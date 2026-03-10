@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { redisClient } from '../server';
+import { redisClient, redisConnected } from '../redis';
 import { DialogueChoiceTelemetryEvent, handleDialogueTelemetry } from '../telemetry/dialogueTelemetryServer';
 
 export function setupSocketHandlers(io: Server) {
@@ -15,11 +15,13 @@ export function setupSocketHandlers(io: Server) {
             console.log(`[Socket] Character ${data.characterId} joined Room ${data.roomId}`);
 
             // Redis에 현재 사용자의 위치 및 상태 저장 (빠른 읽기/쓰기)
-            await redisClient.hSet(`userState:${data.characterId}`, {
-                socketId: socket.id,
-                roomId: data.roomId,
-                online: 'true'
-            });
+            if (redisConnected) {
+                await redisClient.hSet(`userState:${data.characterId}`, {
+                    socketId: socket.id,
+                    roomId: data.roomId,
+                    online: 'true'
+                });
+            }
 
             // 방 안의 다른 유저에게 새로운 플레이어 접속 알림
             socket.to(data.roomId).emit('playerJoined', { characterId: data.characterId });

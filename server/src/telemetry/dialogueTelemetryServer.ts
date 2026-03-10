@@ -1,26 +1,8 @@
 import { Socket } from 'socket.io';
 import { persistDialogueTelemetry } from './dialogueTelemetryPersistence';
+import { DialogueChoiceTelemetryEvent } from '../../../shared/types/telemetry';
 
-export interface DialogueChoiceTelemetryEvent {
-  eventId: string;
-  eventTs: string;
-  sessionId: string;
-  playerIdHash: string;
-  chapterId: string;
-  sceneId: string;
-  npcId: string;
-  dialogueNodeId: string;
-  choiceId: string;
-  choiceTextKey: string;
-  inputMode: 'keyboard' | 'gamepad' | 'touch';
-  latencyMs?: number;
-  partyComp?: string[];
-  difficultyTier?: 'story' | 'normal' | 'hard' | 'nightmare';
-  buildVersion: string;
-  platform: 'web' | 'unity' | 'ue5' | 'ps5' | 'xbox';
-  region?: string;
-  idempotencyKey: string;
-}
+export type { DialogueChoiceTelemetryEvent };
 
 const dedupeWindowMs = 5 * 60 * 1000;
 const idempotencyStore = new Map<string, number>();

@@ -1,25 +1,20 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { Server } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
-import { createClient } from 'redis';
+import { redisClient } from './redis';
 import { setupSocketHandlers } from './socket/socketHandler';
 
 const fastify = Fastify({ logger: true });
 
-// 1. PostgreSQL ORM (PrismaClient)
-export const prisma = new PrismaClient();
-
-// 2. Redis Client (캐싱 및 상태 동기화)
-export const redisClient = createClient({
-    url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:5173', 'http://localhost:3000'];
 
 async function startServer() {
     try {
         // CORS 설정 추가
         await fastify.register(cors, {
-            origin: '*' // 운영 시에는 프론트엔드 도메인으로 한정
+            origin: ALLOWED_ORIGINS
         });
 
         // 헬스 체크 API 엔드포인트
@@ -36,7 +31,7 @@ async function startServer() {
         // Fastify HTTP 서버에 Socket.io 서버 바인딩
         const io = new Server(fastify.server, {
             cors: {
-                origin: '*',
+                origin: ALLOWED_ORIGINS,
             }
         });
 
@@ -44,10 +39,13 @@ async function startServer() {
         setupSocketHandlers(io);
         fastify.log.info(`Socket Server attached`);
 
-        // Redis 연결 시작
-        redisClient.on('error', (err) => console.log('Redis Client Error', err));
-        await redisClient.connect();
-        fastify.log.info('Connected to Redis In-Memory Store');
+        // Redis 연결 시작 (graceful degradation)
+        try {
+            await redisClient.connect();
+            fastify.log.info('Connected to Redis In-Memory Store');
+        } catch (redisErr) {
+            fastify.log.warn(`Redis connection failed, continuing without Redis: ${redisErr}`);
+        }
 
     } catch (err) {
         fastify.log.error(err);

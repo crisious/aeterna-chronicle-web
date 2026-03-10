@@ -159,7 +159,30 @@ export class HudOverlay {
 
     if (changed) {
       this.quickSlots = nextSlots;
-      this.renderQuickSlots('keyboard');
+      this.updateCooldowns();
+    }
+  }
+
+  private updateCooldowns(): void {
+    const container = this.query<HTMLElement>('#hud-quickslots');
+    const buttons = container.querySelectorAll<HTMLButtonElement>('[data-slot-index]');
+
+    for (const button of buttons) {
+      const slotIndex = Number(button.dataset.slotIndex);
+      const slot = this.quickSlots.find((s) => s.slotIndex === slotIndex);
+      if (!slot) continue;
+
+      const cdEl = button.querySelector<HTMLElement>('.slot-cd');
+      if (cdEl) {
+        const remainingSec = Math.ceil(slot.remainingCooldownMs / 1000);
+        cdEl.textContent = slot.remainingCooldownMs > 0 ? `${remainingSec}s` : 'Ready';
+      }
+
+      if (slot.remainingCooldownMs > 0) {
+        button.classList.add('slot-cooldown');
+      } else {
+        button.classList.remove('slot-cooldown');
+      }
     }
   }
 

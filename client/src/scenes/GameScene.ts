@@ -33,6 +33,7 @@ export class GameScene extends Phaser.Scene {
   private quickSlots: QuickSlotData[] = [];
   private readonly sessionId = `sess_${Date.now().toString(36)}`;
   private dialogueOpenAtMs = 0;
+  private lastMoveEmitTime = 0;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -84,12 +85,16 @@ export class GameScene extends Phaser.Scene {
     this.simulateStatusTick(delta);
 
     if ((this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) && this.socket?.connected) {
-      this.socket.emit('playerMove', {
-        characterId: this.socket.id,
-        x: this.player.x,
-        y: this.player.y,
-        state: 'moving'
-      });
+      const now = Date.now();
+      if (now - this.lastMoveEmitTime >= 200) {
+        this.lastMoveEmitTime = now;
+        this.socket.emit('playerMove', {
+          characterId: this.socket.id,
+          x: this.player.x,
+          y: this.player.y,
+          state: 'moving'
+        });
+      }
     }
   }
 
@@ -218,7 +223,8 @@ export class GameScene extends Phaser.Scene {
 
   private setupNetwork(): void {
     try {
-      this.socket = io('http://localhost:3000', { reconnectionAttempts: 3 });
+      const serverUrl = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3000';
+      this.socket = io(serverUrl, { reconnectionAttempts: 3 });
 
       this.socket.on('connect', () => {
         console.log(`[네트워크] 서버 접속 성공: ${this.socket?.id}`);

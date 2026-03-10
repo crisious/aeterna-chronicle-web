@@ -1,4 +1,5 @@
-import { prisma, redisClient } from '../server';
+import { prisma } from '../db';
+import { redisClient, redisConnected } from '../redis';
 import { DialogueChoiceTelemetryEvent } from './dialogueTelemetryServer';
 
 const REDIS_TTL_SECONDS = 60 * 24 * 60 * 60; // 60 days
@@ -11,7 +12,9 @@ export async function persistDialogueTelemetry(
   payload: DialogueChoiceTelemetryEvent,
   deduped: boolean
 ): Promise<void> {
-  await persistToRedis(payload, deduped);
+  if (redisConnected) {
+    await persistToRedis(payload, deduped);
+  }
   await persistToPostgresBestEffort(payload, deduped);
 }
 
