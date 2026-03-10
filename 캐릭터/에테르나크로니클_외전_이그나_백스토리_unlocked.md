@@ -1,0 +1,78 @@
+# 에테르나크로니클_외전_이그나_백스토리
+
+> 📋 Notion 관련 페이지(이그나.md)에서 복원된 내용입니다.
+> 원본 파일은 Synology 잠금으로 접근 불가 — NAS 재시작 후 교체 필요.
+
+---
+
+# 이그나 (Igna)
+
+
+> 출처: [[캐릭터_정리]]
+
+
+## 기본 정보
+
+
+- **종족**: 이프리타 (불꽃 친화 종족)
+- **직책**: 이프리타 족장의 딸
+- **나이**: 19세
+- **외형**: 주황색 머리카락, 금빛 눈, 양쪽 팔뚝에 빛나는 불꽃 문신
+- **특징**: 아버지(족장 이그리스)가 레테 교단에 기억을 빼앗겨 에리언에게 거래를 요청하며 합류. 이프리타 방식대로 부탁 대신 거래를 요구하지만, 시간이 지날수록 진정한 동료가 된다.
+- **말투**: 짧고 직접적. 돌려 말하지 않음. 감정을 숨기지 않지만 약하게 보이는 것은 싫어함.
+- **역할**: 솔라리스 사막 구간의 안내자. 솔리안 유적 지도와 이프리타 전투력을 제공.
+
+**🎨 AI 이미지 프롬프트 (Checkpoint AI / Stable Diffusion)**
+
+```plain text
+masterpiece, best quality, ultra-detailed, 8k uhd,
+1girl, 19 years old, (flame-orange medium hair:1.3), sharp golden eyes, fierce proud expression,
+(amber-toned skin:1.2), strong athletic build, tribal desert warrior,
+(leather and fire-red woven combat outfit:1.2), exposed forearms, tribal bead accessories,
+(glowing orange-red fire tattoos on both forearms:1.4), faint ember light emanating from skin,
+arms crossed, jaw set, chin slightly raised — defiant posture masking inner worry,
+(sandstorm swirling behind her:1.2), dying sunset orange sky, red rock canyon cliffs,
+sand particles streaming past her body, hair whipping in desert wind,
+warm firelight from tattoos contrasting cool dusk sky,
+dark fantasy RPG warrior character art, watercolor ink hybrid style,
+cinematic rim lighting, warm amber and deep orange palette, professional game art
+```
+
+**Negative Prompt:**
+
+```plain text
+nsfw, blurry, low quality, extra limbs, bad anatomy, childlike, cartoonish, oversaturated,
+smiling softly, gentle expression, pale skin, modern clothing, fantasy elf ears,
+cold color palette, rain, green environment, duplicate, watermark
+```
+
+
+**🎬 AI 영상 프롬프트 (WAN 2.2)**
+
+```plain text
+[WAN 2.2 | Text-to-Video | 720p | 81frames | Steps 30 | CFG 7.0]
+A 19-year-old desert warrior girl with flame-orange hair stands at the edge of a red rock canyon at sunset,
+her forearm fire tattoos pulse rhythmically with warm orange-red glow as desert wind rises,
+she stares forward with fierce golden eyes — expression guarded but grief barely contained beneath,
+camera slowly circles from her side profile to her front, silhouetted against burning orange sky,
+sand particles stream horizontally past her body, hair and clothing whipping in the dry wind,
+the tattoos brighten with each gust — as if the fire inside her answers the storm outside,
+warm cinematic backlighting, emotional intensity, 24fps natural motion
+
+Negative Prompt:
+cold color palette, rain, snow, green environment, gentle expression, modern clothing,
+fast cuts, shaky cam, blurry, bright cheerful lighting, artifacts
+```
+
+
+---
+
+
+
+## 주요 특징 요약 (보강 v1.1)
+
+
+- **핵심 프로필**: 이프리타 (불꽃 친화 종족) / 이프리타 족장의 딸 / 나이/외견: 19세
+- **서사 핵심**: 아버지(족장 이그리스)가 레테 교단에 기억을 빼앗겨 에리언에게 거래를 요청하며 합류.
+- **플레이 내 기능**: 솔라리스 사막 구간의 안내자.
+- **대사 톤 가이드**: 짧고 직접적.

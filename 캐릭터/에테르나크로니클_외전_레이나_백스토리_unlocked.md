@@ -1,0 +1,79 @@
+# 에테르나크로니클_외전_레이나_백스토리
+
+> 📋 Notion 관련 페이지(레이나.md)에서 복원된 내용입니다.
+> 원본 파일은 Synology 잠금으로 접근 불가 — NAS 재시작 후 교체 필요.
+
+---
+
+# 레이나 (Reina)
+
+
+> 출처: [[캐릭터_정리]]
+
+
+## 기본 정보
+
+
+- **종족**: 인간
+- **소속**: 전직 레테 교단 첩자 (심문관)
+- **나이**: 28세
+- **외형**: 긴 적갈색 머리카락, 수녀 복장, 교단 낙인 위에 자해 흉터
+- **특징**: 4살 때 교단에 입단(본인의 선택이 아님). 24년간 시키는 대로 기억을 빼앗았으나, 6살 아이 기억 탈취 임무를 거부하면서 교단을 이탈. 교단 내부 문서와 황제 잠식 정보를 가지고 수호자단에 협력.
+- **말투**: 날카롭고 경제적. 불필요한 감정 표현 없음. 증거와 사실로 말함. 신뢰를 구걸하지 않는다.
+- **역할**: 아르겐티움 지하 연구소에서 합류. 황금 에테르 탑 내부 구조와 황제 해방 루트의 열쇠.
+
+**🎨 AI 이미지 프롬프트 (Checkpoint AI / Stable Diffusion)**
+
+```plain text
+masterpiece, best quality, ultra-detailed, 8k uhd,
+1girl, 28 years old, (long auburn-red hair:1.2), pale skin, controlled expressionless face,
+sharp perceptive eyes hiding immense interior weight,
+(dark modified nun's habit with subtle cult embroidery at collar:1.3), practical and worn,
+(one sleeve pushed up revealing branded cult mark with self-made scar crossing it:1.4),
+other arm clutching bundle of stolen documents tightly to chest,
+standing in (narrow stone underground corridor:1.2), back slightly toward wall,
+(single torch on wall casting cold dramatic side shadow:1.3),
+posture: ready and controlled — not fearful, just carrying 24 years alone,
+dark fantasy RPG defector character art, watercolor ink hybrid style,
+cinematic hard side lighting, cold gray and deep red palette, professional game art
+```
+
+**Negative Prompt:**
+
+```plain text
+nsfw, blurry, low quality, extra limbs, bad anatomy, childlike, cartoonish, oversaturated,
+smiling, soft expression, bright colors, clean white habit, outdoor setting,
+warm lighting, fantasy armor, elf ears, duplicate, watermark
+```
+
+
+**🎬 AI 영상 프롬프트 (WAN 2.2)**
+
+```plain text
+[WAN 2.2 | Text-to-Video | 720p | 81frames | Steps 30 | CFG 7.0]
+A 28-year-old woman in a dark modified nun's habit stands in a narrow stone underground corridor, back to the wall,
+she reaches for her sleeve and rolls it up deliberately to reveal a branded cult mark with a scar crossing it,
+raises the arm toward the torchlight — not asking for sympathy, presenting evidence,
+expression absolutely flat and controlled throughout,
+camera begins close on the scar in torchlight, slowly rises to her face,
+auburn hair falls across one eye, the other holds the camera completely steady and unblinking,
+single flickering wall torch, cold stone corridor, harsh side shadow,
+no score — only ambient corridor silence, cinematic dark fantasy, 24fps
+
+Negative Prompt:
+smiling, warm lighting, bright colors, outdoor setting, cheerful mood,
+fast movement, shaky cam, soft focus, blurry, modern setting, artifacts
+```
+
+
+---
+
+
+
+## 주요 특징 요약 (보강 v1.1)
+
+
+- **핵심 프로필**: 인간 / 전직 레테 교단 첩자 (심문관) / 나이/외견: 28세
+- **서사 핵심**: 4살 때 교단에 입단(본인의 선택이 아님).
+- **플레이 내 기능**: 아르겐티움 지하 연구소에서 합류.
+- **대사 톤 가이드**: 날카롭고 경제적.
