@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:VisualElement name="hud-root" class="hud-root">
+    <ui:VisualElement name="statusMount" class="mount-status" />
+    <ui:VisualElement name="quickSlotMount" class="mount-quickslot" />
+    <ui:VisualElement name="questMount" class="mount-quest" />
+    <ui:VisualElement name="dialogueMount" class="mount-dialogue" />
+  </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:VisualElement name="hud-dialogue" class="hud-panel dialogue-panel" style="display:none;">
+    <ui:Label name="speakerLabel" text="Speaker" class="dialogue-speaker" />
+    <ui:Label name="bodyLabel" text="..." class="dialogue-body" />
+    <ui:VisualElement name="choiceList" class="dialogue-choice-list" />
+  </ui:VisualElement>
+</ui:UXML>

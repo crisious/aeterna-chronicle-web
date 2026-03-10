@@ -1,0 +1,397 @@
+{
+  "task": "P2-08_l10n_key_integrity",
+  "scannedAt": "2026-03-07T12:30:46+0900",
+  "root": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클",
+  "scanConfig": {
+    "includeDirs": [
+      "시나리오",
+      "03_데이터테이블",
+      "01_코어기획",
+      "02_UI_UX",
+      "04_검증_P0",
+      "client/src",
+      "server/src",
+      "unity_ui_toolkit",
+      "ue5_umg"
+    ],
+    "includeExts": [
+      ".cpp",
+      ".cs",
+      ".h",
+      ".hpp",
+      ".js",
+      ".json",
+      ".jsx",
+      ".md",
+      ".py",
+      ".ts",
+      ".tsx",
+      ".txt",
+      ".uxml",
+      ".yaml",
+      ".yml"
+    ],
+    "dotPattern": "\\b(?:dialogue|npc|quest|ui|story|system|item|monster|ending|combat|hud)(?:\\.[a-z0-9_-]+){2,}\\b",
+    "snakePattern": "\\b(?:LOC|L10N|STR|TEXT|UI|NPC|DIALOG|QUEST|ITEM|SYSTEM|HUD|ENDING)_[A-Z0-9]+(?:_[A-Z0-9]+){1,}\\b"
+  },
+  "summary": {
+    "scannedFileCount": 108,
+    "filesWithKeyHits": 10,
+    "totalHitCount": 44,
+    "definitionHitCount": 2,
+    "referenceHitCount": 42,
+    "uniqueDefinitionKeyCount": 2,
+    "uniqueReferenceKeyCount": 22,
+    "duplicateDefinitionKeyCount": 0,
+    "missingDefinitionKeyCount": 21,
+    "conflictKeyCount": 0,
+    "scanErrorCount": 5
+  },
+  "duplicateDefinitionKeys": [],
+  "referencedWithoutDefinition": [
+    {
+      "key": "dialogue.c2.n2.choice",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "client/src/scenes/GameScene.ts",
+          "line": 195,
+          "text": "choiceTextKey: `dialogue.c2.n2.choice.${choiceId.toLowerCase()}`,"
+        }
+      ]
+    },
+    {
+      "key": "dialogue.c4.n3.choice.a",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "03_데이터테이블/npc_choice_event_telemetry_schema_v1.md",
+          "line": 77,
+          "text": "\"choiceTextKey\": \"dialogue.c4.n3.choice.a\","
+        }
+      ]
+    },
+    {
+      "key": "ending.progress.a",
+      "referenceCount": 4,
+      "references": [
+        {
+          "file": "04_검증_P0/P1/P1-05_챕터3_수직슬라이스_골든패스_고정_v1.md",
+          "line": 57,
+          "text": "- `ending.progress.A += 15`"
+        },
+        {
+          "file": "04_검증_P0/P1/P1-05_챕터3_수직슬라이스_골든패스_고정_v1.md",
+          "line": 78,
+          "text": "| `ending.progress.A` | +15 이상 |"
+        },
+        {
+          "file": "04_검증_P0/P1/P1-05_챕터3_수직슬라이스_실행결과_v1.md",
+          "line": 25,
+          "text": "| STEP 05 | 라와르 기억 루트(공명 3회) | PASS | `fragment_count +1`, `ending.progress.A +15` 반영 |"
+        },
+        {
+          "file": "04_검증_P0/P1/P1-05_챕터3_수직슬라이스_실행결과_v1.md",
+          "line": 38,
+          "text": "| `ending.progress.A` | +15 이상 | +15 | PASS |"
+        }
+      ]
+    },
+    {
+      "key": "item.data.rarity.tostring",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "02_UI_UX/UI_UX_멀티엔진_설계.md",
+          "line": 1179,
+          "text": "slot.AddToClassList($\"rarity-{item.Data.Rarity.ToString().ToLower()}\");"
+        }
+      ]
+    },
+    {
+      "key": "npc.choice.nuariel.c2n2",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-06_신규NPC6인_시스템보상_연결표_v1.md",
+          "line": 77,
+          "text": "- 예: `npc.choice.nuariel.c2n2 = A`"
+        }
+      ]
+    },
+    {
+      "key": "npc.whistleblower.survival",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-06_신규NPC6인_시스템보상_연결표_v1.md",
+          "line": 50,
+          "text": "| A 즉시 공개 | 침투 난이도 -1단계, 내부고발자 생존확률 -20% | `city.unrest=HIGH`, `mission.stealth.difficulty=-1`, `npc.whistleblower.survival=-20` |"
+        }
+      ]
+    },
+    {
+      "key": "quest.c2.malatus_contact",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-05_챕터2_수직슬라이스_플레이경로_v1.md",
+          "line": 77,
+          "text": "| `quest.c2.malatus_contact` | COMPLETE |"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.dialogue.choice_confirm",
+      "referenceCount": 4,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 168,
+          "text": "- `ui.event.dialogue.choice_confirm`"
+        },
+        {
+          "file": "client/src/scenes/GameScene.ts",
+          "line": 183,
+          "text": "this.events.on('ui.event.dialogue.choice_confirm', ({ choiceId }: { choiceId: string }) => {"
+        },
+        {
+          "file": "client/src/ui/HudOverlay.ts",
+          "line": 222,
+          "text": "this.scene.events.emit('ui.event.dialogue.choice_confirm', { choiceId });"
+        },
+        {
+          "file": "ue5_umg/HUD/Blueprint/WBP_Binding_Guide.md",
+          "line": 14,
+          "text": "- `ui.event.dialogue.choice_confirm` -> Narrative Subsystem 전달"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.dialogue.choice_select",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 167,
+          "text": "- `ui.event.dialogue.choice_select`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.dialogue.next",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 165,
+          "text": "- `ui.event.dialogue.next`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.dialogue.skip",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 166,
+          "text": "- `ui.event.dialogue.skip`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.questtracker.navigate",
+      "referenceCount": 2,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 128,
+          "text": "- `ui.event.questtracker.navigate`"
+        },
+        {
+          "file": "ue5_umg/HUD/Blueprint/WBP_Binding_Guide.md",
+          "line": 13,
+          "text": "- `ui.event.questtracker.navigate` -> 퀘스트 핀/내비게이션"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.questtracker.pin",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 127,
+          "text": "- `ui.event.questtracker.pin`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.questtracker.toggle",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 126,
+          "text": "- `ui.event.questtracker.toggle`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.quickslot.invalid_use",
+      "referenceCount": 3,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 89,
+          "text": "- `ui.event.quickslot.invalid_use`"
+        },
+        {
+          "file": "client/src/scenes/GameScene.ts",
+          "line": 171,
+          "text": "this.events.on('ui.event.quickslot.invalid_use', ({ slotIndex }: { slotIndex: number }) => {"
+        },
+        {
+          "file": "client/src/ui/HudOverlay.ts",
+          "line": 173,
+          "text": "this.scene.events.emit('ui.event.quickslot.invalid_use', { slotIndex: slot.slotIndex });"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.quickslot.select",
+      "referenceCount": 2,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 87,
+          "text": "- `ui.event.quickslot.select`"
+        },
+        {
+          "file": "client/src/ui/HudOverlay.ts",
+          "line": 216,
+          "text": "this.scene.events.emit('ui.event.quickslot.select', { slotIndex });"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.quickslot.swap",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 88,
+          "text": "- `ui.event.quickslot.swap`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.quickslot.use",
+      "referenceCount": 4,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 86,
+          "text": "- `ui.event.quickslot.use`"
+        },
+        {
+          "file": "client/src/scenes/GameScene.ts",
+          "line": 167,
+          "text": "this.events.on('ui.event.quickslot.use', ({ slotIndex }: { slotIndex: number }) => {"
+        },
+        {
+          "file": "client/src/ui/HudOverlay.ts",
+          "line": 177,
+          "text": "this.scene.events.emit('ui.event.quickslot.use', { slotIndex: slot.slotIndex });"
+        },
+        {
+          "file": "ue5_umg/HUD/Blueprint/WBP_Binding_Guide.md",
+          "line": 12,
+          "text": "- `ui.event.quickslot.use` -> 입력 액션 `IA_QuickSlot1..12`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.status.avatar_click",
+      "referenceCount": 3,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 46,
+          "text": "- `ui.event.status.avatar_click`"
+        },
+        {
+          "file": "client/src/scenes/GameScene.ts",
+          "line": 175,
+          "text": "this.events.on('ui.event.status.avatar_click', () => {"
+        },
+        {
+          "file": "client/src/ui/HudOverlay.ts",
+          "line": 210,
+          "text": "this.scene.events.emit('ui.event.status.avatar_click');"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.status.hover_change",
+      "referenceCount": 1,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 47,
+          "text": "- `ui.event.status.hover_change`"
+        }
+      ]
+    },
+    {
+      "key": "ui.event.status.hp_critical",
+      "referenceCount": 4,
+      "references": [
+        {
+          "file": "04_검증_P0/P0/P0-08_HUD_4컴포넌트_계약서_v1.md",
+          "line": 48,
+          "text": "- `ui.event.status.hp_critical` (critical 진입 시 1회)"
+        },
+        {
+          "file": "client/src/scenes/GameScene.ts",
+          "line": 179,
+          "text": "this.events.on('ui.event.status.hp_critical', () => {"
+        },
+        {
+          "file": "client/src/ui/HudOverlay.ts",
+          "line": 248,
+          "text": "this.scene.events.emit('ui.event.status.hp_critical');"
+        },
+        {
+          "file": "ue5_umg/HUD/Blueprint/WBP_Binding_Guide.md",
+          "line": 11,
+          "text": "- `ui.event.status.hp_critical` -> BP 디스패처 `OnHpCritical`"
+        }
+      ]
+    }
+  ],
+  "conflictKeys": [],
+  "scanErrors": [
+    {
+      "file": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/01_코어기획/에테르나크로니클_이슈_트래커.md",
+      "error": "read failed: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/01_코어기획/에테르나크로니클_이슈_트래커.md ([Errno 11] Resource deadlock avoided)"
+    },
+    {
+      "file": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/NPC대화/에테르나크로니클_대화스크립트_이그나.md",
+      "error": "read failed: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/NPC대화/에테르나크로니클_대화스크립트_이그나.md ([Errno 11] Resource deadlock avoided)"
+    },
+    {
+      "file": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/에테르나크로니클_시나리오_마스터.md",
+      "error": "read failed: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/에테르나크로니클_시나리오_마스터.md ([Errno 11] Resource deadlock avoided)"
+    },
+    {
+      "file": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/세계관외전/에테르나크로니클_외전_발견문서_통합.md",
+      "error": "read failed: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/세계관외전/에테르나크로니클_외전_발견문서_통합.md ([Errno 11] Resource deadlock avoided)"
+    },
+    {
+      "file": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/세계관외전/에테르나크로니클_외전_세계관이벤트_통합.md",
+      "error": "read failed: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/시나리오/세계관외전/에테르나크로니클_외전_세계관이벤트_통합.md ([Errno 11] Resource deadlock avoided)"
+    }
+  ]
+}

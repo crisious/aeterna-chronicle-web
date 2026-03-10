@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+  <ui:VisualElement name="hud-status" class="hud-panel status-panel">
+    <ui:VisualElement class="status-head">
+      <ui:Button name="avatarButton" text="" class="avatar" />
+      <ui:VisualElement>
+        <ui:Label name="characterName" text="Erien" class="status-name" />
+        <ui:Label name="levelLabel" text="Lv.1" class="status-level" />
+      </ui:VisualElement>
+    </ui:VisualElement>
+
+    <ui:Label text="HP" class="bar-caption" />
+    <ui:VisualElement class="bar-track"><ui:VisualElement name="hpFill" class="bar-fill hp" /></ui:VisualElement>
+    <ui:Label name="hpText" text="100/100" class="bar-text" />
+
+    <ui:Label text="MP" class="bar-caption" />
+    <ui:VisualElement class="bar-track"><ui:VisualElement name="mpFill" class="bar-fill mp" /></ui:VisualElement>
+    <ui:Label name="mpText" text="100/100" class="bar-text" />
+
+    <ui:Label text="EXP" class="bar-caption" />
+    <ui:VisualElement class="bar-track"><ui:VisualElement name="expFill" class="bar-fill exp" /></ui:VisualElement>
+  </ui:VisualElement>
+</ui:UXML>

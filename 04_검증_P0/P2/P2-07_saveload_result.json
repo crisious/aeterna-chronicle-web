@@ -1,0 +1,107 @@
+{
+  "iterations": 20,
+  "pass": 20,
+  "fail": 0,
+  "rows": [
+    {
+      "iteration": 1,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 2,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 3,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 4,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 5,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 6,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 7,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 8,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 9,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 10,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 11,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 12,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 13,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 14,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 15,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 16,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 17,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 18,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 19,
+      "result": "PASS",
+      "diffKeys": []
+    },
+    {
+      "iteration": 20,
+      "result": "PASS",
+      "diffKeys": []
+    }
+  ]
+}

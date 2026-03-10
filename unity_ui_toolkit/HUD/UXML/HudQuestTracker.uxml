@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:VisualElement name="hud-quest" class="hud-panel quest-panel">
+    <ui:Label text="Quest Tracker" class="quest-header" />
+    <ui:VisualElement name="questList" class="quest-list" />
+  </ui:VisualElement>
+</ui:UXML>

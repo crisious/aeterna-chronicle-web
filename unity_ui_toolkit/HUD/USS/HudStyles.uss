@@ -1,0 +1,21 @@
+.hud-root { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.hud-panel { background-color: rgba(10,16,28,0.78); border-top-left-radius: 10px; border-top-right-radius:10px; border-bottom-left-radius:10px; border-bottom-right-radius:10px; border-left-width:1px; border-right-width:1px; border-top-width:1px; border-bottom-width:1px; border-left-color: rgba(255,255,255,0.12); border-right-color: rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.12); border-bottom-color: rgba(255,255,255,0.12); padding-left:10px; padding-right:10px; padding-top:10px; padding-bottom:10px; }
+.mount-status { position:absolute; left:16px; bottom:16px; width:320px; }
+.mount-quickslot { position:absolute; left:50%; bottom:16px; width:760px; translate: -380px 0; }
+.mount-quest { position:absolute; right:16px; top:16px; width:320px; }
+.mount-dialogue { position:absolute; left:50%; bottom:122px; width:820px; translate:-410px 0; }
+.status-head { flex-direction: row; align-items: center; margin-bottom: 8px; }
+.avatar { width: 46px; height: 46px; margin-right: 8px; background-color: #F5A623; }
+.bar-caption { font-size: 10px; color:#9CB1C9; margin-top: 6px; }
+.bar-track { height: 12px; background-color:#1D2A3D; border-top-left-radius:999px; border-top-right-radius:999px; border-bottom-left-radius:999px; border-bottom-right-radius:999px; overflow:hidden; }
+.bar-fill { height: 12px; }
+.hp { background-color:#D64545; }
+.mp { background-color:#3A7BFF; }
+.exp { background-color:#C89B3C; }
+.slot-grid { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+.slot-item { width: 116px; min-height: 74px; background-color:#1A2536; border-left-width:1px; border-right-width:1px; border-top-width:1px; border-bottom-width:1px; border-left-color:#2C3F5A; border-right-color:#2C3F5A; border-top-color:#2C3F5A; border-bottom-color:#2C3F5A; border-top-left-radius:8px; border-top-right-radius:8px; border-bottom-left-radius:8px; border-bottom-right-radius:8px; padding:6px; }
+.slot-item.cooldown { border-left-color:#8D5C2A; border-right-color:#8D5C2A; border-top-color:#8D5C2A; border-bottom-color:#8D5C2A; }
+.quest-row { border-bottom-width:1px; border-bottom-color:rgba(255,255,255,0.08); padding-top:6px; padding-bottom:6px; }
+.dialogue-speaker { font-size: 14px; unity-font-style: bold; }
+.dialogue-body { font-size: 18px; white-space: normal; }
+.dialogue-choice { margin-top:6px; min-height: 34px; background-color:#1A2536; }

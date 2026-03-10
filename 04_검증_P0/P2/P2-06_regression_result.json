@@ -1,0 +1,42 @@
+{
+  "total": 5,
+  "pass": 5,
+  "fail": 0,
+  "rows": [
+    {
+      "caseId": "REG-D-001",
+      "description": "히든 D 우선 적용",
+      "expected": "D",
+      "actual": "D",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-C-001",
+      "description": "C 조건 충족",
+      "expected": "C",
+      "actual": "C",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-A-001",
+      "description": "A 조건 충족",
+      "expected": "A",
+      "actual": "A",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-B-001",
+      "description": "B 조건 충족",
+      "expected": "B",
+      "actual": "B",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-FAIL-001",
+      "description": "패배 루트 강제",
+      "expected": "DEFEAT",
+      "actual": "DEFEAT",
+      "result": "PASS"
+    }
+  ]
+}

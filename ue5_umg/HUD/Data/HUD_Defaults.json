@@ -1,0 +1,17 @@
+{
+  "status": {
+    "hpCurrent": 415,
+    "hpMax": 415,
+    "mpCurrent": 208,
+    "mpMax": 208,
+    "level": 15,
+    "expRatio": 0.42,
+    "characterName": "Erien",
+    "dangerHpThreshold": 0.2
+  },
+  "slots": [
+    { "slotIndex": 0, "label": "Slash", "hotkey": "1", "cooldownMs": 4000, "remainingCooldownMs": 0, "stackCount": 0, "isUsable": true },
+    { "slotIndex": 1, "label": "Ice", "hotkey": "2", "cooldownMs": 2500, "remainingCooldownMs": 0, "stackCount": 0, "isUsable": true },
+    { "slotIndex": 2, "label": "Shield", "hotkey": "3", "cooldownMs": 2500, "remainingCooldownMs": 0, "stackCount": 0, "isUsable": true }
+  ]
+}
