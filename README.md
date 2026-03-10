@@ -141,9 +141,19 @@ graph TD
 │   ├── NPC대화/                # 대화 스크립트 12개
 │   └── 세계관외전/             # 발견 문서·이벤트
 ├── 🌍 월드맵/               # 6개 지역 상세 설계
-├── 👤 캐릭터/               # ~30명 프로필 + 외전
-├── 💻 client/               # Phaser.js 웹 클라이언트
-├── 🖥️ server/               # Fastify + Prisma 서버
+├── 👤 캐릭터/               # 37파일: 30명 프로필 + 5 외전 + 마스터
+├── 💻 client/               # Phaser.js 웹 클라이언트 (8 files)
+│   ├── src/scenes/             # GameScene (200ms 이동 스로틀)
+│   ├── src/ui/                 # HudOverlay (부분 렌더링)
+│   └── src/telemetry/          # NPC 대화 텔레메트리
+├── 🖥️ server/               # Fastify + Prisma 서버 (9 files)
+│   ├── src/db.ts               # Prisma 클라이언트 (순환 import 분리)
+│   ├── src/redis.ts            # Redis (graceful degradation)
+│   ├── src/socket/             # Room 기반 브로드캐스트
+│   ├── src/telemetry/          # 이중 기록 (Redis + PostgreSQL)
+│   └── prisma/schema.prisma    # 5모델 (User/Character/Inventory/Quest/Telemetry)
+├── 📦 shared/               # 클라이언트-서버 공유 타입
+│   └── types/telemetry.ts      # DialogueChoiceTelemetryEvent
 ├── 🎮 ue5_umg/              # UE5 HUD (C++ UMG)
 ├── 🎮 unity_ui_toolkit/     # Unity HUD (C# UI Toolkit)
 └── 🔧 tools/
@@ -252,7 +262,7 @@ graph LR
 
 ```
 Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
-Phase 2  ████████████░░░░░░░░   60%  멀티엔진 포팅 + 텔레메트리 + QA
+Phase 2  ████████████████░░░░   80%  멀티엔진 포팅 + 텔레메트리 + QA + 코드리뷰
 Phase 3  ░░░░░░░░░░░░░░░░░░░░    0%  길드/PvP + 시즌 + 라이브 서비스
 ```
 
@@ -353,14 +363,21 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
+| 총 파일 | 198개 (Git tracked) |
+| 총 커밋 | 11개 |
 | 기획 문서 | 134개 (.md) |
 | 코어기획 | 21개 / ~12,000줄 |
-| 캐릭터 | ~30명 |
+| 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
+| 시나리오 | 22개 (챕터 5 + NPC대화 12 + 세계관외전 2 + 마스터 3) |
+| 월드맵 | 9개 (6지역 + 마스터 3) |
 | 지역 | 6개 |
 | 챕터 | 5개 |
 | 엔딩 | 4종 |
-| 검증 리포트 | 24개 (P0/P1/P2) |
-| 코드 파일 | 64개 (TS/C++/C#/Python) |
+| 검증 리포트 | 41개 (P0/P1/P2/공통) |
+| 코드 파일 | 38개 (TS/C++/C#/Python) |
+| 클라이언트 | Phaser.js + TypeScript (8 files) |
+| 서버 | Fastify + Socket.io + Prisma (9 files) |
+| 공유 타입 | shared/types/telemetry.ts |
 
 ---
 
