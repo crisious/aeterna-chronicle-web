@@ -330,3 +330,20 @@ model RaidSession {
   @@index([guildId])
   @@index([status])
 }
+
+// ─── 2차 전직 시스템 ────────────────────────────────────────────
+model ClassAdvancement {
+  id            String   @id @default(uuid())
+  baseClass     String   @map("base_class")      // ether_knight, memory_weaver, shadow_weaver
+  advancedClass String   @map("advanced_class")
+  tier          Int                                // 1(Lv.30), 2(Lv.50), 3(Lv.80)
+  requiredLevel Int      @map("required_level")
+  questId       String?  @map("quest_id")
+  skills        Json                               // 해금 스킬 목록
+  statBonus     Json     @map("stat_bonus")
+  ultimateSkill Json?    @map("ultimate_skill")    // tier 3만
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("class_advancements")
+  @@unique([baseClass, tier])
+}

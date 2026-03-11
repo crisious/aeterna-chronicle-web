@@ -19,6 +19,7 @@ import { setupAchievementSocketHandlers } from './socket/achievementSocketHandle
 import { raidRoutes } from './routes/raidRoutes';
 import { setupRaidSocketHandlers } from './socket/raidSocketHandler';
 import { raidManager } from './raid/raidManager';
+import { classRoutes } from './routes/classRoutes';
 
 const fastify = Fastify({ logger: true });
 
@@ -70,6 +71,10 @@ async function startServer() {
         // 레이드 보스 REST API 라우트 등록
         await fastify.register(raidRoutes);
         fastify.log.info('Raid boss routes registered');
+
+        // 2차 전직 시스템 REST API 라우트 등록
+        await fastify.register(classRoutes);
+        fastify.log.info('Class advancement routes registered');
 
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
