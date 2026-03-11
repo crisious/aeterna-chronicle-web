@@ -10,6 +10,8 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../db';
 import { enqueue, dequeue, isInQueue, getCurrentSeason } from '../pvp/matchmaker';
+import { getSeasonInfo, previewSeasonReward, claimSeasonReward, SEASON_TIER_REWARDS } from '../pvp/pvpSeasonReward';
+import { normalizeForPvp, RawStats } from '../pvp/pvpNormalizer';
 
 /** 큐 등록 요청 바디 */
 interface QueueBody {
@@ -142,6 +144,63 @@ export async function registerPvpRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.status(200).send(rating);
+    },
+  );
+
+  // ═══════════════════════════════════════════════════════════
+  // P6-08: PvP 시즌 & 정규화 라우트
+  // ═══════════════════════════════════════════════════════════
+
+  // ─── GET /api/pvp/season — 현재 시즌 정보 ─────────────────
+  app.get('/api/pvp/season', async (_request, reply) => {
+    const info = await getSeasonInfo();
+    return reply.status(200).send(info);
+  });
+
+  // ─── GET /api/pvp/season/rewards — 시즌 보상 등급표 ───────
+  app.get('/api/pvp/season/rewards', async (_request, reply) => {
+    return reply.status(200).send({
+      season: getCurrentSeason(),
+      tiers: SEASON_TIER_REWARDS,
+    });
+  });
+
+  // ─── GET /api/pvp/season/preview/:userId — 개인 보상 미리보기
+  app.get<{ Params: { userId: string } }>(
+    '/api/pvp/season/preview/:userId',
+    async (request, reply) => {
+      const preview = await previewSeasonReward(request.params.userId);
+      return reply.status(200).send(preview);
+    },
+  );
+
+  // ─── POST /api/pvp/season/claim — 시즌 보상 수령 ─────────
+  app.post<{ Body: { userId: string; season?: number } }>(
+    '/api/pvp/season/claim',
+    async (request, reply) => {
+      const { userId, season } = request.body;
+      if (!userId) {
+        return reply.status(400).send({ error: 'userId 필수' });
+      }
+
+      const result = await claimSeasonReward(userId, season);
+      if (!result.success) {
+        return reply.status(400).send({ error: result.error });
+      }
+      return reply.status(200).send(result);
+    },
+  );
+
+  // ─── POST /api/pvp/normalize — PvP 스탯 정규화 (디버그용) ─
+  app.post<{ Body: RawStats }>(
+    '/api/pvp/normalize',
+    async (request, reply) => {
+      const raw = request.body;
+      if (!raw || raw.gearScore == null) {
+        return reply.status(400).send({ error: '스탯 데이터 필수' });
+      }
+      const normalized = normalizeForPvp(raw);
+      return reply.status(200).send({ raw, normalized });
     },
   );
 }

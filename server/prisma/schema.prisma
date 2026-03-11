@@ -199,6 +199,7 @@ model Guild {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   members      GuildMember[]
+  skills       GuildSkill[]
   wars         GuildWar[]     @relation("AttackerGuild")
   warsAsTarget GuildWar[]     @relation("DefenderGuild")
 
@@ -218,13 +219,33 @@ model GuildMember {
   @@map("guild_members")
 }
 
+// ─── 길드 스킬 (P6-06) ──────────────────────────────────────
+model GuildSkill {
+  id          String   @id @default(uuid())
+  guildId     String   @map("guild_id")
+  skillCode   String   @map("skill_code")
+  level       Int      @default(1)
+  unlockedAt  DateTime @default(now()) @map("unlocked_at")
+
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, skillCode])
+  @@map("guild_skills")
+}
+
+// ─── 길드전 (P6-07 거점 점령전 확장) ────────────────────────
 model GuildWar {
   id            String    @id @default(uuid())
   attackerId    String    @map("attacker_id")
   defenderId    String    @map("defender_id")
-  status        String    @default("pending")  // pending, active, finished
+  status        String    @default("pending")  // pending, matching, active, finished
   attackerScore Int       @default(0) @map("attacker_score")
   defenderScore Int       @default(0) @map("defender_score")
+  winnerId      String?   @map("winner_id")       // 승리 길드 ID
+  fortressA     String?   @map("fortress_a")       // 거점 A 점령 길드 ID
+  fortressB     String?   @map("fortress_b")       // 거점 B 점령 길드 ID
+  fortressC     String?   @map("fortress_c")       // 거점 C 점령 길드 ID
+  rewardClaimed Boolean   @default(false) @map("reward_claimed")
   startedAt     DateTime? @map("started_at")
   endedAt       DateTime? @map("ended_at")
   createdAt     DateTime  @default(now()) @map("created_at")
@@ -233,6 +254,7 @@ model GuildWar {
   defender      Guild     @relation("DefenderGuild", fields: [defenderId], references: [id])
 
   @@map("guild_wars")
+  @@index([status])
 }
 
 // ─── PvP 아레나 시스템 ──────────────────────────────────────
@@ -954,5 +976,59 @@ model PlayerCosmetic {
 
   @@unique([userId, cosmeticId])
   @@map("player_cosmetics")
+  @@index([userId])
+}
+
+// ─── 매칭 큐 티켓 (P6-09) ──────────────────────────────────────
+model MatchmakingTicket {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  queueType   String    @map("queue_type")   // dungeon, raid, pvp
+  contentId   String?   @map("content_id")   // 특정 던전/레이드 ID
+  role        String    // tank, dps, healer, any
+  level       Int
+  gearScore   Int       @map("gear_score")
+  status      String    @default("waiting")  // waiting, matched, cancelled, expired
+  matchedAt   DateTime? @map("matched_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("matchmaking_tickets")
+  @@index([queueType, status])
+  @@index([userId])
+}
+
+// ─── 챕터 진행도 (P6-10) ───────────────────────────────────────
+model ChapterProgress {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  chapter       Int
+  status        String    @default("locked")  // locked, unlocked, in_progress, completed
+  completedAt   DateTime? @map("completed_at")
+  flags         Json      @default("{}")       // 스토리 플래그 (선택지 결과)
+  cutscenesSeen Json      @default("[]")       @map("cutscenes_seen")
+  createdAt     DateTime  @default(now())      @map("created_at")
+
+  @@unique([userId, chapter])
+  @@map("chapter_progress")
+  @@index([userId])
+}
+
+// ─── 세이브 슬롯 (P6-11) ──────────────────────────────────────
+model SaveSlot {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  slot        Int      // 0=auto, 1~3=manual
+  label       String?
+  data        Json     // 전체 진행 상태 스냅샷
+  playtime    Int      @default(0)   // 초
+  chapter     Int      @default(1)
+  level       Int      @default(1)
+  location    String?
+  thumbnail   String?  // 스크린샷 base64 (소형)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt     @map("updated_at")
+
+  @@unique([userId, slot])
+  @@map("save_slots")
   @@index([userId])
 }

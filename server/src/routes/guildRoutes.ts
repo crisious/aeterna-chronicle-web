@@ -1,5 +1,14 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
+import { addGuildXp, getGuildLevelInfo, XpSource } from '../guild/guildLevelManager';
+import { upgradeGuildSkill, getGuildSkillsInfo, unlockAvailableSkills } from '../guild/guildSkills';
+import {
+  declareWar as declareGuildWar,
+  matchWar,
+  getWarStatus,
+  attackFortress,
+  getWarHistory,
+} from '../guild/guildWarEngine';
 
 // ─── 공용 타입 & 스키마 ─────────────────────────────────────────
 
@@ -367,6 +376,144 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
         data,
       });
       return updated;
+    },
+  );
+
+  // ═══════════════════════════════════════════════════════════
+  // P6-06: 길드 레벨 & 스킬 라우트
+  // ═══════════════════════════════════════════════════════════
+
+  // ── POST /api/guilds/:id/xp — 길드 경험치 부여 ────────────
+  fastify.post<{ Params: GuildIdParams; Body: { source: string; multiplier?: number } }>(
+    '/api/guilds/:id/xp',
+    async (request, reply) => {
+      const { id } = request.params;
+      const { source, multiplier } = request.body;
+
+      const validSources: XpSource[] = ['DUNGEON_CLEAR', 'GUILD_QUEST', 'RAID_CLEAR', 'WAR_WIN'];
+      if (!validSources.includes(source as XpSource)) {
+        return reply.status(400).send({ error: `유효하지 않은 경험치 소스. 허용: ${validSources.join(', ')}` });
+      }
+
+      try {
+        const result = await addGuildXp(id, source as XpSource, multiplier);
+        // 레벨업 시 새로 해금되는 스킬 자동 해금
+        if (result.leveledUp) {
+          await unlockAvailableSkills(id);
+        }
+        return reply.status(200).send(result);
+      } catch (err) {
+        return reply.status(404).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  // ── GET /api/guilds/:id/level — 길드 레벨 정보 조회 ───────
+  fastify.get<{ Params: GuildIdParams }>(
+    '/api/guilds/:id/level',
+    async (request, reply) => {
+      try {
+        const info = await getGuildLevelInfo(request.params.id);
+        return reply.status(200).send(info);
+      } catch (err) {
+        return reply.status(404).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  // ── GET /api/guilds/:id/skills — 길드 스킬 목록 조회 ─────
+  fastify.get<{ Params: GuildIdParams }>(
+    '/api/guilds/:id/skills',
+    async (request, reply) => {
+      try {
+        const skills = await getGuildSkillsInfo(request.params.id);
+        return reply.status(200).send(skills);
+      } catch (err) {
+        return reply.status(404).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  // ── POST /api/guilds/:id/skills/upgrade — 길드 스킬 업그레이드
+  fastify.post<{ Params: GuildIdParams; Body: { skillCode: string } }>(
+    '/api/guilds/:id/skills/upgrade',
+    async (request, reply) => {
+      const { id } = request.params;
+      const { skillCode } = request.body;
+
+      if (!skillCode) {
+        return reply.status(400).send({ error: 'skillCode 필수' });
+      }
+
+      const result = await upgradeGuildSkill(id, skillCode);
+      if (!result.success) {
+        return reply.status(400).send({ error: result.error });
+      }
+      return reply.status(200).send(result);
+    },
+  );
+
+  // ═══════════════════════════════════════════════════════════
+  // P6-07: 길드전 (거점 점령) 라우트
+  // ═══════════════════════════════════════════════════════════
+
+  // ── POST /api/guilds/:id/war/declare — 길드전 선포 ────────
+  fastify.post<{ Params: GuildIdParams }>(
+    '/api/guilds/:id/war/declare',
+    async (request, reply) => {
+      const result = await declareGuildWar(request.params.id);
+      if (!result.success) {
+        return reply.status(400).send({ error: result.error });
+      }
+
+      // 자동 매칭 시도
+      if (result.warId) {
+        const matchResult = await matchWar(result.warId);
+        return reply.status(201).send({ ...result, match: matchResult });
+      }
+
+      return reply.status(201).send(result);
+    },
+  );
+
+  // ── GET /api/guilds/war/:warId/status — 전쟁 상태 조회 ───
+  fastify.get<{ Params: { warId: string } }>(
+    '/api/guilds/war/:warId/status',
+    async (request, reply) => {
+      const status = await getWarStatus(request.params.warId);
+      if (!status) {
+        return reply.status(404).send({ error: '전쟁을 찾을 수 없습니다' });
+      }
+      return reply.status(200).send(status);
+    },
+  );
+
+  // ── POST /api/guilds/war/:warId/capture — 거점 공격 ──────
+  fastify.post<{ Params: { warId: string }; Body: { fortressId: string; guildId: string; damage: number } }>(
+    '/api/guilds/war/:warId/capture',
+    async (request, reply) => {
+      const { warId } = request.params;
+      const { fortressId, guildId, damage } = request.body;
+
+      if (!fortressId || !guildId || damage == null) {
+        return reply.status(400).send({ error: 'fortressId, guildId, damage 필수' });
+      }
+
+      const result = await attackFortress(warId, fortressId, guildId, damage);
+      if (!result.success) {
+        return reply.status(400).send({ error: result.error });
+      }
+      return reply.status(200).send(result);
+    },
+  );
+
+  // ── GET /api/guilds/:id/war/history — 전쟁 기록 ──────────
+  fastify.get<{ Params: GuildIdParams; Querystring: { limit?: string } }>(
+    '/api/guilds/:id/war/history',
+    async (request, reply) => {
+      const limit = Math.min(50, Math.max(1, parseInt(request.query.limit ?? '10', 10)));
+      const history = await getWarHistory(request.params.id, limit);
+      return reply.status(200).send(history);
     },
   );
 }

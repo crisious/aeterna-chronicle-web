@@ -65,6 +65,14 @@ import { paymentRoutes } from './routes/paymentRoutes';
 import { cosmeticRoutes } from './routes/cosmeticRoutes';
 import { combatRoutes } from './routes/combatRoutes';
 import { statusEffectManager } from './combat/statusEffectManager';
+import { matchmakingRoutes } from './routes/matchmakingRoutes';
+import { setupMatchmakingSocketHandlers } from './socket/matchmakingSocketHandler';
+import { startMatchmaking, stopMatchmaking } from './matchmaking/matchmakingQueue';
+import { storyRoutes } from './routes/storyRoutes';
+import { saveRoutes } from './routes/saveRoutes';
+import { setupGuildWarSocketHandlers } from './socket/guildWarSocketHandler';
+import { shutdownGuildWar } from './guild/guildWarEngine';
+import { resetAllDr } from './pvp/pvpNormalizer';
 
 const fastify = Fastify({ logger: true });
 
@@ -230,6 +238,18 @@ async function startServer() {
         await fastify.register(combatRoutes);
         fastify.log.info('Combat (status effect + combo) routes registered');
 
+        // 매칭 큐 REST API 라우트 등록 (P6-09)
+        await fastify.register(matchmakingRoutes);
+        fastify.log.info('Matchmaking queue routes registered');
+
+        // 스토리 챕터 REST API 라우트 등록 (P6-10)
+        await fastify.register(storyRoutes);
+        fastify.log.info('Story chapter routes registered');
+
+        // 세이브/체크포인트 REST API 라우트 등록 (P6-11)
+        await fastify.register(saveRoutes);
+        fastify.log.info('Save/checkpoint routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -259,6 +279,10 @@ async function startServer() {
         // 길드 소켓 이벤트 핸들러 초기화
         setupGuildSocketHandlers(io);
         fastify.log.info('Guild socket handlers attached');
+
+        // 길드전 (거점 점령) 소켓 핸들러 초기화 (P6-07)
+        setupGuildWarSocketHandlers(io);
+        fastify.log.info('Guild War socket handlers attached');
 
         // 업적 소켓 이벤트 핸들러 초기화
         setupAchievementSocketHandlers(io);
@@ -300,6 +324,11 @@ async function startServer() {
         } catch (dialogueErr) {
             fastify.log.warn(`Dialogue tree loading failed (non-critical): ${dialogueErr}`);
         }
+
+        // 매칭 큐 소켓 핸들러 + 매칭 시스템 시작 (P6-09)
+        setupMatchmakingSocketHandlers(io);
+        startMatchmaking(io);
+        fastify.log.info('Matchmaking socket handlers + queue system started');
 
         // 거래소 소켓 핸들러 초기화 (P5-06)
         setupAuctionSocketHandlers(io);
@@ -412,9 +441,21 @@ async function gracefulShutdown(signal: string): Promise<void> {
     auctionManager.stopExpireTimer();
     console.log('[Shutdown] Auction expire timer stopped');
 
-    // 1) 매칭 시스템 정지
+    // 0.8) 길드전 엔진 정리 (P6-07)
+    shutdownGuildWar();
+    console.log('[Shutdown] Guild war engine stopped');
+
+    // 0.9) PvP DR 타이머 정리 (P6-08)
+    resetAllDr();
+    console.log('[Shutdown] PvP diminishing returns cleared');
+
+    // 1) PvP 매칭 시스템 정지
     stopMatchmaker();
-    console.log('[Shutdown] Matchmaker stopped');
+    console.log('[Shutdown] PvP Matchmaker stopped');
+
+    // 1.1) 파티 매칭 큐 시스템 정지 (P6-09)
+    stopMatchmaking();
+    console.log('[Shutdown] Party matchmaking queue stopped');
 
     // 2) APM 타이머 정리
     await shutdownApm();
