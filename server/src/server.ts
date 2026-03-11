@@ -21,6 +21,9 @@ import { setupRaidSocketHandlers } from './socket/raidSocketHandler';
 import { raidManager } from './raid/raidManager';
 import { tickManager } from './tick/tickManager';
 import { classRoutes } from './routes/classRoutes';
+import { craftRoutes } from './routes/craftRoutes';
+import { petRoutes } from './routes/petRoutes';
+import { setupPetSocketHandlers } from './socket/petSocketHandler';
 
 const fastify = Fastify({ logger: true });
 
@@ -77,6 +80,14 @@ async function startServer() {
         await fastify.register(classRoutes);
         fastify.log.info('Class advancement routes registered');
 
+        // 제작 시스템 REST API 라우트 등록
+        await fastify.register(craftRoutes);
+        fastify.log.info('Craft system routes registered');
+
+        // 펫 시스템 REST API 라우트 등록
+        await fastify.register(petRoutes);
+        fastify.log.info('Pet system routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -114,6 +125,10 @@ async function startServer() {
         // 레이드 보스 소켓 핸들러 초기화
         setupRaidSocketHandlers(io);
         fastify.log.info('Raid boss socket handlers attached');
+
+        // 펫 시스템 소켓 핸들러 초기화
+        setupPetSocketHandlers(io);
+        fastify.log.info('Pet socket handlers attached');
 
         // Redis 연결 시작 (graceful degradation)
         try {
