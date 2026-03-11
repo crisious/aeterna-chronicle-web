@@ -491,6 +491,128 @@ def sync_one(
     return SyncResult(md_path, action, page_id, len(blocks))
 
 
+################################################################################
+# ──── Post-sync folder organizer ────
+# Obsidian 폴더 → Notion 부모 페이지 자동 매핑. 동기화 후 루트에 남은 고아 페이지를 올바른 폴더로 이동.
+################################################################################
+
+# Obsidian 디렉터리 접두사 → Notion 폴더 page_id
+FOLDER_MAP: Dict[str, str] = {
+    "01_코어기획":   "31e70bd1-67e9-810e-9365-fb421a89bf72",
+    "02_UI_UX":      "31e70bd1-67e9-8101-832e-e17fcd9ead8b",
+    "03_데이터테이블": "31e70bd1-67e9-8159-bdc8-d6edd832f4e6",
+    "시나리오":       "31e70bd1-67e9-811a-baff-e367b2aec7d1",
+    "월드맵":         "31e70bd1-67e9-81d6-9aae-fdbfc0efd8f3",
+    "캐릭터":         "31e70bd1-67e9-8162-8783-df23d1b34084",
+    "04_검증_P0":    "31e70bd1-67e9-81c4-ac87-df3d99e057b0",
+    "99_백업이관":   "31e70bd1-67e9-810e-9365-fb421a89bf72",  # 코어기획에 넣기
+    "ue5_project":   "31e70bd1-67e9-810e-9365-fb421a89bf72",
+    "k8s":           "31e70bd1-67e9-810e-9365-fb421a89bf72",
+    "server":        "31e70bd1-67e9-810e-9365-fb421a89bf72",
+    "client":        "31e70bd1-67e9-810e-9365-fb421a89bf72",
+}
+
+# 루트에 남아도 되는 페이지 (이동 안 함)
+ROOT_KEEP_TITLES = {
+    "README.md",
+    "SSOT_참조_락_규칙.md",
+    "정합성_검증_체크리스트.md",
+    "에테르나크로니클_통합_가이드.md",
+    "분류이동_결과_2026-03-07.md",
+    "분류이동_결과_2026-03-09.md",
+}
+
+# 아카이브 대상 제목 패턴 (중복 잔재)
+ARCHIVE_TITLE_PATTERNS = ["_unlocked"]
+
+
+def _resolve_folder(file_path: Path, vault_root: Path) -> Optional[str]:
+    """파일 경로에서 Notion 폴더 page_id를 결정."""
+    try:
+        rel = file_path.relative_to(vault_root)
+    except ValueError:
+        return None
+    parts = rel.parts
+    if len(parts) < 2:
+        return None  # 루트 파일
+    for prefix, folder_id in FOLDER_MAP.items():
+        if parts[0] == prefix or parts[0].startswith(prefix):
+            return folder_id
+    return None
+
+
+def post_sync_organize(
+    notion: "NotionClient",
+    parent_page_id: str,
+    state: dict,
+    vault_root: Path,
+    dry_run: bool,
+) -> None:
+    """동기화 후 루트의 고아 페이지를 올바른 폴더로 이동하고, 중복/잔재를 아카이브."""
+    print("\n[organize] 루트 페이지 정리 시작 ...")
+
+    # 루트 직접 자식 페이지 조회
+    root_children = notion.list_children(parent_page_id)
+    root_pages = [c for c in root_children if c.get("type") == "child_page"]
+    # 폴더 페이지 ID (이동 대상에서 제외)
+    folder_ids = set(FOLDER_MAP.values())
+
+    # state에서 file_path → pageId 역매핑
+    page_to_file: Dict[str, str] = {}
+    for fpath, info in state.get("files", {}).items():
+        pid = info.get("pageId", "")
+        if pid:
+            page_to_file[pid] = fpath
+
+    moved = 0
+    archived = 0
+    for pg in root_pages:
+        pid = pg["id"]
+        title = pg.get("child_page", {}).get("title", "")
+
+        # 폴더 자체는 건드리지 않음
+        if pid in folder_ids:
+            continue
+        # 루트 유지 대상
+        if title in ROOT_KEEP_TITLES:
+            continue
+
+        # 아카이브 대상 확인
+        should_archive = any(pat in title for pat in ARCHIVE_TITLE_PATTERNS)
+        if should_archive:
+            if dry_run:
+                print(f"  [dry-run] archive: {title}")
+            else:
+                notion.request("PATCH", f"https://api.notion.com/v1/pages/{pid}", {"archived": True})
+                print(f"  [archived] {title}")
+                archived += 1
+            continue
+
+        # 이동 대상: state에서 원본 파일 경로 찾기
+        src_file = page_to_file.get(pid)
+        target_folder = None
+        if src_file:
+            target_folder = _resolve_folder(Path(src_file), vault_root)
+
+        if target_folder and target_folder != parent_page_id:
+            if dry_run:
+                print(f"  [dry-run] move: {title} → {target_folder}")
+            else:
+                try:
+                    notion.request(
+                        "POST",
+                        f"https://api.notion.com/v1/pages/{pid}/move",
+                        {"parent": {"type": "page_id", "page_id": target_folder}},
+                    )
+                    print(f"  [moved] {title} → folder")
+                    moved += 1
+                except Exception as e:
+                    print(f"  [move-failed] {title}: {e}")
+            time.sleep(0.35)
+
+    print(f"[organize] 완료: moved={moved}, archived={archived}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Obsidian -> Notion sync runner")
     parser.add_argument("--mode", choices=["full", "incremental"], default="incremental")
@@ -499,6 +621,7 @@ def main() -> None:
     parser.add_argument("--state-file", default=str(DEFAULT_STATE_FILE))
     parser.add_argument("--file", action="append", help="특정 파일만 동기화 (반복 가능)")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--no-organize", action="store_true", help="동기화 후 폴더 정리 건너뛰기")
     args = parser.parse_args()
 
     token = os.getenv("NOTION_API_KEY")
@@ -565,6 +688,16 @@ def main() -> None:
     print("---")
     print(f"mode={args.mode} dryRun={args.dry_run}")
     print(f"targets={len(targets)} synced={len(results)} elapsed={finished-started:.2f}s")
+
+    # ── Post-sync folder organize ──
+    if not getattr(args, "no_organize", False):
+        post_sync_organize(
+            notion=notion,
+            parent_page_id=args.parent_page_id,
+            state=state,
+            vault_root=vault_root,
+            dry_run=args.dry_run,
+        )
 
 
 if __name__ == "__main__":
