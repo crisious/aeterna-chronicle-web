@@ -1,0 +1,116 @@
+# ── 에테르나 크로니클 — 프로덕션 배포 ──────────────────────
+# main 브랜치 push + 수동 트리거
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '배포 환경'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  SERVER_IMAGE: ghcr.io/${{ github.repository }}/server
+  CLIENT_IMAGE: ghcr.io/${{ github.repository }}/client
+
+jobs:
+  # ── 1. Docker 이미지 빌드 & Push ──
+  build-and-push:
+    name: 🚀 Build & Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Docker Buildx 설정
+        uses: docker/setup-buildx-action@v3
+
+      - name: GitHub Container Registry 로그인
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker 메타데이터 (서버)
+        id: meta-server
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.SERVER_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=,format=short
+
+      - name: Docker 메타데이터 (클라이언트)
+        id: meta-client
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.CLIENT_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=,format=short
+
+      - name: 서버 이미지 빌드 & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: server/Dockerfile
+          push: true
+          tags: ${{ steps.meta-server.outputs.tags }}
+          labels: ${{ steps.meta-server.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 클라이언트 이미지 빌드 & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: client/Dockerfile
+          push: true
+          tags: ${{ steps.meta-client.outputs.tags }}
+          labels: ${{ steps.meta-client.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── 2. 배포 알림 ──
+  deploy-notification:
+    name: 📢 Deploy Notification
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    permissions:
+      deployments: write
+    steps:
+      - name: GitHub Deployment 이벤트 생성
+        uses: chrnorm/deployment-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: ${{ inputs.environment || 'production' }}
+          description: |
+            서버: ${{ env.SERVER_IMAGE }}:${{ github.sha }}
+            클라이언트: ${{ env.CLIENT_IMAGE }}:${{ github.sha }}
+
+      - name: 배포 완료 요약
+        run: |
+          echo "## 🎮 배포 완료" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 항목 | 값 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| 커밋 | \`${GITHUB_SHA::7}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 서버 이미지 | \`${{ env.SERVER_IMAGE }}:latest\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 클라이언트 이미지 | \`${{ env.CLIENT_IMAGE }}:latest\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 환경 | ${{ inputs.environment || 'production' }} |" >> $GITHUB_STEP_SUMMARY
