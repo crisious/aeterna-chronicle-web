@@ -147,12 +147,15 @@ graph TD
 │   ├── src/ui/                 # HudOverlay (부분 렌더링)
 │   ├── src/utils/              # ObjectPool 유틸
 │   └── src/telemetry/          # NPC 대화 텔레메트리
-├── 🖥️ server/               # Fastify + Prisma 서버 (14 files)
+├── 🖥️ server/               # Fastify + Prisma 서버 (24 files)
 │   ├── src/db.ts               # Prisma 클라이언트
 │   ├── src/redis.ts            # Redis (graceful degradation)
 │   ├── src/socket/             # Room 기반 브로드캐스트 (Protobuf)
+│   ├── src/routes/             # 길드·PvP REST API
+│   ├── src/pvp/                # 매칭 큐 + ELO 아레나
+│   ├── src/apm/                # APM 메트릭 + 알림 + 대시보드
 │   ├── src/telemetry/          # 이중 기록 (Redis + PostgreSQL)
-│   └── prisma/schema.prisma    # 5모델 (User/Character/Inventory/Quest/Telemetry)
+│   └── prisma/schema.prisma    # 9모델 (User/Character/Telemetry/Guild/PvP)
 ├── 📦 shared/               # 클라이언트-서버 공유 코덱/타입 (3 files)
 │   ├── proto/game.proto        # Protobuf 스키마 (PlayerMove/Action/Room)
 │   ├── codec/gameCodec.ts      # 바이너리 인코더/디코더
@@ -266,12 +269,12 @@ graph LR
 ```
 Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
 Phase 2  ████████████████████  100%  멀티엔진 포팅 + 텔레메트리 + QA ✅ RC 승인
-Phase 3  █░░░░░░░░░░░░░░░░░░░    5%  길드/PvP + 시즌 + 라이브 서비스 (진행 중)
+Phase 3  ████████░░░░░░░░░░░░   40%  길드/PvP + 시즌 + 라이브 서비스 (Sprint 3-4 진행 중)
 ```
 
 ### 최근 업데이트
 
-> **2026-03-11** — **Phase 2 RC 승인 완료** → Phase 3 착수. P3-01 Protobuf 패킷 전환 완료 (30~50% 절감)
+> **2026-03-11** — Phase 3 Sprint 1-2 완료 (6/7), Sprint 3-4 진행 중. 길드·PvP·APM·Protobuf·Prisma 마이그레이션 구현
 
 <details>
 <summary><b>📋 코어기획 문서 (21개)</b></summary>
@@ -366,9 +369,9 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 파일 | 209개 (Git tracked) |
-| 총 커밋 | 18개 |
-| 기획 문서 | 151개 (.md) |
+| 총 파일 | 226개 (Git tracked) |
+| 총 커밋 | 24개 |
+| 기획 문서 | 153개 (.md) |
 | 코어기획 | 21개 / ~12,000줄 |
 | 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
 | 시나리오 | 22개 (챕터 5 + NPC대화 12 + 세계관외전 2 + 마스터 3) |
@@ -377,11 +380,12 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 챕터 | 5개 |
 | 엔딩 | 4종 |
 | 검증 리포트 | 43개 (P0/P1/P2/공통) |
-| 코드 파일 | 46개 (TS/C++/C#/Python) |
-| 클라이언트 | Phaser.js + TypeScript (9 files) |
-| 서버 | Fastify + Socket.io + Prisma (14 files) |
+| 코드 파일 | 54개 (TS/C++/C#/Python) |
+| 클라이언트 | Phaser.js + TypeScript (14 files) |
+| 서버 | Fastify + Socket.io + Prisma (24 files) |
 | 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
 | 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
+| DB 모델 | 9개 (User/Character/Telemetry×2/Guild×3/PvP×2) |
 
 ---
 
