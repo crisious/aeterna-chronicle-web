@@ -98,17 +98,26 @@ class NotionClient:
     # ── Page cache: build title→page dict from parent's children ──
 
     def build_page_cache(self, parent_page_id: str) -> Dict[str, dict]:
-        """List all child *pages* under parent_page_id and return {title: page_dict}."""
+        """Recursively list all child *pages* under parent_page_id and return {title: page_dict}."""
         cache: Dict[str, dict] = {}
-        children = self.list_children(parent_page_id)
+        self._build_cache_recursive(parent_page_id, cache, depth=0)
+        print(f"[cache] {len(cache)} child pages loaded (recursive)")
+        return cache
+
+    def _build_cache_recursive(self, page_id: str, cache: Dict[str, dict], depth: int) -> None:
+        if depth > 3:
+            return
+        children = self.list_children(page_id)
         for child in children:
             if child.get("type") != "child_page":
                 continue
             title = child.get("child_page", {}).get("title", "")
+            child_id = child["id"]
             if title:
-                cache[title] = {"id": child["id"], "object": "block"}
-        print(f"[cache] {len(cache)} child pages loaded from parent")
-        return cache
+                cache[title] = {"id": child_id, "object": "block"}
+            # Recurse into folder pages
+            time.sleep(0.15)
+            self._build_cache_recursive(child_id, cache, depth + 1)
 
     def find_page_under_parent(self, parent_page_id: str, title: str) -> Optional[dict]:
         """Fallback search – only used if cache misses (shouldn't happen often)."""

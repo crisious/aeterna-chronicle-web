@@ -17,6 +17,8 @@ import {
   decodePlayerJoined,
   decodePlayerAction
 } from '../../../shared/codec/gameCodec';
+import { EffectManager, HitEffectType } from '../effects/EffectManager';
+import { runPoolBenchmark } from '../utils/PoolBenchmark';
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -26,6 +28,7 @@ export class GameScene extends Phaser.Scene {
 
   private socket?: Socket;
   private hud!: HudOverlay;
+  private effectManager!: EffectManager;
 
   private hudStatus: HudStatusProps = {
     hpCurrent: 415,

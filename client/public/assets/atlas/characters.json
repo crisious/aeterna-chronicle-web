@@ -1,0 +1,47 @@
+{
+  "frames": {
+    "erien_idle_01": {
+      "frame": { "x": 0, "y": 0, "w": 48, "h": 64 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+      "sourceSize": { "w": 48, "h": 64 }
+    },
+    "erien_walk_01": {
+      "frame": { "x": 48, "y": 0, "w": 48, "h": 64 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+      "sourceSize": { "w": 48, "h": 64 }
+    },
+    "erien_walk_02": {
+      "frame": { "x": 96, "y": 0, "w": 48, "h": 64 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+      "sourceSize": { "w": 48, "h": 64 }
+    },
+    "erien_attack_01": {
+      "frame": { "x": 144, "y": 0, "w": 64, "h": 64 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
+      "sourceSize": { "w": 64, "h": 64 }
+    },
+    "seraphine_idle_01": {
+      "frame": { "x": 0, "y": 64, "w": 48, "h": 64 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+      "sourceSize": { "w": 48, "h": 64 }
+    }
+  },
+  "meta": {
+    "app": "TexturePacker",
+    "version": "1.0",
+    "image": "characters.png",
+    "format": "RGBA8888",
+    "size": { "w": 256, "h": 256 },
+    "scale": "1"
+  }
+}
