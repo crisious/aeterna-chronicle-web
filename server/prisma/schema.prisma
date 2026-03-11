@@ -17,7 +17,8 @@ model User {
   banReason String?     @map("ban_reason")
   gold      Int         @default(0)
   diamond   Int         @default(0)
-  eventCoin Int         @default(0) @map("event_coin")
+  eventCoin     Int         @default(0) @map("event_coin")
+  tutorialStep  Int         @default(0) @map("tutorial_step")  // P4-13: 튜토리얼 진행 단계 (0~5)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   characters Character[]

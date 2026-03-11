@@ -37,6 +37,11 @@ import { eventRoutes } from './routes/eventRoutes';
 import { currencyRoutes } from './routes/currencyRoutes';
 import { syncEventStatus } from './event/eventEngine';
 import { adminRoutes } from './routes/adminRoutes';
+import { authRoutes } from './routes/authRoutes';
+import { tutorialRoutes } from './routes/tutorialRoutes';
+import { setupChatSocketHandlers } from './socket/chatSocketHandler';
+import { rateLimitMiddleware } from './security/rateLimiter';
+import { inputValidatorMiddleware } from './security/inputValidator';
 
 const fastify = Fastify({ logger: true });
 
@@ -50,6 +55,11 @@ async function startServer() {
         await fastify.register(cors, {
             origin: ALLOWED_ORIGINS
         });
+
+        // ── 전역 보안 미들웨어 (P4-15) ────────────────────────────────
+        fastify.addHook('preHandler', rateLimitMiddleware);
+        fastify.addHook('preHandler', inputValidatorMiddleware);
+        fastify.log.info('Global security middleware registered (rate limiter + input validator)');
 
         // 헬스 체크 API 엔드포인트 (메트릭 요약 포함 옵션: ?metrics=true)
         fastify.get('/api/health', async (request, _reply) => {
@@ -133,6 +143,14 @@ async function startServer() {
         await fastify.register(adminRoutes);
         fastify.log.info('Admin dashboard routes registered');
 
+        // 인증 시스템 REST API 라우트 등록 (P4-15)
+        await fastify.register(authRoutes);
+        fastify.log.info('Auth routes registered');
+
+        // 튜토리얼 시스템 REST API 라우트 등록 (P4-13)
+        await fastify.register(tutorialRoutes);
+        fastify.log.info('Tutorial routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -179,6 +197,10 @@ async function startServer() {
         setupSocialSocketHandlers(io);
         bindSocialIO(io);
         fastify.log.info('Social socket handlers attached');
+
+        // 채팅 시스템 소켓 핸들러 초기화 (P4-14)
+        setupChatSocketHandlers(io);
+        fastify.log.info('Chat socket handlers attached');
 
         // Redis 연결 시작 (graceful degradation)
         try {
