@@ -1,0 +1,42 @@
+{
+  "total": 5,
+  "pass": 5,
+  "fail": 0,
+  "rows": [
+    {
+      "caseId": "REG-P3-DIVINE-001",
+      "description": "[P3] 히든 엔딩: sacred_artifacts=12 최우선 적용",
+      "expected": "DIVINE_RETURN",
+      "actual": "DIVINE_RETURN",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-P3-DEFEAT-001",
+      "description": "[P3] 패배 엔딩: fragment < 3, 조건 미충족",
+      "expected": "DEFEAT",
+      "actual": "DEFEAT",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-P3-BETRAY-001",
+      "description": "[P3] 배신 엔딩: betrayal_score=70 임계값",
+      "expected": "BETRAYAL",
+      "actual": "BETRAYAL",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-P3-TRUE-001",
+      "description": "[P3] 트루 엔딩: fragment=4 + 전원 생존",
+      "expected": "TRUE_GUARDIAN",
+      "actual": "TRUE_GUARDIAN",
+      "result": "PASS"
+    },
+    {
+      "caseId": "REG-P3-WITNESS-001",
+      "description": "[P3] 기본 엔딩: fragment=3, 파티 사망 존재",
+      "expected": "LAST_WITNESS",
+      "actual": "LAST_WITNESS",
+      "result": "PASS"
+    }
+  ]
+}

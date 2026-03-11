@@ -171,6 +171,20 @@ model PvpRating {
   @@index([season, rating(sort: Desc)])
 }
 
+// ─── 엔딩 시스템: 엔딩 달성 기록 ────────────────────────────
+model EndingRecord {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  endingType  String   @map("ending_type")
+  flags       Json     // 판정 시점 플래그 스냅샷
+  playthrough Int      @default(1)
+  achievedAt  DateTime @default(now()) @map("achieved_at")
+
+  @@map("ending_records")
+  @@index([userId])
+  @@index([endingType])
+}
+
 // ─── 상점 시스템 ────────────────────────────────────────────────
 model ShopItem {
   id          String    @id @default(uuid())

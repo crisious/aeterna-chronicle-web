@@ -11,6 +11,7 @@ import { initApm, shutdownApm, getMetricsSummary } from './apm';
 import { registerPvpRoutes } from './routes/pvpRoutes';
 import { startMatchmaker, stopMatchmaker } from './pvp/matchmaker';
 import { setupPvpSocketHandlers } from './socket/pvpSocketHandler';
+import { endingRoutes } from './routes/endingRoutes';
 import { shopRoutes } from './routes/shopRoutes';
 import { seasonPassRoutes } from './routes/seasonPassRoutes';
 
@@ -44,6 +45,10 @@ async function startServer() {
         // PvP REST API 라우트 등록
         await registerPvpRoutes(fastify);
         fastify.log.info('PvP API routes registered');
+
+        // 엔딩 시스템 REST API 라우트 등록
+        await fastify.register(endingRoutes);
+        fastify.log.info('Ending system routes registered');
 
         // 상점 REST API 라우트 등록
         await fastify.register(shopRoutes);
