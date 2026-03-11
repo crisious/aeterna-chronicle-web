@@ -36,7 +36,7 @@ export interface StoryFlag {
 export const CHAPTER_DEFINITIONS: ChapterDefinition[] = [
   {
     chapter: 1,
-    region: '아르겐티움',
+    region: '에레보스', // 칸텔라 마을 사건 → 기억 각성
     requiredLevel: 1,
     gateConditions: [
       { type: 'tutorial_complete', value: 1 },
@@ -44,7 +44,7 @@ export const CHAPTER_DEFINITIONS: ChapterDefinition[] = [
   },
   {
     chapter: 2,
-    region: '실반헤임',
+    region: '실반헤임', // 기억의 숲, 첫 번째 파편
     requiredLevel: 15,
     gateConditions: [
       { type: 'chapter_complete', value: 1 },
@@ -53,7 +53,7 @@ export const CHAPTER_DEFINITIONS: ChapterDefinition[] = [
   },
   {
     chapter: 3,
-    region: '솔라리스/브리탈리아',
+    region: '솔라리스/브리탈리아', // 솔리안 유적, 이프리타
     requiredLevel: 30,
     gateConditions: [
       { type: 'chapter_complete', value: 2 },
@@ -62,7 +62,7 @@ export const CHAPTER_DEFINITIONS: ChapterDefinition[] = [
   },
   {
     chapter: 4,
-    region: '북방 영원빙원',
+    region: '아르겐티움/북방 영원빙원', // 제국 심장 + 기억석 사원
     requiredLevel: 50,
     gateConditions: [
       { type: 'chapter_complete', value: 3 },
@@ -71,7 +71,7 @@ export const CHAPTER_DEFINITIONS: ChapterDefinition[] = [
   },
   {
     chapter: 5,
-    region: '에레보스',
+    region: '망각의 고원', // 최종 결전, 레테와의 대결
     requiredLevel: 70,
     gateConditions: [
       { type: 'chapter_complete', value: 4 },
