@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:migrate": "prisma migrate deploy"
+    "prisma:migrate": "prisma migrate deploy",
+    "test:e2e": "node --experimental-vm-modules node_modules/.bin/jest --config ../tests/jest.config.ts --testPathPattern=tests/e2e"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",

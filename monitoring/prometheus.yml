@@ -1,0 +1,13 @@
+# Prometheus 설정 — 에테르나 크로니클
+# P4-18 로그/모니터링
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'aeterna-server'
+    static_configs:
+      - targets: ['server:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
