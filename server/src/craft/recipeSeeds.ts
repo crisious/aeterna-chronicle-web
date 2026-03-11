@@ -1,0 +1,630 @@
+/**
+ * 레시피 시드 데이터 (P4-02)
+ * 50개 레시피: 무기 10 + 방어구 10 + 액세서리 10 + 소모품 10 + 재료 가공 10
+ */
+
+import { prisma } from '../db';
+
+interface RecipeSeed {
+  name: string;
+  description: string;
+  category: string;
+  resultItemId: string;
+  resultCount: number;
+  materials: { itemId: string; name: string; count: number }[];
+  requiredLevel: number;
+  craftTime: number;
+  successRate: number;
+}
+
+// ─── 무기 레시피 (10) ───────────────────────────────────────
+
+const weaponRecipes: RecipeSeed[] = [
+  {
+    name: '철검',
+    description: '기본적인 철제 검. 무난한 공격력을 가진다.',
+    category: 'weapon',
+    resultItemId: 'wpn_iron_sword',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_iron_ingot', name: '철 주괴', count: 3 }, { itemId: 'mat_wood', name: '목재', count: 2 }],
+    requiredLevel: 1,
+    craftTime: 10,
+    successRate: 1.0,
+  },
+  {
+    name: '강철 대검',
+    description: '단단한 강철로 제작된 대검. 높은 공격력.',
+    category: 'weapon',
+    resultItemId: 'wpn_steel_greatsword',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_steel_ingot', name: '강철 주괴', count: 5 }, { itemId: 'mat_leather', name: '가죽', count: 2 }],
+    requiredLevel: 15,
+    craftTime: 20,
+    successRate: 0.9,
+  },
+  {
+    name: '미스릴 검',
+    description: '미스릴로 단조한 명검. 가볍고 예리하다.',
+    category: 'weapon',
+    resultItemId: 'wpn_mithril_sword',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 4 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 2 }],
+    requiredLevel: 30,
+    craftTime: 30,
+    successRate: 0.8,
+  },
+  {
+    name: '견습생의 지팡이',
+    description: '마법 입문자를 위한 기초 지팡이.',
+    category: 'weapon',
+    resultItemId: 'wpn_apprentice_staff',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_wood', name: '목재', count: 3 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 1 }],
+    requiredLevel: 1,
+    craftTime: 8,
+    successRate: 1.0,
+  },
+  {
+    name: '아케인 지팡이',
+    description: '강력한 마력이 깃든 지팡이.',
+    category: 'weapon',
+    resultItemId: 'wpn_arcane_staff',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_elder_wood', name: '고목 원목', count: 3 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 5 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 2 }],
+    requiredLevel: 30,
+    craftTime: 25,
+    successRate: 0.8,
+  },
+  {
+    name: '에테르 지팡이',
+    description: '에테르의 힘으로 제작된 최고급 지팡이.',
+    category: 'weapon',
+    resultItemId: 'wpn_ether_staff',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_core', name: '에테르 코어', count: 2 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 8 }, { itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 3 }],
+    requiredLevel: 50,
+    craftTime: 45,
+    successRate: 0.6,
+  },
+  {
+    name: '단검',
+    description: '빠른 공격에 특화된 소형 검.',
+    category: 'weapon',
+    resultItemId: 'wpn_dagger',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_iron_ingot', name: '철 주괴', count: 1 }, { itemId: 'mat_leather', name: '가죽', count: 1 }],
+    requiredLevel: 1,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '암살자의 단검',
+    description: '독이 묻은 날카로운 단검.',
+    category: 'weapon',
+    resultItemId: 'wpn_assassin_dagger',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_steel_ingot', name: '강철 주괴', count: 2 }, { itemId: 'mat_poison_extract', name: '독 추출물', count: 3 }],
+    requiredLevel: 20,
+    craftTime: 15,
+    successRate: 0.85,
+  },
+  {
+    name: '그림자 단검',
+    description: '어둠의 기운이 서린 전설의 단검.',
+    category: 'weapon',
+    resultItemId: 'wpn_shadow_dagger',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 2 }, { itemId: 'mat_shadow_essence', name: '그림자 정수', count: 3 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 1 }],
+    requiredLevel: 40,
+    craftTime: 35,
+    successRate: 0.7,
+  },
+  {
+    name: '에테르 대검',
+    description: '시공을 가르는 전설급 대검.',
+    category: 'weapon',
+    resultItemId: 'wpn_ether_greatsword',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_core', name: '에테르 코어', count: 3 }, { itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 6 }, { itemId: 'mat_dragon_scale', name: '용의 비늘', count: 2 }],
+    requiredLevel: 60,
+    craftTime: 60,
+    successRate: 0.5,
+  },
+];
+
+// ─── 방어구 레시피 (10) ─────────────────────────────────────
+
+const armorRecipes: RecipeSeed[] = [
+  {
+    name: '가죽 갑옷',
+    description: '기본적인 가죽 방어구.',
+    category: 'armor',
+    resultItemId: 'arm_leather_armor',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_leather', name: '가죽', count: 5 }, { itemId: 'mat_thread', name: '실', count: 3 }],
+    requiredLevel: 1,
+    craftTime: 10,
+    successRate: 1.0,
+  },
+  {
+    name: '철판 갑옷',
+    description: '철판으로 만든 견고한 중갑.',
+    category: 'armor',
+    resultItemId: 'arm_iron_plate',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_iron_ingot', name: '철 주괴', count: 6 }, { itemId: 'mat_leather', name: '가죽', count: 3 }],
+    requiredLevel: 10,
+    craftTime: 20,
+    successRate: 0.95,
+  },
+  {
+    name: '강철 갑옷',
+    description: '강철로 제작된 고급 중갑.',
+    category: 'armor',
+    resultItemId: 'arm_steel_plate',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_steel_ingot', name: '강철 주괴', count: 7 }, { itemId: 'mat_leather', name: '가죽', count: 4 }],
+    requiredLevel: 25,
+    craftTime: 30,
+    successRate: 0.85,
+  },
+  {
+    name: '미스릴 갑옷',
+    description: '미스릴로 주조한 경량 판금갑.',
+    category: 'armor',
+    resultItemId: 'arm_mithril_plate',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 6 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 3 }],
+    requiredLevel: 40,
+    craftTime: 40,
+    successRate: 0.7,
+  },
+  {
+    name: '견습생의 로브',
+    description: '마법사 입문용 기본 로브.',
+    category: 'armor',
+    resultItemId: 'arm_apprentice_robe',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_cloth', name: '천', count: 4 }, { itemId: 'mat_thread', name: '실', count: 2 }],
+    requiredLevel: 1,
+    craftTime: 8,
+    successRate: 1.0,
+  },
+  {
+    name: '아케인 로브',
+    description: '마력 증폭 효과가 있는 고급 로브.',
+    category: 'armor',
+    resultItemId: 'arm_arcane_robe',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_silk', name: '실크', count: 5 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 4 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 1 }],
+    requiredLevel: 30,
+    craftTime: 25,
+    successRate: 0.8,
+  },
+  {
+    name: '에테르 로브',
+    description: '시공의 힘이 깃든 최고급 로브.',
+    category: 'armor',
+    resultItemId: 'arm_ether_robe',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_core', name: '에테르 코어', count: 2 }, { itemId: 'mat_silk', name: '실크', count: 6 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 5 }],
+    requiredLevel: 50,
+    craftTime: 45,
+    successRate: 0.6,
+  },
+  {
+    name: '경량 가죽 갑주',
+    description: '기동성을 살린 가죽 갑주.',
+    category: 'armor',
+    resultItemId: 'arm_light_leather',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_leather', name: '가죽', count: 4 }, { itemId: 'mat_iron_ingot', name: '철 주괴', count: 1 }],
+    requiredLevel: 5,
+    craftTime: 12,
+    successRate: 1.0,
+  },
+  {
+    name: '강화 가죽 갑주',
+    description: '금속 보강재가 달린 가죽 갑주.',
+    category: 'armor',
+    resultItemId: 'arm_reinforced_leather',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_leather', name: '가죽', count: 6 }, { itemId: 'mat_steel_ingot', name: '강철 주괴', count: 3 }],
+    requiredLevel: 20,
+    craftTime: 20,
+    successRate: 0.9,
+  },
+  {
+    name: '드래곤 비늘 갑옷',
+    description: '용의 비늘로 만든 전설급 방어구.',
+    category: 'armor',
+    resultItemId: 'arm_dragon_scale',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_dragon_scale', name: '용의 비늘', count: 5 }, { itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 4 }, { itemId: 'mat_ether_core', name: '에테르 코어', count: 1 }],
+    requiredLevel: 60,
+    craftTime: 60,
+    successRate: 0.5,
+  },
+];
+
+// ─── 액세서리 레시피 (10) ───────────────────────────────────
+
+const accessoryRecipes: RecipeSeed[] = [
+  {
+    name: '구리 반지',
+    description: '기본적인 구리 반지.',
+    category: 'accessory',
+    resultItemId: 'acc_copper_ring',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_copper_ingot', name: '구리 주괴', count: 2 }],
+    requiredLevel: 1,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '은 반지',
+    description: '은으로 세공한 반지. 마력 증가.',
+    category: 'accessory',
+    resultItemId: 'acc_silver_ring',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_silver_ingot', name: '은 주괴', count: 2 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 1 }],
+    requiredLevel: 10,
+    craftTime: 10,
+    successRate: 0.95,
+  },
+  {
+    name: '에테르 반지',
+    description: '에테르의 힘이 담긴 전설 반지.',
+    category: 'accessory',
+    resultItemId: 'acc_ether_ring',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 1 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 3 }],
+    requiredLevel: 40,
+    craftTime: 25,
+    successRate: 0.7,
+  },
+  {
+    name: '뼈 목걸이',
+    description: '몬스터 뼈로 만든 원시적 목걸이.',
+    category: 'accessory',
+    resultItemId: 'acc_bone_necklace',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_bone', name: '몬스터 뼈', count: 3 }, { itemId: 'mat_thread', name: '실', count: 1 }],
+    requiredLevel: 5,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '은 목걸이',
+    description: '은으로 만든 우아한 목걸이.',
+    category: 'accessory',
+    resultItemId: 'acc_silver_necklace',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_silver_ingot', name: '은 주괴', count: 3 }, { itemId: 'mat_gem_sapphire', name: '사파이어', count: 1 }],
+    requiredLevel: 15,
+    craftTime: 15,
+    successRate: 0.9,
+  },
+  {
+    name: '에테르 목걸이',
+    description: '시공의 힘이 깃든 전설 목걸이.',
+    category: 'accessory',
+    resultItemId: 'acc_ether_necklace',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_core', name: '에테르 코어', count: 1 }, { itemId: 'mat_mithril_ingot', name: '미스릴 주괴', count: 2 }, { itemId: 'mat_gem_diamond', name: '다이아몬드', count: 1 }],
+    requiredLevel: 50,
+    craftTime: 35,
+    successRate: 0.6,
+  },
+  {
+    name: '나무 귀걸이',
+    description: '자연의 기운이 담긴 나무 귀걸이.',
+    category: 'accessory',
+    resultItemId: 'acc_wood_earring',
+    resultCount: 2,
+    materials: [{ itemId: 'mat_elder_wood', name: '고목 원목', count: 1 }, { itemId: 'mat_herb_extract', name: '약초 추출물', count: 1 }],
+    requiredLevel: 5,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '은 귀걸이',
+    description: '은으로 세공한 귀걸이.',
+    category: 'accessory',
+    resultItemId: 'acc_silver_earring',
+    resultCount: 2,
+    materials: [{ itemId: 'mat_silver_ingot', name: '은 주괴', count: 1 }, { itemId: 'mat_gem_ruby', name: '루비', count: 1 }],
+    requiredLevel: 15,
+    craftTime: 10,
+    successRate: 0.9,
+  },
+  {
+    name: '에테르 귀걸이',
+    description: '에테르 파편으로 만든 전설 귀걸이.',
+    category: 'accessory',
+    resultItemId: 'acc_ether_earring',
+    resultCount: 2,
+    materials: [{ itemId: 'mat_ether_shard', name: '에테르 파편', count: 2 }, { itemId: 'mat_gem_emerald', name: '에메랄드', count: 1 }],
+    requiredLevel: 40,
+    craftTime: 25,
+    successRate: 0.7,
+  },
+  {
+    name: '시간의 부적',
+    description: '시간의 흐름을 조율하는 신비한 부적.',
+    category: 'accessory',
+    resultItemId: 'acc_time_amulet',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_core', name: '에테르 코어', count: 2 }, { itemId: 'mat_shadow_essence', name: '그림자 정수', count: 2 }, { itemId: 'mat_gem_diamond', name: '다이아몬드', count: 2 }],
+    requiredLevel: 60,
+    craftTime: 60,
+    successRate: 0.4,
+  },
+];
+
+// ─── 소모품 레시피 (10) ─────────────────────────────────────
+
+const consumableRecipes: RecipeSeed[] = [
+  {
+    name: '소형 체력 포션',
+    description: 'HP를 100 회복한다.',
+    category: 'consumable',
+    resultItemId: 'con_hp_potion_s',
+    resultCount: 3,
+    materials: [{ itemId: 'mat_herb_extract', name: '약초 추출물', count: 1 }, { itemId: 'mat_water', name: '정수', count: 1 }],
+    requiredLevel: 1,
+    craftTime: 3,
+    successRate: 1.0,
+  },
+  {
+    name: '중형 체력 포션',
+    description: 'HP를 300 회복한다.',
+    category: 'consumable',
+    resultItemId: 'con_hp_potion_m',
+    resultCount: 3,
+    materials: [{ itemId: 'mat_herb_extract', name: '약초 추출물', count: 3 }, { itemId: 'mat_water', name: '정수', count: 2 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 1 }],
+    requiredLevel: 15,
+    craftTime: 5,
+    successRate: 0.95,
+  },
+  {
+    name: '대형 체력 포션',
+    description: 'HP를 700 회복한다.',
+    category: 'consumable',
+    resultItemId: 'con_hp_potion_l',
+    resultCount: 3,
+    materials: [{ itemId: 'mat_herb_extract', name: '약초 추출물', count: 5 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 1 }],
+    requiredLevel: 30,
+    craftTime: 8,
+    successRate: 0.9,
+  },
+  {
+    name: '소형 마나 포션',
+    description: 'MP를 50 회복한다.',
+    category: 'consumable',
+    resultItemId: 'con_mp_potion_s',
+    resultCount: 3,
+    materials: [{ itemId: 'mat_magic_crystal', name: '마력 수정', count: 1 }, { itemId: 'mat_water', name: '정수', count: 1 }],
+    requiredLevel: 1,
+    craftTime: 3,
+    successRate: 1.0,
+  },
+  {
+    name: '대형 마나 포션',
+    description: 'MP를 200 회복한다.',
+    category: 'consumable',
+    resultItemId: 'con_mp_potion_l',
+    resultCount: 3,
+    materials: [{ itemId: 'mat_magic_crystal', name: '마력 수정', count: 4 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 1 }, { itemId: 'mat_water', name: '정수', count: 2 }],
+    requiredLevel: 25,
+    craftTime: 8,
+    successRate: 0.9,
+  },
+  {
+    name: '전투 식량',
+    description: '10분간 공격력 +10%.',
+    category: 'consumable',
+    resultItemId: 'con_battle_food',
+    resultCount: 5,
+    materials: [{ itemId: 'mat_meat', name: '고기', count: 2 }, { itemId: 'mat_herb_extract', name: '약초 추출물', count: 1 }],
+    requiredLevel: 5,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '수호의 식량',
+    description: '10분간 방어력 +10%.',
+    category: 'consumable',
+    resultItemId: 'con_defense_food',
+    resultCount: 5,
+    materials: [{ itemId: 'mat_meat', name: '고기', count: 2 }, { itemId: 'mat_bone', name: '몬스터 뼈', count: 1 }],
+    requiredLevel: 5,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '공격력 버프 스크롤',
+    description: '30분간 공격력 +20%.',
+    category: 'consumable',
+    resultItemId: 'con_atk_scroll',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_parchment', name: '양피지', count: 1 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 2 }, { itemId: 'mat_herb_extract', name: '약초 추출물', count: 1 }],
+    requiredLevel: 15,
+    craftTime: 10,
+    successRate: 0.9,
+  },
+  {
+    name: '방어력 버프 스크롤',
+    description: '30분간 방어력 +20%.',
+    category: 'consumable',
+    resultItemId: 'con_def_scroll',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_parchment', name: '양피지', count: 1 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 2 }, { itemId: 'mat_bone', name: '몬스터 뼈', count: 2 }],
+    requiredLevel: 15,
+    craftTime: 10,
+    successRate: 0.9,
+  },
+  {
+    name: '경험치 부스트 스크롤',
+    description: '1시간 동안 획득 경험치 +50%.',
+    category: 'consumable',
+    resultItemId: 'con_exp_scroll',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_parchment', name: '양피지', count: 2 }, { itemId: 'mat_ether_shard', name: '에테르 파편', count: 2 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 3 }],
+    requiredLevel: 20,
+    craftTime: 15,
+    successRate: 0.8,
+  },
+];
+
+// ─── 재료 가공 레시피 (10) ──────────────────────────────────
+
+const materialRecipes: RecipeSeed[] = [
+  {
+    name: '철 주괴 제련',
+    description: '철광석을 제련하여 철 주괴를 만든다.',
+    category: 'material',
+    resultItemId: 'mat_iron_ingot',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_iron_ore', name: '철광석', count: 3 }],
+    requiredLevel: 1,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '강철 주괴 제련',
+    description: '철 주괴와 석탄으로 강철을 만든다.',
+    category: 'material',
+    resultItemId: 'mat_steel_ingot',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_iron_ingot', name: '철 주괴', count: 2 }, { itemId: 'mat_coal', name: '석탄', count: 2 }],
+    requiredLevel: 10,
+    craftTime: 8,
+    successRate: 0.95,
+  },
+  {
+    name: '미스릴 주괴 제련',
+    description: '미스릴 광석을 특수 제련하여 주괴를 만든다.',
+    category: 'material',
+    resultItemId: 'mat_mithril_ingot',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_mithril_ore', name: '미스릴 광석', count: 3 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 1 }],
+    requiredLevel: 25,
+    craftTime: 15,
+    successRate: 0.85,
+  },
+  {
+    name: '구리 주괴 제련',
+    description: '구리 광석을 제련한다.',
+    category: 'material',
+    resultItemId: 'mat_copper_ingot',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_copper_ore', name: '구리 광석', count: 3 }],
+    requiredLevel: 1,
+    craftTime: 3,
+    successRate: 1.0,
+  },
+  {
+    name: '은 주괴 제련',
+    description: '은 광석을 제련한다.',
+    category: 'material',
+    resultItemId: 'mat_silver_ingot',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_silver_ore', name: '은 광석', count: 3 }],
+    requiredLevel: 5,
+    craftTime: 5,
+    successRate: 1.0,
+  },
+  {
+    name: '약초 추출물',
+    description: '야생 약초에서 유효 성분을 추출한다.',
+    category: 'material',
+    resultItemId: 'mat_herb_extract',
+    resultCount: 2,
+    materials: [{ itemId: 'mat_wild_herb', name: '야생 약초', count: 3 }],
+    requiredLevel: 1,
+    craftTime: 3,
+    successRate: 1.0,
+  },
+  {
+    name: '독 추출물',
+    description: '독초에서 독성분을 추출한다.',
+    category: 'material',
+    resultItemId: 'mat_poison_extract',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_poison_herb', name: '독초', count: 3 }, { itemId: 'mat_water', name: '정수', count: 1 }],
+    requiredLevel: 10,
+    craftTime: 5,
+    successRate: 0.9,
+  },
+  {
+    name: '에테르 파편 정제',
+    description: '원석에서 에테르 파편을 추출한다.',
+    category: 'material',
+    resultItemId: 'mat_ether_shard',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_raw', name: '에테르 원석', count: 5 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 1 }],
+    requiredLevel: 20,
+    craftTime: 10,
+    successRate: 0.8,
+  },
+  {
+    name: '에테르 코어 결정화',
+    description: '에테르 파편을 응축하여 코어를 만든다.',
+    category: 'material',
+    resultItemId: 'mat_ether_core',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_ether_shard', name: '에테르 파편', count: 5 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 3 }],
+    requiredLevel: 35,
+    craftTime: 20,
+    successRate: 0.6,
+  },
+  {
+    name: '그림자 정수 추출',
+    description: '그림자 재료로부터 정수를 추출한다.',
+    category: 'material',
+    resultItemId: 'mat_shadow_essence',
+    resultCount: 1,
+    materials: [{ itemId: 'mat_shadow_dust', name: '그림자 가루', count: 5 }, { itemId: 'mat_magic_crystal', name: '마력 수정', count: 2 }],
+    requiredLevel: 25,
+    craftTime: 12,
+    successRate: 0.75,
+  },
+];
+
+// ─── 시드 실행 ──────────────────────────────────────────────
+
+const ALL_RECIPES: RecipeSeed[] = [
+  ...weaponRecipes,
+  ...armorRecipes,
+  ...accessoryRecipes,
+  ...consumableRecipes,
+  ...materialRecipes,
+];
+
+/** 레시피 시드 실행 (기존 데이터가 있으면 건너뜀) */
+export async function seedRecipes(): Promise<{ created: number; skipped: number }> {
+  let created = 0;
+  let skipped = 0;
+
+  for (const recipe of ALL_RECIPES) {
+    const existing = await prisma.recipe.findUnique({ where: { name: recipe.name } });
+    if (existing) {
+      skipped++;
+      continue;
+    }
+    await prisma.recipe.create({ data: recipe });
+    created++;
+  }
+
+  return { created, skipped };
+}
+
+/** 전체 레시피 초기화 (삭제 후 재생성) */
+export async function resetRecipes(): Promise<{ created: number }> {
+  await prisma.recipe.deleteMany({});
+  for (const recipe of ALL_RECIPES) {
+    await prisma.recipe.create({ data: recipe });
+  }
+  return { created: ALL_RECIPES.length };
+}
