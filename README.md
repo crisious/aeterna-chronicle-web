@@ -272,11 +272,12 @@ graph LR
 Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
 Phase 2  ████████████████████  100%  멀티엔진 포팅 + 텔레메트리 + QA ✅ RC 승인
 Phase 3  ████████████████████  100%  18/20 완료 ✅ RC 승인 (P3-04/05 라이브 후 검증)
+Phase 4  ██████░░░░░░░░░░░░░░   30%  6/20 완료 — 펫/제작/NPC/소셜/사운드/퀘스트 (Sprint 3-4 진행 중)
 ```
 
 ### 최근 업데이트
 
-> **2026-03-11** — **Phase 3 RC 승인 완료** (18/20, PASS 20 FAIL 0). 길드·PvP·과금·엔딩·레이드·업적·UE5·k8s·CI/CD 전부 구현
+> **2026-03-11** — Phase 4 진행 중 (6/20). 펫·제작·NPC AI·소셜·사운드·퀘스트 구현 완료. Sprint 3-4 착수
 
 <details>
 <summary><b>📋 코어기획 문서 (21개)</b></summary>
@@ -371,8 +372,8 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 파일 | 322개 (Git tracked) |
-| 총 커밋 | 37개 |
+| 총 파일 | 346개 (Git tracked) |
+| 총 커밋 | 44개 |
 | 기획 문서 | 153개 (.md) |
 | 코어기획 | 21개 / ~12,000줄 |
 | 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
@@ -382,14 +383,14 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 챕터 | 5개 |
 | 엔딩 | 4종 |
 | 검증 리포트 | 43개 (P0/P1/P2/공통) |
-| 코드 파일 | 111개 (TS/C++/C#/Python) |
-| 클라이언트 | Phaser.js + TypeScript (21 files) |
-| 서버 | Fastify + Socket.io + Prisma (47 files) |
+| 코드 파일 | 118개 (TS/C++/C#/Python) |
+| 클라이언트 | Phaser.js + TypeScript (23 files) |
+| 서버 | Fastify + Socket.io + Prisma (68 files) |
 | UE5 | C++ GAS + UMG (40 files) |
 | 인프라 | k8s 14매니페스트 + Docker + CI/CD 3워크플로우 |
 | 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
 | 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
-| DB 모델 | 21개 (User/Char/Telemetry×2/Guild×3/PvP×2/Shop×4/Ending/Raid×2/Achievement×3/Class) |
+| DB 모델 | 30개 (+Pet×2/Recipe/CraftLog/Npc/NpcAffinity/Friendship/Party/Mail/Quest/QuestProgress) |
 | API 엔드포인트 | 40개+ REST + 20개+ Socket 이벤트 |
 
 ---
