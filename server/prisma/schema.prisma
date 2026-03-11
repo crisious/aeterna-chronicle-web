@@ -437,6 +437,41 @@ model Npc {
   @@index([location])
 }
 
+// ─── 퀘스트 시스템 ──────────────────────────────────────────────
+model Quest {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  description   String   @db.Text
+  type          String   // main, sub, daily, weekly, event
+  chapter       Int?     // 메인 퀘스트용
+  requiredLevel Int      @default(1) @map("required_level")
+  prerequisites Json     @default("[]")  // 선행 퀘스트 code 목록
+  objectives    Json     // [{type, target, count, description}]
+  rewards       Json     // [{type, itemId?, amount, description}]
+  npcId         String?  @map("npc_id")  // 수주 NPC
+  timeLimit     Int?     @map("time_limit")  // 초 (일일/주간)
+  isRepeatable  Boolean  @default(false) @map("is_repeatable")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("quests")
+  @@index([type])
+}
+
+model QuestProgress {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  questId     String    @map("quest_id")
+  status      String    @default("in_progress")  // in_progress, completed, failed, abandoned
+  progress    Json      // [{objectiveIndex, current, target, completed}]
+  startedAt   DateTime  @default(now()) @map("started_at")
+  completedAt DateTime? @map("completed_at")
+
+  @@unique([userId, questId])
+  @@map("quest_progress")
+  @@index([userId])
+}
+
 model NpcAffinity {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
@@ -448,4 +483,51 @@ model NpcAffinity {
 
   @@unique([userId, npcId])
   @@map("npc_affinities")
+}
+
+// ─── 소셜 시스템: 친구 ──────────────────────────────────────────
+model Friendship {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  friendId  String   @map("friend_id")
+  status    String   @default("pending")  // pending, accepted, blocked
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, friendId])
+  @@map("friendships")
+  @@index([userId])
+  @@index([friendId])
+}
+
+// ─── 소셜 시스템: 파티 ──────────────────────────────────────────
+model Party {
+  id        String   @id @default(uuid())
+  leaderId  String   @map("leader_id")
+  name      String?
+  maxSize   Int      @default(4) @map("max_size")
+  members   Json     // [{userId, role, joinedAt}]
+  status    String   @default("open")  // open, full, in_dungeon
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("parties")
+  @@index([leaderId])
+}
+
+// ─── 소셜 시스템: 우편 ──────────────────────────────────────────
+model Mail {
+  id          String    @id @default(uuid())
+  senderId    String?   @map("sender_id")  // null = 시스템 우편
+  receiverId  String    @map("receiver_id")
+  subject     String
+  body        String    @db.Text
+  attachments Json?     // [{itemId, count}]
+  isRead      Boolean   @default(false) @map("is_read")
+  isCollected Boolean   @default(false) @map("is_collected")  // 첨부 수령 여부
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("mails")
+  @@index([receiverId])
+  @@index([senderId])
 }

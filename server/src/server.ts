@@ -26,6 +26,9 @@ import { tickAllNpcs } from './npc/behaviorTree';
 import { craftRoutes } from './routes/craftRoutes';
 import { petRoutes } from './routes/petRoutes';
 import { setupPetSocketHandlers } from './socket/petSocketHandler';
+import { socialRoutes } from './routes/socialRoutes';
+import { setupSocialSocketHandlers, bindSocialIO } from './socket/socialSocketHandler';
+import { purgeExpiredMails } from './social/mailSystem';
 
 const fastify = Fastify({ logger: true });
 
@@ -94,6 +97,10 @@ async function startServer() {
         await fastify.register(petRoutes);
         fastify.log.info('Pet system routes registered');
 
+        // 소셜 시스템 REST API 라우트 등록 (친구/파티/우편)
+        await fastify.register(socialRoutes);
+        fastify.log.info('Social system routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -136,6 +143,11 @@ async function startServer() {
         setupPetSocketHandlers(io);
         fastify.log.info('Pet socket handlers attached');
 
+        // 소셜 시스템 소켓 핸들러 초기화 (친구/파티/우편 실시간 알림)
+        setupSocialSocketHandlers(io);
+        bindSocialIO(io);
+        fastify.log.info('Social socket handlers attached');
+
         // Redis 연결 시작 (graceful degradation)
         try {
             await redisClient.connect();
@@ -166,6 +178,18 @@ async function startServer() {
 
         tickManager.start();
         fastify.log.info('Tick manager started (physics:20Hz, network:10Hz, logic:2Hz)');
+
+        // ── 만료 우편 정리 타이머 (1시간 간격) ──
+        const mailPurgeInterval = setInterval(async () => {
+          try {
+            const count = await purgeExpiredMails();
+            if (count > 0) fastify.log.info(`[Mail] 만료 우편 ${count}건 삭제`);
+          } catch (err) {
+            fastify.log.error(`[Mail] 만료 우편 정리 실패: ${err}`);
+          }
+        }, 60 * 60 * 1000);
+        // graceful shutdown에서 정리할 수 있도록 저장
+        (fastify as unknown as Record<string, unknown>)._mailPurgeInterval = mailPurgeInterval;
 
     } catch (err) {
         fastify.log.error(err);
