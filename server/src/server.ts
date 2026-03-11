@@ -48,6 +48,8 @@ import { setupWorldSocketHandlers } from './socket/worldSocketHandler';
 import { rateLimitMiddleware } from './security/rateLimiter';
 import { inputValidatorMiddleware } from './security/inputValidator';
 import { skillRoutes } from './routes/skillRoutes';
+import { monsterRoutes } from './routes/monsterRoutes';
+import { spawnManager } from './monster/spawnManager';
 
 const fastify = Fastify({ logger: true });
 
@@ -169,6 +171,10 @@ async function startServer() {
         await fastify.register(skillRoutes);
         fastify.log.info('Skill tree routes registered');
 
+        // 몬스터/적 시스템 REST API 라우트 등록 (P5-01)
+        await fastify.register(monsterRoutes);
+        fastify.log.info('Monster system routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -253,11 +259,20 @@ async function startServer() {
         tickManager.on('logic', (deltaMs) => {
             // NPC 행동 트리 AI 업데이트
             tickAllNpcs(deltaMs);
-            // TODO: 스폰 체크, 버프 만료 처리
+            // 몬스터 스폰 매니저 틱 (AI + 리스폰 + 필드 보스 스케줄)
+            spawnManager.tick(deltaMs, (_zoneId: string) => []);
         });
 
         tickManager.start();
         fastify.log.info('Tick manager started (physics:20Hz, network:10Hz, logic:2Hz)');
+
+        // ── 몬스터 스폰 매니저 초기화 (P5-01) ──
+        try {
+            await spawnManager.initialize();
+            fastify.log.info('Monster spawn manager initialized');
+        } catch (spawnErr) {
+            fastify.log.warn(`Spawn manager init failed (DB may not have monster data): ${spawnErr}`);
+        }
 
         // 퀘스트 일일/주간 초기화 스케줄러 시작
         startQuestResetScheduler();
@@ -307,6 +322,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     // 0.5) 레이드 매니저 정리
     raidManager.shutdown();
     console.log('[Shutdown] Raid manager stopped');
+
+    // 0.6) 몬스터 스폰 매니저 정리
+    spawnManager.shutdown();
+    console.log('[Shutdown] Monster spawn manager stopped');
 
     // 0.6) 던전 매니저 정리
     dungeonManager.shutdown();

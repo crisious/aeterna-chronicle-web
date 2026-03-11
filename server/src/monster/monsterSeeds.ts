@@ -1361,4 +1361,581 @@ const eliteMonsters: MonsterSeed[] = [
       { itemId: 'EQUIP_ORB_RESONANCE', rate: 0.03, minQty: 1, maxQty: 1 },
     ],
     expReward: 800, goldReward: 270,
-    behavior: {
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'crystal_cavern', respawnTime: 240,
+    lore: '수정 동굴 전체와 공명하는 대정령. 동굴이 곧 그의 몸이며 어디서든 에테르를 끌어 모은다.',
+  },
+  {
+    code: 'MON_CC_E04', name: '심연의 나가', type: 'elite', element: 'ice', level: 64,
+    hp: 1000, attack: 82, defense: 22, speed: 12,
+    skills: [
+      { name: '빙결 창술', damage: 95, cooldown: 5, element: 'ice', effectType: 'damage' },
+      { name: '빙하 소환', damage: 80, cooldown: 10, element: 'ice', effectType: 'aoe' },
+      { name: '동결 결계', damage: 0, cooldown: 15, element: 'ice', effectType: 'debuff' },
+      { name: '빙정 치유', damage: 0, cooldown: 22, element: 'ice', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_NAGA_SCALE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FROST_PEARL', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SPEAR_ICE', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 850, goldReward: 280,
+    behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'crystal_cavern', respawnTime: 270,
+    lore: '동굴 심연의 빙결 호수를 지배하는 나가. 뱀 같은 하반신과 얼음 창술이 위협적이다.',
+  },
+  // 허공의 심연 (3)
+  {
+    code: 'MON_VA_E01', name: '허공의 집행자', type: 'elite', element: 'dark', level: 72,
+    hp: 1300, attack: 90, defense: 30, speed: 12,
+    skills: [
+      { name: '허무의 대검', damage: 120, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '차원 단절', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '허공의 심판', damage: 100, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '어둠 흡수', damage: 0, cooldown: 20, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_EXECUTOR_BLADE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_VOID_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_EXECUTOR', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1000, goldReward: 350,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'void_abyss', respawnTime: 300,
+    lore: '허공의 심연에서 심판을 집행하는 존재. 차원을 단절시켜 도주를 막고 대검으로 처형한다.',
+  },
+  {
+    code: 'MON_VA_E02', name: '시간의 감시자', type: 'elite', element: 'time', level: 75,
+    hp: 1200, attack: 95, defense: 25, speed: 14,
+    skills: [
+      { name: '시간 붕괴', damage: 130, cooldown: 8, element: 'time', effectType: 'aoe' },
+      { name: '시간 가속', damage: 0, cooldown: 12, element: 'time', effectType: 'debuff' },
+      { name: '크로노 블레이드', damage: 110, cooldown: 5, element: 'time', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WATCHER_EYE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CHRONO_HEART', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_WATCH_ETERNAL', rate: 0.02, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1100, goldReward: 380,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 300,
+    lore: '시간의 흐름을 감시하는 초월적 존재. 시간을 자유롭게 조종하여 과거와 미래를 무기로 삼는다.',
+  },
+  {
+    code: 'MON_VA_E03', name: '에테르 드래곤 근위병', type: 'elite', element: 'aether', level: 78,
+    hp: 1500, attack: 100, defense: 35, speed: 13,
+    skills: [
+      { name: '에테르 대브레스', damage: 140, cooldown: 8, element: 'aether', effectType: 'aoe' },
+      { name: '용의 위엄', damage: 0, cooldown: 15, element: 'aether', effectType: 'debuff' },
+      { name: '에테르 클로', damage: 110, cooldown: 5, element: 'aether', effectType: 'damage' },
+      { name: '에테르 재생', damage: 0, cooldown: 25, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DRAGON_GUARD_SCALE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_DRAGON_BLOOD', rate: 0.05, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_DRAGON', rate: 0.02, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1200, goldReward: 400,
+    behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'void_abyss', respawnTime: 360,
+    lore: '에테르 드래곤의 근위병. 성체 드래곤의 명령에 따라 심연의 입구를 지키는 최강의 용인족.',
+  },
+];
+
+// ─── 던전 보스 12마리 (던전당 1) ────────────────────────────────
+
+const dungeonBosses: MonsterSeed[] = [
+  {
+    code: 'MON_BOSS_TF01', name: '고대 트렌트 오미가', type: 'boss', element: 'earth', level: 15,
+    hp: 2000, attack: 40, defense: 25, speed: 3,
+    skills: [
+      { name: '세계수의 분노', damage: 60, cooldown: 8, element: 'earth', effectType: 'aoe' },
+      { name: '뿌리 감옥', damage: 30, cooldown: 6, element: 'earth', effectType: 'debuff' },
+      { name: '자연 재생', damage: 0, cooldown: 15, element: 'earth', effectType: 'heal' },
+      { name: '낙엽 폭풍', damage: 50, cooldown: 10, element: 'earth', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ANCIENT_HEARTWOOD', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_STAFF_TREANT', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SPIRIT_WOOD', rate: 0.5, minQty: 2, maxQty: 4 },
+    ],
+    expReward: 500, goldReward: 200,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'twilight_forest', respawnTime: 600,
+    lore: '황혼의 숲 던전 최심부를 지키는 고대 트렌트. HP 30% 이하에서 광폭화하며 뿌리로 전장을 뒤덮는다.',
+  },
+  {
+    code: 'MON_BOSS_TF02', name: '달빛 수호령 루나리스', type: 'boss', element: 'light', level: 15,
+    hp: 1800, attack: 45, defense: 20, speed: 12,
+    skills: [
+      { name: '달빛 세례', damage: 55, cooldown: 6, element: 'light', effectType: 'aoe' },
+      { name: '환월참', damage: 70, cooldown: 5, element: 'light', effectType: 'damage' },
+      { name: '월광 결계', damage: 0, cooldown: 18, element: 'light', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MOONLIGHT_CORE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_MOON', rate: 0.12, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_LIGHT_ESSENCE', rate: 0.6, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 480, goldReward: 190,
+    behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'twilight_forest', respawnTime: 600,
+    lore: '달빛이 물리적 형태를 얻은 수호령. 순결한 자에게는 관대하지만, 탐욕스러운 자에게는 가차없다.',
+  },
+  {
+    code: 'MON_BOSS_KC01', name: '시간 폭군 크로노스 Mk-II', type: 'boss', element: 'time', level: 25,
+    hp: 3000, attack: 55, defense: 30, speed: 8,
+    skills: [
+      { name: '시간 정지 필드', damage: 0, cooldown: 20, element: 'time', effectType: 'debuff' },
+      { name: '시간 절단', damage: 80, cooldown: 5, element: 'time', effectType: 'damage' },
+      { name: '시간 가속 모드', damage: 0, cooldown: 25, element: 'time', effectType: 'heal' },
+      { name: '크로노 캐논', damage: 100, cooldown: 10, element: 'time', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CHRONO_ENGINE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_WATCH_TYRANT', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_TIME_CRYSTAL', rate: 0.5, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 800, goldReward: 350,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'kronos_city', respawnTime: 600,
+    lore: '크로노스 시계탑 최상층의 시간 병기. 시간 정지와 가속을 번갈아 사용하며 전장을 지배한다.',
+  },
+  {
+    code: 'MON_BOSS_KC02', name: '하수도왕 레비아탄', type: 'boss', element: 'ice', level: 25,
+    hp: 3500, attack: 50, defense: 35, speed: 5,
+    skills: [
+      { name: '대홍수', damage: 90, cooldown: 10, element: 'ice', effectType: 'aoe' },
+      { name: '턱 분쇄', damage: 100, cooldown: 6, element: 'neutral', effectType: 'damage' },
+      { name: '얼음 갑각', damage: 0, cooldown: 20, element: 'ice', effectType: 'heal' },
+      { name: '꼬리 쓸기', damage: 70, cooldown: 7, element: 'ice', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_LEVIATHAN_FANG', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_LEVIATHAN', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ICE_SCALE', rate: 0.6, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 850, goldReward: 380,
+    behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'kronos_city', respawnTime: 600,
+    lore: '크로노스 하수도 최심부에 서식하는 거대 해수. 하수도 전체를 얼려버릴 수 있는 빙결 능력을 지녔다.',
+  },
+  {
+    code: 'MON_BOSS_AV01', name: '에테르 심판자 아리엘', type: 'boss', element: 'aether', level: 35,
+    hp: 4000, attack: 65, defense: 30, speed: 11,
+    skills: [
+      { name: '심판의 에테르', damage: 100, cooldown: 8, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 속박', damage: 0, cooldown: 12, element: 'aether', effectType: 'debuff' },
+      { name: '정화 광선', damage: 120, cooldown: 10, element: 'light', effectType: 'damage' },
+      { name: '에테르 재생', damage: 0, cooldown: 20, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ARIEL_WING', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_STAFF_ARIEL', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_CORE', rate: 0.5, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 1200, goldReward: 500,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'aetheria_village', respawnTime: 600,
+    lore: '에테리아 탑의 최상층에서 세계를 심판하는 천사형 존재. 에테르의 균형을 지키는 것이 사명.',
+  },
+  {
+    code: 'MON_BOSS_AV02', name: '기억의 군주 메모리아', type: 'boss', element: 'dark', level: 35,
+    hp: 3800, attack: 72, defense: 25, speed: 10,
+    skills: [
+      { name: '기억 폭풍', damage: 110, cooldown: 8, element: 'dark', effectType: 'aoe' },
+      { name: '정신 지배', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '과거의 칼날', damage: 90, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '기억 흡수', damage: 60, cooldown: 10, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MEMORIA_CROWN', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ORB_MEMORIA', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_MEMORY_FRAGMENT', rate: 0.6, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 1150, goldReward: 480,
+    behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'aetheria_village', respawnTime: 600,
+    lore: '모든 기억을 지배하려는 어둠의 군주. 대상의 기억을 빼앗아 자신의 힘으로 변환한다.',
+  },
+  {
+    code: 'MON_BOSS_SF01', name: '그림자 군주 오브시디안', type: 'boss', element: 'dark', level: 50,
+    hp: 6000, attack: 85, defense: 40, speed: 10,
+    skills: [
+      { name: '절대 암흑', damage: 130, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '그림자 대검', damage: 110, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '어둠의 결계', damage: 0, cooldown: 18, element: 'dark', effectType: 'debuff' },
+      { name: '그림자 치유', damage: 0, cooldown: 22, element: 'dark', effectType: 'heal' },
+      { name: '암흑 소환', damage: 80, cooldown: 15, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_OBSIDIAN_HEART', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_OBSIDIAN', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SHADOW_CORE', rate: 0.5, minQty: 2, maxQty: 4 },
+    ],
+    expReward: 2000, goldReward: 800,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'shadow_fortress', respawnTime: 900,
+    lore: '그림자 요새의 지배자. 절대 암흑으로 전장을 뒤덮고 보이지 않는 곳에서 공격하는 교활한 보스.',
+  },
+  {
+    code: 'MON_BOSS_SF02', name: '화염 마왕 이그니스', type: 'boss', element: 'fire', level: 50,
+    hp: 5500, attack: 95, defense: 30, speed: 12,
+    skills: [
+      { name: '지옥불', damage: 150, cooldown: 10, element: 'fire', effectType: 'aoe' },
+      { name: '업화의 채찍', damage: 120, cooldown: 6, element: 'fire', effectType: 'damage' },
+      { name: '화염 부활', damage: 0, cooldown: 30, element: 'fire', effectType: 'heal' },
+      { name: '마왕의 포효', damage: 0, cooldown: 15, element: 'fire', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_IGNIS_CORE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_WHIP_IGNIS', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_HELLFIRE_CORE', rate: 0.5, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 1900, goldReward: 780,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'shadow_fortress', respawnTime: 900,
+    lore: '그림자 요새 화염 구역의 지배자. 지옥의 화염을 주무르며 일대를 불바다로 만든다.',
+  },
+  {
+    code: 'MON_BOSS_CC01', name: '수정 폭군 프리즈마', type: 'boss', element: 'earth', level: 65,
+    hp: 8000, attack: 90, defense: 50, speed: 6,
+    skills: [
+      { name: '수정 대폭발', damage: 140, cooldown: 10, element: 'earth', effectType: 'aoe' },
+      { name: '프리즘 레이저', damage: 160, cooldown: 8, element: 'light', effectType: 'damage' },
+      { name: '수정 재구축', damage: 0, cooldown: 25, element: 'earth', effectType: 'heal' },
+      { name: '수정 감옥', damage: 0, cooldown: 15, element: 'earth', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_PRISMA_CORE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_PRISMA', rate: 0.06, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_PERFECT_GEM', rate: 0.4, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 3000, goldReward: 1200,
+    behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'crystal_cavern', respawnTime: 900,
+    lore: '수정 동굴 최심부의 폭군. 몸 전체가 순도 100% 에테르 수정으로 구성되어 물리 공격이 거의 통하지 않는다.',
+  },
+  {
+    code: 'MON_BOSS_CC02', name: '용암 드래곤 볼케이노', type: 'boss', element: 'fire', level: 65,
+    hp: 7500, attack: 100, defense: 35, speed: 10,
+    skills: [
+      { name: '멸망의 브레스', damage: 180, cooldown: 10, element: 'fire', effectType: 'aoe' },
+      { name: '용암 분출', damage: 120, cooldown: 6, element: 'fire', effectType: 'damage' },
+      { name: '마그마 갑각', damage: 0, cooldown: 20, element: 'fire', effectType: 'heal' },
+      { name: '화산 폭발', damage: 150, cooldown: 15, element: 'fire', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_VOLCANO_HEART', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_VOLCANO', rate: 0.06, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DRAGON_SCALE', rate: 0.4, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 2800, goldReward: 1100,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'crystal_cavern', respawnTime: 900,
+    lore: '동굴 용암 호수의 주인. 성체 화염 드래곤으로, 멸망의 브레스 한 번에 전장이 불바다가 된다.',
+  },
+  {
+    code: 'MON_BOSS_VA01', name: '허공의 심판관 니힐', type: 'boss', element: 'dark', level: 80,
+    hp: 12000, attack: 120, defense: 45, speed: 12,
+    skills: [
+      { name: '허무의 선고', damage: 200, cooldown: 12, element: 'dark', effectType: 'aoe' },
+      { name: '존재 소거', damage: 180, cooldown: 8, element: 'dark', effectType: 'damage' },
+      { name: '허공 재생', damage: 0, cooldown: 25, element: 'dark', effectType: 'heal' },
+      { name: '차원 봉쇄', damage: 0, cooldown: 18, element: 'dark', effectType: 'debuff' },
+      { name: '종말의 파동', damage: 250, cooldown: 20, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_NIHIL_ESSENCE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_NIHIL', rate: 0.05, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_VOID_CORE', rate: 0.5, minQty: 2, maxQty: 3 },
+    ],
+    expReward: 5000, goldReward: 2000,
+    behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 1200,
+    lore: '허공의 심연 최종 보스. 존재 자체를 소거하는 힘을 지닌 심판관으로, 종말의 파동은 전장 전체를 파괴한다.',
+  },
+  {
+    code: 'MON_BOSS_VA02', name: '시간의 종말자 크로노스', type: 'boss', element: 'time', level: 80,
+    hp: 11000, attack: 115, defense: 40, speed: 14,
+    skills: [
+      { name: '시간 붕괴', damage: 180, cooldown: 10, element: 'time', effectType: 'aoe' },
+      { name: '크로노 블레이드 X', damage: 200, cooldown: 7, element: 'time', effectType: 'damage' },
+      { name: '시간 되감기', damage: 0, cooldown: 30, element: 'time', effectType: 'heal' },
+      { name: '시공 정지', damage: 0, cooldown: 20, element: 'time', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CHRONOS_HEART', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_BLADE_CHRONOS', rate: 0.05, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CHRONO_KEY', rate: 0.4, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 4800, goldReward: 1900,
+    behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'void_abyss', respawnTime: 1200,
+    lore: '시간의 끝에서 모든 것을 종결시키려는 존재. 시간을 되감아 HP를 회복하는 치명적 능력이 있다.',
+  },
+];
+
+// ─── 필드 보스 5마리 ────────────────────────────────────────────
+
+const fieldBosses: MonsterSeed[] = [
+  {
+    code: 'MON_FB_001', name: '숲의 폭군 그란트리', type: 'field_boss', element: 'earth', level: 20,
+    hp: 5000, attack: 50, defense: 30, speed: 3,
+    skills: [
+      { name: '대지 진동', damage: 80, cooldown: 8, element: 'earth', effectType: 'aoe' },
+      { name: '거목 낙하', damage: 100, cooldown: 10, element: 'earth', effectType: 'damage' },
+      { name: '자연의 축복', damage: 0, cooldown: 20, element: 'earth', effectType: 'heal' },
+      { name: '뿌리 감옥', damage: 40, cooldown: 6, element: 'earth', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GRANTREE_HEART', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_STAFF_GRANTREE', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ANCIENT_BARK', rate: 0.6, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 1500, goldReward: 600,
+    behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'twilight_forest', respawnTime: 1800,
+    lore: '황혼의 숲 한가운데에 우뚝 선 고대의 거목 보스. 숲 전체를 뒤흔드는 대지 진동이 특기.',
+  },
+  {
+    code: 'MON_FB_002', name: '시간의 파수꾼 모멘토', type: 'field_boss', element: 'time', level: 35,
+    hp: 7000, attack: 70, defense: 35, speed: 10,
+    skills: [
+      { name: '시간 대폭발', damage: 120, cooldown: 10, element: 'time', effectType: 'aoe' },
+      { name: '시간 정지 권역', damage: 0, cooldown: 20, element: 'time', effectType: 'debuff' },
+      { name: '크로노 재구성', damage: 0, cooldown: 25, element: 'time', effectType: 'heal' },
+      { name: '과거의 메아리', damage: 90, cooldown: 7, element: 'time', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MOMENTO_CLOCK', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_WATCH_MOMENTO', rate: 0.06, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_TIME_CRYSTAL', rate: 0.5, minQty: 2, maxQty: 4 },
+    ],
+    expReward: 2500, goldReward: 1000,
+    behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'kronos_city', respawnTime: 2400,
+    lore: '크로노스 시가지에 돌연 출현하는 거대한 시계 형태의 필드 보스. 시간을 왜곡시켜 전투를 지배한다.',
+  },
+  {
+    code: 'MON_FB_003', name: '심연의 히드라', type: 'field_boss', element: 'dark', level: 50,
+    hp: 10000, attack: 85, defense: 35, speed: 8,
+    skills: [
+      { name: '다두 공격', damage: 100, cooldown: 4, element: 'dark', effectType: 'damage' },
+      { name: '독액 세례', damage: 80, cooldown: 8, element: 'dark', effectType: 'aoe' },
+      { name: '머리 재생', damage: 0, cooldown: 15, element: 'dark', effectType: 'heal' },
+      { name: '암흑 브레스', damage: 130, cooldown: 12, element: 'dark', effectType: 'aoe' },
+      { name: '공포의 포효', damage: 0, cooldown: 20, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_HYDRA_FANG', rate: 1.0, minQty: 1, maxQty: 2 },
+      { itemId: 'EQUIP_NECKLACE_HYDRA', rate: 0.05, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DARK_CRYSTAL', rate: 0.5, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 3500, goldReward: 1500,
+    behavior: { aggro_range: 25, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'shadow_fortress', respawnTime: 3000,
+    lore: '그림자 요새 외곽에 출현하는 다두 히드라. 머리를 잘라도 재생하며, 다수의 머리로 동시 공격한다.',
+  },
+  {
+    code: 'MON_FB_004', name: '결정룡 다이아몬드', type: 'field_boss', element: 'earth', level: 65,
+    hp: 12000, attack: 95, defense: 50, speed: 9,
+    skills: [
+      { name: '수정 브레스', damage: 160, cooldown: 10, element: 'earth', effectType: 'aoe' },
+      { name: '다이아몬드 클로', damage: 130, cooldown: 5, element: 'earth', effectType: 'damage' },
+      { name: '수정 갑옷 강화', damage: 0, cooldown: 20, element: 'earth', effectType: 'heal' },
+      { name: '보석 폭풍', damage: 120, cooldown: 12, element: 'earth', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DIAMOND_DRAGON_HEART', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_DIAMOND', rate: 0.04, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_PERFECT_GEM', rate: 0.6, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 4500, goldReward: 2000,
+    behavior: { aggro_range: 25, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'crystal_cavern', respawnTime: 3600,
+    lore: '수정 동굴의 최강 필드 보스. 다이아몬드 갑각은 거의 무적에 가까우며 보석 폭풍으로 전장을 유린한다.',
+  },
+  {
+    code: 'MON_FB_005', name: '허공의 왕 아비서스', type: 'field_boss', element: 'dark', level: 80,
+    hp: 18000, attack: 120, defense: 50, speed: 11,
+    skills: [
+      { name: '허공 대소멸', damage: 250, cooldown: 15, element: 'dark', effectType: 'aoe' },
+      { name: '존재 부정', damage: 200, cooldown: 8, element: 'dark', effectType: 'damage' },
+      { name: '심연의 재생', damage: 0, cooldown: 25, element: 'dark', effectType: 'heal' },
+      { name: '차원 분쇄', damage: 180, cooldown: 10, element: 'aether', effectType: 'aoe' },
+      { name: '종말의 선포', damage: 0, cooldown: 30, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ABYSSUS_CROWN', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_ABYSSUS', rate: 0.03, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_VOID_CORE', rate: 0.6, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 8000, goldReward: 3500,
+    behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 5400,
+    lore: '허공의 심연 전체를 지배하는 왕. 차원을 분쇄하고 존재 자체를 부정하는 궁극의 필드 보스.',
+  },
+];
+
+// ─── 레이드 보스 3마리 (기존 raidBoss 모델과 연동) ──────────────
+
+const raidBosses: MonsterSeed[] = [
+  {
+    code: 'MON_RAID_001', name: '에테르 드래곤 에테르노스', type: 'raid_boss', element: 'aether', level: 80,
+    hp: 50000, attack: 150, defense: 60, speed: 12,
+    skills: [
+      { name: '에테르 종말 브레스', damage: 300, cooldown: 15, element: 'aether', effectType: 'aoe' },
+      { name: '용의 발톱 연격', damage: 200, cooldown: 5, element: 'neutral', effectType: 'damage' },
+      { name: '에테르 재생', damage: 0, cooldown: 30, element: 'aether', effectType: 'heal' },
+      { name: '차원 붕괴', damage: 250, cooldown: 20, element: 'aether', effectType: 'aoe' },
+      { name: '용의 위엄', damage: 0, cooldown: 25, element: 'aether', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ETERNOS_SCALE', rate: 1.0, minQty: 1, maxQty: 2 },
+      { itemId: 'EQUIP_LEGENDARY_SWORD_ETERNOS', rate: 0.01, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_DRAGON_BLOOD', rate: 0.5, minQty: 3, maxQty: 5 },
+      { itemId: 'MAT_AETHER_HEART', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 20000, goldReward: 10000,
+    behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'void_abyss', respawnTime: 86400,
+    lore: '에테르나 크로니클 세계의 최강 드래곤. 에테르 에너지 그 자체가 형상화된 존재로, 세계를 초기화할 수 있는 힘을 가졌다.',
+  },
+  {
+    code: 'MON_RAID_002', name: '시간의 신 테포라스', type: 'raid_boss', element: 'time', level: 80,
+    hp: 45000, attack: 140, defense: 55, speed: 15,
+    skills: [
+      { name: '시간 대붕괴', damage: 280, cooldown: 12, element: 'time', effectType: 'aoe' },
+      { name: '시간 정지 결계', damage: 0, cooldown: 25, element: 'time', effectType: 'debuff' },
+      { name: '시간 역행', damage: 0, cooldown: 35, element: 'time', effectType: 'heal' },
+      { name: '크로노 블레이드 오메가', damage: 250, cooldown: 8, element: 'time', effectType: 'damage' },
+      { name: '과거-현재-미래 삼중격', damage: 350, cooldown: 20, element: 'time', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_TEPORAS_HOURGLASS', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_LEGENDARY_BLADE_TEMPORAS', rate: 0.01, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CHRONO_HEART', rate: 0.3, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_TIME_CRYSTAL', rate: 0.6, minQty: 5, maxQty: 8 },
+    ],
+    expReward: 18000, goldReward: 9000,
+    behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 86400,
+    lore: '시간을 관장하는 신적 존재. 과거·현재·미래를 동시에 공격하며, 시간 역행으로 전투를 원점 복귀시킨다.',
+  },
+  {
+    code: 'MON_RAID_003', name: '혼돈의 제왕 카오스', type: 'raid_boss', element: 'dark', level: 80,
+    hp: 55000, attack: 160, defense: 50, speed: 13,
+    skills: [
+      { name: '혼돈 대소멸', damage: 350, cooldown: 15, element: 'dark', effectType: 'aoe' },
+      { name: '혼돈의 지배', damage: 0, cooldown: 20, element: 'dark', effectType: 'debuff' },
+      { name: '카오스 재생', damage: 0, cooldown: 30, element: 'dark', effectType: 'heal' },
+      { name: '무한 어둠', damage: 280, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '종말의 검', damage: 400, cooldown: 25, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CHAOS_CROWN', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_LEGENDARY_ARMOR_CHAOS', rate: 0.01, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CHAOS_ESSENCE', rate: 0.4, minQty: 2, maxQty: 4 },
+      { itemId: 'MAT_DOOM_ESSENCE', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 22000, goldReward: 12000,
+    behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
+    location: 'void_abyss', respawnTime: 86400,
+    lore: '모든 혼돈의 근원이자 세계를 멸망시키려는 최종 보스. 종말의 검 한 번에 파티가 전멸할 수 있다.',
+  },
+];
+
+// ─── 시드 함수 ──────────────────────────────────────────────────
+
+/**
+ * 전체 100마리 몬스터를 DB에 시드
+ * 기존 데이터와 충돌 시 code 기준으로 upsert
+ */
+export async function seedMonsters(): Promise<{ created: number; updated: number }> {
+  const allMonsters: MonsterSeed[] = [
+    ...twilightForestNormals,   // 10
+    ...kronosCityNormals,       // 10
+    ...aetheriaVillageNormals,  // 10
+    ...shadowFortressNormals,   // 10
+    ...crystalCavernNormals,    // 10
+    ...voidAbyssNormals,        // 10
+    ...eliteMonsters,           // 20
+    ...dungeonBosses,           // 12
+    ...fieldBosses,             // 5
+    ...raidBosses,              // 3
+  ];
+
+  let created = 0;
+  let updated = 0;
+
+  for (const m of allMonsters) {
+    const existing = await prisma.monster.findUnique({ where: { code: m.code } });
+    if (existing) {
+      await prisma.monster.update({
+        where: { code: m.code },
+        data: {
+          name: m.name,
+          type: m.type,
+          element: m.element,
+          level: m.level,
+          hp: m.hp,
+          attack: m.attack,
+          defense: m.defense,
+          speed: m.speed,
+          skills: m.skills,
+          dropTable: m.dropTable,
+          expReward: m.expReward,
+          goldReward: m.goldReward,
+          behavior: m.behavior,
+          location: m.location,
+          respawnTime: m.respawnTime,
+          lore: m.lore,
+        },
+      });
+      updated++;
+    } else {
+      await prisma.monster.create({
+        data: {
+          code: m.code,
+          name: m.name,
+          type: m.type,
+          element: m.element,
+          level: m.level,
+          hp: m.hp,
+          attack: m.attack,
+          defense: m.defense,
+          speed: m.speed,
+          skills: m.skills,
+          dropTable: m.dropTable,
+          expReward: m.expReward,
+          goldReward: m.goldReward,
+          behavior: m.behavior,
+          location: m.location,
+          respawnTime: m.respawnTime,
+          lore: m.lore,
+        },
+      });
+      created++;
+    }
+  }
+
+  return { created, updated };
+}
+
+/** 몬스터 시드 데이터 배열 (외부 참조용) */
+export function getAllMonsterSeeds(): MonsterSeed[] {
+  return [
+    ...twilightForestNormals,
+    ...kronosCityNormals,
+    ...aetheriaVillageNormals,
+    ...shadowFortressNormals,
+    ...crystalCavernNormals,
+    ...voidAbyssNormals,
+    ...eliteMonsters,
+    ...dungeonBosses,
+    ...fieldBosses,
+    ...raidBosses,
+  ];
+}

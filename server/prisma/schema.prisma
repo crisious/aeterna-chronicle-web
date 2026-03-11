@@ -829,3 +829,35 @@ model PlayerLocation {
 
   @@map("player_locations")
 }
+
+// ─── 도감/컬렉션 시스템 (P5-08) ─────────────────────────────────
+model CodexEntry {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  category    String   // monster, item, npc, zone, skill
+  targetCode  String   @map("target_code")
+  discovered  Boolean  @default(true)
+  percentage  Float    @default(0)
+  unlockedAt  DateTime @default(now()) @map("unlocked_at")
+
+  @@unique([userId, category, targetCode])
+  @@map("codex_entries")
+  @@index([userId])
+  @@index([category])
+}
+
+// ─── 알림 시스템 (P5-10) ────────────────────────────────────────
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // system, achievement, mail, guild, pvp, quest, event, social
+  title       String
+  message     String
+  data        Json?
+  isRead      Boolean  @default(false) @map("is_read")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
