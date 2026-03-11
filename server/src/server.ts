@@ -14,6 +14,8 @@ import { setupPvpSocketHandlers } from './socket/pvpSocketHandler';
 import { endingRoutes } from './routes/endingRoutes';
 import { shopRoutes } from './routes/shopRoutes';
 import { seasonPassRoutes } from './routes/seasonPassRoutes';
+import { achievementRoutes } from './routes/achievementRoutes';
+import { setupAchievementSocketHandlers } from './socket/achievementSocketHandler';
 import { raidRoutes } from './routes/raidRoutes';
 import { setupRaidSocketHandlers } from './socket/raidSocketHandler';
 import { raidManager } from './raid/raidManager';
@@ -61,6 +63,10 @@ async function startServer() {
         await fastify.register(seasonPassRoutes);
         fastify.log.info('Season Pass routes registered');
 
+        // 업적 시스템 REST API 라우트 등록
+        await fastify.register(achievementRoutes);
+        fastify.log.info('Achievement routes registered');
+
         // 레이드 보스 REST API 라우트 등록
         await fastify.register(raidRoutes);
         fastify.log.info('Raid boss routes registered');
@@ -94,6 +100,10 @@ async function startServer() {
         // 길드 소켓 이벤트 핸들러 초기화
         setupGuildSocketHandlers(io);
         fastify.log.info('Guild socket handlers attached');
+
+        // 업적 소켓 이벤트 핸들러 초기화
+        setupAchievementSocketHandlers(io);
+        fastify.log.info('Achievement socket handlers attached');
 
         // 레이드 보스 소켓 핸들러 초기화
         setupRaidSocketHandlers(io);
