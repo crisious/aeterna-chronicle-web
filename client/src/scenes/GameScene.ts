@@ -35,11 +35,30 @@ export class GameScene extends Phaser.Scene {
   private dialogueOpenAtMs = 0;
   private lastMoveEmitTime = 0;
 
+  /** Delta accumulator: HUD 상태 시뮬레이션을 100ms 주기로 제한 (매 프레임 → 10fps HUD) */
+  private statusTickAccumulator = 0;
+  private static readonly STATUS_TICK_INTERVAL_MS = 100;
+
   constructor() {
     super({ key: 'GameScene' });
   }
 
   preload(): void {
+    // ──────────────────────────────────────────────────────────
+    // [텍스처 아틀라스 가이드] Phase 2+ 에서 개별 스프라이트 로드를
+    // 아틀라스로 교체할 것. TexturePacker/ShoeBox 출력물 사용:
+    //
+    //   this.load.atlas('characters', 'assets/atlas/characters.png',
+    //                   'assets/atlas/characters.json');
+    //   this.load.atlas('effects',    'assets/atlas/effects.png',
+    //                   'assets/atlas/effects.json');
+    //   this.load.atlas('ui',         'assets/atlas/ui.png',
+    //                   'assets/atlas/ui.json');
+    //
+    // 아틀라스 전환 시 draw call 최소화 + VRAM 절약.
+    // 개별 this.load.image() 호출은 제거하고 atlas frame 참조로 변경.
+    // ──────────────────────────────────────────────────────────
+
     const graphics = this.add.graphics();
     graphics.fillStyle(0xf5a623, 1);
     graphics.fillRoundedRect(0, 0, 48, 64, 8);
@@ -82,7 +101,13 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.hud.update(delta);
-    this.simulateStatusTick(delta);
+
+    // HUD 상태 시뮬레이션: 매 프레임이 아닌 100ms 간격으로만 실행
+    this.statusTickAccumulator += delta;
+    if (this.statusTickAccumulator >= GameScene.STATUS_TICK_INTERVAL_MS) {
+      this.simulateStatusTick(this.statusTickAccumulator);
+      this.statusTickAccumulator = 0;
+    }
 
     if ((this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) && this.socket?.connected) {
       const now = Date.now();

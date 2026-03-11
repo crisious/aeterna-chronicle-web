@@ -1,8 +1,10 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { Server } from 'socket.io';
-import { redisClient } from './redis';
+import { redisClient, redisConnected } from './redis';
+import { prisma } from './db';
 import { setupSocketHandlers } from './socket/socketHandler';
+import { stopPruneTimer } from './telemetry/dialogueTelemetryServer';
 
 const fastify = Fastify({ logger: true });
 
@@ -52,5 +54,46 @@ async function startServer() {
         process.exit(1);
     }
 }
+
+// ── Graceful Shutdown ────────────────────────────────────────
+async function gracefulShutdown(signal: string): Promise<void> {
+    console.log(`\n[Shutdown] ${signal} received. Graceful shutdown 시작...`);
+
+    // 1) 텔레메트리 prune 타이머 정리
+    stopPruneTimer();
+    console.log('[Shutdown] Telemetry prune timer stopped');
+
+    // 2) Fastify (HTTP + Socket.io) 종료
+    try {
+        await fastify.close();
+        console.log('[Shutdown] Fastify server closed');
+    } catch (err) {
+        console.error('[Shutdown] Fastify close error:', err);
+    }
+
+    // 3) Redis 연결 종료
+    if (redisConnected) {
+        try {
+            await redisClient.quit();
+            console.log('[Shutdown] Redis disconnected');
+        } catch (err) {
+            console.error('[Shutdown] Redis quit error:', err);
+        }
+    }
+
+    // 4) Prisma (PostgreSQL) 연결 종료
+    try {
+        await prisma.$disconnect();
+        console.log('[Shutdown] Prisma disconnected');
+    } catch (err) {
+        console.error('[Shutdown] Prisma disconnect error:', err);
+    }
+
+    console.log('[Shutdown] Graceful shutdown 완료');
+    process.exit(0);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 startServer();

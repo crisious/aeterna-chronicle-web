@@ -7,8 +7,32 @@ export type { DialogueChoiceTelemetryEvent };
 const dedupeWindowMs = 5 * 60 * 1000;
 const idempotencyStore = new Map<string, number>();
 
+/** 주기적 정리: 30초마다 만료된 idempotency 키 제거 (매 요청마다 순회 → 타이머 기반) */
+const PRUNE_INTERVAL_MS = 30_000;
+let pruneTimer: ReturnType<typeof setInterval> | null = null;
+
+function startPruneTimer(): void {
+  if (pruneTimer) return;
+  pruneTimer = setInterval(() => {
+    pruneExpired();
+  }, PRUNE_INTERVAL_MS);
+  // 서버 종료 시 타이머가 프로세스 유지하지 않도록
+  if (pruneTimer && typeof pruneTimer === 'object' && 'unref' in pruneTimer) {
+    pruneTimer.unref();
+  }
+}
+
+startPruneTimer();
+
+export function stopPruneTimer(): void {
+  if (pruneTimer) {
+    clearInterval(pruneTimer);
+    pruneTimer = null;
+  }
+}
+
 export async function handleDialogueTelemetry(socket: Socket, payload: DialogueChoiceTelemetryEvent): Promise<void> {
-  pruneExpired();
+  // pruneExpired()는 이제 30초 타이머로 주기적 실행 — 매 요청마다 호출하지 않음
 
   if (!isValid(payload)) {
     socket.emit('telemetry:ack', {

@@ -70,6 +70,24 @@ export class HudOverlay {
   private quickSlots: QuickSlotData[] = [];
   private quests: QuestItem[] = [];
 
+  /** Dirty flags for partial DOM updates */
+  // dirtyStatus는 개별 필드 dirty check로 대체 (lastHpPercent 등)
+  private dirtyQuickSlots = true;
+  // dirtyQuests는 questHash 기반 변경 감지로 대체
+
+  /** Cached values for dirty checking */
+  private lastHpPercent = -1;
+  private lastMpPercent = -1;
+  private lastExpPercent = -1;
+  private lastHpText = '';
+  private lastMpText = '';
+  private lastCharName = '';
+  private lastLevel = -1;
+  private lastHpDanger = false;
+
+  /** Quest hash for change detection */
+  private lastQuestHash = '';
+
   private readonly root: HTMLDivElement;
 
   constructor(scene: Phaser.Scene) {
@@ -99,6 +117,7 @@ export class HudOverlay {
 
   setQuickSlots(slots: QuickSlotData[], inputMode: InputMode): void {
     this.quickSlots = slots;
+    this.dirtyQuickSlots = true;
     this.renderQuickSlots(inputMode);
   }
 
@@ -252,21 +271,55 @@ export class HudOverlay {
     const mpRatio = this.safeRatio(this.status.mpCurrent, this.status.mpMax);
     const expRatio = Phaser.Math.Clamp(this.status.expRatio, 0, 1);
 
-    const hpFill = this.query<HTMLElement>('#hud-hp-fill');
-    const mpFill = this.query<HTMLElement>('#hud-mp-fill');
-    const expFill = this.query<HTMLElement>('#hud-exp-fill');
+    const hpPercent = Math.floor(hpRatio * 100);
+    const mpPercent = Math.floor(mpRatio * 100);
+    const expPercent = Math.floor(expRatio * 100);
 
-    hpFill.style.width = `${Math.floor(hpRatio * 100)}%`;
-    mpFill.style.width = `${Math.floor(mpRatio * 100)}%`;
-    expFill.style.width = `${Math.floor(expRatio * 100)}%`;
-
-    this.query<HTMLElement>('#hud-name').textContent = this.status.characterName;
-    this.query<HTMLElement>('#hud-level').textContent = `Lv.${this.status.level}`;
-    this.query<HTMLElement>('#hud-hp-text').textContent = `${this.status.hpCurrent}/${this.status.hpMax}`;
-    this.query<HTMLElement>('#hud-mp-text').textContent = `${this.status.mpCurrent}/${this.status.mpMax}`;
-
+    const hpText = `${this.status.hpCurrent}/${this.status.hpMax}`;
+    const mpText = `${this.status.mpCurrent}/${this.status.mpMax}`;
     const hpDanger = hpRatio <= (this.status.dangerHpThreshold ?? 0.2);
-    hpFill.style.filter = hpDanger ? 'brightness(1.35)' : 'none';
+
+    // Dirty check: 실제 변경된 DOM 요소만 업데이트
+    if (hpPercent !== this.lastHpPercent) {
+      this.query<HTMLElement>('#hud-hp-fill').style.width = `${hpPercent}%`;
+      this.lastHpPercent = hpPercent;
+    }
+
+    if (mpPercent !== this.lastMpPercent) {
+      this.query<HTMLElement>('#hud-mp-fill').style.width = `${mpPercent}%`;
+      this.lastMpPercent = mpPercent;
+    }
+
+    if (expPercent !== this.lastExpPercent) {
+      this.query<HTMLElement>('#hud-exp-fill').style.width = `${expPercent}%`;
+      this.lastExpPercent = expPercent;
+    }
+
+    if (hpText !== this.lastHpText) {
+      this.query<HTMLElement>('#hud-hp-text').textContent = hpText;
+      this.lastHpText = hpText;
+    }
+
+    if (mpText !== this.lastMpText) {
+      this.query<HTMLElement>('#hud-mp-text').textContent = mpText;
+      this.lastMpText = mpText;
+    }
+
+    if (this.status.characterName !== this.lastCharName) {
+      this.query<HTMLElement>('#hud-name').textContent = this.status.characterName;
+      this.lastCharName = this.status.characterName;
+    }
+
+    if (this.status.level !== this.lastLevel) {
+      this.query<HTMLElement>('#hud-level').textContent = `Lv.${this.status.level}`;
+      this.lastLevel = this.status.level;
+    }
+
+    if (hpDanger !== this.lastHpDanger) {
+      this.query<HTMLElement>('#hud-hp-fill').style.filter = hpDanger ? 'brightness(1.35)' : 'none';
+      this.lastHpDanger = hpDanger;
+    }
+
     if (hpDanger) {
       this.scene.events.emit('ui.event.status.hp_critical');
     }
@@ -274,42 +327,62 @@ export class HudOverlay {
 
   private renderQuickSlots(inputMode: InputMode): void {
     const container = this.query<HTMLElement>('#hud-quickslots');
-    container.innerHTML = '';
 
-    for (const slot of this.quickSlots) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'hud-slot';
-      button.dataset.slotIndex = String(slot.slotIndex);
-      button.setAttribute('aria-label', `${slot.label} ${slot.hotkey}`);
+    if (this.dirtyQuickSlots) {
+      // Full rebuild only when slot data structurally changed
+      container.innerHTML = '';
 
-      const remainingSec = Math.ceil(slot.remainingCooldownMs / 1000);
-      const cooldownText = slot.remainingCooldownMs > 0 ? `${remainingSec}s` : 'Ready';
-      const stackText = slot.stackCount > 0 ? `x${slot.stackCount}` : '-';
+      for (const slot of this.quickSlots) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'hud-slot';
+        button.dataset.slotIndex = String(slot.slotIndex);
+        button.setAttribute('aria-label', `${slot.label} ${slot.hotkey}`);
 
-      button.innerHTML = `
-        <span class="slot-hotkey">${slot.hotkey}</span>
-        <span class="slot-icon">${slot.icon}</span>
-        <span class="slot-label">${slot.label}</span>
-        <span class="slot-cd">${cooldownText}</span>
-        <span class="slot-stack">${stackText}</span>
-      `;
+        const remainingSec = Math.ceil(slot.remainingCooldownMs / 1000);
+        const cooldownText = slot.remainingCooldownMs > 0 ? `${remainingSec}s` : 'Ready';
+        const stackText = slot.stackCount > 0 ? `x${slot.stackCount}` : '-';
 
-      if (!slot.isUsable) {
-        button.classList.add('slot-disabled');
+        button.innerHTML = `
+          <span class="slot-hotkey">${slot.hotkey}</span>
+          <span class="slot-icon">${slot.icon}</span>
+          <span class="slot-label">${slot.label}</span>
+          <span class="slot-cd">${cooldownText}</span>
+          <span class="slot-stack">${stackText}</span>
+        `;
+
+        if (!slot.isUsable) {
+          button.classList.add('slot-disabled');
+        }
+
+        if (slot.remainingCooldownMs > 0) {
+          button.classList.add('slot-cooldown');
+        }
+
+        container.appendChild(button);
       }
 
-      if (slot.remainingCooldownMs > 0) {
-        button.classList.add('slot-cooldown');
-      }
-
-      container.appendChild(button);
+      this.dirtyQuickSlots = false;
+    } else {
+      // Partial update: cooldowns and state only via updateCooldowns()
+      this.updateCooldowns();
     }
 
     this.query<HTMLElement>('#hud-input-mode').textContent = `Input: ${inputMode}`;
   }
 
   private renderQuests(): void {
+    // Quest hash: 변경 감지용. 퀘스트 데이터가 동일하면 DOM 재생성 skip
+    const questHash = this.quests
+      .slice(0, 3)
+      .map((q) => `${q.questId}:${q.progressCurrent}/${q.progressTarget}:${q.isCompleted}:${q.distanceMeters ?? ''}`)
+      .join('|');
+
+    if (questHash === this.lastQuestHash) {
+      return;
+    }
+    this.lastQuestHash = questHash;
+
     const container = this.query<HTMLElement>('#hud-quests');
     container.innerHTML = '';
 

@@ -2,6 +2,10 @@ import { Server, Socket } from 'socket.io';
 import { redisClient, redisConnected } from '../redis';
 import { DialogueChoiceTelemetryEvent, handleDialogueTelemetry } from '../telemetry/dialogueTelemetryServer';
 
+/** 서버 측 playerMove rate limit: 소켓별 마지막 처리 시각 */
+const lastMoveTimestamps = new Map<string, number>();
+const MOVE_RATE_LIMIT_MS = 50;
+
 export function setupSocketHandlers(io: Server) {
     io.on('connection', (socket: Socket) => {
         console.log(`[Socket] User connected: ${socket.id}`);
@@ -32,6 +36,14 @@ export function setupSocketHandlers(io: Server) {
          * 초당 여러 번 들어오므로 패킷 크기와 서버 부하를 최소화해야 합니다.
          */
         socket.on('playerMove', (data: { characterId: string, x: number, y: number, state: string }) => {
+            // 서버 측 rate limit: 50ms 간격 이하의 이동 패킷은 무시
+            const now = Date.now();
+            const lastTime = lastMoveTimestamps.get(socket.id) ?? 0;
+            if (now - lastTime < MOVE_RATE_LIMIT_MS) {
+                return; // 무시 — 클라 스로틀(200ms) 위에 서버 방어선
+            }
+            lastMoveTimestamps.set(socket.id, now);
+
             // socket.rooms를 통해 자신이 속한 방 중 소켓ID가 아닌 진짜 게임 RoomID를 찾음
             const currentRoom = Array.from(socket.rooms).find(room => room !== socket.id);
 
@@ -62,9 +74,22 @@ export function setupSocketHandlers(io: Server) {
         /**
          * 연결 끊김 처리 (Disconnect)
          */
-        socket.on('disconnect', () => {
+        socket.on('disconnect', async () => {
             console.log(`[Socket] User disconnected: ${socket.id}`);
-            // 접속 종료 시 Redis 내 위치 데이터 정리 및 PostgreSQL 최종 동기화 이벤트 큐 등록
+
+            // rate limit 맵 정리
+            lastMoveTimestamps.delete(socket.id);
+
+            // Redis 내 유저 상태 정리: joinRoom에서 저장한 userState 해시 삭제
+            if (redisConnected) {
+                try {
+                    // characterId는 소켓 연결 시 socket.id를 사용하므로 동일 키
+                    await redisClient.del(`userState:${socket.id}`);
+                    console.log(`[Socket] Redis userState cleaned for ${socket.id}`);
+                } catch (err) {
+                    console.warn(`[Socket] Redis cleanup failed for ${socket.id}:`, err);
+                }
+            }
         });
     });
 }
