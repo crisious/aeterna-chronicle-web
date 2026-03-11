@@ -1,0 +1,104 @@
+# ── 에테르나 크로니클 — 스테이징 Docker Compose ──────────────
+# 사용법: docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
+#
+# 프로덕션 미러 환경: server + client + postgres + redis
+# 네트워크 격리: aeterna-staging
+# 볼륨: postgres 데이터 영속화
+
+services:
+  # ── PostgreSQL (스테이징) ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: aeterna-staging-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-aeterna_staging}
+      POSTGRES_USER: ${POSTGRES_USER:-aeterna_staging}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-staging_secret_changeme}
+    ports:
+      - "5433:5432"   # 로컬 프로덕션(5432)과 충돌 방지
+    volumes:
+      - staging-postgres-data:/var/lib/postgresql/data
+    networks:
+      - aeterna-staging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aeterna_staging}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis (스테이징) ──
+  redis:
+    image: redis:7-alpine
+    container_name: aeterna-staging-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"   # 로컬 프로덕션(6379)과 충돌 방지
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - aeterna-staging
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── 게임 서버 (스테이징) ──
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: aeterna-staging-server
+    restart: unless-stopped
+    ports:
+      - "3001:3000"   # 로컬 프로덕션(3000)과 충돌 방지
+    environment:
+      PORT: "3000"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aeterna_staging}:${POSTGRES_PASSWORD:-staging_secret_changeme}@postgres:5432/${POSTGRES_DB:-aeterna_staging}
+      REDIS_URL: redis://redis:6379
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:8080,http://localhost:5173}
+      NODE_ENV: staging
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      JWT_SECRET: ${JWT_SECRET:-staging-jwt-secret-do-not-use-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aeterna-staging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ── 게임 클라이언트 (스테이징) ──
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: aeterna-staging-client
+    restart: unless-stopped
+    ports:
+      - "8080:80"     # 로컬 프로덕션(80)과 충돌 방지
+    depends_on:
+      server:
+        condition: service_healthy
+    networks:
+      - aeterna-staging
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  staging-postgres-data:
+    driver: local
+
+networks:
+  aeterna-staging:
+    name: aeterna-staging
+    driver: bridge

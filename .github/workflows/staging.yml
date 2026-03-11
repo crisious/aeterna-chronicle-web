@@ -1,0 +1,111 @@
+# ── 에테르나 크로니클 — 스테이징 자동 배포 ────────────────────
+# develop 브랜치 push 시 스테이징 환경에 자동 배포
+name: Staging Deploy
+
+on:
+  push:
+    branches: [develop]
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+env:
+  COMPOSE_FILE: docker-compose.staging.yml
+  ENV_FILE: .env.staging
+
+jobs:
+  # ── 1. 빌드 + 타입체크 ──
+  validate:
+    name: 🔍 Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: 서버 의존성 설치 + Prisma 생성
+        run: |
+          cd server && npm ci
+          npx prisma generate
+
+      - name: TypeScript 타입 체크
+        run: cd server && npx tsc --noEmit
+
+  # ── 2. Docker 빌드 + 배포 ──
+  deploy:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: validate
+    environment: staging
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Docker Buildx 설정
+        uses: docker/setup-buildx-action@v3
+
+      - name: 스테이징 환경변수 생성
+        run: |
+          cat > .env.staging << 'EOF'
+          POSTGRES_DB=aeterna_staging
+          POSTGRES_USER=aeterna_staging
+          POSTGRES_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}
+          PORT=3000
+          DATABASE_URL=postgresql://aeterna_staging:${{ secrets.STAGING_DB_PASSWORD }}@postgres:5432/aeterna_staging
+          REDIS_URL=redis://redis:6379
+          ALLOWED_ORIGINS=${{ vars.STAGING_ALLOWED_ORIGINS || 'http://localhost:8080' }}
+          NODE_ENV=staging
+          LOG_LEVEL=debug
+          JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}
+          VITE_SERVER_URL=${{ vars.STAGING_SERVER_URL || 'http://localhost:3001' }}
+          VITE_WS_URL=${{ vars.STAGING_WS_URL || 'ws://localhost:3001' }}
+          EOF
+
+      - name: Docker Compose 빌드
+        run: |
+          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE build
+
+      - name: DB + Redis 기동
+        run: |
+          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d postgres redis
+          echo "⏳ DB 헬스체크 대기..."
+          sleep 10
+          docker compose -f $COMPOSE_FILE exec -T postgres pg_isready -U aeterna_staging
+
+      - name: Prisma 마이그레이션
+        run: |
+          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE run --rm \
+            server npx prisma migrate deploy
+
+      - name: 시드 실행
+        run: |
+          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE run --rm \
+            server npx ts-node tools/staging/seed.ts
+
+      - name: 전체 서비스 기동
+        run: |
+          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d
+
+      - name: 헬스체크
+        run: |
+          sleep 10
+          echo "🩺 Server 헬스체크..."
+          curl -sf http://localhost:3001/health || echo "⚠️ Server 응답 대기 중"
+          echo "🩺 Client 헬스체크..."
+          curl -sf http://localhost:8080/ || echo "⚠️ Client 응답 대기 중"
+
+      - name: 배포 결과 요약
+        if: always()
+        run: |
+          echo "## 🚀 스테이징 배포 결과" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **브랜치:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **커밋:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **시각:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
