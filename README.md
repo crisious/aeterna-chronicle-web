@@ -271,12 +271,12 @@ graph LR
 ```
 Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
 Phase 2  ████████████████████  100%  멀티엔진 포팅 + 텔레메트리 + QA ✅ RC 승인
-Phase 3  ████████████░░░░░░░░   60%  길드/PvP/과금/엔딩 + 라이브 서비스 (Sprint 5-6 진행 중)
+Phase 3  ████████████████░░░░   75%  12/20 완료 — 길드/PvP/과금/엔딩/레이드/업적/UE5 (Sprint 5-6 진행 중)
 ```
 
 ### 최근 업데이트
 
-> **2026-03-11** — Phase 3 Sprint 3-4 완료 (12/20). 길드·PvP·과금·멀티엔딩·APM·Protobuf 구현. Sprint 5-6 진행 중
+> **2026-03-11** — Phase 3 진행 중 (12/20). UE5 GAS 전투 + 콘솔 UI + 레이드 + 업적 100개 구현
 
 <details>
 <summary><b>📋 코어기획 문서 (21개)</b></summary>
@@ -371,8 +371,8 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 파일 | 236개 (Git tracked) |
-| 총 커밋 | 27개 |
+| 총 파일 | 285개 (Git tracked) |
+| 총 커밋 | 31개 |
 | 기획 문서 | 153개 (.md) |
 | 코어기획 | 21개 / ~12,000줄 |
 | 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
@@ -382,12 +382,13 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 챕터 | 5개 |
 | 엔딩 | 4종 |
 | 검증 리포트 | 43개 (P0/P1/P2/공통) |
-| 코드 파일 | 61개 (TS/C++/C#/Python) |
+| 코드 파일 | 102개 (TS/C++/C#/Python) |
 | 클라이언트 | Phaser.js + TypeScript (15 files) |
-| 서버 | Fastify + Socket.io + Prisma (32 files) |
+| 서버 | Fastify + Socket.io + Prisma (41 files) |
+| UE5 | C++ GAS + UMG (40 files) |
 | 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
 | 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
-| DB 모델 | 14개 (User/Character/Telemetry×2/Guild×3/PvP×2/Shop×4/Ending) |
+| DB 모델 | 20개 (User/Char/Telemetry×2/Guild×3/PvP×2/Shop×4/Ending/Raid×2/Achievement×3) |
 
 ---
 
