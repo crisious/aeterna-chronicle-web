@@ -1,0 +1,1364 @@
+/**
+ * monsterSeeds.ts — 100개 몬스터 시드 데이터
+ *
+ * 분포:
+ *   일반(normal) 60마리 — 지역당 10마리 × 6지역
+ *   엘리트(elite) 20마리 — 지역당 3~4마리
+ *   던전 보스(boss) 12마리 — 던전당 1마리
+ *   필드 보스(field_boss) 5마리
+ *   레이드 보스(raid_boss) 3마리
+ *
+ * 지역: twilight_forest(Lv.1~15), kronos_city(Lv.10~25), aetheria_village(Lv.20~35),
+ *        shadow_fortress(Lv.30~50), crystal_cavern(Lv.45~65), void_abyss(Lv.60~80)
+ *
+ * 레벨 분포: 1~80
+ */
+import { prisma } from '../db';
+
+// ─── 타입 정의 ──────────────────────────────────────────────────
+
+interface MonsterSeed {
+  code: string;
+  name: string;
+  type: 'normal' | 'elite' | 'boss' | 'field_boss' | 'raid_boss';
+  element: string;
+  level: number;
+  hp: number;
+  attack: number;
+  defense: number;
+  speed: number;
+  skills: Array<{
+    name: string;
+    damage: number;
+    cooldown: number;
+    element: string;
+    effectType: string;
+  }>;
+  dropTable: Array<{
+    itemId: string;
+    rate: number;
+    minQty: number;
+    maxQty: number;
+  }>;
+  expReward: number;
+  goldReward: number;
+  behavior: {
+    aggro_range: number;
+    patrol: boolean;
+    flee_hp_pct: number;
+    enrage_hp_pct: number;
+  };
+  location: string;
+  respawnTime: number;
+  lore: string;
+}
+
+// ─── 지역 1: 황혼의 숲 (twilight_forest) Lv.1~15 ───────────────
+
+const twilightForestNormals: MonsterSeed[] = [
+  {
+    code: 'MON_TF_001', name: '이끼 슬라임', type: 'normal', element: 'earth', level: 1,
+    hp: 80, attack: 8, defense: 3, speed: 4,
+    skills: [
+      { name: '점액 투척', damage: 12, cooldown: 5, element: 'earth', effectType: 'damage' },
+      { name: '분열', damage: 6, cooldown: 10, element: 'neutral', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SLIME_GEL', rate: 0.6, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_HERB_COMMON', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 15, goldReward: 5,
+    behavior: { aggro_range: 5, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 15,
+    lore: '황혼의 숲 초입에 서식하는 작은 슬라임. 이끼를 양분 삼아 살아가며, 위협을 느끼면 산성 점액을 뿜는다.',
+  },
+  {
+    code: 'MON_TF_002', name: '숲 고블린', type: 'normal', element: 'neutral', level: 3,
+    hp: 120, attack: 12, defense: 5, speed: 7,
+    skills: [
+      { name: '돌팔매', damage: 15, cooldown: 4, element: 'earth', effectType: 'damage' },
+      { name: '기습', damage: 20, cooldown: 8, element: 'neutral', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GOBLIN_TOOTH', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'EQUIP_DAGGER_RUSTY', rate: 0.05, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 25, goldReward: 8,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 20,
+    lore: '황혼의 숲에 무리 지어 사는 소형 고블린. 약삭빠르고 교활하지만 겁이 많아 체력이 떨어지면 도주한다.',
+  },
+  {
+    code: 'MON_TF_003', name: '독버섯 스포어', type: 'normal', element: 'dark', level: 5,
+    hp: 100, attack: 14, defense: 4, speed: 3,
+    skills: [
+      { name: '독포자 방출', damage: 8, cooldown: 6, element: 'dark', effectType: 'dot' },
+      { name: '포자 폭발', damage: 25, cooldown: 12, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_POISON_SPORE', rate: 0.5, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_MUSHROOM_CAP', rate: 0.35, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 35, goldReward: 10,
+    behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 25,
+    lore: '어둡고 습한 곳에서 자라난 독버섯의 포자체. 움직이는 존재에 반응해 맹독 포자를 뿌린다.',
+  },
+  {
+    code: 'MON_TF_004', name: '야생 늑대', type: 'normal', element: 'neutral', level: 6,
+    hp: 150, attack: 18, defense: 6, speed: 12,
+    skills: [
+      { name: '물어뜯기', damage: 22, cooldown: 3, element: 'neutral', effectType: 'damage' },
+      { name: '원거리 포효', damage: 0, cooldown: 15, element: 'neutral', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WOLF_PELT', rate: 0.45, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FANG', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 40, goldReward: 12,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 20,
+    lore: '숲의 포식자. 무리를 이뤄 사냥하며, 한 마리가 포효하면 근처의 동료가 합류한다.',
+  },
+  {
+    code: 'MON_TF_005', name: '수정 나비', type: 'normal', element: 'light', level: 4,
+    hp: 60, attack: 16, defense: 2, speed: 15,
+    skills: [
+      { name: '빛의 인분', damage: 18, cooldown: 5, element: 'light', effectType: 'damage' },
+      { name: '눈부심', damage: 0, cooldown: 10, element: 'light', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CRYSTAL_DUST', rate: 0.5, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_BUTTERFLY_WING', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 30, goldReward: 15,
+    behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 30, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 30,
+    lore: '에테르 에너지를 먹고 자란 초자연적 나비. 날개의 수정 가루는 연금술 재료로 귀하게 쓰인다.',
+  },
+  {
+    code: 'MON_TF_006', name: '썩은 나무 정령', type: 'normal', element: 'earth', level: 8,
+    hp: 200, attack: 15, defense: 12, speed: 3,
+    skills: [
+      { name: '뿌리 휘감기', damage: 18, cooldown: 6, element: 'earth', effectType: 'debuff' },
+      { name: '나무줄기 강타', damage: 30, cooldown: 8, element: 'earth', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ROTTEN_BARK', rate: 0.5, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_SPIRIT_ESSENCE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 55, goldReward: 18,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'twilight_forest', respawnTime: 30,
+    lore: '에테르 오염으로 변이된 고목의 정령. 느리지만 강인하며 체력이 낮아지면 광폭화한다.',
+  },
+  {
+    code: 'MON_TF_007', name: '그림자 박쥐', type: 'normal', element: 'dark', level: 7,
+    hp: 90, attack: 20, defense: 3, speed: 14,
+    skills: [
+      { name: '초음파', damage: 16, cooldown: 5, element: 'dark', effectType: 'debuff' },
+      { name: '흡혈', damage: 22, cooldown: 7, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_BAT_WING', rate: 0.45, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_DARK_ESSENCE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 45, goldReward: 14,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 20,
+    lore: '어둠 속에서 날아다니는 대형 박쥐. 초음파로 먹잇감을 혼란시킨 뒤 피를 빨아들인다.',
+  },
+  {
+    code: 'MON_TF_008', name: '가시덩굴 덫', type: 'normal', element: 'earth', level: 10,
+    hp: 180, attack: 22, defense: 8, speed: 1,
+    skills: [
+      { name: '가시 쏘기', damage: 25, cooldown: 4, element: 'earth', effectType: 'damage' },
+      { name: '덩굴 포박', damage: 10, cooldown: 10, element: 'earth', effectType: 'debuff' },
+      { name: '독가시 폭사', damage: 35, cooldown: 15, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_THORN_VINE', rate: 0.5, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_POISON_SAC', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 65, goldReward: 20,
+    behavior: { aggro_range: 3, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 35,
+    lore: '숲 바닥에 위장해 있다가 다가오는 생물을 감아 올리는 식물형 몬스터. 이동은 못 하지만 사정거리 내에서는 치명적.',
+  },
+  {
+    code: 'MON_TF_009', name: '황혼 여우', type: 'normal', element: 'fire', level: 12,
+    hp: 170, attack: 24, defense: 7, speed: 13,
+    skills: [
+      { name: '여우불', damage: 28, cooldown: 5, element: 'fire', effectType: 'damage' },
+      { name: '환영 분신', damage: 0, cooldown: 12, element: 'neutral', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_FOX_TAIL', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FIRE_CRYSTAL', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 75, goldReward: 25,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 25, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 25,
+    lore: '에테르를 불꽃으로 변환하는 능력을 가진 영리한 여우. 환영을 만들어 적을 혼란시키고 도주에 능하다.',
+  },
+  {
+    code: 'MON_TF_010', name: '유령 반딧불이 군집', type: 'normal', element: 'light', level: 14,
+    hp: 130, attack: 26, defense: 4, speed: 10,
+    skills: [
+      { name: '집중 광선', damage: 32, cooldown: 6, element: 'light', effectType: 'damage' },
+      { name: '섬광 폭발', damage: 40, cooldown: 14, element: 'light', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ETHER_DUST', rate: 0.4, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_LIGHT_ESSENCE', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 85, goldReward: 28,
+    behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 30,
+    lore: '수백 마리의 반딧불이가 하나의 의지로 뭉친 집합 생명체. 개별로는 약하지만 합쳐지면 강렬한 빛을 발사한다.',
+  },
+];
+
+// ─── 지역 2: 크로노스 시가지 (kronos_city) Lv.10~25 ────────────
+
+const kronosCityNormals: MonsterSeed[] = [
+  {
+    code: 'MON_KC_001', name: '하수구 쥐떼', type: 'normal', element: 'dark', level: 10,
+    hp: 140, attack: 18, defense: 5, speed: 11,
+    skills: [
+      { name: '군집 돌격', damage: 20, cooldown: 4, element: 'dark', effectType: 'damage' },
+      { name: '역병의 이빨', damage: 15, cooldown: 8, element: 'dark', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_RAT_TAIL', rate: 0.5, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_PLAGUE_SAMPLE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 60, goldReward: 18,
+    behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'kronos_city', respawnTime: 15,
+    lore: '크로노스 시 하수구에 서식하는 변이 쥐떼. 에테르 오염으로 비정상적으로 공격적이 되었다.',
+  },
+  {
+    code: 'MON_KC_002', name: '폐허 골렘', type: 'normal', element: 'earth', level: 13,
+    hp: 280, attack: 20, defense: 18, speed: 3,
+    skills: [
+      { name: '바위 주먹', damage: 30, cooldown: 5, element: 'earth', effectType: 'damage' },
+      { name: '지진 밟기', damage: 22, cooldown: 10, element: 'earth', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_STONE_CORE', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_IRON_ORE', rate: 0.4, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 80, goldReward: 25,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'kronos_city', respawnTime: 40,
+    lore: '시간 왜곡으로 무너진 건물 잔해가 에테르에 의해 형태를 갖춘 존재. 느리지만 방어력이 높다.',
+  },
+  {
+    code: 'MON_KC_003', name: '시간 유랑자', type: 'normal', element: 'time', level: 15,
+    hp: 160, attack: 28, defense: 8, speed: 10,
+    skills: [
+      { name: '시간 가속', damage: 0, cooldown: 15, element: 'time', effectType: 'debuff' },
+      { name: '시간 칼날', damage: 35, cooldown: 6, element: 'time', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_TIME_SHARD', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CHRONO_DUST', rate: 0.4, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 95, goldReward: 35,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'kronos_city', respawnTime: 30,
+    lore: '시간의 틈에서 빠져나온 인간형 존재. 과거와 현재가 뒤섞인 모습으로 떠돌며, 에테르 반응에 이끌린다.',
+  },
+  {
+    code: 'MON_KC_004', name: '오염된 시계태엽', type: 'normal', element: 'lightning', level: 16,
+    hp: 190, attack: 25, defense: 14, speed: 8,
+    skills: [
+      { name: '방전', damage: 30, cooldown: 5, element: 'lightning', effectType: 'damage' },
+      { name: '톱니 연사', damage: 20, cooldown: 3, element: 'neutral', effectType: 'damage' },
+      { name: '과부하', damage: 45, cooldown: 18, element: 'lightning', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GEAR_FRAGMENT', rate: 0.45, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_LIGHTNING_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 100, goldReward: 30,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'kronos_city', respawnTime: 25,
+    lore: '크로노스의 고대 시계탑 부품이 에테르로 오염되어 자의식을 갖게 된 기계 괴물.',
+  },
+  {
+    code: 'MON_KC_005', name: '떠도는 환영', type: 'normal', element: 'dark', level: 18,
+    hp: 140, attack: 32, defense: 5, speed: 12,
+    skills: [
+      { name: '공포의 손길', damage: 35, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '정신 침식', damage: 20, cooldown: 10, element: 'dark', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ECTOPLASM', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_SOUL_FRAGMENT', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 110, goldReward: 35,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'kronos_city', respawnTime: 20,
+    lore: '시간의 뒤틀림 속에서 사라진 시민들의 잔류 사념. 물리 공격에 저항하지만 빛 속성에 취약하다.',
+  },
+  {
+    code: 'MON_KC_006', name: '변이 경비 인형', type: 'normal', element: 'neutral', level: 19,
+    hp: 250, attack: 26, defense: 16, speed: 6,
+    skills: [
+      { name: '방패 돌진', damage: 28, cooldown: 5, element: 'neutral', effectType: 'damage' },
+      { name: '경보 발동', damage: 0, cooldown: 20, element: 'neutral', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ARMOR_SCRAP', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'EQUIP_SHIELD_IRON', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 115, goldReward: 38,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'kronos_city', respawnTime: 30,
+    lore: '크로노스 성의 경비 인형이 오래된 에테르 명령을 수행하며 배회한다. 침입자로 인식한 모든 것을 공격한다.',
+  },
+  {
+    code: 'MON_KC_007', name: '폭주 마력체', type: 'normal', element: 'aether', level: 20,
+    hp: 160, attack: 35, defense: 6, speed: 9,
+    skills: [
+      { name: '에테르 폭발', damage: 42, cooldown: 7, element: 'aether', effectType: 'aoe' },
+      { name: '마력 흡수', damage: 20, cooldown: 10, element: 'aether', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_AETHER_CRYSTAL', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_MANA_RESIDUE', rate: 0.5, minQty: 1, maxQty: 3 },
+    ],
+    expReward: 125, goldReward: 40,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'kronos_city', respawnTime: 35,
+    lore: '제어를 벗어난 순수 에테르 에너지 덩어리. 불안정하며 근처의 마력을 빨아들이고 폭발한다.',
+  },
+  {
+    code: 'MON_KC_008', name: '시간 매', type: 'normal', element: 'time', level: 22,
+    hp: 175, attack: 30, defense: 7, speed: 16,
+    skills: [
+      { name: '급강하', damage: 38, cooldown: 4, element: 'neutral', effectType: 'damage' },
+      { name: '시간 정지 날갯짓', damage: 25, cooldown: 12, element: 'time', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_TIME_FEATHER', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_HAWK_TALON', rate: 0.4, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 135, goldReward: 42,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'kronos_city', respawnTime: 25,
+    lore: '시간 에너지를 날개에 축적한 맹금. 순간적으로 시간을 멈춰 먹잇감을 덮치는 최상위 포식자.',
+  },
+  {
+    code: 'MON_KC_009', name: '하수구 악어', type: 'normal', element: 'ice', level: 23,
+    hp: 300, attack: 28, defense: 15, speed: 5,
+    skills: [
+      { name: '턱 물기', damage: 40, cooldown: 5, element: 'neutral', effectType: 'damage' },
+      { name: '꼬리 휩쓸기', damage: 30, cooldown: 7, element: 'ice', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GATOR_HIDE', rate: 0.4, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ICE_SCALE', rate: 0.2, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 140, goldReward: 45,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'kronos_city', respawnTime: 35,
+    lore: '크로노스 지하 하수도에 서식하는 대형 악어. 차가운 하수에 적응해 얼음 속성을 지니게 되었다.',
+  },
+  {
+    code: 'MON_KC_010', name: '부서진 시간상', type: 'normal', element: 'time', level: 25,
+    hp: 220, attack: 33, defense: 12, speed: 7,
+    skills: [
+      { name: '시간 왜곡파', damage: 40, cooldown: 6, element: 'time', effectType: 'damage' },
+      { name: '역류', damage: 30, cooldown: 10, element: 'time', effectType: 'debuff' },
+      { name: '시간 균열', damage: 55, cooldown: 18, element: 'time', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_TIME_SHARD', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_CHRONO_CORE', rate: 0.08, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 155, goldReward: 50,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'kronos_city', respawnTime: 40,
+    lore: '크로노스 광장의 시간 조각상이 에테르 폭주로 깨어난 것. 시간 속성 공격이 강력하다.',
+  },
+];
+
+// ─── 지역 3: 에테리아 마을 (aetheria_village) Lv.20~35 ──────────
+
+const aetheriaVillageNormals: MonsterSeed[] = [
+  {
+    code: 'MON_AV_001', name: '에테르 정령', type: 'normal', element: 'aether', level: 20,
+    hp: 180, attack: 30, defense: 10, speed: 11,
+    skills: [
+      { name: '에테르 화살', damage: 35, cooldown: 4, element: 'aether', effectType: 'damage' },
+      { name: '정령의 축복', damage: 0, cooldown: 15, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_AETHER_ESSENCE', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_SPIRIT_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 120, goldReward: 38,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 25,
+    lore: '에테리아 마을 주변에 떠도는 순수 에테르 정령. 보통은 온순하지만 위협을 느끼면 반격한다.',
+  },
+  {
+    code: 'MON_AV_002', name: '전쟁 잔상', type: 'normal', element: 'fire', level: 23,
+    hp: 210, attack: 34, defense: 12, speed: 8,
+    skills: [
+      { name: '화염 검격', damage: 40, cooldown: 5, element: 'fire', effectType: 'damage' },
+      { name: '전장의 포효', damage: 0, cooldown: 12, element: 'fire', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WAR_RESIDUE', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'EQUIP_SWORD_FLAME', rate: 0.02, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 140, goldReward: 45,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'aetheria_village', respawnTime: 30,
+    lore: '과거 전쟁의 기억이 에테르에 각인되어 형태를 갖춘 잔상. 끊임없이 전투를 반복한다.',
+  },
+  {
+    code: 'MON_AV_003', name: '마력 흡수 식물', type: 'normal', element: 'earth', level: 25,
+    hp: 250, attack: 28, defense: 15, speed: 2,
+    skills: [
+      { name: '마나 드레인', damage: 25, cooldown: 6, element: 'aether', effectType: 'damage' },
+      { name: '포자 구름', damage: 20, cooldown: 10, element: 'earth', effectType: 'aoe' },
+      { name: '뿌리 속박', damage: 15, cooldown: 8, element: 'earth', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MANA_BLOOM', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_RARE_HERB', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 150, goldReward: 48,
+    behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 35,
+    lore: '에테르를 양분으로 빨아들이는 거대 식물. 마법사의 마나를 흡수해 성장한다.',
+  },
+  {
+    code: 'MON_AV_004', name: '빛의 환수', type: 'normal', element: 'light', level: 27,
+    hp: 195, attack: 38, defense: 10, speed: 13,
+    skills: [
+      { name: '성광탄', damage: 45, cooldown: 5, element: 'light', effectType: 'damage' },
+      { name: '빛의 보호막', damage: 0, cooldown: 15, element: 'light', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_LIGHT_MANE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_HOLY_CRYSTAL', rate: 0.12, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 165, goldReward: 52,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 30,
+    lore: '에테리아 탑의 빛 에너지가 형상화된 환수. 아름답지만 영역을 침범하면 가차없이 공격한다.',
+  },
+  {
+    code: 'MON_AV_005', name: '기억 수집가', type: 'normal', element: 'dark', level: 28,
+    hp: 170, attack: 40, defense: 8, speed: 10,
+    skills: [
+      { name: '기억 탈취', damage: 42, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '환각', damage: 30, cooldown: 10, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MEMORY_FRAGMENT', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_DARK_INK', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 170, goldReward: 55,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 25,
+    lore: '다른 생물의 기억을 탈취해 자신의 힘으로 삼는 어둠의 존재. 기억을 잃은 자들의 원흉.',
+  },
+  {
+    code: 'MON_AV_006', name: '번개 두꺼비', type: 'normal', element: 'lightning', level: 30,
+    hp: 230, attack: 36, defense: 13, speed: 7,
+    skills: [
+      { name: '전기 혀', damage: 40, cooldown: 4, element: 'lightning', effectType: 'damage' },
+      { name: '번개 점프', damage: 50, cooldown: 10, element: 'lightning', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_THUNDER_GLAND', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_TOAD_SKIN', rate: 0.4, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 180, goldReward: 58,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'aetheria_village', respawnTime: 30,
+    lore: '에테르 전기를 체내에 축적하는 거대 두꺼비. 방전 시 주변 모든 것에 감전 피해를 입힌다.',
+  },
+  {
+    code: 'MON_AV_007', name: '유리 거미', type: 'normal', element: 'ice', level: 31,
+    hp: 150, attack: 42, defense: 6, speed: 14,
+    skills: [
+      { name: '얼음 거미줄', damage: 35, cooldown: 5, element: 'ice', effectType: 'debuff' },
+      { name: '빙결 독니', damage: 48, cooldown: 7, element: 'ice', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ICE_SILK', rate: 0.4, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_SPIDER_VENOM', rate: 0.25, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 185, goldReward: 60,
+    behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 25,
+    lore: '투명한 얼음으로 이루어진 거미. 거미줄에 닿으면 순식간에 얼어붙으며, 빛에 반사되어 찾기 어렵다.',
+  },
+  {
+    code: 'MON_AV_008', name: '바람 하피', type: 'normal', element: 'neutral', level: 32,
+    hp: 200, attack: 38, defense: 9, speed: 16,
+    skills: [
+      { name: '질풍 할퀴기', damage: 44, cooldown: 4, element: 'neutral', effectType: 'damage' },
+      { name: '회오리', damage: 35, cooldown: 9, element: 'neutral', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_HARPY_FEATHER', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_WIND_ESSENCE', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 190, goldReward: 62,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 20,
+    lore: '에테리아 마을 상공을 배회하는 하피. 날카로운 발톱과 바람을 조종하는 능력이 위협적이다.',
+  },
+  {
+    code: 'MON_AV_009', name: '잔영 기사', type: 'normal', element: 'time', level: 33,
+    hp: 270, attack: 40, defense: 18, speed: 8,
+    skills: [
+      { name: '시간 검', damage: 48, cooldown: 5, element: 'time', effectType: 'damage' },
+      { name: '잔상 분리', damage: 30, cooldown: 12, element: 'time', effectType: 'debuff' },
+      { name: '역행 일격', damage: 60, cooldown: 18, element: 'time', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CHRONO_PLATE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_CHRONO', rate: 0.02, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 200, goldReward: 65,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'aetheria_village', respawnTime: 35,
+    lore: '과거의 기사가 시간에 갇혀 떠도는 잔영. 실체와 환영을 분리하는 교묘한 전투술을 구사한다.',
+  },
+  {
+    code: 'MON_AV_010', name: '에테르 폭풍 정령', type: 'normal', element: 'aether', level: 35,
+    hp: 240, attack: 44, defense: 11, speed: 12,
+    skills: [
+      { name: '에테르 폭풍', damage: 55, cooldown: 8, element: 'aether', effectType: 'aoe' },
+      { name: '마력 집중포', damage: 50, cooldown: 6, element: 'aether', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_STORM_AETHER', rate: 0.3, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_AETHER_CORE', rate: 0.08, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 215, goldReward: 70,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'aetheria_village', respawnTime: 40,
+    lore: '에테르 에너지가 폭풍처럼 소용돌이치는 상위 정령. 영역에 들어서면 에테르 폭풍이 몰아친다.',
+  },
+];
+
+// ─── 지역 4: 그림자 요새 (shadow_fortress) Lv.30~50 ────────────
+
+const shadowFortressNormals: MonsterSeed[] = [
+  {
+    code: 'MON_SF_001', name: '암흑 기사', type: 'normal', element: 'dark', level: 30,
+    hp: 320, attack: 38, defense: 20, speed: 8,
+    skills: [
+      { name: '암흑 참격', damage: 45, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '어둠의 방패', damage: 0, cooldown: 15, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DARK_PLATE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SHADOW_STEEL', rate: 0.25, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 195, goldReward: 65,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'shadow_fortress', respawnTime: 30,
+    lore: '그림자 군주에게 충성하는 암흑 기사. 어둠의 힘으로 무장하여 요새를 수호한다.',
+  },
+  {
+    code: 'MON_SF_002', name: '독안개 마녀', type: 'normal', element: 'dark', level: 33,
+    hp: 220, attack: 45, defense: 10, speed: 9,
+    skills: [
+      { name: '독안개', damage: 30, cooldown: 6, element: 'dark', effectType: 'dot' },
+      { name: '저주의 화살', damage: 52, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '생명력 착취', damage: 40, cooldown: 12, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WITCH_BREW', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_CURSE_SCROLL', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 220, goldReward: 72,
+    behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'shadow_fortress', respawnTime: 30,
+    lore: '독안개를 뿜어내는 마녀. 원거리에서 저주를 날리며, 위험해지면 안개 속으로 사라진다.',
+  },
+  {
+    code: 'MON_SF_003', name: '강철 가고일', type: 'normal', element: 'earth', level: 36,
+    hp: 400, attack: 40, defense: 25, speed: 5,
+    skills: [
+      { name: '급강하 타격', damage: 55, cooldown: 6, element: 'earth', effectType: 'damage' },
+      { name: '석화 포효', damage: 0, cooldown: 18, element: 'earth', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GARGOYLE_STONE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_IRON_WING', rate: 0.25, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 240, goldReward: 78,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'shadow_fortress', respawnTime: 40,
+    lore: '요새 성벽에 숨어있는 석상 괴물. 침입자가 지나가면 깨어나 덮친다. 방어력이 극도로 높다.',
+  },
+  {
+    code: 'MON_SF_004', name: '그림자 암살자', type: 'normal', element: 'dark', level: 38,
+    hp: 240, attack: 55, defense: 12, speed: 18,
+    skills: [
+      { name: '급소 찌르기', damage: 70, cooldown: 7, element: 'dark', effectType: 'damage' },
+      { name: '연막', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SHADOW_BLADE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ASSASSIN_CLOAK', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 260, goldReward: 85,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 25, enrage_hp_pct: 0 },
+    location: 'shadow_fortress', respawnTime: 25,
+    lore: '그림자 속에서 출현하는 암살자. 빠른 속도와 치명적 일격이 특징이며, 위기 시 연막을 치고 도주한다.',
+  },
+  {
+    code: 'MON_SF_005', name: '뼈 전사', type: 'normal', element: 'dark', level: 40,
+    hp: 350, attack: 42, defense: 22, speed: 7,
+    skills: [
+      { name: '뼈 창 돌진', damage: 50, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '해골 방벽', damage: 0, cooldown: 12, element: 'dark', effectType: 'heal' },
+      { name: '사령술', damage: 35, cooldown: 15, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_BONE_FRAGMENT', rate: 0.45, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_SOUL_GEM', rate: 0.08, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 280, goldReward: 90,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'shadow_fortress', respawnTime: 30,
+    lore: '사령술로 부활한 고대 전사의 해골. 생전의 전투 기술을 고스란히 간직하고 있다.',
+  },
+  {
+    code: 'MON_SF_006', name: '화염 워그', type: 'normal', element: 'fire', level: 42,
+    hp: 300, attack: 48, defense: 15, speed: 14,
+    skills: [
+      { name: '화염 돌진', damage: 55, cooldown: 5, element: 'fire', effectType: 'damage' },
+      { name: '불꽃 포효', damage: 40, cooldown: 10, element: 'fire', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WARG_PELT', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FIRE_FANG', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 300, goldReward: 95,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 25 },
+    location: 'shadow_fortress', respawnTime: 25,
+    lore: '그림자 요새의 화염 늑대. 뜨거운 숨결과 불타는 발톱으로 침입자를 몰아낸다.',
+  },
+  {
+    code: 'MON_SF_007', name: '저주받은 인형사', type: 'normal', element: 'dark', level: 44,
+    hp: 260, attack: 52, defense: 14, speed: 8,
+    skills: [
+      { name: '실 조종', damage: 0, cooldown: 10, element: 'dark', effectType: 'debuff' },
+      { name: '인형 폭발', damage: 65, cooldown: 8, element: 'dark', effectType: 'aoe' },
+      { name: '영혼 봉인', damage: 55, cooldown: 12, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CURSED_THREAD', rate: 0.3, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_PUPPET_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 320, goldReward: 100,
+    behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'shadow_fortress', respawnTime: 35,
+    lore: '보이지 않는 실로 인형들을 조종하는 저주받은 마술사. 인형을 방패로 쓰다 폭파시키는 전술을 구사한다.',
+  },
+  {
+    code: 'MON_SF_008', name: '혼돈의 미노타우로스', type: 'normal', element: 'fire', level: 46,
+    hp: 450, attack: 50, defense: 20, speed: 9,
+    skills: [
+      { name: '돌진', damage: 65, cooldown: 6, element: 'neutral', effectType: 'damage' },
+      { name: '화염 도끼', damage: 70, cooldown: 8, element: 'fire', effectType: 'damage' },
+      { name: '분노의 발구름', damage: 50, cooldown: 12, element: 'earth', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MINOTAUR_HORN', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_AXE_FLAME', rate: 0.02, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 340, goldReward: 110,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'shadow_fortress', respawnTime: 40,
+    lore: '요새의 미궁에 갇힌 미노타우로스. 혼돈의 에너지로 강화되어 과거보다 훨씬 강력해졌다.',
+  },
+  {
+    code: 'MON_SF_009', name: '어둠 결정체', type: 'normal', element: 'dark', level: 48,
+    hp: 380, attack: 46, defense: 25, speed: 4,
+    skills: [
+      { name: '암흑 광선', damage: 60, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '암흑 필드', damage: 45, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '어둠의 흡수', damage: 30, cooldown: 15, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DARK_CRYSTAL', rate: 0.3, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_VOID_SHARD', rate: 0.08, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 360, goldReward: 115,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'shadow_fortress', respawnTime: 45,
+    lore: '순수한 어둠 에너지가 결정화된 존재. 이동은 느리지만 암흑 속성 공격이 극도로 강력하다.',
+  },
+  {
+    code: 'MON_SF_010', name: '망령 수호자', type: 'normal', element: 'dark', level: 50,
+    hp: 400, attack: 52, defense: 22, speed: 10,
+    skills: [
+      { name: '영혼 참격', damage: 65, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '망령의 포옹', damage: 50, cooldown: 8, element: 'dark', effectType: 'damage' },
+      { name: '죽음의 선고', damage: 80, cooldown: 20, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WRAITH_ESSENCE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SHADOW_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 380, goldReward: 120,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'shadow_fortress', respawnTime: 40,
+    lore: '그림자 요새의 최심부를 지키는 망령. 죽음의 선고로 일정 시간 후 대상을 즉사시키려 한다.',
+  },
+];
+
+// ─── 지역 5: 수정 동굴 (crystal_cavern) Lv.45~65 ───────────────
+
+const crystalCavernNormals: MonsterSeed[] = [
+  {
+    code: 'MON_CC_001', name: '수정 골렘', type: 'normal', element: 'earth', level: 45,
+    hp: 500, attack: 45, defense: 30, speed: 4,
+    skills: [
+      { name: '수정 주먹', damage: 60, cooldown: 5, element: 'earth', effectType: 'damage' },
+      { name: '수정 파편', damage: 50, cooldown: 8, element: 'earth', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CRYSTAL_ORE', rate: 0.4, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_GEM_ROUGH', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 350, goldReward: 100,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'crystal_cavern', respawnTime: 40,
+    lore: '수정 동굴의 에테르가 광석에 스며들어 탄생한 골렘. 극도로 단단하지만 공명 주파수에 취약하다.',
+  },
+  {
+    code: 'MON_CC_002', name: '프리즘 뱀', type: 'normal', element: 'light', level: 48,
+    hp: 320, attack: 55, defense: 15, speed: 13,
+    skills: [
+      { name: '무지개 광선', damage: 65, cooldown: 6, element: 'light', effectType: 'damage' },
+      { name: '프리즘 반사', damage: 45, cooldown: 10, element: 'light', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_PRISM_SCALE', rate: 0.3, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_RAINBOW_FANG', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 370, goldReward: 110,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'crystal_cavern', respawnTime: 30,
+    lore: '수정 사이를 미끄러지듯 이동하는 대형 뱀. 빛을 굴절시켜 무지개 광선을 쏜다.',
+  },
+  {
+    code: 'MON_CC_003', name: '동굴 트롤', type: 'normal', element: 'earth', level: 50,
+    hp: 550, attack: 50, defense: 22, speed: 6,
+    skills: [
+      { name: '곤봉 내리치기', damage: 70, cooldown: 5, element: 'earth', effectType: 'damage' },
+      { name: '바위 던지기', damage: 55, cooldown: 7, element: 'earth', effectType: 'damage' },
+      { name: '재생', damage: 0, cooldown: 20, element: 'earth', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_TROLL_BLOOD', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_TROLL_HIDE', rate: 0.3, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 400, goldReward: 120,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'crystal_cavern', respawnTime: 45,
+    lore: '동굴 깊은 곳에 거주하는 거대 트롤. 재생 능력이 있어 불 속성이 아니면 쓰러뜨리기 어렵다.',
+  },
+  {
+    code: 'MON_CC_004', name: '마나 수정 벌레', type: 'normal', element: 'aether', level: 52,
+    hp: 280, attack: 58, defense: 12, speed: 10,
+    skills: [
+      { name: '마나 드릴', damage: 65, cooldown: 5, element: 'aether', effectType: 'damage' },
+      { name: '에테르 분진', damage: 50, cooldown: 8, element: 'aether', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MANA_CARAPACE', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_POWDER', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 420, goldReward: 130,
+    behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'crystal_cavern', respawnTime: 30,
+    lore: '수정을 파먹고 에테르를 축적하는 갑충. 단단한 외골격 아래에 순수 마나를 품고 있다.',
+  },
+  {
+    code: 'MON_CC_005', name: '수정 박쥐 군주', type: 'normal', element: 'dark', level: 55,
+    hp: 340, attack: 60, defense: 14, speed: 15,
+    skills: [
+      { name: '초음파 폭발', damage: 70, cooldown: 6, element: 'dark', effectType: 'aoe' },
+      { name: '수정 흡혈', damage: 55, cooldown: 8, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CRYSTAL_WING', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_BLOOD_CRYSTAL', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 450, goldReward: 140,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'crystal_cavern', respawnTime: 35,
+    lore: '동굴 박쥐의 왕. 수정으로 된 날개에서 초음파를 증폭시켜 치명적인 충격파를 발산한다.',
+  },
+  {
+    code: 'MON_CC_006', name: '용암 정령', type: 'normal', element: 'fire', level: 57,
+    hp: 420, attack: 62, defense: 18, speed: 7,
+    skills: [
+      { name: '용암 분출', damage: 75, cooldown: 6, element: 'fire', effectType: 'aoe' },
+      { name: '화염 아우라', damage: 40, cooldown: 10, element: 'fire', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_LAVA_CORE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FIRE_CRYSTAL_PURE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 470, goldReward: 148,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'crystal_cavern', respawnTime: 40,
+    lore: '동굴 최심부 용암 지대에서 올라온 화염 정령. 주변 온도를 극도로 올려 접근 자체가 위험하다.',
+  },
+  {
+    code: 'MON_CC_007', name: '빙결 정령', type: 'normal', element: 'ice', level: 58,
+    hp: 380, attack: 58, defense: 20, speed: 8,
+    skills: [
+      { name: '빙결 창', damage: 70, cooldown: 5, element: 'ice', effectType: 'damage' },
+      { name: '절대영도', damage: 60, cooldown: 12, element: 'ice', effectType: 'aoe' },
+      { name: '얼음 감옥', damage: 0, cooldown: 18, element: 'ice', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_FROST_CORE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ICE_CRYSTAL_PURE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 480, goldReward: 152,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'crystal_cavern', respawnTime: 40,
+    lore: '동굴의 얼음 구간을 지배하는 빙결 정령. 주변 모든 것을 얼려버리는 절대영도의 힘을 지녔다.',
+  },
+  {
+    code: 'MON_CC_008', name: '보석 스콜피온', type: 'normal', element: 'earth', level: 60,
+    hp: 480, attack: 56, defense: 28, speed: 9,
+    skills: [
+      { name: '보석 꼬리 찌르기', damage: 80, cooldown: 5, element: 'earth', effectType: 'damage' },
+      { name: '보석 껍질', damage: 0, cooldown: 15, element: 'earth', effectType: 'heal' },
+      { name: '독침', damage: 50, cooldown: 7, element: 'dark', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GEM_STINGER', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SCORPION_SHELL', rate: 0.35, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 500, goldReward: 160,
+    behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'crystal_cavern', respawnTime: 35,
+    lore: '동굴의 보석을 껍질로 삼은 거대 전갈. 보석 갑옷의 방어력이 압도적이다.',
+  },
+  {
+    code: 'MON_CC_009', name: '공명 정령', type: 'normal', element: 'aether', level: 62,
+    hp: 360, attack: 65, defense: 16, speed: 11,
+    skills: [
+      { name: '공명 파동', damage: 80, cooldown: 6, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 공명', damage: 70, cooldown: 8, element: 'aether', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_RESONANCE_CRYSTAL', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_SHARD', rate: 0.35, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 520, goldReward: 168,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'crystal_cavern', respawnTime: 40,
+    lore: '수정 동굴 전체와 공명하는 고위 정령. 동굴 자체를 무기로 사용하며 파동으로 공격한다.',
+  },
+  {
+    code: 'MON_CC_010', name: '차원 균열 벌레', type: 'normal', element: 'aether', level: 65,
+    hp: 400, attack: 68, defense: 18, speed: 12,
+    skills: [
+      { name: '차원 절단', damage: 85, cooldown: 6, element: 'aether', effectType: 'damage' },
+      { name: '공간 뒤틀림', damage: 70, cooldown: 10, element: 'aether', effectType: 'aoe' },
+      { name: '차원 도약', damage: 0, cooldown: 15, element: 'aether', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_RIFT_ESSENCE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DIMENSION_SHARD', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 550, goldReward: 175,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'crystal_cavern', respawnTime: 45,
+    lore: '차원의 균열에서 기어나온 에테르 벌레. 공간을 뒤틀어 순간이동하며 예측 불가능한 공격을 한다.',
+  },
+];
+
+// ─── 지역 6: 허공의 심연 (void_abyss) Lv.60~80 ────────────────
+
+const voidAbyssNormals: MonsterSeed[] = [
+  {
+    code: 'MON_VA_001', name: '허공의 촉수', type: 'normal', element: 'dark', level: 60,
+    hp: 450, attack: 60, defense: 20, speed: 8,
+    skills: [
+      { name: '촉수 휘감기', damage: 75, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '허공의 흡입', damage: 60, cooldown: 8, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_VOID_TENTACLE', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_ABYSSAL_INK', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 500, goldReward: 155,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'void_abyss', respawnTime: 35,
+    lore: '허공의 심연에서 뻗어 나온 거대한 촉수. 본체는 보이지 않으며, 닿는 모든 것을 허공으로 끌어들인다.',
+  },
+  {
+    code: 'MON_VA_002', name: '차원 방랑자', type: 'normal', element: 'aether', level: 63,
+    hp: 380, attack: 68, defense: 16, speed: 14,
+    skills: [
+      { name: '차원 칼날', damage: 80, cooldown: 5, element: 'aether', effectType: 'damage' },
+      { name: '위상 전환', damage: 0, cooldown: 12, element: 'aether', effectType: 'debuff' },
+      { name: '차원 폭풍', damage: 90, cooldown: 15, element: 'aether', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DIMENSION_BLADE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_PHASE_CRYSTAL', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 550, goldReward: 170,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'void_abyss', respawnTime: 30,
+    lore: '차원 사이를 떠도는 존재. 위상을 전환해 물리 공격을 무시하고, 차원 칼날로 공간을 베어낸다.',
+  },
+  {
+    code: 'MON_VA_003', name: '허공의 눈', type: 'normal', element: 'dark', level: 65,
+    hp: 300, attack: 75, defense: 10, speed: 6,
+    skills: [
+      { name: '멸망의 시선', damage: 90, cooldown: 7, element: 'dark', effectType: 'damage' },
+      { name: '광기의 눈동자', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '허공의 레이저', damage: 100, cooldown: 12, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_VOID_LENS', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DARK_PUPIL', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 580, goldReward: 180,
+    behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'void_abyss', respawnTime: 40,
+    lore: '허공에 떠도는 거대한 눈알. 멸망의 시선에 닿은 자는 정신이 녹아내리며, 레이저는 모든 것을 관통한다.',
+  },
+  {
+    code: 'MON_VA_004', name: '엔트로피 슬라임', type: 'normal', element: 'aether', level: 67,
+    hp: 520, attack: 62, defense: 25, speed: 5,
+    skills: [
+      { name: '엔트로피 파동', damage: 80, cooldown: 6, element: 'aether', effectType: 'aoe' },
+      { name: '물질 분해', damage: 70, cooldown: 8, element: 'aether', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ENTROPY_GEL', rate: 0.3, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_CHAOS_ESSENCE', rate: 0.12, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 600, goldReward: 190,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'void_abyss', respawnTime: 45,
+    lore: '모든 것을 분해하는 혼돈의 슬라임. 닿는 물질의 분자 구조를 해체하여 흡수한다.',
+  },
+  {
+    code: 'MON_VA_005', name: '시공 파수꾼', type: 'normal', element: 'time', level: 70,
+    hp: 480, attack: 70, defense: 22, speed: 11,
+    skills: [
+      { name: '시간 정지', damage: 0, cooldown: 20, element: 'time', effectType: 'debuff' },
+      { name: '시공 참격', damage: 95, cooldown: 6, element: 'time', effectType: 'damage' },
+      { name: '시간 역류', damage: 80, cooldown: 10, element: 'time', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SPACETIME_SHARD', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CHRONO_KEY', rate: 0.05, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 650, goldReward: 200,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 40,
+    lore: '시공간의 균열을 지키는 파수꾼. 시간을 자유롭게 조작하며 침입자를 시간의 감옥에 가둔다.',
+  },
+  {
+    code: 'MON_VA_006', name: '심연의 해파리', type: 'normal', element: 'lightning', level: 72,
+    hp: 350, attack: 78, defense: 12, speed: 8,
+    skills: [
+      { name: '전기 촉수', damage: 85, cooldown: 5, element: 'lightning', effectType: 'damage' },
+      { name: '심연 방전', damage: 100, cooldown: 10, element: 'lightning', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ABYSSAL_JELLY', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_THUNDER_CORE_PURE', rate: 0.08, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 680, goldReward: 210,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'void_abyss', respawnTime: 35,
+    lore: '허공의 심연에 둥둥 떠다니는 반투명 해파리. 전기를 축적한 촉수에 닿으면 막대한 감전 피해를 입는다.',
+  },
+  {
+    code: 'MON_VA_007', name: '망각의 기사', type: 'normal', element: 'dark', level: 74,
+    hp: 550, attack: 72, defense: 28, speed: 10,
+    skills: [
+      { name: '망각의 검', damage: 95, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '기억 소거', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '허무의 참격', damage: 110, cooldown: 12, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_OBLIVION_PLATE', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_VOID', rate: 0.01, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 720, goldReward: 220,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 45,
+    lore: '모든 기억을 잃고 허공을 떠도는 기사. 망각의 검에 베이면 전투 중 획득한 버프가 사라진다.',
+  },
+  {
+    code: 'MON_VA_008', name: '허공의 거미 여왕', type: 'normal', element: 'dark', level: 76,
+    hp: 480, attack: 80, defense: 20, speed: 12,
+    skills: [
+      { name: '허공의 거미줄', damage: 0, cooldown: 8, element: 'dark', effectType: 'debuff' },
+      { name: '맹독 주입', damage: 90, cooldown: 6, element: 'dark', effectType: 'dot' },
+      { name: '새끼 소환', damage: 50, cooldown: 15, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_VOID_SILK', rate: 0.25, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_QUEEN_VENOM', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 750, goldReward: 230,
+    behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 10, enrage_hp_pct: 25 },
+    location: 'void_abyss', respawnTime: 40,
+    lore: '허공의 심연에 거대한 둥지를 틀고 있는 거미 여왕. 새끼를 소환하고 맹독으로 먹잇감을 마비시킨다.',
+  },
+  {
+    code: 'MON_VA_009', name: '에테르 드래곤릿', type: 'normal', element: 'aether', level: 78,
+    hp: 600, attack: 82, defense: 25, speed: 13,
+    skills: [
+      { name: '에테르 브레스', damage: 110, cooldown: 8, element: 'aether', effectType: 'aoe' },
+      { name: '용의 발톱', damage: 90, cooldown: 5, element: 'neutral', effectType: 'damage' },
+      { name: '에테르 보호막', damage: 0, cooldown: 20, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DRAGON_SCALE', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_HEART', rate: 0.05, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 800, goldReward: 250,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'void_abyss', respawnTime: 50,
+    lore: '어린 에테르 드래곤. 성체에는 한참 못 미치지만 이미 에테르 브레스를 사용할 수 있는 위험한 존재.',
+  },
+  {
+    code: 'MON_VA_010', name: '종말의 사도', type: 'normal', element: 'dark', level: 80,
+    hp: 650, attack: 88, defense: 30, speed: 11,
+    skills: [
+      { name: '종말의 선언', damage: 120, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '허무의 손', damage: 100, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '어둠의 갑옷', damage: 0, cooldown: 18, element: 'dark', effectType: 'heal' },
+      { name: '영혼 수확', damage: 80, cooldown: 8, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_APOCALYPSE_SHARD', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DOOM_ESSENCE', rate: 0.08, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 850, goldReward: 280,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'void_abyss', respawnTime: 55,
+    lore: '세계의 종말을 예언하며 허공을 떠도는 사도. 그의 선언이 울려퍼지면 주변 모든 생명이 약해진다.',
+  },
+];
+
+// ─── 엘리트 몬스터 20마리 (지역당 3~4) ─────────────────────────
+
+const eliteMonsters: MonsterSeed[] = [
+  // 황혼의 숲 (3)
+  {
+    code: 'MON_TF_E01', name: '숲의 수호자 엔트', type: 'elite', element: 'earth', level: 12,
+    hp: 600, attack: 30, defense: 20, speed: 4,
+    skills: [
+      { name: '대지의 분노', damage: 45, cooldown: 6, element: 'earth', effectType: 'aoe' },
+      { name: '뿌리 감옥', damage: 25, cooldown: 10, element: 'earth', effectType: 'debuff' },
+      { name: '자연 치유', damage: 0, cooldown: 20, element: 'earth', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ANCIENT_BARK', rate: 0.5, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_SPIRIT_WOOD', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_STAFF_NATURE', rate: 0.05, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 200, goldReward: 80,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'twilight_forest', respawnTime: 120,
+    lore: '황혼의 숲을 수호하는 고대 엔트. 숲을 해치는 자에게만 반응하며, 분노 시 대지가 뒤흔들린다.',
+  },
+  {
+    code: 'MON_TF_E02', name: '달빛 늑대 우두머리', type: 'elite', element: 'light', level: 14,
+    hp: 500, attack: 35, defense: 15, speed: 14,
+    skills: [
+      { name: '월광 돌진', damage: 50, cooldown: 5, element: 'light', effectType: 'damage' },
+      { name: '늑대 소환', damage: 0, cooldown: 20, element: 'neutral', effectType: 'debuff' },
+      { name: '달의 포효', damage: 35, cooldown: 10, element: 'light', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MOONLIT_PELT', rate: 0.4, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ALPHA_FANG', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_NECKLACE_WOLF', rate: 0.05, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 220, goldReward: 90,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'twilight_forest', respawnTime: 150,
+    lore: '늑대 무리의 알파. 달빛을 받으면 더욱 강해지며, 포효로 동료 늑대를 전장에 불러낸다.',
+  },
+  {
+    code: 'MON_TF_E03', name: '독안개 여왕 거미', type: 'elite', element: 'dark', level: 15,
+    hp: 450, attack: 40, defense: 12, speed: 10,
+    skills: [
+      { name: '맹독 분사', damage: 30, cooldown: 4, element: 'dark', effectType: 'dot' },
+      { name: '거미줄 트랩', damage: 0, cooldown: 8, element: 'dark', effectType: 'debuff' },
+      { name: '독액 폭발', damage: 55, cooldown: 12, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_QUEEN_SILK', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_DEADLY_VENOM', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_RING_POISON', rate: 0.04, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 250, goldReward: 95,
+    behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'twilight_forest', respawnTime: 180,
+    lore: '황혼의 숲 깊은 곳에 둥지를 튼 거미 여왕. 독안개로 시야를 가리고 거미줄로 사냥감을 포획한다.',
+  },
+  // 크로노스 시가지 (3)
+  {
+    code: 'MON_KC_E01', name: '시계탑 수호자', type: 'elite', element: 'time', level: 22,
+    hp: 700, attack: 42, defense: 22, speed: 9,
+    skills: [
+      { name: '시간 역행 칼날', damage: 55, cooldown: 5, element: 'time', effectType: 'damage' },
+      { name: '시간 감속 필드', damage: 0, cooldown: 12, element: 'time', effectType: 'debuff' },
+      { name: '시계 톱니 폭풍', damage: 50, cooldown: 8, element: 'neutral', effectType: 'aoe' },
+      { name: '시간 되감기', damage: 0, cooldown: 25, element: 'time', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CHRONO_GEAR', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_TIME_CRYSTAL', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_WATCH_CHRONO', rate: 0.04, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 350, goldReward: 120,
+    behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'kronos_city', respawnTime: 180,
+    lore: '크로노스 시계탑의 최종 수호자. 시간을 자유롭게 조종하여 전투를 유리하게 이끈다.',
+  },
+  {
+    code: 'MON_KC_E02', name: '하수구 여왕 쥐', type: 'elite', element: 'dark', level: 18,
+    hp: 550, attack: 38, defense: 16, speed: 12,
+    skills: [
+      { name: '역병 브레스', damage: 45, cooldown: 6, element: 'dark', effectType: 'aoe' },
+      { name: '쥐떼 소환', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '전염성 물기', damage: 50, cooldown: 5, element: 'dark', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_PLAGUE_QUEEN_TAIL', rate: 0.4, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_PLAGUE_CORE', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_DAGGER_PLAGUE', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 280, goldReward: 95,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'kronos_city', respawnTime: 150,
+    lore: '하수구 쥐떼의 지배자. 역병을 품은 거대한 쥐로, 브레스 한 번에 주변이 오염된다.',
+  },
+  {
+    code: 'MON_KC_E03', name: '망가진 전쟁기계', type: 'elite', element: 'lightning', level: 24,
+    hp: 800, attack: 45, defense: 28, speed: 5,
+    skills: [
+      { name: '레이저 빔', damage: 65, cooldown: 6, element: 'lightning', effectType: 'damage' },
+      { name: '미사일 일제사격', damage: 50, cooldown: 10, element: 'fire', effectType: 'aoe' },
+      { name: '방어 모드', damage: 0, cooldown: 20, element: 'neutral', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_WAR_MACHINE_PART', rate: 0.4, minQty: 1, maxQty: 3 },
+      { itemId: 'MAT_POWER_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_MECH', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 380, goldReward: 130,
+    behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'kronos_city', respawnTime: 200,
+    lore: '고대 전쟁에서 버려진 전쟁기계가 에테르로 재가동되었다. 오작동으로 아군과 적을 구분하지 못한다.',
+  },
+  // 에테리아 마을 (4)
+  {
+    code: 'MON_AV_E01', name: '에테르 수호신', type: 'elite', element: 'aether', level: 30,
+    hp: 750, attack: 50, defense: 25, speed: 10,
+    skills: [
+      { name: '신성 에테르 파동', damage: 65, cooldown: 6, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 결계', damage: 0, cooldown: 15, element: 'aether', effectType: 'heal' },
+      { name: '정화의 빛', damage: 70, cooldown: 8, element: 'light', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DIVINE_AETHER', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_GUARDIAN_ESSENCE', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SHIELD_AETHER', rate: 0.04, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 400, goldReward: 140,
+    behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'aetheria_village', respawnTime: 180,
+    lore: '에테리아 마을을 수호하는 고위 정령. 마을에 적의를 품은 자에게만 반응하는 심판자.',
+  },
+  {
+    code: 'MON_AV_E02', name: '전장의 망령 장군', type: 'elite', element: 'fire', level: 32,
+    hp: 680, attack: 55, defense: 20, speed: 11,
+    skills: [
+      { name: '화염 군도', damage: 70, cooldown: 5, element: 'fire', effectType: 'damage' },
+      { name: '잔영 병사 소환', damage: 40, cooldown: 12, element: 'fire', effectType: 'aoe' },
+      { name: '지휘관의 포효', damage: 0, cooldown: 18, element: 'fire', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GENERAL_BADGE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FLAME_STEEL', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_GENERAL', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 430, goldReward: 150,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'aetheria_village', respawnTime: 200,
+    lore: '과거 전쟁의 장군이 에테르에 의해 부활한 망령. 부하 병사를 소환하며 전장을 지휘한다.',
+  },
+  {
+    code: 'MON_AV_E03', name: '기억의 마녀', type: 'elite', element: 'dark', level: 34,
+    hp: 580, attack: 60, defense: 15, speed: 9,
+    skills: [
+      { name: '기억 폭발', damage: 75, cooldown: 6, element: 'dark', effectType: 'aoe' },
+      { name: '정신 지배', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '과거의 고통', damage: 65, cooldown: 8, element: 'dark', effectType: 'dot' },
+      { name: '기억 치유', damage: 0, cooldown: 20, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MEMORY_ORB', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_WITCH_HAT', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_STAFF_MEMORY', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 460, goldReward: 155,
+    behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 180,
+    lore: '기억을 조종하는 마녀. 대상의 가장 고통스러운 기억을 끌어내 무기로 사용한다.',
+  },
+  {
+    code: 'MON_AV_E04', name: '폭풍의 그리폰', type: 'elite', element: 'lightning', level: 35,
+    hp: 700, attack: 58, defense: 18, speed: 16,
+    skills: [
+      { name: '번개 급강하', damage: 80, cooldown: 6, element: 'lightning', effectType: 'damage' },
+      { name: '폭풍 날개짓', damage: 60, cooldown: 8, element: 'lightning', effectType: 'aoe' },
+      { name: '번개 보호막', damage: 0, cooldown: 18, element: 'lightning', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GRIFFIN_FEATHER', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_STORM_CLAW', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_RING_STORM', rate: 0.04, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 480, goldReward: 160,
+    behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'aetheria_village', respawnTime: 200,
+    lore: '에테리아 상공을 비행하는 폭풍의 그리폰. 번개를 몸에 두르고 급강하하는 공격은 일격필살에 가깝다.',
+  },
+  // 그림자 요새 (3)
+  {
+    code: 'MON_SF_E01', name: '그림자 장군', type: 'elite', element: 'dark', level: 45,
+    hp: 1000, attack: 65, defense: 30, speed: 10,
+    skills: [
+      { name: '어둠의 군령', damage: 80, cooldown: 6, element: 'dark', effectType: 'aoe' },
+      { name: '그림자 분신', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '처형의 칼날', damage: 100, cooldown: 10, element: 'dark', effectType: 'damage' },
+      { name: '어둠 회복', damage: 0, cooldown: 20, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SHADOW_GENERAL_BADGE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DARK_COMMANDER_CAPE', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_SHADOW', rate: 0.04, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 600, goldReward: 200,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'shadow_fortress', respawnTime: 240,
+    lore: '그림자 군단의 장군. 수백의 암흑 기사를 지휘하며, 분신을 만들어 전략적으로 싸운다.',
+  },
+  {
+    code: 'MON_SF_E02', name: '죽음의 기사단장', type: 'elite', element: 'dark', level: 48,
+    hp: 1100, attack: 70, defense: 35, speed: 8,
+    skills: [
+      { name: '사신의 낫', damage: 95, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '죽음의 오라', damage: 50, cooldown: 10, element: 'dark', effectType: 'dot' },
+      { name: '불사의 맹세', damage: 0, cooldown: 25, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DEATH_SCYTHE_SHARD', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_UNDYING_PLATE', rate: 0.15, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SCYTHE_DEATH', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 650, goldReward: 220,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'shadow_fortress', respawnTime: 270,
+    lore: '죽음을 넘어선 기사단장. 불사의 맹세로 한 번은 쓰러져도 다시 일어나며 사신의 낫을 휘두른다.',
+  },
+  {
+    code: 'MON_SF_E03', name: '화염 마왕 부관', type: 'elite', element: 'fire', level: 50,
+    hp: 900, attack: 75, defense: 22, speed: 12,
+    skills: [
+      { name: '지옥 화염', damage: 100, cooldown: 7, element: 'fire', effectType: 'aoe' },
+      { name: '화염 채찍', damage: 85, cooldown: 5, element: 'fire', effectType: 'damage' },
+      { name: '업화', damage: 60, cooldown: 10, element: 'fire', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_HELLFIRE_CORE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DEMON_HORN', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_WHIP_FIRE', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 700, goldReward: 240,
+    behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
+    location: 'shadow_fortress', respawnTime: 300,
+    lore: '그림자 요새 최심부에서 마왕을 보좌하는 화염 악마. 지옥의 화염을 다루는 무시무시한 존재.',
+  },
+  // 수정 동굴 (4)
+  {
+    code: 'MON_CC_E01', name: '수정왕 골렘', type: 'elite', element: 'earth', level: 55,
+    hp: 1200, attack: 65, defense: 40, speed: 3,
+    skills: [
+      { name: '수정 대포', damage: 90, cooldown: 6, element: 'earth', effectType: 'damage' },
+      { name: '수정 비', damage: 75, cooldown: 10, element: 'earth', effectType: 'aoe' },
+      { name: '수정 갑옷', damage: 0, cooldown: 20, element: 'earth', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_KING_CRYSTAL', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_PERFECT_GEM', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ARMOR_CRYSTAL', rate: 0.04, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 700, goldReward: 230,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'crystal_cavern', respawnTime: 240,
+    lore: '수정 동굴의 지배자. 몸 전체가 최고급 수정으로 이루어져 있으며 방어력이 압도적이다.',
+  },
+  {
+    code: 'MON_CC_E02', name: '용암 드레이크', type: 'elite', element: 'fire', level: 58,
+    hp: 950, attack: 80, defense: 25, speed: 11,
+    skills: [
+      { name: '용암 브레스', damage: 100, cooldown: 7, element: 'fire', effectType: 'aoe' },
+      { name: '화염 돌진', damage: 85, cooldown: 5, element: 'fire', effectType: 'damage' },
+      { name: '마그마 분출', damage: 70, cooldown: 10, element: 'fire', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DRAKE_SCALE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_MAGMA_HEART', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_MAGMA', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 750, goldReward: 250,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'crystal_cavern', respawnTime: 270,
+    lore: '동굴 최심부 용암 호수에서 올라온 소형 드래곤. 성체 드래곤만큼은 아니지만 충분히 위협적이다.',
+  },
+  {
+    code: 'MON_CC_E03', name: '공명의 대정령', type: 'elite', element: 'aether', level: 62,
+    hp: 850, attack: 78, defense: 20, speed: 13,
+    skills: [
+      { name: '대공명', damage: 110, cooldown: 8, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 흡수', damage: 80, cooldown: 6, element: 'aether', effectType: 'damage' },
+      { name: '공명 보호막', damage: 0, cooldown: 18, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GRAND_RESONANCE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_CORE_PURE', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ORB_RESONANCE', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 800, goldReward: 270,
+    behavior: {
