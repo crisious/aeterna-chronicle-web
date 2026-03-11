@@ -21,6 +21,8 @@ import { setupRaidSocketHandlers } from './socket/raidSocketHandler';
 import { raidManager } from './raid/raidManager';
 import { tickManager } from './tick/tickManager';
 import { classRoutes } from './routes/classRoutes';
+import { npcRoutes } from './routes/npcRoutes';
+import { tickAllNpcs } from './npc/behaviorTree';
 import { craftRoutes } from './routes/craftRoutes';
 import { petRoutes } from './routes/petRoutes';
 import { setupPetSocketHandlers } from './socket/petSocketHandler';
@@ -79,6 +81,10 @@ async function startServer() {
         // 2차 전직 시스템 REST API 라우트 등록
         await fastify.register(classRoutes);
         fastify.log.info('Class advancement routes registered');
+
+        // NPC 시스템 REST API 라우트 등록
+        await fastify.register(npcRoutes);
+        fastify.log.info('NPC routes registered');
 
         // 제작 시스템 REST API 라우트 등록
         await fastify.register(craftRoutes);
@@ -152,9 +158,10 @@ async function startServer() {
         });
 
         // 로직 틱 (2Hz): AI/스폰/버프 만료
-        tickManager.on('logic', (_deltaMs) => {
-            // TODO: AI 업데이트, 스폰 체크, 버프 만료 처리
-            void _deltaMs;
+        tickManager.on('logic', (deltaMs) => {
+            // NPC 행동 트리 AI 업데이트
+            tickAllNpcs(deltaMs);
+            // TODO: 스폰 체크, 버프 만료 처리
         });
 
         tickManager.start();
