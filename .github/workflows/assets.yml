@@ -1,0 +1,146 @@
+# P6-15: 에셋 빌드 + S3 업로드 CI 파이프라인
+name: Asset Pipeline
+
+on:
+  push:
+    paths:
+      - 'assets/src/**'
+      - 'tools/assets/**'
+    branches: [main, staging]
+  workflow_dispatch:
+    inputs:
+      invalidate_cache:
+        description: 'CDN 캐시 무효화 실행'
+        type: boolean
+        default: false
+
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_PROD: aeterna-chronicle-assets
+  S3_BUCKET_STAGING: aeterna-chronicle-assets-staging
+  CLOUDFRONT_DIST_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+jobs:
+  build-assets:
+    name: 에셋 빌드 + 최적화
+    runs-on: ubuntu-latest
+    outputs:
+      build-hash: ${{ steps.build.outputs.build_hash }}
+      total-files: ${{ steps.build.outputs.total_files }}
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 의존성 설치
+        run: npm ci
+        working-directory: server
+
+      - name: TypeScript 빌드 (에셋 파이프라인)
+        run: npx tsc --project tsconfig.json
+        working-directory: server
+
+      - name: 에셋 빌드 실행
+        id: build
+        run: |
+          node tools/assets/assetPipeline.js
+          BUILD_HASH=$(jq -r '.buildHash' assets/dist/asset-manifest.json)
+          TOTAL_FILES=$(jq '.files | length' assets/dist/asset-manifest.json)
+          echo "build_hash=$BUILD_HASH" >> $GITHUB_OUTPUT
+          echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
+          echo "📦 빌드 해시: $BUILD_HASH, 파일 수: $TOTAL_FILES"
+
+      - name: 매니페스트 아티팩트 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: asset-manifest-${{ steps.build.outputs.build_hash }}
+          path: assets/dist/asset-manifest.json
+          retention-days: 30
+
+      - name: 빌드 결과 아티팩트 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: assets-${{ steps.build.outputs.build_hash }}
+          path: assets/dist/
+          retention-days: 7
+
+  upload-s3:
+    name: S3 업로드
+    needs: build-assets
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: 빌드 결과 다운로드
+        uses: actions/download-artifact@v4
+        with:
+          name: assets-${{ needs.build-assets.outputs.build-hash }}
+          path: assets/dist/
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: S3 버킷 결정
+        id: bucket
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "bucket=${{ env.S3_BUCKET_PROD }}" >> $GITHUB_OUTPUT
+            echo "env=production" >> $GITHUB_OUTPUT
+          else
+            echo "bucket=${{ env.S3_BUCKET_STAGING }}" >> $GITHUB_OUTPUT
+            echo "env=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: S3 동기화 (해시 파일 — immutable 캐시)
+        run: |
+          aws s3 sync assets/dist/ s3://${{ steps.bucket.outputs.bucket }}/v1/ \
+            --exclude "*.json" \
+            --cache-control "public, max-age=31536000, immutable" \
+            --delete
+
+      - name: S3 업로드 (매니페스트 — 짧은 캐시)
+        run: |
+          aws s3 cp assets/dist/asset-manifest.json \
+            s3://${{ steps.bucket.outputs.bucket }}/v1/asset-manifest.json \
+            --cache-control "public, max-age=300"
+
+      - name: 업로드 결과 요약
+        run: |
+          echo "### 🚀 에셋 배포 완료" >> $GITHUB_STEP_SUMMARY
+          echo "- **환경:** ${{ steps.bucket.outputs.env }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **버킷:** ${{ steps.bucket.outputs.bucket }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **빌드 해시:** ${{ needs.build-assets.outputs.build-hash }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **파일 수:** ${{ needs.build-assets.outputs.total-files }}" >> $GITHUB_STEP_SUMMARY
+
+  invalidate-cdn:
+    name: CDN 캐시 무효화
+    needs: [build-assets, upload-s3]
+    runs-on: ubuntu-latest
+    if: |
+      github.ref == 'refs/heads/main' &&
+      (github.event.inputs.invalidate_cache == 'true' || contains(github.event.head_commit.message, '[invalidate]'))
+
+    steps:
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: CloudFront 캐시 무효화
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
+            --paths "/v1/*"
+          echo "✅ CDN 캐시 무효화 요청 완료"

@@ -1,0 +1,218 @@
+{
+  "__meta": "P6-14: Grafana KPI 대시보드 패널 정의 — DAU/MAU, 매출, 리텐션 곡선",
+  "dashboard": {
+    "title": "Aeterna Chronicle — KPI/BI 대시보드",
+    "uid": "aeterna-kpi-bi",
+    "tags": ["kpi", "bi", "aeterna-chronicle", "p6-14"],
+    "timezone": "Asia/Seoul",
+    "refresh": "5m",
+    "time": { "from": "now-30d", "to": "now" },
+    "panels": [
+      {
+        "id": 1,
+        "title": "DAU / MAU 트렌드",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT date AS time, value FROM kpi_snapshots WHERE metric = 'dau' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          },
+          {
+            "refId": "B",
+            "rawSql": "SELECT date AS time, value FROM kpi_snapshots WHERE metric = 'mau' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          },
+          "overrides": [
+            { "matcher": { "id": "byName", "options": "DAU" }, "properties": [{ "id": "color", "value": "#3274D9" }] },
+            { "matcher": { "id": "byName", "options": "MAU" }, "properties": [{ "id": "color", "value": "#FF9830" }] }
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "title": "일일 매출",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT date AS time, value FROM kpi_snapshots WHERE metric = 'revenue' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyKRW",
+            "custom": { "lineWidth": 2, "fillOpacity": 20, "gradientMode": "scheme" }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "리텐션 곡선 (D1 / D7 / D30)",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT date AS time, value * 100 AS \"D1\" FROM kpi_snapshots WHERE metric = 'retention_d1' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          },
+          {
+            "refId": "B",
+            "rawSql": "SELECT date AS time, value * 100 AS \"D7\" FROM kpi_snapshots WHERE metric = 'retention_d7' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          },
+          {
+            "refId": "C",
+            "rawSql": "SELECT date AS time, value * 100 AS \"D30\" FROM kpi_snapshots WHERE metric = 'retention_d30' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": { "lineWidth": 2, "fillOpacity": 5 }
+          },
+          "overrides": [
+            { "matcher": { "id": "byName", "options": "D1" }, "properties": [{ "id": "color", "value": "#56A64B" }] },
+            { "matcher": { "id": "byName", "options": "D7" }, "properties": [{ "id": "color", "value": "#F2CC0C" }] },
+            { "matcher": { "id": "byName", "options": "D30" }, "properties": [{ "id": "color", "value": "#E02F44" }] }
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "title": "ARPU / ARPPU",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT date AS time, value FROM kpi_snapshots WHERE metric = 'arpu' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          },
+          {
+            "refId": "B",
+            "rawSql": "SELECT date AS time, value FROM kpi_snapshots WHERE metric = 'arppu' AND date >= $__timeFrom() AND date <= $__timeTo() ORDER BY date",
+            "format": "time_series"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyKRW",
+            "custom": { "lineWidth": 2 }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "전환율 (무과금 → 첫 결제)",
+        "type": "stat",
+        "gridPos": { "x": 0, "y": 16, "w": 6, "h": 4 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT value * 100 FROM kpi_snapshots WHERE metric = 'conversion' ORDER BY date DESC LIMIT 1",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 2, "color": "yellow" },
+                { "value": 5, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "LTV (생애 가치)",
+        "type": "stat",
+        "gridPos": { "x": 6, "y": 16, "w": 6, "h": 4 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT value FROM kpi_snapshots WHERE metric = 'ltv' ORDER BY date DESC LIMIT 1",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyKRW",
+            "thresholds": {
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 10000, "color": "yellow" },
+                { "value": 50000, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "인플레이션 지수 (골드 유통/소모)",
+        "type": "gauge",
+        "gridPos": { "x": 12, "y": 16, "w": 6, "h": 4 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT CASE WHEN SUM(CASE WHEN type='spend' THEN ABS(amount) ELSE 0 END) > 0 THEN SUM(CASE WHEN type='earn' THEN amount ELSE 0 END) / SUM(CASE WHEN type='spend' THEN ABS(amount) ELSE 0 END) ELSE 0 END AS inflation FROM currency_transactions WHERE currency='gold' AND created_at >= NOW() - INTERVAL '30 days'",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 3,
+            "thresholds": {
+              "steps": [
+                { "value": 0, "color": "green" },
+                { "value": 1.2, "color": "yellow" },
+                { "value": 1.5, "color": "orange" },
+                { "value": 2, "color": "red" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "오늘의 KPI 요약",
+        "type": "table",
+        "gridPos": { "x": 18, "y": 16, "w": 6, "h": 4 },
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "rawSql": "SELECT metric, value, segment FROM kpi_snapshots WHERE date = CURRENT_DATE ORDER BY metric",
+            "format": "table"
+          }
+        ]
+      }
+    ]
+  }
+}
