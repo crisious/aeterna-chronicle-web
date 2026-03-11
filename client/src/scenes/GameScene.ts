@@ -55,21 +55,18 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // ──────────────────────────────────────────────────────────
-    // [텍스처 아틀라스 가이드] Phase 2+ 에서 개별 스프라이트 로드를
-    // 아틀라스로 교체할 것. TexturePacker/ShoeBox 출력물 사용:
-    //
-    //   this.load.atlas('characters', 'assets/atlas/characters.png',
-    //                   'assets/atlas/characters.json');
-    //   this.load.atlas('effects',    'assets/atlas/effects.png',
-    //                   'assets/atlas/effects.json');
-    //   this.load.atlas('ui',         'assets/atlas/ui.png',
-    //                   'assets/atlas/ui.json');
-    //
-    // 아틀라스 전환 시 draw call 최소화 + VRAM 절약.
-    // 개별 this.load.image() 호출은 제거하고 atlas frame 참조로 변경.
-    // ──────────────────────────────────────────────────────────
+    // ── 텍스처 아틀라스 로드 (이미지 없으면 로드 실패 → fallback) ──
+    // 아틀라스 PNG가 존재하면 draw call 최소화 + VRAM 절약 효과.
+    // PNG 없이 JSON만 있으면 로드 실패하므로, on FILE_LOAD_ERROR로 무시.
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[Atlas] 로드 실패 (fallback 사용): ${file.key}`);
+    });
 
+    this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
+    this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
+    this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
+
+    // ── Fallback: generateTexture로 플레이어 임시 스프라이트 ──
     const graphics = this.add.graphics();
     graphics.fillStyle(0xf5a623, 1);
     graphics.fillRoundedRect(0, 0, 48, 64, 8);
@@ -82,8 +79,16 @@ export class GameScene extends Phaser.Scene {
     this.createPlayer();
     this.createInputs();
     this.createHud();
-
     this.setupNetwork();
+
+    // ── EffectManager 초기화 (풀 워밍업 포함) ──
+    this.effectManager = new EffectManager(this);
+    this.setupCombatEvents();
+
+    // 개발 모드: 풀 벤치마크 실행
+    if ((import.meta as unknown as Record<string, Record<string, unknown>>).env?.DEV) {
+      runPoolBenchmark(1000);
+    }
   }
 
   update(_time: number, delta: number): void {
@@ -112,6 +117,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.hud.update(delta);
+    this.effectManager.update(delta);
 
     // HUD 상태 시뮬레이션: 매 프레임이 아닌 100ms 간격으로만 실행
     this.statusTickAccumulator += delta;
@@ -257,6 +263,54 @@ export class GameScene extends Phaser.Scene {
       })
       .setScrollFactor(0)
       .setDepth(10000);
+  }
+
+  /**
+   * 전투 이벤트 리스너 설정 — EffectManager와 연동
+   * 서버/로컬 전투 시스템에서 이벤트를 emit하면 이펙트가 스폰된다.
+   */
+  private setupCombatEvents(): void {
+    // 데미지 발생 이벤트
+    this.events.on('combat.damage', (data: {
+      x: number; y: number; damage: number; isCritical: boolean
+    }) => {
+      this.effectManager.spawnDamageText(data.x, data.y, data.damage, data.isCritical);
+    });
+
+    // 히트 이펙트 이벤트
+    this.events.on('combat.hit', (data: {
+      x: number; y: number; type: HitEffectType
+    }) => {
+      this.effectManager.spawnHitEffect(data.x, data.y, data.type);
+    });
+
+    // 버프/디버프 적용 이벤트
+    this.events.on('combat.buff', (data: {
+      x: number; y: number; buffId: string
+    }) => {
+      this.effectManager.spawnBuffIcon(data.x, data.y, data.buffId);
+    });
+
+    // [디버그] 스페이스바로 테스트 이펙트 발동
+    this.input.keyboard!.on('keydown-SPACE', () => {
+      const px = this.player.x;
+      const py = this.player.y;
+      const testDamage = Math.floor(Math.random() * 500) + 100;
+      const isCrit = Math.random() < 0.3;
+      const hitTypes: HitEffectType[] = ['slash', 'blunt', 'magic'];
+      const hitType = hitTypes[Math.floor(Math.random() * hitTypes.length)];
+
+      this.effectManager.spawnDamageText(
+        px + (Math.random() - 0.5) * 40,
+        py - 40,
+        testDamage,
+        isCrit
+      );
+      this.effectManager.spawnHitEffect(px, py, hitType);
+
+      console.log(`[Combat] 테스트 — ${testDamage}${isCrit ? ' (CRIT!)' : ''} [${hitType}]`,
+        this.effectManager.getStats());
+    });
   }
 
   private setupNetwork(): void {
