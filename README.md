@@ -5,13 +5,13 @@
 **기억은 사라져도, 이야기는 남는다.**
 
 [![Phase](https://img.shields.io/badge/Phase-3-purple?style=for-the-badge)](01_코어기획/P3_작업_리스트_v1.md)
-[![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Unity%20%7C%20UE5-green?style=for-the-badge)](#-기술-스택)
+[![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-21%20Design%20Docs-orange?style=for-the-badge)](#-코어기획-문서-21개)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
 
-*실시간 반자동 전투 RPG — PC 웹 브라우저 + Unity + Unreal Engine 5*
+*실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱 (콘솔 배포 제외)*
 
 <br>
 
