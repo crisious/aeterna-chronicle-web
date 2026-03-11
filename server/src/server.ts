@@ -31,6 +31,7 @@ import { startQuestResetScheduler, stopQuestResetScheduler } from './quest/quest
 import { socialRoutes } from './routes/socialRoutes';
 import { setupSocialSocketHandlers, bindSocialIO } from './socket/socialSocketHandler';
 import { purgeExpiredMails } from './social/mailSystem';
+import { adminRoutes } from './routes/adminRoutes';
 
 const fastify = Fastify({ logger: true });
 
@@ -106,6 +107,10 @@ async function startServer() {
         // 소셜 시스템 REST API 라우트 등록 (친구/파티/우편)
         await fastify.register(socialRoutes);
         fastify.log.info('Social system routes registered');
+
+        // 어드민 대시보드 REST API 라우트 등록 (P4-07)
+        await fastify.register(adminRoutes);
+        fastify.log.info('Admin dashboard routes registered');
 
         const PORT = parseInt(process.env.PORT || '3000', 10);
 

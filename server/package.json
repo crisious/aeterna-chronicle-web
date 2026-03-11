@@ -16,14 +16,16 @@
     "@fastify/cors": "^9.0.1",
     "@prisma/client": "^5.10.0",
     "fastify": "^4.26.1",
+    "jsonwebtoken": "^9.0.3",
+    "protobufjs": "^7.2.6",
     "redis": "^4.6.13",
-    "socket.io": "^4.7.4",
-    "protobufjs": "^7.2.6"
+    "socket.io": "^4.7.4"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.11.19",
-    "typescript": "^5.3.3",
+    "prisma": "^5.10.0",
     "ts-node-dev": "^2.0.0",
-    "prisma": "^5.10.0"
+    "typescript": "^5.3.3"
   }
 }
