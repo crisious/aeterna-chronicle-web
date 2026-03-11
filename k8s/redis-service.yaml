@@ -1,0 +1,17 @@
+# 에테르나 크로니클 — Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aeterna-redis
+  namespace: aeterna
+  labels:
+    app: aeterna-redis
+spec:
+  selector:
+    app: aeterna-redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
+  type: ClusterIP

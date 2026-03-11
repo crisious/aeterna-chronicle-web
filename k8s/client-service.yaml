@@ -1,0 +1,17 @@
+# 에테르나 크로니클 — 클라이언트 Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aeterna-client
+  namespace: aeterna
+  labels:
+    app: aeterna-client
+spec:
+  selector:
+    app: aeterna-client
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  type: ClusterIP

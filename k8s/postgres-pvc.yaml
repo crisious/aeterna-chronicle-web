@@ -1,0 +1,15 @@
+# 에테르나 크로니클 — PostgreSQL PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aeterna-postgres-pvc
+  namespace: aeterna
+  labels:
+    app: aeterna-postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard

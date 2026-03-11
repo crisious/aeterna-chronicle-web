@@ -19,6 +19,7 @@ import { setupAchievementSocketHandlers } from './socket/achievementSocketHandle
 import { raidRoutes } from './routes/raidRoutes';
 import { setupRaidSocketHandlers } from './socket/raidSocketHandler';
 import { raidManager } from './raid/raidManager';
+import { tickManager } from './tick/tickManager';
 import { classRoutes } from './routes/classRoutes';
 
 const fastify = Fastify({ logger: true });
@@ -122,6 +123,28 @@ async function startServer() {
             fastify.log.warn(`Redis connection failed, continuing without Redis: ${redisErr}`);
         }
 
+        // ── 틱 매니저 초기화 (P3-18: 서버 틱 계층화) ──
+        // 물리 틱 (20Hz): 충돌/위치 계산
+        tickManager.on('physics', (deltaMs) => {
+            // TODO: 물리 시뮬레이션 콜백 연결
+            void deltaMs;
+        });
+
+        // 네트워크 틱 (10Hz): 상태 브로드캐스트
+        tickManager.on('network', (_deltaMs) => {
+            // TODO: io.emit으로 월드 상태 브로드캐스트
+            void _deltaMs;
+        });
+
+        // 로직 틱 (2Hz): AI/스폰/버프 만료
+        tickManager.on('logic', (_deltaMs) => {
+            // TODO: AI 업데이트, 스폰 체크, 버프 만료 처리
+            void _deltaMs;
+        });
+
+        tickManager.start();
+        fastify.log.info('Tick manager started (physics:20Hz, network:10Hz, logic:2Hz)');
+
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
@@ -132,7 +155,11 @@ async function startServer() {
 async function gracefulShutdown(signal: string): Promise<void> {
     console.log(`\n[Shutdown] ${signal} received. Graceful shutdown 시작...`);
 
-    // 0) 레이드 매니저 정리
+    // 0) 틱 매니저 정지
+    tickManager.stop();
+    console.log('[Shutdown] Tick manager stopped');
+
+    // 0.5) 레이드 매니저 정리
     raidManager.shutdown();
     console.log('[Shutdown] Raid manager stopped');
 

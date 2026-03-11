@@ -1,0 +1,53 @@
+# 에테르나 크로니클 — Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aeterna-redis
+  namespace: aeterna
+  labels:
+    app: aeterna-redis
+    app.kubernetes.io/part-of: aeterna-chronicle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aeterna-redis
+  template:
+    metadata:
+      labels:
+        app: aeterna-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          command:
+            - redis-server
+            - --maxmemory
+            - 256mb
+            - --maxmemory-policy
+            - allkeys-lru
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      restartPolicy: Always

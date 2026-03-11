@@ -1,0 +1,17 @@
+# 에테르나 크로니클 — 게임 서버 Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aeterna-server
+  namespace: aeterna
+  labels:
+    app: aeterna-server
+spec:
+  selector:
+    app: aeterna-server
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  type: ClusterIP

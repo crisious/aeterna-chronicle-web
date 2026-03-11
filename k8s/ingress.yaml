@@ -1,0 +1,45 @@
+# 에테르나 크로니클 — Nginx Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aeterna-ingress
+  namespace: aeterna
+  labels:
+    app.kubernetes.io/part-of: aeterna-chronicle
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # WebSocket 지원 (Socket.IO)
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+spec:
+  ingressClassName: nginx
+  rules:
+    # 클라이언트 (프론트엔드)
+    - host: aeterna.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aeterna-client
+                port:
+                  number: 80
+          # API + WebSocket → 서버
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: aeterna-server
+                port:
+                  number: 3000
+          - path: /socket.io
+            pathType: Prefix
+            backend:
+              service:
+                name: aeterna-server
+                port:
+                  number: 3000

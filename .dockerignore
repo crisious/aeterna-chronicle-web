@@ -1,0 +1,48 @@
+# 의존성
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# 빌드 산출물
+dist/
+server/dist/
+client/dist/
+
+# 개발 설정
+.git/
+.gitignore
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 기획 문서 (빌드 불필요)
+00_인덱스/
+01_코어기획/
+02_UI_UX/
+03_데이터테이블/
+04_검증_P0/
+99_백업이관/
+시나리오/
+월드맵/
+캐릭터/
+tools/
+ue5_project/
+ue5_umg/
+unity_ui_toolkit/
+
+# OS / Synology
+.DS_Store
+Thumbs.db
+.sync_state/
+@eaDir/
+
+# 환경변수
+.env
+.env.local
+
+# k8s (Docker 빌드에 불필요)
+k8s/
+
+# 문서
+*.md

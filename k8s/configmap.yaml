@@ -1,0 +1,14 @@
+# 에테르나 크로니클 — 공통 설정
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aeterna-config
+  namespace: aeterna
+  labels:
+    app.kubernetes.io/part-of: aeterna-chronicle
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  ALLOWED_ORIGINS: "https://aeterna.example.com,http://localhost:5173"
+  REDIS_URL: "redis://aeterna-redis:6379"
+  # DATABASE_URL은 secrets.yaml에서 관리
