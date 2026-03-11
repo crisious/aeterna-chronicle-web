@@ -17,6 +17,7 @@ model User {
   banReason String?     @map("ban_reason")
   gold      Int         @default(0)
   diamond   Int         @default(0)
+  crystal       Int         @default(0)  // P6-02: 프리미엄 화폐 (유료 크리스탈)
   eventCoin     Int         @default(0) @map("event_coin")
   tutorialStep  Int         @default(0) @map("tutorial_step")  // P4-13: 튜토리얼 진행 단계 (0~5)
   createdAt DateTime    @default(now())
@@ -899,4 +900,59 @@ model RankingEntry {
   @@unique([userId, category, season])
   @@map("ranking_entries")
   @@index([category, score])
+}
+
+// ─── 결제 영수증 (P6-02) ────────────────────────────────────────
+model PaymentReceipt {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  platform      String    // web, ios, android
+  productId     String    @map("product_id")
+  amount        Int       // 실제 결제금액 (원)
+  currency      String    @default("KRW")
+  crystalAmount Int       @map("crystal_amount")
+  receiptData   String?   @map("receipt_data") @db.Text
+  status        String    @default("pending") // pending, verified, failed, refunded
+  refundStatus  String?   @map("refund_status")
+  verifiedAt    DateTime? @map("verified_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("payment_receipts")
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── 코스메틱 아이템 (P6-03) ────────────────────────────────────
+model CosmeticItem {
+  id            String    @id @default(uuid())
+  code          String    @unique
+  name          String
+  category      String    // skin, weapon_skin, pet_skin, mount, emote, title_effect
+  rarity        String    @default("rare") // rare, epic, legendary
+  priceType     String    @map("price_type") // crystal, gold, season_reward
+  price         Int
+  affectsStats  Boolean   @default(false) @map("affects_stats") // P2W 가드: 반드시 false
+  preview       String?   // 미리보기 이미지 경로
+  description   String?   @db.Text
+  isLimited     Boolean   @default(false) @map("is_limited")
+  availableFrom DateTime? @map("available_from")
+  availableTo   DateTime? @map("available_to")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("cosmetic_items")
+  @@index([category])
+}
+
+// ─── 플레이어 코스메틱 보유/장착 (P6-03) ────────────────────────
+model PlayerCosmetic {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  cosmeticId   String   @map("cosmetic_id")
+  isEquipped   Boolean  @default(false) @map("is_equipped")
+  equippedSlot String?  @map("equipped_slot")
+  acquiredAt   DateTime @default(now()) @map("acquired_at")
+
+  @@unique([userId, cosmeticId])
+  @@map("player_cosmetics")
+  @@index([userId])
 }

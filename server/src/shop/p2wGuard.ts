@@ -58,6 +58,19 @@ function logViolation(item: P2wCheckTarget, reason: string): void {
  * 아이템이 P2W 제로 원칙을 준수하는지 검증한다.
  * @returns allowed=true 면 구매 가능, false 면 거부 + reason 포함
  */
+/**
+ * 코스메틱 아이템이 P2W 원칙을 준수하는지 검증한다.
+ * affectsStats=true인 코스메틱은 등록/구매를 차단한다.
+ */
+export function validateCosmeticP2w(cosmetic: { affectsStats: boolean; code: string; name: string }): P2wCheckResult {
+  if (cosmetic.affectsStats) {
+    const reason = `코스메틱 P2W 위반: ${cosmetic.code}(${cosmetic.name}) — affectsStats=true`;
+    console.warn(`[P2W-GUARD] ${reason}`);
+    return { allowed: false, reason };
+  }
+  return { allowed: true };
+}
+
 export function validateP2w(item: P2wCheckTarget): P2wCheckResult {
   // 1) 카테고리 화이트리스트 검증
   if (!ALLOWED_CATEGORIES.has(item.category)) {

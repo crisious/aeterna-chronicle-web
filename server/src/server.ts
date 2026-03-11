@@ -61,6 +61,10 @@ import { monsterRoutes } from './routes/monsterRoutes';
 import { spawnManager } from './monster/spawnManager';
 import { registerErrorHandler } from './error/errorHandler';
 import { errorRoutes } from './routes/errorRoutes';
+import { paymentRoutes } from './routes/paymentRoutes';
+import { cosmeticRoutes } from './routes/cosmeticRoutes';
+import { combatRoutes } from './routes/combatRoutes';
+import { statusEffectManager } from './combat/statusEffectManager';
 
 const fastify = Fastify({ logger: true });
 
@@ -214,6 +218,18 @@ async function startServer() {
         await fastify.register(errorRoutes);
         fastify.log.info('Error collection routes registered');
 
+        // 결제/프리미엄 화폐 REST API 라우트 등록 (P6-02)
+        await fastify.register(paymentRoutes);
+        fastify.log.info('Payment/Crystal routes registered');
+
+        // 코스메틱 상점 REST API 라우트 등록 (P6-03)
+        await fastify.register(cosmeticRoutes);
+        fastify.log.info('Cosmetic shop routes registered');
+
+        // 전투 시스템 (상태이상 + 콤보) REST API 라우트 등록 (P6-04/05)
+        await fastify.register(combatRoutes);
+        fastify.log.info('Combat (status effect + combo) routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -311,12 +327,17 @@ async function startServer() {
             void _deltaMs;
         });
 
-        // 로직 틱 (2Hz): AI/스폰/버프 만료
+        // 로직 틱 (2Hz): AI/스폰/버프 만료/상태이상 틱
         tickManager.on('logic', (deltaMs) => {
             // NPC 행동 트리 AI 업데이트
             tickAllNpcs(deltaMs);
             // 몬스터 스폰 매니저 틱 (AI + 리스폰 + 필드 보스 스케줄)
             spawnManager.tick(deltaMs, (_zoneId: string) => []);
+            // 상태이상 DoT 틱 처리 (P6-04)
+            const _dotResults = statusEffectManager.tick(
+                deltaMs / 1000,
+                (_targetId: string) => 1000, // TODO: 실제 maxHp 조회 연결
+            );
         });
 
         tickManager.start();

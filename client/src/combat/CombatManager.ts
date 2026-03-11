@@ -9,6 +9,7 @@
  */
 
 import { io, Socket } from 'socket.io-client';
+import type { StatusEffectData } from './StatusEffectRenderer';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -90,6 +91,23 @@ interface BattleEndPayload {
 interface BuffUpdatePayload {
   unitId: string;
   buffs: ActiveBuff[];
+}
+
+/** P6-04: 상태이상 업데이트 페이로드 */
+interface StatusEffectUpdatePayload {
+  unitId: string;
+  effects: StatusEffectData[];
+}
+
+/** P6-05: 콤보 달성 페이로드 */
+interface ComboAchievedPayload {
+  playerId: string;
+  comboName: string;
+  damageBonus: number;
+  bonusDescription: string;
+  hitCount: number;
+  totalMultiplier: number;
+  chainLabel: string | null;
 }
 
 // ─── 콜백 타입 ─────────────────────────────────────────────────

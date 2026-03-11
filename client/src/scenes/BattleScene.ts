@@ -16,6 +16,8 @@ import { EffectManager } from '../effects/EffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { BattleUI } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
+import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
+import { ComboUI } from '../ui/ComboUI';
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
 
@@ -84,6 +86,10 @@ export class BattleScene extends Phaser.Scene {
   /** 현재 표시 중인 전리품 팝업 (파괴 시 참조) */
   public lootPopup: Phaser.GameObjects.Container | null = null;
 
+  // P6-04/05: 상태이상 렌더러 + 콤보 UI
+  private statusEffectRenderer!: StatusEffectRenderer;
+  private comboUI!: ComboUI;
+
   constructor() {
     super({ key: 'BattleScene' });
   }
@@ -144,6 +150,15 @@ export class BattleScene extends Phaser.Scene {
     // 전투 UI (하단 스킬바, 로그, 상태창)
     this.battleUI = new BattleUI(this, this.skillSlots);
 
+    // P6-04: 상태이상 렌더러 초기화
+    this.statusEffectRenderer = new StatusEffectRenderer(this);
+    for (const us of this.allSprites) {
+      this.statusEffectRenderer.registerUnit(us.unit.id);
+    }
+
+    // P6-05: 콤보 UI 초기화
+    this.comboUI = new ComboUI(this);
+
     // 인트로 연출 (0.5초 후 전투 시작)
     this.time.delayedCall(500, () => {
       this.phase = 'fighting';
@@ -172,6 +187,12 @@ export class BattleScene extends Phaser.Scene {
 
     // 이펙트 업데이트
     this.effectManager.update(delta);
+
+    // P6-04: 상태이상 렌더러 업데이트
+    this.statusEffectRenderer.update(delta);
+
+    // P6-05: 콤보 UI 업데이트
+    this.comboUI.update(delta);
 
     // UI 업데이트
     this.battleUI.update(delta);
