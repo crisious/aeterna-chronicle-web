@@ -31,6 +31,8 @@ import { startQuestResetScheduler, stopQuestResetScheduler } from './quest/quest
 import { socialRoutes } from './routes/socialRoutes';
 import { setupSocialSocketHandlers, bindSocialIO } from './socket/socialSocketHandler';
 import { purgeExpiredMails } from './social/mailSystem';
+import { economyRoutes } from './routes/economyRoutes';
+import { inventoryRoutes } from './routes/inventoryRoutes';
 import { eventRoutes } from './routes/eventRoutes';
 import { currencyRoutes } from './routes/currencyRoutes';
 import { syncEventStatus } from './event/eventEngine';
@@ -110,6 +112,14 @@ async function startServer() {
         // 소셜 시스템 REST API 라우트 등록 (친구/파티/우편)
         await fastify.register(socialRoutes);
         fastify.log.info('Social system routes registered');
+
+        // 경제 밸런싱 시스템 REST API 라우트 등록 (P4-08)
+        await fastify.register(economyRoutes);
+        fastify.log.info('Economy balance routes registered');
+
+        // 인벤토리/장비 시스템 REST API 라우트 등록 (P4-09)
+        await fastify.register(inventoryRoutes);
+        fastify.log.info('Inventory/Equipment routes registered');
 
         // 출석/이벤트 시스템 REST API 라우트 등록
         await fastify.register(eventRoutes);
