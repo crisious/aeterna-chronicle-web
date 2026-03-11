@@ -674,3 +674,158 @@ model Mail {
   @@index([receiverId])
   @@index([senderId])
 }
+
+// ─── 몬스터/적 시스템 (P5-01) ───────────────────────────────────
+model Monster {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  type        String   // normal, elite, boss, field_boss, raid_boss
+  element     String   @default("neutral")  // neutral, fire, ice, lightning, earth, dark, light, time, aether
+  level       Int
+  hp          Int
+  attack      Int
+  defense     Int
+  speed       Int
+  skills      Json     @default("[]")  // [{name, damage, cooldown, element, effectType}]
+  dropTable   Json     @map("drop_table")  // [{itemId, rate, minQty, maxQty}]
+  expReward   Int      @map("exp_reward")
+  goldReward  Int      @map("gold_reward")
+  behavior    Json     // 행동 패턴 {aggro_range, patrol, flee_hp_pct, enrage_hp_pct}
+  location    String?  // 출현 지역
+  respawnTime Int      @default(30) @map("respawn_time")  // 초
+  lore        String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("monsters")
+  @@index([type])
+  @@index([level])
+  @@index([location])
+}
+
+model MonsterSpawn {
+  id        String  @id @default(uuid())
+  monsterId String  @map("monster_id")
+  zoneId    String  @map("zone_id")
+  posX      Float   @map("pos_x")
+  posY      Float   @map("pos_y")
+  maxCount  Int     @default(3) @map("max_count")
+  isActive  Boolean @default(true) @map("is_active")
+
+  @@map("monster_spawns")
+  @@index([zoneId])
+}
+
+// ─── 스킬 트리 시스템 (P5-02) ───────────────────────────────
+model Skill {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  description   String   @db.Text
+  class         String   // ether_knight, memory_weaver, shadow_weaver
+  tier          Int      // 1(기본), 2(Lv.30전직), 3(Lv.50전직), 4(Lv.80전직)
+  type          String   // active, passive, ultimate
+  element       String   @default("neutral")
+  damage        Int      @default(0)
+  damageScale   Float    @default(1.0) @map("damage_scale")
+  mpCost        Int      @default(0) @map("mp_cost")
+  cooldown      Float    @default(0)
+  castTime      Float    @default(0) @map("cast_time")
+  range         Float    @default(1)
+  targetType    String   @default("single") @map("target_type")
+  aoeRadius     Float?   @map("aoe_radius")
+  effect        Json?
+  maxLevel      Int      @default(5) @map("max_level")
+  levelScaling  Json     @map("level_scaling")
+  prerequisites Json     @default("[]")
+  requiredLevel Int      @default(1) @map("required_level")
+  icon          String?
+  animation     String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("skills")
+  @@index([class])
+  @@index([tier])
+}
+
+model PlayerSkill {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  skillId     String   @map("skill_id")
+  level       Int      @default(1)
+  isEquipped  Boolean  @default(false) @map("is_equipped")
+  slotIndex   Int?     @map("slot_index")
+  unlockedAt  DateTime @default(now()) @map("unlocked_at")
+
+  @@unique([userId, skillId])
+  @@map("player_skills")
+  @@index([userId])
+}
+
+// ─── 던전 시스템 (P5-03) ────────────────────────────────────────
+model Dungeon {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  description   String   @db.Text
+  zoneId        String   @map("zone_id")
+  difficulty    String   @default("normal")  // normal, hard, nightmare
+  requiredLevel Int      @map("required_level")
+  maxPlayers    Int      @default(4) @map("max_players")
+  waves         Json     // [{wave, monsters: [{monsterId, count}], isBoss}]
+  rewards       Json     // 클리어 보상
+  timeLimit     Int      @default(600) @map("time_limit")
+  entryCount    Int      @default(3) @map("entry_count")  // 일일 입장 횟수
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("dungeons")
+  @@index([zoneId])
+  @@index([difficulty])
+}
+
+model DungeonRun {
+  id          String    @id @default(uuid())
+  dungeonId   String    @map("dungeon_id")
+  leaderId    String    @map("leader_id")
+  members     Json      // [{userId, damage, deaths}]
+  status      String    @default("in_progress")  // in_progress, cleared, failed, abandoned
+  currentWave Int       @default(1) @map("current_wave")
+  startedAt   DateTime  @default(now()) @map("started_at")
+  endedAt     DateTime? @map("ended_at")
+  lootResult  Json?     @map("loot_result")
+
+  @@map("dungeon_runs")
+  @@index([dungeonId])
+  @@index([leaderId])
+}
+
+// ─── 월드맵/필드 시스템 (P5-04) ─────────────────────────────────
+model Zone {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  description   String   @db.Text
+  region        String   // argentium, silvanhome, erebos, solaris, northland, britallia, oblivion_plateau
+  levelRange    Json     @map("level_range")  // {min, max}
+  connections   Json     // 인접 존 코드 목록
+  npcs          Json     @default("[]")  // 배치된 NPC 목록
+  ambientSound  String?  @map("ambient_sound")
+  bgm           String?
+  mapData       Json?    @map("map_data")  // 타일맵 데이터
+  isHub         Boolean  @default(false) @map("is_hub")  // 마을/안전지대
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("zones")
+  @@index([region])
+}
+
+model PlayerLocation {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  zoneId    String   @map("zone_id")
+  posX      Float    @default(0) @map("pos_x")
+  posY      Float    @default(0) @map("pos_y")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("player_locations")
+}

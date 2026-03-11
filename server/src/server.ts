@@ -42,6 +42,7 @@ import { tutorialRoutes } from './routes/tutorialRoutes';
 import { setupChatSocketHandlers } from './socket/chatSocketHandler';
 import { rateLimitMiddleware } from './security/rateLimiter';
 import { inputValidatorMiddleware } from './security/inputValidator';
+import { skillRoutes } from './routes/skillRoutes';
 
 const fastify = Fastify({ logger: true });
 
@@ -150,6 +151,10 @@ async function startServer() {
         // 튜토리얼 시스템 REST API 라우트 등록 (P4-13)
         await fastify.register(tutorialRoutes);
         fastify.log.info('Tutorial routes registered');
+
+        // 스킬 트리 시스템 REST API 라우트 등록 (P5-02)
+        await fastify.register(skillRoutes);
+        fastify.log.info('Skill tree routes registered');
 
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
