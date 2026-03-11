@@ -116,6 +116,8 @@ type OnAttackResult = (data: AttackResultPayload) => void;
 type OnSkillResult = (data: SkillResultPayload) => void;
 type OnBattleEnd = (data: BattleEndPayload) => void;
 type OnBuffUpdate = (data: BuffUpdatePayload) => void;
+type OnStatusEffectUpdate = (data: StatusEffectUpdatePayload) => void;
+type OnComboAchieved = (data: ComboAchievedPayload) => void;
 
 // ─── CombatManager ─────────────────────────────────────────────
 
@@ -131,6 +133,8 @@ export class CombatManager {
   private onSkillResult?: OnSkillResult;
   private onBattleEnd?: OnBattleEnd;
   private onBuffUpdate?: OnBuffUpdate;
+  private onStatusEffectUpdate?: OnStatusEffectUpdate;
+  private onComboAchieved?: OnComboAchieved;
 
   constructor(battleId?: string) {
     this.battleId = battleId;
@@ -173,6 +177,16 @@ export class CombatManager {
 
       this.socket.on('battle:buff_update', (data: BuffUpdatePayload) => {
         this.onBuffUpdate?.(data);
+      });
+
+      // P6-04: 상태이상 업데이트 수신
+      this.socket.on('battle:status_effect_update', (data: StatusEffectUpdatePayload) => {
+        this.onStatusEffectUpdate?.(data);
+      });
+
+      // P6-05: 콤보 달성 수신
+      this.socket.on('battle:combo_achieved', (data: ComboAchievedPayload) => {
+        this.onComboAchieved?.(data);
       });
     } catch {
       // 오프라인 모드 — 소켓 없이 로컬 전투
@@ -219,6 +233,8 @@ export class CombatManager {
   setOnSkillResult(cb: OnSkillResult): void { this.onSkillResult = cb; }
   setOnBattleEnd(cb: OnBattleEnd): void { this.onBattleEnd = cb; }
   setOnBuffUpdate(cb: OnBuffUpdate): void { this.onBuffUpdate = cb; }
+  setOnStatusEffectUpdate(cb: OnStatusEffectUpdate): void { this.onStatusEffectUpdate = cb; }
+  setOnComboAchieved(cb: OnComboAchieved): void { this.onComboAchieved = cb; }
 
   // ─── 전리품 조회 ─────────────────────────────────────────────
 

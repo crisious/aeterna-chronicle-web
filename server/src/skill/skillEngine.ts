@@ -2,6 +2,9 @@
 // 스킬 포인트, 해금, 레벨업, 장착/해제, 리셋, 데미지 계산
 
 import { prisma } from '../db';
+// P6-04/05: 상태이상 + 콤보 시스템 연동
+import { statusEffectManager } from '../combat/statusEffectManager';
+import { comboManager } from '../combat/comboManager';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 const MAX_EQUIP_SLOTS = 6;                         // 장착 슬롯 최대 수
@@ -342,6 +345,9 @@ export const SKILL_CONSTANTS = {
   RESET_BASE_COST,
   RESET_COST_PER_LEVEL,
 } as const;
+
+// P6-04/05: 상태이상/콤보 매니저 재수출 (전투 시스템 통합 접점)
+export { statusEffectManager, comboManager };
 
 // 미사용 방지용 타입 내보내기
 export type { LevelScalingEntry, SkillEffect, CalculatedDamage };
