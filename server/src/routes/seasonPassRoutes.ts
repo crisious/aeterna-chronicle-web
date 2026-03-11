@@ -146,7 +146,7 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     }
 
     // 보상 존재 여부 확인
-    const rewardList = (type === 'free' ? currentSeason.freeRewards : currentSeason.premiumRewards) as RewardEntry[];
+    const rewardList = (type === 'free' ? currentSeason.freeRewards : currentSeason.premiumRewards) as unknown as RewardEntry[];
     const reward = rewardList.find((r) => r.level === level);
     if (!reward) {
       return reply.status(404).send({ error: `레벨 ${level}에 해당하는 ${type} 보상이 없습니다.` });
@@ -253,7 +253,7 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     let currentLevel = progress.level;
 
     // 최대 레벨 산정 (보상 리스트 길이 기반)
-    const freeRewards = currentSeason.freeRewards as RewardEntry[];
+    const freeRewards = currentSeason.freeRewards as unknown as RewardEntry[];
     const maxLevel = freeRewards.length > 0
       ? Math.max(...freeRewards.map((r) => r.level))
       : 100; // 기본 최대 레벨

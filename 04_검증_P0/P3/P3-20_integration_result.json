@@ -1,0 +1,205 @@
+{
+  "timestamp": "2026-03-11T16:57:30+0900",
+  "results": [
+    {
+      "module": "Build-Server",
+      "check": "tsc_noEmit",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "tsc --noEmit 성공",
+      "elapsed_ms": 902
+    },
+    {
+      "module": "Build-Client",
+      "check": "tsc_noEmit",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "tsc --noEmit 성공",
+      "elapsed_ms": 619
+    },
+    {
+      "module": "P3-01-Protobuf",
+      "check": "proto+codec",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "1 proto, codec OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-02-APM",
+      "check": "apm_files",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "5 파일 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-03-Prisma",
+      "check": "prisma_schema",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "스키마 구문 OK — 20 모델, generator+datasource 확인",
+      "elapsed_ms": 399
+    },
+    {
+      "module": "P3-06-L10N",
+      "check": "l10n_integrity",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "중복 0, 충돌 0",
+      "elapsed_ms": 76
+    },
+    {
+      "module": "P3-07-AtlasPool",
+      "check": "effect_pool_files",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "EffectManager+ObjectPool+Benchmark OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-08-Guild",
+      "check": "guild_crud+war",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "routes + socket OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-09-PvP",
+      "check": "pvp_match+elo+rank",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "matchmaker + arena + routes + socket OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-10-Shop",
+      "check": "shop+season+p2w",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "shopRoutes + seasonPass + p2wGuard OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-11-Ending",
+      "check": "ending_regression",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "회귀 테스트 전원 PASS",
+      "elapsed_ms": 30
+    },
+    {
+      "module": "P3-12-UE5",
+      "check": "ue5_gas+server",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "C++/Header 33개 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-13-UMG",
+      "check": "umg_hud_files",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "HUD 파일 16개",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-14-Raid",
+      "check": "raid_10man+loot",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "raidManager + routes + socket OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-15-Achievement",
+      "check": "achievement_100+title",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "업적 101개 + 칭호 모델 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-16-Class",
+      "check": "class_9paths+ultimate",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "전직 10경로, 궁극기 참조 4건",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-17-k8s",
+      "check": "k8s_manifests",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "14 매니페스트 구문 OK",
+      "elapsed_ms": 15
+    },
+    {
+      "module": "P3-17-Docker",
+      "check": "compose_yaml",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "YAML 구문 OK",
+      "elapsed_ms": 2
+    },
+    {
+      "module": "P3-18-TickWorker",
+      "check": "tick_3layer+worker",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "tickManager + workerBridge + physics/network OK",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-19-CICD",
+      "check": "workflow_yaml",
+      "status": "PASS",
+      "severity": "observation",
+      "detail": "3 워크플로우 OK: ['release.yml', 'deploy.yml', 'ci.yml']",
+      "elapsed_ms": 9
+    },
+    {
+      "module": "P3-04-KPI",
+      "check": "kpi_live_data",
+      "status": "SKIP",
+      "severity": "observation",
+      "detail": "라이브 데이터 필요 — 수동 검증 대상",
+      "elapsed_ms": 0
+    },
+    {
+      "module": "P3-05-HUD",
+      "check": "hud_capture",
+      "status": "SKIP",
+      "severity": "observation",
+      "detail": "수동 스크린샷 캡처 필요",
+      "elapsed_ms": 0
+    }
+  ],
+  "metrics": {
+    "total_files": 298,
+    "code_files": 104,
+    "server_ts_files": 34,
+    "client_ts_files": 12,
+    "db_models": 20,
+    "api_endpoints": 22,
+    "socket_events": 47,
+    "tsc_server_errors": 0,
+    "tsc_client_errors": 0,
+    "proto_messages": 6,
+    "k8s_manifests": 14,
+    "achievements": 101,
+    "class_advancements": 10,
+    "ue5_source_files": 33
+  },
+  "summary": {
+    "total": 22,
+    "pass": 20,
+    "fail": 0,
+    "skip": 2,
+    "critical_fail": 0,
+    "major_fail": 0
+  }
+}
