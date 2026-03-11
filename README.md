@@ -151,11 +151,13 @@ graph TD
 │   ├── src/db.ts               # Prisma 클라이언트
 │   ├── src/redis.ts            # Redis (graceful degradation)
 │   ├── src/socket/             # Room 기반 브로드캐스트 (Protobuf)
-│   ├── src/routes/             # 길드·PvP REST API
+│   ├── src/routes/             # 길드·PvP·상점·시즌패스·엔딩 REST API
 │   ├── src/pvp/                # 매칭 큐 + ELO 아레나
+│   ├── src/shop/               # P2W 가드
+│   ├── src/ending/             # 엔딩 판정 엔진 + 플래그 추적
 │   ├── src/apm/                # APM 메트릭 + 알림 + 대시보드
 │   ├── src/telemetry/          # 이중 기록 (Redis + PostgreSQL)
-│   └── prisma/schema.prisma    # 9모델 (User/Character/Telemetry/Guild/PvP)
+│   └── prisma/schema.prisma    # 14모델
 ├── 📦 shared/               # 클라이언트-서버 공유 코덱/타입 (3 files)
 │   ├── proto/game.proto        # Protobuf 스키마 (PlayerMove/Action/Room)
 │   ├── codec/gameCodec.ts      # 바이너리 인코더/디코더
@@ -269,12 +271,12 @@ graph LR
 ```
 Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
 Phase 2  ████████████████████  100%  멀티엔진 포팅 + 텔레메트리 + QA ✅ RC 승인
-Phase 3  ████████░░░░░░░░░░░░   40%  길드/PvP + 시즌 + 라이브 서비스 (Sprint 3-4 진행 중)
+Phase 3  ████████████░░░░░░░░   60%  길드/PvP/과금/엔딩 + 라이브 서비스 (Sprint 5-6 진행 중)
 ```
 
 ### 최근 업데이트
 
-> **2026-03-11** — Phase 3 Sprint 1-2 완료 (6/7), Sprint 3-4 진행 중. 길드·PvP·APM·Protobuf·Prisma 마이그레이션 구현
+> **2026-03-11** — Phase 3 Sprint 3-4 완료 (12/20). 길드·PvP·과금·멀티엔딩·APM·Protobuf 구현. Sprint 5-6 진행 중
 
 <details>
 <summary><b>📋 코어기획 문서 (21개)</b></summary>
@@ -369,8 +371,8 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 파일 | 226개 (Git tracked) |
-| 총 커밋 | 24개 |
+| 총 파일 | 236개 (Git tracked) |
+| 총 커밋 | 27개 |
 | 기획 문서 | 153개 (.md) |
 | 코어기획 | 21개 / ~12,000줄 |
 | 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
@@ -380,12 +382,12 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 챕터 | 5개 |
 | 엔딩 | 4종 |
 | 검증 리포트 | 43개 (P0/P1/P2/공통) |
-| 코드 파일 | 54개 (TS/C++/C#/Python) |
-| 클라이언트 | Phaser.js + TypeScript (14 files) |
-| 서버 | Fastify + Socket.io + Prisma (24 files) |
+| 코드 파일 | 61개 (TS/C++/C#/Python) |
+| 클라이언트 | Phaser.js + TypeScript (15 files) |
+| 서버 | Fastify + Socket.io + Prisma (32 files) |
 | 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
 | 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
-| DB 모델 | 9개 (User/Character/Telemetry×2/Guild×3/PvP×2) |
+| DB 모델 | 14개 (User/Character/Telemetry×2/Guild×3/PvP×2/Shop×4/Ending) |
 
 ---
 
