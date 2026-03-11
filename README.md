@@ -7,7 +7,7 @@
 [![Phase](https://img.shields.io/badge/Phase-2-blue?style=for-the-badge)](01_코어기획/P2_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Unity%20%7C%20UE5-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-21%20Design%20Docs-orange?style=for-the-badge)](#-코어기획-문서-21개)
-[![License](https://img.shields.io/badge/License-Private-red?style=for-the-badge)](#)
+[![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
 
@@ -385,7 +385,7 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 ### 🤝 기여
 
-이 프로젝트는 현재 비공개입니다.
+이 프로젝트는 현재 공개되어 있습니다.
 
 ---
 
