@@ -19,6 +19,7 @@ import {
 } from '../../../shared/codec/gameCodec';
 import { EffectManager, HitEffectType } from '../effects/EffectManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
+import { SoundManager } from '../sound/SoundManager';
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -29,6 +30,7 @@ export class GameScene extends Phaser.Scene {
   private socket?: Socket;
   private hud!: HudOverlay;
   private effectManager!: EffectManager;
+  private soundManager!: SoundManager;
 
   private hudStatus: HudStatusProps = {
     hpCurrent: 415,
@@ -62,6 +64,10 @@ export class GameScene extends Phaser.Scene {
       console.warn(`[Atlas] 로드 실패 (fallback 사용): ${file.key}`);
     });
 
+    // ── 사운드 매니저 프리로드 (P4-05) ──
+    this.soundManager = new SoundManager(this);
+    this.soundManager.preloadAll();
+
     this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
@@ -80,6 +86,9 @@ export class GameScene extends Phaser.Scene {
     this.createInputs();
     this.createHud();
     this.setupNetwork();
+
+    // ── SoundManager 초기화 (P4-05) ──
+    this.soundManager.init();
 
     // ── EffectManager 초기화 (풀 워밍업 포함) ──
     this.effectManager = new EffectManager(this);

@@ -26,6 +26,8 @@ import { tickAllNpcs } from './npc/behaviorTree';
 import { craftRoutes } from './routes/craftRoutes';
 import { petRoutes } from './routes/petRoutes';
 import { setupPetSocketHandlers } from './socket/petSocketHandler';
+import { questRoutes } from './routes/questRoutes';
+import { startQuestResetScheduler, stopQuestResetScheduler } from './quest/questEngine';
 import { socialRoutes } from './routes/socialRoutes';
 import { setupSocialSocketHandlers, bindSocialIO } from './socket/socialSocketHandler';
 import { purgeExpiredMails } from './social/mailSystem';
@@ -96,6 +98,10 @@ async function startServer() {
         // 펫 시스템 REST API 라우트 등록
         await fastify.register(petRoutes);
         fastify.log.info('Pet system routes registered');
+
+        // 퀘스트 시스템 REST API 라우트 등록
+        await fastify.register(questRoutes);
+        fastify.log.info('Quest system routes registered');
 
         // 소셜 시스템 REST API 라우트 등록 (친구/파티/우편)
         await fastify.register(socialRoutes);
@@ -179,6 +185,10 @@ async function startServer() {
         tickManager.start();
         fastify.log.info('Tick manager started (physics:20Hz, network:10Hz, logic:2Hz)');
 
+        // 퀘스트 일일/주간 초기화 스케줄러 시작
+        startQuestResetScheduler();
+        fastify.log.info('Quest reset scheduler started');
+
         // ── 만료 우편 정리 타이머 (1시간 간격) ──
         const mailPurgeInterval = setInterval(async () => {
           try {
@@ -201,7 +211,9 @@ async function startServer() {
 async function gracefulShutdown(signal: string): Promise<void> {
     console.log(`\n[Shutdown] ${signal} received. Graceful shutdown 시작...`);
 
-    // 0) 틱 매니저 정지
+    // 0) 퀘스트 스케줄러 + 틱 매니저 정지
+    stopQuestResetScheduler();
+    console.log('[Shutdown] Quest reset scheduler stopped');
     tickManager.stop();
     console.log('[Shutdown] Tick manager stopped');
 
