@@ -59,6 +59,8 @@ import { auctionManager } from './auction/auctionManager';
 import { rankingRoutes } from './routes/rankingRoutes';
 import { monsterRoutes } from './routes/monsterRoutes';
 import { spawnManager } from './monster/spawnManager';
+import { registerErrorHandler } from './error/errorHandler';
+import { errorRoutes } from './routes/errorRoutes';
 
 const fastify = Fastify({ logger: true });
 
@@ -72,6 +74,10 @@ async function startServer() {
         await fastify.register(cors, {
             origin: ALLOWED_ORIGINS
         });
+
+        // ── 글로벌 에러 핸들러 등록 (P5-17) ─────────────────────────────
+        await registerErrorHandler(fastify);
+        fastify.log.info('Global error handler registered');
 
         // ── 전역 보안 미들웨어 (P4-15) ────────────────────────────────
         fastify.addHook('preHandler', rateLimitMiddleware);
@@ -203,6 +209,10 @@ async function startServer() {
         // 몬스터/적 시스템 REST API 라우트 등록 (P5-01)
         await fastify.register(monsterRoutes);
         fastify.log.info('Monster system routes registered');
+
+        // 클라이언트 에러 수집 라우트 등록 (P5-17)
+        await fastify.register(errorRoutes);
+        fastify.log.info('Error collection routes registered');
 
         const PORT = parseInt(process.env.PORT || '3000', 10);
 

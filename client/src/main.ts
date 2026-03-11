@@ -1,25 +1,50 @@
 import 'phaser';
+import { MainMenuScene } from './scenes/MainMenuScene';
+import { CharacterSelectScene } from './scenes/CharacterSelectScene';
+import { LobbyScene } from './scenes/LobbyScene';
+import { WorldScene } from './scenes/WorldScene';
 import { GameScene } from './scenes/GameScene';
-import { EndingScene } from './scenes/EndingScene';
 import { BattleScene } from './scenes/BattleScene';
+import { DungeonScene } from './scenes/DungeonScene';
+import { EndingScene } from './scenes/EndingScene';
+import { sceneManager } from './scenes/SceneManager';
+import { errorBoundary } from './error/ErrorBoundary';
 
-// GDD Phase 1 스펙: 1280x720 픽셀 (최소 해상도), 탑다운 RPG.
+/**
+ * 씬 등록 순서 (P5-18):
+ * MainMenu → CharacterSelect → Lobby → World → Game → Battle → Dungeon → Ending
+ *
+ * GDD Phase 1 스펙: 1280x720 픽셀 (최소 해상도), 탑다운 RPG.
+ */
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: 1280,
     height: 720,
     parent: 'game-container',
-    backgroundColor: '#16213E', // UI 다크 블루 컬러를 배경으로 사용 (로딩 중)
+    backgroundColor: '#16213E',
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0, x: 0 }, // 탑다운 RPG이므로 중력 비활성화
-            debug: false             // 배포 시에는 false 처리 (물리 콜라이더 표시)
-        }
+            gravity: { y: 0, x: 0 },
+            debug: false,
+        },
     },
-    scene: [GameScene, BattleScene, EndingScene],
-    pixelArt: true, // 픽셀 아트 스타일 적용을 위해 안티앨리어싱 제거 
+    scene: [
+        MainMenuScene,
+        CharacterSelectScene,
+        LobbyScene,
+        WorldScene,
+        GameScene,
+        BattleScene,
+        DungeonScene,
+        EndingScene,
+    ],
+    pixelArt: true,
 };
 
 // 게임 인스턴스 초기화
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+// 글로벌 시스템 초기화
+sceneManager.initialize(game);
+errorBoundary.initialize(game);

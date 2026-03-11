@@ -1,0 +1,196 @@
+# artillery_config.yml — 에테르나 크로니클 Artillery 부하 테스트 (k6 대안)
+#
+# 실행: npx artillery run tools/loadtest/artillery_config.yml
+# 리포트: npx artillery run --output report.json tools/loadtest/artillery_config.yml
+#          npx artillery report report.json
+
+config:
+  target: "http://localhost:3000"
+  phases:
+    # 1단계: 워밍업 (1분, 초당 10 요청)
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm-up"
+    # 2단계: Ramp-up (3분, 10→100 요청/초)
+    - duration: 180
+      arrivalRate: 10
+      rampTo: 100
+      name: "Ramp-up"
+    # 3단계: 유지 (10분, 초당 100 요청)
+    - duration: 600
+      arrivalRate: 100
+      name: "Sustained load"
+    # 4단계: 스파이크 (1분, 초당 200 요청)
+    - duration: 60
+      arrivalRate: 200
+      name: "Spike"
+    # 5단계: 쿨다운 (1분, 100→10 요청/초)
+    - duration: 60
+      arrivalRate: 100
+      rampTo: 10
+      name: "Cool-down"
+
+  # 응답 임계값
+  ensure:
+    thresholds:
+      - http.response_time.p95: 500    # p95 < 500ms
+      - http.response_time.p99: 1000   # p99 < 1000ms
+    conditions:
+      - expression: "http.codes.200 / http.responses > 0.99"
+        strict: true
+
+  # 기본 헤더
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+  # 플러그인
+  plugins:
+    expect: {}
+
+  # 변수
+  variables:
+    zones:
+      - "starting_village"
+      - "verdant_plains"
+      - "whispering_forest"
+      - "crystal_cave"
+      - "flame_mountain"
+      - "frozen_tundra"
+    skills:
+      - "slash"
+      - "fireball"
+      - "heal"
+      - "backstab"
+      - "rapidShot"
+    items:
+      - "hpPotion_small"
+      - "mpPotion_small"
+      - "antidote"
+
+scenarios:
+  # ── 시나리오 1: 전체 게임 플로우 ──
+  - name: "Full Game Flow"
+    weight: 60
+    flow:
+      # 로그인
+      - post:
+          url: "/api/auth/login"
+          json:
+            username: "artillery_{{ $uuid }}"
+            password: "TestPass123!"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+
+      - think: 2
+
+      # 존 이동
+      - post:
+          url: "/api/world/move"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            zoneId: "{{ $randomItem(zones) }}"
+          expect:
+            - statusCode: 200
+
+      - think: 3
+
+      # 던전 입장
+      - post:
+          url: "/api/dungeon/enter"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            dungeonId: "crystal_cave_01"
+            difficulty: "normal"
+          expect:
+            - statusCode:
+                - 200
+                - 201
+
+      - think: 1
+
+      # 스킬 사용 (3회)
+      - loop:
+          - post:
+              url: "/api/skill/use"
+              headers:
+                Authorization: "Bearer {{ authToken }}"
+              json:
+                skillId: "{{ $randomItem(skills) }}"
+                targetId: "monster_{{ $randomNumber(1, 10) }}"
+              expect:
+                - statusCode: 200
+          - think: 0.5
+        count: 3
+
+      # 인벤토리 조회
+      - get:
+          url: "/api/inventory?page=1&limit=20"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+      - think: 1
+
+      # 채팅
+      - post:
+          url: "/api/chat/send"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            channel: "world"
+            message: "Artillery 테스트 메시지"
+          expect:
+            - statusCode:
+                - 200
+                - 201
+
+  # ── 시나리오 2: 거래소 집중 ──
+  - name: "Auction Heavy"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            username: "auction_{{ $uuid }}"
+            password: "TestPass123!"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+      - think: 1
+
+      # 거래소 목록 조회 (5회 반복)
+      - loop:
+          - get:
+              url: "/api/auction/list?page={{ $loopCount }}&limit=20&sort=recent"
+              headers:
+                Authorization: "Bearer {{ authToken }}"
+              expect:
+                - statusCode: 200
+          - think: 1
+        count: 5
+
+      # 거래소 검색
+      - get:
+          url: "/api/auction/search?keyword=sword&rarity=rare"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # ── 시나리오 3: 헬스 체크 ──
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/health?metrics=true"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
