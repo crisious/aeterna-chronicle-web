@@ -25,8 +25,6 @@ const FONT_FAMILY = 'Pretendard, sans-serif';
 
 const COLOR_BG = 0x1a1a2e;
 const COLOR_BORDER = 0x4a4a6a;
-const COLOR_ACCENT = 0xffd700;
-const COLOR_TEXT = 0xffffff;
 const COLOR_TOGGLE_ON = 0x00cc66;
 const COLOR_TOGGLE_OFF = 0x666666;
 const COLOR_SLIDER_BG = 0x333355;
@@ -51,14 +49,14 @@ const SUBTITLE_SIZE_LABELS: Record<SubtitleSize, string> = {
 
 interface ToggleButton {
   bg: Phaser.GameObjects.Rectangle;
-  knob: Phaser.GameObjects.Circle;
+  knob: Phaser.GameObjects.Arc;
   enabled: boolean;
 }
 
 interface SliderControl {
   track: Phaser.GameObjects.Rectangle;
   fill: Phaser.GameObjects.Rectangle;
-  handle: Phaser.GameObjects.Circle;
+  handle: Phaser.GameObjects.Arc;
   value: number;
   min: number;
   max: number;
@@ -75,24 +73,10 @@ interface CycleButton {
 // ─── 설정 패널 Scene ─────────────────────────────────────────
 
 export class AccessibilitySettingsPanel extends Phaser.Scene {
-  private panelBg!: Phaser.GameObjects.Rectangle;
-  private panelBorder!: Phaser.GameObjects.Rectangle;
-  private titleText!: Phaser.GameObjects.Text;
   private container!: Phaser.GameObjects.Container;
-
-  // UI 컨트롤
-  private colorBlindCycle!: CycleButton;
-  private highContrastToggle!: ToggleButton;
-  private uiScaleSlider!: SliderControl;
-  private subtitlesToggle!: ToggleButton;
-  private subtitleSizeCycle!: CycleButton;
-  private subtitleOpacitySlider!: SliderControl;
-  private keyboardNavToggle!: ToggleButton;
-  private screenReaderToggle!: ToggleButton;
-  private reduceMotionToggle!: ToggleButton;
-
   private currentSettings!: AccessibilitySettings;
   private rowY = 0;
+
 
   constructor() {
     super({ key: 'AccessibilitySettingsPanel' });
@@ -109,9 +93,9 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     overlay.setInteractive();
 
     // 패널 배경
-    this.panelBg = this.add.rectangle(cx, cy, PANEL_WIDTH, PANEL_HEIGHT, COLOR_BG, 0.95);
-    this.panelBorder = this.add.rectangle(cx, cy, PANEL_WIDTH, PANEL_HEIGHT);
-    this.panelBorder.setStrokeStyle(2, COLOR_BORDER);
+    this.add.rectangle(cx, cy, PANEL_WIDTH, PANEL_HEIGHT, COLOR_BG, 0.95);
+    const panelBorder = this.add.rectangle(cx, cy, PANEL_WIDTH, PANEL_HEIGHT);
+    panelBorder.setStrokeStyle(2, COLOR_BORDER);
 
     // 컨테이너 (패널 내부 요소)
     const containerX = cx - PANEL_WIDTH / 2;
@@ -119,55 +103,47 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     this.container = this.add.container(containerX, containerY);
 
     // 제목
-    this.titleText = this.add.text(PANEL_WIDTH / 2, PADDING, '⚙ 접근성 설정', {
+    const titleText = this.add.text(PANEL_WIDTH / 2, PADDING, '⚙ 접근성 설정', {
       fontFamily: FONT_FAMILY,
       fontSize: '22px',
       color: '#FFD700',
       fontStyle: 'bold',
     }).setOrigin(0.5, 0);
-    this.container.add(this.titleText);
+    this.container.add(titleText);
 
     this.rowY = PADDING + 50;
 
     // ── 각 설정 항목 생성 ──
     this.createColorBlindRow();
     this.createToggleRow('고대비 모드', this.currentSettings.highContrast, (v) => {
-      this.highContrastToggle = this.lastToggle;
       accessibilityManager.setHighContrast(v);
     });
-    this.highContrastToggle = this.lastToggle;
 
     this.createSliderRow('UI 스케일', this.currentSettings.uiScale, 0.75, 2.0, 0.25, (v) => {
       accessibilityManager.setUiScale(v);
     });
-    this.uiScaleSlider = this.lastSlider;
 
     this.createToggleRow('자막 표시', this.currentSettings.subtitlesEnabled, (v) => {
       accessibilityManager.setSubtitlesEnabled(v);
     });
-    this.subtitlesToggle = this.lastToggle;
 
     this.createSubtitleSizeRow();
 
     this.createSliderRow('자막 배경 불투명도', this.currentSettings.subtitleBgOpacity, 0, 1, 0.1, (v) => {
       accessibilityManager.setSubtitleBgOpacity(v);
     });
-    this.subtitleOpacitySlider = this.lastSlider;
 
     this.createToggleRow('키보드 내비게이션', this.currentSettings.keyboardNavEnabled, (v) => {
       accessibilityManager.setKeyboardNavEnabled(v);
     });
-    this.keyboardNavToggle = this.lastToggle;
 
     this.createToggleRow('스크린리더 지원', this.currentSettings.screenReaderEnabled, (v) => {
       accessibilityManager.setScreenReaderEnabled(v);
     });
-    this.screenReaderToggle = this.lastToggle;
 
     this.createToggleRow('모션 감소', this.currentSettings.reduceMotion, (v) => {
       accessibilityManager.setReduceMotion(v);
     });
-    this.reduceMotionToggle = this.lastToggle;
 
     // 닫기 / 초기화 버튼
     this.rowY += 10;
@@ -179,10 +155,7 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
 
   // ── 토글 버튼 생성 ─────────────────────────────────────────
 
-  private lastToggle!: ToggleButton;
-
   private createToggleRow(label: string, initial: boolean, onChange: (v: boolean) => void): void {
-    // 라벨
     const text = this.add.text(LABEL_X, this.rowY + ROW_HEIGHT / 2, label, {
       fontFamily: FONT_FAMILY,
       fontSize: '15px',
@@ -190,17 +163,15 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     }).setOrigin(0, 0.5);
     this.container.add(text);
 
-    // 토글 배경
     const toggleWidth = 50;
-    const toggleHeight = 24;
     const tx = CONTROL_X + 40;
     const ty = this.rowY + ROW_HEIGHT / 2;
-    const bg = this.add.rectangle(tx, ty, toggleWidth, toggleHeight, initial ? COLOR_TOGGLE_ON : COLOR_TOGGLE_OFF, 1)
+    const bg = this.add.rectangle(tx, ty, toggleWidth, 24, initial ? COLOR_TOGGLE_ON : COLOR_TOGGLE_OFF, 1)
       .setInteractive({ useHandCursor: true });
     bg.setStrokeStyle(1, 0x888888);
 
     const knobX = initial ? tx + toggleWidth / 2 - 12 : tx - toggleWidth / 2 + 12;
-    const knob = this.add.circle(knobX, ty, 10, COLOR_TEXT);
+    const knob = this.add.arc(knobX, ty, 10, 0, 360, false, 0xffffff);
 
     this.container.add([bg, knob]);
 
@@ -214,20 +185,16 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
       onChange(toggle.enabled);
     });
 
-    this.lastToggle = toggle;
     this.rowY += ROW_HEIGHT;
   }
 
   // ── 슬라이더 생성 ──────────────────────────────────────────
-
-  private lastSlider!: SliderControl;
 
   private createSliderRow(
     label: string, initial: number,
     min: number, max: number, step: number,
     onChange: (v: number) => void,
   ): void {
-    // 라벨
     const text = this.add.text(LABEL_X, this.rowY + ROW_HEIGHT / 2, label, {
       fontFamily: FONT_FAMILY,
       fontSize: '15px',
@@ -235,7 +202,6 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     }).setOrigin(0, 0.5);
     this.container.add(text);
 
-    // 슬라이더 트랙
     const sliderWidth = 120;
     const sx = CONTROL_X;
     const sy = this.rowY + ROW_HEIGHT / 2;
@@ -245,12 +211,11 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     const fillWidth = pct * sliderWidth;
     const fill = this.add.rectangle(sx + fillWidth / 2, sy, fillWidth, 6, COLOR_SLIDER_FILL);
 
-    const handle = this.add.circle(sx + fillWidth, sy, 8, COLOR_ACCENT)
+    const handle = this.add.arc(sx + fillWidth, sy, 8, 0, 360, false, 0xffd700)
       .setInteractive({ useHandCursor: true, draggable: true });
 
     this.container.add([track, fill, handle]);
 
-    // 값 표시 텍스트
     const valueText = this.add.text(sx + sliderWidth + 12, sy, initial.toFixed(2), {
       fontFamily: FONT_FAMILY,
       fontSize: '13px',
@@ -265,7 +230,6 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
       handle.setPosition(clampedX, sy);
       const newPct = (clampedX - sx) / sliderWidth;
       let rawValue = min + newPct * (max - min);
-      // step 보정
       rawValue = Math.round(rawValue / step) * step;
       rawValue = Phaser.Math.Clamp(rawValue, min, max);
       slider.value = rawValue;
@@ -278,7 +242,6 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
       onChange(rawValue);
     });
 
-    this.lastSlider = slider;
     this.rowY += ROW_HEIGHT;
   }
 
@@ -301,15 +264,15 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
     bg.setStrokeStyle(1, COLOR_BORDER);
 
-    const label = this.add.text(bx, by, COLOR_BLIND_LABELS[modes[currentIdx]], {
+    const lbl = this.add.text(bx, by, COLOR_BLIND_LABELS[modes[currentIdx]], {
       fontFamily: FONT_FAMILY,
       fontSize: '13px',
       color: '#FFD700',
     }).setOrigin(0.5);
-    this.container.add([bg, label]);
+    this.container.add([bg, lbl]);
 
     const cycle: CycleButton = {
-      bg, label,
+      bg, label: lbl,
       options: modes,
       currentIndex: currentIdx,
     };
@@ -317,11 +280,10 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     bg.on('pointerdown', () => {
       cycle.currentIndex = (cycle.currentIndex + 1) % modes.length;
       const mode = modes[cycle.currentIndex];
-      label.setText(COLOR_BLIND_LABELS[mode]);
+      lbl.setText(COLOR_BLIND_LABELS[mode]);
       accessibilityManager.setColorBlindMode(mode);
     });
 
-    this.colorBlindCycle = cycle;
     this.rowY += ROW_HEIGHT;
   }
 
@@ -344,15 +306,15 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
     bg.setStrokeStyle(1, COLOR_BORDER);
 
-    const label = this.add.text(bx, by, SUBTITLE_SIZE_LABELS[sizes[currentIdx]], {
+    const lbl = this.add.text(bx, by, SUBTITLE_SIZE_LABELS[sizes[currentIdx]], {
       fontFamily: FONT_FAMILY,
       fontSize: '14px',
       color: '#FFD700',
     }).setOrigin(0.5);
-    this.container.add([bg, label]);
+    this.container.add([bg, lbl]);
 
     const cycle: CycleButton = {
-      bg, label,
+      bg, label: lbl,
       options: sizes,
       currentIndex: currentIdx,
     };
@@ -360,11 +322,10 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     bg.on('pointerdown', () => {
       cycle.currentIndex = (cycle.currentIndex + 1) % sizes.length;
       const size = sizes[cycle.currentIndex] as SubtitleSize;
-      label.setText(SUBTITLE_SIZE_LABELS[size]);
+      lbl.setText(SUBTITLE_SIZE_LABELS[size]);
       accessibilityManager.setSubtitleSize(size);
     });
 
-    this.subtitleSizeCycle = cycle;
     this.rowY += ROW_HEIGHT;
   }
 
@@ -384,7 +345,7 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
 
     resetBg.on('pointerdown', () => {
       accessibilityManager.resetSettings();
-      this.scene.restart(); // 패널 새로고침
+      this.scene.restart();
     });
 
     // 닫기 버튼

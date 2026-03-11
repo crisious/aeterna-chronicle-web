@@ -77,8 +77,8 @@ const COLOR_BLIND_FILTERS: Record<ColorBlindMode, string> = {
     'url(#tritanopia-filter)',
 };
 
-/** 색맹 CSS 필터 — CSS filter 방식 fallback */
-const COLOR_BLIND_CSS_FILTERS: Record<ColorBlindMode, string> = {
+/** 색맹 CSS 필터 — CSS filter 방식 fallback (SVG 미지원 브라우저용) */
+export const COLOR_BLIND_CSS_FILTERS: Record<ColorBlindMode, string> = {
   none: 'none',
   // Protanopia: 적색 인식 불가 — 적-녹 혼동 (적색 약화)
   protanopia: 'saturate(0.8) hue-rotate(-20deg)',

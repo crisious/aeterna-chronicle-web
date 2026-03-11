@@ -1,0 +1,23 @@
+{
+  "name": "aeterna-chronicle",
+  "version": "0.5.14",
+  "description": "에테르나 크로니클 — MMORPG 프로젝트",
+  "private": true,
+  "scripts": {
+    "test:unit": "vitest run --config vitest.config.ts --include 'tests/unit/**/*.test.ts'",
+    "test:integration": "vitest run --config vitest.config.ts --include 'tests/integration/**/*.test.ts'",
+    "test:e2e": "vitest run --config vitest.config.ts --include 'tests/e2e/**/*.test.ts'",
+    "test:all": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "seed": "npx ts-node --project server/tsconfig.json tools/seed/masterSeed.ts",
+    "seed:dry": "npx ts-node --project server/tsconfig.json tools/seed/masterSeed.ts --dry-run",
+    "seed:check": "npx ts-node --project server/tsconfig.json tools/seed/integrityCheck.ts",
+    "seed:reset": "npx prisma db push --force-reset && npm run seed",
+    "seed:staging": "npx ts-node --project server/tsconfig.json tools/staging/seed.ts"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0",
+    "@vitest/coverage-v8": "^3.0.0"
+  }
+}
