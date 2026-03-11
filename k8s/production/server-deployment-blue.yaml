@@ -1,0 +1,60 @@
+# ─── 프로덕션 Blue 배포 (P6-16) ─────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-blue
+  namespace: etherna-production
+  labels:
+    app: etherna-server
+    slot: blue
+    role: standby
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: etherna-server
+      slot: blue
+  template:
+    metadata:
+      labels:
+        app: etherna-server
+        slot: blue
+    spec:
+      containers:
+        - name: server
+          image: ghcr.io/etherna/etherna-server:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: etherna-production-config
+            - secretRef:
+                name: etherna-production-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            failureThreshold: 30
+            periodSeconds: 5
+      terminationGracePeriodSeconds: 60

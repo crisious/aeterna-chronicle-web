@@ -1,0 +1,67 @@
+# ─── 프로덕션 Ingress — 트래픽 가중치 기반 전환 (P6-16) ─────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: etherna-production
+  namespace: etherna-production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # WebSocket 지원
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    # Canary 설정 — 블루/그린 전환 시 weight 조절
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "0"
+spec:
+  tls:
+    - hosts:
+        - api.etherna.io
+      secretName: etherna-production-tls
+  rules:
+    - host: api.etherna.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server-green
+                port:
+                  number: 3000
+---
+# Primary Ingress (Blue — standby, 기본 트래픽 수신)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: etherna-production-primary
+  namespace: etherna-production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+spec:
+  tls:
+    - hosts:
+        - api.etherna.io
+      secretName: etherna-production-tls
+  rules:
+    - host: api.etherna.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server-green
+                port:
+                  number: 3000

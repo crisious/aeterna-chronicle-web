@@ -1032,3 +1032,87 @@ model SaveSlot {
   @@map("save_slots")
   @@index([userId])
 }
+
+// ─── 베타 초대 코드 (P6-19) ───────────────────────────────────
+model BetaInvite {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  email       String?
+  usedBy      String?  @map("used_by")
+  isUsed      Boolean  @default(false) @map("is_used")
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("beta_invites")
+  @@index([code])
+}
+
+// ─── 피드백 리포트 (P6-19) ────────────────────────────────────
+model FeedbackReport {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // bug, feature, balance, ux, other
+  title       String
+  description String   @db.Text
+  priority    String   @default("normal") // low, normal, high, critical
+  status      String   @default("open") // open, acknowledged, in_progress, resolved, wontfix
+  screenshot  String?  @db.Text
+  metadata    Json?    // 브라우저/OS/해상도 등
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("feedback_reports")
+  @@index([type])
+  @@index([status])
+}
+
+// ─── 신고 시스템 (P6-12) ──────────────────────────────────────
+model Report {
+  id          String    @id @default(uuid())
+  reporterId  String    @map("reporter_id")
+  targetId    String    @map("target_id")
+  type        String    // harassment, cheating, botting, inappropriate_name, spam, other
+  description String    @db.Text
+  evidence    Json?     // 스크린샷 URL, 채팅 로그 등
+  status      String    @default("pending") // pending, reviewing, resolved, dismissed
+  reviewerId  String?   @map("reviewer_id")
+  action      String?   // warn, mute_1h, mute_24h, ban_7d, ban_30d, ban_permanent
+  reviewNote  String?   @map("review_note") @db.Text
+  resolvedAt  DateTime? @map("resolved_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("reports")
+  @@index([targetId])
+  @@index([status])
+}
+
+// ─── 제재 시스템 (P6-12) ──────────────────────────────────────
+model Sanction {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  type       String    // warn, mute, ban
+  reason     String
+  duration   Int?      // 분 (null=영구)
+  issuedBy   String    @map("issued_by")
+  isActive   Boolean   @default(true) @map("is_active")
+  expiresAt  DateTime? @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@map("sanctions")
+  @@index([userId])
+  @@index([isActive])
+}
+
+// ─── KPI 스냅샷 (P6-14) ──────────────────────────────────────
+model KpiSnapshot {
+  id        String   @id @default(uuid())
+  date      DateTime
+  metric    String   // dau, mau, arpu, ltv, retention_d1, retention_d7, retention_d30, revenue, arppu, conversion
+  value     Float
+  segment   String?  // 세그먼트 (new/returning/whale 등)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([date, metric, segment])
+  @@map("kpi_snapshots")
+  @@index([metric])
+  @@index([date])
+}

@@ -70,9 +70,15 @@ import { setupMatchmakingSocketHandlers } from './socket/matchmakingSocketHandle
 import { startMatchmaking, stopMatchmaking } from './matchmaking/matchmakingQueue';
 import { storyRoutes } from './routes/storyRoutes';
 import { saveRoutes } from './routes/saveRoutes';
+import { reportRoutes } from './routes/reportRoutes';
+import { analyticsRoutes } from './routes/analyticsRoutes';
+import { expireOverdueSanctions } from './report/reportManager';
 import { setupGuildWarSocketHandlers } from './socket/guildWarSocketHandler';
 import { shutdownGuildWar } from './guild/guildWarEngine';
 import { resetAllDr } from './pvp/pvpNormalizer';
+import { opsRoutes } from './routes/opsRoutes';
+import { opsAlertManager } from './ops/opsAlertManager';
+import { betaRoutes } from './routes/betaRoutes';
 
 const fastify = Fastify({ logger: true });
 
@@ -94,6 +100,14 @@ async function startServer() {
         // ── 전역 보안 미들웨어 (P4-15) ────────────────────────────────
         fastify.addHook('preHandler', rateLimitMiddleware);
         fastify.addHook('preHandler', inputValidatorMiddleware);
+
+        // ── P6-18: 운영 알림 메트릭 수집 훅 ──
+        fastify.addHook('onResponse', (req, reply, done) => {
+          const latency = reply.elapsedTime ?? 0;
+          const isError = reply.statusCode >= 500;
+          opsAlertManager.recordRequest(latency, isError);
+          done();
+        });
         fastify.log.info('Global security middleware registered (rate limiter + input validator)');
 
         // 헬스 체크 API 엔드포인트 (메트릭 요약 포함 옵션: ?metrics=true)
@@ -250,6 +264,22 @@ async function startServer() {
         await fastify.register(saveRoutes);
         fastify.log.info('Save/checkpoint routes registered');
 
+        // 신고/제재 REST API 라우트 등록 (P6-12)
+        await fastify.register(reportRoutes);
+        fastify.log.info('Report/Sanction routes registered');
+
+        // KPI/BI 분석 REST API 라우트 등록 (P6-14)
+        await fastify.register(analyticsRoutes);
+        fastify.log.info('Analytics/KPI routes registered');
+
+        // ── P6-18: 운영 알림 라우트 ──
+        await fastify.register(opsRoutes);
+        fastify.log.info('Ops alert routes registered');
+
+        // ── P6-19: 오픈 베타 라우트 ──
+        await fastify.register(betaRoutes);
+        fastify.log.info('Beta invite/feedback routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -396,6 +426,17 @@ async function startServer() {
           }
         }, 5 * 60 * 1000);
         (fastify as unknown as Record<string, unknown>)._eventSyncInterval = eventSyncInterval;
+
+        // ── 만료 제재 자동 해제 타이머 (5분 간격, P6-12) ──
+        const sanctionExpireInterval = setInterval(async () => {
+          try {
+            const count = await expireOverdueSanctions();
+            if (count > 0) fastify.log.info(`[Sanction] 만료 제재 ${count}건 해제`);
+          } catch (err) {
+            fastify.log.error(`[Sanction] 만료 제재 해제 실패: ${err}`);
+          }
+        }, 5 * 60 * 1000);
+        (fastify as unknown as Record<string, unknown>)._sanctionExpireInterval = sanctionExpireInterval;
 
         // ── 만료 우편 정리 타이머 (1시간 간격) ──
         const mailPurgeInterval = setInterval(async () => {

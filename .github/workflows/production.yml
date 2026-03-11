@@ -1,0 +1,242 @@
+# ─── 프로덕션 배포 워크플로우 (P6-16) ───────────────────────────
+# 블루/그린 무중단 배포 + 수동 롤백 지원
+name: Production Deploy
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      rollback_tag:
+        description: '롤백 대상 태그 (예: v1.2.3)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/etherna-server
+  K8S_NAMESPACE: etherna-production
+
+jobs:
+  # ── 1단계: 린트 + 테스트 ──────────────────────────────────────
+  validate:
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.rollback_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: cd server && npm ci
+
+      - name: Lint
+        run: cd server && npm run lint
+
+      - name: Type check
+        run: cd server && npx tsc --noEmit
+
+      - name: Unit tests
+        run: cd server && npm test
+        env:
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+
+  # ── 2단계: Docker 이미지 빌드 + 푸시 ──────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    needs: validate
+    if: ${{ !inputs.rollback_tag }}
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=sha,prefix=
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Slack 알림 — 빌드 완료
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🏗️ 프로덕션 빌드 완료: ${{ steps.meta.outputs.version }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+
+  # ── 3단계: 블루/그린 배포 ─────────────────────────────────────
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ !inputs.rollback_tag }}
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Set kubeconfig
+        run: echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > $HOME/.kube/config
+
+      - name: Slack 알림 — 배포 시작
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🚀 프로덕션 배포 시작: ${{ needs.build.outputs.image_tag }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+
+      - name: Green 배포 — 새 버전 적용
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}"
+          kubectl set image deployment/server-green server=${IMAGE} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/server-green \
+            -n ${{ env.K8S_NAMESPACE }} --timeout=300s
+
+      - name: 헬스체크 — Green 서버 검증
+        run: |
+          GREEN_SVC=$(kubectl get svc server-green -n ${{ env.K8S_NAMESPACE }} -o jsonpath='{.spec.clusterIP}')
+          for i in $(seq 1 10); do
+            STATUS=$(curl -sf http://${GREEN_SVC}:3000/health | jq -r '.status' 2>/dev/null || echo "fail")
+            if [ "$STATUS" = "ok" ]; then
+              echo "✅ Green 헬스체크 통과 (${i}/10)"
+              exit 0
+            fi
+            echo "⏳ 헬스체크 재시도 ${i}/10..."
+            sleep 10
+          done
+          echo "❌ Green 헬스체크 실패"
+          exit 1
+
+      - name: 트래픽 전환 — Green으로 100% 전환
+        run: |
+          kubectl patch ingress etherna-production \
+            -n ${{ env.K8S_NAMESPACE }} \
+            --type merge \
+            -p '{"metadata":{"annotations":{"nginx.ingress.kubernetes.io/canary-weight":"0"}}}'
+          # green을 primary로 설정
+          kubectl label deployment server-green role=primary --overwrite -n ${{ env.K8S_NAMESPACE }}
+          kubectl label deployment server-blue role=standby --overwrite -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Blue 업데이트 — 이전 버전 유지 (롤백용)
+        run: |
+          echo "Blue deployment 유지 — 롤백 필요 시 사용"
+          kubectl annotate deployment server-blue \
+            previous-tag="${{ needs.build.outputs.image_tag }}" \
+            --overwrite -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Slack 알림 — 배포 성공
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ 프로덕션 배포 성공: ${{ needs.build.outputs.image_tag }}\n환경: ${{ env.K8S_NAMESPACE }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+
+      - name: Slack 알림 — 배포 실패
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "❌ 프로덕션 배포 실패: ${{ needs.build.outputs.image_tag }}\n확인 필요: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+
+  # ── 롤백 (수동 dispatch) ──────────────────────────────────────
+  rollback:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.rollback_tag }}
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Set kubeconfig
+        run: echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > $HOME/.kube/config
+
+      - name: Slack 알림 — 롤백 시작
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "⏪ 프로덕션 롤백 시작: ${{ inputs.rollback_tag }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+
+      - name: 롤백 실행
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.rollback_tag }}"
+          kubectl set image deployment/server-green server=${IMAGE} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/server-green \
+            -n ${{ env.K8S_NAMESPACE }} --timeout=300s
+
+      - name: 롤백 헬스체크
+        run: |
+          GREEN_SVC=$(kubectl get svc server-green -n ${{ env.K8S_NAMESPACE }} -o jsonpath='{.spec.clusterIP}')
+          for i in $(seq 1 5); do
+            STATUS=$(curl -sf http://${GREEN_SVC}:3000/health | jq -r '.status' 2>/dev/null || echo "fail")
+            if [ "$STATUS" = "ok" ]; then
+              echo "✅ 롤백 헬스체크 통과"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "❌ 롤백 헬스체크 실패"
+          exit 1
+
+      - name: Slack 알림 — 롤백 완료
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ 프로덕션 롤백 완료: ${{ inputs.rollback_tag }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
