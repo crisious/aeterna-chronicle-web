@@ -48,7 +48,7 @@ export interface CreateReportInput {
   targetId: string;
   type: ReportType;
   description: string;
-  evidence?: Record<string, unknown>; // 스크린샷 URL, 채팅 로그 등
+  evidence?: Record<string, unknown> | null; // 스크린샷 URL, 채팅 로그 등
 }
 
 /**
@@ -74,7 +74,7 @@ export async function createReport(input: CreateReportInput) {
       targetId: input.targetId,
       type: input.type,
       description: input.description,
-      evidence: input.evidence ?? undefined,
+      evidence: input.evidence ? JSON.parse(JSON.stringify(input.evidence)) as typeof undefined : undefined,
       status: 'pending',
     },
   });
