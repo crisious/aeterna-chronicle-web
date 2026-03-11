@@ -31,4 +31,53 @@ model Character {
   
   // Phase 1 인벤토리/장비 데이터는 DB 구조 단순화를 위해 JSONB로 관리 (확장성 고려)
   inventoryData Json?
+
+  @@index([userId])
+}
+
+// ─── 텔레메트리: 대화 선택지 이벤트 ───────────────────────────
+model TelemetryDialogueChoice {
+  id              String   @id @default(uuid())
+  eventId         String   @map("event_id")
+  eventTs         DateTime @map("event_ts")
+  sessionId       String   @map("session_id")
+  playerIdHash    String   @map("player_id_hash")
+  chapterId       String   @map("chapter_id")
+  sceneId         String   @map("scene_id")
+  npcId           String   @map("npc_id")
+  dialogueNodeId  String   @map("dialogue_node_id")
+  choiceId        String   @map("choice_id")
+  choiceTextKey   String   @map("choice_text_key")
+  inputMode       String   @map("input_mode")
+  latencyMs       Int?     @map("latency_ms")
+  partyComp       Json?    @map("party_comp")
+  difficultyTier  String?  @map("difficulty_tier")
+  buildVersion    String   @map("build_version")
+  platform        String
+  region          String?
+  idempotencyKey  String   @unique @map("idempotency_key")
+  deduped         Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("telemetry_dialogue_choice_events")
+  @@index([chapterId, sceneId, npcId])
+  @@index([sessionId])
+  @@index([eventTs])
+  @@index([playerIdHash])
+}
+
+// ─── 텔레메트리: 범용 게임 이벤트 (향후 확장용) ─────────────────
+model TelemetryGameEvent {
+  id          String   @id @default(uuid())
+  eventType   String   @map("event_type")
+  eventTs     DateTime @map("event_ts")
+  sessionId   String   @map("session_id")
+  playerId    String   @map("player_id")
+  payload     Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("telemetry_game_events")
+  @@index([eventType, eventTs])
+  @@index([sessionId])
+  @@index([playerId])
 }

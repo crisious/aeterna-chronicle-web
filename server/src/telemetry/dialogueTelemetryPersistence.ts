@@ -2,12 +2,16 @@ import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
 import { DialogueChoiceTelemetryEvent } from './dialogueTelemetryServer';
 
-const REDIS_TTL_SECONDS = 60 * 24 * 60 * 60; // 60 days
+const REDIS_TTL_SECONDS = 60 * 24 * 60 * 60; // 60일
 
 function baseKey(payload: DialogueChoiceTelemetryEvent): string {
   return `telemetry:dialogue_choice:${payload.eventId}`;
 }
 
+/**
+ * 대화 선택지 텔레메트리를 Redis + PostgreSQL에 저장한다.
+ * PostgreSQL 저장은 best-effort — 실패해도 서버는 계속 동작한다.
+ */
 export async function persistDialogueTelemetry(
   payload: DialogueChoiceTelemetryEvent,
   deduped: boolean
@@ -18,6 +22,7 @@ export async function persistDialogueTelemetry(
   await persistToPostgresBestEffort(payload, deduped);
 }
 
+/** Redis 해시 + 타임라인 sorted set + 카운터 원자적 기록 */
 async function persistToRedis(payload: DialogueChoiceTelemetryEvent, deduped: boolean): Promise<void> {
   const key = baseKey(payload);
   const ts = Date.parse(payload.eventTs) || Date.now();
@@ -56,74 +61,47 @@ async function persistToRedis(payload: DialogueChoiceTelemetryEvent, deduped: bo
 }
 
 /**
- * Prisma 모델이 아직 schema.prisma에 반영되지 않았을 수 있으므로
- * raw SQL + best-effort로 기록한다. (테이블 미존재 시 서버 동작은 유지)
+ * Prisma 모델 기반 PostgreSQL upsert.
+ * idempotencyKey 중복 시 deduped 플래그만 갱신한다.
+ * 테이블 미존재 등 오류 시 경고 로그만 남기고 서버 동작을 유지한다.
  */
 async function persistToPostgresBestEffort(
   payload: DialogueChoiceTelemetryEvent,
   deduped: boolean
 ): Promise<void> {
-  const eventTs = new Date(payload.eventTs);
-  const latencyMs = payload.latencyMs ?? null;
-  const partyComp = JSON.stringify(payload.partyComp ?? []);
-  const difficultyTier = payload.difficultyTier ?? null;
-  const region = payload.region ?? null;
-
   try {
-    await prisma.$executeRawUnsafe(
-      `
-      INSERT INTO telemetry_dialogue_choice_events (
-        event_id,
-        event_ts,
-        session_id,
-        player_id_hash,
-        chapter_id,
-        scene_id,
-        npc_id,
-        dialogue_node_id,
-        choice_id,
-        choice_text_key,
-        input_mode,
-        latency_ms,
-        party_comp,
-        difficulty_tier,
-        build_version,
-        platform,
-        region,
-        idempotency_key,
+    await prisma.telemetryDialogueChoice.upsert({
+      where: { idempotencyKey: payload.idempotencyKey },
+      create: {
+        eventId: payload.eventId,
+        eventTs: new Date(payload.eventTs),
+        sessionId: payload.sessionId,
+        playerIdHash: payload.playerIdHash,
+        chapterId: payload.chapterId,
+        sceneId: payload.sceneId,
+        npcId: payload.npcId,
+        dialogueNodeId: payload.dialogueNodeId,
+        choiceId: payload.choiceId,
+        choiceTextKey: payload.choiceTextKey,
+        inputMode: payload.inputMode,
+        latencyMs: payload.latencyMs ?? null,
+        partyComp: payload.partyComp ?? undefined,
+        difficultyTier: payload.difficultyTier ?? null,
+        buildVersion: payload.buildVersion,
+        platform: payload.platform,
+        region: payload.region ?? null,
+        idempotencyKey: payload.idempotencyKey,
         deduped,
-        created_at
-      ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
-        $11,$12,$13,$14,$15,$16,$17,$18,$19,NOW()
-      )
-      ON CONFLICT (idempotency_key)
-      DO UPDATE SET deduped = EXCLUDED.deduped;
-      `,
-      payload.eventId,
-      eventTs,
-      payload.sessionId,
-      payload.playerIdHash,
-      payload.chapterId,
-      payload.sceneId,
-      payload.npcId,
-      payload.dialogueNodeId,
-      payload.choiceId,
-      payload.choiceTextKey,
-      payload.inputMode,
-      latencyMs,
-      partyComp,
-      difficultyTier,
-      payload.buildVersion,
-      payload.platform,
-      region,
-      payload.idempotencyKey,
-      deduped
-    );
+      },
+      update: {
+        deduped,
+      },
+    });
   } catch (error) {
+    // best-effort: 실패해도 서버 중단하지 않음
     console.warn('[Telemetry:dialogue_choice] postgres persistence skipped', {
       reason: error instanceof Error ? error.message : String(error),
-      eventId: payload.eventId
+      eventId: payload.eventId,
     });
   }
 }
