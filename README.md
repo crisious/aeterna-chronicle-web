@@ -4,7 +4,7 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-5%20RELEASE-gold?style=for-the-badge)](01_코어기획/P5_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-6%20OPEN%20BETA-brightgreen?style=for-the-badge)](01_코어기획/P6_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-21%20Design%20Docs-orange?style=for-the-badge)](#-코어기획-문서-21개)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
@@ -277,7 +277,7 @@ Phase 4  ████████████████████  100%  20/
 
 ### 최근 업데이트
 
-> **2026-03-11** — **Phase 5 출시 RC 승인** (20/20, 50/50 PASS). 전투 코어·던전·월드맵·거래소·스킬·도감·대화·접근성·QA 250+·L10N·보안감사 전부 구현. 게임 출시 가능 상태
+> **2026-03-11** — **Phase 6 오픈 베타 승인** (20/20, 60/60 PASS). 수익화(시즌패스·IAP·코스메틱)·전투 고도화(상태이상·콤보)·소셜(길드전·PvP 정규화·매칭)·5챕터 스토리·세이브·어드민 대시보드·KPI/BI·프로덕션 배포·오픈 베타 준비 전부 구현
 
 <details>
 <summary><b>📋 코어기획 문서 (21개)</b></summary>
@@ -372,9 +372,9 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 커밋 | 64개 |
+| 총 커밋 | 74개 |
 | 기획 문서 | 153개 (.md) |
-| 코어기획 | 22개 / ~15,000줄 |
+| 코어기획 | 23개 / ~18,000줄 |
 | 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
 | 시나리오 | 22개 (챕터 5 + NPC대화 12 + 세계관외전 2 + 마스터 3) |
 | 월드맵 | 9개 (6지역 + 마스터 3) |
@@ -384,18 +384,21 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 던전 | 20개 (3난이도) |
 | 몬스터 | 100개 (일반 60/엘리트 20/보스 20) |
 | 스킬 | 90개 (3클래스 × 30) |
-| 검증 리포트 | 45개+ (P0~P5) |
-| 코드 파일 | 200개+ (TS/C++/C#/Python) |
-| 클라이언트 | Phaser.js + TypeScript (32 files, 9 scenes) |
-| 서버 | Fastify + Socket.io + Prisma (112 files) |
+| 검증 리포트 | 50개+ (P0~P6) |
+| 코드 파일 | 250개+ (TS/TSX/C++/C#/Python) |
+| 클라이언트 | Phaser.js + TypeScript (32 files, 10 scenes) |
+| 서버 | Fastify + Socket.io + Prisma (140+ files) |
+| 어드민 | React + TailwindCSS (12 files) |
 | 테스트 | 250개+ (유닛 100 + 통합 50 + E2E 100) — 35 files |
 | UE5 | C++ GAS + UMG (40 files) |
-| 인프라 | k8s 14매니페스트 + Docker + CI/CD + 스테이징 |
+| 인프라 | k8s 20+매니페스트 + Docker + CI/CD 5워크플로우 + 프로덕션 블루/그린 |
 | 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
 | 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
-| DB 모델 | 51개 |
-| API 엔드포인트 | 130개+ REST + 12 Socket 핸들러 |
+| DB 모델 | 63개 |
+| API 엔드포인트 | 160개+ REST (40 라우트) + 14 Socket 핸들러 |
 | i18n | 한/영/일 3언어 |
+| 수익화 | 시즌 패스 50단계 + IAP 6종 + 코스메틱 50개 (P2W 제로) |
+| 코스메틱 | 50개 (스킨/무기/펫/마운트/이모트/칭호) |
 
 ---
 
