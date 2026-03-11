@@ -170,3 +170,68 @@ model PvpRating {
   @@map("pvp_ratings")
   @@index([season, rating(sort: Desc)])
 }
+
+// ─── 상점 시스템 ────────────────────────────────────────────────
+model ShopItem {
+  id          String    @id @default(uuid())
+  name        String
+  category    String    // cosmetic, convenience, season_pass, bundle
+  price       Int       // 프리미엄 화폐 가격
+  currency    String    @default("crystal")  // crystal(유료), gold(무료)
+  rarity      String    @default("common")   // common, rare, epic, legendary
+  description String?   @db.Text
+  imageUrl    String?   @map("image_url")
+  isActive    Boolean   @default(true) @map("is_active")
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  purchases   Purchase[]
+  @@map("shop_items")
+  @@index([category, isActive])
+}
+
+model Purchase {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  itemId    String   @map("item_id")
+  price     Int
+  currency  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  item      ShopItem @relation(fields: [itemId], references: [id])
+  @@map("purchases")
+  @@index([userId])
+}
+
+// ─── 시즌 패스 시스템 ───────────────────────────────────────────
+model SeasonPass {
+  id             String   @id @default(uuid())
+  season         Int      @unique
+  name           String
+  startDate      DateTime @map("start_date")
+  endDate        DateTime @map("end_date")
+  freeRewards    Json     @map("free_rewards")    // [{level, reward}]
+  premiumRewards Json     @map("premium_rewards")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  progresses     SeasonPassProgress[]
+  @@map("season_passes")
+}
+
+model SeasonPassProgress {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  seasonPassId   String   @map("season_pass_id")
+  level          Int      @default(0)
+  exp            Int      @default(0)
+  isPremium      Boolean  @default(false) @map("is_premium")
+  claimedFree    Json     @default("[]") @map("claimed_free")
+  claimedPremium Json     @default("[]") @map("claimed_premium")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  seasonPass     SeasonPass @relation(fields: [seasonPassId], references: [id])
+  @@unique([userId, seasonPassId])
+  @@map("season_pass_progress")
+}
