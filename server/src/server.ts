@@ -4,6 +4,8 @@ import { Server } from 'socket.io';
 import { redisClient, redisConnected } from './redis';
 import { prisma } from './db';
 import { setupSocketHandlers } from './socket/socketHandler';
+import { setupGuildSocketHandlers } from './socket/guildSocketHandler';
+import { guildRoutes } from './routes/guildRoutes';
 import { stopPruneTimer } from './telemetry/dialogueTelemetryServer';
 import { initApm, shutdownApm, getMetricsSummary } from './apm';
 
@@ -30,6 +32,10 @@ async function startServer() {
             return base;
         });
 
+        // 길드 REST API 라우트 등록
+        await fastify.register(guildRoutes);
+        fastify.log.info('Guild REST routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -50,6 +56,10 @@ async function startServer() {
         // 웹소켓 이벤트 핸들러 초기화 (Protobuf 코덱 로딩 포함)
         await setupSocketHandlers(io);
         fastify.log.info(`Socket Server attached`);
+
+        // 길드 소켓 이벤트 핸들러 초기화
+        setupGuildSocketHandlers(io);
+        fastify.log.info('Guild socket handlers attached');
 
         // Redis 연결 시작 (graceful degradation)
         try {

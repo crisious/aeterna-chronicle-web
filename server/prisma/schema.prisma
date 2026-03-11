@@ -81,3 +81,92 @@ model TelemetryGameEvent {
   @@index([sessionId])
   @@index([playerId])
 }
+
+// ─── 길드 시스템 ────────────────────────────────────────────────
+model Guild {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  tag         String   @unique @db.VarChar(5)  // 길드 태그 (2~5자)
+  leaderId    String   @map("leader_id")
+  level       Int      @default(1)
+  exp         Int      @default(0)
+  maxMembers  Int      @default(30) @map("max_members")
+  notice      String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  members      GuildMember[]
+  wars         GuildWar[]     @relation("AttackerGuild")
+  warsAsTarget GuildWar[]     @relation("DefenderGuild")
+
+  @@map("guilds")
+}
+
+model GuildMember {
+  id       String   @id @default(uuid())
+  guildId  String   @map("guild_id")
+  userId   String   @map("user_id")
+  role     String   @default("member")  // leader, officer, member
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  guild    Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@map("guild_members")
+}
+
+model GuildWar {
+  id            String    @id @default(uuid())
+  attackerId    String    @map("attacker_id")
+  defenderId    String    @map("defender_id")
+  status        String    @default("pending")  // pending, active, finished
+  attackerScore Int       @default(0) @map("attacker_score")
+  defenderScore Int       @default(0) @map("defender_score")
+  startedAt     DateTime? @map("started_at")
+  endedAt       DateTime? @map("ended_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  attacker      Guild     @relation("AttackerGuild", fields: [attackerId], references: [id])
+  defender      Guild     @relation("DefenderGuild", fields: [defenderId], references: [id])
+
+  @@map("guild_wars")
+}
+
+// ─── PvP 아레나 시스템 ──────────────────────────────────────
+model PvpMatch {
+  id            String    @id @default(uuid())
+  player1Id     String    @map("player1_id")
+  player2Id     String    @map("player2_id")
+  winnerId      String?   @map("winner_id")
+  player1Score  Int       @default(0) @map("player1_score")
+  player2Score  Int       @default(0) @map("player2_score")
+  arenaType     String    @default("ranked") @map("arena_type")  // ranked, casual, tournament
+  season        Int       @default(1)
+  duration      Int?      // 매치 소요 시간 (초)
+  status        String    @default("matching")  // matching, ready, fighting, finished
+  startedAt     DateTime? @map("started_at")
+  endedAt       DateTime? @map("ended_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("pvp_matches")
+  @@index([player1Id])
+  @@index([player2Id])
+  @@index([season, arenaType])
+}
+
+model PvpRating {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  season     Int      @default(1)
+  rating     Int      @default(1000)
+  tier       String   @default("bronze")  // bronze, silver, gold, platinum, diamond, master
+  wins       Int      @default(0)
+  losses     Int      @default(0)
+  streak     Int      @default(0)
+  peakRating Int      @default(1000) @map("peak_rating")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, season])
+  @@map("pvp_ratings")
+  @@index([season, rating(sort: Desc)])
+}
