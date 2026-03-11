@@ -8,6 +8,9 @@ import { setupGuildSocketHandlers } from './socket/guildSocketHandler';
 import { guildRoutes } from './routes/guildRoutes';
 import { stopPruneTimer } from './telemetry/dialogueTelemetryServer';
 import { initApm, shutdownApm, getMetricsSummary } from './apm';
+import { registerPvpRoutes } from './routes/pvpRoutes';
+import { startMatchmaker, stopMatchmaker } from './pvp/matchmaker';
+import { setupPvpSocketHandlers } from './socket/pvpSocketHandler';
 
 const fastify = Fastify({ logger: true });
 
@@ -36,6 +39,10 @@ async function startServer() {
         await fastify.register(guildRoutes);
         fastify.log.info('Guild REST routes registered');
 
+        // PvP REST API 라우트 등록
+        await registerPvpRoutes(fastify);
+        fastify.log.info('PvP API routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -56,6 +63,11 @@ async function startServer() {
         // 웹소켓 이벤트 핸들러 초기화 (Protobuf 코덱 로딩 포함)
         await setupSocketHandlers(io);
         fastify.log.info(`Socket Server attached`);
+
+        // PvP 소켓 핸들러 + 매칭 시스템 초기화
+        setupPvpSocketHandlers(io);
+        startMatchmaker(io);
+        fastify.log.info('PvP matchmaker started');
 
         // 길드 소켓 이벤트 핸들러 초기화
         setupGuildSocketHandlers(io);
@@ -79,7 +91,11 @@ async function startServer() {
 async function gracefulShutdown(signal: string): Promise<void> {
     console.log(`\n[Shutdown] ${signal} received. Graceful shutdown 시작...`);
 
-    // 1) APM 타이머 정리
+    // 1) 매칭 시스템 정지
+    stopMatchmaker();
+    console.log('[Shutdown] Matchmaker stopped');
+
+    // 2) APM 타이머 정리
     await shutdownApm();
     console.log('[Shutdown] APM shutdown completed');
 

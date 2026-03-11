@@ -22,3 +22,20 @@ message JoinRoom {
 message PlayerJoined {
   string character_id = 1;
 }
+
+// ─── PvP 아레나 메시지 ──────────────────────────────────────
+message PvpAction {
+  string character_id = 1;
+  string action_type = 2;
+  string target_id = 3;
+  int32 damage = 4;
+  string skill_id = 5;
+}
+
+message PvpResult {
+  string match_id = 1;
+  string winner_id = 2;
+  int32 player1_score = 3;
+  int32 player2_score = 4;
+  int32 rating_change = 5;
+}

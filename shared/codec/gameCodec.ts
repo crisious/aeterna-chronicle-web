@@ -35,6 +35,22 @@ message JoinRoom {
 message PlayerJoined {
   string character_id = 1;
 }
+
+message PvpAction {
+  string character_id = 1;
+  string action_type = 2;
+  string target_id = 3;
+  int32 damage = 4;
+  string skill_id = 5;
+}
+
+message PvpResult {
+  string match_id = 1;
+  string winner_id = 2;
+  int32 player1_score = 3;
+  int32 player2_score = 4;
+  int32 rating_change = 5;
+}
 `;
 
 /** 메시지 타입별 인터페이스 */
@@ -60,11 +76,29 @@ export interface IPlayerJoined {
   characterId: string;
 }
 
+export interface IPvpAction {
+  characterId: string;
+  actionType: string;
+  targetId?: string;
+  damage?: number;
+  skillId?: string;
+}
+
+export interface IPvpResult {
+  matchId: string;
+  winnerId: string;
+  player1Score: number;
+  player2Score: number;
+  ratingChange: number;
+}
+
 /** 내부 메시지 타입 참조 (loadProto 후 초기화) */
 let PlayerMoveType: protobuf.Type | null = null;
 let PlayerActionType: protobuf.Type | null = null;
 let JoinRoomType: protobuf.Type | null = null;
 let PlayerJoinedType: protobuf.Type | null = null;
+let PvpActionType: protobuf.Type | null = null;
+let PvpResultType: protobuf.Type | null = null;
 let _initialized = false;
 
 /**
@@ -79,6 +113,8 @@ export async function loadProto(): Promise<void> {
   PlayerActionType = root.lookupType('aeterna.PlayerAction');
   JoinRoomType = root.lookupType('aeterna.JoinRoom');
   PlayerJoinedType = root.lookupType('aeterna.PlayerJoined');
+  PvpActionType = root.lookupType('aeterna.PvpAction');
+  PvpResultType = root.lookupType('aeterna.PvpResult');
   _initialized = true;
 }
 
@@ -137,6 +173,18 @@ export function encodePlayerJoined(data: IPlayerJoined): Uint8Array {
   return PlayerJoinedType!.encode(msg).finish();
 }
 
+export function encodePvpAction(data: IPvpAction): Uint8Array {
+  ensureInitialized();
+  const msg = PvpActionType!.create(toSnakeCase(data as unknown as Record<string, unknown>));
+  return PvpActionType!.encode(msg).finish();
+}
+
+export function encodePvpResult(data: IPvpResult): Uint8Array {
+  ensureInitialized();
+  const msg = PvpResultType!.create(toSnakeCase(data as unknown as Record<string, unknown>));
+  return PvpResultType!.encode(msg).finish();
+}
+
 // ─── Decode 함수들 ──────────────────────────────────────────
 
 export function decodePlayerMove(buf: Uint8Array): IPlayerMove {
@@ -165,6 +213,20 @@ export function decodePlayerJoined(buf: Uint8Array): IPlayerJoined {
   const decoded = PlayerJoinedType!.decode(buf);
   const obj = PlayerJoinedType!.toObject(decoded) as Record<string, unknown>;
   return toCamelCase(obj) as unknown as IPlayerJoined;
+}
+
+export function decodePvpAction(buf: Uint8Array): IPvpAction {
+  ensureInitialized();
+  const decoded = PvpActionType!.decode(buf);
+  const obj = PvpActionType!.toObject(decoded) as Record<string, unknown>;
+  return toCamelCase(obj) as unknown as IPvpAction;
+}
+
+export function decodePvpResult(buf: Uint8Array): IPvpResult {
+  ensureInitialized();
+  const decoded = PvpResultType!.decode(buf);
+  const obj = PvpResultType!.toObject(decoded) as Record<string, unknown>;
+  return toCamelCase(obj) as unknown as IPvpResult;
 }
 
 /**
