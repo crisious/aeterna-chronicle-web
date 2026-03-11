@@ -323,8 +323,8 @@ export async function runDailyKpiSnapshot(targetDate?: Date): Promise<{
 export async function getEconomyMetrics() {
   const inflation = await calculateInflationIndex();
 
-  // 통화별 총 유통량
-  const currencyTotals = await prisma.currency.aggregate({
+  // 통화별 총 유통량 — User 모델의 gold/diamond 필드 합산
+  const currencyTotals = await prisma.user.aggregate({
     _sum: { gold: true, diamond: true },
   });
 
