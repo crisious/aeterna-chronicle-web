@@ -40,6 +40,11 @@ import { adminRoutes } from './routes/adminRoutes';
 import { authRoutes } from './routes/authRoutes';
 import { tutorialRoutes } from './routes/tutorialRoutes';
 import { setupChatSocketHandlers } from './socket/chatSocketHandler';
+import { dungeonRoutes } from './routes/dungeonRoutes';
+import { setupDungeonSocketHandlers } from './socket/dungeonSocketHandler';
+import { dungeonManager } from './dungeon/dungeonManager';
+import { worldRoutes } from './routes/worldRoutes';
+import { setupWorldSocketHandlers } from './socket/worldSocketHandler';
 import { rateLimitMiddleware } from './security/rateLimiter';
 import { inputValidatorMiddleware } from './security/inputValidator';
 import { skillRoutes } from './routes/skillRoutes';
@@ -152,6 +157,14 @@ async function startServer() {
         await fastify.register(tutorialRoutes);
         fastify.log.info('Tutorial routes registered');
 
+        // 던전 시스템 REST API 라우트 등록 (P5-03)
+        await fastify.register(dungeonRoutes);
+        fastify.log.info('Dungeon routes registered');
+
+        // 월드맵/필드 REST API 라우트 등록 (P5-04)
+        await fastify.register(worldRoutes);
+        fastify.log.info('World/Zone routes registered');
+
         // 스킬 트리 시스템 REST API 라우트 등록 (P5-02)
         await fastify.register(skillRoutes);
         fastify.log.info('Skill tree routes registered');
@@ -206,6 +219,14 @@ async function startServer() {
         // 채팅 시스템 소켓 핸들러 초기화 (P4-14)
         setupChatSocketHandlers(io);
         fastify.log.info('Chat socket handlers attached');
+
+        // 던전 시스템 소켓 핸들러 초기화 (P5-03)
+        setupDungeonSocketHandlers(io);
+        fastify.log.info('Dungeon socket handlers attached');
+
+        // 월드맵 소켓 핸들러 초기화 (P5-04)
+        setupWorldSocketHandlers(io);
+        fastify.log.info('World socket handlers attached');
 
         // Redis 연결 시작 (graceful degradation)
         try {
@@ -286,6 +307,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     // 0.5) 레이드 매니저 정리
     raidManager.shutdown();
     console.log('[Shutdown] Raid manager stopped');
+
+    // 0.6) 던전 매니저 정리
+    dungeonManager.shutdown();
+    console.log('[Shutdown] Dungeon manager stopped');
 
     // 1) 매칭 시스템 정지
     stopMatchmaker();
