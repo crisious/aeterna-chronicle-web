@@ -31,6 +31,9 @@ import { startQuestResetScheduler, stopQuestResetScheduler } from './quest/quest
 import { socialRoutes } from './routes/socialRoutes';
 import { setupSocialSocketHandlers, bindSocialIO } from './socket/socialSocketHandler';
 import { purgeExpiredMails } from './social/mailSystem';
+import { eventRoutes } from './routes/eventRoutes';
+import { currencyRoutes } from './routes/currencyRoutes';
+import { syncEventStatus } from './event/eventEngine';
 import { adminRoutes } from './routes/adminRoutes';
 
 const fastify = Fastify({ logger: true });
@@ -107,6 +110,14 @@ async function startServer() {
         // 소셜 시스템 REST API 라우트 등록 (친구/파티/우편)
         await fastify.register(socialRoutes);
         fastify.log.info('Social system routes registered');
+
+        // 출석/이벤트 시스템 REST API 라우트 등록
+        await fastify.register(eventRoutes);
+        fastify.log.info('Event system routes registered');
+
+        // 화폐 시스템 REST API 라우트 등록
+        await fastify.register(currencyRoutes);
+        fastify.log.info('Currency system routes registered');
 
         // 어드민 대시보드 REST API 라우트 등록 (P4-07)
         await fastify.register(adminRoutes);
@@ -193,6 +204,19 @@ async function startServer() {
         // 퀘스트 일일/주간 초기화 스케줄러 시작
         startQuestResetScheduler();
         fastify.log.info('Quest reset scheduler started');
+
+        // ── 이벤트 상태 동기화 타이머 (5분 간격) ──
+        const eventSyncInterval = setInterval(async () => {
+          try {
+            const result = await syncEventStatus();
+            if (result.activated > 0 || result.deactivated > 0) {
+              fastify.log.info(`[Event] 활성화 ${result.activated}건, 비활성화 ${result.deactivated}건`);
+            }
+          } catch (err) {
+            fastify.log.error(`[Event] 상태 동기화 실패: ${err}`);
+          }
+        }, 5 * 60 * 1000);
+        (fastify as unknown as Record<string, unknown>)._eventSyncInterval = eventSyncInterval;
 
         // ── 만료 우편 정리 타이머 (1시간 간격) ──
         const mailPurgeInterval = setInterval(async () => {
