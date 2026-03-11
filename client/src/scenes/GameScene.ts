@@ -9,6 +9,14 @@ import {
   makeDefaultSlots
 } from '../ui/HudOverlay';
 import { buildDialogueChoiceTelemetry, DialogueChoiceTelemetryEvent } from '../telemetry/dialogueTelemetry';
+import {
+  loadProto,
+  encodePlayerMove,
+  decodePlayerMove,
+  encodeJoinRoom,
+  decodePlayerJoined,
+  decodePlayerAction
+} from '../../../shared/codec/gameCodec';
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -113,12 +121,14 @@ export class GameScene extends Phaser.Scene {
       const now = Date.now();
       if (now - this.lastMoveEmitTime >= 200) {
         this.lastMoveEmitTime = now;
-        this.socket.emit('playerMove', {
-          characterId: this.socket.id,
+        // Protobuf 바이너리로 인코딩하여 전송
+        const moveBuf = encodePlayerMove({
+          characterId: this.socket.id ?? '',
           x: this.player.x,
           y: this.player.y,
           state: 'moving'
         });
+        this.socket.emit('playerMove', moveBuf);
       }
     }
   }
@@ -253,7 +263,53 @@ export class GameScene extends Phaser.Scene {
 
       this.socket.on('connect', () => {
         console.log(`[네트워크] 서버 접속 성공: ${this.socket?.id}`);
-        this.socket?.emit('joinRoom', { roomId: 'tutorial_map', characterId: this.socket?.id });
+
+        // Protobuf 코덱 초기화 후 joinRoom 바이너리 전송
+        loadProto().then(() => {
+          console.log('[Protobuf] 클라이언트 코덱 초기화 완료');
+          const joinBuf = encodeJoinRoom({
+            roomId: 'tutorial_map',
+            characterId: this.socket?.id ?? ''
+          });
+          this.socket?.emit('joinRoom', joinBuf);
+        });
+      });
+
+      // playerMoved 수신: Protobuf 바이너리 디코딩
+      this.socket.on('playerMoved', (data: unknown) => {
+        if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+          const decoded = decodePlayerMove(
+            data instanceof ArrayBuffer ? new Uint8Array(data) : data
+          );
+          console.log('[네트워크] playerMoved (proto):', decoded);
+        } else {
+          // JSON fallback
+          console.log('[네트워크] playerMoved (json):', data);
+        }
+      });
+
+      // playerJoined 수신: Protobuf 바이너리 디코딩
+      this.socket.on('playerJoined', (data: unknown) => {
+        if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+          const decoded = decodePlayerJoined(
+            data instanceof ArrayBuffer ? new Uint8Array(data) : data
+          );
+          console.log('[네트워크] playerJoined (proto):', decoded);
+        } else {
+          console.log('[네트워크] playerJoined (json):', data);
+        }
+      });
+
+      // playerActionCasted 수신: Protobuf 바이너리 디코딩
+      this.socket.on('playerActionCasted', (data: unknown) => {
+        if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+          const decoded = decodePlayerAction(
+            data instanceof ArrayBuffer ? new Uint8Array(data) : data
+          );
+          console.log('[네트워크] playerActionCasted (proto):', decoded);
+        } else {
+          console.log('[네트워크] playerActionCasted (json):', data);
+        }
       });
 
       this.socket.on('connect_error', () => {

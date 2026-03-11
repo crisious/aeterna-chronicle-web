@@ -37,8 +37,8 @@ async function startServer() {
             }
         });
 
-        // 웹소켓 이벤트 핸들러 초기화
-        setupSocketHandlers(io);
+        // 웹소켓 이벤트 핸들러 초기화 (Protobuf 코덱 로딩 포함)
+        await setupSocketHandlers(io);
         fastify.log.info(`Socket Server attached`);
 
         // Redis 연결 시작 (graceful degradation)
