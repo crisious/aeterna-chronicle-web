@@ -1,6 +1,7 @@
 import 'phaser';
 import { GameScene } from './scenes/GameScene';
 import { EndingScene } from './scenes/EndingScene';
+import { BattleScene } from './scenes/BattleScene';
 
 // GDD Phase 1 스펙: 1280x720 픽셀 (최소 해상도), 탑다운 RPG.
 const config: Phaser.Types.Core.GameConfig = {
@@ -16,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
             debug: false             // 배포 시에는 false 처리 (물리 콜라이더 표시)
         }
     },
-    scene: [GameScene, EndingScene],
+    scene: [GameScene, BattleScene, EndingScene],
     pixelArt: true, // 픽셀 아트 스타일 적용을 위해 안티앨리어싱 제거 
 };
 

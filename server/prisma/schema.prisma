@@ -861,3 +861,42 @@ model Notification {
   @@index([userId, isRead])
   @@index([createdAt])
 }
+
+// ─── 거래소/경매장 (P5-06) ──────────────────────────────────────
+model AuctionListing {
+  id          String   @id @default(uuid())
+  sellerId    String   @map("seller_id")
+  itemId      String   @map("item_id")
+  slotId      String   @map("slot_id")
+  quantity    Int      @default(1)
+  priceType   String   @default("gold") @map("price_type")
+  buyoutPrice Int      @map("buyout_price")
+  bidPrice    Int?     @map("bid_price")
+  currentBid  Int?     @map("current_bid")
+  bidderId    String?  @map("bidder_id")
+  status      String   @default("active")  // active, sold, expired, cancelled
+  fee         Int      @default(0)  // 등록 수수료
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("auction_listings")
+  @@index([sellerId])
+  @@index([itemId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+// ─── 통합 랭킹 (P5-07) ─────────────────────────────────────────
+model RankingEntry {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  category    String   // level, combat_power, pvp_rating, raid_clear, achievement_points
+  score       Float
+  rank        Int?
+  season      String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, category, season])
+  @@map("ranking_entries")
+  @@index([category, score])
+}

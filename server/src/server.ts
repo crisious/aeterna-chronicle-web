@@ -48,6 +48,15 @@ import { setupWorldSocketHandlers } from './socket/worldSocketHandler';
 import { rateLimitMiddleware } from './security/rateLimiter';
 import { inputValidatorMiddleware } from './security/inputValidator';
 import { skillRoutes } from './routes/skillRoutes';
+import { codexRoutes } from './routes/codexRoutes';
+import { dialogueRoutes } from './routes/dialogueRoutes';
+import { dialogueLoader } from './dialogue/dialogueLoader';
+import { notificationRoutes } from './routes/notificationRoutes';
+import { setupNotificationSocketHandlers } from './socket/notificationSocketHandler';
+import { auctionRoutes } from './routes/auctionRoutes';
+import { setupAuctionSocketHandlers } from './socket/auctionSocketHandler';
+import { auctionManager } from './auction/auctionManager';
+import { rankingRoutes } from './routes/rankingRoutes';
 import { monsterRoutes } from './routes/monsterRoutes';
 import { spawnManager } from './monster/spawnManager';
 
@@ -171,6 +180,26 @@ async function startServer() {
         await fastify.register(skillRoutes);
         fastify.log.info('Skill tree routes registered');
 
+        // 도감/컬렉션 시스템 REST API 라우트 등록 (P5-08)
+        await fastify.register(codexRoutes);
+        fastify.log.info('Codex/Collection routes registered');
+
+        // 시나리오 대화 시스템 REST API 라우트 등록 (P5-09)
+        await fastify.register(dialogueRoutes);
+        fastify.log.info('Dialogue routes registered');
+
+        // 알림 시스템 REST API 라우트 등록 (P5-10)
+        await fastify.register(notificationRoutes);
+        fastify.log.info('Notification routes registered');
+
+        // 거래소/경매장 REST API 라우트 등록 (P5-06)
+        await fastify.register(auctionRoutes);
+        fastify.log.info('Auction routes registered');
+
+        // 통합 랭킹 REST API 라우트 등록 (P5-07)
+        await fastify.register(rankingRoutes);
+        fastify.log.info('Ranking routes registered');
+
         // 몬스터/적 시스템 REST API 라우트 등록 (P5-01)
         await fastify.register(monsterRoutes);
         fastify.log.info('Monster system routes registered');
@@ -233,6 +262,23 @@ async function startServer() {
         // 월드맵 소켓 핸들러 초기화 (P5-04)
         setupWorldSocketHandlers(io);
         fastify.log.info('World socket handlers attached');
+
+        // 알림 시스템 소켓 핸들러 초기화 (P5-10)
+        setupNotificationSocketHandlers(io);
+        fastify.log.info('Notification socket handlers attached');
+
+        // 대화 트리 로딩 (P5-09)
+        try {
+            const dialogueCount = await dialogueLoader.loadAll();
+            fastify.log.info(`Dialogue trees loaded: ${dialogueCount} NPCs`);
+        } catch (dialogueErr) {
+            fastify.log.warn(`Dialogue tree loading failed (non-critical): ${dialogueErr}`);
+        }
+
+        // 거래소 소켓 핸들러 초기화 (P5-06)
+        setupAuctionSocketHandlers(io);
+        auctionManager.startExpireTimer();
+        fastify.log.info('Auction socket handlers attached + expire timer started');
 
         // Redis 연결 시작 (graceful degradation)
         try {
@@ -330,6 +376,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     // 0.6) 던전 매니저 정리
     dungeonManager.shutdown();
     console.log('[Shutdown] Dungeon manager stopped');
+
+    // 0.7) 경매장 만료 타이머 정리
+    auctionManager.stopExpireTimer();
+    console.log('[Shutdown] Auction expire timer stopped');
 
     // 1) 매칭 시스템 정지
     stopMatchmaker();
