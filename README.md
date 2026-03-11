@@ -4,7 +4,7 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-2-blue?style=for-the-badge)](01_코어기획/P2_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-3-purple?style=for-the-badge)](01_코어기획/P3_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Unity%20%7C%20UE5-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-21%20Design%20Docs-orange?style=for-the-badge)](#-코어기획-문서-21개)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
@@ -142,17 +142,20 @@ graph TD
 │   └── 세계관외전/             # 발견 문서·이벤트
 ├── 🌍 월드맵/               # 6개 지역 상세 설계
 ├── 👤 캐릭터/               # 37파일: 30명 프로필 + 5 외전 + 마스터
-├── 💻 client/               # Phaser.js 웹 클라이언트 (8 files)
-│   ├── src/scenes/             # GameScene (200ms 이동 스로틀)
+├── 💻 client/               # Phaser.js 웹 클라이언트 (9 files)
+│   ├── src/scenes/             # GameScene (Protobuf emit, 200ms 스로틀)
 │   ├── src/ui/                 # HudOverlay (부분 렌더링)
+│   ├── src/utils/              # ObjectPool 유틸
 │   └── src/telemetry/          # NPC 대화 텔레메트리
-├── 🖥️ server/               # Fastify + Prisma 서버 (9 files)
-│   ├── src/db.ts               # Prisma 클라이언트 (순환 import 분리)
+├── 🖥️ server/               # Fastify + Prisma 서버 (14 files)
+│   ├── src/db.ts               # Prisma 클라이언트
 │   ├── src/redis.ts            # Redis (graceful degradation)
-│   ├── src/socket/             # Room 기반 브로드캐스트
+│   ├── src/socket/             # Room 기반 브로드캐스트 (Protobuf)
 │   ├── src/telemetry/          # 이중 기록 (Redis + PostgreSQL)
 │   └── prisma/schema.prisma    # 5모델 (User/Character/Inventory/Quest/Telemetry)
-├── 📦 shared/               # 클라이언트-서버 공유 타입
+├── 📦 shared/               # 클라이언트-서버 공유 코덱/타입 (3 files)
+│   ├── proto/game.proto        # Protobuf 스키마 (PlayerMove/Action/Room)
+│   ├── codec/gameCodec.ts      # 바이너리 인코더/디코더
 │   └── types/telemetry.ts      # DialogueChoiceTelemetryEvent
 ├── 🎮 ue5_umg/              # UE5 HUD (C++ UMG)
 ├── 🎮 unity_ui_toolkit/     # Unity HUD (C# UI Toolkit)
@@ -242,7 +245,7 @@ graph LR
         G[(Redis Cache)]
     end
 
-    A & B & C --> D & E
+    A & B & C -->|Protobuf/JSON| D & E
     D & E --> G
     G -->|30s sync| F
 
@@ -262,13 +265,13 @@ graph LR
 
 ```
 Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
-Phase 2  ████████████████░░░░   80%  멀티엔진 포팅 + 텔레메트리 + QA + 코드리뷰
-Phase 3  ░░░░░░░░░░░░░░░░░░░░    0%  길드/PvP + 시즌 + 라이브 서비스
+Phase 2  ████████████████████  100%  멀티엔진 포팅 + 텔레메트리 + QA ✅ RC 승인
+Phase 3  █░░░░░░░░░░░░░░░░░░░    5%  길드/PvP + 시즌 + 라이브 서비스 (진행 중)
 ```
 
 ### 최근 업데이트
 
-> **2026-03-10** — 코어기획 정합성 검증 + P0/P1 이슈 11건 수정 + 신규 기획 12문서 작성
+> **2026-03-11** — **Phase 2 RC 승인 완료** → Phase 3 착수. P3-01 Protobuf 패킷 전환 완료 (30~50% 절감)
 
 <details>
 <summary><b>📋 코어기획 문서 (21개)</b></summary>
@@ -363,9 +366,9 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 파일 | 198개 (Git tracked) |
-| 총 커밋 | 11개 |
-| 기획 문서 | 134개 (.md) |
+| 총 파일 | 209개 (Git tracked) |
+| 총 커밋 | 18개 |
+| 기획 문서 | 151개 (.md) |
 | 코어기획 | 21개 / ~12,000줄 |
 | 캐릭터 | 37개 (프로필 30 + 외전 5 + 마스터 1 + 인덱스 1) |
 | 시나리오 | 22개 (챕터 5 + NPC대화 12 + 세계관외전 2 + 마스터 3) |
@@ -373,11 +376,12 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 지역 | 6개 |
 | 챕터 | 5개 |
 | 엔딩 | 4종 |
-| 검증 리포트 | 41개 (P0/P1/P2/공통) |
-| 코드 파일 | 38개 (TS/C++/C#/Python) |
-| 클라이언트 | Phaser.js + TypeScript (8 files) |
-| 서버 | Fastify + Socket.io + Prisma (9 files) |
-| 공유 타입 | shared/types/telemetry.ts |
+| 검증 리포트 | 43개 (P0/P1/P2/공통) |
+| 코드 파일 | 46개 (TS/C++/C#/Python) |
+| 클라이언트 | Phaser.js + TypeScript (9 files) |
+| 서버 | Fastify + Socket.io + Prisma (14 files) |
+| 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
+| 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
 
 ---
 
