@@ -14,6 +14,9 @@ import { setupPvpSocketHandlers } from './socket/pvpSocketHandler';
 import { endingRoutes } from './routes/endingRoutes';
 import { shopRoutes } from './routes/shopRoutes';
 import { seasonPassRoutes } from './routes/seasonPassRoutes';
+import { raidRoutes } from './routes/raidRoutes';
+import { setupRaidSocketHandlers } from './socket/raidSocketHandler';
+import { raidManager } from './raid/raidManager';
 
 const fastify = Fastify({ logger: true });
 
@@ -58,6 +61,10 @@ async function startServer() {
         await fastify.register(seasonPassRoutes);
         fastify.log.info('Season Pass routes registered');
 
+        // 레이드 보스 REST API 라우트 등록
+        await fastify.register(raidRoutes);
+        fastify.log.info('Raid boss routes registered');
+
         const PORT = parseInt(process.env.PORT || '3000', 10);
 
         // HTTP 서버 실행 (Socket.io 부착을 위해 fastify.server 사용)
@@ -88,6 +95,10 @@ async function startServer() {
         setupGuildSocketHandlers(io);
         fastify.log.info('Guild socket handlers attached');
 
+        // 레이드 보스 소켓 핸들러 초기화
+        setupRaidSocketHandlers(io);
+        fastify.log.info('Raid boss socket handlers attached');
+
         // Redis 연결 시작 (graceful degradation)
         try {
             await redisClient.connect();
@@ -105,6 +116,10 @@ async function startServer() {
 // ── Graceful Shutdown ────────────────────────────────────────
 async function gracefulShutdown(signal: string): Promise<void> {
     console.log(`\n[Shutdown] ${signal} received. Graceful shutdown 시작...`);
+
+    // 0) 레이드 매니저 정리
+    raidManager.shutdown();
+    console.log('[Shutdown] Raid manager stopped');
 
     // 1) 매칭 시스템 정지
     stopMatchmaker();
