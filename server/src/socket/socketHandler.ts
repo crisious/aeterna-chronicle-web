@@ -11,6 +11,7 @@ import {
     decodeJoinRoom,
     encodePlayerJoined
 } from '../../../shared/codec/gameCodec';
+import { recordSocketLatency } from '../apm';
 
 /** 서버 측 playerMove rate limit: 소켓별 마지막 처리 시각 */
 const lastMoveTimestamps = new Map<string, number>();
@@ -32,6 +33,7 @@ export async function setupSocketHandlers(io: Server) {
          * 바이너리(Protobuf) 수신 시 decode, JSON fallback 지원
          */
         socket.on('joinRoom', async (data: unknown) => {
+            const _apmStart = performance.now();
             let roomId: string;
             let characterId: string;
 
@@ -65,6 +67,9 @@ export async function setupSocketHandlers(io: Server) {
             // 방 안의 다른 유저에게 새로운 플레이어 접속 알림 (Protobuf 바이너리)
             const joinedBuf = encodePlayerJoined({ characterId });
             socket.to(roomId).emit('playerJoined', joinedBuf);
+
+            // APM: joinRoom 처리 시간 기록
+            recordSocketLatency(performance.now() - _apmStart);
         });
 
         /**
@@ -72,6 +77,7 @@ export async function setupSocketHandlers(io: Server) {
          * 바이너리(Protobuf) 수신 시 decode, JSON fallback 지원
          */
         socket.on('playerMove', (data: unknown) => {
+            const _apmStart = performance.now();
             // 서버 측 rate limit: 50ms 간격 이하의 이동 패킷은 무시
             const now = Date.now();
             const lastTime = lastMoveTimestamps.get(socket.id) ?? 0;
@@ -100,6 +106,9 @@ export async function setupSocketHandlers(io: Server) {
                 const buf = encodePlayerMove(moveData);
                 socket.to(currentRoom).emit('playerMoved', buf);
             }
+
+            // APM: playerMove 처리 시간 기록
+            recordSocketLatency(performance.now() - _apmStart);
         });
 
         /**
@@ -107,6 +116,7 @@ export async function setupSocketHandlers(io: Server) {
          * 바이너리(Protobuf) 수신 시 decode, JSON fallback 지원
          */
         socket.on('playerAction', (data: unknown) => {
+            const _apmStart = performance.now();
             let actionData: { characterId: string; actionType: string; targetId?: string };
 
             if (isBinary(data)) {
@@ -125,6 +135,9 @@ export async function setupSocketHandlers(io: Server) {
                 const buf = encodePlayerAction(actionData);
                 socket.to(currentRoom).emit('playerActionCasted', buf);
             }
+
+            // APM: playerAction 처리 시간 기록
+            recordSocketLatency(performance.now() - _apmStart);
         });
 
         /**

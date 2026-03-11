@@ -5,6 +5,7 @@ import { redisClient, redisConnected } from './redis';
 import { prisma } from './db';
 import { setupSocketHandlers } from './socket/socketHandler';
 import { stopPruneTimer } from './telemetry/dialogueTelemetryServer';
+import { initApm, shutdownApm, getMetricsSummary } from './apm';
 
 const fastify = Fastify({ logger: true });
 
@@ -19,9 +20,14 @@ async function startServer() {
             origin: ALLOWED_ORIGINS
         });
 
-        // 헬스 체크 API 엔드포인트
-        fastify.get('/api/health', async (request, reply) => {
-            return { status: 'ok', game: 'Aeterna Chronicle', phase: 1 };
+        // 헬스 체크 API 엔드포인트 (메트릭 요약 포함 옵션: ?metrics=true)
+        fastify.get('/api/health', async (request, _reply) => {
+            const query = request.query as Record<string, string>;
+            const base = { status: 'ok', game: 'Aeterna Chronicle', phase: 1 };
+            if (query.metrics === 'true') {
+                return { ...base, apm: getMetricsSummary() };
+            }
+            return base;
         });
 
         const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -36,6 +42,10 @@ async function startServer() {
                 origin: ALLOWED_ORIGINS,
             }
         });
+
+        // APM 초기화 (HTTP 훅 + 대시보드 + 메트릭 수집 + 알림)
+        await initApm(fastify, io);
+        fastify.log.info('APM monitoring initialized');
 
         // 웹소켓 이벤트 핸들러 초기화 (Protobuf 코덱 로딩 포함)
         await setupSocketHandlers(io);
@@ -59,11 +69,15 @@ async function startServer() {
 async function gracefulShutdown(signal: string): Promise<void> {
     console.log(`\n[Shutdown] ${signal} received. Graceful shutdown 시작...`);
 
-    // 1) 텔레메트리 prune 타이머 정리
+    // 1) APM 타이머 정리
+    await shutdownApm();
+    console.log('[Shutdown] APM shutdown completed');
+
+    // 2) 텔레메트리 prune 타이머 정리
     stopPruneTimer();
     console.log('[Shutdown] Telemetry prune timer stopped');
 
-    // 2) Fastify (HTTP + Socket.io) 종료
+    // 3) Fastify (HTTP + Socket.io) 종료
     try {
         await fastify.close();
         console.log('[Shutdown] Fastify server closed');
@@ -71,7 +85,7 @@ async function gracefulShutdown(signal: string): Promise<void> {
         console.error('[Shutdown] Fastify close error:', err);
     }
 
-    // 3) Redis 연결 종료
+    // 4) Redis 연결 종료
     if (redisConnected) {
         try {
             await redisClient.quit();
@@ -81,7 +95,7 @@ async function gracefulShutdown(signal: string): Promise<void> {
         }
     }
 
-    // 4) Prisma (PostgreSQL) 연결 종료
+    // 5) Prisma (PostgreSQL) 연결 종료
     try {
         await prisma.$disconnect();
         console.log('[Shutdown] Prisma disconnected');
