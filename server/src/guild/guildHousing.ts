@@ -28,7 +28,7 @@ export const FURNITURE_SLOTS_BY_LEVEL: Record<number, number> = {
   5: 80,
 };
 
-/** 가구 마스터 데이터 (P10-19: TODO 해소) */
+/** 가구 마스터 데이터 */
 const FURNITURE_MASTER: Record<string, { name: string }> = {
   guild_banner: { name: '길드 깃발' },
   trophy_case: { name: '트로피 진열장' },
