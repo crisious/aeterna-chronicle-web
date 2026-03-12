@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "description": "에테르나 크로니클 — 26개 바인딩 가능 액션 정의",
+  "actions": [
+    {
+      "id": "move_up",
+      "category": "movement",
+      "label_ko": "위로 이동",
+      "label_en": "Move Up",
+      "default": { "primary": "KeyW", "secondary": null, "gamepad": "LeftStickUp" },
+      "protected": false
+    },
+    {
+      "id": "move_down",
+      "category": "movement",
+      "label_ko": "아래로 이동",
+      "label_en": "Move Down",
+      "default": { "primary": "KeyS", "secondary": null, "gamepad": "LeftStickDown" },
+      "protected": false
+    },
+    {
+      "id": "move_left",
+      "category": "movement",
+      "label_ko": "왼쪽 이동",
+      "label_en": "Move Left",
+      "default": { "primary": "KeyA", "secondary": null, "gamepad": "LeftStickLeft" },
+      "protected": false
+    },
+    {
+      "id": "move_right",
+      "category": "movement",
+      "label_ko": "오른쪽 이동",
+      "label_en": "Move Right",
+      "default": { "primary": "KeyD", "secondary": null, "gamepad": "LeftStickRight" },
+      "protected": false
+    },
+    {
+      "id": "attack_basic",
+      "category": "combat",
+      "label_ko": "기본 공격",
+      "label_en": "Basic Attack",
+      "default": { "primary": "Mouse0", "secondary": "KeyJ", "gamepad": "ButtonX" },
+      "protected": false
+    },
+    {
+      "id": "skill_1",
+      "category": "combat",
+      "label_ko": "스킬 1",
+      "label_en": "Skill 1",
+      "default": { "primary": "KeyQ", "secondary": null, "gamepad": "ButtonA" },
+      "protected": false
+    },
+    {
+      "id": "skill_2",
+      "category": "combat",
+      "label_ko": "스킬 2",
+      "label_en": "Skill 2",
+      "default": { "primary": "KeyE", "secondary": null, "gamepad": "ButtonB" },
+      "protected": false
+    },
+    {
+      "id": "skill_3",
+      "category": "combat",
+      "label_ko": "스킬 3",
+      "label_en": "Skill 3",
+      "default": { "primary": "KeyR", "secondary": null, "gamepad": "ButtonY" },
+      "protected": false
+    },
+    {
+      "id": "skill_4",
+      "category": "combat",
+      "label_ko": "스킬 4",
+      "label_en": "Skill 4",
+      "default": { "primary": "KeyF", "secondary": null, "gamepad": "RightTrigger" },
+      "protected": false
+    },
+    {
+      "id": "dodge",
+      "category": "combat",
+      "label_ko": "회피",
+      "label_en": "Dodge",
+      "default": { "primary": "Space", "secondary": null, "gamepad": "LeftBumper" },
+      "protected": false
+    },
+    {
+      "id": "potion",
+      "category": "combat",
+      "label_ko": "포션 사용",
+      "label_en": "Use Potion",
+      "default": { "primary": "Digit1", "secondary": null, "gamepad": "RightBumper" },
+      "protected": false
+    },
+    {
+      "id": "target_lock",
+      "category": "combat",
+      "label_ko": "타겟 고정",
+      "label_en": "Lock Target",
+      "default": { "primary": "Tab", "secondary": null, "gamepad": "LeftTrigger" },
+      "protected": false
+    },
+    {
+      "id": "inventory",
+      "category": "ui",
+      "label_ko": "인벤토리",
+      "label_en": "Inventory",
+      "default": { "primary": "KeyI", "secondary": null, "gamepad": "DPadUp" },
+      "protected": false
+    },
+    {
+      "id": "character",
+      "category": "ui",
+      "label_ko": "캐릭터 정보",
+      "label_en": "Character",
+      "default": { "primary": "KeyC", "secondary": null, "gamepad": "DPadLeft" },
+      "protected": false
+    },
+    {
+      "id": "map",
+      "category": "ui",
+      "label_ko": "지도",
+      "label_en": "Map",
+      "default": { "primary": "KeyM", "secondary": null, "gamepad": "DPadRight" },
+      "protected": false
+    },
+    {
+      "id": "quest_log",
+      "category": "ui",
+      "label_ko": "퀘스트 로그",
+      "label_en": "Quest Log",
+      "default": { "primary": "KeyL", "secondary": null, "gamepad": "DPadDown" },
+      "protected": false
+    },
+    {
+      "id": "chat_toggle",
+      "category": "ui",
+      "label_ko": "채팅 토글",
+      "label_en": "Toggle Chat",
+      "default": { "primary": "Enter", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "menu",
+      "category": "ui",
+      "label_ko": "메뉴",
+      "label_en": "Menu",
+      "default": { "primary": "Escape", "secondary": null, "gamepad": "Start" },
+      "protected": true
+    },
+    {
+      "id": "camera_zoom_in",
+      "category": "camera",
+      "label_ko": "줌 인",
+      "label_en": "Zoom In",
+      "default": { "primary": "ScrollUp", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "camera_zoom_out",
+      "category": "camera",
+      "label_ko": "줌 아웃",
+      "label_en": "Zoom Out",
+      "default": { "primary": "ScrollDown", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "camera_rotate_l",
+      "category": "camera",
+      "label_ko": "카메라 좌회전",
+      "label_en": "Rotate Left",
+      "default": { "primary": "BracketLeft", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "camera_rotate_r",
+      "category": "camera",
+      "label_ko": "카메라 우회전",
+      "label_en": "Rotate Right",
+      "default": { "primary": "BracketRight", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "screenshot",
+      "category": "system",
+      "label_ko": "스크린샷",
+      "label_en": "Screenshot",
+      "default": { "primary": "F12", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "toggle_hud",
+      "category": "system",
+      "label_ko": "HUD 토글",
+      "label_en": "Toggle HUD",
+      "default": { "primary": "KeyH", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "toggle_fps",
+      "category": "system",
+      "label_ko": "FPS 표시",
+      "label_en": "Toggle FPS",
+      "default": { "primary": "F3", "secondary": null, "gamepad": null },
+      "protected": false
+    },
+    {
+      "id": "quick_save",
+      "category": "system",
+      "label_ko": "빠른 저장",
+      "label_en": "Quick Save",
+      "default": { "primary": "F5", "secondary": null, "gamepad": null },
+      "protected": false
+    }
+  ],
+  "categories": {
+    "movement": { "label_ko": "이동", "label_en": "Movement", "order": 1 },
+    "combat": { "label_ko": "전투", "label_en": "Combat", "order": 2 },
+    "ui": { "label_ko": "UI", "label_en": "UI", "order": 3 },
+    "camera": { "label_ko": "카메라", "label_en": "Camera", "order": 4 },
+    "system": { "label_ko": "시스템", "label_en": "System", "order": 5 }
+  },
+  "forbidden_keys": ["AltF4", "ControlW", "F11"],
+  "protected_actions": ["menu"]
+}

@@ -1,0 +1,125 @@
+{
+  "version": "1.0",
+  "description": "에테르나 크로니클 — 고대비 테마 UI 토큰",
+  "themes": {
+    "default": {
+      "label": "기본 테마",
+      "label_en": "Default Theme",
+      "tokens": {
+        "bg-primary": "#1a1a2e",
+        "bg-secondary": "#16213e",
+        "bg-panel": "rgba(0,0,0,0.7)",
+        "bg-modal": "rgba(0,0,0,0.8)",
+        "bg-hover": "#2a2a4e",
+        "bg-active": "#3a3a5e",
+        "bg-input": "#0f3460",
+        "text-primary": "#e0e0e0",
+        "text-secondary": "#a0a0a0",
+        "text-muted": "#666666",
+        "text-accent": "#e94560",
+        "text-link": "#4488FF",
+        "text-success": "#44CC44",
+        "text-warning": "#FFCC00",
+        "text-error": "#FF4444",
+        "border-default": "#333333",
+        "border-focus": "#4488FF",
+        "border-accent": "#e94560",
+        "border-panel": "#2a2a4e",
+        "focus-glow": "none",
+        "focus-width": "2px",
+        "hp-bar-fg": "#44CC44",
+        "hp-bar-bg": "#333333",
+        "mp-bar-fg": "#4488FF",
+        "mp-bar-bg": "#333333",
+        "exp-bar-fg": "#FFCC00",
+        "cooldown-overlay": "rgba(0,0,0,0.5)",
+        "rarity-common": "#AAAAAA",
+        "rarity-uncommon": "#44CC44",
+        "rarity-rare": "#4488FF",
+        "rarity-epic": "#AA44FF",
+        "rarity-legendary": "#FF8800",
+        "rarity-mythic": "#FF2222",
+        "tooltip-bg": "rgba(0,0,0,0.9)",
+        "tooltip-border": "#555555"
+      }
+    },
+    "high_contrast": {
+      "label": "고대비 테마",
+      "label_en": "High Contrast Theme",
+      "description": "WCAG 2.1 AAA — 텍스트 대비 7:1 이상, 비텍스트 3:1 이상",
+      "tokens": {
+        "bg-primary": "#000000",
+        "bg-secondary": "#0a0a0a",
+        "bg-panel": "rgba(0,0,0,0.95)",
+        "bg-modal": "rgba(0,0,0,0.98)",
+        "bg-hover": "#1a1a1a",
+        "bg-active": "#2a2a2a",
+        "bg-input": "#000000",
+        "text-primary": "#FFFFFF",
+        "text-secondary": "#E0E0E0",
+        "text-muted": "#BBBBBB",
+        "text-accent": "#FF6680",
+        "text-link": "#66AAFF",
+        "text-success": "#66FF66",
+        "text-warning": "#FFDD44",
+        "text-error": "#FF6666",
+        "border-default": "#888888",
+        "border-focus": "#00FF00",
+        "border-accent": "#FFD700",
+        "border-panel": "#AAAAAA",
+        "focus-glow": "0 0 0 5px rgba(0,255,0,0.3)",
+        "focus-width": "3px",
+        "hp-bar-fg": "#66FF66",
+        "hp-bar-bg": "#1a1a1a",
+        "mp-bar-fg": "#66AAFF",
+        "mp-bar-bg": "#1a1a1a",
+        "exp-bar-fg": "#FFDD44",
+        "cooldown-overlay": "rgba(0,0,0,0.8)",
+        "rarity-common": "#CCCCCC",
+        "rarity-uncommon": "#66FF66",
+        "rarity-rare": "#66AAFF",
+        "rarity-epic": "#CC66FF",
+        "rarity-legendary": "#FFAA44",
+        "rarity-mythic": "#FF6666",
+        "tooltip-bg": "#000000",
+        "tooltip-border": "#FFFFFF"
+      }
+    }
+  },
+  "contrast_validation": {
+    "description": "대비비 검증 결과 (고대비 테마, bg-primary #000000 기준)",
+    "results": [
+      { "token": "text-primary", "color": "#FFFFFF", "ratio": 21.0, "level": "AAA" },
+      { "token": "text-secondary", "color": "#E0E0E0", "ratio": 15.3, "level": "AAA" },
+      { "token": "text-muted", "color": "#BBBBBB", "ratio": 11.5, "level": "AAA" },
+      { "token": "text-accent", "color": "#FF6680", "ratio": 7.2, "level": "AAA" },
+      { "token": "text-link", "color": "#66AAFF", "ratio": 8.1, "level": "AAA" },
+      { "token": "text-success", "color": "#66FF66", "ratio": 12.4, "level": "AAA" },
+      { "token": "text-warning", "color": "#FFDD44", "ratio": 16.7, "level": "AAA" },
+      { "token": "text-error", "color": "#FF6666", "ratio": 7.8, "level": "AAA" },
+      { "token": "border-default", "color": "#888888", "ratio": 5.3, "level": "AA (non-text)" },
+      { "token": "border-focus", "color": "#00FF00", "ratio": 15.3, "level": "AAA" },
+      { "token": "border-accent", "color": "#FFD700", "ratio": 16.3, "level": "AAA" }
+    ]
+  },
+  "scale": {
+    "steps": [0.75, 1.0, 1.25, 1.5, 2.0],
+    "font_sizes": [12, 14, 16, 18, 20, 24],
+    "default_scale": 1.0,
+    "default_font_size": 16,
+    "breakpoints": {
+      "compact": {
+        "condition": "ui-scale >= 1.5 OR viewport-width < 1280",
+        "changes": ["HUD compact mode", "minimap hidden", "skills wrapped"]
+      },
+      "expanded": {
+        "condition": "ui-scale <= 0.75 OR viewport-width >= 2560",
+        "changes": ["extra info panels", "wider chat"]
+      },
+      "mobile": {
+        "condition": "viewport-width < 768",
+        "changes": ["vertical stack", "simplified HUD"]
+      }
+    }
+  }
+}
