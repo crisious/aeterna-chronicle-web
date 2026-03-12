@@ -4,7 +4,7 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-8%20SEASON%202-purple?style=for-the-badge)](01_코어기획/P8_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-9%20GA%20RELEASE-green?style=for-the-badge)](01_코어기획/P9_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-21%20Design%20Docs-orange?style=for-the-badge)](#-코어기획-문서-21개)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
@@ -278,6 +278,7 @@ Phase 5  ████████████████████  100%  몬
 Phase 6  ████████████████████  100%  수익화/길드전/PvP정규화/프로덕션 — 60/60 오픈 베타 ✅
 Phase 7  ████████████████████  100%  시스템 연동 완성 + 프로덕션 품질 — 128/128 GA ✅
 Phase 8  ████████████████████  100%  시즌2 깨어나는 봉인 — 148/148 시즌2 출시 ✅
+Phase 9  ████████████████████  100%  멀티 플랫폼 + 실서비스 — 168/168 GA 출시 🚀
 ```
 
 ### 정합성 검증 (2026-03-11)
@@ -297,6 +298,8 @@ Phase 8  ████████████████████  100%  시
 | [🔧 설치 가이드](01_코어기획/에테르나크로니클_설치_가이드.md) | Quick Start, DB/Redis, Docker, k8s, CI/CD, 테스트 — 개발 환경 세팅 |
 
 ### 최근 업데이트
+
+> **2026-03-12** — **Phase 9 GA 출시 승인** (20/20, 168/168). Unity WebGL 클라이언트 + Stripe 실결제 + 안티치트/어뷰징 탐지 + GDPR + 계정보안(2FA) + 법적문서 6종 + 고객지원 + 크로스 클라이언트 검증 + OWASP 보안감사 v2 + 통합 테스트 → **실서비스 GA 출시**
 
 > **2026-03-12** — **Phase 8 시즌 2 출시 RC PASS** (20/20, 148/148). PvP 시즌2 (맵 2개+보상+강등) + 길드 레이드/하우스 + NPC 10명 + L10N 3언어 + E2E 통합 테스트 → 시즌 2 "깨어나는 봉인" 출시 승인
 

@@ -8,6 +8,8 @@ import { prisma } from '../db';
 import { requireAdmin, getAdminUser } from '../admin/authMiddleware';
 import { writeAuditLog, queryAuditLogs } from '../admin/auditLogger';
 import { inventoryManager } from '../inventory/inventoryManager';
+import { getActiveSanctions, getUserSanctions, revokeSanction, applySanction, SanctionLevel } from '../security/abuseDetector';
+import { getAdminTicketList, assignTicket, addAdminReply, closeTicket, updateTicketPriority, getTicketStats, TicketPriority } from '../support/ticketManager';
 import type { Server as SocketServer } from 'socket.io';
 import os from 'os';
 
@@ -462,5 +464,97 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
     } catch {
       return reply.status(404).send({ error: '이벤트를 찾을 수 없습니다.' });
     }
+  });
+
+  // ─── P9-14: 제재 관리 API ──────────────────────────────────────
+
+  /** 활성 제재 목록 조회 */
+  server.get('/admin/sanctions', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply: FastifyReply) => {
+    const page = parseInt(request.query.page ?? '1', 10);
+    const limit = parseInt(request.query.limit ?? '20', 10);
+    const result = await getActiveSanctions(page, limit);
+    return reply.send(result);
+  });
+
+  /** 특정 유저 제재 이력 조회 */
+  server.get('/admin/sanctions/user/:id', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    const sanctions = await getUserSanctions(request.params.id);
+    return reply.send({ userId: request.params.id, sanctions });
+  });
+
+  /** 수동 제재 적용 */
+  server.post('/admin/sanctions', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Body: { userId: string; level: string; reason: string; evidence?: string } }>, reply: FastifyReply) => {
+    const admin = getAdminUser(request);
+    const { userId, level, reason, evidence } = request.body as any;
+    if (!Object.values(SanctionLevel).includes(level)) {
+      return reply.status(400).send({ error: '유효하지 않은 제재 레벨입니다.' });
+    }
+    await applySanction(userId, level as SanctionLevel, reason, evidence ?? 'MANUAL_ADMIN', admin.id);
+    return reply.send({ success: true, userId, level, reason });
+  });
+
+  /** 제재 해제 */
+  server.delete('/admin/sanctions/:id', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { reason: string } }>, reply: FastifyReply) => {
+    const admin = getAdminUser(request);
+    const { reason } = request.body as any;
+    await revokeSanction(request.params.id, admin.id, reason);
+    return reply.send({ success: true, sanctionId: request.params.id });
+  });
+
+  // ─── P9-16: 어드민 티켓 관리 API ──────────────────────────────
+
+  /** 티켓 목록 (필터) */
+  server.get('/admin/tickets', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Querystring: Record<string, string> }>, reply: FastifyReply) => {
+    const q = request.query;
+    const result = await getAdminTicketList({
+      status: q.status as any,
+      category: q.category as any,
+      priority: q.priority as any,
+      assignedTo: q.assignedTo,
+      userId: q.userId,
+      page: q.page ? parseInt(q.page) : undefined,
+      limit: q.limit ? parseInt(q.limit) : undefined,
+    });
+    return reply.send(result);
+  });
+
+  /** 티켓 통계 */
+  server.get('/admin/tickets/stats', { preHandler: [requireAdmin] }, async (_request, reply: FastifyReply) => {
+    const stats = await getTicketStats();
+    return reply.send(stats);
+  });
+
+  /** 티켓 할당 */
+  server.post('/admin/tickets/:id/assign', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    const admin = getAdminUser(request);
+    const ticket = await assignTicket(request.params.id, admin.id);
+    return reply.send(ticket);
+  });
+
+  /** 티켓 답변 */
+  server.post('/admin/tickets/:id/reply', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { content: string; attachments?: string[] } }>, reply: FastifyReply) => {
+    const admin = getAdminUser(request);
+    const { content, attachments } = request.body as any;
+    const message = await addAdminReply(request.params.id, admin.id, content, attachments);
+    return reply.send(message);
+  });
+
+  /** 티켓 종료 */
+  server.post('/admin/tickets/:id/close', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { resolution: string } }>, reply: FastifyReply) => {
+    const admin = getAdminUser(request);
+    const { resolution } = request.body as any;
+    const ticket = await closeTicket(request.params.id, admin.id, resolution);
+    return reply.send(ticket);
+  });
+
+  /** 티켓 우선순위 변경 */
+  server.patch('/admin/tickets/:id/priority', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { priority: string } }>, reply: FastifyReply) => {
+    const admin = getAdminUser(request);
+    const { priority } = request.body as any;
+    if (!Object.values(TicketPriority).includes(priority as TicketPriority)) {
+      return reply.status(400).send({ error: '유효하지 않은 우선순위입니다.' });
+    }
+    const ticket = await updateTicketPriority(request.params.id, admin.id, priority as TicketPriority);
+    return reply.send(ticket);
   });
 }
