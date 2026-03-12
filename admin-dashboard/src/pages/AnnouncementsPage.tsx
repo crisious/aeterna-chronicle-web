@@ -2,8 +2,7 @@
  * P6-13: 공지사항 관리 페이지 — CRUD
  */
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
-import { API_BASE } from '../App';
+import apiClient from '../api/apiClient';
 
 interface Announcement {
   id: string;
@@ -33,9 +32,7 @@ export const AnnouncementsPage: React.FC = () => {
   const fetchAnnouncements = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/admin/announcements`, {
-        headers: authHeaders(),
-      });
+      const res = await apiClient.get('/admin/announcements');
       setAnnouncements(res.data.announcements || res.data || []);
     } catch {
       // 연결 실패
@@ -74,9 +71,9 @@ export const AnnouncementsPage: React.FC = () => {
       };
 
       if (isNew) {
-        await axios.post(`${API_BASE}/admin/announcements`, data, { headers: authHeaders() });
+        await apiClient.post('/admin/announcements', data);
       } else if (editing) {
-        await axios.patch(`${API_BASE}/admin/announcements/${editing.id}`, data, { headers: authHeaders() });
+        await apiClient.patch(`/admin/announcements/${editing.id}`, data);
       }
 
       setEditing(null);
@@ -90,7 +87,7 @@ export const AnnouncementsPage: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('이 공지를 삭제하시겠습니까?')) return;
     try {
-      await axios.delete(`${API_BASE}/admin/announcements/${id}`, { headers: authHeaders() });
+      await apiClient.delete(`/admin/announcements/${id}`);
       void fetchAnnouncements();
     } catch {
       // 실패 처리
@@ -221,7 +218,4 @@ export const AnnouncementsPage: React.FC = () => {
   );
 };
 
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('admin_token') || '';
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// authHeaders() 제거 — apiClient의 authInterceptor로 대체 (P10-09)

@@ -129,7 +129,4 @@ function thirtyDaysAgo(): string {
   return d.toISOString().split('T')[0]!;
 }
 
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('admin_token') || '';
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// authHeaders() 제거 — apiClient의 authInterceptor로 대체 (P10-09)

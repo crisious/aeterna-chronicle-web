@@ -2,10 +2,9 @@
  * P6-13: 경제 지표 페이지 — 인플레이션 지표, 화폐 유통량
  */
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 import { StatCard } from '../components/StatCard';
 import { LineChart, BarChart } from '../components/Chart';
-import { API_BASE } from '../App';
 
 interface EconomyMetrics {
   inflation: {
@@ -32,10 +31,9 @@ export const EconomyPage: React.FC = () => {
     const fetchData = async () => {
       try {
         const [economyRes, revenueRes] = await Promise.all([
-          axios.get(`${API_BASE}/analytics/economy`, { headers: authHeaders() }),
-          axios.get(`${API_BASE}/analytics/revenue`, {
+          apiClient.get('/analytics/economy'),
+          apiClient.get('/analytics/revenue', {
             params: { startDate: ninetyDaysAgo(), endDate: today() },
-            headers: authHeaders(),
           }),
         ]);
         setMetrics(economyRes.data);
@@ -154,7 +152,4 @@ function ninetyDaysAgo(): string {
   return d.toISOString().split('T')[0]!;
 }
 
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('admin_token') || '';
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// authHeaders() 제거 — apiClient의 authInterceptor로 대체 (P10-09)

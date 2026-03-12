@@ -2,9 +2,8 @@
  * P6-13: 신고 관리 페이지 — 신고 큐 + 검토 UI
  */
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 import { DataTable, type Column } from '../components/DataTable';
-import { API_BASE } from '../App';
 
 interface ReportRow {
   id: string;
@@ -74,9 +73,8 @@ export const ReportsPage: React.FC = () => {
   const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/admin/reports`, {
+      const res = await apiClient.get('/admin/reports', {
         params: { status: statusFilter, page, limit: 20 },
-        headers: authHeaders(),
       });
       setReports(res.data.reports || []);
       setTotalPages(res.data.totalPages || 1);
@@ -93,13 +91,12 @@ export const ReportsPage: React.FC = () => {
   const handleReview = async (dismiss: boolean) => {
     if (!selectedReport) return;
     try {
-      await axios.patch(
-        `${API_BASE}/admin/reports/${selectedReport.id}/review`,
+      await apiClient.patch(
+        `/admin/reports/${selectedReport.id}/review`,
         {
           action: dismiss ? null : (reviewAction || null),
           reviewNote: reviewNote || undefined,
         },
-        { headers: authHeaders() },
       );
       setSelectedReport(null);
       setReviewAction('');
@@ -214,7 +211,4 @@ export const ReportsPage: React.FC = () => {
   );
 };
 
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('admin_token') || '';
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// authHeaders() 제거 — apiClient의 authInterceptor로 대체 (P10-09)
