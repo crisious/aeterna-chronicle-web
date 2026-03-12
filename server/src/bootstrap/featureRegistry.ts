@@ -49,6 +49,7 @@ import { betaRoutes } from '../routes/betaRoutes';
 import { endlessDungeonRoutes } from '../routes/endlessDungeonRoutes';
 import { worldBossRoutes } from '../routes/worldBossRoutes';
 import { transcendenceRoutes } from '../routes/transcendenceRoutes';
+import { communityRoutes } from '../routes/shareRoutes';
 
 // ─── 소켓 핸들러 임포트 ─────────────────────────────────────
 import { setupSocketHandlers } from '../socket/socketHandler';
@@ -131,6 +132,8 @@ const ROUTE_MANIFEST: RouteEntry[] = [
   { plugin: endlessDungeonRoutes, name: 'Endless Dungeon' },
   { plugin: worldBossRoutes, name: 'World Boss' },
   { plugin: transcendenceRoutes, name: 'Transcendence' },
+  // P12 커뮤니티 확장
+  { plugin: communityRoutes, name: 'Community (P12)' },
 ];
 
 /**

@@ -83,6 +83,14 @@ const DEFAULT_FEATURES: FeatureDefinition[] = [
   { key: 'endless_dungeon', defaultEnabled: true,  description: '무한 던전 (시간의 탑)' },
   { key: 'world_boss',     defaultEnabled: true,  description: '월드 보스' },
   { key: 'transcendence',  defaultEnabled: true,  description: '장비 초월/강화' },
+  // P12 커뮤니티 확장
+  { key: 'sns_share',      defaultEnabled: true,  description: 'SNS 공유 (P12-01)' },
+  { key: 'discord_bot',    defaultEnabled: true,  description: 'Discord 봇 연동 (P12-02)' },
+  { key: 'streamer_mode',  defaultEnabled: true,  description: '스트리머 모드 (P12-03)' },
+  { key: 'referral',       defaultEnabled: true,  description: '레퍼럴 시스템 (P12-04)' },
+  { key: 'ugc_gallery',    defaultEnabled: true,  description: 'UGC 갤러리 (P12-05)' },
+  { key: 'community_event', defaultEnabled: true, description: '커뮤니티 이벤트 (P12-06)' },
+  { key: 'social_profile', defaultEnabled: true,  description: '소셜 프로필 (P12-07)' },
 ];
 
 // ── FeatureFlags 클래스 ───────────────────────────────────────

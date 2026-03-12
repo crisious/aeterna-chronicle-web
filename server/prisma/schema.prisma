@@ -1306,3 +1306,111 @@ model LoginSession {
   @@index([userId, isActive])
   @@index([isActive])
 }
+
+// ─── SNS 공유 (P12-01) ───────────────────────────────────────
+model Share {
+  id          String   @id                           // shortCode
+  userId      String   @map("user_id")
+  type        String                                 // achievement | screenshot | character_card | build
+  resourceId  String   @map("resource_id")
+  message     String?  @db.Text
+  imageUrl    String?  @map("image_url")
+  ogMeta      Json     @map("og_meta")
+  viewCount   Int      @default(0) @map("view_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("shares")
+  @@index([userId])
+  @@index([type])
+}
+
+// ─── 레퍼럴 코드 (P12-04) ────────────────────────────────────
+model ReferralCode {
+  code       String    @id @unique
+  ownerId    String    @map("owner_id")
+  usedCount  Int       @default(0) @map("used_count")
+  maxUses    Int       @default(50) @map("max_uses")
+  isActive   Boolean   @default(true) @map("is_active")
+  expiresAt  DateTime? @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@map("referral_codes")
+  @@index([ownerId])
+}
+
+// ─── 레퍼럴 보상 (P12-04) ────────────────────────────────────
+model ReferralReward {
+  id          String    @id @default(uuid())
+  referrerId  String    @map("referrer_id")
+  referredId  String    @map("referred_id")
+  codeUsed    String    @map("code_used")
+  rewardType  String    @map("reward_type")  // diamond | cosmetic_box | premium_pass
+  amount      Int
+  side        String                          // referrer | referred | milestone
+  claimed     Boolean   @default(false)
+  claimedAt   DateTime? @map("claimed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("referral_rewards")
+  @@index([referrerId])
+  @@index([referredId])
+  @@index([codeUsed])
+}
+
+// ─── UGC 게시글 (P12-05) ─────────────────────────────────────
+model UgcPost {
+  id          String   @id @default(uuid())
+  authorId    String   @map("author_id")
+  type        String                          // screenshot | build | guide | fanart
+  title       String
+  description String?  @db.Text
+  imageUrl    String?  @map("image_url")
+  buildData   Json?    @map("build_data")
+  tags        String[] @default([])
+  likeCount   Int      @default(0) @map("like_count")
+  viewCount   Int      @default(0) @map("view_count")
+  reportCount Int      @default(0) @map("report_count")
+  isHidden    Boolean  @default(false) @map("is_hidden")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("ugc_posts")
+  @@index([authorId])
+  @@index([type])
+  @@index([isHidden, createdAt])
+  @@index([isHidden, likeCount])
+}
+
+// ─── UGC 좋아요 (P12-05) ─────────────────────────────────────
+model UgcLike {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([postId, userId])
+  @@map("ugc_likes")
+  @@index([postId])
+  @@index([userId])
+}
+
+// ─── 커뮤니티 이벤트 (P12-06) ─────────────────────────────────
+model CommunityEvent {
+  id               String   @id @default(uuid())
+  name             String
+  type             String                     // bonus_exp | bonus_drop | special_boss | ...
+  description      String   @db.Text
+  startAt          DateTime @map("start_at")
+  endAt            DateTime @map("end_at")
+  config           Json                       // CommunityEventConfig 전체
+  status           String   @default("scheduled") // scheduled | active | ended | cancelled
+  participantCount Int      @default(0) @map("participant_count")
+  createdBy        String   @map("created_by")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("community_events")
+  @@index([status])
+  @@index([startAt])
+  @@index([endAt])
+}

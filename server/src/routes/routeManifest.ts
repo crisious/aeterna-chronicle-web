@@ -102,6 +102,9 @@ export const ROUTE_MANIFEST: RouteEntry[] = [
   { name: 'endlessDungeon',  plugin: reg(() => import('./endlessDungeonRoutes'),  'endlessDungeonRoutes'),  style: 'register', feature: 'endless_dungeon' },
   { name: 'worldBoss',       plugin: reg(() => import('./worldBossRoutes'),       'worldBossRoutes'),       style: 'register', feature: 'world_boss' },
   { name: 'transcendence',   plugin: reg(() => import('./transcendenceRoutes'),   'transcendenceRoutes'),   style: 'register', feature: 'transcendence' },
+
+  // ── P12 커뮤니티 확장 ──
+  { name: 'community',       plugin: reg(() => import('./shareRoutes'),           'communityRoutes'),       style: 'register', feature: 'social' },
 ];
 
 // ── 자동 등록 함수 ────────────────────────────────────────────
