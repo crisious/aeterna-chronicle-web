@@ -1,0 +1,1956 @@
+{
+  "season": 2,
+  "total_cosmetics": 50,
+  "cosmetics": [
+    {
+      "asset_id": "COS-WING_S2_01",
+      "cosmetic_code": "WING_S2_01",
+      "name_ko": "안개의 날개 (소형)",
+      "category": "wing",
+      "rarity": "rare",
+      "season": 2,
+      "description": "안개해의 에테르로 만든 반투명 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 안개의 날개 (소형): 안개해의 에테르로 만든 반투명 날개., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개의 날개 (소형): 안개해의 에테르로 만든 반투명 날개.. wing attachment sprite, flapping animation frames, back accessory. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개의 날개 (소형), 안개해의 에테르로 만든 반투명 날개., wing attachment sprite, flapping animation frames, back accessory, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_02",
+      "cosmetic_code": "WING_S2_02",
+      "name_ko": "봉인의 날개 (소형)",
+      "category": "wing",
+      "rarity": "rare",
+      "season": 2,
+      "description": "봉인 에너지가 깃든 수정 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 봉인의 날개 (소형): 봉인 에너지가 깃든 수정 날개., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인의 날개 (소형): 봉인 에너지가 깃든 수정 날개.. wing attachment sprite, flapping animation frames, back accessory. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인의 날개 (소형), 봉인 에너지가 깃든 수정 날개., wing attachment sprite, flapping animation frames, back accessory, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_03",
+      "cosmetic_code": "WING_S2_03",
+      "name_ko": "기억 파편 날개",
+      "category": "wing",
+      "rarity": "epic",
+      "season": 2,
+      "description": "파괴된 기억의 조각이 날개 형태로 모인 것.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 기억 파편 날개: 파괴된 기억의 조각이 날개 형태로 모인 것., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 기억 파편 날개: 파괴된 기억의 조각이 날개 형태로 모인 것.. wing attachment sprite, flapping animation frames, back accessory. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 기억 파편 날개, 파괴된 기억의 조각이 날개 형태로 모인 것., wing attachment sprite, flapping animation frames, back accessory, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_04",
+      "cosmetic_code": "WING_S2_04",
+      "name_ko": "안개 비룡 날개",
+      "category": "wing",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개 비룡의 날개를 본뜬 에테르 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 안개 비룡 날개: 안개 비룡의 날개를 본뜬 에테르 날개., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 비룡 날개: 안개 비룡의 날개를 본뜬 에테르 날개.. wing attachment sprite, flapping animation frames, back accessory. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 비룡 날개, 안개 비룡의 날개를 본뜬 에테르 날개., wing attachment sprite, flapping animation frames, back accessory, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_05",
+      "cosmetic_code": "WING_S2_05",
+      "name_ko": "봉인의 날개 (중형)",
+      "category": "wing",
+      "rarity": "epic",
+      "season": 2,
+      "description": "봉인 에너지가 응축된 대형 수정 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 봉인의 날개 (중형): 봉인 에너지가 응축된 대형 수정 날개., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인의 날개 (중형): 봉인 에너지가 응축된 대형 수정 날개.. wing attachment sprite, flapping animation frames, back accessory. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인의 날개 (중형), 봉인 에너지가 응축된 대형 수정 날개., wing attachment sprite, flapping animation frames, back accessory, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_06",
+      "cosmetic_code": "WING_S2_06",
+      "name_ko": "레테의 날개",
+      "category": "wing",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "레테의 힘을 정화해 만든 어둠빛 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 레테의 날개: 레테의 힘을 정화해 만든 어둠빛 날개., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 레테의 날개: 레테의 힘을 정화해 만든 어둠빛 날개.. wing attachment sprite, flapping animation frames, back accessory. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 레테의 날개, 레테의 힘을 정화해 만든 어둠빛 날개., wing attachment sprite, flapping animation frames, back accessory, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_07",
+      "cosmetic_code": "WING_S2_07",
+      "name_ko": "심연의 날개",
+      "category": "wing",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "심연의 해구에서 발견된 고대 날개 형태.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 심연의 날개: 심연의 해구에서 발견된 고대 날개 형태., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 심연의 날개: 심연의 해구에서 발견된 고대 날개 형태.. wing attachment sprite, flapping animation frames, back accessory. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 심연의 날개, 심연의 해구에서 발견된 고대 날개 형태., wing attachment sprite, flapping animation frames, back accessory, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_08",
+      "cosmetic_code": "WING_S2_08",
+      "name_ko": "망각의 군주 날개",
+      "category": "wing",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "기억 파괴자 전용 전설 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 망각의 군주 날개: 기억 파괴자 전용 전설 날개., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 망각의 군주 날개: 기억 파괴자 전용 전설 날개.. wing attachment sprite, flapping animation frames, back accessory. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 망각의 군주 날개, 기억 파괴자 전용 전설 날개., wing attachment sprite, flapping animation frames, back accessory, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_09",
+      "cosmetic_code": "WING_S2_09",
+      "name_ko": "봉인의 날개 (대형)",
+      "category": "wing",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "시즌 2 시즌패스 최고 보상 날개.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 봉인의 날개 (대형): 시즌 2 시즌패스 최고 보상 날개., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인의 날개 (대형): 시즌 2 시즌패스 최고 보상 날개.. wing attachment sprite, flapping animation frames, back accessory. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인의 날개 (대형), 시즌 2 시즌패스 최고 보상 날개., wing attachment sprite, flapping animation frames, back accessory, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WING_S2_10",
+      "cosmetic_code": "WING_S2_10",
+      "name_ko": "깨어나는 봉인 날개",
+      "category": "wing",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "시즌 2 한정 전설 날개 — 봉인 해제 이펙트.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, wing attachment sprite, flapping animation frames, back accessory, 깨어나는 봉인 날개: 시즌 2 한정 전설 날개 — 봉인 해제 이펙트., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 깨어나는 봉인 날개: 시즌 2 한정 전설 날개 — 봉인 해제 이펙트.. wing attachment sprite, flapping animation frames, back accessory. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 깨어나는 봉인 날개, 시즌 2 한정 전설 날개 — 봉인 해제 이펙트., wing attachment sprite, flapping animation frames, back accessory, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_01",
+      "cosmetic_code": "AURA_S2_01",
+      "name_ko": "안개의 오라",
+      "category": "aura",
+      "rarity": "rare",
+      "season": 2,
+      "description": "캐릭터 주변에 안개가 피어오르는 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 안개의 오라: 캐릭터 주변에 안개가 피어오르는 오라., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개의 오라: 캐릭터 주변에 안개가 피어오르는 오라.. aura effect overlay, looping particle animation around character. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개의 오라, 캐릭터 주변에 안개가 피어오르는 오라., aura effect overlay, looping particle animation around character, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_02",
+      "cosmetic_code": "AURA_S2_02",
+      "name_ko": "봉인 공명 오라",
+      "category": "aura",
+      "rarity": "rare",
+      "season": 2,
+      "description": "봉인석 근처처럼 빛이 맥동하는 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 봉인 공명 오라: 봉인석 근처처럼 빛이 맥동하는 오라., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 공명 오라: 봉인석 근처처럼 빛이 맥동하는 오라.. aura effect overlay, looping particle animation around character. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 공명 오라, 봉인석 근처처럼 빛이 맥동하는 오라., aura effect overlay, looping particle animation around character, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_03",
+      "cosmetic_code": "AURA_S2_03",
+      "name_ko": "기억 파편 오라",
+      "category": "aura",
+      "rarity": "epic",
+      "season": 2,
+      "description": "기억 파편이 캐릭터 주위를 공전하는 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 기억 파편 오라: 기억 파편이 캐릭터 주위를 공전하는 오라., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 기억 파편 오라: 기억 파편이 캐릭터 주위를 공전하는 오라.. aura effect overlay, looping particle animation around character. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 기억 파편 오라, 기억 파편이 캐릭터 주위를 공전하는 오라., aura effect overlay, looping particle animation around character, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_04",
+      "cosmetic_code": "AURA_S2_04",
+      "name_ko": "에테르 폭풍 오라",
+      "category": "aura",
+      "rarity": "epic",
+      "season": 2,
+      "description": "에테르 에너지가 폭풍처럼 감싸는 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 에테르 폭풍 오라: 에테르 에너지가 폭풍처럼 감싸는 오라., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 에테르 폭풍 오라: 에테르 에너지가 폭풍처럼 감싸는 오라.. aura effect overlay, looping particle animation around character. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 에테르 폭풍 오라, 에테르 에너지가 폭풍처럼 감싸는 오라., aura effect overlay, looping particle animation around character, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_05",
+      "cosmetic_code": "AURA_S2_05",
+      "name_ko": "봉인 해방 오라",
+      "category": "aura",
+      "rarity": "epic",
+      "season": 2,
+      "description": "봉인이 해제되는 빛줄기 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 봉인 해방 오라: 봉인이 해제되는 빛줄기 오라., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 해방 오라: 봉인이 해제되는 빛줄기 오라.. aura effect overlay, looping particle animation around character. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 해방 오라, 봉인이 해제되는 빛줄기 오라., aura effect overlay, looping particle animation around character, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_06",
+      "cosmetic_code": "AURA_S2_06",
+      "name_ko": "심연의 오라",
+      "category": "aura",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "심연의 어둠이 감싸는 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 심연의 오라: 심연의 어둠이 감싸는 오라., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 심연의 오라: 심연의 어둠이 감싸는 오라.. aura effect overlay, looping particle animation around character. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 심연의 오라, 심연의 어둠이 감싸는 오라., aura effect overlay, looping particle animation around character, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_07",
+      "cosmetic_code": "AURA_S2_07",
+      "name_ko": "레테의 잔영 오라",
+      "category": "aura",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "레테의 정화된 에너지 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 레테의 잔영 오라: 레테의 정화된 에너지 오라., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 레테의 잔영 오라: 레테의 정화된 에너지 오라.. aura effect overlay, looping particle animation around character. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 레테의 잔영 오라, 레테의 정화된 에너지 오라., aura effect overlay, looping particle animation around character, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_08",
+      "cosmetic_code": "AURA_S2_08",
+      "name_ko": "기억 파괴 오라",
+      "category": "aura",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "기억이 파괴되며 소멸하는 이펙트 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 기억 파괴 오라: 기억이 파괴되며 소멸하는 이펙트 오라., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 기억 파괴 오라: 기억이 파괴되며 소멸하는 이펙트 오라.. aura effect overlay, looping particle animation around character. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 기억 파괴 오라, 기억이 파괴되며 소멸하는 이펙트 오라., aura effect overlay, looping particle animation around character, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_09",
+      "cosmetic_code": "AURA_S2_09",
+      "name_ko": "대망각 오라",
+      "category": "aura",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "대망각의 힘이 재현되는 전설 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 대망각 오라: 대망각의 힘이 재현되는 전설 오라., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 대망각 오라: 대망각의 힘이 재현되는 전설 오라.. aura effect overlay, looping particle animation around character. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 대망각 오라, 대망각의 힘이 재현되는 전설 오라., aura effect overlay, looping particle animation around character, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-AURA_S2_10",
+      "cosmetic_code": "AURA_S2_10",
+      "name_ko": "봉인자의 축복 오라",
+      "category": "aura",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "12인의 봉인자 축복 오라.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, aura effect overlay, looping particle animation around character, 봉인자의 축복 오라: 12인의 봉인자 축복 오라., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인자의 축복 오라: 12인의 봉인자 축복 오라.. aura effect overlay, looping particle animation around character. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인자의 축복 오라, 12인의 봉인자 축복 오라., aura effect overlay, looping particle animation around character, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_01",
+      "cosmetic_code": "WPN_S2_01",
+      "name_ko": "안개해 장검",
+      "category": "weapon_skin",
+      "rarity": "rare",
+      "season": 2,
+      "description": "안개해의 에테르로 단조된 장검.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 안개해 장검: 안개해의 에테르로 단조된 장검., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개해 장검: 안개해의 에테르로 단조된 장검.. weapon sprite overlay, detailed pixel art weapon design. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개해 장검, 안개해의 에테르로 단조된 장검., weapon sprite overlay, detailed pixel art weapon design, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_02",
+      "cosmetic_code": "WPN_S2_02",
+      "name_ko": "봉인 파괴검",
+      "category": "weapon_skin",
+      "rarity": "rare",
+      "season": 2,
+      "description": "봉인을 부수기 위해 만든 의식용 검.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 봉인 파괴검: 봉인을 부수기 위해 만든 의식용 검., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 파괴검: 봉인을 부수기 위해 만든 의식용 검.. weapon sprite overlay, detailed pixel art weapon design. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 파괴검, 봉인을 부수기 위해 만든 의식용 검., weapon sprite overlay, detailed pixel art weapon design, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_03",
+      "cosmetic_code": "WPN_S2_03",
+      "name_ko": "안개의 지팡이",
+      "category": "weapon_skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개 결정으로 만든 지팡이.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 안개의 지팡이: 안개 결정으로 만든 지팡이., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개의 지팡이: 안개 결정으로 만든 지팡이.. weapon sprite overlay, detailed pixel art weapon design. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개의 지팡이, 안개 결정으로 만든 지팡이., weapon sprite overlay, detailed pixel art weapon design, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_04",
+      "cosmetic_code": "WPN_S2_04",
+      "name_ko": "기억 침식 단검",
+      "category": "weapon_skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "닿는 것의 기억을 침식시키는 단검.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 기억 침식 단검: 닿는 것의 기억을 침식시키는 단검., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 기억 침식 단검: 닿는 것의 기억을 침식시키는 단검.. weapon sprite overlay, detailed pixel art weapon design. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 기억 침식 단검, 닿는 것의 기억을 침식시키는 단검., weapon sprite overlay, detailed pixel art weapon design, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_05",
+      "cosmetic_code": "WPN_S2_05",
+      "name_ko": "봉인 대검",
+      "category": "weapon_skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "봉인 에너지가 흐르는 거대한 검.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 봉인 대검: 봉인 에너지가 흐르는 거대한 검., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 대검: 봉인 에너지가 흐르는 거대한 검.. weapon sprite overlay, detailed pixel art weapon design. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 대검, 봉인 에너지가 흐르는 거대한 검., weapon sprite overlay, detailed pixel art weapon design, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_06",
+      "cosmetic_code": "WPN_S2_06",
+      "name_ko": "심연의 낫",
+      "category": "weapon_skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "심연의 해구에서 발견된 고대 낫.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 심연의 낫: 심연의 해구에서 발견된 고대 낫., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 심연의 낫: 심연의 해구에서 발견된 고대 낫.. weapon sprite overlay, detailed pixel art weapon design. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 심연의 낫, 심연의 해구에서 발견된 고대 낫., weapon sprite overlay, detailed pixel art weapon design, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_07",
+      "cosmetic_code": "WPN_S2_07",
+      "name_ko": "레테의 채찍",
+      "category": "weapon_skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "레테의 촉수를 본뜬 에테르 채찍.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 레테의 채찍: 레테의 촉수를 본뜬 에테르 채찍., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 레테의 채찍: 레테의 촉수를 본뜬 에테르 채찍.. weapon sprite overlay, detailed pixel art weapon design. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 레테의 채찍, 레테의 촉수를 본뜬 에테르 채찍., weapon sprite overlay, detailed pixel art weapon design, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_08",
+      "cosmetic_code": "WPN_S2_08",
+      "name_ko": "대망각의 홀",
+      "category": "weapon_skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "대망각의 에너지가 응축된 마법 홀.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 대망각의 홀: 대망각의 에너지가 응축된 마법 홀., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 대망각의 홀: 대망각의 에너지가 응축된 마법 홀.. weapon sprite overlay, detailed pixel art weapon design. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 대망각의 홀, 대망각의 에너지가 응축된 마법 홀., weapon sprite overlay, detailed pixel art weapon design, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_09",
+      "cosmetic_code": "WPN_S2_09",
+      "name_ko": "망각의 군주 쌍검",
+      "category": "weapon_skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "기억 파괴자 전설 쌍검.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 망각의 군주 쌍검: 기억 파괴자 전설 쌍검., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 망각의 군주 쌍검: 기억 파괴자 전설 쌍검.. weapon sprite overlay, detailed pixel art weapon design. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 망각의 군주 쌍검, 기억 파괴자 전설 쌍검., weapon sprite overlay, detailed pixel art weapon design, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-WPN_S2_10",
+      "cosmetic_code": "WPN_S2_10",
+      "name_ko": "봉인자의 유산",
+      "category": "weapon_skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "시즌 2 한정 전설 무기 외형.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 1,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, weapon sprite overlay, detailed pixel art weapon design, 봉인자의 유산: 시즌 2 한정 전설 무기 외형., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인자의 유산: 시즌 2 한정 전설 무기 외형.. weapon sprite overlay, detailed pixel art weapon design. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인자의 유산, 시즌 2 한정 전설 무기 외형., weapon sprite overlay, detailed pixel art weapon design, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_EK_01",
+      "cosmetic_code": "SKIN_S2_EK_01",
+      "name_ko": "안개해 탐험자 (에테르 나이트)",
+      "category": "skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개해 탐험을 위해 제작된 에테르 나이트 갑주.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 안개해 탐험자 (에테르 나이트): 안개해 탐험을 위해 제작된 에테르 나이트 갑주., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개해 탐험자 (에테르 나이트): 안개해 탐험을 위해 제작된 에테르 나이트 갑주.. character skin, full body pixel art sprite, 4-directional idle pose. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개해 탐험자 (에테르 나이트), 안개해 탐험을 위해 제작된 에테르 나이트 갑주., character skin, full body pixel art sprite, 4-directional idle pose, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_EK_02",
+      "cosmetic_code": "SKIN_S2_EK_02",
+      "name_ko": "봉인 수호자 (에테르 나이트)",
+      "category": "skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "봉인의 첨탑을 지키는 수호자 갑주.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 봉인 수호자 (에테르 나이트): 봉인의 첨탑을 지키는 수호자 갑주., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 수호자 (에테르 나이트): 봉인의 첨탑을 지키는 수호자 갑주.. character skin, full body pixel art sprite, 4-directional idle pose. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 수호자 (에테르 나이트), 봉인의 첨탑을 지키는 수호자 갑주., character skin, full body pixel art sprite, 4-directional idle pose, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_MW_01",
+      "cosmetic_code": "SKIN_S2_MW_01",
+      "name_ko": "안개해 학자 (메모리 위버)",
+      "category": "skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개해 연구를 위한 학자 로브.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 안개해 학자 (메모리 위버): 안개해 연구를 위한 학자 로브., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개해 학자 (메모리 위버): 안개해 연구를 위한 학자 로브.. character skin, full body pixel art sprite, 4-directional idle pose. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개해 학자 (메모리 위버), 안개해 연구를 위한 학자 로브., character skin, full body pixel art sprite, 4-directional idle pose, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_MW_02",
+      "cosmetic_code": "SKIN_S2_MW_02",
+      "name_ko": "봉인 해독자 (메모리 위버)",
+      "category": "skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "봉인 문양을 해독하는 학자의 의상.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 봉인 해독자 (메모리 위버): 봉인 문양을 해독하는 학자의 의상., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 해독자 (메모리 위버): 봉인 문양을 해독하는 학자의 의상.. character skin, full body pixel art sprite, 4-directional idle pose. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 해독자 (메모리 위버), 봉인 문양을 해독하는 학자의 의상., character skin, full body pixel art sprite, 4-directional idle pose, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_SW_01",
+      "cosmetic_code": "SKIN_S2_SW_01",
+      "name_ko": "안개해 잠행자 (섀도우 위버)",
+      "category": "skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개 속에서 은밀히 움직이는 잠행 복장.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 안개해 잠행자 (섀도우 위버): 안개 속에서 은밀히 움직이는 잠행 복장., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개해 잠행자 (섀도우 위버): 안개 속에서 은밀히 움직이는 잠행 복장.. character skin, full body pixel art sprite, 4-directional idle pose. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개해 잠행자 (섀도우 위버), 안개 속에서 은밀히 움직이는 잠행 복장., character skin, full body pixel art sprite, 4-directional idle pose, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_SW_02",
+      "cosmetic_code": "SKIN_S2_SW_02",
+      "name_ko": "심연 정찰자 (섀도우 위버)",
+      "category": "skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "심연의 해구를 정찰하는 특수 복장.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 심연 정찰자 (섀도우 위버): 심연의 해구를 정찰하는 특수 복장., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 심연 정찰자 (섀도우 위버): 심연의 해구를 정찰하는 특수 복장.. character skin, full body pixel art sprite, 4-directional idle pose. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 심연 정찰자 (섀도우 위버), 심연의 해구를 정찰하는 특수 복장., character skin, full body pixel art sprite, 4-directional idle pose, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_MB_01",
+      "cosmetic_code": "SKIN_S2_MB_01",
+      "name_ko": "봉인 해체자 (메모리 브레이커)",
+      "category": "skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "기억 파괴자의 기본 전투복.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 봉인 해체자 (메모리 브레이커): 기억 파괴자의 기본 전투복., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 해체자 (메모리 브레이커): 기억 파괴자의 기본 전투복.. character skin, full body pixel art sprite, 4-directional idle pose. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 해체자 (메모리 브레이커), 기억 파괴자의 기본 전투복., character skin, full body pixel art sprite, 4-directional idle pose, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-SKIN_S2_MB_02",
+      "cosmetic_code": "SKIN_S2_MB_02",
+      "name_ko": "망각의 군주 (메모리 브레이커)",
+      "category": "skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "시즌 2 한정 전설 기억 파괴자 스킨.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, character skin, full body pixel art sprite, 4-directional idle pose, 망각의 군주 (메모리 브레이커): 시즌 2 한정 전설 기억 파괴자 스킨., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 망각의 군주 (메모리 브레이커): 시즌 2 한정 전설 기억 파괴자 스킨.. character skin, full body pixel art sprite, 4-directional idle pose. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 망각의 군주 (메모리 브레이커), 시즌 2 한정 전설 기억 파괴자 스킨., character skin, full body pixel art sprite, 4-directional idle pose, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-PET_S2_01",
+      "cosmetic_code": "PET_S2_01",
+      "name_ko": "안개 늑대",
+      "category": "pet_skin",
+      "rarity": "rare",
+      "season": 2,
+      "description": "안개해에 서식하는 반투명 늑대.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, companion pet sprite, 4-frame idle animation, cute creature, 안개 늑대: 안개해에 서식하는 반투명 늑대., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 늑대: 안개해에 서식하는 반투명 늑대.. companion pet sprite, 4-frame idle animation, cute creature. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 늑대, 안개해에 서식하는 반투명 늑대., companion pet sprite, 4-frame idle animation, cute creature, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-PET_S2_02",
+      "cosmetic_code": "PET_S2_02",
+      "name_ko": "안개 해마",
+      "category": "pet_skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개해 해류를 타는 에테르 해마.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, companion pet sprite, 4-frame idle animation, cute creature, 안개 해마: 안개해 해류를 타는 에테르 해마., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 해마: 안개해 해류를 타는 에테르 해마.. companion pet sprite, 4-frame idle animation, cute creature. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 해마, 안개해 해류를 타는 에테르 해마., companion pet sprite, 4-frame idle animation, cute creature, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-PET_S2_03",
+      "cosmetic_code": "PET_S2_03",
+      "name_ko": "봉인 수호자",
+      "category": "pet_skin",
+      "rarity": "epic",
+      "season": 2,
+      "description": "봉인석을 지키는 미니 가디언.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, companion pet sprite, 4-frame idle animation, cute creature, 봉인 수호자: 봉인석을 지키는 미니 가디언., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 수호자: 봉인석을 지키는 미니 가디언.. companion pet sprite, 4-frame idle animation, cute creature. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 수호자, 봉인석을 지키는 미니 가디언., companion pet sprite, 4-frame idle animation, cute creature, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-PET_S2_04",
+      "cosmetic_code": "PET_S2_04",
+      "name_ko": "안개 드래곤",
+      "category": "pet_skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "안개해 깊은 곳의 드래곤 아기.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, companion pet sprite, 4-frame idle animation, cute creature, 안개 드래곤: 안개해 깊은 곳의 드래곤 아기., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 드래곤: 안개해 깊은 곳의 드래곤 아기.. companion pet sprite, 4-frame idle animation, cute creature. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 드래곤, 안개해 깊은 곳의 드래곤 아기., companion pet sprite, 4-frame idle animation, cute creature, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-PET_S2_05",
+      "cosmetic_code": "PET_S2_05",
+      "name_ko": "안개 불사조",
+      "category": "pet_skin",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "시즌 2 한정 전설 펫.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 4,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, companion pet sprite, 4-frame idle animation, cute creature, 안개 불사조: 시즌 2 한정 전설 펫., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 불사조: 시즌 2 한정 전설 펫.. companion pet sprite, 4-frame idle animation, cute creature. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 불사조, 시즌 2 한정 전설 펫., companion pet sprite, 4-frame idle animation, cute creature, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-MOUNT_S2_01",
+      "cosmetic_code": "MOUNT_S2_01",
+      "name_ko": "안개 해마 (마운트)",
+      "category": "mount",
+      "rarity": "epic",
+      "season": 2,
+      "description": "안개해를 유영하는 거대 해마.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, mount sprite, 4-directional walk cycle, rideable creature, 안개 해마 (마운트): 안개해를 유영하는 거대 해마., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 해마 (마운트): 안개해를 유영하는 거대 해마.. mount sprite, 4-directional walk cycle, rideable creature. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 해마 (마운트), 안개해를 유영하는 거대 해마., mount sprite, 4-directional walk cycle, rideable creature, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-MOUNT_S2_02",
+      "cosmetic_code": "MOUNT_S2_02",
+      "name_ko": "안개 비룡",
+      "category": "mount",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "안개 속을 나는 비룡.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, mount sprite, 4-directional walk cycle, rideable creature, 안개 비룡: 안개 속을 나는 비룡., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 비룡: 안개 속을 나는 비룡.. mount sprite, 4-directional walk cycle, rideable creature. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 비룡, 안개 속을 나는 비룡., mount sprite, 4-directional walk cycle, rideable creature, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-MOUNT_S2_03",
+      "cosmetic_code": "MOUNT_S2_03",
+      "name_ko": "봉인 기계거인",
+      "category": "mount",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "봉인자들이 만든 고대 기계거인.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, mount sprite, 4-directional walk cycle, rideable creature, 봉인 기계거인: 봉인자들이 만든 고대 기계거인., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 기계거인: 봉인자들이 만든 고대 기계거인.. mount sprite, 4-directional walk cycle, rideable creature. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 기계거인, 봉인자들이 만든 고대 기계거인., mount sprite, 4-directional walk cycle, rideable creature, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-MOUNT_S2_04",
+      "cosmetic_code": "MOUNT_S2_04",
+      "name_ko": "레테의 배",
+      "category": "mount",
+      "rarity": "legendary",
+      "season": 2,
+      "description": "레테의 에너지를 동력으로 하는 전설 배.",
+      "sprite_spec": {
+        "size": "128x128",
+        "frames": 4,
+        "format": "single_or_directional"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, mount sprite, 4-directional walk cycle, rideable creature, 레테의 배: 레테의 에너지를 동력으로 하는 전설 배., golden-orange rarity glow, intense particle effects, premium quality, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 레테의 배: 레테의 에너지를 동력으로 하는 전설 배.. mount sprite, 4-directional walk cycle, rideable creature. legendary quality with golden-orange rarity glow, intense particle effects, premium quality. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 레테의 배, 레테의 에너지를 동력으로 하는 전설 배., mount sprite, 4-directional walk cycle, rideable creature, legendary quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-EMOTE_S2_01",
+      "cosmetic_code": "EMOTE_S2_01",
+      "name_ko": "봉인 해제",
+      "category": "emote",
+      "rarity": "rare",
+      "season": 2,
+      "description": "봉인이 해제되는 모션.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, emote animation sprite sheet, character expression animation, 봉인 해제: 봉인이 해제되는 모션., blue rarity glow, subtle shimmer, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 봉인 해제: 봉인이 해제되는 모션.. emote animation sprite sheet, character expression animation. rare quality with blue rarity glow, subtle shimmer. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 봉인 해제, 봉인이 해제되는 모션., emote animation sprite sheet, character expression animation, rare quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-EMOTE_S2_02",
+      "cosmetic_code": "EMOTE_S2_02",
+      "name_ko": "기억 파쇄",
+      "category": "emote",
+      "rarity": "epic",
+      "season": 2,
+      "description": "기억을 부수는 모션.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, emote animation sprite sheet, character expression animation, 기억 파쇄: 기억을 부수는 모션., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 기억 파쇄: 기억을 부수는 모션.. emote animation sprite sheet, character expression animation. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 기억 파쇄, 기억을 부수는 모션., emote animation sprite sheet, character expression animation, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "COS-EMOTE_S2_03",
+      "cosmetic_code": "EMOTE_S2_03",
+      "name_ko": "안개 소환",
+      "category": "emote",
+      "rarity": "epic",
+      "season": 2,
+      "description": "주변에 안개를 소환하는 모션.",
+      "sprite_spec": {
+        "size": "64x64",
+        "frames": 8,
+        "format": "sprite_sheet"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art, dark fantasy Korean MMORPG cosmetic, emote animation sprite sheet, character expression animation, 안개 소환: 주변에 안개를 소환하는 모션., purple rarity glow, noticeable particle trail, transparent background, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, low quality, deformed, noisy, JPEG artifacts",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art cosmetic sprite. 안개 소환: 주변에 안개를 소환하는 모션.. emote animation sprite sheet, character expression animation. epic quality with purple rarity glow, noticeable particle trail. Dark fantasy MMORPG. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art cosmetic, 안개 소환, 주변에 안개를 소환하는 모션., emote animation sprite sheet, character expression animation, epic quality, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1276 @@
+{
+  "class": "에테르나이트",
+  "class_en": "Ether Knight",
+  "class_color": "#00BFFF",
+  "element": "에테르/빛",
+  "total_effects": 30,
+  "sprite_spec": {
+    "frames_per_effect": 8,
+    "frame_size": "64x64",
+    "sheet_size": "512x64",
+    "format": "horizontal_strip",
+    "fps": 12
+  },
+  "effects": [
+    {
+      "asset_id": "VFX-ETH-001",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 베기",
+      "skill_name_en": "ether slash",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether slash: cyan energy blade slash arc",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether slash effect, cyan energy blade slash arc, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether slash: cyan energy blade slash arc. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether slash, cyan energy blade slash arc, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-002",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 방패",
+      "skill_name_en": "ether shield",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether shield: hexagonal cyan energy barrier",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether shield effect, hexagonal cyan energy barrier, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether shield: hexagonal cyan energy barrier. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether shield, hexagonal cyan energy barrier, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-003",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "돌진",
+      "skill_name_en": "ether charge",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether charge: knight charging with cyan trail",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether charge effect, knight charging with cyan trail, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether charge: knight charging with cyan trail. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether charge, knight charging with cyan trail, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-004",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "기억 참격",
+      "skill_name_en": "memory cleave",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory cleave: wide horizontal slash with memory fragments",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory cleave effect, wide horizontal slash with memory fragments, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory cleave: wide horizontal slash with memory fragments. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory cleave, wide horizontal slash with memory fragments, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-005",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 갑옷",
+      "skill_name_en": "ether armor",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether armor: body coated in cyan crystal armor aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether armor effect, body coated in cyan crystal armor aura, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether armor: body coated in cyan crystal armor aura. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether armor, body coated in cyan crystal armor aura, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-006",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "빛의 일격",
+      "skill_name_en": "radiant strike",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for radiant strike: downward sword strike with bright flash",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, radiant strike effect, downward sword strike with bright flash, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. radiant strike: downward sword strike with bright flash. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, radiant strike, downward sword strike with bright flash, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-007",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "수호의 맹세",
+      "skill_name_en": "guardian oath",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for guardian oath: golden shield symbol with ether glow",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, guardian oath effect, golden shield symbol with ether glow, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. guardian oath: golden shield symbol with ether glow. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, guardian oath, golden shield symbol with ether glow, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-008",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "검기 폭풍",
+      "skill_name_en": "blade storm",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for blade storm: whirlwind of cyan energy blades",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, blade storm effect, whirlwind of cyan energy blades, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. blade storm: whirlwind of cyan energy blades. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, blade storm, whirlwind of cyan energy blades, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-009",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 해방",
+      "skill_name_en": "ether release",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether release: explosive cyan energy burst from sword",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether release effect, explosive cyan energy burst from sword, cyan/gold energy color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether release: explosive cyan energy burst from sword. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether release, explosive cyan energy burst from sword, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-010",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "신성 참격",
+      "skill_name_en": "divine cleave",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for divine cleave: massive golden-cyan energy slash",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, divine cleave effect, massive golden-cyan energy slash, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. divine cleave: massive golden-cyan energy slash. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, divine cleave, massive golden-cyan energy slash, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-011",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "기사의 의지",
+      "skill_name_en": "knight resolve",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for knight resolve: glowing determination aura, fist clenched",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, knight resolve effect, glowing determination aura, fist clenched, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. knight resolve: glowing determination aura, fist clenched. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, knight resolve, glowing determination aura, fist clenched, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-012",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 반격",
+      "skill_name_en": "ether counter",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether counter: parry flash with counter-slash",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether counter effect, parry flash with counter-slash, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether counter: parry flash with counter-slash. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether counter, parry flash with counter-slash, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-013",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "결계 전개",
+      "skill_name_en": "barrier deploy",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for barrier deploy: expanding dome barrier",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, barrier deploy effect, expanding dome barrier, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. barrier deploy: expanding dome barrier. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, barrier deploy, expanding dome barrier, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-014",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "빛의 심판",
+      "skill_name_en": "light judgment",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for light judgment: pillar of light descending",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, light judgment effect, pillar of light descending, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. light judgment: pillar of light descending. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, light judgment, pillar of light descending, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-015",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 연쇄",
+      "skill_name_en": "ether chain",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether chain: chain of cyan energy links binding",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether chain effect, chain of cyan energy links binding, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether chain: chain of cyan energy links binding. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether chain, chain of cyan energy links binding, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-016",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "대지 강타",
+      "skill_name_en": "earth smash",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for earth smash: ground slam with shockwave",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, earth smash effect, ground slam with shockwave, cyan/gold energy color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. earth smash: ground slam with shockwave. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, earth smash, ground slam with shockwave, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-017",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "기억 수복",
+      "skill_name_en": "memory repair",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory repair: healing light mending wounds",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory repair effect, healing light mending wounds, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory repair: healing light mending wounds. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory repair, healing light mending wounds, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-018",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 집중",
+      "skill_name_en": "ether focus",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether focus: concentration aura, power building",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether focus effect, concentration aura, power building, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether focus: concentration aura, power building. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether focus, concentration aura, power building, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-019",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "최후의 방어",
+      "skill_name_en": "last stand",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for last stand: unbreakable shield at critical HP",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, last stand effect, unbreakable shield at critical HP, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. last stand: unbreakable shield at critical HP. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, last stand, unbreakable shield at critical HP, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-020",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 각성",
+      "skill_name_en": "ether awakening",
+      "effect_type": "self",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether awakening: full body transformation, intense glow",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether awakening effect, full body transformation, intense glow, cyan/gold energy color scheme, self effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether awakening: full body transformation, intense glow. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether awakening, full body transformation, intense glow, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-021",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "광역 도발",
+      "skill_name_en": "mass taunt",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for mass taunt: roaring challenge, aggro waves",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, mass taunt effect, roaring challenge, aggro waves, cyan/gold energy color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. mass taunt: roaring challenge, aggro waves. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, mass taunt, roaring challenge, aggro waves, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-022",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 치유",
+      "skill_name_en": "ether heal",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether heal: gentle cyan healing light on ally",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether heal effect, gentle cyan healing light on ally, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether heal: gentle cyan healing light on ally. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether heal, gentle cyan healing light on ally, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-023",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "기사의 돌격",
+      "skill_name_en": "knight rush",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for knight rush: forward charge with lance",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, knight rush effect, forward charge with lance, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. knight rush: forward charge with lance. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, knight rush, forward charge with lance, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-024",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "파멸의 검",
+      "skill_name_en": "doom blade",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for doom blade: dark-edged blade with destructive aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, doom blade effect, dark-edged blade with destructive aura, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. doom blade: dark-edged blade with destructive aura. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, doom blade, dark-edged blade with destructive aura, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-025",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "수호 결계",
+      "skill_name_en": "protective ward",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for protective ward: rune circle barrier on ground",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, protective ward effect, rune circle barrier on ground, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. protective ward: rune circle barrier on ground. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, protective ward, rune circle barrier on ground, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-026",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 강타",
+      "skill_name_en": "ether smite",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether smite: overhead slam with energy explosion",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether smite effect, overhead slam with energy explosion, cyan/gold energy color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether smite: overhead slam with energy explosion. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether smite, overhead slam with energy explosion, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-027",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "빛의 쇄도",
+      "skill_name_en": "light surge",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for light surge: rapid forward thrust with light trail",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, light surge effect, rapid forward thrust with light trail, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. light surge: rapid forward thrust with light trail. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, light surge, rapid forward thrust with light trail, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-028",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 전진",
+      "skill_name_en": "ether advance",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether advance: shielded advance, pushing enemies",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether advance effect, shielded advance, pushing enemies, cyan/gold energy color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether advance: shielded advance, pushing enemies. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether advance, shielded advance, pushing enemies, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-029",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "최종 해방",
+      "skill_name_en": "final liberation",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for final liberation: ultimate ether explosion, area effect",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, final liberation effect, ultimate ether explosion, area effect, cyan/gold energy color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. final liberation: ultimate ether explosion, area effect. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, final liberation, ultimate ether explosion, area effect, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-ETH-030",
+      "class": "에테르나이트",
+      "class_en": "Ether Knight",
+      "class_color": "#00BFFF",
+      "skill_name_ko": "에테르 심판",
+      "skill_name_en": "ether judgment",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ether judgment: giant energy sword descending from above",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ether judgment effect, giant energy sword descending from above, cyan/gold energy color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ether judgment: giant energy sword descending from above. cyan/gold energy colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ether judgment, giant energy sword descending from above, cyan/gold energy, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

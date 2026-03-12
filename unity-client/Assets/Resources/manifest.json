@@ -1,0 +1,407 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-03-13",
+  "project": "Aeterna Chronicle",
+  "platform": "WebGL",
+  "totalAssets": 1248,
+  "memoryBudget": {
+    "total_mb": 256,
+    "characters_mb": 48,
+    "monsters_mb": 40,
+    "environment_mb": 64,
+    "ui_mb": 32,
+    "vfx_mb": 40,
+    "cosmetics_mb": 24,
+    "audio_mb": 8
+  },
+  "bundles": [
+    {
+      "name": "core-characters",
+      "category": "characters",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 2048,
+      "memoryBudget_mb": 16,
+      "assets": [
+        { "id": "char_ether_knight_base", "type": "sprite_sheet", "path": "Characters/EtherKnight/base", "frames": 48, "size_kb": 256 },
+        { "id": "char_memory_weaver_base", "type": "sprite_sheet", "path": "Characters/MemoryWeaver/base", "frames": 48, "size_kb": 256 },
+        { "id": "char_shadow_weaver_base", "type": "sprite_sheet", "path": "Characters/ShadowWeaver/base", "frames": 48, "size_kb": 256 },
+        { "id": "char_memory_breaker_base", "type": "sprite_sheet", "path": "Characters/MemoryBreaker/base", "frames": 48, "size_kb": 256 },
+        { "id": "char_time_guardian_base", "type": "sprite_sheet", "path": "Characters/TimeGuardian/base", "frames": 48, "size_kb": 256 },
+        { "id": "char_void_wanderer_base", "type": "sprite_sheet", "path": "Characters/VoidWanderer/base", "frames": 48, "size_kb": 256 }
+      ]
+    },
+    {
+      "name": "characters-advanced",
+      "category": "characters",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 4608,
+      "memoryBudget_mb": 32,
+      "assets": [
+        { "id": "char_ether_knight_adv1", "type": "sprite_sheet", "path": "Characters/EtherKnight/adv1", "size_kb": 256 },
+        { "id": "char_ether_knight_adv2", "type": "sprite_sheet", "path": "Characters/EtherKnight/adv2", "size_kb": 256 },
+        { "id": "char_ether_knight_adv3", "type": "sprite_sheet", "path": "Characters/EtherKnight/adv3", "size_kb": 256 },
+        { "id": "char_memory_weaver_adv1", "type": "sprite_sheet", "path": "Characters/MemoryWeaver/adv1", "size_kb": 256 },
+        { "id": "char_memory_weaver_adv2", "type": "sprite_sheet", "path": "Characters/MemoryWeaver/adv2", "size_kb": 256 },
+        { "id": "char_memory_weaver_adv3", "type": "sprite_sheet", "path": "Characters/MemoryWeaver/adv3", "size_kb": 256 },
+        { "id": "char_shadow_weaver_adv1", "type": "sprite_sheet", "path": "Characters/ShadowWeaver/adv1", "size_kb": 256 },
+        { "id": "char_shadow_weaver_adv2", "type": "sprite_sheet", "path": "Characters/ShadowWeaver/adv2", "size_kb": 256 },
+        { "id": "char_shadow_weaver_adv3", "type": "sprite_sheet", "path": "Characters/ShadowWeaver/adv3", "size_kb": 256 },
+        { "id": "char_memory_breaker_adv1", "type": "sprite_sheet", "path": "Characters/MemoryBreaker/adv1", "size_kb": 256 },
+        { "id": "char_memory_breaker_adv2", "type": "sprite_sheet", "path": "Characters/MemoryBreaker/adv2", "size_kb": 256 },
+        { "id": "char_memory_breaker_adv3", "type": "sprite_sheet", "path": "Characters/MemoryBreaker/adv3", "size_kb": 256 },
+        { "id": "char_time_guardian_adv1", "type": "sprite_sheet", "path": "Characters/TimeGuardian/adv1", "size_kb": 256 },
+        { "id": "char_time_guardian_adv2", "type": "sprite_sheet", "path": "Characters/TimeGuardian/adv2", "size_kb": 256 },
+        { "id": "char_time_guardian_adv3", "type": "sprite_sheet", "path": "Characters/TimeGuardian/adv3", "size_kb": 256 },
+        { "id": "char_void_wanderer_adv1", "type": "sprite_sheet", "path": "Characters/VoidWanderer/adv1", "size_kb": 256 },
+        { "id": "char_void_wanderer_adv2", "type": "sprite_sheet", "path": "Characters/VoidWanderer/adv2", "size_kb": 256 },
+        { "id": "char_void_wanderer_adv3", "type": "sprite_sheet", "path": "Characters/VoidWanderer/adv3", "size_kb": 256 }
+      ]
+    },
+    {
+      "name": "monsters-erebos",
+      "category": "monsters",
+      "priority": "high",
+      "loadOrder": 2,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 6,
+      "description": "에레보스 지역 몬스터 (일반 20 + 엘리트 5 + 보스 3 + 레이드 2)",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-silvanhame",
+      "category": "monsters",
+      "priority": "high",
+      "loadOrder": 2,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 6,
+      "description": "실반헤임 지역 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-solaris",
+      "category": "monsters",
+      "priority": "medium",
+      "loadOrder": 3,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 6,
+      "description": "솔라리스 지역 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-northern-glacier",
+      "category": "monsters",
+      "priority": "medium",
+      "loadOrder": 3,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 4,
+      "description": "북방빙원 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-argentium",
+      "category": "monsters",
+      "priority": "medium",
+      "loadOrder": 3,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 4,
+      "description": "아르겐티움 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-britalia",
+      "category": "monsters",
+      "priority": "medium",
+      "loadOrder": 4,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 4,
+      "description": "브리탈리아 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-fog-sea",
+      "category": "monsters",
+      "priority": "medium",
+      "loadOrder": 4,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 4,
+      "description": "안개해 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-memory-abyss",
+      "category": "monsters",
+      "priority": "medium",
+      "loadOrder": 4,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 4,
+      "description": "기억의심연 몬스터",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-temporal-rift",
+      "category": "monsters",
+      "priority": "low",
+      "loadOrder": 5,
+      "estimatedSize_kb": 3840,
+      "memoryBudget_mb": 4,
+      "description": "시간의균열 몬스터 (엔드게임)",
+      "assetCount": 30
+    },
+    {
+      "name": "monsters-raid-bosses",
+      "category": "monsters",
+      "priority": "low",
+      "loadOrder": 5,
+      "estimatedSize_kb": 4096,
+      "memoryBudget_mb": 4,
+      "description": "레이드 보스 전용 (대형 스프라이트)",
+      "assetCount": 8
+    },
+    {
+      "name": "environment-tiles-core",
+      "category": "environment",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 6144,
+      "memoryBudget_mb": 16,
+      "description": "에레보스/실반헤임/솔라리스 타일셋 (초기 3지역)",
+      "assets": [
+        { "id": "tiles_erebos", "type": "tileset", "path": "Environment/Tiles/erebos", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_silvanhame", "type": "tileset", "path": "Environment/Tiles/silvanhame", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_solaris", "type": "tileset", "path": "Environment/Tiles/solaris", "sets": 9, "size_kb": 2048 }
+      ]
+    },
+    {
+      "name": "environment-tiles-extended",
+      "category": "environment",
+      "priority": "medium",
+      "loadOrder": 3,
+      "estimatedSize_kb": 12288,
+      "memoryBudget_mb": 24,
+      "description": "잔여 6지역 타일셋",
+      "assets": [
+        { "id": "tiles_northern_glacier", "type": "tileset", "path": "Environment/Tiles/northern_glacier", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_argentium", "type": "tileset", "path": "Environment/Tiles/argentium", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_britalia", "type": "tileset", "path": "Environment/Tiles/britalia", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_fog_sea", "type": "tileset", "path": "Environment/Tiles/fog_sea", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_memory_abyss", "type": "tileset", "path": "Environment/Tiles/memory_abyss", "sets": 9, "size_kb": 2048 },
+        { "id": "tiles_temporal_rift", "type": "tileset", "path": "Environment/Tiles/temporal_rift", "sets": 9, "size_kb": 2048 }
+      ]
+    },
+    {
+      "name": "environment-backgrounds",
+      "category": "environment",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 9216,
+      "memoryBudget_mb": 24,
+      "description": "9지역 패럴랙스 배경 (4레이어×3시간대×9지역 = 108장)",
+      "assetCount": 108
+    },
+    {
+      "name": "ui-icons-items",
+      "category": "ui",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 800,
+      "memoryBudget_mb": 4,
+      "description": "아이템 아이콘 100종 (64×64)",
+      "assetCount": 100
+    },
+    {
+      "name": "ui-icons-skills",
+      "category": "ui",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 1200,
+      "memoryBudget_mb": 6,
+      "description": "스킬 아이콘 150종 (6클래스×25 + 공통 30, 중복제거)",
+      "assetCount": 150
+    },
+    {
+      "name": "ui-icons-status",
+      "category": "ui",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 200,
+      "memoryBudget_mb": 1,
+      "description": "상태이상/버프 아이콘 25종",
+      "assetCount": 25
+    },
+    {
+      "name": "ui-frames",
+      "category": "ui",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 1440,
+      "memoryBudget_mb": 8,
+      "description": "UI 프레임/버튼 30종×3테마 = 90 변형 (9-slice)",
+      "assetCount": 90
+    },
+    {
+      "name": "ui-fonts-common",
+      "category": "ui",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 512,
+      "memoryBudget_mb": 4,
+      "description": "공통 폰트 에셋",
+      "assetCount": 3
+    },
+    {
+      "name": "vfx-common",
+      "category": "vfx",
+      "priority": "critical",
+      "loadOrder": 0,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 8,
+      "description": "공통 이펙트 30종 (히트/크리/힐/버프/디버프/사망/레벨업 등)",
+      "assetCount": 30
+    },
+    {
+      "name": "vfx-skills-ether-knight",
+      "category": "vfx",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 5,
+      "description": "에테르나이트 스킬 VFX 30종",
+      "assetCount": 30
+    },
+    {
+      "name": "vfx-skills-memory-weaver",
+      "category": "vfx",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 5,
+      "description": "기억술사 스킬 VFX 30종",
+      "assetCount": 30
+    },
+    {
+      "name": "vfx-skills-shadow-weaver",
+      "category": "vfx",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 5,
+      "description": "그림자직공 스킬 VFX 30종",
+      "assetCount": 30
+    },
+    {
+      "name": "vfx-skills-memory-breaker",
+      "category": "vfx",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 5,
+      "description": "기억파괴자 스킬 VFX 30종",
+      "assetCount": 30
+    },
+    {
+      "name": "vfx-skills-time-guardian",
+      "category": "vfx",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 5,
+      "description": "시간수호자 스킬 VFX 30종",
+      "assetCount": 30
+    },
+    {
+      "name": "vfx-skills-void-wanderer",
+      "category": "vfx",
+      "priority": "high",
+      "loadOrder": 1,
+      "estimatedSize_kb": 1920,
+      "memoryBudget_mb": 5,
+      "description": "공허방랑자 스킬 VFX 30종",
+      "assetCount": 30
+    },
+    {
+      "name": "cosmetics-season1",
+      "category": "cosmetics",
+      "priority": "low",
+      "loadOrder": 5,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 8,
+      "description": "시즌 1 코스메틱 50종 (스킨/무기/펫/마운트/이모트/칭호)",
+      "assetCount": 50
+    },
+    {
+      "name": "cosmetics-season2",
+      "category": "cosmetics",
+      "priority": "low",
+      "loadOrder": 6,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 8,
+      "description": "시즌 2 코스메틱 50종 (날개/오라/스킨/무기/펫 추가)",
+      "assetCount": 50
+    },
+    {
+      "name": "cosmetics-season3",
+      "category": "cosmetics",
+      "priority": "low",
+      "loadOrder": 7,
+      "estimatedSize_kb": 3200,
+      "memoryBudget_mb": 8,
+      "description": "시즌 3 코스메틱 50종 (심연/시간 테마)",
+      "assetCount": 50
+    }
+  ],
+  "loadingStrategy": {
+    "description": "프로그레시브 로딩 전략",
+    "phases": [
+      {
+        "phase": 0,
+        "name": "critical",
+        "description": "씬 진입 전 필수 로딩 — UI/폰트/공통VFX/플레이어 캐릭터/현재지역 타일",
+        "bundles": ["core-characters", "environment-tiles-core", "ui-icons-items", "ui-icons-skills", "ui-icons-status", "ui-frames", "ui-fonts-common", "vfx-common"],
+        "estimatedTime_sec": 3,
+        "showLoadingScreen": true
+      },
+      {
+        "phase": 1,
+        "name": "high",
+        "description": "씬 진입 직후 백그라운드 — 전직 캐릭터/배경/현재 클래스 VFX",
+        "bundles": ["characters-advanced", "environment-backgrounds", "vfx-skills-ether-knight", "vfx-skills-memory-weaver", "vfx-skills-shadow-weaver", "vfx-skills-memory-breaker", "vfx-skills-time-guardian", "vfx-skills-void-wanderer"],
+        "estimatedTime_sec": 5,
+        "showLoadingScreen": false
+      },
+      {
+        "phase": 2,
+        "name": "medium",
+        "description": "플레이 중 온디맨드 — 추가 지역 몬스터/타일",
+        "bundles": ["monsters-erebos", "monsters-silvanhame", "monsters-solaris", "monsters-northern-glacier", "monsters-argentium", "monsters-britalia", "monsters-fog-sea", "monsters-memory-abyss", "environment-tiles-extended"],
+        "estimatedTime_sec": 8,
+        "showLoadingScreen": false
+      },
+      {
+        "phase": 3,
+        "name": "low",
+        "description": "유휴 시간 프리로드 — 엔드게임/코스메틱/레이드",
+        "bundles": ["monsters-temporal-rift", "monsters-raid-bosses", "cosmetics-season1", "cosmetics-season2", "cosmetics-season3"],
+        "estimatedTime_sec": 12,
+        "showLoadingScreen": false
+      }
+    ]
+  },
+  "categorySummary": {
+    "characters": { "bundles": 2, "assets": 24, "totalSize_kb": 6656, "memoryBudget_mb": 48 },
+    "monsters": { "bundles": 10, "assets": 278, "totalSize_kb": 35136, "memoryBudget_mb": 40 },
+    "environment": { "bundles": 3, "assets": 189, "totalSize_kb": 27648, "memoryBudget_mb": 64 },
+    "ui": { "bundles": 5, "assets": 368, "totalSize_kb": 4152, "memoryBudget_mb": 23 },
+    "vfx": { "bundles": 7, "assets": 210, "totalSize_kb": 13440, "memoryBudget_mb": 38 },
+    "cosmetics": { "bundles": 3, "assets": 150, "totalSize_kb": 9600, "memoryBudget_mb": 24 },
+    "total": { "bundles": 30, "assets": 1219, "totalSize_kb": 96632, "memoryBudget_mb": 237 }
+  },
+  "notes": [
+    "WebGL 환경 최대 메모리: 256MB (모바일 브라우저 기준)",
+    "에셋 번들 압축: LZ4 (WebGL 호환, 해제 속도 우선)",
+    "IndexedDB 캐시: 최대 100MB, LRU 방식 해제",
+    "스프라이트 아틀라스는 atlas-spec.md 참조",
+    "Addressables 기반 비동기 로딩 — AssetLoader.cs 참조"
+  ]
+}

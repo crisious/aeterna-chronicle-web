@@ -1,0 +1,1276 @@
+{
+  "class": "시간수호자",
+  "class_en": "Time Guardian",
+  "class_color": "#F1C40F",
+  "element": "시간",
+  "total_effects": 30,
+  "sprite_spec": {
+    "frames_per_effect": 8,
+    "frame_size": "64x64",
+    "sheet_size": "512x64",
+    "format": "horizontal_strip",
+    "fps": 12
+  },
+  "effects": [
+    {
+      "asset_id": "VFX-TIM-001",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 정지",
+      "skill_name_en": "time stop",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time stop: clock hands frozen, golden freeze field",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time stop effect, clock hands frozen, golden freeze field, golden/amber temporal color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time stop: clock hands frozen, golden freeze field. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time stop, clock hands frozen, golden freeze field, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-002",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "되감기",
+      "skill_name_en": "rewind",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for rewind: reverse clock motion, target reverting",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, rewind effect, reverse clock motion, target reverting, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. rewind: reverse clock motion, target reverting. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, rewind, reverse clock motion, target reverting, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-003",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "가속",
+      "skill_name_en": "haste",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for haste: clock hands spinning fast, speed aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, haste effect, clock hands spinning fast, speed aura, golden/amber temporal color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. haste: clock hands spinning fast, speed aura. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, haste, clock hands spinning fast, speed aura, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-004",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 탄환",
+      "skill_name_en": "time bullet",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time bullet: golden projectile with clock trail",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time bullet effect, golden projectile with clock trail, golden/amber temporal color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time bullet: golden projectile with clock trail. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time bullet, golden projectile with clock trail, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-005",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 장벽",
+      "skill_name_en": "time barrier",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time barrier: golden clock-face barrier",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time barrier effect, golden clock-face barrier, golden/amber temporal color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time barrier: golden clock-face barrier. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time barrier, golden clock-face barrier, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-006",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "감속 필드",
+      "skill_name_en": "slow field",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for slow field: area with slowed clock gears",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, slow field effect, area with slowed clock gears, golden/amber temporal color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. slow field: area with slowed clock gears. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, slow field, area with slowed clock gears, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-007",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 도약",
+      "skill_name_en": "time leap",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time leap: jumping through time portal",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time leap effect, jumping through time portal, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time leap: jumping through time portal. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time leap, jumping through time portal, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-008",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 복제",
+      "skill_name_en": "time duplicate",
+      "effect_type": "self",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time duplicate: afterimage of past self acting",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time duplicate effect, afterimage of past self acting, golden/amber temporal color scheme, self effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time duplicate: afterimage of past self acting. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time duplicate, afterimage of past self acting, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-009",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 치유",
+      "skill_name_en": "time heal",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time heal: rewinding wounds, reverse injury",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time heal effect, rewinding wounds, reverse injury, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time heal: rewinding wounds, reverse injury. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time heal, rewinding wounds, reverse injury, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-010",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 폭발",
+      "skill_name_en": "time burst",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time burst: compressed time releasing",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time burst effect, compressed time releasing, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time burst: compressed time releasing. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time burst, compressed time releasing, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-011",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 감옥",
+      "skill_name_en": "time prison",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time prison: target frozen in time bubble",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time prison effect, target frozen in time bubble, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time prison: target frozen in time bubble. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time prison, target frozen in time bubble, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-012",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간의 화살",
+      "skill_name_en": "time arrow",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time arrow: golden arrow piercing through time",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time arrow effect, golden arrow piercing through time, golden/amber temporal color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time arrow: golden arrow piercing through time. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time arrow, golden arrow piercing through time, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-013",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "역류",
+      "skill_name_en": "time reversal",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time reversal: reversing cause and effect",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time reversal effect, reversing cause and effect, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time reversal: reversing cause and effect. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time reversal, reversing cause and effect, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-014",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 가속 장",
+      "skill_name_en": "acceleration field",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for acceleration field: party-wide speed buff",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, acceleration field effect, party-wide speed buff, golden/amber temporal color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. acceleration field: party-wide speed buff. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, acceleration field, party-wide speed buff, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-015",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 압축",
+      "skill_name_en": "time compression",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time compression: collapsing time around target",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time compression effect, collapsing time around target, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time compression: collapsing time around target. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time compression, collapsing time around target, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-016",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "예지",
+      "skill_name_en": "foresight",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for foresight: eye icon seeing future attacks",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, foresight effect, eye icon seeing future attacks, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. foresight: eye icon seeing future attacks. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, foresight, eye icon seeing future attacks, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-017",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 편집",
+      "skill_name_en": "time edit",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time edit: rewriting recent action",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time edit effect, rewriting recent action, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time edit: rewriting recent action. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time edit, rewriting recent action, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-018",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 폭풍",
+      "skill_name_en": "time storm",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time storm: chaotic temporal energy storm",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time storm effect, chaotic temporal energy storm, golden/amber temporal color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time storm: chaotic temporal energy storm. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time storm, chaotic temporal energy storm, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-019",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 고정",
+      "skill_name_en": "time anchor",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time anchor: anchoring moment, auto-revive",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time anchor effect, anchoring moment, auto-revive, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time anchor: anchoring moment, auto-revive. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time anchor, anchoring moment, auto-revive, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-020",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 초월",
+      "skill_name_en": "time transcend",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time transcend: ultimate: stopping all time",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time transcend effect, ultimate: stopping all time, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time transcend: ultimate: stopping all time. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time transcend, ultimate: stopping all time, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-021",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 연쇄",
+      "skill_name_en": "time chain",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time chain: linking targets in time",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time chain effect, linking targets in time, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time chain: linking targets in time. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time chain, linking targets in time, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-022",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 분열",
+      "skill_name_en": "time split",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time split: splitting into past/future selves",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time split effect, splitting into past/future selves, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time split: splitting into past/future selves. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time split, splitting into past/future selves, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-023",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 방패",
+      "skill_name_en": "time shield",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time shield: absorbing damage to time bank",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time shield effect, absorbing damage to time bank, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time shield: absorbing damage to time bank. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time shield, absorbing damage to time bank, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-024",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "역행 포탈",
+      "skill_name_en": "reverse portal",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for reverse portal: portal to moments ago",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, reverse portal effect, portal to moments ago, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. reverse portal: portal to moments ago. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, reverse portal, portal to moments ago, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-025",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 집중",
+      "skill_name_en": "time focus",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time focus: building temporal energy",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time focus effect, building temporal energy, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time focus: building temporal energy. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time focus, building temporal energy, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-026",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 가속탄",
+      "skill_name_en": "time accel shot",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time accel shot: rapid fire golden bolts",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time accel shot effect, rapid fire golden bolts, golden/amber temporal color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time accel shot: rapid fire golden bolts. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time accel shot, rapid fire golden bolts, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-027",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 소멸",
+      "skill_name_en": "time erasure",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time erasure: erasing target from timeline",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time erasure effect, erasing target from timeline, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time erasure: erasing target from timeline. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time erasure, erasing target from timeline, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-028",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 순환",
+      "skill_name_en": "time cycle",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time cycle: repeating action automatically",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time cycle effect, repeating action automatically, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time cycle: repeating action automatically. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time cycle, repeating action automatically, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-029",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "시간 심판",
+      "skill_name_en": "time judgment",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for time judgment: ultimate temporal sentence",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, time judgment effect, ultimate temporal sentence, golden/amber temporal color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. time judgment: ultimate temporal sentence. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, time judgment, ultimate temporal sentence, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-TIM-030",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#F1C40F",
+      "skill_name_ko": "영원의 시간",
+      "skill_name_en": "eternal time",
+      "effect_type": "self",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for eternal time: ultimate transcendence form",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, eternal time effect, ultimate transcendence form, golden/amber temporal color scheme, self effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. eternal time: ultimate transcendence form. golden/amber temporal colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, eternal time, ultimate transcendence form, golden/amber temporal, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1276 @@
+{
+  "class": "기억술사",
+  "class_en": "Memory Weaver (Mnemonist)",
+  "class_color": "#9B59B6",
+  "element": "기억/마법",
+  "total_effects": 30,
+  "sprite_spec": {
+    "frames_per_effect": 8,
+    "frame_size": "64x64",
+    "sheet_size": "512x64",
+    "format": "horizontal_strip",
+    "fps": 12
+  },
+  "effects": [
+    {
+      "asset_id": "VFX-MNE-001",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 탄환",
+      "skill_name_en": "memory bolt",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory bolt: purple energy projectile with memory sparks",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory bolt effect, purple energy projectile with memory sparks, purple/violet arcane color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory bolt: purple energy projectile with memory sparks. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory bolt, purple energy projectile with memory sparks, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-002",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소환: 골렘",
+      "skill_name_en": "memory summon golem",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory summon golem: summoning circle with golem silhouette",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory summon golem effect, summoning circle with golem silhouette, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory summon golem: summoning circle with golem silhouette. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory summon golem, summoning circle with golem silhouette, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-003",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 회복",
+      "skill_name_en": "memory restore",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory restore: gentle purple healing wisps",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory restore effect, gentle purple healing wisps, purple/violet arcane color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory restore: gentle purple healing wisps. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory restore, gentle purple healing wisps, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-004",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 폭발",
+      "skill_name_en": "memory burst",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory burst: expanding purple explosion",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory burst effect, expanding purple explosion, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory burst: expanding purple explosion. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory burst, expanding purple explosion, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-005",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 장벽",
+      "skill_name_en": "memory wall",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory wall: vertical purple barrier of memories",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory wall effect, vertical purple barrier of memories, purple/violet arcane color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory wall: vertical purple barrier of memories. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory wall, vertical purple barrier of memories, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-006",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 흡수",
+      "skill_name_en": "memory absorb",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory absorb: pulling purple energy toward caster",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory absorb effect, pulling purple energy toward caster, purple/violet arcane color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory absorb: pulling purple energy toward caster. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory absorb, pulling purple energy toward caster, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-007",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소환: 정령",
+      "skill_name_en": "memory summon spirit",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory summon spirit: spirit figure emerging from portal",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory summon spirit effect, spirit figure emerging from portal, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory summon spirit: spirit figure emerging from portal. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory summon spirit, spirit figure emerging from portal, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-008",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 왜곡",
+      "skill_name_en": "memory distort",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory distort: swirling distortion field",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory distort effect, swirling distortion field, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory distort: swirling distortion field. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory distort, swirling distortion field, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-009",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 연쇄 번개",
+      "skill_name_en": "memory chain lightning",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory chain lightning: branching purple lightning",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory chain lightning effect, branching purple lightning, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory chain lightning: branching purple lightning. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory chain lightning, branching purple lightning, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-010",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 비",
+      "skill_name_en": "memory rain",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory rain: raining memory fragments from above",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory rain effect, raining memory fragments from above, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory rain: raining memory fragments from above. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory rain, raining memory fragments from above, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-011",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 독",
+      "skill_name_en": "memory poison",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory poison: purple toxic cloud spreading",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory poison effect, purple toxic cloud spreading, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory poison: purple toxic cloud spreading. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory poison, purple toxic cloud spreading, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-012",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 결빙",
+      "skill_name_en": "memory freeze",
+      "effect_type": "self",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory freeze: purple ice crystals forming",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory freeze effect, purple ice crystals forming, purple/violet arcane color scheme, self effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory freeze: purple ice crystals forming. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory freeze, purple ice crystals forming, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-013",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 화염",
+      "skill_name_en": "memory flame",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory flame: purple fire erupting",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory flame effect, purple fire erupting, purple/violet arcane color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory flame: purple fire erupting. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory flame, purple fire erupting, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-014",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 반사",
+      "skill_name_en": "memory reflect",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory reflect: mirror barrier reflecting projectile",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory reflect effect, mirror barrier reflecting projectile, purple/violet arcane color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory reflect: mirror barrier reflecting projectile. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory reflect, mirror barrier reflecting projectile, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-015",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소용돌이",
+      "skill_name_en": "memory vortex",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory vortex: whirlpool of memory fragments",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory vortex effect, whirlpool of memory fragments, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory vortex: whirlpool of memory fragments. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory vortex, whirlpool of memory fragments, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-016",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 텔레포트",
+      "skill_name_en": "memory teleport",
+      "effect_type": "self",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory teleport: blink effect, arrival flash",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory teleport effect, blink effect, arrival flash, purple/violet arcane color scheme, self effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory teleport: blink effect, arrival flash. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory teleport, blink effect, arrival flash, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-017",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 강화",
+      "skill_name_en": "memory empower",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory empower: buff aura with rising symbols",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory empower effect, buff aura with rising symbols, purple/violet arcane color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory empower: buff aura with rising symbols. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory empower, buff aura with rising symbols, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-018",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소환: 피닉스",
+      "skill_name_en": "memory summon phoenix",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory summon phoenix: phoenix rising from purple fire",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory summon phoenix effect, phoenix rising from purple fire, purple/violet arcane color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory summon phoenix: phoenix rising from purple fire. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory summon phoenix, phoenix rising from purple fire, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-019",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "대기억술",
+      "skill_name_en": "grand mnemonics",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for grand mnemonics: massive ritual circle, intense power",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, grand mnemonics effect, massive ritual circle, intense power, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. grand mnemonics: massive ritual circle, intense power. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, grand mnemonics, massive ritual circle, intense power, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-020",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 폭풍",
+      "skill_name_en": "memory storm",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory storm: area-wide purple lightning storm",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory storm effect, area-wide purple lightning storm, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory storm: area-wide purple lightning storm. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory storm, area-wide purple lightning storm, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-021",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 차원문",
+      "skill_name_en": "memory gateway",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory gateway: portal to memory dimension",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory gateway effect, portal to memory dimension, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory gateway: portal to memory dimension. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory gateway, portal to memory dimension, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-022",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 분해",
+      "skill_name_en": "memory dissolve",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory dissolve: target dissolving into memory dust",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory dissolve effect, target dissolving into memory dust, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory dissolve: target dissolving into memory dust. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory dissolve, target dissolving into memory dust, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-023",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 봉인",
+      "skill_name_en": "memory seal",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory seal: binding seal circle on target",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory seal effect, binding seal circle on target, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory seal: binding seal circle on target. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory seal, binding seal circle on target, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-024",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 방어장",
+      "skill_name_en": "memory ward field",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory ward field: area defense circle",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory ward field effect, area defense circle, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory ward field: area defense circle. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory ward field, area defense circle, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-025",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 충전",
+      "skill_name_en": "memory charge",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory charge: building energy in crystal staff",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory charge effect, building energy in crystal staff, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory charge: building energy in crystal staff. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory charge, building energy in crystal staff, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-026",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 발사",
+      "skill_name_en": "memory launch",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory launch: releasing charged energy beam",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory launch effect, releasing charged energy beam, purple/violet arcane color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory launch: releasing charged energy beam. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory launch, releasing charged energy beam, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-027",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 환영",
+      "skill_name_en": "memory illusion",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory illusion: creating illusory copies",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory illusion effect, creating illusory copies, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory illusion: creating illusory copies. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory illusion, creating illusory copies, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-028",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 치유의 빛",
+      "skill_name_en": "memory healing light",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory healing light: large area healing circle",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory healing light effect, large area healing circle, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory healing light: large area healing circle. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory healing light, large area healing circle, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-029",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "대소환술",
+      "skill_name_en": "grand summoning",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for grand summoning: massive creature emerging from portal",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, grand summoning effect, massive creature emerging from portal, purple/violet arcane color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. grand summoning: massive creature emerging from portal. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, grand summoning, massive creature emerging from portal, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MNE-030",
+      "class": "기억술사",
+      "class_en": "Memory Weaver (Mnemonist)",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 심판",
+      "skill_name_en": "memory judgment",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory judgment: ultimate area bombardment from above",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory judgment effect, ultimate area bombardment from above, purple/violet arcane color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory judgment: ultimate area bombardment from above. purple/violet arcane colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory judgment, ultimate area bombardment from above, purple/violet arcane, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

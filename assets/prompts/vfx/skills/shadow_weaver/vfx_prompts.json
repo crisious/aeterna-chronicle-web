@@ -1,0 +1,1276 @@
+{
+  "class": "그림자직공",
+  "class_en": "Shadow Weaver",
+  "class_color": "#2ECC71",
+  "element": "그림자/독",
+  "total_effects": 30,
+  "sprite_spec": {
+    "frames_per_effect": 8,
+    "frame_size": "64x64",
+    "sheet_size": "512x64",
+    "format": "horizontal_strip",
+    "fps": 12
+  },
+  "effects": [
+    {
+      "asset_id": "VFX-SHA-001",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "암습",
+      "skill_name_en": "backstab",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for backstab: dagger striking from shadow behind target",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, backstab effect, dagger striking from shadow behind target, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. backstab: dagger striking from shadow behind target. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, backstab, dagger striking from shadow behind target, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-002",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독 도포",
+      "skill_name_en": "poison coat",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for poison coat: green poison dripping on blade edge",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, poison coat effect, green poison dripping on blade edge, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. poison coat: green poison dripping on blade edge. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, poison coat, green poison dripping on blade edge, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-003",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "은신",
+      "skill_name_en": "stealth",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for stealth: figure fading into shadow, transparent",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, stealth effect, figure fading into shadow, transparent, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. stealth: figure fading into shadow, transparent. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, stealth, figure fading into shadow, transparent, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-004",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "함정 설치",
+      "skill_name_en": "trap set",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for trap set: spike trap on ground, wire trigger",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, trap set effect, spike trap on ground, wire trigger, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. trap set: spike trap on ground, wire trigger. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, trap set, spike trap on ground, wire trigger, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-005",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 도약",
+      "skill_name_en": "shadow leap",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow leap: leaping through shadow portal",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow leap effect, leaping through shadow portal, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow leap: leaping through shadow portal. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow leap, leaping through shadow portal, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-006",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "연막탄",
+      "skill_name_en": "smoke bomb",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for smoke bomb: grey-green smoke cloud explosion",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, smoke bomb effect, grey-green smoke cloud explosion, dark green/shadow black color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. smoke bomb: grey-green smoke cloud explosion. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, smoke bomb, grey-green smoke cloud explosion, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-007",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "출혈 베기",
+      "skill_name_en": "bleed cut",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for bleed cut: slash leaving red blood trail",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, bleed cut effect, slash leaving red blood trail, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. bleed cut: slash leaving red blood trail. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, bleed cut, slash leaving red blood trail, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-008",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 분신",
+      "skill_name_en": "shadow clone",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow clone: dark copy splitting from body",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow clone effect, dark copy splitting from body, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow clone: dark copy splitting from body. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow clone, dark copy splitting from body, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-009",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "급소 공격",
+      "skill_name_en": "vital strike",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for vital strike: precise hit on glowing weak point",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, vital strike effect, precise hit on glowing weak point, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. vital strike: precise hit on glowing weak point. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, vital strike, precise hit on glowing weak point, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-010",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독 폭발",
+      "skill_name_en": "poison burst",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for poison burst: green toxic explosion",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, poison burst effect, green toxic explosion, dark green/shadow black color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. poison burst: green toxic explosion. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, poison burst, green toxic explosion, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-011",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 올가미",
+      "skill_name_en": "shadow snare",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow snare: dark tendrils binding target feet",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow snare effect, dark tendrils binding target feet, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow snare: dark tendrils binding target feet. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow snare, dark tendrils binding target feet, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-012",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "단검 투척",
+      "skill_name_en": "dagger throw",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for dagger throw: multiple daggers flying",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, dagger throw effect, multiple daggers flying, dark green/shadow black color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. dagger throw: multiple daggers flying. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, dagger throw, multiple daggers flying, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-013",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "죽음의 표식",
+      "skill_name_en": "death mark",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for death mark: skull symbol on target",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, death mark effect, skull symbol on target, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. death mark: skull symbol on target. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, death mark, skull symbol on target, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-014",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "연쇄 암살",
+      "skill_name_en": "chain kill",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for chain kill: rapid strikes on multiple targets",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, chain kill effect, rapid strikes on multiple targets, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. chain kill: rapid strikes on multiple targets. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, chain kill, rapid strikes on multiple targets, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-015",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 갑옷",
+      "skill_name_en": "shadow armor",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow armor: dark mist forming armor",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow armor effect, dark mist forming armor, dark green/shadow black color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow armor: dark mist forming armor. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow armor, dark mist forming armor, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-016",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독침 비",
+      "skill_name_en": "poison needle rain",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for poison needle rain: raining green needles",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, poison needle rain effect, raining green needles, dark green/shadow black color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. poison needle rain: raining green needles. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, poison needle rain, raining green needles, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-017",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 차원",
+      "skill_name_en": "shadow dimension",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow dimension: pulling target into shadow realm",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow dimension effect, pulling target into shadow realm, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow dimension: pulling target into shadow realm. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow dimension, pulling target into shadow realm, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-018",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "급속 이동",
+      "skill_name_en": "dash",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for dash: speed blur afterimage",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, dash effect, speed blur afterimage, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. dash: speed blur afterimage. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, dash, speed blur afterimage, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-019",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 폭풍",
+      "skill_name_en": "shadow storm",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow storm: dark tornado of shadow blades",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow storm effect, dark tornado of shadow blades, dark green/shadow black color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow storm: dark tornado of shadow blades. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow storm, dark tornado of shadow blades, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-020",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "암살자의 시선",
+      "skill_name_en": "assassin sight",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for assassin sight: eye icon revealing hidden enemies",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, assassin sight effect, eye icon revealing hidden enemies, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. assassin sight: eye icon revealing hidden enemies. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, assassin sight, eye icon revealing hidden enemies, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-021",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "치명적 일격",
+      "skill_name_en": "lethal blow",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for lethal blow: single massive crit strike",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, lethal blow effect, single massive crit strike, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. lethal blow: single massive crit strike. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, lethal blow, single massive crit strike, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-022",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독안개",
+      "skill_name_en": "poison fog",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for poison fog: spreading green mist field",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, poison fog effect, spreading green mist field, dark green/shadow black color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. poison fog: spreading green mist field. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, poison fog, spreading green mist field, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-023",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 교란",
+      "skill_name_en": "shadow disruption",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow disruption: disrupting enemy casting",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow disruption effect, disrupting enemy casting, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow disruption: disrupting enemy casting. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow disruption, disrupting enemy casting, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-024",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "회피 강화",
+      "skill_name_en": "evasion boost",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for evasion boost: speed lines and dodge aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, evasion boost effect, speed lines and dodge aura, dark green/shadow black color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. evasion boost: speed lines and dodge aura. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, evasion boost, speed lines and dodge aura, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-025",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 결계",
+      "skill_name_en": "shadow barrier",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow barrier: dark defensive circle",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow barrier effect, dark defensive circle, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow barrier: dark defensive circle. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow barrier, dark defensive circle, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-026",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "연쇄 독",
+      "skill_name_en": "chain poison",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for chain poison: poison spreading between targets",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, chain poison effect, poison spreading between targets, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. chain poison: poison spreading between targets. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, chain poison, poison spreading between targets, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-027",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 빙결",
+      "skill_name_en": "shadow freeze",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow freeze: dark ice trapping target",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow freeze effect, dark ice trapping target, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow freeze: dark ice trapping target. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow freeze, dark ice trapping target, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-028",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "속도의 인장",
+      "skill_name_en": "speed seal",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for speed seal: wind rune for movement buff",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, speed seal effect, wind rune for movement buff, dark green/shadow black color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. speed seal: wind rune for movement buff. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, speed seal, wind rune for movement buff, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-029",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "최종 암살",
+      "skill_name_en": "final assassination",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for final assassination: ultimate lethal strike from above",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, final assassination effect, ultimate lethal strike from above, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. final assassination: ultimate lethal strike from above. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, final assassination, ultimate lethal strike from above, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-SHA-030",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 심판",
+      "skill_name_en": "shadow execution",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shadow execution: dark energy execution strike",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shadow execution effect, dark energy execution strike, dark green/shadow black color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shadow execution: dark energy execution strike. dark green/shadow black colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shadow execution, dark energy execution strike, dark green/shadow black, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

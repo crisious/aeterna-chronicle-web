@@ -1,0 +1,1276 @@
+{
+  "class": "기억파괴자",
+  "class_en": "Memory Breaker",
+  "class_color": "#E74C3C",
+  "element": "파괴/분노",
+  "total_effects": 30,
+  "sprite_spec": {
+    "frames_per_effect": 8,
+    "frame_size": "64x64",
+    "sheet_size": "512x64",
+    "format": "horizontal_strip",
+    "fps": 12
+  },
+  "effects": [
+    {
+      "asset_id": "VFX-MEM-001",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 파쇄",
+      "skill_name_en": "memory shatter",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory shatter: fist smashing memory crystal, fragments flying",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory shatter effect, fist smashing memory crystal, fragments flying, crimson red/dark orange destructive color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory shatter: fist smashing memory crystal, fragments flying. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory shatter, fist smashing memory crystal, fragments flying, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-002",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "광역 파동",
+      "skill_name_en": "area wave",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for area wave: expanding red shockwave on ground",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, area wave effect, expanding red shockwave on ground, crimson red/dark orange destructive color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. area wave: expanding red shockwave on ground. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, area wave, expanding red shockwave on ground, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-003",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 흡수: 공격",
+      "skill_name_en": "memory drain attack",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory drain attack: pulling red energy from target",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory drain attack effect, pulling red energy from target, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory drain attack: pulling red energy from target. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory drain attack, pulling red energy from target, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-004",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파쇄 연격",
+      "skill_name_en": "shatter combo",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shatter combo: rapid multiple strike icons",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shatter combo effect, rapid multiple strike icons, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shatter combo: rapid multiple strike icons. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shatter combo, rapid multiple strike icons, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-005",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "분노 폭주",
+      "skill_name_en": "rage frenzy",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for rage frenzy: red aura flaring, eyes glowing",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, rage frenzy effect, red aura flaring, eyes glowing, crimson red/dark orange destructive color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. rage frenzy: red aura flaring, eyes glowing. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, rage frenzy, red aura flaring, eyes glowing, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-006",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 분해장",
+      "skill_name_en": "memory disintegrate field",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory disintegrate field: area disintegration zone",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory disintegrate field effect, area disintegration zone, crimson red/dark orange destructive color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory disintegrate field: area disintegration zone. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory disintegrate field, area disintegration zone, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-007",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "대지 분쇄",
+      "skill_name_en": "earth crush",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for earth crush: ground breaking apart, fissure",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, earth crush effect, ground breaking apart, fissure, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. earth crush: ground breaking apart, fissure. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, earth crush, ground breaking apart, fissure, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-008",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 과부하",
+      "skill_name_en": "memory overload",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory overload: target glowing then exploding",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory overload effect, target glowing then exploding, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory overload: target glowing then exploding. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory overload, target glowing then exploding, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-009",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파쇄 질주",
+      "skill_name_en": "shatter rush",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shatter rush: charging with destructive aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shatter rush effect, charging with destructive aura, crimson red/dark orange destructive color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shatter rush: charging with destructive aura. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shatter rush, charging with destructive aura, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-010",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 흡수: 방어",
+      "skill_name_en": "memory drain defense",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory drain defense: absorbing into shield",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory drain defense effect, absorbing into shield, crimson red/dark orange destructive color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory drain defense: absorbing into shield. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory drain defense, absorbing into shield, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-011",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "광란의 일격",
+      "skill_name_en": "berserk strike",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for berserk strike: massive wild swing",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, berserk strike effect, massive wild swing, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. berserk strike: massive wild swing. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, berserk strike, massive wild swing, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-012",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파괴의 함성",
+      "skill_name_en": "destruction shout",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for destruction shout: sonic wave from roar",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, destruction shout effect, sonic wave from roar, crimson red/dark orange destructive color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. destruction shout: sonic wave from roar. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, destruction shout, sonic wave from roar, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-013",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 침식",
+      "skill_name_en": "memory erosion",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory erosion: target slowly dissolving",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory erosion effect, target slowly dissolving, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory erosion: target slowly dissolving. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory erosion, target slowly dissolving, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-014",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파쇄 폭풍",
+      "skill_name_en": "shatter storm",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shatter storm: tornado of destructive energy",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shatter storm effect, tornado of destructive energy, crimson red/dark orange destructive color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shatter storm: tornado of destructive energy. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shatter storm, tornado of destructive energy, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-015",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 파편화",
+      "skill_name_en": "memory fragment",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory fragment: target splitting into pieces",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory fragment effect, target splitting into pieces, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory fragment: target splitting into pieces. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory fragment, target splitting into pieces, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-016",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "흡수 강화",
+      "skill_name_en": "drain enhance",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for drain enhance: amplified absorption aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, drain enhance effect, amplified absorption aura, crimson red/dark orange destructive color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. drain enhance: amplified absorption aura. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, drain enhance, amplified absorption aura, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-017",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파괴 반사",
+      "skill_name_en": "destruction reflect",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for destruction reflect: redirecting damage back",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, destruction reflect effect, redirecting damage back, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. destruction reflect: redirecting damage back. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, destruction reflect, redirecting damage back, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-018",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "연쇄 파쇄",
+      "skill_name_en": "chain shatter",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for chain shatter: destruction spreading through group",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, chain shatter effect, destruction spreading through group, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. chain shatter: destruction spreading through group. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, chain shatter, destruction spreading through group, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-019",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "최종 파괴",
+      "skill_name_en": "final destruction",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for final destruction: massive area destruction",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, final destruction effect, massive area destruction, crimson red/dark orange destructive color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. final destruction: massive area destruction. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, final destruction, massive area destruction, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-020",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 소멸",
+      "skill_name_en": "memory annihilate",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory annihilate: complete energy erasure beam",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory annihilate effect, complete energy erasure beam, crimson red/dark orange destructive color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory annihilate: complete energy erasure beam. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory annihilate, complete energy erasure beam, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-021",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파쇄 장벽",
+      "skill_name_en": "shatter barrier",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shatter barrier: barrier that damages attackers",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shatter barrier effect, barrier that damages attackers, crimson red/dark orange destructive color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shatter barrier: barrier that damages attackers. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shatter barrier, barrier that damages attackers, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-022",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "분노 집중",
+      "skill_name_en": "rage focus",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for rage focus: controlled rage, power spike",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, rage focus effect, controlled rage, power spike, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. rage focus: controlled rage, power spike. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, rage focus, controlled rage, power spike, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-023",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 약탈",
+      "skill_name_en": "memory plunder",
+      "effect_type": "buff",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory plunder: stealing target's buffs",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory plunder effect, stealing target's buffs, crimson red/dark orange destructive color scheme, buff effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory plunder: stealing target's buffs. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory plunder, stealing target's buffs, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-024",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "대파쇄",
+      "skill_name_en": "grand shatter",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for grand shatter: enormous ground-pound",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, grand shatter effect, enormous ground-pound, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. grand shatter: enormous ground-pound. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, grand shatter, enormous ground-pound, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-025",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 독",
+      "skill_name_en": "memory toxin",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory toxin: corrosive memory energy",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory toxin effect, corrosive memory energy, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory toxin: corrosive memory energy. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory toxin, corrosive memory energy, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-026",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "파쇄 도약",
+      "skill_name_en": "shatter leap",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for shatter leap: jumping slam attack",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, shatter leap effect, jumping slam attack, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. shatter leap: jumping slam attack. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, shatter leap, jumping slam attack, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-027",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 포화",
+      "skill_name_en": "memory saturation",
+      "effect_type": "area",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory saturation: area denial energy field",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory saturation effect, area denial energy field, crimson red/dark orange destructive color scheme, area effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory saturation: area denial energy field. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory saturation, area denial energy field, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-028",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "분노의 쇄도",
+      "skill_name_en": "rage surge",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for rage surge: rushing with unstoppable force",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, rage surge effect, rushing with unstoppable force, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. rage surge: rushing with unstoppable force. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, rage surge, rushing with unstoppable force, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-029",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "궁극 파쇄",
+      "skill_name_en": "ultimate shatter",
+      "effect_type": "strike",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for ultimate shatter: screen-filling destruction",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, ultimate shatter effect, screen-filling destruction, crimson red/dark orange destructive color scheme, strike effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. ultimate shatter: screen-filling destruction. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, ultimate shatter, screen-filling destruction, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "VFX-MEM-030",
+      "class": "기억파괴자",
+      "class_en": "Memory Breaker",
+      "class_color": "#E74C3C",
+      "skill_name_ko": "기억 심판",
+      "skill_name_en": "memory sentence",
+      "effect_type": "projectile",
+      "sprite_sheet": {
+        "frames": 8,
+        "frame_size": "64x64",
+        "sheet_size": "512x64",
+        "format": "horizontal_strip",
+        "fps": 12
+      },
+      "description": "VFX sprite sheet for memory sentence: judging energy execution beam",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art VFX sprite sheet, 8 animation frames in horizontal strip, 512x64 pixel, dark fantasy Korean MMORPG style, memory sentence effect, judging energy execution beam, crimson red/dark orange destructive color scheme, projectile effect type, transparent background, game VFX animation frames, sequential motion left to right, (clean pixel edges:1.4), (consistent frame spacing:1.3), no anti-aliasing, particle effects, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, character full body, inconsistent frames, merged frames, single image",
+          "params": {
+            "steps": 35,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 64,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 animation frames in a horizontal strip. memory sentence: judging energy execution beam. crimson red/dark orange destructive colors. Dark fantasy style. Each frame 64x64 pixels, total 512x64. Sequential animation left to right. Transparent background. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1792x256",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art VFX sprite sheet, 8 frames horizontal strip, memory sentence, judging energy execution beam, crimson red/dark orange destructive, dark fantasy RPG, sequential animation, transparent bg --ar 8:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}
