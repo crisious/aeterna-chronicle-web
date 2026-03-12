@@ -7,11 +7,6 @@
       "color": "#89CFF0",
       "count": 30
     },
-    "mnemonist": {
-      "class_ko": "기억술사",
-      "color": "#9B59B6",
-      "count": 30
-    },
     "shadow_weaver": {
       "class_ko": "그림자직공",
       "color": "#2ECC71",
@@ -30,6 +25,11 @@
     "void_wanderer": {
       "class_ko": "허공의 방랑자",
       "color": "#FF00FF",
+      "count": 30
+    },
+    "memory_weaver": {
+      "class_ko": "기억술사",
+      "color": "#9B59B6",
       "count": 30
     }
   },

@@ -3,15 +3,6 @@
   "generated_at": "2026-03-12T17:05:19.867491+00:00",
   "total_assets": 1248,
   "bundles": {
-    "core": {
-      "asset_count": 42,
-      "categories": [
-        "character_illust",
-        "character_sprite"
-      ],
-      "priority": 0,
-      "estimated_size_mb": 6.3
-    },
     "ui": {
       "asset_count": 365,
       "categories": [
@@ -81,7 +72,6 @@
     }
   },
   "load_order": [
-    "core",
     "ui",
     "characters",
     "environment",

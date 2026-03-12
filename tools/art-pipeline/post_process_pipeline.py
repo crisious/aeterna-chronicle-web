@@ -60,7 +60,7 @@ REGION_PALETTES = {
         "shadow": "#1A1A1A",
         "highlight": "#FFD700",
     },
-    "frostland": {
+    "northland": {
         "name": "북방 영원빙원",
         "primary": ["#E8F4FD", "#D6EAF8", "#AED6F1"],
         "accent": ["#E0FFFF", "#00BFFF"],
@@ -74,7 +74,7 @@ REGION_PALETTES = {
         "shadow": "#0F2F2F",
         "highlight": "#48D1CC",
     },
-    "mistsea": {
+    "fog_sea": {
         "name": "안개해",
         "primary": ["#3C3C5C", "#4C4C6C", "#2C2C4C"],
         "accent": ["#DDA0DD", "#E6E6FA", "#BA55D3"],
@@ -87,13 +87,6 @@ REGION_PALETTES = {
         "accent": ["#00FFFF", "#FF00FF", "#FFFFFF"],
         "shadow": "#000010",
         "highlight": "#00FFFF",
-    },
-    "oblivion": {
-        "name": "망각의 고원",
-        "primary": ["#1A0A0A", "#2A1A1A", "#0A0505"],
-        "accent": ["#FF0000", "#00FF00"],
-        "shadow": "#050000",
-        "highlight": "#FF4444",
     },
     "temporal_rift": {
         "name": "시간의 균열",
