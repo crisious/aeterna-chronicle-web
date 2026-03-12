@@ -1,0 +1,132 @@
+/* 에테르나 크로니클 — 로그인 패널 스타일 */
+
+.login-container {
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(15, 12, 25);
+    padding: 40px;
+}
+
+.logo-area {
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.game-title {
+    font-size: 36px;
+    color: rgb(200, 180, 255);
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+.game-subtitle {
+    font-size: 14px;
+    color: rgb(120, 100, 160);
+    letter-spacing: 4px;
+}
+
+.form-area {
+    width: 360px;
+    padding: 30px;
+    background-color: rgba(30, 25, 50, 0.9);
+    border-radius: 12px;
+    border-color: rgba(100, 80, 180, 0.3);
+    border-width: 1px;
+}
+
+.input-field {
+    margin-bottom: 16px;
+}
+
+.input-field > Label {
+    color: rgb(160, 140, 200);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.input-field > VisualElement > TextInput {
+    background-color: rgb(20, 16, 35);
+    border-color: rgb(60, 50, 100);
+    border-radius: 6px;
+    border-width: 1px;
+    color: rgb(220, 210, 245);
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.input-field > VisualElement > TextInput:focus {
+    border-color: rgb(140, 100, 255);
+}
+
+.remember-toggle {
+    margin-bottom: 16px;
+}
+
+.remember-toggle > Label {
+    color: rgb(140, 120, 180);
+    font-size: 12px;
+}
+
+.error-text {
+    color: rgb(255, 100, 100);
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: none;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    align-self: center;
+    margin-bottom: 12px;
+    display: none;
+}
+
+.btn-primary {
+    background-color: rgb(100, 60, 200);
+    color: white;
+    border-radius: 8px;
+    height: 44px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+    border-width: 0;
+}
+
+.btn-primary:hover {
+    background-color: rgb(120, 80, 230);
+}
+
+.btn-primary:active {
+    background-color: rgb(80, 50, 170);
+}
+
+.btn-secondary {
+    background-color: rgba(100, 80, 160, 0.3);
+    color: rgb(180, 160, 220);
+    border-radius: 8px;
+    height: 40px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    border-color: rgba(100, 80, 160, 0.5);
+    border-width: 1px;
+}
+
+.btn-link {
+    background-color: transparent;
+    color: rgb(140, 120, 200);
+    font-size: 12px;
+    border-width: 0;
+    align-self: center;
+}
+
+.btn-link:hover {
+    color: rgb(180, 160, 240);
+}
+
+.version-label {
+    color: rgb(80, 60, 120);
+    font-size: 10px;
+    margin-top: 20px;
+}
