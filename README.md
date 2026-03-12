@@ -4,11 +4,11 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-11%20SEASON%203%20ABYSS-blue?style=for-the-badge)](01_코어기획/P11_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-12%20COMMUNITY%20%2B%20QUALITY-blue?style=for-the-badge)](01_코어기획/P12_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
-[![Docs](https://img.shields.io/badge/Docs-242%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-113-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-208%2F208%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Docs](https://img.shields.io/badge/Docs-250%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
+[![Commits](https://img.shields.io/badge/Commits-115%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Tickets](https://img.shields.io/badge/Notion-228%2F228%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
