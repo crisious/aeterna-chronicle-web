@@ -1,0 +1,161 @@
+{
+  "region": "솔라리스",
+  "region_en": "Solaris",
+  "theme": "사막 (Desert)",
+  "color_palette": {
+    "primary": "#C2956B",
+    "secondary": "#8B4513",
+    "accent": "#FFD700",
+    "names": ["모래색", "적갈색", "태양열/에테르 금"]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "SOL-G-01",
+      "name": "기본 모래",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Desert sand surface, soft golden (#C2956B) sand with subtle wave patterns",
+        "top": "Sand top edge meeting rocky terrain, scattered pebbles",
+        "bottom": "Bottom edge, sand drifting over stone, wind-blown pattern",
+        "left": "Left edge, sand gradient thinning to reveal rock below",
+        "right": "Right edge, wind-swept sand accumulation",
+        "corner_tl": "Top-left, sand-rock transition corner, sparse",
+        "corner_tr": "Top-right, wind ridge forming",
+        "corner_bl": "Bottom-left, deep sand corner",
+        "corner_br": "Bottom-right, sand ripple convergence"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, desert sand surface, golden sand (#C2956B) with wave patterns, scattered pebbles, arid landscape, dark fantasy desert ruins aesthetic, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character, snow, forest",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, desert sand for ancient ruins desert. Golden (#C2956B) sand with wave patterns, pebbles. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy desert.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, desert sand, golden wave patterns, ancient ruins desert, {piece_description}, 32x32, clean edges, outline, seamless --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "SOL-G-02",
+      "name": "바위 지형",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Sandstone rock surface, exposed reddish-brown (#8B4513) sedimentary layers",
+        "top": "Top edge, rock meeting sand, wind-eroded lip",
+        "bottom": "Bottom edge, rock shelf with sand accumulation below",
+        "left": "Left edge, layered sandstone strata visible",
+        "right": "Right edge, crumbling rock face",
+        "corner_tl": "Top-left, rounded erosion corner",
+        "corner_tr": "Top-right, sharp cliff corner",
+        "corner_bl": "Bottom-left, sand-buried rock corner",
+        "corner_br": "Bottom-right, cracked rock corner"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tileset, top-down, sandstone rock surface, reddish-brown (#8B4513) sedimentary layers, wind-eroded, desert, seamless, (2px outline:1.3), (clean pixel:1.4), 32x32, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, realistic, blurry, watermark, low quality, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art tile, 32x32, sandstone rock surface. Reddish-brown (#8B4513) sedimentary layers, wind-eroded. {piece_description}. Clean pixels, outline, seamless.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down pixel art tile, sandstone rock, reddish-brown layers, wind-eroded desert, {piece_description}, 32x32, seamless --ar 1:1 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "SOL-G-05",
+      "name": "오아시스 물",
+      "type": "autotile_3x3_animated_3f",
+      "variants": 1,
+      "pieces": {
+        "center": "Oasis water surface, clear turquoise, gentle ripples, visible sandy bottom",
+        "top": "Water edge top, reeds and grass at waterline",
+        "bottom": "Bottom edge, sandy shore meeting water",
+        "left": "Left edge, palm shadow on water",
+        "right": "Right edge, lily pads at margin",
+        "corner_tl": "Top-left, shallow water corner with stones",
+        "corner_tr": "Top-right, deeper blue corner",
+        "corner_bl": "Bottom-left, sand slope into water",
+        "corner_br": "Bottom-right, submerged ruins edge"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tileset, top-down, oasis water surface, clear turquoise water, gentle ripples, sandy bottom visible, 3-frame animation, desert oasis, seamless, (2px outline:1.3), 32x32 per frame, {piece_description}, <lora:pixel-art-style-v2:0.7>",
+          "negative": "3D, realistic, blurry, watermark, low quality",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 768, "height": 256}
+        }
+      }
+    },
+    {
+      "id": "SOL-G-08",
+      "name": "모래+자갈 혼합",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Mixed sand and gravel, coarse desert floor with scattered small stones",
+        "top": "Top edge, gravel density increasing",
+        "bottom": "Bottom edge, mostly sand with sparse gravel",
+        "left": "Left edge, gravel line along rock formation",
+        "right": "Right edge, wind-sorted gravel band",
+        "corner_tl": "Top-left, dense gravel corner",
+        "corner_tr": "Top-right, sand-dominant corner",
+        "corner_bl": "Bottom-left, mixed transition",
+        "corner_br": "Bottom-right, gravel pile corner"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tile, top-down, mixed sand and gravel desert floor, (#C2956B) sand with scattered small stones, coarse texture, seamless, (2px outline:1.3), 32x32, {piece_description}, <lora:pixel-art-style-v2:0.7>",
+          "negative": "3D, realistic, blurry, watermark, low quality",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256}
+        }
+      }
+    }
+  ],
+  "special_tiles": [
+    {"id": "SOL-G-03", "name": "유리 모래", "type": "animated_3f", "description": "Heat-fused glass sand, reflective glinting surface, 3-frame shimmer"},
+    {"id": "SOL-G-04", "name": "사막 균열", "type": "single", "variants": 3, "description": "Dry cracked earth, varying crack sizes"},
+    {"id": "SOL-G-06", "name": "유적 석판", "type": "single", "variants": 3, "description": "Solian ruin floor tiles with ancient script patterns A/B/C"},
+    {"id": "SOL-G-07", "name": "에테르 결정 지표", "type": "animated_4f", "description": "Gold (#FFD700) ether crystal ground exposure, pulsing glow 4-frame"},
+    {"id": "SOL-G-09", "name": "타일 경계 (모래→바위)", "type": "autotile_2x3", "variants": 1, "description": "Transition tiles from sand to rock terrain"},
+    {"id": "SOL-G-10", "name": "화산 암석", "type": "single", "variants": 2, "description": "Black basalt volcanic rock patches in desert"}
+  ],
+  "decoration_objects": [
+    {"id": "SOL-D-01", "name": "사막 선인장", "size": "1x2", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, desert cactus, tall saguaro with arms, (#C2956B) sand base, green cactus with spines, 2 variant shapes, transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"},
+    {"id": "SOL-D-02", "name": "에테르 결정 기둥", "size": "1x3", "collision": true, "interaction": "채집", "prompt_sd": "(masterpiece:1.3), 2D pixel art, ether crystal pillar, golden (#FFD700) glowing crystal tower, faceted surface, light particles, desert sand base, transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"},
+    {"id": "SOL-D-03", "name": "유적 석주", "size": "1x3", "collision": true, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, ancient Solian column, sandstone (#8B4513) pillar with carved script, partially buried in sand, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-04", "name": "모래 구덩이", "size": "2x2", "collision": false, "prompt_sd": "(masterpiece:1.3), 2D pixel art, sand pit trap, depression in desert sand, darker center suggesting depth, unstable edges, (#C2956B) (#8B4513), transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-05", "name": "상인 텐트", "size": "3x2", "collision": true, "interaction": "상점", "prompt_sd": "(masterpiece:1.3), 2D pixel art, merchant tent, striped canvas awning in desert, warm colors, goods displayed, (#C2956B) sand, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-06", "name": "유적 입구", "size": "3x3", "collision": true, "interaction": "진입", "prompt_sd": "(masterpiece:1.3), 2D pixel art, ancient ruins entrance, stone arch half-buried in sand, Solian carvings, dark doorway, (#8B4513) sandstone, (#FFD700) glow from within, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-07", "name": "뼈 잔해", "size": "1x1", "collision": false, "prompt_sd": "(masterpiece:1.3), 2D pixel art, desert animal bones, bleached white skull and ribs half-buried in sand, (#C2956B), transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-08", "name": "모래 시계 (대형)", "size": "1x2", "collision": true, "interaction": "퍼즐", "prompt_sd": "(masterpiece:1.3), 2D pixel art, giant ornate hourglass, golden (#FFD700) frame, flowing sand inside, ancient ruin artifact, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-09", "name": "오아시스 야자", "size": "2x3", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, oasis palm tree, tall palm with coconuts, casting shadow on sand, green fronds, (#6B4423) trunk, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-10", "name": "모래 바람개비", "size": "1x1", "collision": false, "animated": true, "frames": 4, "prompt_sd": "(masterpiece:1.3), 2D pixel art, sand pinwheel, small windmill device spinning, 4-frame rotation sheet, metal and cloth, desert, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-11", "name": "채광 장비", "size": "2x1", "collision": true, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, mining equipment, imperial ether mining drill and cart, metal tools, (#8B4513) (#FFD700), transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-12", "name": "이프리타 표식", "size": "1x1", "collision": false, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, Ifrita flame mark on ground, fire pattern carved into stone, faint orange glow, desert floor, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-13", "name": "신기루 잔상", "size": "2x2", "collision": false, "prompt_sd": "(masterpiece:1.3), 2D pixel art, mirage ghost buildings, translucent building silhouettes hovering above sand, shimmering heat distortion, ethereal, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-14", "name": "사막 캠프파이어", "size": "1x1", "collision": false, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, desert campfire, stone ring with fire/embers, two states (lit/unlit), (#FFD700) flame glow, transparent bg, (2px outline:1.3)"},
+    {"id": "SOL-D-15", "name": "모래폭풍 차단벽", "size": "3x1", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, sandstorm barrier wall, Ifrita-built low stone wall with wind-worn surface, (#8B4513) (#C2956B), transparent bg, (2px outline:1.3)"}
+  ],
+  "generation_notes": {
+    "autotile_workflow": "Generate center tile first → derive edges/corners via inpainting",
+    "heat_effects": "Day variants include heat haze shimmer overlay; Night variants show (#FFD700) crystal glow",
+    "post_process": "remove_bg → color_correct to palette → qa_runner tile-seamless check",
+    "sheet_assembly": "9-piece autotile → 3x3 grid PNG"
+  }
+}

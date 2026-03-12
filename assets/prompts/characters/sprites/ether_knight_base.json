@@ -1,0 +1,112 @@
+{
+  "asset_id": "char_sprite_ether_knight_base",
+  "class": "에테르기사",
+  "class_en": "Ether Knight",
+  "advancement": "base",
+  "advancement_kr": "기본직",
+  "category": "character_sprite_sheet",
+  "frame_size": "64x64",
+  "directions": [
+    "D",
+    "DL",
+    "L",
+    "UL",
+    "U"
+  ],
+  "motions": [
+    "idle",
+    "walk",
+    "attack_melee",
+    "attack_ranged",
+    "cast",
+    "hit",
+    "death"
+  ],
+  "total_frames_per_direction": 35,
+  "total_production_frames": 175,
+  "sheet_size": "1408x640",
+  "color_palette": {
+    "primary": "#4682B4",
+    "secondary": "#C0C0C0",
+    "glow": "#89CFF0"
+  },
+  "controlnet_pose_ref": "assets/controlnet-poses/character/",
+  "prompts": {
+    "sd": {
+      "sprite_sheet": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character sprite sheet, Ether Knight (에테르기사) 기본직, heavy plate armor warrior, steel blue and silver, basic equipment, simple design, 64x64 pixel frame size, 5 directional views (front/front-left/left/back-left/back), 7 motion animations (idle 4f/walk 6f/melee attack 6f/ranged attack 6f/cast 5f/hit 3f/death 5f), sprite sheet layout, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body chibi proportions, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, inconsistent frame sizes, overlapping frames, missing directions",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 1408,
+          "height": 640
+        }
+      },
+      "per_frame_template": {
+        "prompt_template": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character sprite, single frame, Ether Knight 기본직, heavy plate armor warrior, steel blue and silver, basic equipment, simple design, {direction} facing, {motion} pose frame {frame_num}, 64x64 pixel art, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        },
+        "variables": {
+          "direction": [
+            "D",
+            "DL",
+            "L",
+            "UL",
+            "U"
+          ],
+          "motion": [
+            "idle",
+            "walk",
+            "attack_melee",
+            "attack_ranged",
+            "cast",
+            "hit",
+            "death"
+          ]
+        }
+      }
+    },
+    "dalle": {
+      "sprite_sheet": {
+        "prompt": "Create a pixel art RPG character sprite sheet for Ether Knight (기본직). heavy plate armor warrior, steel blue and silver, basic equipment, simple design. Sheet layout: 5 rows (one per direction: front, front-left, left, back-left, back), each row contains 35 frames of animation (idle 4, walk 6, attacks 12, cast 5, hit 3, death 5). 64x64 pixels per frame. Dark fantasy Korean MMORPG style, 2.5 head chibi proportions. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "sprite_sheet": {
+        "prompt": "2D pixel art RPG character sprite sheet::2, Ether Knight 기본직::1.5, heavy plate armor warrior, steel blue and silver, basic equipment, simple design, 5 directional rows, 7 animation sequences per row, 64x64 frames, dark fantasy MMORPG::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 11:5",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "11:5"
+        }
+      }
+    }
+  },
+  "pose_mapping": {
+    "idle": "assets/controlnet-poses/character/idle_{dir}.json",
+    "walk": "assets/controlnet-poses/character/walk_{dir}.json",
+    "attack_melee": "assets/controlnet-poses/character/attack_melee_{dir}.json",
+    "attack_ranged": "assets/controlnet-poses/character/attack_ranged_{dir}.json",
+    "cast": "assets/controlnet-poses/character/cast_{dir}.json",
+    "hit": "assets/controlnet-poses/character/hit_{dir}.json",
+    "death": "assets/controlnet-poses/character/death_{dir}.json"
+  }
+}

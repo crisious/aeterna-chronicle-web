@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_13_hashir",
+  "npc_name": "하쉬르",
+  "npc_name_en": "Hashir",
+  "region": "아르겐티움",
+  "role": "machine technician, equipment repair",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#5C4033",
+    "secondary": "#B8860B",
+    "glow": "#F5F5F5",
+    "accent": "#696969"
+  },
+  "design": {
+    "appearance": "large build, brown skin, bald with mechanical goggles, wide warm smile",
+    "clothing": "work overalls with leather apron, tool belt overflowing, partial mechanical arm",
+    "items": "spanners, wrenches, soldering tools",
+    "special_features": "small steam engine on back for power tools, always covered in grease",
+    "personality_vibe": "creative and experimental, hearty laugh"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Hashir (하쉬르), machine technician, equipment repair, large build, brown skin, bald with mechanical goggles, wide warm smile, work overalls with leather apron, tool belt overflowing, partial mechanical arm, creative and experimental, hearty laugh expression, small steam engine on back for power tools, always covered in grease, Argentium region, machine city, steam, clockwork color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Hashir — machine technician, equipment repair. large build, brown skin, bald with mechanical goggles, wide warm smile. Wearing work overalls with leather apron, tool belt overflowing, partial mechanical arm. Holding/carrying spanners, wrenches, soldering tools. Special details: small steam engine on back for power tools, always covered in grease. Expression: creative and experimental, hearty laugh. Set in Argentium region with machine city, steam, clockwork atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Hashir machine technician, equipment repair::1.5, large build, brown skin, bald with mechanical goggles, wide warm smile, work overalls with leather apron, tool belt overflowing, partial mechanical arm, creative and experimental, hearty laugh expression, Argentium machine city, steam, clockwork::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

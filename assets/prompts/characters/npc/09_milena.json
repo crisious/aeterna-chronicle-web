@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_09_milena",
+  "npc_name": "밀레나",
+  "npc_name_en": "Milena",
+  "region": "솔라리스",
+  "role": "trade merchant, rare item shop",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#6A0572",
+    "secondary": "#FFD700",
+    "glow": "#DEB887",
+    "accent": "#8B1A1A"
+  },
+  "design": {
+    "appearance": "medium height, brown skin, black curly hair under headscarf, one gold tooth",
+    "clothing": "ornate desert merchant clothing, headscarf, gold coin necklace",
+    "items": "large merchandise bundle, golden balance scale",
+    "special_features": "small desert lizard pet on shoulder",
+    "personality_vibe": "shrewd but honest"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Milena (밀레나), trade merchant, rare item shop, medium height, brown skin, black curly hair under headscarf, one gold tooth, ornate desert merchant clothing, headscarf, gold coin necklace, shrewd but honest expression, small desert lizard pet on shoulder, Solaris region, burning desert, glass, flame color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Milena — trade merchant, rare item shop. medium height, brown skin, black curly hair under headscarf, one gold tooth. Wearing ornate desert merchant clothing, headscarf, gold coin necklace. Holding/carrying large merchandise bundle, golden balance scale. Special details: small desert lizard pet on shoulder. Expression: shrewd but honest. Set in Solaris region with burning desert, glass, flame atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Milena trade merchant, rare item shop::1.5, medium height, brown skin, black curly hair under headscarf, one gold tooth, ornate desert merchant clothing, headscarf, gold coin necklace, shrewd but honest expression, Solaris burning desert, glass, flame::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

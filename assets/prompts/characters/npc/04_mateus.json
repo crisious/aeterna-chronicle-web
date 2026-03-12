@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_04_mateus",
+  "npc_name": "마테우스",
+  "npc_name_en": "Mateus",
+  "region": "에레보스",
+  "role": "blacksmith, equipment forger",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#8B4513",
+    "secondary": "#71797E",
+    "glow": "#FF4500",
+    "accent": "#B8860B"
+  },
+  "design": {
+    "appearance": "large muscular build, bald with braided brown beard, burn scars on arms",
+    "clothing": "leather apron over sleeveless shirt, blacksmith gloves, tool belt at waist",
+    "items": "large forging hammer, tool belt",
+    "special_features": "mechanical left arm prosthetic (Argentium-made) with steam vents",
+    "personality_vibe": "boisterous and hearty"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Mateus (마테우스), blacksmith, equipment forger, large muscular build, bald with braided brown beard, burn scars on arms, leather apron over sleeveless shirt, blacksmith gloves, tool belt at waist, boisterous and hearty expression, mechanical left arm prosthetic (Argentium-made) with steam vents, Erebos region, ruins, fog, spectral color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Mateus — blacksmith, equipment forger. large muscular build, bald with braided brown beard, burn scars on arms. Wearing leather apron over sleeveless shirt, blacksmith gloves, tool belt at waist. Holding/carrying large forging hammer, tool belt. Special details: mechanical left arm prosthetic (Argentium-made) with steam vents. Expression: boisterous and hearty. Set in Erebos region with ruins, fog, spectral atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Mateus blacksmith, equipment forger::1.5, large muscular build, bald with braided brown beard, burn scars on arms, leather apron over sleeveless shirt, blacksmith gloves, tool belt at waist, boisterous and hearty expression, Erebos ruins, fog, spectral::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

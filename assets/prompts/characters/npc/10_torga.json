@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_10_torga",
+  "npc_name": "토르가",
+  "npc_name_en": "Torga",
+  "region": "북방 영원빙원",
+  "role": "frost chieftain, tribal leader",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#E8F4FD",
+    "secondary": "#4682B4",
+    "glow": "#00FF7F",
+    "accent": "#C0C0C0"
+  },
+  "design": {
+    "appearance": "massive build, platinum blonde long hair with braided beard, grey eyes, weathered face",
+    "clothing": "white bear fur cloak over frost-encrusted armor, aurora sigil on shoulder",
+    "items": "large frost-encrusted battle axe",
+    "special_features": "aurora glow in left eye, visible breath always",
+    "personality_vibe": "stoic and authoritative with quiet wisdom"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Torga (토르가), frost chieftain, tribal leader, massive build, platinum blonde long hair with braided beard, grey eyes, weathered face, white bear fur cloak over frost-encrusted armor, aurora sigil on shoulder, stoic and authoritative with quiet wisdom expression, aurora glow in left eye, visible breath always, Northern Permafrost region, ice, aurora, frozen color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Torga — frost chieftain, tribal leader. massive build, platinum blonde long hair with braided beard, grey eyes, weathered face. Wearing white bear fur cloak over frost-encrusted armor, aurora sigil on shoulder. Holding/carrying large frost-encrusted battle axe. Special details: aurora glow in left eye, visible breath always. Expression: stoic and authoritative with quiet wisdom. Set in Northern Permafrost region with ice, aurora, frozen atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Torga frost chieftain, tribal leader::1.5, massive build, platinum blonde long hair with braided beard, grey eyes, weathered face, white bear fur cloak over frost-encrusted armor, aurora sigil on shoulder, stoic and authoritative with quiet wisdom expression, Northern Permafrost ice, aurora, frozen::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

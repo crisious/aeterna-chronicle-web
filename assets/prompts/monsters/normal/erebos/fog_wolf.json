@@ -1,0 +1,66 @@
+{
+  "asset_id": "mon_erebos_fog_wolf_normal",
+  "monster_name": "안개 늑대",
+  "monster_name_en": "Fog Wolf",
+  "region": "에레보스",
+  "grade": "normal",
+  "size": "M",
+  "pixel_size": "64x64",
+  "category": "quadruped",
+  "motions": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "frames": {
+    "idle": 4,
+    "attack": 4,
+    "hit": 2,
+    "death": 4
+  },
+  "directions": 2,
+  "color_palette": {
+    "primary": "#2D2D3F",
+    "secondary": "#5C4A72",
+    "glow": "#89CFF0"
+  },
+  "prompts": {
+    "sd": {
+      "sprite": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG monster sprite, 안개 늑대 (fog wolf), quadruped creature type, semi-transparent wolf with fog trail tail, ghostly howling pose, Erebos region, ruins, fog, spectral color scheme, palette: #2D2D3F/#5C4A72/#89CFF0, medium size (64x64), idle pose front-facing, dark fantasy style, menacing but not gory, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, cute, friendly-looking, human anatomy, modern elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "sprite": {
+        "prompt": "Create a pixel art RPG monster sprite: Fog Wolf — semi-transparent wolf with fog trail tail, ghostly howling pose. Erebos region with ruins, fog, spectral atmosphere. medium size, 64x64 pixel art. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "sprite": {
+        "prompt": "2D pixel art RPG monster sprite::2, fog wolf::1.5, semi-transparent wolf with fog trail tail, ghostly howling pose, Erebos ruins, fog, spectral::1, 64x64 pixel art::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

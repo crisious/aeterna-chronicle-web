@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_15_veltus",
+  "npc_name": "벨투스",
+  "npc_name_en": "Veltus",
+  "region": "브리탈리아",
+  "role": "retired pirate king, adventure quest giver",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#2F4F4F",
+    "secondary": "#8B0000",
+    "glow": "#FFD700",
+    "accent": "#6B4423"
+  },
+  "design": {
+    "appearance": "middle-aged, black curly hair with beard, left eye patch, sturdy build",
+    "clothing": "faded pirate coat with tricorn hat, gold earring, worn boots",
+    "items": "old cutlass, decorative flintlock at waist",
+    "special_features": "treasure map tattoo on left arm, mechanical parrot instead of real one",
+    "personality_vibe": "boastful but experienced"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Veltus (벨투스), retired pirate king, adventure quest giver, middle-aged, black curly hair with beard, left eye patch, sturdy build, faded pirate coat with tricorn hat, gold earring, worn boots, boastful but experienced expression, treasure map tattoo on left arm, mechanical parrot instead of real one, Britalia region, harbor, ocean, pirate color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Veltus — retired pirate king, adventure quest giver. middle-aged, black curly hair with beard, left eye patch, sturdy build. Wearing faded pirate coat with tricorn hat, gold earring, worn boots. Holding/carrying old cutlass, decorative flintlock at waist. Special details: treasure map tattoo on left arm, mechanical parrot instead of real one. Expression: boastful but experienced. Set in Britalia region with harbor, ocean, pirate atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Veltus retired pirate king, adventure quest giver::1.5, middle-aged, black curly hair with beard, left eye patch, sturdy build, faded pirate coat with tricorn hat, gold earring, worn boots, boastful but experienced expression, Britalia harbor, ocean, pirate::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

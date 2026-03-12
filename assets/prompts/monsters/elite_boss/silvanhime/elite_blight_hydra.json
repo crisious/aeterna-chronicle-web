@@ -1,0 +1,70 @@
+{
+  "asset_id": "mon_silvanhime_blight_hydra_elite",
+  "monster_name": "역병 히드라",
+  "monster_name_en": "Blight Hydra",
+  "region": "실반헤임",
+  "grade": "elite",
+  "size": "L",
+  "pixel_size": "96x96",
+  "category": "plant",
+  "base_monster_ref": "fungus_golem",
+  "motions": [
+    "idle",
+    "attack",
+    "hit",
+    "death",
+    "special"
+  ],
+  "frames": {
+    "idle": 4,
+    "attack": 6,
+    "hit": 2,
+    "death": 4,
+    "special": 4
+  },
+  "directions": 2,
+  "color_palette": {
+    "primary": "#1B4332",
+    "secondary": "#6B4423",
+    "glow": "#7DF9FF",
+    "aura": "#ADFF2F"
+  },
+  "prompts": {
+    "sd": {
+      "sprite": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG elite monster sprite, 역병 히드라 (blight hydra), enhanced variant of fungus golem, plant creature, multi-headed fungal hydra, each head different mushroom type, faint #7DF9FF aura glow around edges, Silvanhime region, ancient forest, spores, old growth, large size (96x96), menacing idle pose front-facing, extra ornamental details, glowing accents, 2px black outline + 1px #7DF9FF outer glow, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, cute, friendly-looking, human anatomy, modern elements, same as base monster, no aura",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "sprite": {
+        "prompt": "Create a pixel art RPG elite monster: Blight Hydra — enhanced variant with multi-headed fungal hydra, each head different mushroom type. Faint #7DF9FF aura glow. Silvanhime region. Large size, 96x96 pixel art, 2px outline + 1px aura glow. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "sprite": {
+        "prompt": "2D pixel art RPG elite monster::2, blight hydra::1.5, multi-headed fungal hydra, each head different mushroom type, #7DF9FF aura glow, Silvanhime::1, 96x96 pixel art::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

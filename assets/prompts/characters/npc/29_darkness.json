@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_29_darkness",
+  "npc_name": "다크니스",
+  "npc_name_en": "Darkness",
+  "region": "히든",
+  "role": "black market dealer",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#0D0D1A",
+    "secondary": "#1A1A2E",
+    "glow": "#FF4444",
+    "accent": "#9B59B6"
+  },
+  "design": {
+    "appearance": "full-body hooded cloak, only glowing eyes visible, indeterminate build",
+    "clothing": "layered dark cloaks and hoods, shadow seems to cling to fabric",
+    "items": "hidden goods in cloak folds, shadow coin purse",
+    "special_features": "eyes glow faintly in the dark, shadow around body deeper than natural",
+    "personality_vibe": "menacing and secretive"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Darkness (다크니스), black market dealer, full-body hooded cloak, only glowing eyes visible, indeterminate build, layered dark cloaks and hoods, shadow seems to cling to fabric, menacing and secretive expression, eyes glow faintly in the dark, shadow around body deeper than natural, Hidden region, secret, shadow, time color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Darkness — black market dealer. full-body hooded cloak, only glowing eyes visible, indeterminate build. Wearing layered dark cloaks and hoods, shadow seems to cling to fabric. Holding/carrying hidden goods in cloak folds, shadow coin purse. Special details: eyes glow faintly in the dark, shadow around body deeper than natural. Expression: menacing and secretive. Set in Hidden region with secret, shadow, time atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Darkness black market dealer::1.5, full-body hooded cloak, only glowing eyes visible, indeterminate build, layered dark cloaks and hoods, shadow seems to cling to fabric, menacing and secretive expression, Hidden secret, shadow, time::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

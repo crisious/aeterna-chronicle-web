@@ -1,0 +1,191 @@
+{
+  "region": "솔라리스",
+  "region_en": "Solaris",
+  "theme": "사막 (Desert)",
+  "color_palette": {
+    "primary": "#C2956B",
+    "secondary": "#8B4513",
+    "accent": "#FFD700"
+  },
+  "spec": {
+    "format": "RGBA 32bit PNG",
+    "seamless": "horizontal seamless tiling required",
+    "layers": ["sky", "far", "mid", "near"]
+  },
+  "backgrounds": [
+    {
+      "id": "SOL-BG-SKY-DAY",
+      "layer": "sky",
+      "time": "day",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Blazing desert sky, intense sun with heat haze distortion effect. Pale yellow-white sky fading to light blue at top. Shimmering mirage air.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax background sky layer, blazing desert sky, intense bright sun with heat haze shimmer, pale yellow-white (#FFD700→white) fading to light blue at top, desert mirage atmosphere, arid wasteland, seamless, 1920x360, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, cloudy, overcast, snow, forest, text, character, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 360}
+        },
+        "dalle": {
+          "prompt": "2D parallax sky layer, 1920x360. Blazing desert sky with intense sun and heat haze shimmer. Pale yellow-white fading to light blue. Desert mirage atmosphere. Seamless tileable. No characters.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax sky, blazing desert sun, heat haze shimmer, pale yellow to light blue, mirage atmosphere, arid, seamless, 1920x360 --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "SOL-BG-SKY-NIGHT",
+      "layer": "sky",
+      "time": "night",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Deep dark blue desert night sky, brilliant stars visible, golden (#FFD700) ether crystal light reflection from below casting faint glow on horizon.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax sky, deep dark blue desert night sky, brilliant star field, golden (#FFD700) ether crystal glow reflected on horizon from below, vast open desert night, seamless, 1920x360, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, cloudy, overcast, forest, text, character",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 360}
+        },
+        "dalle": {
+          "prompt": "2D parallax sky layer, 1920x360. Deep dark blue desert night with brilliant stars. Golden ether glow on horizon. Open desert sky. Seamless.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax sky, dark blue desert night, brilliant stars, golden ether glow horizon, vast open, seamless, 1920x360 --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "SOL-BG-SKY-DUSK",
+      "layer": "sky",
+      "time": "dusk",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Dramatic desert sunset, deep orange and crimson at horizon fading to purple overhead. Crystal light beginning to compete with dying sunlight."
+    },
+    {
+      "id": "SOL-BG-FAR-DAY",
+      "layer": "far",
+      "time": "day",
+      "size": "1920x540",
+      "scroll_speed": "0.15x",
+      "description": "Overlapping sand dune silhouettes in haze, partial ancient ruin column tips visible. Translucent mirage of phantom ruins (4-frame loop suggestion). Bleached colors.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax far background, overlapping sand dune silhouettes in desert haze, ancient ruin column tips protruding from sand, faint translucent mirage ghost buildings, bleached (#C2956B) colors, (#8B4513) stone tips, heat shimmer, seamless, 1920x540, alpha transparent ground, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, clear sharp details, modern, forest, text, character",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 540}
+        },
+        "dalle": {
+          "prompt": "2D parallax far layer, 1920x540. Overlapping sand dune silhouettes in heat haze, ancient ruin columns protruding from sand, faint mirage. Bleached desert (#C2956B). Seamless. Transparent ground.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax far layer, sand dune silhouettes in haze, ancient ruin columns, faint mirage, bleached desert, heat shimmer, seamless, 1920x540 --ar 32:9 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "SOL-BG-FAR-NIGHT",
+      "layer": "far",
+      "time": "night",
+      "size": "1920x540",
+      "scroll_speed": "0.15x",
+      "description": "Dark dune silhouettes, distant ether crystal clusters glowing gold (#FFD700) along horizon, no mirage, clear starlit edges."
+    },
+    {
+      "id": "SOL-BG-FAR-DUSK",
+      "layer": "far",
+      "time": "dusk",
+      "size": "1920x540",
+      "scroll_speed": "0.15x",
+      "description": "Dunes catching warm orange light, long shadows, ruin silhouettes dramatic against sunset, ether crystals starting to glow."
+    },
+    {
+      "id": "SOL-BG-MID-DAY",
+      "layer": "mid",
+      "time": "day",
+      "size": "1920x720",
+      "scroll_speed": "0.35x",
+      "description": "Ruin remnants in mid-distance: broken Solian temple walls, cluster of ether crystal pillars, mining base scaffolding. More detailed textures. Heat shimmer lines.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax mid background, desert ruins mid-distance, broken Solian temple walls with carvings, cluster of golden (#FFD700) ether crystal pillars, mining scaffolding, detailed sandstone (#8B4513) textures, heat shimmer lines, (#C2956B) sand drifts at base, dark fantasy desert, seamless, 1920x720, alpha transparent, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, modern, forest, text, character, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 720}
+        },
+        "dalle": {
+          "prompt": "2D parallax mid layer, 1920x720. Desert ruins: broken Solian temple, golden (#FFD700) ether crystal pillars, mining scaffolding. Sandstone (#8B4513), sand (#C2956B). Heat shimmer. Dark fantasy. Seamless. Transparent areas.",
+          "size": "1920x720"
+        },
+        "midjourney": {
+          "prompt": "2D parallax mid layer, desert ruins, broken temple, golden crystal pillars, mining scaffolding, sandstone textures, heat shimmer, dark fantasy, seamless, 1920x720 --ar 8:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "SOL-BG-MID-NIGHT",
+      "layer": "mid",
+      "time": "night",
+      "size": "1920x720",
+      "scroll_speed": "0.35x",
+      "description": "Same ruins dark, ether crystal pillars glowing gold→orange pulsing, mining base lanterns lit, cool blue moonlight on sand, warm crystal glow contrast."
+    },
+    {
+      "id": "SOL-BG-MID-DUSK",
+      "layer": "mid",
+      "time": "dusk",
+      "size": "1920x720",
+      "scroll_speed": "0.35x",
+      "description": "Warm orange light bathing ruins, crystal pillars starting to glow, long dramatic shadows, temple carvings highlighted."
+    },
+    {
+      "id": "SOL-BG-NEAR-DAY",
+      "layer": "near",
+      "time": "day",
+      "size": "1920x720",
+      "scroll_speed": "0.7x",
+      "description": "Wind-blown sand particle foreground, horizontal drift direction, heat distortion wavy lines near bottom. Sparse thin overlay.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax near foreground, wind-blown sand particles drifting horizontally, heat distortion wavy lines near bottom, sparse semi-transparent overlay, desert wind atmosphere, (#C2956B) sand tones, seamless, 1920x720, mostly transparent, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, opaque, solid, text, character, buildings, heavy fog",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 720}
+        },
+        "dalle": {
+          "prompt": "2D parallax near foreground, 1920x720. Wind-blown sand particles, heat distortion waves at bottom. Semi-transparent overlay. Desert wind. Seamless. Mostly transparent.",
+          "size": "1920x720"
+        },
+        "midjourney": {
+          "prompt": "2D parallax near layer, wind-blown sand particles, heat distortion waves, semi-transparent overlay, desert wind, seamless, 1920x720 --ar 8:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "SOL-BG-NEAR-NIGHT",
+      "layer": "near",
+      "time": "night",
+      "size": "1920x720",
+      "scroll_speed": "0.7x",
+      "description": "Gentle sand drift, golden (#FFD700) ether crystal dust particles floating (10-15), no heat distortion, cool breeze feel."
+    },
+    {
+      "id": "SOL-BG-NEAR-DUSK",
+      "layer": "near",
+      "time": "dusk",
+      "size": "1920x720",
+      "scroll_speed": "0.7x",
+      "description": "Sand particles catching orange sunset light, ether dust beginning to appear, warm amber foreground haze."
+    }
+  ],
+  "total_images": 12,
+  "generation_notes": {
+    "seamless": "All layers horizontal seamless. Verify 2x width preview.",
+    "alpha": "Far/Mid/Near need transparency for layer stacking.",
+    "mirage_animation": "Far layer mirage is 4-frame loop — generate as sprite sheet or separate frames.",
+    "crystal_glow_shift": "Day: crystals dim. Dusk: begin glow. Night: full gold→orange pulse.",
+    "heat_haze": "Day/Dusk only. Applied as post-process shader or baked into near layer."
+  }
+}

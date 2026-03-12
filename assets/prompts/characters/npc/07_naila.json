@@ -1,0 +1,60 @@
+{
+  "asset_id": "npc_portrait_07_naila",
+  "npc_name": "나일라",
+  "npc_name_en": "Naila",
+  "region": "실반헤임",
+  "role": "spore researcher, potion crafter",
+  "category": "npc_portrait",
+  "resolution": "256x256",
+  "color_palette": {
+    "primary": "#8B6943",
+    "secondary": "#ADFF2F",
+    "glow": "#E0FFFF",
+    "accent": "#F0F0F0"
+  },
+  "design": {
+    "appearance": "small petite build, brown bob-cut hair, large round spectacles",
+    "clothing": "research coat with forest spore collection bag, test tube belt at waist",
+    "items": "multiple glowing spore glass bottles, small notebook",
+    "special_features": "tiny mushrooms growing from hair (symbiotic), green-stained fingertips",
+    "personality_vibe": "curious and talkative scholar"
+  },
+  "prompts": {
+    "sd": {
+      "portrait": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC portrait, bust shot, front-facing, Naila (나일라), spore researcher, potion crafter, small petite build, brown bob-cut hair, large round spectacles, research coat with forest spore collection bag, test tube belt at waist, curious and talkative scholar expression, tiny mushrooms growing from hair (symbiotic), green-stained fingertips, Silvanhime region, ancient forest, spores, old growth color scheme, dark fantasy medieval setting, memory and ether theme, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, 256x256 resolution, dark gradient background, game dialogue portrait style, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, wrong eye color, inconsistent clothing, modern clothing, sci-fi elements",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "portrait": {
+        "prompt": "Create a 2D pixel art RPG NPC portrait, bust shot of Naila — spore researcher, potion crafter. small petite build, brown bob-cut hair, large round spectacles. Wearing research coat with forest spore collection bag, test tube belt at waist. Holding/carrying multiple glowing spore glass bottles, small notebook. Special details: tiny mushrooms growing from hair (symbiotic), green-stained fingertips. Expression: curious and talkative scholar. Set in Silvanhime region with ancient forest, spores, old growth atmosphere. 256x256 pixel art style, dark gradient background, game dialogue portrait. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "portrait": {
+        "prompt": "2D pixel art RPG NPC portrait bust shot::2, Naila spore researcher, potion crafter::1.5, small petite build, brown bob-cut hair, large round spectacles, research coat with forest spore collection bag, test tube belt at waist, curious and talkative scholar expression, Silvanhime ancient forest, spores, old growth::1, 256x256 pixel art, dark gradient background, game dialogue portrait::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 1:1",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

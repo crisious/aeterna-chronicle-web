@@ -1,0 +1,204 @@
+{
+  "region": "에레보스",
+  "region_en": "Erebos",
+  "theme": "폐허 도시 (Ruined City)",
+  "color_palette": {
+    "primary": "#2D2D3F",
+    "secondary": "#5C4A72",
+    "accent": "#89CFF0"
+  },
+  "spec": {
+    "format": "RGBA 32bit PNG",
+    "seamless": "horizontal seamless tiling required",
+    "layers": ["sky", "far", "mid", "near"]
+  },
+  "backgrounds": [
+    {
+      "id": "ERB-BG-SKY-DAY",
+      "layer": "sky",
+      "time": "day",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Overcast purple-grey sky with dim light filtering through thick clouds. Faint sun disc barely visible behind cloud mass.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background layer, overcast purple-grey (#2D2D3F) sky, thick cloud mass, dim diffused daylight, faint sun disc behind clouds, dark fantasy ruined city atmosphere, muted tones, horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright sunny, blue sky, clear weather, text, watermark, character, UI elements, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 360, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Overcast purple-grey sky for a dark ruined city. Thick clouds with dim diffused daylight, faint sun barely visible. Muted tones (#2D2D3F palette). Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, overcast purple-grey sky, thick clouds, dim daylight, faint sun behind clouds, dark fantasy ruined city atmosphere, muted purple-grey tones, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "ERB-BG-SKY-NIGHT",
+      "layer": "sky",
+      "time": "night",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Deep dark purple-black sky, pale white moon disc half-hidden by clouds, scattered memory light faint streaks in upper atmosphere.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax background sky, deep dark purple-black (#2D2D3F→darker) night sky, pale white moon disc half-hidden by wispy clouds, faint cyan (#89CFF0) memory light streaks in upper atmosphere, stars barely visible through haze, dark fantasy, horizontal seamless, 1920x360, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, bright, clear night, too many stars, text, character, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 360}
+        },
+        "dalle": {
+          "prompt": "2D parallax background sky, 1920x360. Deep dark purple-black night sky, pale moon half-hidden by clouds, faint cyan memory light streaks. Dark fantasy ruined city. Seamless tileable. No text, no characters.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax sky, deep dark purple-black night, pale moon behind clouds, faint cyan memory streaks, dark fantasy, seamless, 1920x360, painted --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "ERB-BG-SKY-DUSK",
+      "layer": "sky",
+      "time": "dusk",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Twilight sky transitioning from muted orange-purple at horizon to deep purple overhead. Cloud edges catch warm light. Memory streaks begin appearing.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax background sky, twilight transition sky, muted orange-purple (#5C4A72) at horizon fading to deep purple overhead, cloud edges catching warm sunset light, faint (#89CFF0) memory streaks beginning to appear, dark fantasy ruins, seamless, 1920x360, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, bright, clear, text, character, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 360}
+        },
+        "dalle": {
+          "prompt": "2D parallax sky layer, 1920x360. Twilight sky, muted orange-purple at horizon to deep purple above. Cloud edges warm-lit. Faint cyan memory light streaks. Dark fantasy. Seamless. No characters.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax sky, twilight, muted orange-purple horizon to deep purple, warm cloud edges, cyan memory streaks, dark fantasy, seamless, 1920x360 --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "ERB-BG-FAR-DAY",
+      "layer": "far",
+      "time": "day",
+      "size": "1920x540",
+      "scroll_speed": "0.15x",
+      "description": "Distant ruined spire silhouettes (3-4) emerging from fog, broken arches, muted grey-purple. Intermittent memory flash (faint cyan-white).",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax far background, distant ruined spire silhouettes 3-4 towers, broken arches emerging from fog, muted grey-purple (#2D2D3F) (#5C4A72), faint (#89CFF0) memory flash, atmospheric depth fog, dark fantasy ruins cityscape, seamless, 1920x540, alpha transparency below skyline, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, clear day, modern buildings, text, character, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 540}
+        },
+        "dalle": {
+          "prompt": "2D parallax far background layer, 1920x540. Distant ruined city spire silhouettes (3-4 towers) in fog. Broken arches. Grey-purple (#2D2D3F, #5C4A72) tones. Faint cyan memory flash. Dark fantasy. Seamless. Transparent below skyline.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax far layer, distant ruined spires in fog, broken arches, grey-purple silhouettes, faint cyan flash, dark fantasy ruins, seamless, 1920x540 --ar 32:9 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "ERB-BG-FAR-NIGHT",
+      "layer": "far",
+      "time": "night",
+      "size": "1920x540",
+      "scroll_speed": "0.15x",
+      "description": "Dark spire silhouettes barely visible, fog thicker, memory flashes brighter and more frequent cyan-white bursts in distance."
+    },
+    {
+      "id": "ERB-BG-FAR-DUSK",
+      "layer": "far",
+      "time": "dusk",
+      "size": "1920x540",
+      "scroll_speed": "0.15x",
+      "description": "Spire silhouettes darkening against warm horizon glow, fog catching sunset amber, memory flashes starting to appear."
+    },
+    {
+      "id": "ERB-BG-MID-DAY",
+      "layer": "mid",
+      "time": "day",
+      "size": "1920x720",
+      "scroll_speed": "0.35x",
+      "description": "Mid-ground ruined buildings — broken clocktower, collapsed bridge, buildings with empty dark windows. More detail visible. Faint window light flickering.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax mid background, ruined city buildings mid-distance, broken clocktower with cracked face, collapsed stone bridge, buildings with dark empty windows, one window faint light flicker, detailed architecture decay, (#2D2D3F) (#5C4A72) palette, atmospheric fog, dark fantasy, seamless, 1920x720, alpha transparent ground, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, modern, clean buildings, text, character, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 720}
+        },
+        "dalle": {
+          "prompt": "2D parallax mid background layer, 1920x720. Ruined city buildings: broken clocktower, collapsed bridge, empty dark windows with one faint light. Grey-purple decay. Dark fantasy. Seamless. Transparent ground area.",
+          "size": "1920x720"
+        },
+        "midjourney": {
+          "prompt": "2D parallax mid layer, ruined city buildings, broken clocktower, collapsed bridge, dark empty windows, grey-purple palette, dark fantasy decay, seamless, 1920x720 --ar 8:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "ERB-BG-MID-NIGHT",
+      "layer": "mid",
+      "time": "night",
+      "size": "1920x720",
+      "scroll_speed": "0.35x",
+      "description": "Same ruins darker, window lights stronger/multiple, memory glow seeping from cracks in buildings, cyan light pooling on rubble."
+    },
+    {
+      "id": "ERB-BG-MID-DUSK",
+      "layer": "mid",
+      "time": "dusk",
+      "size": "1920x720",
+      "scroll_speed": "0.35x",
+      "description": "Ruins silhouetted against amber horizon, warm light on upper surfaces, deepening shadows in windows and crevices."
+    },
+    {
+      "id": "ERB-BG-NEAR-DAY",
+      "layer": "near",
+      "time": "day",
+      "size": "1920x720",
+      "scroll_speed": "0.7x",
+      "description": "Thick fog particles in foreground, floating memory fragments (3-5 cyan-white glowing shards), slow vertical bobbing. Fog opacity 30% day.",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D parallax near foreground layer, thick fog wisps, 3-5 floating cyan (#89CFF0) memory fragment shards glowing, gentle bobbing motion, semi-transparent fog at 30% opacity, dark fantasy ruins atmosphere, seamless, 1920x720, mostly transparent with fog and particles, painted, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, photo, solid background, opaque, text, character, buildings, pixel art",
+          "params": {"steps": 40, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "width": 1920, "height": 720}
+        },
+        "dalle": {
+          "prompt": "2D parallax near foreground layer, 1920x720. Thick fog wisps with floating cyan (#89CFF0) memory fragment shards (3-5 glowing pieces). Semi-transparent overlay. Dark fantasy ruins. Seamless. Mostly transparent background.",
+          "size": "1920x720"
+        },
+        "midjourney": {
+          "prompt": "2D parallax near layer, fog wisps, floating cyan memory shards, semi-transparent overlay, dark fantasy ruins, seamless, 1920x720 --ar 8:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "ERB-BG-NEAR-NIGHT",
+      "layer": "near",
+      "time": "night",
+      "size": "1920x720",
+      "scroll_speed": "0.7x",
+      "description": "Dense fog 60% opacity, memory fragments maximum glow, more numerous (5-8 shards), trails of cyan particles."
+    },
+    {
+      "id": "ERB-BG-NEAR-DUSK",
+      "layer": "near",
+      "time": "dusk",
+      "size": "1920x720",
+      "scroll_speed": "0.7x",
+      "description": "Fog 40% opacity, warm amber tint mixing with cyan memory glow, fragments transitioning from faint to bright."
+    }
+  ],
+  "total_images": 12,
+  "generation_notes": {
+    "seamless": "All layers must tile horizontally. Verify with 2x width preview.",
+    "alpha": "Far/Mid/Near layers need transparent regions — use alpha channel, not solid backgrounds.",
+    "time_variants": "Use img2img from day variant as base, shift palette via color_correct tool.",
+    "parallax_test": "Stack all 4 layers in test viewer to verify depth consistency."
+  }
+}

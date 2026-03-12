@@ -1,0 +1,70 @@
+{
+  "asset_id": "npc_sprite_26_fog_elder",
+  "npc_name": "안개 노인",
+  "npc_name_en": "Fog Elder",
+  "region": "안개해",
+  "category": "npc_sprite",
+  "frame_size": "64x64",
+  "directions": [
+    "D",
+    "DL",
+    "L",
+    "U"
+  ],
+  "motions": [
+    "idle",
+    "walk",
+    "talk"
+  ],
+  "frames_per_motion": {
+    "idle": 4,
+    "walk": 6,
+    "talk": 4
+  },
+  "total_frames": 56,
+  "portrait_ref": "assets/prompts/characters/npc/26_fog_elder.json",
+  "color_palette": {
+    "primary": "#696969",
+    "secondary": "#4B0082",
+    "glow": "#DDA0DD",
+    "accent": "#E6E6FA"
+  },
+  "prompts": {
+    "sd": {
+      "sprite_sheet": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG NPC field sprite, full body, Fog Elder (안개 노인), drifter sage, simplified pixel version, tattered drifter robes soaked with sea mist, 64x64 pixel frame, 4 directions (front/front-left/left/back), 3 motions (idle 4f/walk 6f/talk 4f), Fog Sea region style, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, too detailed for sprite size, portrait style",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 896,
+          "height": 256
+        }
+      }
+    },
+    "dalle": {
+      "sprite_sheet": {
+        "prompt": "Create a pixel art RPG NPC field sprite sheet for Fog Elder. Simplified pixel version of portrait: tattered drifter robes soaked with sea mist. 4 rows (front/front-left/left/back), each with idle(4f)+walk(6f)+talk(4f) = 14 frames. 64x64 pixels per frame, Fog Sea style. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "sprite_sheet": {
+        "prompt": "2D pixel art RPG NPC sprite sheet::2, Fog Elder::1.5, tattered drifter robes soaked with sea mist, 4 directional rows, idle+walk+talk animations, 64x64 frames, Fog Sea style::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 7:2",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "7:2"
+        }
+      }
+    }
+  }
+}

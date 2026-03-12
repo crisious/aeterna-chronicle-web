@@ -1,0 +1,160 @@
+{
+  "region": "실반헤임",
+  "region_en": "Sylvanheim",
+  "theme": "마법의 숲 (Enchanted Forest)",
+  "color_palette": {
+    "primary": "#1B4332",
+    "secondary": "#6B4423",
+    "accent": "#7DF9FF",
+    "names": ["숲 녹색", "고목 갈색", "발광균 청록"]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "SYL-G-01",
+      "name": "숲 흙길",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Forest dirt path, soft brown earth with root traces, small pebbles",
+        "top": "Dirt path top edge meeting grass and leaf litter",
+        "bottom": "Bottom edge, dirt blending into mossy ground",
+        "left": "Left edge, tree root crossing into path",
+        "right": "Right edge, ferns encroaching from forest floor",
+        "corner_tl": "Top-left, grass-dirt corner with small mushroom",
+        "corner_tr": "Top-right, leaf pile corner",
+        "corner_bl": "Bottom-left, moss-dirt transition corner",
+        "corner_br": "Bottom-right, puddle in root depression"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, forest dirt path, enchanted woods, soft brown earth with root traces (#6B4423), small pebbles, leaf litter, deep forest green (#1B4332) grass edges, magical forest atmosphere, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character, urban",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, forest dirt path for enchanted magical woods. Soft brown (#6B4423) earth with root traces, pebbles, leaf litter. Deep green (#1B4332) grass at edges. {piece_description}. Clean pixel edges, black outline, seamless. Fantasy forest style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, forest dirt path, enchanted woods, brown earth root traces, green grass edges, {piece_description}, 32x32, clean edges, black outline, seamless, fantasy forest --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "SYL-G-02",
+      "name": "이끼 바위",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Moss-covered rock surface, thick green moss on grey stone, forest floor",
+        "top": "Top edge, moss thinning to bare rock",
+        "bottom": "Bottom edge, thick moss draping down",
+        "left": "Left edge, moss gradient with lichen spots",
+        "right": "Right edge, moss patches with exposed granite",
+        "corner_tl": "Top-left, bare rock corner with single moss tuft",
+        "corner_tr": "Top-right, moderate moss with tiny fern",
+        "corner_bl": "Bottom-left, heavy moss with small mushrooms growing",
+        "corner_br": "Bottom-right, moss meeting dirt"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tileset, top-down, moss-covered rock surface, enchanted forest floor, thick green moss (#1B4332) on grey stone, lichen spots, forest atmosphere, seamless, (2px outline:1.3), (clean pixel:1.4), 32x32, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, realistic, blurry, watermark, low quality, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32, moss-covered rock for enchanted forest. Green (#1B4332) moss on grey stone, lichen. {piece_description}. Clean pixels, outline, seamless.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down pixel art tile, moss rock, enchanted forest, green moss grey stone, {piece_description}, 32x32, seamless --ar 1:1 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "SYL-G-08",
+      "name": "시냇물",
+      "type": "autotile_3x3_animated_3f",
+      "variants": 1,
+      "pieces": {
+        "center": "Flowing stream water, clear blue-green, small ripples, visible pebbles below",
+        "top": "Stream bank top, grass and roots overhanging water edge",
+        "bottom": "Stream bank bottom, muddy edge with water plants",
+        "left": "Left bank, mossy rocks lining stream",
+        "right": "Right bank, fallen leaves on water surface",
+        "corner_tl": "Top-left, stream bend with foam",
+        "corner_tr": "Top-right, shallow water with exposed stones",
+        "corner_bl": "Bottom-left, deep pool corner",
+        "corner_br": "Bottom-right, stream narrowing into rocks"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tileset, top-down, flowing forest stream, clear water with visible pebbles, gentle ripples, 3-frame animation sprite sheet, enchanted forest, (#1B4332) banks, seamless, (2px outline:1.3), (clean pixel:1.4), 32x32 per frame, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, realistic, blurry, watermark, low quality",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 768, "height": 256}
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG tile sprite sheet, 3 frames horizontal, forest stream with flowing water animation. Clear water, pebbles below, mossy banks. 32x32 per frame. Clean pixels, outline, seamless.",
+          "size": "768x256"
+        },
+        "midjourney": {
+          "prompt": "2D pixel art sprite sheet, 3 frames, flowing forest stream animation, clear water pebbles, mossy banks, 32x32 per frame, seamless --ar 3:1 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "SYL-G-10",
+      "name": "고대 석판 바닥",
+      "type": "single",
+      "variants": 2,
+      "pieces": {
+        "center": "Ancient stone slab floor, moss-covered Elparis script carvings, overgrown cracks"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tile, top-down, ancient stone slab floor, Elparis elven script carvings, moss-covered, overgrown cracks, enchanted forest ruins, (#1B4332) (#6B4423), seamless, (2px outline:1.3), 32x32, <lora:pixel-art-style-v2:0.7>",
+          "negative": "3D, realistic, blurry, watermark, low quality",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256}
+        }
+      }
+    }
+  ],
+  "special_tiles": [
+    {"id": "SYL-G-03", "name": "나무뿌리 바닥", "type": "single", "variants": 3, "description": "Giant tree root crossing patterns on forest floor"},
+    {"id": "SYL-G-04", "name": "숲 연못", "type": "animated_3f", "description": "Clear forest pool with floating leaves, subtle ripple animation"},
+    {"id": "SYL-G-05", "name": "낙엽", "type": "single", "variants": 4, "description": "Fallen leaves in 4 color variants: green/yellow/red/brown"},
+    {"id": "SYL-G-06", "name": "발광 이끼", "type": "animated_4f", "description": "Bioluminescent moss, cyan-teal (#7DF9FF) glow pulsing 4-frame animation"},
+    {"id": "SYL-G-07", "name": "포자 지대", "type": "animated_3f", "description": "Toxic spore ground, purple spore particles rising"},
+    {"id": "SYL-G-09", "name": "버섯 군락 바닥", "type": "single", "variants": 3, "description": "Mushroom cluster floor, various sized mushrooms on moss"}
+  ],
+  "decoration_objects": [
+    {"id": "SYL-D-01", "name": "거대 나무", "size": "4x6", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, massive ancient tree, enchanted forest, centuries-old oak with thick trunk, canopy extending above frame, (#1B4332) foliage, (#6B4423) bark, faint (#7DF9FF) glow spots, transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"},
+    {"id": "SYL-D-02", "name": "숲 성소", "size": "3x3", "collision": true, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, forest shrine, stone altar with bioluminescent mushroom decorations, (#7DF9FF) glow, vines, (#1B4332) (#6B4423), transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-03", "name": "발광균 군락", "size": "1x1", "collision": false, "interaction": "채집", "animated": true, "frames": 4, "prompt_sd": "(masterpiece:1.3), 2D pixel art, bioluminescent mushroom cluster, (#7DF9FF) cyan-teal glow, 4-frame pulse animation sheet, forest floor, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-04", "name": "덩굴 아치", "size": "3x3", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, vine-covered stone arch, enchanted forest gateway, thick green vines and flowers wrapping stone pillars, (#1B4332), transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-05", "name": "고대 비석", "size": "1x2", "collision": true, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, ancient elven stele, Elparis script carved in moss-covered stone, faint glow, enchanted forest, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-06", "name": "숲 제단", "size": "2x2", "collision": true, "interaction": "퍼즐", "prompt_sd": "(masterpiece:1.3), 2D pixel art, forest altar, stone platform with memory crystal socket, vine decorations, (#1B4332) (#7DF9FF), transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-07", "name": "버섯 원", "size": "2x2", "collision": false, "prompt_sd": "(masterpiece:1.3), 2D pixel art, fairy ring of mushrooms, glowing circle, various colored caps, bioluminescent, enchanted forest floor, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-08", "name": "시냇물 다리", "size": "3x2", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, wooden plank bridge over stream, forest crossing, simple railing, mossy planks, (#6B4423) wood, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-09", "name": "나무 속 동굴 입구", "size": "2x3", "collision": true, "interaction": "진입", "prompt_sd": "(masterpiece:1.3), 2D pixel art, tree hollow entrance, giant tree root cave opening, dark interior, root frame, (#6B4423) bark, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-10", "name": "매달린 등불", "size": "1x1", "collision": false, "prompt_sd": "(masterpiece:1.3), 2D pixel art, hanging ether lantern from branch, (#7DF9FF) warm glow, small glass lantern, forest canopy, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-11", "name": "쓰러진 고목", "size": "4x1", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, fallen ancient tree trunk, moss-covered, mushrooms growing, blocking path, (#6B4423) (#1B4332), transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-12", "name": "숲 요정 집", "size": "2x2", "collision": true, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, tiny fairy house in tree hollow, small door with warm light, mushroom decorations, whimsical, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-13", "name": "거대 버섯", "size": "2x3", "collision": true, "prompt_sd": "(masterpiece:1.3), 2D pixel art, giant mushroom, 3-tile tall, spotted cap, thick stem, (#7DF9FF) bioluminescent glow, enchanted forest, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-14", "name": "거미줄", "size": "2x2", "collision": false, "prompt_sd": "(masterpiece:1.3), 2D pixel art, spider web between trees, translucent silk strands, dew drops, forest, transparent bg, (2px outline:1.3)"},
+    {"id": "SYL-D-15", "name": "기억나무 (소형)", "size": "1x2", "collision": true, "interaction": "조사", "prompt_sd": "(masterpiece:1.3), 2D pixel art, small memory tree, crystalline fruit hanging from branches, (#7DF9FF) glow, slender trunk, enchanted forest, transparent bg, (2px outline:1.3)"}
+  ],
+  "generation_notes": {
+    "autotile_workflow": "Generate center tile first → derive edges/corners via inpainting",
+    "bioluminescence": "Night variants: all (#7DF9FF) elements glow at 100% intensity; Day variants: glow at 20%",
+    "post_process": "remove_bg → color_correct to palette → qa_runner tile-seamless check",
+    "sheet_assembly": "9-piece autotile → 3x3 grid PNG"
+  }
+}

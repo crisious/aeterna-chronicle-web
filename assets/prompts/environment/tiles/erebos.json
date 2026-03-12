@@ -1,0 +1,314 @@
+{
+  "region": "에레보스",
+  "region_en": "Erebos",
+  "theme": "폐허 도시 (Ruined City)",
+  "color_palette": {
+    "primary": "#2D2D3F",
+    "secondary": "#5C4A72",
+    "accent": "#89CFF0",
+    "names": ["안개 회색", "부서진 보라", "기억 잔광 청백"]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "ERB-G-01",
+      "name": "금이 간 포석",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Cracked cobblestone, main walking surface with fine cracks, dust in gaps",
+        "top": "Cobblestone edge meeting void/grass, top border eroded",
+        "bottom": "Bottom border, partial rubble spill into lower terrain",
+        "left": "Left edge, broken stones with exposed mortar",
+        "right": "Right edge, partial collapse showing dirt underneath",
+        "corner_tl": "Top-left rounded corner, worn smooth",
+        "corner_tr": "Top-right corner, one stone missing",
+        "corner_bl": "Bottom-left corner, moss creeping in",
+        "corner_br": "Bottom-right corner, deepest crack convergence"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, cracked cobblestone road, dark ruins city, mist grey (#2D2D3F) base with broken purple (#5C4A72) mortar, fine crack patterns, dust in gaps, dark fantasy abandoned city aesthetic, seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, cracked cobblestone road tile for a dark ruined city. Color palette: mist grey (#2D2D3F) and broken purple (#5C4A72) mortar, with faint cyan (#89CFF0) memory glow in deepest cracks. {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, cracked cobblestone road, dark ruined city tileset, mist grey and broken purple palette, faint cyan memory glow in cracks, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ERB-G-02",
+      "name": "부서진 대리석",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Broken marble floor, white-grey with purple vein cracks, indoor ruin",
+        "top": "Marble edge top, chipped border meeting wall rubble",
+        "bottom": "Bottom edge, marble fragments scattered",
+        "left": "Left edge, clean cut meeting dirt floor",
+        "right": "Right edge, crumbling into gravel",
+        "corner_tl": "Top-left corner, partially intact decorative border",
+        "corner_tr": "Top-right corner, completely shattered",
+        "corner_bl": "Bottom-left corner, mossy growth encroaching",
+        "corner_br": "Bottom-right corner, dust pile accumulation"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, broken marble floor, indoor ruins, white-grey marble with purple (#5C4A72) vein cracks, chipped edges, rubble fragments, dark fantasy abandoned palace interior, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, broken marble floor for dark ruins interior. White-grey marble with purple (#5C4A72) vein cracks. {piece_description}. Clean pixel edges, black outline, cel shading, seamless. Dark fantasy style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, broken marble floor, dark ruins interior, white-grey marble purple vein cracks, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ERB-G-04",
+      "name": "이끼 낀 돌",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Moss-covered stone, thick green-grey moss on dark stone, abandoned area",
+        "top": "Top edge, moss thinning at border, exposed stone",
+        "bottom": "Bottom edge, moss thick, dripping down",
+        "left": "Left edge, moss gradient from thick to thin",
+        "right": "Right edge, moss patches with bare stone showing",
+        "corner_tl": "Top-left, minimal moss corner",
+        "corner_tr": "Top-right, moderate moss",
+        "corner_bl": "Bottom-left, heavy moss with tiny mushrooms",
+        "corner_br": "Bottom-right, moss and puddle"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, moss-covered stone ground, abandoned ruins overgrown, dark grey stone with green-grey moss patches, small mushrooms, damp atmosphere, dark fantasy, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, moss-covered stone for abandoned ruins. Dark stone with green-grey moss, tiny mushrooms. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, moss-covered stone, abandoned ruins overgrown, dark stone green moss, {piece_description}, 32x32, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ERB-G-07",
+      "name": "먼지 길",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Dusty dirt road, exposed earth between cobblestone ruins, footprints optional",
+        "top": "Top edge, dirt meeting cobblestone border",
+        "bottom": "Bottom edge, dirt trailing off into rubble",
+        "left": "Left edge, eroded transition to stone",
+        "right": "Right edge, loose gravel scatter",
+        "corner_tl": "Top-left, stone-to-dirt corner transition",
+        "corner_tr": "Top-right, narrow dirt wedge",
+        "corner_bl": "Bottom-left, wide dirt with debris",
+        "corner_br": "Bottom-right, puddle in depression"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, dusty dirt road, exposed earth in ruined city, muted brown-grey tones matching (#2D2D3F) palette, scattered pebbles, faint footprints, dark fantasy ruins path, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32, dusty dirt path in a dark ruined city. Brown-grey earth, pebbles, footprints. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, dusty dirt road, dark ruined city, brown-grey earth pebbles, {piece_description}, 32x32, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ],
+  "special_tiles": [
+    {
+      "id": "ERB-G-03",
+      "name": "하수도 격자",
+      "type": "single",
+      "variants": 2,
+      "description": "Sewer grate, metal grid over dark hole, open/closed states",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), 2D pixel art tile, top-down, iron sewer grate on stone floor, dark ruins city, rusty metal grid over black void, mist rising from grate, (#2D2D3F) palette, 32x32, (2px outline:1.3), (clean pixel:1.4), <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D, realistic, blurry, watermark, low quality",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256}
+        }
+      }
+    },
+    {
+      "id": "ERB-G-05",
+      "name": "물웅덩이",
+      "type": "animated_3f",
+      "description": "Standing water puddle, reflective surface, subtle ripple animation 3 frames"
+    },
+    {
+      "id": "ERB-G-06",
+      "name": "무너진 타일",
+      "type": "single",
+      "variants": 3,
+      "description": "Collapsed floor tiles, holes of varying sizes exposing dark void below"
+    },
+    {
+      "id": "ERB-G-08",
+      "name": "기억 균열",
+      "type": "animated_4f",
+      "description": "Memory crack in the ground, glowing purple-cyan (#89CFF0) fissure, pulsing 4-frame animation"
+    },
+    {
+      "id": "ERB-G-09",
+      "name": "혈흔 바닥",
+      "type": "single",
+      "variants": 3,
+      "description": "Bloodstained floor, dark crimson stains on stone, battle scars"
+    },
+    {
+      "id": "ERB-G-10",
+      "name": "재더미",
+      "type": "single",
+      "variants": 2,
+      "description": "Ash pile, grey-black burned debris on stone floor"
+    }
+  ],
+  "decoration_objects": [
+    {
+      "id": "ERB-D-01",
+      "name": "무너진 기둥",
+      "size": "1x3",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art decoration sprite, collapsed stone column, dark fantasy ruins, partially broken pillar with cracks and moss, memory glow (#89CFF0) seeping from cracks, (#2D2D3F) (#5C4A72) palette, top-down RPG object, transparent background, (2px outline:1.3), (clean pixel:1.4), <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+      "prompt_dalle": "2D pixel art RPG decoration, collapsed stone column for dark ruined city tilemap. Cracked pillar with faint cyan memory glow in cracks. Grey-purple palette (#2D2D3F, #5C4A72). Transparent background, clean pixel edges.",
+      "prompt_mj": "2D pixel art RPG decoration, collapsed stone column, dark ruins, cracks with cyan glow, grey-purple palette, transparent bg, clean pixels --ar 1:3 --niji 6"
+    },
+    {
+      "id": "ERB-D-02",
+      "name": "기억 가로등 (꺼짐)",
+      "size": "1x2",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art decoration, broken street lamp, dark fantasy ruins, bent iron pole with shattered glass lantern, no light, rust details, (#2D2D3F) palette, transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-03",
+      "name": "부서진 마차",
+      "size": "3x2",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, broken wooden cart, dark ruins, wheels detached, cargo scattered, rotting wood, cobblestone, (#2D2D3F) (#5C4A72), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-04",
+      "name": "폐건물 잔해",
+      "size": "3x3",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, building rubble pile, dark ruins city, collapsed wall with exposed bricks, dust, twisted metal, memory glow cracks, (#2D2D3F) (#5C4A72) (#89CFF0), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-05",
+      "name": "나무 바리케이드",
+      "size": "2x1",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, wooden barricade, dark ruins, makeshift barrier of planks and crates, nailed boards, dark wood, (#2D2D3F) palette, transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-06",
+      "name": "기억의 우물",
+      "size": "2x2",
+      "collision": true,
+      "interaction": "조사",
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, memory well, dark fantasy ruins, circular stone well with cyan (#89CFF0) glow emanating from depths, cracked rim, iron chain, (#2D2D3F) (#5C4A72), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-07",
+      "name": "부서진 분수대",
+      "size": "2x2",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, broken fountain, dark ruins city, cracked basin with no water, central statue toppled, moss and dust, (#2D2D3F) (#5C4A72), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-08",
+      "name": "쓰러진 나무",
+      "size": "3x1",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, fallen dead tree, dark ruins, grey bark, no leaves, trunk blocking path, (#2D2D3F), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-09",
+      "name": "안개 발생기",
+      "size": "1x1",
+      "collision": false,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, ground crack emitting mist, dark ruins, small fissure with rising fog particles, subtle purple tint, (#2D2D3F) (#5C4A72), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-10",
+      "name": "기억 파편 더미",
+      "size": "1x1",
+      "collision": false,
+      "interaction": "채집",
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, floating memory fragments, dark fantasy, cluster of cyan (#89CFF0) glowing shards hovering above ground, ethereal particles, (#2D2D3F), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-11",
+      "name": "부서진 벤치",
+      "size": "2x1",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, broken wooden bench, dark ruins, one leg snapped, tilted seat, weathered wood, (#2D2D3F), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-12",
+      "name": "녹슨 표지판",
+      "size": "1x2",
+      "collision": true,
+      "interaction": "조사",
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, rusted metal sign post, dark ruins, illegible text on corroded iron plate, leaning, (#2D2D3F), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-13",
+      "name": "무너진 계단",
+      "size": "2x2",
+      "collision": true,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, collapsed stone staircase, dark ruins, half-destroyed steps, rubble at base, (#2D2D3F) (#5C4A72), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-14",
+      "name": "기억 가로등 (작동)",
+      "size": "1x2",
+      "collision": true,
+      "animated": true,
+      "frames": 4,
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, working ether street lamp, dark fantasy ruins, iron pole with glowing cyan (#89CFF0) lantern, light halo effect, 4-frame glow pulse animation sprite sheet, (#2D2D3F), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    },
+    {
+      "id": "ERB-D-15",
+      "name": "봉인 석판",
+      "size": "1x1",
+      "collision": false,
+      "interaction": "퍼즐",
+      "prompt_sd": "(masterpiece:1.3), 2D pixel art, sealed stone tablet on ground, dark fantasy, memory rune patterns carved in stone, faint purple (#5C4A72) glow, puzzle element, (#2D2D3F), transparent bg, (2px outline:1.3), <lora:pixel-art-style-v2:0.7>"
+    }
+  ],
+  "generation_notes": {
+    "autotile_workflow": "Generate center tile first → derive edges/corners via inpainting with seamless constraint",
+    "variant_generation": "Use same seed range with slight prompt variation (crack pattern A/B/C)",
+    "post_process": "remove_bg → color_correct to palette → qa_runner tile-seamless check",
+    "sheet_assembly": "9-piece autotile → 3x3 grid PNG (96x96 for 32px tiles)"
+  }
+}
