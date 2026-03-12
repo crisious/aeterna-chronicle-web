@@ -494,6 +494,83 @@ const mistSeaZones: ZoneSeed[] = [
 // 기존 시드에 안개해 존 병합
 ZONE_SEEDS.push(...mistSeaZones);
 
+// ═══ 기억의 심연 (P11-02) — Lv.60-80 ═════════════════════════
+const abyssOfMemoryZones: ZoneSeed[] = [
+  {
+    code: 'abyss_gate',
+    name: '심연 입구',
+    description: '안개해 해저로 내려가는 거대한 문. 잠수 장비 NPC와 보급 상인이 위치한다.',
+    region: 'abyss_of_memory',
+    levelRange: { min: 60, max: 65 },
+    connections: ['foggy_sea_depths', 'abyss_sunken_streets'],
+    npcs: [
+      { npcId: 'npc_dive_tech', name: '잠수 기술자 네모', posX: 100, posY: 150, role: 'shop' },
+      { npcId: 'npc_abyss_merchant', name: '심해 상인 무렐', posX: 160, posY: 140, role: 'shop' },
+      { npcId: 'npc_expedition_leader', name: '탐사대장 한나', posX: 80, posY: 180, role: 'quest' },
+    ],
+    ambientSound: 'deep_sea_ambient',
+    bgm: 'abyss_gate_theme',
+    isHub: true,
+  },
+  {
+    code: 'abyss_sunken_streets',
+    name: '침몰 시가지',
+    description: '에테르니아의 주거/상업 구역 잔해. 무너진 건물 사이로 심해 몬스터가 서식한다.',
+    region: 'abyss_of_memory',
+    levelRange: { min: 63, max: 70 },
+    connections: ['abyss_gate', 'abyss_library', 'abyss_trial_hall'],
+    npcs: [
+      { npcId: 'npc_abyss_scholar', name: '해저 학자 파비안', posX: 200, posY: 120, role: 'dialogue' },
+    ],
+    ambientSound: 'sunken_ruins',
+    bgm: 'sunken_city_theme',
+    isHub: false,
+  },
+  {
+    code: 'abyss_library',
+    name: '에테르니아 대서고',
+    description: '고대 마법 지식이 저장된 수중 서고. 봉인 12인의 기록이 남아 있다.',
+    region: 'abyss_of_memory',
+    levelRange: { min: 65, max: 72 },
+    connections: ['abyss_sunken_streets'],
+    npcs: [
+      { npcId: 'npc_ghost_librarian', name: '유령 사서 엘도라', posX: 150, posY: 100, role: 'quest' },
+    ],
+    ambientSound: 'underwater_library',
+    bgm: 'library_theme',
+    isHub: false,
+  },
+  {
+    code: 'abyss_trial_hall',
+    name: '시련의 전당',
+    description: '봉인 12인이 후계자를 시험하기 위해 만든 공간. 시간 수호자 클래스 해금 장소.',
+    region: 'abyss_of_memory',
+    levelRange: { min: 68, max: 75 },
+    connections: ['abyss_sunken_streets', 'abyss_core'],
+    npcs: [
+      { npcId: 'npc_time_spirit', name: '시간 수호자 정령', posX: 200, posY: 200, role: 'quest' },
+    ],
+    ambientSound: 'mystical_hall',
+    bgm: 'trial_hall_theme',
+    isHub: false,
+  },
+  {
+    code: 'abyss_core',
+    name: '심연의 핵심',
+    description: '레테의 마지막 파편이 봉인된 최심부. 시간 균열이 열리는 장소.',
+    region: 'abyss_of_memory',
+    levelRange: { min: 75, max: 80 },
+    connections: ['abyss_trial_hall'],
+    npcs: [],
+    ambientSound: 'void_pulse',
+    bgm: 'abyss_core_theme',
+    isHub: false,
+  },
+];
+
+// 기억의 심연 존 병합
+ZONE_SEEDS.push(...abyssOfMemoryZones);
+
 // ─── 시드 함수 ──────────────────────────────────────────────────
 
 export async function seedZones(): Promise<void> {

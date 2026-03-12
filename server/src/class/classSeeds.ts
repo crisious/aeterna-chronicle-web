@@ -250,12 +250,69 @@ const memoryBreakerTier3: ClassSeedData = {
 // 기존 시드에 기억 파괴자 추가
 ALL_CLASS_SEEDS.push(memoryBreakerTier1, memoryBreakerTier2, memoryBreakerTier3);
 
+// ════════════════════════════════════════════════════════════════
+// 시간 수호자 (Time Guardian) 전직 트리 — P11-03
+// 봉인 12인의 힘을 계승. 챕터 7 시련의 전당에서 해금.
+// ════════════════════════════════════════════════════════════════
+
+const timeGuardianTier1: ClassSeedData = {
+  baseClass: 'time_guardian',
+  advancedClass: 'chrono_warden',     // 시간 감시자
+  tier: 1,
+  requiredLevel: 30,
+  questId: 'quest_tg_t1_chrono_warden',
+  skills: [
+    { id: 'tg_t1_s1', name: '시간 감속', description: '주변 적의 이동/공격 속도를 25% 감소 (8초)', type: 'active', cooldown: 18, mpCost: 35 },
+    { id: 'tg_t1_s2', name: '시간 가속', description: '자신과 아군의 이동/공격 속도 20% 증가 (10초)', type: 'active', cooldown: 20, mpCost: 40 },
+    { id: 'tg_t1_s3', name: '시간 인지', description: '회피율 8% 증가', type: 'passive' },
+    { id: 'tg_t1_s4', name: '봉인의 잔향', description: '적 처치 시 스킬 쿨다운 2초 감소', type: 'passive' },
+  ],
+  statBonus: { hp: 350, attack: 25, defense: 25, speed: 15 },
+};
+
+const timeGuardianTier2: ClassSeedData = {
+  baseClass: 'time_guardian',
+  advancedClass: 'temporal_knight',   // 시간 기사
+  tier: 2,
+  requiredLevel: 50,
+  questId: 'quest_tg_t2_temporal_knight',
+  skills: [
+    { id: 'tg_t2_s1', name: '시간 참격', description: '시간을 응축한 일격, 공격력 220% + 2초 스턴', type: 'active', cooldown: 14, mpCost: 50 },
+    { id: 'tg_t2_s2', name: '되감기', description: '자신의 HP/MP를 5초 전 상태로 복원', type: 'active', cooldown: 45, mpCost: 60 },
+    { id: 'tg_t2_s3', name: '시간 왜곡장', description: '적의 투사체 속도 50% 감소 (범위)', type: 'active', cooldown: 25, mpCost: 45 },
+    { id: 'tg_t2_s4', name: '시간 분열', description: '크리티컬 시 추가 타격 1회 (원본 피해의 30%)', type: 'passive' },
+  ],
+  statBonus: { hp: 400, attack: 40, defense: 25, speed: 20, critRate: 8 },
+};
+
+const timeGuardianTier3: ClassSeedData = {
+  baseClass: 'time_guardian',
+  advancedClass: 'epoch_sovereign',   // 시대의 지배자
+  tier: 3,
+  requiredLevel: 70,
+  questId: 'quest_tg_t3_epoch_sovereign',
+  skills: [
+    { id: 'tg_t3_s1', name: '시간 정지', description: '3초간 주변 모든 적 행동 정지 (보스 1초)', type: 'active', cooldown: 60, mpCost: 80 },
+    { id: 'tg_t3_s2', name: '시간 분신', description: '3초 전의 자신을 소환, 10초간 동일 행동 반복', type: 'active', cooldown: 50, mpCost: 70 },
+    { id: 'tg_t3_s3', name: '영원의 가호', description: '치명상 시 1회 부활 (HP 30%, 전투당 1회)', type: 'passive' },
+    { id: 'tg_t3_s4', name: '시간의 군주', description: '모든 시간 계열 스킬 효과 20% 증가', type: 'passive' },
+  ],
+  statBonus: { hp: 500, attack: 55, defense: 35, speed: 25, critRate: 10, critDamage: 15 },
+  ultimateSkill: {
+    id: 'tg_ult', name: '대망각의 역류', description: '3,200년의 봉인 에너지를 해방. 범위 내 적에게 공격력 500% + 전 스탯 30% 감소 (5초). 아군 전원 HP 20% 회복',
+    type: 'active', cooldown: 120, mpCost: 100,
+  },
+};
+
+ALL_CLASS_SEEDS.push(timeGuardianTier1, timeGuardianTier2, timeGuardianTier3);
+
 // ─── 베이스 클래스 한글 매핑 ──────────────────────────────────
 export const BASE_CLASS_NAMES: Record<string, string> = {
   ether_knight: '에테르 기사',
   memory_weaver: '기억술사',
   shadow_weaver: '그림자 직조사',
   memory_breaker: '기억 파괴자',
+  time_guardian: '시간 수호자',
 };
 
 // ─── 전직 클래스 한글 매핑 ────────────────────────────────────
@@ -272,4 +329,7 @@ export const ADVANCED_CLASS_NAMES: Record<string, string> = {
   seal_cracker: '봉인 해체자',
   void_breaker: '허공 파괴자',
   oblivion_lord: '망각의 군주',
+  chrono_warden: '시간 감시자',
+  temporal_knight: '시간 기사',
+  epoch_sovereign: '시대의 지배자',
 };
