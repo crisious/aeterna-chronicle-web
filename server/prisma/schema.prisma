@@ -26,6 +26,12 @@ model User {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   characters Character[]
+
+  // P7-14: DAU/MAU 집계 + 밴 필터 + 역할 조회 최적화
+  @@index([lastLoginAt])
+  @@index([isBanned])
+  @@index([role])
+  @@index([createdAt])
 }
 
 // ─── 어드민 감사 로그 ───────────────────────────────────────────
@@ -58,6 +64,8 @@ model Announcement {
   createdAt   DateTime  @default(now()) @map("created_at")
 
   @@map("announcements")
+  // P7-14: 활성 공지 조회 최적화
+  @@index([isActive, startAt, endAt])
 }
 
 // ─── 게임 이벤트 (어드민 관리) ──────────────────────────────────
@@ -76,6 +84,8 @@ model GameEvent {
 
   @@map("game_events")
   @@index([type])
+  // P7-14: 활성 이벤트 조회 + 기간 필터 최적화
+  @@index([isActive, startAt, endAt])
 }
 
 // ─── 출석 기록 ──────────────────────────────────────────────────
@@ -139,6 +149,8 @@ model Character {
   inventoryData Json?
 
   @@index([userId])
+  // P7-14: 클래스+레벨 기반 조회 최적화 (maxHp 계산, 랭킹 등)
+  @@index([classId, level])
 }
 
 // ─── 텔레메트리: 대화 선택지 이벤트 ───────────────────────────
@@ -332,6 +344,9 @@ model ShopItem {
   purchases   Purchase[]
   @@map("shop_items")
   @@index([category, isActive])
+  // P7-14: 기간 한정 상품 조회 최적화
+  @@index([isActive, startDate, endDate])
+  @@index([currency])
 }
 
 model Purchase {
@@ -345,6 +360,10 @@ model Purchase {
   item      ShopItem @relation(fields: [itemId], references: [id])
   @@map("purchases")
   @@index([userId])
+  // P7-14: 아이템별 매출 분석 + 기간 필터
+  @@index([itemId])
+  @@index([createdAt])
+  @@index([userId, createdAt])
 }
 
 // ─── 시즌 패스 시스템 ───────────────────────────────────────────
@@ -616,6 +635,8 @@ model QuestProgress {
   @@unique([userId, questId])
   @@map("quest_progress")
   @@index([userId])
+  // P7-14: 상태별 퀘스트 조회 (진행 중/완료)
+  @@index([userId, status])
 }
 
 model NpcAffinity {
@@ -717,6 +738,9 @@ model Mail {
   @@map("mails")
   @@index([receiverId])
   @@index([senderId])
+  // P7-14: 읽지 않은 우편 + 만료 우편 정리 최적화
+  @@index([receiverId, isRead])
+  @@index([expiresAt])
 }
 
 // ─── 몬스터/적 시스템 (P5-01) ───────────────────────────────────
@@ -841,6 +865,10 @@ model DungeonRun {
   @@map("dungeon_runs")
   @@index([dungeonId])
   @@index([leaderId])
+  // P7-14: 상태별 + 기간별 던전 런 조회 (클리어율 집계)
+  @@index([status])
+  @@index([startedAt])
+  @@index([dungeonId, status])
 }
 
 // ─── 월드맵/필드 시스템 (P5-04) ─────────────────────────────────
@@ -904,6 +932,8 @@ model Notification {
   @@map("notifications")
   @@index([userId, isRead])
   @@index([createdAt])
+  // P7-14: 타입별 필터 + 읽지 않은 알림 카운트 최적화
+  @@index([userId, type])
 }
 
 // ─── 거래소/경매장 (P5-06) ──────────────────────────────────────
@@ -963,6 +993,9 @@ model PaymentReceipt {
   @@map("payment_receipts")
   @@index([userId])
   @@index([status])
+  // P7-14: 매출 집계 + ARPPU 쿼리 최적화
+  @@index([status, createdAt])
+  @@index([userId, status])
 }
 
 // ─── 코스메틱 아이템 (P6-03) ────────────────────────────────────
@@ -1121,6 +1154,8 @@ model Sanction {
   @@map("sanctions")
   @@index([userId])
   @@index([isActive])
+  // P7-14: 만료 제재 자동 해제 최적화
+  @@index([isActive, expiresAt])
 }
 
 // ─── KPI 스냅샷 (P6-14) ──────────────────────────────────────

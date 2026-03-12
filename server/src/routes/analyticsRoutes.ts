@@ -13,6 +13,8 @@ import {
   getRevenueTimeSeries,
   calculateRetention,
   runDailyKpiSnapshot,
+  calculateAvgSessionTime,
+  calculateStageClearRate,
   KpiMetric,
 } from '../analytics/analyticsEngine';
 import { requireAdmin } from '../admin/authMiddleware';
@@ -123,6 +125,41 @@ export async function analyticsRoutes(fastify: FastifyInstance): Promise<void> {
       try {
         const series = await getRevenueTimeSeries(startDate, endDate);
         return reply.send({ startDate, endDate, series });
+      } catch (err) {
+        return reply.status(500).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  // ── P7-11: 세션 시간 조회 ──
+  fastify.get(
+    '/api/analytics/session-time',
+    { preHandler: requireAdmin('moderator', 'view_analytics') },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const query = request.query as { date?: string };
+      const date = query.date ? new Date(query.date) : new Date();
+      try {
+        const avgSeconds = await calculateAvgSessionTime(date);
+        return reply.send({ date, avgSessionTimeSeconds: avgSeconds });
+      } catch (err) {
+        return reply.status(500).send({ error: (err as Error).message });
+      }
+    },
+  );
+
+  // ── P7-11: 스테이지 클리어율 조회 ──
+  fastify.get(
+    '/api/analytics/clear-rate',
+    { preHandler: requireAdmin('moderator', 'view_analytics') },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const query = request.query as { startDate?: string; endDate?: string };
+      const endDate = query.endDate ? new Date(query.endDate) : new Date();
+      const startDate = query.startDate
+        ? new Date(query.startDate)
+        : new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+      try {
+        const result = await calculateStageClearRate(startDate, endDate);
+        return reply.send({ startDate, endDate, ...result });
       } catch (err) {
         return reply.status(500).send({ error: (err as Error).message });
       }

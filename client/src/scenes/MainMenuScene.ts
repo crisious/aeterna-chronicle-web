@@ -112,8 +112,8 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   private _onSettings(): void {
-    // TODO: SettingsScene 구현 후 연결
-    console.info('[MainMenuScene] 설정 화면 (미구현)');
+    // P7-09: SettingsScene 연결
+    this.scene.start('SettingsScene');
   }
 
   private _onCredits(): void {

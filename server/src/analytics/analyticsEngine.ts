@@ -315,6 +315,15 @@ export async function runDailyKpiSnapshot(targetDate?: Date): Promise<{
   metrics['ltv'] = await calculateLtv();
   await saveKpiSnapshot(date, 'ltv', metrics['ltv']);
 
+  // P7-11: 세션 시간 + 클리어율
+  metrics['avg_session_time'] = await calculateAvgSessionTime(date);
+  // KPI 스냅샷 저장 (커스텀 메트릭은 segment로 구분)
+  await saveKpiSnapshot(date, 'dau', metrics['avg_session_time'], 'session_time_sec');
+
+  const clearData = await calculateStageClearRate(dayStart, dayEnd);
+  metrics['stage_clear_rate'] = clearData.clearRate;
+  await saveKpiSnapshot(date, 'dau', metrics['stage_clear_rate'], 'stage_clear_rate');
+
   return { date, metrics };
 }
 
@@ -332,6 +341,87 @@ export async function getEconomyMetrics() {
     inflation,
     totalGold: currencyTotals._sum.gold ?? 0,
     totalDiamond: currencyTotals._sum.diamond ?? 0,
+  };
+}
+
+// ─── 세션 시간 집계 (P7-11: KPI 실데이터 수집) ────────────────
+
+/**
+ * 평균 세션 시간(초) — 오늘 로그인한 유저의 세이브 슬롯 playtime 기반 추정.
+ * 정밀한 세션 트래킹은 TelemetryGameEvent 기반으로 확장 예정.
+ */
+export async function calculateAvgSessionTime(date: Date): Promise<number> {
+  const dayStart = new Date(date);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(date);
+  dayEnd.setHours(23, 59, 59, 999);
+
+  // 오늘 접속한 유저 ID
+  const activeUsers = await prisma.user.findMany({
+    where: { lastLoginAt: { gte: dayStart, lte: dayEnd } },
+    select: { id: true },
+  });
+
+  if (activeUsers.length === 0) return 0;
+
+  // 세이브 슬롯에서 오늘 업데이트된 것들의 playtime 변동 추정
+  const saves = await prisma.saveSlot.findMany({
+    where: {
+      userId: { in: activeUsers.map(u => u.id) },
+      updatedAt: { gte: dayStart, lte: dayEnd },
+    },
+    select: { playtime: true },
+  });
+
+  if (saves.length === 0) return 0;
+
+  const totalPlaytime = saves.reduce((sum, s) => sum + s.playtime, 0);
+  return Math.round(totalPlaytime / activeUsers.length);
+}
+
+// ─── 스테이지/던전 클리어율 집계 (P7-11) ───────────────────────
+
+/**
+ * 특정 기간의 던전 클리어율 (cleared / total runs).
+ */
+export async function calculateStageClearRate(startDate: Date, endDate: Date): Promise<{
+  totalRuns: number;
+  clearedRuns: number;
+  clearRate: number;
+  byDungeon: Array<{ dungeonId: string; total: number; cleared: number; rate: number }>;
+}> {
+  const runs = await prisma.dungeonRun.findMany({
+    where: {
+      startedAt: { gte: startDate, lte: endDate },
+      status: { in: ['cleared', 'failed', 'abandoned'] },
+    },
+    select: { dungeonId: true, status: true },
+  });
+
+  const totalRuns = runs.length;
+  const clearedRuns = runs.filter(r => r.status === 'cleared').length;
+
+  // 던전별 집계
+  const dungeonMap = new Map<string, { total: number; cleared: number }>();
+  for (const run of runs) {
+    const entry = dungeonMap.get(run.dungeonId) ?? { total: 0, cleared: 0 };
+    entry.total++;
+    if (run.status === 'cleared') entry.cleared++;
+    dungeonMap.set(run.dungeonId, entry);
+  }
+
+  const byDungeon = Array.from(dungeonMap.entries()).map(([dungeonId, stats]) => ({
+    dungeonId,
+    total: stats.total,
+    cleared: stats.cleared,
+    rate: stats.total > 0 ? stats.cleared / stats.total : 0,
+  }));
+
+  return {
+    totalRuns,
+    clearedRuns,
+    clearRate: totalRuns > 0 ? clearedRuns / totalRuns : 0,
+    byDungeon,
   };
 }
 
