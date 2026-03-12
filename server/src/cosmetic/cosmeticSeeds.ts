@@ -170,4 +170,84 @@ export const COSMETIC_SEEDS: CosmeticSeedItem[] = [
   { code: 'EMOTE_S2_01', name: '봉인 해제', category: 'emote', rarity: 'rare', priceType: 'gold', price: 15000, affectsStats: false, description: '봉인이 해제되는 모션.', isLimited: false },
   { code: 'EMOTE_S2_02', name: '기억 파쇄', category: 'emote', rarity: 'epic', priceType: 'crystal', price: 300, affectsStats: false, description: '기억을 부수는 모션.', isLimited: false },
   { code: 'EMOTE_S2_03', name: '안개 소환', category: 'emote', rarity: 'epic', priceType: 'crystal', price: 400, affectsStats: false, description: '주변에 안개를 소환하는 모션.', isLimited: false },
+
+  // ═══════════════════════════════════════════════════════════════
+  //  시즌 3 "기억의 심연" 코스메틱 (50개) — P11-17
+  //  심연 테마: 해저 스킨, 심해 오라, 시간 이펙트
+  //  모든 아이템: affectsStats = false (P2W 제로)
+  // ═══════════════════════════════════════════════════════════════
+
+  // ── 캐릭터 스킨 (15): 클래스당 3 × 5클래스 ───────────────────
+
+  // 에테르 나이트 (3)
+  { code: 'SKIN_S3_EK_01', name: '심해 기사', category: 'skin', rarity: 'epic', priceType: 'crystal', price: 800, affectsStats: false, description: '심연의 압력을 견디는 심해 갑옷. 인광 문양이 물결친다.', isLimited: false },
+  { code: 'SKIN_S3_EK_02', name: '시간 왜곡 전사', category: 'skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '시간이 뒤틀린 갑주. 갑옷 표면에 과거와 미래가 겹쳐 보인다.', isLimited: true },
+  { code: 'SKIN_S3_EK_03', name: '심연의 파수꾼', category: 'skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 최종 보상. 해저 심연을 수호하는 전사의 갑주.', isLimited: true },
+
+  // 기억술사 / 메모리 위버 (3)
+  { code: 'SKIN_S3_MW_01', name: '심해 학자', category: 'skin', rarity: 'epic', priceType: 'crystal', price: 800, affectsStats: false, description: '심연의 기억을 연구하는 학자의 로브. 발광 해파리 문양.', isLimited: false },
+  { code: 'SKIN_S3_MW_02', name: '시간의 심연술사', category: 'skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '시간과 기억이 뒤섞인 로브. 주변에 시간 파편이 떠다닌다.', isLimited: true },
+  { code: 'SKIN_S3_MW_03', name: '기억의 해류', category: 'skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 해류처럼 흐르는 기억의 로브.', isLimited: true },
+
+  // 섀도우 위버 (3)
+  { code: 'SKIN_S3_SW_01', name: '심연 잠행자', category: 'skin', rarity: 'epic', priceType: 'crystal', price: 800, affectsStats: false, description: '심해 어둠에 완벽히 녹아드는 잠행 복장.', isLimited: false },
+  { code: 'SKIN_S3_SW_02', name: '시간 절단자', category: 'skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '시간선을 끊어내는 암살자의 의상. 잔상이 남는다.', isLimited: true },
+  { code: 'SKIN_S3_SW_03', name: '심해 유령', category: 'skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 심해의 유령처럼 반투명한 복장.', isLimited: true },
+
+  // 기억 파괴자 / 메모리 브레이커 (3)
+  { code: 'SKIN_S3_MB_01', name: '심연 파쇄자', category: 'skin', rarity: 'epic', priceType: 'crystal', price: 800, affectsStats: false, description: '심연의 기억을 산산조각 내는 파쇄 갑옷.', isLimited: false },
+  { code: 'SKIN_S3_MB_02', name: '시간 붕괴자', category: 'skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '시간 자체를 붕괴시키는 파괴자의 갑주.', isLimited: true },
+  { code: 'SKIN_S3_MB_03', name: '망각의 심연왕', category: 'skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 심연 깊은 곳의 망각을 지배하는 왕의 의상.', isLimited: true },
+
+  // 시간 수호자 (P11-03 신규 클래스) (3)
+  { code: 'SKIN_S3_TG_01', name: '심해 시간관측자', category: 'skin', rarity: 'epic', priceType: 'crystal', price: 800, affectsStats: false, description: '심연에서 시간을 관측하는 수호자의 의장.', isLimited: false },
+  { code: 'SKIN_S3_TG_02', name: '영원의 파도', category: 'skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '영원히 멈추지 않는 파도를 형상화한 의장.', isLimited: true },
+  { code: 'SKIN_S3_TG_03', name: '심연의 크로노스', category: 'skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 시간신 크로노스의 심연 현현.', isLimited: true },
+
+  // ── 무기 외형 (8) ─────────────────────────────────────────────
+  { code: 'WPN_S3_01', name: '심해 트라이던트', category: 'weapon_skin', rarity: 'rare', priceType: 'crystal', price: 250, affectsStats: false, description: '심연의 해저에서 인양한 삼지창.', isLimited: false },
+  { code: 'WPN_S3_02', name: '시간 왜곡 검', category: 'weapon_skin', rarity: 'epic', priceType: 'crystal', price: 600, affectsStats: false, description: '칼날이 시간 왜곡으로 일렁인다.', isLimited: false },
+  { code: 'WPN_S3_03', name: '기억 산호 지팡이', category: 'weapon_skin', rarity: 'epic', priceType: 'crystal', price: 600, affectsStats: false, description: '기억이 결정화된 산호로 만든 지팡이.', isLimited: false },
+  { code: 'WPN_S3_04', name: '심연 단검 쌍', category: 'weapon_skin', rarity: 'epic', priceType: 'crystal', price: 700, affectsStats: false, description: '심해 흑요석으로 연마한 쌍단검.', isLimited: false },
+  { code: 'WPN_S3_05', name: '레비아탄의 이빨', category: 'weapon_skin', rarity: 'legendary', priceType: 'crystal', price: 1200, affectsStats: false, description: '전설의 심해 괴수 이빨로 만든 대검.', isLimited: true },
+  { code: 'WPN_S3_06', name: '시간 정지 활', category: 'weapon_skin', rarity: 'legendary', priceType: 'crystal', price: 1200, affectsStats: false, description: '화살이 시간을 멈추는 궤적을 남긴다.', isLimited: true },
+  { code: 'WPN_S3_07', name: '심연의 낫', category: 'weapon_skin', rarity: 'epic', priceType: 'gold', price: 60000, affectsStats: false, description: '심해 해류를 베는 낫.', isLimited: false },
+  { code: 'WPN_S3_08', name: '크로노 앵커', category: 'weapon_skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 시간을 정박시키는 닻 형태 무기.', isLimited: true },
+
+  // ── 펫 스킨 (6) ───────────────────────────────────────────────
+  { code: 'PET_S3_01', name: '심해 해파리', category: 'pet_skin', rarity: 'rare', priceType: 'crystal', price: 350, affectsStats: false, description: '심연에서 빛나는 해파리 펫.', isLimited: false },
+  { code: 'PET_S3_02', name: '시간 문어', category: 'pet_skin', rarity: 'epic', priceType: 'crystal', price: 700, affectsStats: false, description: '촉수마다 다른 시간대가 흐르는 문어.', isLimited: false },
+  { code: 'PET_S3_03', name: '기억 산호뱀', category: 'pet_skin', rarity: 'epic', priceType: 'crystal', price: 800, affectsStats: false, description: '기억 산호 사이를 누비는 발광 뱀.', isLimited: false },
+  { code: 'PET_S3_04', name: '심연 아귀', category: 'pet_skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '심해 아귀의 미니어처. 이마의 빛이 기억을 비춘다.', isLimited: true },
+  { code: 'PET_S3_05', name: '시간 거북', category: 'pet_skin', rarity: 'legendary', priceType: 'crystal', price: 1500, affectsStats: false, description: '등껍질에 시간의 흐름이 새겨진 고대 거북.', isLimited: true },
+  { code: 'PET_S3_06', name: '레비아탄 아기', category: 'pet_skin', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 심연 괴수 레비아탄의 새끼.', isLimited: true },
+
+  // ── 마운트 (5) ────────────────────────────────────────────────
+  { code: 'MOUNT_S3_01', name: '심해 만타레이', category: 'mount', rarity: 'epic', priceType: 'crystal', price: 1000, affectsStats: false, description: '심연을 활공하는 거대 만타레이.', isLimited: false },
+  { code: 'MOUNT_S3_02', name: '시간 해마 (거대)', category: 'mount', rarity: 'epic', priceType: 'crystal', price: 1200, affectsStats: false, description: '시간 해류를 타는 거대 해마.', isLimited: false },
+  { code: 'MOUNT_S3_03', name: '심연 잠수정', category: 'mount', rarity: 'legendary', priceType: 'crystal', price: 2000, affectsStats: false, description: '에테르 동력 심연 탐사 잠수정.', isLimited: true },
+  { code: 'MOUNT_S3_04', name: '레비아탄 등', category: 'mount', rarity: 'legendary', priceType: 'crystal', price: 2500, affectsStats: false, description: '길들인 레비아탄의 등에 올라탄다.', isLimited: true },
+  { code: 'MOUNT_S3_05', name: '시간의 조류', category: 'mount', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 시간의 흐름 자체를 타고 이동한다.', isLimited: true },
+
+  // ── 오라 이펙트 (5) ───────────────────────────────────────────
+  { code: 'AURA_S3_01', name: '심해 발광', category: 'aura', rarity: 'rare', priceType: 'crystal', price: 300, affectsStats: false, description: '캐릭터 주변에 심해 생물의 인광이 떠다닌다.', isLimited: false },
+  { code: 'AURA_S3_02', name: '시간 파문', category: 'aura', rarity: 'epic', priceType: 'crystal', price: 600, affectsStats: false, description: '발밑에서 시간의 파문이 퍼져나간다.', isLimited: false },
+  { code: 'AURA_S3_03', name: '기억 거품', category: 'aura', rarity: 'epic', priceType: 'crystal', price: 700, affectsStats: false, description: '기억의 거품이 캐릭터 주변을 감싼다.', isLimited: false },
+  { code: 'AURA_S3_04', name: '심연 해류', category: 'aura', rarity: 'legendary', priceType: 'crystal', price: 1200, affectsStats: false, description: '보이지 않는 심연 해류가 캐릭터를 감싼다.', isLimited: true },
+  { code: 'AURA_S3_05', name: '크로노스의 축복', category: 'aura', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 시간신의 축복이 금빛 모래시계로 현현한다.', isLimited: true },
+
+  // ── 이모트 (5) ────────────────────────────────────────────────
+  { code: 'EMOTE_S3_01', name: '심연 다이브', category: 'emote', rarity: 'rare', priceType: 'gold', price: 15000, affectsStats: false, description: '심연으로 뛰어드는 모션.', isLimited: false },
+  { code: 'EMOTE_S3_02', name: '시간 되감기', category: 'emote', rarity: 'epic', priceType: 'crystal', price: 400, affectsStats: false, description: '시간을 되감는 제스처.', isLimited: false },
+  { code: 'EMOTE_S3_03', name: '기억 해방', category: 'emote', rarity: 'epic', priceType: 'crystal', price: 400, affectsStats: false, description: '억눌린 기억을 해방하는 모션.', isLimited: false },
+  { code: 'EMOTE_S3_04', name: '레비아탄 포효', category: 'emote', rarity: 'legendary', priceType: 'crystal', price: 800, affectsStats: false, description: '레비아탄의 포효를 흉내내는 모션.', isLimited: true },
+  { code: 'EMOTE_S3_05', name: '심연의 명상', category: 'emote', rarity: 'epic', priceType: 'crystal', price: 500, affectsStats: false, description: '심연의 고요 속에서 명상하는 모션.', isLimited: false },
+
+  // ── 칭호 (6) ──────────────────────────────────────────────────
+  { code: 'TITLE_S3_01', name: '심연 탐험가', category: 'title', rarity: 'rare', priceType: 'gold', price: 20000, affectsStats: false, description: '기억의 심연을 처음 탐험한 자.', isLimited: false },
+  { code: 'TITLE_S3_02', name: '시간의 증인', category: 'title', rarity: 'epic', priceType: 'crystal', price: 500, affectsStats: false, description: '시간 왜곡을 목격하고 돌아온 자.', isLimited: false },
+  { code: 'TITLE_S3_03', name: '심해의 군주', category: 'title', rarity: 'legendary', priceType: 'crystal', price: 1000, affectsStats: false, description: '심연의 모든 던전을 정복한 자.', isLimited: false },
+  { code: 'TITLE_S3_04', name: '레비아탄 슬레이어', category: 'title', rarity: 'legendary', priceType: 'crystal', price: 1200, affectsStats: false, description: '전설의 심해 괴수를 처치한 자.', isLimited: true },
+  { code: 'TITLE_S3_05', name: '시간의 정복자', category: 'title', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 한정. 시간마저 정복한 자.', isLimited: true },
+  { code: 'TITLE_S3_06', name: '기억의 심연왕', category: 'title', rarity: 'legendary', priceType: 'season_reward', price: 0, affectsStats: false, description: '시즌 3 최종 칭호. 심연의 모든 기억을 지배하는 왕.', isLimited: true },
 ];

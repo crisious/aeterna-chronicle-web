@@ -6,6 +6,7 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { advancementEngine } from '../class/advancementEngine';
+import { enforceClassGate } from '../class/memoryDestroyerGate';
 
 // ─── 요청 타입 정의 ─────────────────────────────────────────
 
@@ -22,6 +23,12 @@ interface AdvanceBody {
   baseClass: string;
   targetTier: number;
   completedQuests?: string[];
+}
+
+interface CreateCharacterBody {
+  accountId: string;
+  name: string;
+  baseClass: string;
 }
 
 // ─── 라우트 등록 ────────────────────────────────────────────
@@ -86,6 +93,22 @@ export async function classRoutes(fastify: FastifyInstance): Promise<void> {
           });
         }
 
+        // P11-16: 기억파괴자 챕터6 게이트 검증
+        const gateBlock = await enforceClassGate(
+          request.body.characterId, // accountId는 캐릭터에서 역참조
+          baseClass
+        );
+        if (gateBlock) {
+          return reply.status(403).send({
+            success: false,
+            error: gateBlock.reason,
+            gate: {
+              currentChapter: gateBlock.currentChapter,
+              requiredChapter: gateBlock.requiredChapter,
+            },
+          });
+        }
+
         const result = await advancementEngine.executeAdvancement(
           characterId,
           baseClass,
@@ -121,6 +144,39 @@ export async function classRoutes(fastify: FastifyInstance): Promise<void> {
       } catch (err) {
         fastify.log.error(err);
         return reply.status(500).send({ success: false, error: '스킬 목록 조회 실패' });
+      }
+    }
+  );
+
+  /**
+   * GET /api/class/gate/:accountId/:classCode — 클래스 해금 조건 확인
+   * P11-16: 기억파괴자 등 게이트가 있는 클래스의 해금 상태 조회
+   */
+  fastify.get<{ Params: { accountId: string; classCode: string } }>(
+    '/api/class/gate/:accountId/:classCode',
+    async (request, reply) => {
+      try {
+        const { accountId, classCode } = request.params;
+        const gateResult = await enforceClassGate(accountId, classCode);
+
+        if (gateResult === null) {
+          // 게이트 통과 또는 게이트 없는 클래스
+          return reply.send({ success: true, data: { eligible: true, classCode } });
+        }
+
+        return reply.send({
+          success: true,
+          data: {
+            eligible: false,
+            classCode,
+            reason: gateResult.reason,
+            currentChapter: gateResult.currentChapter,
+            requiredChapter: gateResult.requiredChapter,
+          },
+        });
+      } catch (err) {
+        fastify.log.error(err);
+        return reply.status(500).send({ success: false, error: '해금 조건 조회 실패' });
       }
     }
   );
