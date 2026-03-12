@@ -410,6 +410,90 @@ const ZONE_SEEDS: ZoneSeed[] = [
   },
 ];
 
+// ═══════════════════════════════════════════════════════════════
+// P8-03 무한 안개해 — 5개 존 추가
+// ═══════════════════════════════════════════════════════════════
+
+const mistSeaZones: ZoneSeed[] = [
+  {
+    code: 'mist_sea_outskirts',
+    name: '안개해 외곽',
+    description: '무한 안개해의 입구. 옅은 안개가 감싸지만 아직 시야 확보 가능. 초보 안개 몬스터가 서식.',
+    region: 'mist_sea',
+    levelRange: { min: 60, max: 65 },
+    connections: ['britallia_harbor', 'mist_sea_lighthouse'],
+    npcs: [
+      { npcId: 'npc_mist_harbor_master', name: '안개항 항장 이사벨', posX: 100, posY: 150, role: 'quest' },
+      { npcId: 'npc_mist_supplier', name: '보급상 헤르만', posX: 140, posY: 160, role: 'shop' },
+      { npcId: 'npc_mist_navigator', name: '항해사 리오', posX: 80, posY: 140, role: 'dialogue' },
+    ],
+    ambientSound: 'ocean_mist',
+    bgm: 'mist_sea_calm',
+    isHub: true,
+  },
+  {
+    code: 'mist_sea_lighthouse',
+    name: '기억의 등대',
+    description: '봉인자 메모리아가 세운 에테르 등대. 안개 속 유일한 이정표. 지하에 봉인 균열이 존재.',
+    region: 'mist_sea',
+    levelRange: { min: 65, max: 70 },
+    connections: ['mist_sea_outskirts', 'mist_sea_archipelago'],
+    npcs: [
+      { npcId: 'npc_lighthouse_keeper', name: '등대지기 에밀리아', posX: 200, posY: 200, role: 'quest' },
+      { npcId: 'npc_memory_scholar', name: '기억 학자 노엘', posX: 220, posY: 180, role: 'dialogue' },
+    ],
+    ambientSound: 'lighthouse_wind',
+    bgm: 'mist_sea_mystery',
+    isHub: false,
+  },
+  {
+    code: 'mist_sea_archipelago',
+    name: '표류자의 군도',
+    description: '수백 년간 안개에 갇힌 난파선과 잔해가 밀집한 군도. 유령선 이벤트가 발생.',
+    region: 'mist_sea',
+    levelRange: { min: 70, max: 75 },
+    connections: ['mist_sea_lighthouse', 'mist_sea_spire'],
+    npcs: [
+      { npcId: 'npc_ghost_captain', name: '유령 선장 바르도', posX: 150, posY: 100, role: 'quest' },
+      { npcId: 'npc_treasure_hunter', name: '보물 사냥꾼 카이라', posX: 180, posY: 120, role: 'shop' },
+    ],
+    ambientSound: 'shipwreck_creak',
+    bgm: 'mist_sea_eerie',
+    isHub: false,
+  },
+  {
+    code: 'mist_sea_spire',
+    name: '봉인의 첨탑',
+    description: '12인의 봉인 중 핵심 봉인 3개가 집중된 거대 첨탑. 봉인자 후손 마을과 수련장이 있다.',
+    region: 'mist_sea',
+    levelRange: { min: 75, max: 80 },
+    connections: ['mist_sea_archipelago', 'mist_sea_abyss'],
+    npcs: [
+      { npcId: 'npc_lumina', name: '장로 루미나', posX: 200, posY: 250, role: 'quest' },
+      { npcId: 'npc_seal_guardian', name: '봉인 수호자 칼렌', posX: 230, posY: 240, role: 'dialogue' },
+      { npcId: 'npc_seal_smith', name: '봉인 대장장이 오르가', posX: 170, posY: 230, role: 'shop' },
+    ],
+    ambientSound: 'seal_resonance',
+    bgm: 'mist_sea_spire_theme',
+    isHub: true,
+  },
+  {
+    code: 'mist_sea_abyss',
+    name: '심연의 해구',
+    description: '안개해 최심부. 레테의 잔류 의식이 봉인된 핵심 지역. 12인 레이드 전용.',
+    region: 'mist_sea',
+    levelRange: { min: 80, max: 80 },
+    connections: ['mist_sea_spire'],
+    npcs: [],
+    ambientSound: 'abyss_rumble',
+    bgm: 'mist_sea_abyss_theme',
+    isHub: false,
+  },
+];
+
+// 기존 시드에 안개해 존 병합
+ZONE_SEEDS.push(...mistSeaZones);
+
 // ─── 시드 함수 ──────────────────────────────────────────────────
 
 export async function seedZones(): Promise<void> {

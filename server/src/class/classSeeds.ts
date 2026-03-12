@@ -194,11 +194,68 @@ export const CLASS_ADVANCEMENT_SEEDS: ClassSeedData[] = [
   shadowWeaverTier3,
 ];
 
+// ════════════════════════════════════════════════════════════════
+// P8-04 기억 파괴자 (Memory Breaker) 전직 트리
+// ════════════════════════════════════════════════════════════════
+
+const memoryBreakerTier1: ClassSeedData = {
+  baseClass: 'memory_breaker',
+  advancedClass: 'seal_cracker',    // 봉인 해체자
+  tier: 1,
+  requiredLevel: 30,
+  questId: 'quest_mb_t1_seal_cracker',
+  skills: [
+    { id: 'mb_t1_s1', name: '기억 분쇄', description: '대상의 기억을 파쇄하여 공격력 200%의 에테르 피해', type: 'active', cooldown: 10, mpCost: 35 },
+    { id: 'mb_t1_s2', name: '봉인 균열', description: '대상의 방어 봉인을 해체하여 방어력 20% 감소 (10초)', type: 'active', cooldown: 18, mpCost: 40 },
+    { id: 'mb_t1_s3', name: '망각의 갑옷', description: '기억 파괴 시 임시 보호막 생성 (최대 HP의 5%)', type: 'passive' },
+    { id: 'mb_t1_s4', name: '파편 흡수', description: '적 처치 시 봉인 파편 에너지 회복 (MP 3%)', type: 'passive' },
+  ],
+  statBonus: { hp: 200, attack: 45, defense: 15, critRate: 5 },
+};
+
+const memoryBreakerTier2: ClassSeedData = {
+  baseClass: 'memory_breaker',
+  advancedClass: 'void_breaker',    // 허공 파괴자
+  tier: 2,
+  requiredLevel: 50,
+  questId: 'quest_mb_t2_void_breaker',
+  skills: [
+    { id: 'mb_t2_s1', name: '허공 절단', description: '기억의 공간을 절단하여 범위 내 적에게 공격력 280%의 피해', type: 'active', cooldown: 14, mpCost: 55 },
+    { id: 'mb_t2_s2', name: '기억 폭파', description: '축적된 기억 에너지를 폭발시켜 공격력 320%의 피해 (자가 HP 5% 소모)', type: 'active', cooldown: 20, mpCost: 60 },
+    { id: 'mb_t2_s3', name: '파괴자의 직감', description: '크리티컬 발동 시 쿨다운 2초 감소', type: 'passive' },
+    { id: 'mb_t2_s4', name: '봉인 공명', description: '봉인 관련 적에게 피해 15% 증가', type: 'passive' },
+  ],
+  statBonus: { hp: 250, attack: 60, defense: 10, critRate: 8, critDamage: 15 },
+};
+
+const memoryBreakerTier3: ClassSeedData = {
+  baseClass: 'memory_breaker',
+  advancedClass: 'oblivion_lord',   // 망각의 군주
+  tier: 3,
+  requiredLevel: 70,
+  questId: 'quest_mb_t3_oblivion_lord',
+  skills: [
+    { id: 'mb_t3_s1', name: '망각의 영역', description: '주변 영역의 기억을 파괴하여 적 전체 공격력/방어력 25% 감소 (15초)', type: 'active', cooldown: 30, mpCost: 80 },
+    { id: 'mb_t3_s2', name: '레테의 손길', description: '레테의 힘을 빌려 단일 대상의 버프 전체 해제 + 공격력 150%의 피해', type: 'active', cooldown: 25, mpCost: 70 },
+    { id: 'mb_t3_s3', name: '봉인 파괴자의 의지', description: '치명적 피해를 받을 때 1회 생존 (HP 1, 쿨다운 180초)', type: 'passive' },
+    { id: 'mb_t3_s4', name: '기억 포식', description: '적 처치 시 적의 스킬 효과 하나를 10초간 복사', type: 'passive' },
+  ],
+  statBonus: { hp: 350, attack: 80, defense: 20, critRate: 10, critDamage: 25 },
+  ultimateSkill: {
+    id: 'mb_ult', name: '대망각 재현', description: '200년 전 대망각의 힘을 재현 — 범위 내 모든 적에게 공격력 600%의 에테르 피해 + 기억 소실 (5초 행동불능). 사용 시 자가 최대 HP 10% 소모.',
+    type: 'active', cooldown: 120, mpCost: 150,
+  },
+};
+
+// 기존 시드에 기억 파괴자 추가
+ALL_CLASS_SEEDS.push(memoryBreakerTier1, memoryBreakerTier2, memoryBreakerTier3);
+
 // ─── 베이스 클래스 한글 매핑 ──────────────────────────────────
 export const BASE_CLASS_NAMES: Record<string, string> = {
   ether_knight: '에테르 기사',
   memory_weaver: '기억술사',
   shadow_weaver: '그림자 직조사',
+  memory_breaker: '기억 파괴자',
 };
 
 // ─── 전직 클래스 한글 매핑 ────────────────────────────────────
@@ -212,4 +269,7 @@ export const ADVANCED_CLASS_NAMES: Record<string, string> = {
   illusionist: '환영사',
   soul_reaper: '영혼 수확자',
   void_lord: '공허의 군주',
+  seal_cracker: '봉인 해체자',
+  void_breaker: '허공 파괴자',
+  oblivion_lord: '망각의 군주',
 };

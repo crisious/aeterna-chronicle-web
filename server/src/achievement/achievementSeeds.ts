@@ -163,17 +163,88 @@ const storySeeds: AchievementSeed[] = [
 // 전체 시드 데이터 (100개)
 // ════════════════════════════════════════════════════════════════
 
+// ════════════════════════════════════════════════════════════════
+// P8-06 시즌 2 업적 — 50개 (안개해/봉인/기억파괴자/시즌2 콘텐츠)
+// ════════════════════════════════════════════════════════════════
+
+const season2Seeds: AchievementSeed[] = [
+  // ── 안개해 탐험 (10) ──────────────────────────────────────────
+  { code: 'S2_MIST_ENTER', name: '안개 속으로', description: '무한 안개해에 처음 진입하라.', category: 'exploration', tier: 'bronze', points: 10, isHidden: false, condition: { type: 'flag', target: 'mist_sea_enter' } },
+  { code: 'S2_MIST_5_ZONES', name: '안개해 개척자', description: '안개해 5개 존을 모두 탐험하라.', category: 'exploration', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 'mist_sea_zone_discover', count: 5 } },
+  { code: 'S2_LIGHTHOUSE', name: '등대의 불빛', description: '기억의 등대를 발견하라.', category: 'exploration', tier: 'bronze', points: 15, isHidden: false, condition: { type: 'flag', target: 'lighthouse_discover' } },
+  { code: 'S2_ARCHIPELAGO', name: '표류자의 발자취', description: '표류자의 군도에서 난파선 10개를 조사하라.', category: 'exploration', tier: 'silver', points: 25, isHidden: false, condition: { type: 'count', target: 'shipwreck_investigate', count: 10 } },
+  { code: 'S2_SPIRE', name: '봉인의 첨탑', description: '봉인의 첨탑에 도달하라.', category: 'exploration', tier: 'silver', points: 30, isHidden: false, condition: { type: 'flag', target: 'spire_reach' } },
+  { code: 'S2_ABYSS', name: '심연의 부름', description: '심연의 해구에 진입하라.', category: 'exploration', tier: 'gold', points: 40, isHidden: false, condition: { type: 'flag', target: 'abyss_enter' } },
+  { code: 'S2_MIST_SURVIVE_10', name: '안개 생존자', description: '안개해에서 기억 소실 없이 10분 생존하라.', category: 'exploration', tier: 'silver', points: 25, isHidden: false, condition: { type: 'threshold', target: 'mist_survival_minutes', count: 10 } },
+  { code: 'S2_TREASURE_HUNTER', name: '안개해 보물 사냥꾼', description: '안개해에서 숨겨진 보물 5개를 발견하라.', category: 'exploration', tier: 'silver', points: 30, isHidden: true, condition: { type: 'count', target: 'mist_treasure', count: 5 } },
+  { code: 'S2_GHOST_SHIP', name: '유령선 정복', description: '유령선 이벤트를 클리어하라.', category: 'exploration', tier: 'gold', points: 40, isHidden: false, condition: { type: 'flag', target: 'ghost_ship_clear' } },
+  { code: 'S2_MIST_MASTER', name: '안개해의 주인', description: '안개해 탐험 업적 8개를 달성하라.', category: 'exploration', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'threshold', target: 's2_exploration_achievements', count: 8 } },
+
+  // ── 봉인 관련 (10) ────────────────────────────────────────────
+  { code: 'S2_SEAL_CRACK', name: '첫 번째 균열', description: '봉인 균열을 처음 발견하라.', category: 'story', tier: 'bronze', points: 10, isHidden: false, condition: { type: 'flag', target: 'seal_crack_discover' } },
+  { code: 'S2_SEAL_REPAIR_1', name: '봉인 수복자', description: '첫 번째 봉인을 수복하라.', category: 'story', tier: 'silver', points: 30, isHidden: false, condition: { type: 'flag', target: 'seal_repair_1' } },
+  { code: 'S2_SEAL_REPAIR_3', name: '봉인 전문가', description: '봉인 3개를 수복하라.', category: 'story', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 'seal_repair', count: 3 } },
+  { code: 'S2_SEAL_DESCENDANT', name: '후손과의 만남', description: '봉인자 후손 마을을 발견하라.', category: 'story', tier: 'silver', points: 25, isHidden: false, condition: { type: 'flag', target: 'seal_descendant_village' } },
+  { code: 'S2_LUMINA_TRUST', name: '장로의 신뢰', description: '루미나의 호감도를 MAX로 올려라.', category: 'story', tier: 'gold', points: 40, isHidden: false, condition: { type: 'flag', target: 'lumina_affinity_max' } },
+  { code: 'S2_SEAL_ECHO', name: '봉인의 에코', description: '봉인 공명 장면을 5회 목격하라.', category: 'story', tier: 'silver', points: 20, isHidden: false, condition: { type: 'count', target: 'seal_echo_witness', count: 5 } },
+  { code: 'S2_SEAL_LORE_ALL', name: '봉인의 역사가', description: '봉인 관련 로어 북 전부를 수집하라.', category: 'story', tier: 'gold', points: 50, isHidden: false, condition: { type: 'flag', target: 'all_seal_lore' } },
+  { code: 'S2_LETHE_DEFEAT', name: '레테 퇴치', description: '봉인 탐식자(레테의 분신)를 처치하라.', category: 'combat', tier: 'gold', points: 50, isHidden: false, condition: { type: 'flag', target: 'lethe_avatar_defeat' } },
+  { code: 'S2_SEAL_PERFECT', name: '완벽한 봉인', description: '봉인 수복 전투를 피해 없이 클리어하라.', category: 'combat', tier: 'platinum', points: 80, isHidden: true, condition: { type: 'flag', target: 'seal_repair_no_damage' } },
+  { code: 'S2_SEAL_MASTER', name: '봉인의 수호자', description: '봉인 관련 업적 8개를 달성하라.', category: 'story', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'threshold', target: 's2_seal_achievements', count: 8 } },
+
+  // ── 기억 파괴자 (10) ──────────────────────────────────────────
+  { code: 'S2_MB_UNLOCK', name: '기억 파괴자 각성', description: '기억 파괴자 클래스를 해금하라.', category: 'combat', tier: 'silver', points: 30, isHidden: false, condition: { type: 'flag', target: 'memory_breaker_unlock' } },
+  { code: 'S2_MB_TIER1', name: '봉인 해체자', description: '기억 파괴자 1차 전직을 완료하라.', category: 'combat', tier: 'silver', points: 25, isHidden: false, condition: { type: 'flag', target: 'mb_tier1_complete' } },
+  { code: 'S2_MB_TIER2', name: '허공 파괴자', description: '기억 파괴자 2차 전직을 완료하라.', category: 'combat', tier: 'gold', points: 40, isHidden: false, condition: { type: 'flag', target: 'mb_tier2_complete' } },
+  { code: 'S2_MB_TIER3', name: '망각의 군주', description: '기억 파괴자 3차 전직을 완료하라.', category: 'combat', tier: 'platinum', points: 80, isHidden: false, condition: { type: 'flag', target: 'mb_tier3_complete' } },
+  { code: 'S2_MB_SKILL_ALL', name: '기억 파괴 마스터', description: '기억 파괴자 스킬 30개를 전부 습득하라.', category: 'combat', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 'mb_skill_learn', count: 30 } },
+  { code: 'S2_MB_ULTIMATE', name: '대망각 재현', description: '궁극기 "대망각 재현"을 사용하라.', category: 'combat', tier: 'gold', points: 40, isHidden: false, condition: { type: 'flag', target: 'mb_ultimate_use' } },
+  { code: 'S2_MB_KILL_100', name: '기억 수확자', description: '기억 파괴자로 적 100마리를 처치하라.', category: 'combat', tier: 'silver', points: 25, isHidden: false, condition: { type: 'count', target: 'mb_kills', count: 100 } },
+  { code: 'S2_MB_KILL_1000', name: '기억 포식자', description: '기억 파괴자로 적 1,000마리를 처치하라.', category: 'combat', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 'mb_kills', count: 1000 } },
+  { code: 'S2_MB_NO_DEATH', name: '불멸의 파괴자', description: '기억 파괴자로 죽지 않고 던전 5개를 클리어하라.', category: 'combat', tier: 'gold', points: 50, isHidden: true, condition: { type: 'count', target: 'mb_no_death_dungeon', count: 5 } },
+  { code: 'S2_MB_VETERAN', name: '기억 파괴자 베테랑', description: '기억 파괴자 업적 8개를 달성하라.', category: 'combat', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'threshold', target: 's2_mb_achievements', count: 8 } },
+
+  // ── 시즌 2 전투 (10) ──────────────────────────────────────────
+  { code: 'S2_MIST_KILL_100', name: '안개 사냥꾼', description: '안개해 몬스터 100마리를 처치하라.', category: 'combat', tier: 'silver', points: 25, isHidden: false, condition: { type: 'count', target: 'mist_monster_kill', count: 100 } },
+  { code: 'S2_MIST_KILL_500', name: '안개해 전사', description: '안개해 몬스터 500마리를 처치하라.', category: 'combat', tier: 'gold', points: 40, isHidden: false, condition: { type: 'count', target: 'mist_monster_kill', count: 500 } },
+  { code: 'S2_MIST_ELITE_20', name: '안개 엘리트 처단자', description: '안개해 엘리트 몬스터 20마리를 처치하라.', category: 'combat', tier: 'silver', points: 30, isHidden: false, condition: { type: 'count', target: 'mist_elite_kill', count: 20 } },
+  { code: 'S2_MIST_BOSS_ALL', name: '안개해 보스 정복', description: '안개해 보스 5종을 전부 처치하라.', category: 'combat', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 'mist_boss_kill', count: 5 } },
+  { code: 'S2_DUNGEON_CLEAR_5', name: '안개해 던전 마스터', description: '안개해 던전 5개를 모두 클리어하라.', category: 'combat', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 'mist_dungeon_clear', count: 5 } },
+  { code: 'S2_RAID_CLEAR', name: '심연 레이드 클리어', description: '심연의 해구 레이드를 클리어하라.', category: 'combat', tier: 'platinum', points: 80, isHidden: false, condition: { type: 'flag', target: 'abyss_raid_clear' } },
+  { code: 'S2_RAID_SPEED', name: '심연 스피드런', description: '심연 레이드를 15분 이내에 클리어하라.', category: 'combat', tier: 'platinum', points: 100, isHidden: true, condition: { type: 'threshold', target: 'abyss_raid_time', count: 900 } },
+  { code: 'S2_PVP_WIN_50', name: '시즌 2 PvP 전사', description: 'PvP 시즌 2에서 50승하라.', category: 'combat', tier: 'silver', points: 30, isHidden: false, condition: { type: 'count', target: 's2_pvp_wins', count: 50 } },
+  { code: 'S2_PVP_RANK_TOP', name: '시즌 2 PvP 챔피언', description: 'PvP 시즌 2에서 최고 등급에 도달하라.', category: 'combat', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'flag', target: 's2_pvp_top_rank' } },
+  { code: 'S2_COMBAT_VETERAN', name: '시즌 2 전투 베테랑', description: '시즌 2 전투 업적 8개를 달성하라.', category: 'combat', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'threshold', target: 's2_combat_achievements', count: 8 } },
+
+  // ── 시즌 2 컬렉션/소셜 (10) ───────────────────────────────────
+  { code: 'S2_SEASON_PASS_10', name: '시즌패스 입문', description: '시즌 2 시즌패스 10단계를 달성하라.', category: 'collection', tier: 'bronze', points: 10, isHidden: false, condition: { type: 'threshold', target: 's2_season_pass_level', count: 10 } },
+  { code: 'S2_SEASON_PASS_30', name: '시즌패스 중급', description: '시즌 2 시즌패스 30단계를 달성하라.', category: 'collection', tier: 'silver', points: 30, isHidden: false, condition: { type: 'threshold', target: 's2_season_pass_level', count: 30 } },
+  { code: 'S2_SEASON_PASS_50', name: '시즌패스 완료', description: '시즌 2 시즌패스 50단계를 달성하라.', category: 'collection', tier: 'gold', points: 50, isHidden: false, condition: { type: 'threshold', target: 's2_season_pass_level', count: 50 } },
+  { code: 'S2_COSMETIC_10', name: '시즌 2 수집가', description: '시즌 2 코스메틱 10개를 획득하라.', category: 'collection', tier: 'silver', points: 25, isHidden: false, condition: { type: 'count', target: 's2_cosmetic_collect', count: 10 } },
+  { code: 'S2_COSMETIC_ALL', name: '시즌 2 컬렉터', description: '시즌 2 코스메틱 50개를 전부 획득하라.', category: 'collection', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'count', target: 's2_cosmetic_collect', count: 50 } },
+  { code: 'S2_HOUSING_FIRST', name: '새 집 마련', description: '하우징을 처음 구입하라.', category: 'social', tier: 'bronze', points: 15, isHidden: false, condition: { type: 'flag', target: 'housing_first_purchase' } },
+  { code: 'S2_FURNITURE_20', name: '인테리어 디자이너', description: '가구 20개를 배치하라.', category: 'social', tier: 'silver', points: 25, isHidden: false, condition: { type: 'count', target: 'furniture_place', count: 20 } },
+  { code: 'S2_GUILD_RAID', name: '길드 레이드 참가', description: '길드 레이드에 처음 참가하라.', category: 'social', tier: 'silver', points: 20, isHidden: false, condition: { type: 'flag', target: 'guild_raid_join' } },
+  { code: 'S2_EVENT_CLEAR', name: '이벤트 정복자', description: '시간 한정 이벤트 3종을 모두 클리어하라.', category: 'social', tier: 'gold', points: 50, isHidden: false, condition: { type: 'count', target: 's2_event_clear', count: 3 } },
+  { code: 'S2_COLLECTION_VETERAN', name: '시즌 2 수집 베테랑', description: '시즌 2 컬렉션/소셜 업적 8개를 달성하라.', category: 'collection', tier: 'platinum', points: 100, isHidden: false, condition: { type: 'threshold', target: 's2_collection_achievements', count: 8 } },
+];
+
+// ════════════════════════════════════════════════════════════════
+// 전체 시드 데이터 (100 + 시즌2 50 = 150개)
+// ════════════════════════════════════════════════════════════════
+
 export const achievementSeeds: AchievementSeed[] = [
   ...combatSeeds,
   ...explorationSeeds,
   ...socialSeeds,
   ...collectionSeeds,
   ...storySeeds,
+  ...season2Seeds,
 ];
 
-// 검증: 100개 + 코드 유니크
-if (achievementSeeds.length !== 100) {
-  throw new Error(`업적 시드 수 불일치: expected 100, got ${achievementSeeds.length}`);
+// 검증: 150개 + 코드 유니크
+if (achievementSeeds.length !== 150) {
+  throw new Error(`업적 시드 수 불일치: expected 150, got ${achievementSeeds.length}`);
 }
 const codes = new Set(achievementSeeds.map(s => s.code));
 if (codes.size !== achievementSeeds.length) {
