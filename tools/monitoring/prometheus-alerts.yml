@@ -1,0 +1,184 @@
+# ── 에테르나 크로니클 — Prometheus 알림 규칙 ──────────────────
+# P12-14: 모니터링 고도화
+# SLO/SLI 기반 알림 정의 (docs/ops/slo-sli.md 참조)
+
+groups:
+  # ── Tier 1: Critical — 즉시 대응 ──────────────────────────
+  - name: aeterna.critical
+    rules:
+      - alert: ServiceDown
+        expr: up{job="aeterna-server"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: "1"
+        annotations:
+          summary: "에테르나 크로니클 서버 다운"
+          description: "{{ $labels.instance }} 인스턴스가 1분 이상 응답 없음"
+          runbook: "https://wiki.aeterna.gg/runbook/service-down"
+
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(aeterna_http_requests_total{status=~"5.."}[5m]))
+          / sum(rate(aeterna_http_requests_total[5m]))
+          > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          tier: "1"
+        annotations:
+          summary: "5xx 에러율 5% 초과"
+          description: "현재 에러율: {{ $value | humanizePercentage }}"
+
+      - alert: AvailabilitySLOBreach
+        expr: |
+          (
+            sum(rate(aeterna_http_requests_total{status!~"5.."}[1h]))
+            / sum(rate(aeterna_http_requests_total[1h]))
+          ) < 0.995
+        for: 5m
+        labels:
+          severity: critical
+          tier: "1"
+        annotations:
+          summary: "가용성 SLO 위반 (< 99.5%)"
+          description: "1시간 가용성: {{ $value | humanizePercentage }}"
+
+  # ── Tier 2: High — 30분 내 대응 ───────────────────────────
+  - name: aeterna.high
+    rules:
+      - alert: HighAPILatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(aeterna_http_request_duration_ms_bucket[5m])
+          ) > 500
+        for: 5m
+        labels:
+          severity: warning
+          tier: "2"
+        annotations:
+          summary: "API 응답시간 p95 > 500ms"
+          description: "현재 p95: {{ $value | humanize }}ms"
+
+      - alert: HighDBLatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(aeterna_db_query_duration_ms_bucket[5m])
+          ) > 250
+        for: 5m
+        labels:
+          severity: warning
+          tier: "2"
+        annotations:
+          summary: "DB 쿼리 p95 > 250ms"
+          description: "현재 DB p95: {{ $value | humanize }}ms. 슬로우 쿼리 확인 필요."
+
+      - alert: CCUSuddenDrop
+        expr: |
+          (aeterna_ccu_current - aeterna_ccu_current offset 30m)
+          / aeterna_ccu_current offset 30m
+          < -0.5
+        for: 5m
+        labels:
+          severity: warning
+          tier: "2"
+        annotations:
+          summary: "CCU 30분 내 50% 이상 급감"
+          description: "현재 CCU: {{ $value }}. 서비스 장애 또는 네트워크 이슈 확인."
+
+      - alert: HighMemoryUsage
+        expr: |
+          process_resident_memory_bytes / 1024 / 1024 / 1024 > 2
+        for: 10m
+        labels:
+          severity: warning
+          tier: "2"
+        annotations:
+          summary: "Node.js 메모리 사용량 2GB 초과"
+          description: "RSS: {{ $value | humanize }}GB. 메모리 누수 의심."
+
+  # ── Tier 3: Medium — 4시간 내 대응 ────────────────────────
+  - name: aeterna.medium
+    rules:
+      - alert: LowCacheHitRate
+        expr: aeterna_cache_hit_rate < 60
+        for: 15m
+        labels:
+          severity: info
+          tier: "3"
+        annotations:
+          summary: "캐시 히트율 60% 미만"
+          description: "현재 히트율: {{ $value }}%. Redis 상태 또는 TTL 정책 확인."
+
+      - alert: NPlusOneQueries
+        expr: rate(aeterna_query_n_plus_one_total[10m]) > 0.5
+        for: 10m
+        labels:
+          severity: info
+          tier: "3"
+        annotations:
+          summary: "N+1 쿼리 패턴 지속 감지"
+          description: "10분간 N+1 경고 {{ $value | humanize }}/min. include/select 최적화 필요."
+
+      - alert: EndpointErrorSpike
+        expr: |
+          sum by (route) (rate(aeterna_http_requests_total{status=~"5.."}[5m]))
+          / sum by (route) (rate(aeterna_http_requests_total[5m]))
+          > 0.01
+        for: 10m
+        labels:
+          severity: info
+          tier: "3"
+        annotations:
+          summary: "엔드포인트 {{ $labels.route }} 에러율 > 1%"
+
+      - alert: SlowQueryAccumulation
+        expr: aeterna_query_slow_total > 100
+        for: 30m
+        labels:
+          severity: info
+          tier: "3"
+        annotations:
+          summary: "슬로우 쿼리 누적 100건 초과"
+          description: "DB 인덱스 점검 또는 쿼리 최적화 필요."
+
+  # ── 인프라 ────────────────────────────────────────────────
+  - name: aeterna.infra
+    rules:
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: "1"
+        annotations:
+          summary: "Redis 서버 다운"
+          description: "캐시 레이어 장애. Graceful degradation 중이나 성능 저하 발생."
+
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: "1"
+        annotations:
+          summary: "PostgreSQL 다운"
+
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          tier: "2"
+        annotations:
+          summary: "디스크 여유 공간 10% 미만"
+
+      - alert: PodRestartLoop
+        expr: rate(kube_pod_container_status_restarts_total{namespace="aeterna"}[15m]) > 0
+        for: 15m
+        labels:
+          severity: warning
+          tier: "2"
+        annotations:
+          summary: "Pod {{ $labels.pod }} 재시작 반복"

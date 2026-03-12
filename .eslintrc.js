@@ -24,10 +24,14 @@ module.exports = {
   },
   rules: {
     // ── 코드 품질 ───────────────────────────────
-    '@typescript-eslint/no-unused-vars': ['warn', {
+    '@typescript-eslint/no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_',
+      destructuredArrayIgnorePattern: '^_',
+      caughtErrorsIgnorePattern: '^_',
+      ignoreRestSiblings: true,
     }],
+    'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/consistent-type-imports': ['warn', {
       prefer: 'type-imports',
