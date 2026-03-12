@@ -181,6 +181,292 @@ export const PVP_MAP_SEEDS: readonly PvpMapDef[] = [
   },
 ];
 
+  // ═══════════════════════════════════════════════════════════════
+  //  P14-13: PvP 시즌 3 — 신규 맵 2개
+  // ═══════════════════════════════════════════════════════════════
+
+  // ── 시즌 3 맵 1: 시간의 원형경기장 ─────────────────────────
+  {
+    id: 'arena_chrono_colosseum',
+    name: '시간의 원형경기장',
+    nameEn: 'Chrono Colosseum',
+    nameJa: '時の円形闘技場',
+    season: 3,
+    description:
+      '시간의 균열 한가운데 떠 있는 고대 투기장. ' +
+      '시간이 왜곡되어 주기적으로 전장의 속도가 변하고, ' +
+      '과거와 미래의 잔상이 전투에 개입한다.',
+    width: 44,
+    height: 44,
+    minRating: 0,
+    environmentEffects: [
+      {
+        id: 'time_dilation',
+        name: '시간 팽창',
+        description: '모든 플레이어의 스킬 쿨타임이 30% 감소 (12초간)',
+        intervalSec: 40,
+        durationSec: 12,
+        type: 'buff',
+        value: 30,
+      },
+      {
+        id: 'temporal_echo',
+        name: '시간 잔상',
+        description: '3초 전 위치에 잔상이 나타나 랜덤 플레이어에게 피해',
+        intervalSec: 50,
+        durationSec: 3,
+        type: 'damage',
+        value: 8,
+      },
+      {
+        id: 'chrono_rewind',
+        name: '시간 역행',
+        description: '양 팀의 HP가 5초 전 상태로 되돌아감',
+        intervalSec: 90,
+        durationSec: 1,
+        type: 'buff',
+        value: 0,
+      },
+    ],
+    terrainFeatures: [
+      { id: 'chrono_pillar_1', name: '시간의 기둥 1', type: 'obstacle', x: 15, y: 22, radius: 2 },
+      { id: 'chrono_pillar_2', name: '시간의 기둥 2', type: 'obstacle', x: 29, y: 22, radius: 2 },
+      { id: 'time_rift_center', name: '중앙 시간 균열', type: 'hazard', x: 22, y: 22, radius: 3, effect: 'random_teleport' },
+      { id: 'clockwork_platform_a', name: '톱니 발판 A', type: 'interactive', x: 11, y: 11, radius: 2, effect: 'speed_boost_20' },
+      { id: 'clockwork_platform_b', name: '톱니 발판 B', type: 'interactive', x: 33, y: 33, radius: 2, effect: 'speed_boost_20' },
+      { id: 'hourglass_wall_top', name: '모래시계 벽 상단', type: 'cover', x: 22, y: 10, radius: 3 },
+      { id: 'hourglass_wall_bot', name: '모래시계 벽 하단', type: 'cover', x: 22, y: 34, radius: 3 },
+    ],
+    spawnPoints: [
+      { team: 'A', index: 0, x: 5, y: 22 },
+      { team: 'A', index: 1, x: 5, y: 16 },
+      { team: 'A', index: 2, x: 5, y: 28 },
+      { team: 'B', index: 0, x: 39, y: 22 },
+      { team: 'B', index: 1, x: 39, y: 16 },
+      { team: 'B', index: 2, x: 39, y: 28 },
+    ],
+  },
+
+  // ── 시즌 3 맵 2: 균열의 전장 ───────────────────────────────
+  {
+    id: 'arena_rift_battleground',
+    name: '균열의 전장',
+    nameEn: 'Rift Battleground',
+    nameJa: '亀裂の戦場',
+    season: 3,
+    description:
+      '시공간 균열이 열린 광활한 전장. ' +
+      '맵 곳곳에 차원 포탈이 열려 순간이동이 가능하고, ' +
+      '균열에서 쏟아지는 에너지가 전투를 예측 불가능하게 만든다.',
+    width: 50,
+    height: 40,
+    minRating: 1400,
+    unlockCondition: 'season3_unlock OR rating >= 1400',
+    environmentEffects: [
+      {
+        id: 'rift_surge',
+        name: '균열 쇄도',
+        description: '맵 중앙에서 에너지 파동 발생, 피격 시 공격력 +25% (15초)',
+        intervalSec: 35,
+        durationSec: 3,
+        type: 'buff',
+        value: 25,
+      },
+      {
+        id: 'dimensional_instability',
+        name: '차원 불안정',
+        description: '랜덤 2x2 영역이 소멸했다 재생성, 해당 위치 플레이어 넉백',
+        intervalSec: 55,
+        durationSec: 2,
+        type: 'terrain_change',
+        value: 0,
+      },
+      {
+        id: 'void_corruption',
+        name: '허공 침식',
+        description: '맵 가장자리 3타일이 침식, 해당 영역 진입 시 초당 5% HP 감소',
+        intervalSec: 120,
+        durationSec: 30,
+        type: 'damage',
+        value: 5,
+      },
+    ],
+    terrainFeatures: [
+      { id: 'portal_alpha', name: '포탈 알파', type: 'interactive', x: 12, y: 12, radius: 2, effect: 'teleport_to_portal_beta' },
+      { id: 'portal_beta', name: '포탈 베타', type: 'interactive', x: 38, y: 28, radius: 2, effect: 'teleport_to_portal_alpha' },
+      { id: 'rift_crystal_1', name: '균열 수정 1', type: 'obstacle', x: 25, y: 10, radius: 2 },
+      { id: 'rift_crystal_2', name: '균열 수정 2', type: 'obstacle', x: 25, y: 30, radius: 2 },
+      { id: 'energy_nexus', name: '에너지 결절점', type: 'interactive', x: 25, y: 20, radius: 3, effect: 'aoe_heal_10_percent' },
+      { id: 'void_pit_left', name: '허공 구덩이 좌', type: 'hazard', x: 10, y: 20, radius: 3, effect: 'instant_death' },
+      { id: 'void_pit_right', name: '허공 구덩이 우', type: 'hazard', x: 40, y: 20, radius: 3, effect: 'instant_death' },
+      { id: 'broken_wall_1', name: '파괴된 성벽 1', type: 'cover', x: 18, y: 20, radius: 2 },
+      { id: 'broken_wall_2', name: '파괴된 성벽 2', type: 'cover', x: 32, y: 20, radius: 2 },
+    ],
+    spawnPoints: [
+      { team: 'A', index: 0, x: 4, y: 20 },
+      { team: 'A', index: 1, x: 4, y: 13 },
+      { team: 'A', index: 2, x: 4, y: 27 },
+      { team: 'B', index: 0, x: 46, y: 20 },
+      { team: 'B', index: 1, x: 46, y: 13 },
+      { team: 'B', index: 2, x: 46, y: 27 },
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  P14-13: PvP 시즌 3 — 보상 5티어 + 레이팅 리셋 + 시즌 전환
+// ═══════════════════════════════════════════════════════════════
+
+export interface PvpSeason3TierReward {
+  tier: string;
+  tierName: string;
+  minRating: number;
+  maxRating: number;
+  rewards: { type: string; name: string; amount?: number }[];
+}
+
+export const SEASON_3_TIER_REWARDS: readonly PvpSeason3TierReward[] = [
+  {
+    tier: 'bronze',
+    tierName: '브론즈',
+    minRating: 0,
+    maxRating: 1199,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 800 },
+      { type: 'title', name: '균열의 신참' },
+    ],
+  },
+  {
+    tier: 'silver',
+    tierName: '실버',
+    minRating: 1200,
+    maxRating: 1599,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 2500 },
+      { type: 'title', name: '시간의 도전자' },
+      { type: 'cosmetic_box', name: '시즌3 코스메틱 상자', amount: 2 },
+    ],
+  },
+  {
+    tier: 'gold',
+    tierName: '골드',
+    minRating: 1600,
+    maxRating: 1999,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 5000 },
+      { type: 'title', name: '균열의 투사' },
+      { type: 'cosmetic_box', name: '시즌3 코스메틱 상자', amount: 3 },
+      { type: 'season_skin', name: '시간의 갑옷 스킨' },
+    ],
+  },
+  {
+    tier: 'platinum',
+    tierName: '플래티넘',
+    minRating: 2000,
+    maxRating: 2399,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 10000 },
+      { type: 'title', name: '시간의 정복자' },
+      { type: 'cosmetic_box', name: '시즌3 프리미엄 상자', amount: 3 },
+      { type: 'season_skin', name: '균열의 투구 스킨' },
+      { type: 'legendary_weapon_skin', name: '크로노스의 검 외형' },
+    ],
+  },
+  {
+    tier: 'diamond',
+    tierName: '다이아몬드',
+    minRating: 2400,
+    maxRating: 99999,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 20000 },
+      { type: 'legendary_title', name: '시간의 패왕' },
+      { type: 'cosmetic_box', name: '시즌3 프리미엄 상자', amount: 5 },
+      { type: 'season_skin', name: '시공 균열 풀 세트 스킨' },
+      { type: 'legendary_weapon_skin', name: '보이드 아키텍트의 지팡이 외형' },
+      { type: 'crystal', name: '차원 결정', amount: 500 },
+      { type: 'mount', name: '균열의 전마 (시즌3 한정)' },
+    ],
+  },
+];
+
+/** 시즌 3 레이팅 리셋 규칙 */
+export interface RatingResetRule {
+  fromMin: number;
+  fromMax: number;
+  resetTo: number;
+  description: string;
+}
+
+export const SEASON_3_RATING_RESET_RULES: readonly RatingResetRule[] = [
+  { fromMin: 0,    fromMax: 1199, resetTo: 1000, description: '브론즈 → 1000 고정' },
+  { fromMin: 1200, fromMax: 1599, resetTo: 1100, description: '실버 → 1100' },
+  { fromMin: 1600, fromMax: 1999, resetTo: 1200, description: '골드 → 1200' },
+  { fromMin: 2000, fromMax: 2399, resetTo: 1400, description: '플래티넘 → 1400' },
+  { fromMin: 2400, fromMax: 99999, resetTo: 1600, description: '다이아 → 1600' },
+];
+
+/**
+ * 시즌 전환 로직 — 보상 지급 + 레이팅 리셋
+ */
+export async function executeSeasonTransition(
+  fromSeason: number,
+  toSeason: number,
+): Promise<{ rewarded: number; reset: number }> {
+  // 1. 모든 랭크 유저 조회
+  const rankedUsers = await prisma.pvpRating.findMany({
+    where: { season: fromSeason },
+  });
+
+  let rewarded = 0;
+  let resetCount = 0;
+
+  for (const user of rankedUsers) {
+    // 2. 보상 지급
+    const tier = SEASON_3_TIER_REWARDS.find(
+      t => user.rating >= t.minRating && user.rating <= t.maxRating,
+    );
+
+    if (tier) {
+      await prisma.pvpSeasonReward.create({
+        data: {
+          userId: user.userId,
+          season: fromSeason,
+          tier: tier.tier,
+          rating: user.rating,
+          rewards: tier.rewards as any,
+        },
+      });
+      rewarded++;
+    }
+
+    // 3. 레이팅 리셋
+    const resetRule = SEASON_3_RATING_RESET_RULES.find(
+      r => user.rating >= r.fromMin && user.rating <= r.fromMax,
+    );
+
+    if (resetRule) {
+      await prisma.pvpRating.upsert({
+        where: { userId_season: { userId: user.userId, season: toSeason } },
+        create: {
+          userId: user.userId,
+          season: toSeason,
+          rating: resetRule.resetTo,
+          wins: 0,
+          losses: 0,
+        },
+        update: {
+          rating: resetRule.resetTo,
+          wins: 0,
+          losses: 0,
+        },
+      });
+      resetCount++;
+    }
+  }
+
+  return { rewarded, reset: resetCount };
+}
+
 /**
  * 시즌별 맵 목록 조회
  */
@@ -196,7 +482,7 @@ export function getMapById(mapId: string): PvpMapDef | undefined {
 }
 
 /**
- * 유저 레이팅 기준 입장 가능한 시즌 2 맵 필터
+ * 유저 레이팅 기준 입장 가능한 맵 필터
  */
 export function getAvailableMaps(season: number, userRating: number): PvpMapDef[] {
   return PVP_MAP_SEEDS.filter(

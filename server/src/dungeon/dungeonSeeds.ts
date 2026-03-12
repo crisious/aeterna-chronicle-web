@@ -982,6 +982,148 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     timeLimit: 1800,
     entryCount: 1,
   },
+
+  // ═══ P14-19: 시간의 균열 던전 5개 × 3난이도 (Lv.85~100) ══════
+
+  // --- 1. 시간의 회랑 (Corridor of Time) ---
+  { code: 'dg_rift_chrono_n', name: '시간의 회랑 (일반)', description: '시간의 균열 입구에 형성된 왜곡된 통로. 시간 파편 몬스터들이 서식한다.', zoneCode: 'temporal_rift_zone_1', difficulty: 'normal', requiredLevel: 85, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_001', count: 6 }, { monsterId: 'MON_TR_002', count: 3 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_003', count: 4 }, { monsterId: 'MON_TR_005', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_006', count: 3 }, { monsterId: 'MON_TR_004', count: 3 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_BOSS_001', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 15000, exp: 35000, items: [{ itemId: 'MAT_TEMPORAL_SLIME', rate: 0.50, count: 3 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.20, count: 1 }] }, timeLimit: 900, entryCount: 3 },
+  { code: 'dg_rift_chrono_h', name: '시간의 회랑 (영웅)', description: '시간 왜곡이 심화된 회랑. 몬스터들이 시간 가속 버프를 받는다.', zoneCode: 'temporal_rift_zone_1', difficulty: 'hard', requiredLevel: 90, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_001', count: 8 }, { monsterId: 'MON_TR_006', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_008', count: 5 }, { monsterId: 'MON_TR_009', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_011', count: 4 }, { monsterId: 'MON_TR_ELITE_001', count: 1 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_004', count: 6 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_001', count: 1 }, { monsterId: 'MON_TR_002', count: 4 }], isBoss: true },
+    ],
+    rewards: { gold: 35000, exp: 75000, items: [{ itemId: 'MAT_TIME_CRYSTAL', rate: 0.40, count: 2 }, { itemId: 'EQUIP_AION_TIMEPIECE', rate: 0.05, count: 1 }] }, timeLimit: 1200, entryCount: 2 },
+  { code: 'dg_rift_chrono_l', name: '시간의 회랑 (전설)', description: '시간이 완전히 정지된 회랑. 시간 정지 기믹을 해제하며 진행해야 한다.', zoneCode: 'temporal_rift_zone_1', difficulty: 'legendary', requiredLevel: 95, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_011', count: 6 }, { monsterId: 'MON_TR_013', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_016', count: 5 }, { monsterId: 'MON_TR_ELITE_001', count: 1 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_018', count: 4 }, { monsterId: 'MON_TR_ELITE_005', count: 1 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_014', count: 6 }, { monsterId: 'MON_TR_020', count: 4 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_001', count: 1 }, { monsterId: 'MON_TR_ELITE_001', count: 2 }], isBoss: true },
+    ],
+    rewards: { gold: 60000, exp: 130000, items: [{ itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.15, count: 1 }, { itemId: 'EQUIP_AION_TIMEPIECE', rate: 0.10, count: 1 }] }, timeLimit: 1500, entryCount: 1 },
+
+  // --- 2. 패러독스 미궁 (Paradox Labyrinth) ---
+  { code: 'dg_rift_paradox_n', name: '패러독스 미궁 (일반)', description: '인과율이 뒤틀린 미궁. 같은 방을 다시 방문하면 다른 적이 출현한다.', zoneCode: 'temporal_rift_zone_2', difficulty: 'normal', requiredLevel: 87, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_005', count: 6 }, { monsterId: 'MON_TR_007', count: 3 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_008', count: 5 }, { monsterId: 'MON_TR_010', count: 3 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_012', count: 5 }, { monsterId: 'MON_TR_003', count: 3 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_BOSS_002', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 18000, exp: 40000, items: [{ itemId: 'MAT_PARADOX_WING', rate: 0.45, count: 3 }, { itemId: 'MAT_MOBIUS_STRIP', rate: 0.15, count: 1 }] }, timeLimit: 900, entryCount: 3 },
+  { code: 'dg_rift_paradox_h', name: '패러독스 미궁 (영웅)', description: '미궁의 패러독스가 극대화. 보스가 시간을 되감아 전투를 반복시킨다.', zoneCode: 'temporal_rift_zone_2', difficulty: 'hard', requiredLevel: 92, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_012', count: 8 }, { monsterId: 'MON_TR_014', count: 3 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_015', count: 5 }, { monsterId: 'MON_TR_017', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_ELITE_003', count: 1 }, { monsterId: 'MON_TR_010', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_019', count: 6 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_002', count: 1 }, { monsterId: 'MON_TR_005', count: 4 }], isBoss: true },
+    ],
+    rewards: { gold: 40000, exp: 85000, items: [{ itemId: 'MAT_MOBIUS_STRIP', rate: 0.35, count: 2 }, { itemId: 'EQUIP_MOBIUS_RING', rate: 0.05, count: 1 }] }, timeLimit: 1200, entryCount: 2 },
+  { code: 'dg_rift_paradox_l', name: '패러독스 미궁 (전설)', description: '시간의 무한 루프에 갇힌 미궁. 루프를 깨는 기믹을 해결해야 보스를 처치할 수 있다.', zoneCode: 'temporal_rift_zone_2', difficulty: 'legendary', requiredLevel: 97, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_017', count: 6 }, { monsterId: 'MON_TR_ELITE_003', count: 1 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_014', count: 4 }, { monsterId: 'MON_TR_020', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_ELITE_004', count: 1 }, { monsterId: 'MON_TR_018', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_ELITE_002', count: 1 }, { monsterId: 'MON_TR_013', count: 5 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_002', count: 1 }, { monsterId: 'MON_TR_ELITE_003', count: 1 }, { monsterId: 'MON_TR_ELITE_005', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 70000, exp: 140000, items: [{ itemId: 'EQUIP_MOBIUS_RING', rate: 0.10, count: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.20, count: 1 }] }, timeLimit: 1500, entryCount: 1 },
+
+  // --- 3. 차원 파쇄 지대 (Dimension Fracture Zone) ---
+  { code: 'dg_rift_collapse_n', name: '차원 파쇄 지대 (일반)', description: '차원이 부서지고 있는 위험 지역. 공간 왜곡 장애물을 피하며 진행해야 한다.', zoneCode: 'temporal_rift_zone_3', difficulty: 'normal', requiredLevel: 89, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_004', count: 5 }, { monsterId: 'MON_TR_007', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_010', count: 5 }, { monsterId: 'MON_TR_015', count: 3 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_019', count: 6 }, { monsterId: 'MON_TR_012', count: 3 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_BOSS_003', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 20000, exp: 45000, items: [{ itemId: 'MAT_DISTORTION_CORE', rate: 0.40, count: 2 }, { itemId: 'MAT_FRACTURE_SHARD', rate: 0.15, count: 1 }] }, timeLimit: 900, entryCount: 3 },
+  { code: 'dg_rift_collapse_h', name: '차원 파쇄 지대 (영웅)', description: '붕괴 속도가 가속된 차원. 시간 제한이 더 엄격하며 분신 기믹이 추가된다.', zoneCode: 'temporal_rift_zone_3', difficulty: 'hard', requiredLevel: 93, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_015', count: 6 }, { monsterId: 'MON_TR_019', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_ELITE_002', count: 1 }, { monsterId: 'MON_TR_012', count: 5 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_004', count: 4 }, { monsterId: 'MON_TR_010', count: 4 }, { monsterId: 'MON_TR_007', count: 3 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_016', count: 5 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_003', count: 1 }, { monsterId: 'MON_TR_007', count: 4 }], isBoss: true },
+    ],
+    rewards: { gold: 45000, exp: 90000, items: [{ itemId: 'MAT_FRACTURE_SHARD', rate: 0.35, count: 2 }, { itemId: 'EQUIP_FRACTURE_GAUNTLET', rate: 0.05, count: 1 }] }, timeLimit: 1100, entryCount: 2 },
+  { code: 'dg_rift_collapse_l', name: '차원 파쇄 지대 (전설)', description: '차원 붕괴 직전의 임계 지역. 분신 3체 기믹이 동시 진행된다.', zoneCode: 'temporal_rift_zone_3', difficulty: 'legendary', requiredLevel: 98, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_ELITE_002', count: 1 }, { monsterId: 'MON_TR_ELITE_004', count: 1 }, { monsterId: 'MON_TR_015', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_020', count: 5 }, { monsterId: 'MON_TR_019', count: 5 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_018', count: 4 }, { monsterId: 'MON_TR_016', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_ELITE_002', count: 2 }, { monsterId: 'MON_TR_004', count: 6 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_003', count: 1 }, { monsterId: 'MON_TR_ELITE_002', count: 2 }], isBoss: true },
+    ],
+    rewards: { gold: 75000, exp: 150000, items: [{ itemId: 'EQUIP_FRACTURE_GAUNTLET', rate: 0.10, count: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.20, count: 1 }] }, timeLimit: 1500, entryCount: 1 },
+
+  // --- 4. 크로노스의 시계탑 (Chronos Clocktower) ---
+  { code: 'dg_rift_echo_n', name: '크로노스의 시계탑 (일반)', description: '시간의 신 크로노스가 남긴 시계탑. 층마다 시간 기믹이 다르다.', zoneCode: 'temporal_rift_zone_4', difficulty: 'normal', requiredLevel: 91, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_006', count: 5 }, { monsterId: 'MON_TR_009', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_013', count: 5 }, { monsterId: 'MON_TR_011', count: 3 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_016', count: 4 }, { monsterId: 'MON_TR_018', count: 3 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_BOSS_004', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 25000, exp: 50000, items: [{ itemId: 'MAT_CLOCKWORK_GEAR', rate: 0.50, count: 3 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.10, count: 1 }] }, timeLimit: 1000, entryCount: 3 },
+  { code: 'dg_rift_echo_h', name: '크로노스의 시계탑 (영웅)', description: '시계탑의 시간이 폭주. 전체 회복 기믹을 타이밍에 맞춰 차단해야 한다.', zoneCode: 'temporal_rift_zone_4', difficulty: 'hard', requiredLevel: 95, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_013', count: 6 }, { monsterId: 'MON_TR_018', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_ELITE_005', count: 1 }, { monsterId: 'MON_TR_016', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_020', count: 5 }, { monsterId: 'MON_TR_011', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_ELITE_001', count: 1 }, { monsterId: 'MON_TR_009', count: 5 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_004', count: 1 }, { monsterId: 'MON_TR_006', count: 4 }], isBoss: true },
+    ],
+    rewards: { gold: 50000, exp: 100000, items: [{ itemId: 'EQUIP_CHRONOS_FRAGMENT', rate: 0.05, count: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.25, count: 1 }] }, timeLimit: 1300, entryCount: 2 },
+  { code: 'dg_rift_echo_l', name: '크로노스의 시계탑 (전설)', description: '시계탑 정상. 크로노스의 분신이 "종말의 시계" 전멸기를 시전한다. 기믹 실패 = 전멸.', zoneCode: 'temporal_rift_zone_4', difficulty: 'legendary', requiredLevel: 99, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_ELITE_001', count: 1 }, { monsterId: 'MON_TR_ELITE_005', count: 1 }, { monsterId: 'MON_TR_020', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_018', count: 5 }, { monsterId: 'MON_TR_014', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_ELITE_003', count: 1 }, { monsterId: 'MON_TR_ELITE_004', count: 1 }, { monsterId: 'MON_TR_013', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_016', count: 6 }, { monsterId: 'MON_TR_011', count: 4 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_004', count: 1 }, { monsterId: 'MON_TR_ELITE_001', count: 1 }, { monsterId: 'MON_TR_ELITE_005', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 80000, exp: 160000, items: [{ itemId: 'EQUIP_CHRONOS_FRAGMENT', rate: 0.12, count: 1 }, { itemId: 'MAT_TEMPOVORE_FANG', rate: 0.15, count: 1 }] }, timeLimit: 1500, entryCount: 1 },
+
+  // --- 5. 시간 포식자의 둥지 (Tempovore's Nest) — 최종 던전 ---
+  { code: 'dg_rift_origin_n', name: '시간 포식자의 둥지 (일반)', description: '시간의 균열 최심부. 시간 포식자 템포보어가 서식하는 끝의 공간.', zoneCode: 'temporal_rift_zone_5', difficulty: 'normal', requiredLevel: 93, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_020', count: 6 }, { monsterId: 'MON_TR_019', count: 4 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_ELITE_004', count: 1 }, { monsterId: 'MON_TR_015', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_017', count: 5 }, { monsterId: 'MON_TR_014', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_BOSS_005', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 30000, exp: 60000, items: [{ itemId: 'MAT_TEMPOVORE_FANG', rate: 0.25, count: 1 }, { itemId: 'MAT_DEVOURER_LARVA', rate: 0.40, count: 2 }] }, timeLimit: 1200, entryCount: 3 },
+  { code: 'dg_rift_origin_h', name: '시간 포식자의 둥지 (영웅)', description: '둥지 심층. 템포보어가 "존재 소거" 페이즈를 시전한다.', zoneCode: 'temporal_rift_zone_5', difficulty: 'hard', requiredLevel: 97, maxPlayers: 4,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_020', count: 8 }, { monsterId: 'MON_TR_ELITE_004', count: 1 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_ELITE_002', count: 1 }, { monsterId: 'MON_TR_ELITE_003', count: 1 }, { monsterId: 'MON_TR_014', count: 4 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_018', count: 5 }, { monsterId: 'MON_TR_016', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_ELITE_005', count: 1 }, { monsterId: 'MON_TR_017', count: 5 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_005', count: 1 }, { monsterId: 'MON_TR_020', count: 4 }], isBoss: true },
+    ],
+    rewards: { gold: 60000, exp: 120000, items: [{ itemId: 'EQUIP_TEMPOVORE_HEART', rate: 0.05, count: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.30, count: 1 }] }, timeLimit: 1500, entryCount: 2 },
+  { code: 'dg_rift_origin_l', name: '시간 포식자의 둥지 (전설)', description: '시간의 끝. 템포보어 최종 형태와의 결전. 8인 레이드 권장. 전멸기 "존재 소거"를 3회 견뎌야 한다.', zoneCode: 'temporal_rift_zone_5', difficulty: 'legendary', requiredLevel: 100, maxPlayers: 8,
+    waves: [
+      { wave: 1, monsters: [{ monsterId: 'MON_TR_ELITE_001', count: 1 }, { monsterId: 'MON_TR_ELITE_002', count: 1 }, { monsterId: 'MON_TR_020', count: 6 }], isBoss: false },
+      { wave: 2, monsters: [{ monsterId: 'MON_TR_ELITE_003', count: 1 }, { monsterId: 'MON_TR_ELITE_004', count: 1 }, { monsterId: 'MON_TR_018', count: 6 }], isBoss: false },
+      { wave: 3, monsters: [{ monsterId: 'MON_TR_ELITE_005', count: 2 }, { monsterId: 'MON_TR_014', count: 4 }, { monsterId: 'MON_TR_016', count: 4 }], isBoss: false },
+      { wave: 4, monsters: [{ monsterId: 'MON_TR_BOSS_003', count: 1 }, { monsterId: 'MON_TR_BOSS_004', count: 1 }], isBoss: false },
+      { wave: 5, monsters: [{ monsterId: 'MON_TR_BOSS_005', count: 1 }], isBoss: true },
+    ],
+    rewards: { gold: 100000, exp: 200000, items: [{ itemId: 'EQUIP_TEMPOVORE_HEART', rate: 0.12, count: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.40, count: 2 }, { itemId: 'EQUIP_CHRONOS_FRAGMENT', rate: 0.08, count: 1 }] }, timeLimit: 1800, entryCount: 1 },
 ];
 
 // ─── 시드 함수 ──────────────────────────────────────────────────

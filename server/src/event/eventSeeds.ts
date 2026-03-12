@@ -162,6 +162,102 @@ const EVENT_SEEDS: EventSeed[] = [
     startAt: daysFromNow(14),
     endAt: daysFromNow(28),
   },
+
+  // ═══ P14-17: 시간 균열 테마 주간 이벤트 3종 ═══════════════════
+
+  // 1. "시간의 역류" — 역방향 던전 (클리어 순서 역순)
+  {
+    code: 'RIFT_TIME_REVERSAL',
+    name: '시간의 역류',
+    description: '시간의 균열에서 인과율이 뒤틀렸다! 던전을 역순으로 클리어하며 왜곡된 시간을 바로잡아라. 보스부터 시작해 입구로 돌아가는 역방향 공략.',
+    type: 'weekly_rift',
+    config: {
+      theme: 'time_rift',
+      mechanic: 'reverse_dungeon',
+      targetDungeons: ['dg_rift_chrono_n', 'dg_rift_paradox_n', 'dg_rift_collapse_n', 'dg_rift_echo_n', 'dg_rift_origin_n'],
+      reverseWaveOrder: true,
+      timeLimitMultiplier: 1.5,
+      bonusCondition: { type: 'no_death', bonusMultiplier: 2.0 },
+      requiredLevel: 85,
+      maxPartySize: 4,
+      weeklyResetDay: 'monday',
+    },
+    rewards: [
+      { id: 'tr1', type: 'temporal_shard', amount: 5, condition: { type: 'clear', target: 1 } },
+      { id: 'tr2', type: 'temporal_shard', amount: 15, condition: { type: 'clear', target: 3 } },
+      { id: 'tr3', type: 'gold', amount: 50000, condition: { type: 'clear', target: 5 } },
+      { id: 'tr4', type: 'item', itemId: 'EQUIP_RIFT_CHRONOBLADE', amount: 1, condition: { type: 'clear_all_no_death', target: 5 } },
+      { id: 'tr5', type: 'diamond', amount: 500, condition: { type: 'speed_clear', target: 300 } },
+    ],
+    startAt: daysFromNow(0),
+    endAt: daysFromNow(7),
+  },
+
+  // 2. "균열 폭주" — 필드 보스 랜덤 출현 빈도 증가
+  {
+    code: 'RIFT_SURGE',
+    name: '균열 폭주',
+    description: '시간의 균열이 폭주하며 시공간 곳곳에 강력한 균열 보스들이 출현한다! 필드 보스 출현 빈도 300% 증가, 특수 균열 보스 "차원의 포식자" 랜덤 출현.',
+    type: 'weekly_rift',
+    config: {
+      theme: 'time_rift',
+      mechanic: 'field_boss_surge',
+      bossSpawnMultiplier: 3.0,
+      targetZones: ['temporal_rift_zone_1', 'temporal_rift_zone_2', 'temporal_rift_zone_3', 'temporal_rift_zone_4', 'temporal_rift_zone_5'],
+      specialBoss: {
+        code: 'MON_RIFT_DIMENSIONAL_DEVOURER',
+        spawnChance: 0.15,
+        spawnIntervalMin: 120,
+        announceGlobal: true,
+      },
+      fieldBossDropBonus: 1.5,
+      requiredLevel: 88,
+      weeklyResetDay: 'monday',
+    },
+    rewards: [
+      { id: 'rs1', type: 'rift_essence', amount: 3, condition: { type: 'boss_kill', target: 1 } },
+      { id: 'rs2', type: 'rift_essence', amount: 10, condition: { type: 'boss_kill', target: 5 } },
+      { id: 'rs3', type: 'gold', amount: 80000, condition: { type: 'boss_kill', target: 10 } },
+      { id: 'rs4', type: 'item', itemId: 'MAT_DIMENSIONAL_CORE', amount: 1, condition: { type: 'special_boss_kill', target: 1 } },
+      { id: 'rs5', type: 'cosmetic', itemId: 'COSMETIC_RIFT_AURA', amount: 1, condition: { type: 'boss_kill', target: 20 } },
+    ],
+    startAt: daysFromNow(7),
+    endAt: daysFromNow(14),
+  },
+
+  // 3. "차원 교차" — 다른 시즌 몬스터 혼합 출현
+  {
+    code: 'RIFT_DIMENSION_CROSS',
+    name: '차원 교차',
+    description: '시간의 균열이 과거 차원과 연결되었다! 시즌 1~3의 강화된 몬스터들이 시간의 균열 지역에 혼합 출현. 과거의 보스들이 시간 왜곡 버프와 함께 귀환한다.',
+    type: 'weekly_rift',
+    config: {
+      theme: 'time_rift',
+      mechanic: 'cross_season_spawn',
+      seasonMixPool: [
+        { season: 1, monsterCodes: ['MON_TF_BOSS_001', 'MON_SF_BOSS_001', 'MON_CC_BOSS_001'], levelScale: 95 },
+        { season: 2, monsterCodes: ['MON_MS_BOSS_001', 'MON_MS_BOSS_002', 'MON_MS_RAID_001'], levelScale: 97 },
+        { season: 3, monsterCodes: ['MON_AB_BOSS_001', 'MON_AB_BOSS_002', 'MON_AB_RAID_001'], levelScale: 100 },
+      ],
+      temporalBuffs: [
+        { name: '시간 가속', effect: 'attack_speed_up', value: 1.3 },
+        { name: '공간 왜곡', effect: 'teleport_random', intervalSec: 30 },
+        { name: '인과 역전', effect: 'reflect_damage', value: 0.1 },
+      ],
+      spawnRotationHours: 4,
+      requiredLevel: 90,
+      weeklyResetDay: 'monday',
+    },
+    rewards: [
+      { id: 'dc1', type: 'cross_dimension_token', amount: 2, condition: { type: 'kill_cross_season', target: 5 } },
+      { id: 'dc2', type: 'cross_dimension_token', amount: 8, condition: { type: 'kill_cross_season', target: 20 } },
+      { id: 'dc3', type: 'gold', amount: 100000, condition: { type: 'kill_cross_season', target: 50 } },
+      { id: 'dc4', type: 'item', itemId: 'EQUIP_RIFT_DIMENSION_RING', amount: 1, condition: { type: 'kill_all_season_bosses', target: 1 } },
+      { id: 'dc5', type: 'title', titleId: 'TITLE_DIMENSION_WALKER', amount: 1, condition: { type: 'complete_all_objectives', target: 1 } },
+    ],
+    startAt: daysFromNow(14),
+    endAt: daysFromNow(21),
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════
