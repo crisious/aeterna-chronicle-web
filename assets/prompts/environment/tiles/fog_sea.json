@@ -1,0 +1,366 @@
+{
+  "region": "안개해",
+  "region_en": "Fog Sea",
+  "theme": "안개 바다 (Misty Ocean)",
+  "color_palette": {
+    "primary": "#3C3C5C",
+    "secondary": "#696969",
+    "accent": "#DDA0DD",
+    "names": [
+      "안개 보라",
+      "잔해 회색",
+      "기억 안개 분홍"
+    ]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "FOG-G-01",
+      "name": "안개 잔해 바닥",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Main walkable surface, Fog-shrouded debris floor, broken ship timber and rope on misty purple-grey ground",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Fog-shrouded debris floor, broken ship timber and rope on misty purple-grey ground, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Fog-shrouded debris floor, broken ship timber and rope on misty purple-grey ground. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, fog-shrouded debris floor, broken ship timber, misty purple-grey, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-02",
+      "name": "유령선 갑판",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ghost ship deck, rotting planks with ethereal glow, spectral mist seeping",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ghost ship deck, rotting planks with ethereal glow, spectral mist seeping, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ghost ship deck, rotting planks with ethereal glow, spectral mist seeping. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ghost ship deck, rotting planks, ethereal glow, spectral mist, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-03",
+      "name": "표류물 해안",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Driftwood shore, grey sand with scattered wreckage, fog rolling in",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Driftwood shore, grey sand with scattered wreckage, fog rolling in, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Driftwood shore, grey sand with scattered wreckage, fog rolling in. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, driftwood shore, grey sand, scattered wreckage, fog, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-04",
+      "name": "안개돌 기반",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Fog stone foundation, purple-tinted (#3C3C5C) stone, mist emanating from cracks",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Fog stone foundation, purple-tinted (#3C3C5C) stone, mist emanating from cracks, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Fog stone foundation, purple-tinted (#3C3C5C) stone, mist emanating from cracks. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, fog stone foundation, purple-tinted stone, mist from cracks, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-05",
+      "name": "침몰선 내부",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Sunken ship interior, waterlogged wood, ghost light (#E6E6FA) filtering",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Sunken ship interior, waterlogged wood, ghost light (#E6E6FA) filtering, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Sunken ship interior, waterlogged wood, ghost light (#E6E6FA) filtering. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, sunken ship interior, waterlogged wood, ghost light, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-06",
+      "name": "안개 늪지",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Fog swamp, murky water surface with fog, dead reeds, ghostly reflection",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Fog swamp, murky water surface with fog, dead reeds, ghostly reflection, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Fog swamp, murky water surface with fog, dead reeds, ghostly reflection. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, fog swamp, murky water, dead reeds, ghostly reflection, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-07",
+      "name": "유령 등대 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ghost lighthouse floor, cracked tiles with spectral glow patterns",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ghost lighthouse floor, cracked tiles with spectral glow patterns, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ghost lighthouse floor, cracked tiles with spectral glow patterns. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ghost lighthouse floor, cracked tiles, spectral glow, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-08",
+      "name": "기억 해류",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Memory current floor, swirling purple-pink (#DDA0DD) mist patterns on dark water",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Memory current floor, swirling purple-pink (#DDA0DD) mist patterns on dark water, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Memory current floor, swirling purple-pink (#DDA0DD) mist patterns on dark water. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, memory current floor, swirling purple-pink mist on dark water, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "FOG-G-09",
+      "name": "안개해 신전",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Fog sea temple, barnacle-covered ancient stone, lavender (#E6E6FA) rune glow",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Fog sea temple, barnacle-covered ancient stone, lavender (#E6E6FA) rune glow, palette: #3C3C5C/#696969/#DDA0DD, dark fantasy 안개 바다 (Misty Ocean), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Fog sea temple, barnacle-covered ancient stone, lavender (#E6E6FA) rune glow. Color palette: (#3C3C5C/#696969/#DDA0DD). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, fog sea temple floor, barnacle-covered stone, lavender rune glow, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

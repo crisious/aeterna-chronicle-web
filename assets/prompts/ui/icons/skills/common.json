@@ -1,0 +1,1085 @@
+{
+  "class": "공통",
+  "skills": [
+    {
+      "asset_id": "CMN-SKL-001",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "기본 공격",
+      "skill_name_en": "basic attack",
+      "pixel_size": "64x64",
+      "description": "simple weapon swing, white slash arc",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, simple weapon swing, white slash arc, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. basic attack: simple weapon swing, white slash arc. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, basic attack, simple weapon swing, white slash arc, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-002",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "회피",
+      "skill_name_en": "dodge",
+      "pixel_size": "64x64",
+      "description": "afterimage blur, rolling away",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, afterimage blur, rolling away, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dodge: afterimage blur, rolling away. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dodge, afterimage blur, rolling away, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-003",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "도발",
+      "skill_name_en": "taunt",
+      "pixel_size": "64x64",
+      "description": "shouting challenge, aggro waves",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, shouting challenge, aggro waves, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. taunt: shouting challenge, aggro waves. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, taunt, shouting challenge, aggro waves, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-004",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "구르기",
+      "skill_name_en": "roll",
+      "pixel_size": "64x64",
+      "description": "forward roll dodge motion",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, forward roll dodge motion, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. roll: forward roll dodge motion. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, roll, forward roll dodge motion, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-005",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "아이템 사용",
+      "skill_name_en": "use item",
+      "pixel_size": "64x64",
+      "description": "hand holding potion, sparkling",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, hand holding potion, sparkling, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. use item: hand holding potion, sparkling. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, use item, hand holding potion, sparkling, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-006",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "달리기",
+      "skill_name_en": "sprint",
+      "pixel_size": "64x64",
+      "description": "speed lines, running pose",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, speed lines, running pose, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. sprint: speed lines, running pose. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, sprint, speed lines, running pose, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-007",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "점프",
+      "skill_name_en": "jump",
+      "pixel_size": "64x64",
+      "description": "upward leap, jump arc",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, upward leap, jump arc, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. jump: upward leap, jump arc. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, jump, upward leap, jump arc, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-008",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "수집",
+      "skill_name_en": "gather",
+      "pixel_size": "64x64",
+      "description": "hand picking up item, sparkle",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, hand picking up item, sparkle, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. gather: hand picking up item, sparkle. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, gather, hand picking up item, sparkle, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-009",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "제작",
+      "skill_name_en": "craft",
+      "pixel_size": "64x64",
+      "description": "anvil and hammer, spark",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, anvil and hammer, spark, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. craft: anvil and hammer, spark. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, craft, anvil and hammer, spark, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-010",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "대화",
+      "skill_name_en": "talk",
+      "pixel_size": "64x64",
+      "description": "speech bubble icon",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, speech bubble icon, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. talk: speech bubble icon. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, talk, speech bubble icon, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-011",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "부활",
+      "skill_name_en": "resurrect",
+      "pixel_size": "64x64",
+      "description": "golden wings, ascending",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, golden wings, ascending, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. resurrect: golden wings, ascending. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, resurrect, golden wings, ascending, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-012",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "반격",
+      "skill_name_en": "counter",
+      "pixel_size": "64x64",
+      "description": "parry flash, retaliation",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, parry flash, retaliation, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. counter: parry flash, retaliation. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, counter, parry flash, retaliation, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-013",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "전투 태세",
+      "skill_name_en": "battle stance",
+      "pixel_size": "64x64",
+      "description": "ready pose, aura flare",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, ready pose, aura flare, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. battle stance: ready pose, aura flare. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, battle stance, ready pose, aura flare, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-014",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "응급 치료",
+      "skill_name_en": "first aid",
+      "pixel_size": "64x64",
+      "description": "bandage wrapping, green cross",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, bandage wrapping, green cross, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. first aid: bandage wrapping, green cross. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, first aid, bandage wrapping, green cross, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-015",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "탐색",
+      "skill_name_en": "search",
+      "pixel_size": "64x64",
+      "description": "magnifying glass, reveal",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, magnifying glass, reveal, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. search: magnifying glass, reveal. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, search, magnifying glass, reveal, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-016",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "감정",
+      "skill_name_en": "appraise",
+      "pixel_size": "64x64",
+      "description": "eye examining item",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, eye examining item, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. appraise: eye examining item. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, appraise, eye examining item, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-017",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "수리",
+      "skill_name_en": "repair",
+      "pixel_size": "64x64",
+      "description": "hammer on gear, fixing",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, hammer on gear, fixing, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. repair: hammer on gear, fixing. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, repair, hammer on gear, fixing, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-018",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "분해",
+      "skill_name_en": "disassemble",
+      "pixel_size": "64x64",
+      "description": "item breaking into components",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, item breaking into components, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. disassemble: item breaking into components. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, disassemble, item breaking into components, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-019",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "강화",
+      "skill_name_en": "enhance",
+      "pixel_size": "64x64",
+      "description": "item glowing with power",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, item glowing with power, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. enhance: item glowing with power. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, enhance, item glowing with power, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-020",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "합성",
+      "skill_name_en": "synthesize",
+      "pixel_size": "64x64",
+      "description": "two items merging",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, two items merging, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. synthesize: two items merging. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, synthesize, two items merging, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-021",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "교역",
+      "skill_name_en": "trade",
+      "pixel_size": "64x64",
+      "description": "handshake with coins",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, handshake with coins, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. trade: handshake with coins. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, trade, handshake with coins, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-022",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "낚시",
+      "skill_name_en": "fishing",
+      "pixel_size": "64x64",
+      "description": "fishing rod and bobber",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, fishing rod and bobber, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. fishing: fishing rod and bobber. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, fishing, fishing rod and bobber, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-023",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "채광",
+      "skill_name_en": "mining",
+      "pixel_size": "64x64",
+      "description": "pickaxe hitting rock, sparks",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, pickaxe hitting rock, sparks, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. mining: pickaxe hitting rock, sparks. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, mining, pickaxe hitting rock, sparks, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-024",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "약초 채집",
+      "skill_name_en": "herb gathering",
+      "pixel_size": "64x64",
+      "description": "hand picking glowing herb",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, hand picking glowing herb, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. herb gathering: hand picking glowing herb. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, herb gathering, hand picking glowing herb, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-025",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "요리",
+      "skill_name_en": "cooking",
+      "pixel_size": "64x64",
+      "description": "pot over fire, steam",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, pot over fire, steam, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. cooking: pot over fire, steam. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, cooking, pot over fire, steam, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-026",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "연금술",
+      "skill_name_en": "alchemy",
+      "pixel_size": "64x64",
+      "description": "bubbling flask, color change",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, bubbling flask, color change, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. alchemy: bubbling flask, color change. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, alchemy, bubbling flask, color change, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-027",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "마법 부여",
+      "skill_name_en": "enchanting",
+      "pixel_size": "64x64",
+      "description": "rune circle on item",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, rune circle on item, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. enchanting: rune circle on item. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, enchanting, rune circle on item, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-028",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "펫 소환",
+      "skill_name_en": "pet summon",
+      "pixel_size": "64x64",
+      "description": "small creature emerging from circle",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, small creature emerging from circle, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. pet summon: small creature emerging from circle. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, pet summon, small creature emerging from circle, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-029",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "탈것 소환",
+      "skill_name_en": "mount summon",
+      "pixel_size": "64x64",
+      "description": "mount silhouette in summon flash",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, mount silhouette in summon flash, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. mount summon: mount silhouette in summon flash. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, mount summon, mount silhouette in summon flash, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "CMN-SKL-030",
+      "class": "공통",
+      "class_en": "Common",
+      "class_color": "#FFFFFF",
+      "skill_name_ko": "귀환",
+      "skill_name_en": "return home",
+      "pixel_size": "64x64",
+      "description": "blue teleport circle swirling",
+      "type": "common_base",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, common skill icon, blue teleport circle swirling, neutral white/grey color scheme, centered, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. return home: blue teleport circle swirling. Neutral color scheme. Clean pixel edges, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, return home, blue teleport circle swirling, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+{
+  "region": "북방 영원빙원",
+  "region_en": "Northland",
+  "theme": "빙결 설원 (Frozen Tundra)",
+  "color_palette": {
+    "primary": "#E8F4FD",
+    "secondary": "#4682B4",
+    "accent": "#00BFFF",
+    "names": ["빙결 백색", "깊은 얼음 파랑", "결정 발광 시안"]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "NTH-G-01",
+      "name": "빙결 설원",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Frozen snow plain, compacted white-blue ice surface with frost crystal patterns",
+        "top": "Snow edge meeting frozen rock, top border with windswept snow drift",
+        "bottom": "Bottom border, snow compacting into blue ice",
+        "left": "Left edge, frost line meeting tundra grass",
+        "right": "Right edge, snow shelf crumbling into ice chasm",
+        "corner_tl": "Top-left corner, wind-carved snow mound",
+        "corner_tr": "Top-right corner, ice crystal formation at edge",
+        "corner_bl": "Bottom-left corner, frozen moss patch under snow",
+        "corner_br": "Bottom-right corner, deepest ice with trapped air bubbles"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, frozen snow plain, arctic tundra, icy white (#E8F4FD) surface with deep blue (#4682B4) ice patches, frost crystal patterns, dark fantasy frozen wasteland, seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern, warm colors",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, frozen snow plain tile for arctic tundra. Color palette: icy white (#E8F4FD) with deep blue (#4682B4) ice patches and cyan (#00BFFF) crystal glow. {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, frozen snow plain, arctic tundra tileset, icy white and deep blue ice palette, cyan crystal glow, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-02",
+      "name": "빙하 단면",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Glacier surface, deep blue translucent ice with layered compression lines",
+        "top": "Glacier top, frosted surface with snow accumulation",
+        "bottom": "Glacier bottom edge, dark deep ice meeting bedrock",
+        "left": "Left calving edge, cracked ice wall",
+        "right": "Right edge, ice shelf with meltwater channel",
+        "corner_tl": "Top-left corner, snow-topped ice ridge",
+        "corner_tr": "Top-right corner, wind-polished smooth ice",
+        "corner_bl": "Bottom-left corner, ancient ice with dark inclusions",
+        "corner_br": "Bottom-right corner, crevasse entrance"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, glacier surface, deep blue (#4682B4) translucent ice, compression lines, layered ancient ice, dark fantasy arctic, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character, warm colors",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, glacier surface with deep blue translucent ice and compression lines. {piece_description}. Clean pixel edges, black outline, cel shading, seamless. Dark fantasy arctic style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, glacier surface, deep blue translucent ice, compression lines, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-03",
+      "name": "동결 호수",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Frozen lake surface, cracked ice with dark water visible underneath, frost patterns",
+        "top": "Lake shore top, ice meeting frozen pebble beach",
+        "bottom": "Bottom shore, thick ice shelf",
+        "left": "Left shore, reeds frozen in ice",
+        "right": "Right shore, snowbank meeting lake ice",
+        "corner_tl": "Top-left, ice fishing hole (frozen over, dark circle)",
+        "corner_tr": "Top-right, thick frost buildup at shore",
+        "corner_bl": "Bottom-left, submerged dark shapes under ice",
+        "corner_br": "Bottom-right, aurora reflection on ice surface"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, frozen lake surface, cracked ice with dark water underneath, frost patterns, (#E8F4FD) ice white with (#4682B4) deep blue cracks, dark fantasy arctic lake, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, frozen lake with cracked ice and dark water underneath, frost crystal patterns. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, frozen lake, cracked ice, dark water underneath, frost patterns, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-04",
+      "name": "오로라 얼음 결정",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Aurora-infused ice crystal ground, iridescent (#00BFFF/#00FF7F/#FF69B4) glow embedded in ice",
+        "top": "Top edge, crystal formation growing upward",
+        "bottom": "Bottom edge, crystal base merging with normal ice",
+        "left": "Left edge, aurora light refracting through crystal wall",
+        "right": "Right edge, crystal cluster boundary",
+        "corner_tl": "Top-left, large hexagonal crystal node",
+        "corner_tr": "Top-right, shattered crystal fragments",
+        "corner_bl": "Bottom-left, crystal vein emerging from ground",
+        "corner_br": "Bottom-right, aurora pool in crystal basin"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, aurora-infused ice crystals, iridescent glow (#00BFFF cyan + #00FF7F green + #FF69B4 pink), embedded in deep blue ice, magical crystal formation, dark fantasy arctic, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, aurora-infused ice crystals with iridescent cyan/green/pink glow in deep blue ice. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy magical arctic.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, aurora ice crystals, iridescent cyan green pink glow, deep blue ice, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-05",
+      "name": "동결 숲 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Frozen forest floor, ice-coated fallen leaves and pine needles on frozen dirt",
+        "top": "Top edge, tree root breaking through ice",
+        "bottom": "Bottom edge, snow drift against tree base",
+        "left": "Left edge, frozen bush boundary",
+        "right": "Right edge, ice-covered log",
+        "corner_tl": "Top-left, frozen mushroom cluster",
+        "corner_tr": "Top-right, icicle-draped low branch shadow",
+        "corner_bl": "Bottom-left, animal tracks frozen in ice",
+        "corner_br": "Bottom-right, snow mound over buried rock"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, frozen forest floor, ice-coated leaves and pine needles, frozen dirt (#708090), frost patterns, dark fantasy boreal forest, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character, green leaves, summer",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, frozen forest floor with ice-coated leaves and pine needles on grey frozen dirt. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy boreal forest.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, frozen forest floor, ice-coated leaves, pine needles, frozen dirt, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-06",
+      "name": "얼음 동굴 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Ice cave floor, polished blue ice with air bubbles and frost veins",
+        "top": "Top edge, stalagmite bases rising from floor",
+        "bottom": "Bottom edge, meltwater refrozen smooth",
+        "left": "Left wall base, ice crystal growth along cave wall",
+        "right": "Right wall base, frozen waterfall remnant",
+        "corner_tl": "Top-left, large ice stalagmite base",
+        "corner_tr": "Top-right, cave wall junction with ice pillar",
+        "corner_bl": "Bottom-left, dark ice pool (bottomless look)",
+        "corner_br": "Bottom-right, crystalline ice shelf"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, ice cave floor, polished blue (#4682B4) ice, air bubbles, frost veins, dark fantasy underground arctic, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character, outdoor",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, ice cave floor with polished blue ice, air bubbles, frost veins. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy underground.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ice cave floor, polished blue ice, air bubbles, frost veins, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-07",
+      "name": "영구동토 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Permafrost ground, cracked grey-brown frozen earth with ice veins in cracks",
+        "top": "Top edge, permafrost meeting snow cover",
+        "bottom": "Bottom edge, exposed darker frozen subsoil",
+        "left": "Left edge, tundra grass tufts frozen stiff",
+        "right": "Right edge, frost heave mound",
+        "corner_tl": "Top-left, frozen puddle on permafrost",
+        "corner_tr": "Top-right, exposed mammoth bone fragment in ice",
+        "corner_bl": "Bottom-left, polygon crack pattern center",
+        "corner_br": "Bottom-right, thermokarst depression"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, permafrost ground, cracked grey-brown frozen earth, ice veins in cracks, dark fantasy arctic wasteland, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, permafrost ground with cracked grey-brown frozen earth and ice veins. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy arctic.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, permafrost ground, cracked frozen earth, ice veins, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-08",
+      "name": "얼음 다리",
+      "type": "autotile_3x3",
+      "variants": 1,
+      "pieces": {
+        "center": "Ice bridge surface, thick translucent blue ice over chasm, structural stress cracks",
+        "top": "Bridge railing, ice pillar posts with frozen rope",
+        "bottom": "Bridge railing opposite side",
+        "left": "Bridge start, ice meeting stone anchor point",
+        "right": "Bridge end, ice meeting stone anchor point",
+        "corner_tl": "Top-left anchor post, large ice-stone pillar",
+        "corner_tr": "Top-right anchor post",
+        "corner_bl": "Bottom-left anchor post",
+        "corner_br": "Bottom-right anchor post"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, ice bridge, thick translucent blue (#4682B4) ice surface, stress cracks, dark chasm below, dark fantasy arctic, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, ice bridge surface, thick blue translucent ice over dark chasm, stress cracks. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ice bridge, translucent blue ice, stress cracks, dark chasm below, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "NTH-G-09",
+      "name": "빙하 신전 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Ancient ice temple floor, geometric ice mosaic with embedded rune patterns glowing cyan",
+        "top": "Temple floor edge, ornate ice border with runic inscriptions",
+        "bottom": "Bottom border, cracked mosaic meeting natural ice",
+        "left": "Left border, ice pillar base with carved symbols",
+        "right": "Right border, altar step edge",
+        "corner_tl": "Top-left, circular rune node glowing cyan (#00BFFF)",
+        "corner_tr": "Top-right, crumbling ancient ice carving",
+        "corner_bl": "Bottom-left, frozen offering basin",
+        "corner_br": "Bottom-right, aurora light shaft hitting floor"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, ancient ice temple floor, geometric ice mosaic, cyan (#00BFFF) glowing rune patterns, dark fantasy sacred arctic site, seamless, (2px black outline:1.3), (clean pixel edges:1.4), 32x32 tile, 3-step shading, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, perspective, character, modern",
+          "params": {"steps": 30, "cfg_scale": 7.5, "sampler_name": "DPM++ 2M Karras", "width": 256, "height": 256, "seed": -1}
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tile, 32x32 pixels, ancient ice temple floor with geometric mosaic and cyan glowing runes. {piece_description}. Clean pixel edges, black outline, seamless. Dark fantasy sacred arctic.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ice temple floor, geometric mosaic, cyan glowing runes, ancient sacred, {piece_description}, 32x32 pixel, clean edges, black outline, seamless, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

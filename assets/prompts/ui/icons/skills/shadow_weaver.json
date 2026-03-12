@@ -1,0 +1,1087 @@
+{
+  "class": "그림자직공",
+  "class_en": "Shadow Weaver",
+  "color": "#2ECC71",
+  "skills": [
+    {
+      "asset_id": "SKL-SHA-001",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "암습",
+      "skill_name_en": "backstab",
+      "pixel_size": "64x64",
+      "description": "dagger striking from shadow behind target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dagger striking from shadow behind target, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. backstab skill for Shadow Weaver class: dagger striking from shadow behind target. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, backstab, dagger striking from shadow behind target, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-002",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독 도포",
+      "skill_name_en": "poison coat",
+      "pixel_size": "64x64",
+      "description": "green poison dripping on blade edge",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, green poison dripping on blade edge, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. poison coat skill for Shadow Weaver class: green poison dripping on blade edge. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, poison coat, green poison dripping on blade edge, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-003",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "은신",
+      "skill_name_en": "stealth",
+      "pixel_size": "64x64",
+      "description": "figure fading into shadow, transparent",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, figure fading into shadow, transparent, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. stealth skill for Shadow Weaver class: figure fading into shadow, transparent. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, stealth, figure fading into shadow, transparent, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-004",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "함정 설치",
+      "skill_name_en": "trap set",
+      "pixel_size": "64x64",
+      "description": "spike trap on ground, wire trigger",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, spike trap on ground, wire trigger, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. trap set skill for Shadow Weaver class: spike trap on ground, wire trigger. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, trap set, spike trap on ground, wire trigger, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-005",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 도약",
+      "skill_name_en": "shadow leap",
+      "pixel_size": "64x64",
+      "description": "leaping through shadow portal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, leaping through shadow portal, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow leap skill for Shadow Weaver class: leaping through shadow portal. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow leap, leaping through shadow portal, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-006",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "연막탄",
+      "skill_name_en": "smoke bomb",
+      "pixel_size": "64x64",
+      "description": "grey-green smoke cloud explosion",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, grey-green smoke cloud explosion, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. smoke bomb skill for Shadow Weaver class: grey-green smoke cloud explosion. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, smoke bomb, grey-green smoke cloud explosion, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-007",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "출혈 베기",
+      "skill_name_en": "bleed cut",
+      "pixel_size": "64x64",
+      "description": "slash leaving red blood trail",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, slash leaving red blood trail, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. bleed cut skill for Shadow Weaver class: slash leaving red blood trail. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, bleed cut, slash leaving red blood trail, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-008",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 분신",
+      "skill_name_en": "shadow clone",
+      "pixel_size": "64x64",
+      "description": "dark copy splitting from body",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark copy splitting from body, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow clone skill for Shadow Weaver class: dark copy splitting from body. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow clone, dark copy splitting from body, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-009",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "급소 공격",
+      "skill_name_en": "vital strike",
+      "pixel_size": "64x64",
+      "description": "precise hit on glowing weak point",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, precise hit on glowing weak point, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. vital strike skill for Shadow Weaver class: precise hit on glowing weak point. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, vital strike, precise hit on glowing weak point, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-010",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독 폭발",
+      "skill_name_en": "poison burst",
+      "pixel_size": "64x64",
+      "description": "green toxic explosion",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, green toxic explosion, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. poison burst skill for Shadow Weaver class: green toxic explosion. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, poison burst, green toxic explosion, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-011",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 올가미",
+      "skill_name_en": "shadow snare",
+      "pixel_size": "64x64",
+      "description": "dark tendrils binding target feet",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark tendrils binding target feet, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow snare skill for Shadow Weaver class: dark tendrils binding target feet. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow snare, dark tendrils binding target feet, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-012",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "단검 투척",
+      "skill_name_en": "dagger throw",
+      "pixel_size": "64x64",
+      "description": "multiple daggers flying",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, multiple daggers flying, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dagger throw skill for Shadow Weaver class: multiple daggers flying. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dagger throw, multiple daggers flying, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-013",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "죽음의 표식",
+      "skill_name_en": "death mark",
+      "pixel_size": "64x64",
+      "description": "skull symbol on target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, skull symbol on target, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. death mark skill for Shadow Weaver class: skull symbol on target. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, death mark, skull symbol on target, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-014",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "연쇄 암살",
+      "skill_name_en": "chain kill",
+      "pixel_size": "64x64",
+      "description": "rapid strikes on multiple targets",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, rapid strikes on multiple targets, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. chain kill skill for Shadow Weaver class: rapid strikes on multiple targets. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, chain kill, rapid strikes on multiple targets, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-015",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 갑옷",
+      "skill_name_en": "shadow armor",
+      "pixel_size": "64x64",
+      "description": "dark mist forming armor",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark mist forming armor, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow armor skill for Shadow Weaver class: dark mist forming armor. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow armor, dark mist forming armor, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-016",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독침 비",
+      "skill_name_en": "poison needle rain",
+      "pixel_size": "64x64",
+      "description": "raining green needles",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, raining green needles, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. poison needle rain skill for Shadow Weaver class: raining green needles. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, poison needle rain, raining green needles, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-017",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 차원",
+      "skill_name_en": "shadow dimension",
+      "pixel_size": "64x64",
+      "description": "pulling target into shadow realm",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, pulling target into shadow realm, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow dimension skill for Shadow Weaver class: pulling target into shadow realm. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow dimension, pulling target into shadow realm, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-018",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "급속 이동",
+      "skill_name_en": "dash",
+      "pixel_size": "64x64",
+      "description": "speed blur afterimage",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, speed blur afterimage, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dash skill for Shadow Weaver class: speed blur afterimage. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dash, speed blur afterimage, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-019",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 폭풍",
+      "skill_name_en": "shadow storm",
+      "pixel_size": "64x64",
+      "description": "dark tornado of shadow blades",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark tornado of shadow blades, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow storm skill for Shadow Weaver class: dark tornado of shadow blades. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow storm, dark tornado of shadow blades, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-020",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "암살자의 시선",
+      "skill_name_en": "assassin sight",
+      "pixel_size": "64x64",
+      "description": "eye icon revealing hidden enemies",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, eye icon revealing hidden enemies, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. assassin sight skill for Shadow Weaver class: eye icon revealing hidden enemies. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, assassin sight, eye icon revealing hidden enemies, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-021",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "치명적 일격",
+      "skill_name_en": "lethal blow",
+      "pixel_size": "64x64",
+      "description": "single massive crit strike",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, single massive crit strike, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. lethal blow skill for Shadow Weaver class: single massive crit strike. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, lethal blow, single massive crit strike, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-022",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "독안개",
+      "skill_name_en": "poison fog",
+      "pixel_size": "64x64",
+      "description": "spreading green mist field",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, spreading green mist field, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. poison fog skill for Shadow Weaver class: spreading green mist field. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, poison fog, spreading green mist field, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-023",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 교란",
+      "skill_name_en": "shadow disruption",
+      "pixel_size": "64x64",
+      "description": "disrupting enemy casting",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, disrupting enemy casting, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow disruption skill for Shadow Weaver class: disrupting enemy casting. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow disruption, disrupting enemy casting, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-024",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "회피 강화",
+      "skill_name_en": "evasion boost",
+      "pixel_size": "64x64",
+      "description": "speed lines and dodge aura",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, speed lines and dodge aura, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. evasion boost skill for Shadow Weaver class: speed lines and dodge aura. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, evasion boost, speed lines and dodge aura, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-025",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 결계",
+      "skill_name_en": "shadow barrier",
+      "pixel_size": "64x64",
+      "description": "dark defensive circle",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark defensive circle, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow barrier skill for Shadow Weaver class: dark defensive circle. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow barrier, dark defensive circle, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-026",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "연쇄 독",
+      "skill_name_en": "chain poison",
+      "pixel_size": "64x64",
+      "description": "poison spreading between targets",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, poison spreading between targets, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. chain poison skill for Shadow Weaver class: poison spreading between targets. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, chain poison, poison spreading between targets, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-027",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 빙결",
+      "skill_name_en": "shadow freeze",
+      "pixel_size": "64x64",
+      "description": "dark ice trapping target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark ice trapping target, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow freeze skill for Shadow Weaver class: dark ice trapping target. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow freeze, dark ice trapping target, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-028",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "속도의 인장",
+      "skill_name_en": "speed seal",
+      "pixel_size": "64x64",
+      "description": "wind rune for movement buff",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, wind rune for movement buff, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. speed seal skill for Shadow Weaver class: wind rune for movement buff. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, speed seal, wind rune for movement buff, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-029",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "최종 암살",
+      "skill_name_en": "final assassination",
+      "pixel_size": "64x64",
+      "description": "ultimate lethal strike from above",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, ultimate lethal strike from above, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. final assassination skill for Shadow Weaver class: ultimate lethal strike from above. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, final assassination, ultimate lethal strike from above, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-SHA-030",
+      "class": "그림자직공",
+      "class_en": "Shadow Weaver",
+      "class_color": "#2ECC71",
+      "skill_name_ko": "그림자 심판",
+      "skill_name_en": "shadow execution",
+      "pixel_size": "64x64",
+      "description": "dark energy execution strike",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Shadow Weaver, dark energy execution strike, 그림자 독녹 (#2ECC71) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. shadow execution skill for Shadow Weaver class: dark energy execution strike. Color accent: #2ECC71. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, shadow execution, dark energy execution strike, 그림자 독녹 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

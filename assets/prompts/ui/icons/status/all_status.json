@@ -1,0 +1,838 @@
+{
+  "total": 25,
+  "debuffs": 20,
+  "buffs": 5,
+  "icon_spec": {
+    "size": "64x64 px",
+    "outline": "2px black",
+    "shading": "3-step cel shading"
+  },
+  "design_rule": "디버프=적색/어두운 계열 배경 틴트, 버프=청색/밝은 계열 배경 틴트",
+  "statuses": [
+    {
+      "id": "STS-DBF-001",
+      "name_ko": "독",
+      "name_en": "Poison",
+      "type": "debuff",
+      "color": "#00CC00",
+      "desc": "green skull with dripping poison drops, toxic bubbles",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, green skull with dripping poison drops, toxic bubbles, dominant color #00CC00, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Poison (debuff): green skull with dripping poison drops, toxic bubbles. Dominant color: #00CC00. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Poison, green skull with dripping poison drops, toxic bubbles, #00CC00 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-002",
+      "name_ko": "화상",
+      "name_en": "Burn",
+      "type": "debuff",
+      "color": "#FF4500",
+      "desc": "orange-red flame icon, skin searing effect",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, orange-red flame icon, skin searing effect, dominant color #FF4500, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Burn (debuff): orange-red flame icon, skin searing effect. Dominant color: #FF4500. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Burn, orange-red flame icon, skin searing effect, #FF4500 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-003",
+      "name_ko": "동상",
+      "name_en": "Frostbite",
+      "type": "debuff",
+      "color": "#87CEEB",
+      "desc": "ice crystal forming on skin, blue frost spreading",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, ice crystal forming on skin, blue frost spreading, dominant color #87CEEB, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Frostbite (debuff): ice crystal forming on skin, blue frost spreading. Dominant color: #87CEEB. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Frostbite, ice crystal forming on skin, blue frost spreading, #87CEEB accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-004",
+      "name_ko": "출혈",
+      "name_en": "Bleed",
+      "type": "debuff",
+      "color": "#DC143C",
+      "desc": "red blood drops dripping, wound slash mark",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, red blood drops dripping, wound slash mark, dominant color #DC143C, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Bleed (debuff): red blood drops dripping, wound slash mark. Dominant color: #DC143C. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Bleed, red blood drops dripping, wound slash mark, #DC143C accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-005",
+      "name_ko": "기절",
+      "name_en": "Stun",
+      "type": "debuff",
+      "color": "#FFD700",
+      "desc": "yellow stars circling, dazed spiral",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, yellow stars circling, dazed spiral, dominant color #FFD700, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Stun (debuff): yellow stars circling, dazed spiral. Dominant color: #FFD700. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Stun, yellow stars circling, dazed spiral, #FFD700 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-006",
+      "name_ko": "침묵",
+      "name_en": "Silence",
+      "type": "debuff",
+      "color": "#808080",
+      "desc": "mouth with X mark, grey mute symbol",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, mouth with X mark, grey mute symbol, dominant color #808080, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Silence (debuff): mouth with X mark, grey mute symbol. Dominant color: #808080. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Silence, mouth with X mark, grey mute symbol, #808080 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-007",
+      "name_ko": "속박",
+      "name_en": "Bind",
+      "type": "debuff",
+      "color": "#8B4513",
+      "desc": "chains or vines wrapping around, immobilized",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, chains or vines wrapping around, immobilized, dominant color #8B4513, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Bind (debuff): chains or vines wrapping around, immobilized. Dominant color: #8B4513. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Bind, chains or vines wrapping around, immobilized, #8B4513 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-008",
+      "name_ko": "혼란",
+      "name_en": "Confuse",
+      "type": "debuff",
+      "color": "#FF69B4",
+      "desc": "question marks and spiral, dizzy pink swirl",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, question marks and spiral, dizzy pink swirl, dominant color #FF69B4, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Confuse (debuff): question marks and spiral, dizzy pink swirl. Dominant color: #FF69B4. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Confuse, question marks and spiral, dizzy pink swirl, #FF69B4 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-009",
+      "name_ko": "저주",
+      "name_en": "Curse",
+      "type": "debuff",
+      "color": "#4B0082",
+      "desc": "dark purple skull with ominous aura, curse runes",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, dark purple skull with ominous aura, curse runes, dominant color #4B0082, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Curse (debuff): dark purple skull with ominous aura, curse runes. Dominant color: #4B0082. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Curse, dark purple skull with ominous aura, curse runes, #4B0082 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-010",
+      "name_ko": "기억침식",
+      "name_en": "Memory Erosion",
+      "type": "debuff",
+      "color": "#9B59B6",
+      "desc": "brain icon dissolving into purple particles",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, brain icon dissolving into purple particles, dominant color #9B59B6, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Memory Erosion (debuff): brain icon dissolving into purple particles. Dominant color: #9B59B6. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Memory Erosion, brain icon dissolving into purple particles, #9B59B6 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-011",
+      "name_ko": "시간정지",
+      "name_en": "Time Freeze",
+      "type": "debuff",
+      "color": "#FFD700",
+      "desc": "frozen clock face, golden stop symbol",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, frozen clock face, golden stop symbol, dominant color #FFD700, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Time Freeze (debuff): frozen clock face, golden stop symbol. Dominant color: #FFD700. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Time Freeze, frozen clock face, golden stop symbol, #FFD700 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-012",
+      "name_ko": "공간왜곡",
+      "name_en": "Spatial Warp",
+      "type": "debuff",
+      "color": "#FF00FF",
+      "desc": "warped grid pattern, distorted space icon",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, warped grid pattern, distorted space icon, dominant color #FF00FF, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Spatial Warp (debuff): warped grid pattern, distorted space icon. Dominant color: #FF00FF. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Spatial Warp, warped grid pattern, distorted space icon, #FF00FF accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-013",
+      "name_ko": "에테르과부하",
+      "name_en": "Ether Overload",
+      "type": "debuff",
+      "color": "#89CFF0",
+      "desc": "overflowing cyan energy, crackling and unstable",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, overflowing cyan energy, crackling and unstable, dominant color #89CFF0, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Ether Overload (debuff): overflowing cyan energy, crackling and unstable. Dominant color: #89CFF0. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Ether Overload, overflowing cyan energy, crackling and unstable, #89CFF0 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-014",
+      "name_ko": "망각",
+      "name_en": "Amnesia",
+      "type": "debuff",
+      "color": "#696969",
+      "desc": "fading head silhouette, memories scattering as dots",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, fading head silhouette, memories scattering as dots, dominant color #696969, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Amnesia (debuff): fading head silhouette, memories scattering as dots. Dominant color: #696969. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Amnesia, fading head silhouette, memories scattering as dots, #696969 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-015",
+      "name_ko": "환각",
+      "name_en": "Hallucination",
+      "type": "debuff",
+      "color": "#FF1493",
+      "desc": "psychedelic eye icon, rainbow distortion swirl",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, psychedelic eye icon, rainbow distortion swirl, dominant color #FF1493, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Hallucination (debuff): psychedelic eye icon, rainbow distortion swirl. Dominant color: #FF1493. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Hallucination, psychedelic eye icon, rainbow distortion swirl, #FF1493 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-016",
+      "name_ko": "석화",
+      "name_en": "Petrify",
+      "type": "debuff",
+      "color": "#A9A9A9",
+      "desc": "stone texture spreading, grey petrification icon",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, stone texture spreading, grey petrification icon, dominant color #A9A9A9, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Petrify (debuff): stone texture spreading, grey petrification icon. Dominant color: #A9A9A9. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Petrify, stone texture spreading, grey petrification icon, #A9A9A9 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-017",
+      "name_ko": "감전",
+      "name_en": "Shock",
+      "type": "debuff",
+      "color": "#FFFF00",
+      "desc": "yellow lightning bolt, electric sparks",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, yellow lightning bolt, electric sparks, dominant color #FFFF00, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Shock (debuff): yellow lightning bolt, electric sparks. Dominant color: #FFFF00. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Shock, yellow lightning bolt, electric sparks, #FFFF00 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-018",
+      "name_ko": "수면",
+      "name_en": "Sleep",
+      "type": "debuff",
+      "color": "#4169E1",
+      "desc": "Zzz floating, closed eyes, blue sleep bubble",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, Zzz floating, closed eyes, blue sleep bubble, dominant color #4169E1, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Sleep (debuff): Zzz floating, closed eyes, blue sleep bubble. Dominant color: #4169E1. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Sleep, Zzz floating, closed eyes, blue sleep bubble, #4169E1 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-019",
+      "name_ko": "공포",
+      "name_en": "Fear",
+      "type": "debuff",
+      "color": "#2F4F4F",
+      "desc": "frightened eyes, dark shadow looming, tremble marks",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, frightened eyes, dark shadow looming, tremble marks, dominant color #2F4F4F, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Fear (debuff): frightened eyes, dark shadow looming, tremble marks. Dominant color: #2F4F4F. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Fear, frightened eyes, dark shadow looming, tremble marks, #2F4F4F accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-DBF-020",
+      "name_ko": "광기",
+      "name_en": "Madness",
+      "type": "debuff",
+      "color": "#8B0000",
+      "desc": "cracked mind icon, dark red chaotic spiral",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, debuff status icon, cracked mind icon, dark red chaotic spiral, dominant color #8B0000, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Madness (debuff): cracked mind icon, dark red chaotic spiral. Dominant color: #8B0000. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Madness, cracked mind icon, dark red chaotic spiral, #8B0000 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-BUF-001",
+      "name_ko": "에테르강화",
+      "name_en": "Ether Empower",
+      "type": "buff",
+      "color": "#89CFF0",
+      "desc": "ascending cyan ether crystals, power-up arrow, bright aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, buff status icon, ascending cyan ether crystals, power-up arrow, bright aura, dominant color #89CFF0, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Ether Empower (buff): ascending cyan ether crystals, power-up arrow, bright aura. Dominant color: #89CFF0. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Ether Empower, ascending cyan ether crystals, power-up arrow, bright aura, #89CFF0 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-BUF-002",
+      "name_ko": "기억수호",
+      "name_en": "Memory Guard",
+      "type": "buff",
+      "color": "#9B59B6",
+      "desc": "purple shield with memory symbols, protective circle",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, buff status icon, purple shield with memory symbols, protective circle, dominant color #9B59B6, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Memory Guard (buff): purple shield with memory symbols, protective circle. Dominant color: #9B59B6. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Memory Guard, purple shield with memory symbols, protective circle, #9B59B6 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-BUF-003",
+      "name_ko": "시간가속",
+      "name_en": "Time Haste",
+      "type": "buff",
+      "color": "#FFD700",
+      "desc": "golden clock spinning fast, speed lines, haste aura",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, buff status icon, golden clock spinning fast, speed lines, haste aura, dominant color #FFD700, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Time Haste (buff): golden clock spinning fast, speed lines, haste aura. Dominant color: #FFD700. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Time Haste, golden clock spinning fast, speed lines, haste aura, #FFD700 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-BUF-004",
+      "name_ko": "그림자은폐",
+      "name_en": "Shadow Cloak",
+      "type": "buff",
+      "color": "#2ECC71",
+      "desc": "dark cloak icon with green shadow wisps, stealth symbol",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, buff status icon, dark cloak icon with green shadow wisps, stealth symbol, dominant color #2ECC71, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Shadow Cloak (buff): dark cloak icon with green shadow wisps, stealth symbol. Dominant color: #2ECC71. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Shadow Cloak, dark cloak icon with green shadow wisps, stealth symbol, #2ECC71 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "STS-BUF-005",
+      "name_ko": "공간도약",
+      "name_en": "Spatial Leap",
+      "type": "buff",
+      "color": "#FF00FF",
+      "desc": "magenta portal icon with movement arrow, spatial distortion",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG status effect icon, dark fantasy Korean MMORPG style, buff status icon, magenta portal icon with movement arrow, spatial distortion, dominant color #FF00FF, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI status icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text, low quality, noisy, soft edges, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG status icon, 64x64 pixels. Spatial Leap (buff): magenta portal icon with movement arrow, spatial distortion. Dominant color: #FF00FF. Clean pixel edges, black outline, dark fantasy. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG status icon, Spatial Leap, magenta portal icon with movement arrow, spatial distortion, #FF00FF accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

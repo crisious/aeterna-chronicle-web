@@ -1,0 +1,366 @@
+{
+  "region": "기억의 심연",
+  "region_en": "Abyss of Memory",
+  "theme": "기억 심연 (Memory Abyss)",
+  "color_palette": {
+    "primary": "#0A0A1E",
+    "secondary": "#1A1A3E",
+    "accent": "#89CFF0",
+    "names": [
+      "심연 흑색",
+      "기억 파편 남색",
+      "기억 결정 청백"
+    ]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "ABY-G-01",
+      "name": "기억 결정 바닥",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Main walkable surface, Memory crystal floor, dark void (#0A0A1E) with embedded cyan (#89CFF0) memory crystals",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Memory crystal floor, dark void (#0A0A1E) with embedded cyan (#89CFF0) memory crystals, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Memory crystal floor, dark void (#0A0A1E) with embedded cyan (#89CFF0) memory crystals. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, memory crystal floor, dark void with embedded cyan crystals, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-02",
+      "name": "에테르 파편 길",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ether fragment path, floating dark stone fragments with golden memory glow between gaps",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ether fragment path, floating dark stone fragments with golden memory glow between gaps, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ether fragment path, floating dark stone fragments with golden memory glow between gaps. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ether fragment path, floating dark stone, golden memory glow, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-03",
+      "name": "붕괴된 기억",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Collapsed memory ground, fragmented reality tiles, distortion at edges",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Collapsed memory ground, fragmented reality tiles, distortion at edges, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Collapsed memory ground, fragmented reality tiles, distortion at edges. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, collapsed memory ground, fragmented reality tiles, distortion, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-04",
+      "name": "기억 회로판",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Memory circuit floor, geometric (#89CFF0) light lines on obsidian surface",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Memory circuit floor, geometric (#89CFF0) light lines on obsidian surface, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Memory circuit floor, geometric (#89CFF0) light lines on obsidian surface. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, memory circuit floor, cyan light lines on obsidian, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-05",
+      "name": "망각의 공허",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Void of oblivion, near-black surface with faint star-like sparkles deep within",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Void of oblivion, near-black surface with faint star-like sparkles deep within, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Void of oblivion, near-black surface with faint star-like sparkles deep within. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, void of oblivion, near-black, faint star sparkles deep within, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-06",
+      "name": "에테르 맥동 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ether pulse floor, rhythmic cyan pulse waves radiating from center",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ether pulse floor, rhythmic cyan pulse waves radiating from center, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ether pulse floor, rhythmic cyan pulse waves radiating from center. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ether pulse floor, rhythmic cyan pulse waves, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-07",
+      "name": "고대 기억 도서관",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ancient memory library floor, tile mosaic with memory rune inscriptions",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ancient memory library floor, tile mosaic with memory rune inscriptions, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ancient memory library floor, tile mosaic with memory rune inscriptions. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ancient memory library floor, mosaic, memory rune inscriptions, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-08",
+      "name": "기억 나선",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Memory spiral, concentric spiral pattern in dark indigo, memory fragments orbiting",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Memory spiral, concentric spiral pattern in dark indigo, memory fragments orbiting, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Memory spiral, concentric spiral pattern in dark indigo, memory fragments orbiting. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, memory spiral floor, concentric dark indigo pattern, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ABY-G-09",
+      "name": "심연 왕좌 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Abyss throne floor, obsidian and (#FFD700) gold inlay, memory crystal pedestals",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Abyss throne floor, obsidian and (#FFD700) gold inlay, memory crystal pedestals, palette: #0A0A1E/#1A1A3E/#89CFF0, dark fantasy 기억 심연 (Memory Abyss), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Abyss throne floor, obsidian and (#FFD700) gold inlay, memory crystal pedestals. Color palette: (#0A0A1E/#1A1A3E/#89CFF0). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, abyss throne floor, obsidian and gold inlay, crystal pedestals, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

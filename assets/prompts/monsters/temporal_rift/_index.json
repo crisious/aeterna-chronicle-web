@@ -1,0 +1,230 @@
+{
+  "region": "시간의 균열",
+  "region_en": "Temporal Rift",
+  "total_monsters": 30,
+  "by_grade": {
+    "normal": 20,
+    "elite": 5,
+    "boss": 3,
+    "raid": 2
+  },
+  "color_palette": {
+    "primary": "#1A0A2E",
+    "secondary": "#3D2A5E",
+    "glow": "#FFD700",
+    "rift": "#FF6B35",
+    "chrono": "#00FFFF"
+  },
+  "monster_list": [
+    {
+      "id": "TMP_MON_001",
+      "name": "시간 파편충",
+      "name_en": "Chrono Shard Bug",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_002",
+      "name": "균열 슬라임",
+      "name_en": "Rift Slime",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_003",
+      "name": "시간 쥐",
+      "name_en": "Time Rat",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_004",
+      "name": "크로노 박쥐",
+      "name_en": "Chrono Bat",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_005",
+      "name": "시간 거미",
+      "name_en": "Time Spider",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_006",
+      "name": "균열 유령",
+      "name_en": "Rift Phantom",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_007",
+      "name": "시간 늑대",
+      "name_en": "Temporal Wolf",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_008",
+      "name": "크로노 골렘",
+      "name_en": "Chrono Golem",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_009",
+      "name": "시간 독사",
+      "name_en": "Time Viper",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_010",
+      "name": "균열 결정체",
+      "name_en": "Rift Crystal Entity",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_011",
+      "name": "시간 식물",
+      "name_en": "Chrono Plant",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_012",
+      "name": "균열 해골",
+      "name_en": "Rift Skeleton",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_013",
+      "name": "시간 흡수자",
+      "name_en": "Time Absorber",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_014",
+      "name": "크로노 도마뱀",
+      "name_en": "Chrono Lizard",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_015",
+      "name": "시간 수정충",
+      "name_en": "Time Beetle",
+      "grade": "normal",
+      "size": "S"
+    },
+    {
+      "id": "TMP_MON_016",
+      "name": "균열 부유체",
+      "name_en": "Rift Floater",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_017",
+      "name": "시간 전사 잔영",
+      "name_en": "Time Warrior Echo",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_018",
+      "name": "크로노 큐브",
+      "name_en": "Chrono Cube",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_019",
+      "name": "시간 모래악마",
+      "name_en": "Time Sand Devil",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_020",
+      "name": "균열 감시자",
+      "name_en": "Rift Watcher",
+      "grade": "normal",
+      "size": "M"
+    },
+    {
+      "id": "TMP_MON_021",
+      "name": "시간 파수 변이체",
+      "name_en": "Temporal Sentinel Mutant",
+      "grade": "elite",
+      "size": "L"
+    },
+    {
+      "id": "TMP_MON_022",
+      "name": "크로노 나이트",
+      "name_en": "Chrono Knight",
+      "grade": "elite",
+      "size": "L"
+    },
+    {
+      "id": "TMP_MON_023",
+      "name": "균열 마법사",
+      "name_en": "Rift Sorcerer",
+      "grade": "elite",
+      "size": "L"
+    },
+    {
+      "id": "TMP_MON_024",
+      "name": "시간 드래곤 유체",
+      "name_en": "Temporal Drake Larva",
+      "grade": "elite",
+      "size": "L"
+    },
+    {
+      "id": "TMP_MON_025",
+      "name": "크로노 키메라",
+      "name_en": "Chrono Chimera",
+      "grade": "elite",
+      "size": "L"
+    },
+    {
+      "id": "TMP_MON_026",
+      "name": "시간의 수호자",
+      "name_en": "Guardian of Time",
+      "grade": "boss",
+      "size": "XL"
+    },
+    {
+      "id": "TMP_MON_027",
+      "name": "크로노 비스트",
+      "name_en": "Chrono Beast",
+      "grade": "boss",
+      "size": "XL"
+    },
+    {
+      "id": "TMP_MON_028",
+      "name": "균열 지배자",
+      "name_en": "Rift Dominator",
+      "grade": "boss",
+      "size": "XL"
+    },
+    {
+      "id": "TMP_MON_029",
+      "name": "크로노스 프라임",
+      "name_en": "Chronos Prime",
+      "grade": "raid",
+      "size": "XXL"
+    },
+    {
+      "id": "TMP_MON_030",
+      "name": "보이드 아키텍트",
+      "name_en": "Void Architect",
+      "grade": "raid",
+      "size": "XXL"
+    }
+  ]
+}

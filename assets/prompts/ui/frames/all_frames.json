@@ -1,0 +1,3620 @@
+{
+  "total_components": 30,
+  "themes": 3,
+  "total_variants": 90,
+  "total_prompts": 270,
+  "component_categories": {
+    "HUD": 8,
+    "inventory": 6,
+    "shop": 6,
+    "settings": 4,
+    "buttons": 6
+  },
+  "theme_list": {
+    "default": "기본 (다크 판타지)",
+    "dark": "다크 (심연 테마)",
+    "season": "시즌 (시간의균열 테마)"
+  },
+  "variants": [
+    {
+      "asset_id": "UI-HUD-001-DEF",
+      "component_id": "UI-HUD-001",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "HP 바 프레임",
+      "name_en": "HP bar frame",
+      "description": "horizontal health bar container with heart icon, red gradient fill area",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal health bar container with heart icon, red gradient fill area, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: HP bar frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal health bar container with heart icon, red gradient fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, HP bar frame, horizontal health bar container with heart icon, red gradient fill area, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-002-DEF",
+      "component_id": "UI-HUD-002",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "MP 바 프레임",
+      "name_en": "MP bar frame",
+      "description": "horizontal mana bar container with crystal icon, blue-purple gradient fill area",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal mana bar container with crystal icon, blue-purple gradient fill area, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: MP bar frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal mana bar container with crystal icon, blue-purple gradient fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, MP bar frame, horizontal mana bar container with crystal icon, blue-purple gradient fill area, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-003-DEF",
+      "component_id": "UI-HUD-003",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "EXP 바 프레임",
+      "name_en": "EXP bar frame",
+      "description": "horizontal experience bar, star icon, amber fill area",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal experience bar, star icon, amber fill area, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: EXP bar frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal experience bar, star icon, amber fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, EXP bar frame, horizontal experience bar, star icon, amber fill area, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-004-DEF",
+      "component_id": "UI-HUD-004",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "스킬바 슬롯",
+      "name_en": "skill bar slot",
+      "description": "square skill slot with cooldown overlay capability, number badge corner",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, square skill slot with cooldown overlay capability, number badge corner, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: skill bar slot. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, square skill slot with cooldown overlay capability, number badge corner. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, skill bar slot, square skill slot with cooldown overlay capability, number badge corner, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-005-DEF",
+      "component_id": "UI-HUD-005",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "미니맵 프레임",
+      "name_en": "minimap frame",
+      "description": "circular minimap border with compass rose, fog of war overlay",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, circular minimap border with compass rose, fog of war overlay, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: minimap frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, circular minimap border with compass rose, fog of war overlay. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, minimap frame, circular minimap border with compass rose, fog of war overlay, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-006-DEF",
+      "component_id": "UI-HUD-006",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "퀵슬롯 프레임",
+      "name_en": "quickslot frame",
+      "description": "horizontal quickslot bar, numbered item slots",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal quickslot bar, numbered item slots, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: quickslot frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal quickslot bar, numbered item slots. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, quickslot frame, horizontal quickslot bar, numbered item slots, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-007-DEF",
+      "component_id": "UI-HUD-007",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "대화창 프레임",
+      "name_en": "dialog frame",
+      "description": "text dialog box with character portrait area, name plate, scroll indicator",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, text dialog box with character portrait area, name plate, scroll indicator, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: dialog frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, text dialog box with character portrait area, name plate, scroll indicator. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, dialog frame, text dialog box with character portrait area, name plate, scroll indicator, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-008-DEF",
+      "component_id": "UI-HUD-008",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "알림 팝업",
+      "name_en": "notification popup",
+      "description": "small notification toast, icon area + text area, auto-dismiss",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, small notification toast, icon area + text area, auto-dismiss, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: notification popup. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, small notification toast, icon area + text area, auto-dismiss. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, notification popup, small notification toast, icon area + text area, auto-dismiss, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-001-DEF",
+      "component_id": "UI-INV-001",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "인벤토리 배경",
+      "name_en": "inventory background",
+      "description": "large panel background for item grid, ornate border corners",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, large panel background for item grid, ornate border corners, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory background. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, large panel background for item grid, ornate border corners. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory background, large panel background for item grid, ornate border corners, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-002-DEF",
+      "component_id": "UI-INV-002",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "인벤토리 슬롯",
+      "name_en": "inventory slot",
+      "description": "single item slot, empty state with subtle grid pattern",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, single item slot, empty state with subtle grid pattern, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory slot. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, single item slot, empty state with subtle grid pattern. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory slot, single item slot, empty state with subtle grid pattern, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-003-DEF",
+      "component_id": "UI-INV-003",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "인벤토리 탭",
+      "name_en": "inventory tab",
+      "description": "tab buttons for equipment/consumable/material/quest categories",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, tab buttons for equipment/consumable/material/quest categories, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory tab. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, tab buttons for equipment/consumable/material/quest categories. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory tab, tab buttons for equipment/consumable/material/quest categories, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-004-DEF",
+      "component_id": "UI-INV-004",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "스크롤바",
+      "name_en": "scrollbar",
+      "description": "vertical scrollbar with thumb and track, arrow buttons",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, vertical scrollbar with thumb and track, arrow buttons, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: scrollbar. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, vertical scrollbar with thumb and track, arrow buttons. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, scrollbar, vertical scrollbar with thumb and track, arrow buttons, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-005-DEF",
+      "component_id": "UI-INV-005",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "선택 틀",
+      "name_en": "selection frame",
+      "description": "highlighted selection border, glowing accent color outline",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, highlighted selection border, glowing accent color outline, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: selection frame. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, highlighted selection border, glowing accent color outline. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, selection frame, highlighted selection border, glowing accent color outline, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-006-DEF",
+      "component_id": "UI-INV-006",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "툴팁 박스",
+      "name_en": "tooltip box",
+      "description": "item tooltip container with stat lines area, rarity stripe",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, item tooltip container with stat lines area, rarity stripe, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: tooltip box. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, item tooltip container with stat lines area, rarity stripe. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, tooltip box, item tooltip container with stat lines area, rarity stripe, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-001-DEF",
+      "component_id": "UI-SHP-001",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "상점 배경",
+      "name_en": "shop background",
+      "description": "shop panel with merchant area, item display grid",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, shop panel with merchant area, item display grid, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: shop background. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, shop panel with merchant area, item display grid. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, shop background, shop panel with merchant area, item display grid, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-002-DEF",
+      "component_id": "UI-SHP-002",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "상점 탭",
+      "name_en": "shop tab",
+      "description": "category tabs for weapons/armor/consumable/special",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, category tabs for weapons/armor/consumable/special, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: shop tab. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, category tabs for weapons/armor/consumable/special. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, shop tab, category tabs for weapons/armor/consumable/special, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-003-DEF",
+      "component_id": "UI-SHP-003",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "가격표 뱃지",
+      "name_en": "price tag badge",
+      "description": "small price display with coin icon, number area",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, small price display with coin icon, number area, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: price tag badge. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, small price display with coin icon, number area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, price tag badge, small price display with coin icon, number area, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-004-DEF",
+      "component_id": "UI-SHP-004",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "구매 버튼",
+      "name_en": "buy button",
+      "description": "green-accented purchase button, coin icon",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, green-accented purchase button, coin icon, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: buy button. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, green-accented purchase button, coin icon. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, buy button, green-accented purchase button, coin icon, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-005-DEF",
+      "component_id": "UI-SHP-005",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "판매 버튼",
+      "name_en": "sell button",
+      "description": "red-accented sell button, outgoing arrow",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, red-accented sell button, outgoing arrow, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: sell button. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, red-accented sell button, outgoing arrow. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, sell button, red-accented sell button, outgoing arrow, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-006-DEF",
+      "component_id": "UI-SHP-006",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "분류 드롭다운",
+      "name_en": "sort dropdown",
+      "description": "dropdown menu for sorting options",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, dropdown menu for sorting options, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: sort dropdown. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, dropdown menu for sorting options. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, sort dropdown, dropdown menu for sorting options, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-001-DEF",
+      "component_id": "UI-SET-001",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "설정 배경",
+      "name_en": "settings background",
+      "description": "settings panel, clean organized layout",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, settings panel, clean organized layout, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: settings background. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, settings panel, clean organized layout. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, settings background, settings panel, clean organized layout, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-002-DEF",
+      "component_id": "UI-SET-002",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "슬라이더",
+      "name_en": "slider",
+      "description": "horizontal slider bar with draggable thumb, fill indication",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal slider bar with draggable thumb, fill indication, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: slider. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, horizontal slider bar with draggable thumb, fill indication. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, slider, horizontal slider bar with draggable thumb, fill indication, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-003-DEF",
+      "component_id": "UI-SET-003",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "토글 스위치",
+      "name_en": "toggle switch",
+      "description": "on/off toggle, two states",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, on/off toggle, two states, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: toggle switch. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, on/off toggle, two states. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, toggle switch, on/off toggle, two states, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-004-DEF",
+      "component_id": "UI-SET-004",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "드롭다운 메뉴",
+      "name_en": "dropdown menu",
+      "description": "expandable dropdown with arrow indicator",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, expandable dropdown with arrow indicator, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: dropdown menu. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, expandable dropdown with arrow indicator. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, dropdown menu, expandable dropdown with arrow indicator, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-001-DEF",
+      "component_id": "UI-BTN-001",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "대형 버튼 (Normal)",
+      "name_en": "large button normal",
+      "description": "wide rectangular button, standard state, text area centered",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, wide rectangular button, standard state, text area centered, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button normal. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, wide rectangular button, standard state, text area centered. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button normal, wide rectangular button, standard state, text area centered, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-002-DEF",
+      "component_id": "UI-BTN-002",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "대형 버튼 (Hover)",
+      "name_en": "large button hover",
+      "description": "wide button with glow highlight, slightly brighter",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, wide button with glow highlight, slightly brighter, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button hover. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, wide button with glow highlight, slightly brighter. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button hover, wide button with glow highlight, slightly brighter, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-003-DEF",
+      "component_id": "UI-BTN-003",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "대형 버튼 (Pressed)",
+      "name_en": "large button pressed",
+      "description": "wide button depressed state, darker, inset shadow",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, wide button depressed state, darker, inset shadow, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button pressed. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, wide button depressed state, darker, inset shadow. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button pressed, wide button depressed state, darker, inset shadow, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-004-DEF",
+      "component_id": "UI-BTN-004",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "중형 버튼",
+      "name_en": "medium button",
+      "description": "medium-width button, standard proportions",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, medium-width button, standard proportions, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: medium button. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, medium-width button, standard proportions. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, medium button, medium-width button, standard proportions, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-005-DEF",
+      "component_id": "UI-BTN-005",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "소형 버튼",
+      "name_en": "small button",
+      "description": "small compact button, icon-compatible",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, small compact button, icon-compatible, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: small button. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, small compact button, icon-compatible. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, small button, small compact button, icon-compatible, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-006-DEF",
+      "component_id": "UI-BTN-006",
+      "theme": "default",
+      "theme_name": "기본 (다크 판타지)",
+      "name_ko": "비활성 버튼",
+      "name_en": "disabled button",
+      "description": "greyed-out button, no interaction state",
+      "colors": {
+        "bg": "#1A1A2E",
+        "border": "#5C4A72",
+        "accent": "#89CFF0"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, greyed-out button, no interaction state, palette (#1A1A2E/#5C4A72/#89CFF0), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: disabled button. dark fantasy medieval RPG UI, stone and metal frame, ornate gothic border, dark indigo (#1A1A2E) background, greyed-out button, no interaction state. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, disabled button, greyed-out button, no interaction state, 기본 (다크 판타지) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-001-DAR",
+      "component_id": "UI-HUD-001",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "HP 바 프레임",
+      "name_en": "HP bar frame",
+      "description": "horizontal health bar container with heart icon, red gradient fill area",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal health bar container with heart icon, red gradient fill area, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: HP bar frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal health bar container with heart icon, red gradient fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, HP bar frame, horizontal health bar container with heart icon, red gradient fill area, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-002-DAR",
+      "component_id": "UI-HUD-002",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "MP 바 프레임",
+      "name_en": "MP bar frame",
+      "description": "horizontal mana bar container with crystal icon, blue-purple gradient fill area",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal mana bar container with crystal icon, blue-purple gradient fill area, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: MP bar frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal mana bar container with crystal icon, blue-purple gradient fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, MP bar frame, horizontal mana bar container with crystal icon, blue-purple gradient fill area, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-003-DAR",
+      "component_id": "UI-HUD-003",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "EXP 바 프레임",
+      "name_en": "EXP bar frame",
+      "description": "horizontal experience bar, star icon, amber fill area",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal experience bar, star icon, amber fill area, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: EXP bar frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal experience bar, star icon, amber fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, EXP bar frame, horizontal experience bar, star icon, amber fill area, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-004-DAR",
+      "component_id": "UI-HUD-004",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "스킬바 슬롯",
+      "name_en": "skill bar slot",
+      "description": "square skill slot with cooldown overlay capability, number badge corner",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, square skill slot with cooldown overlay capability, number badge corner, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: skill bar slot. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, square skill slot with cooldown overlay capability, number badge corner. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, skill bar slot, square skill slot with cooldown overlay capability, number badge corner, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-005-DAR",
+      "component_id": "UI-HUD-005",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "미니맵 프레임",
+      "name_en": "minimap frame",
+      "description": "circular minimap border with compass rose, fog of war overlay",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, circular minimap border with compass rose, fog of war overlay, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: minimap frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, circular minimap border with compass rose, fog of war overlay. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, minimap frame, circular minimap border with compass rose, fog of war overlay, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-006-DAR",
+      "component_id": "UI-HUD-006",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "퀵슬롯 프레임",
+      "name_en": "quickslot frame",
+      "description": "horizontal quickslot bar, numbered item slots",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal quickslot bar, numbered item slots, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: quickslot frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal quickslot bar, numbered item slots. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, quickslot frame, horizontal quickslot bar, numbered item slots, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-007-DAR",
+      "component_id": "UI-HUD-007",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "대화창 프레임",
+      "name_en": "dialog frame",
+      "description": "text dialog box with character portrait area, name plate, scroll indicator",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, text dialog box with character portrait area, name plate, scroll indicator, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: dialog frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, text dialog box with character portrait area, name plate, scroll indicator. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, dialog frame, text dialog box with character portrait area, name plate, scroll indicator, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-008-DAR",
+      "component_id": "UI-HUD-008",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "알림 팝업",
+      "name_en": "notification popup",
+      "description": "small notification toast, icon area + text area, auto-dismiss",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, small notification toast, icon area + text area, auto-dismiss, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: notification popup. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, small notification toast, icon area + text area, auto-dismiss. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, notification popup, small notification toast, icon area + text area, auto-dismiss, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-001-DAR",
+      "component_id": "UI-INV-001",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "인벤토리 배경",
+      "name_en": "inventory background",
+      "description": "large panel background for item grid, ornate border corners",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, large panel background for item grid, ornate border corners, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory background. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, large panel background for item grid, ornate border corners. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory background, large panel background for item grid, ornate border corners, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-002-DAR",
+      "component_id": "UI-INV-002",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "인벤토리 슬롯",
+      "name_en": "inventory slot",
+      "description": "single item slot, empty state with subtle grid pattern",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, single item slot, empty state with subtle grid pattern, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory slot. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, single item slot, empty state with subtle grid pattern. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory slot, single item slot, empty state with subtle grid pattern, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-003-DAR",
+      "component_id": "UI-INV-003",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "인벤토리 탭",
+      "name_en": "inventory tab",
+      "description": "tab buttons for equipment/consumable/material/quest categories",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, tab buttons for equipment/consumable/material/quest categories, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory tab. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, tab buttons for equipment/consumable/material/quest categories. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory tab, tab buttons for equipment/consumable/material/quest categories, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-004-DAR",
+      "component_id": "UI-INV-004",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "스크롤바",
+      "name_en": "scrollbar",
+      "description": "vertical scrollbar with thumb and track, arrow buttons",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, vertical scrollbar with thumb and track, arrow buttons, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: scrollbar. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, vertical scrollbar with thumb and track, arrow buttons. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, scrollbar, vertical scrollbar with thumb and track, arrow buttons, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-005-DAR",
+      "component_id": "UI-INV-005",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "선택 틀",
+      "name_en": "selection frame",
+      "description": "highlighted selection border, glowing accent color outline",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, highlighted selection border, glowing accent color outline, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: selection frame. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, highlighted selection border, glowing accent color outline. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, selection frame, highlighted selection border, glowing accent color outline, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-006-DAR",
+      "component_id": "UI-INV-006",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "툴팁 박스",
+      "name_en": "tooltip box",
+      "description": "item tooltip container with stat lines area, rarity stripe",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, item tooltip container with stat lines area, rarity stripe, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: tooltip box. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, item tooltip container with stat lines area, rarity stripe. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, tooltip box, item tooltip container with stat lines area, rarity stripe, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-001-DAR",
+      "component_id": "UI-SHP-001",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "상점 배경",
+      "name_en": "shop background",
+      "description": "shop panel with merchant area, item display grid",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, shop panel with merchant area, item display grid, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: shop background. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, shop panel with merchant area, item display grid. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, shop background, shop panel with merchant area, item display grid, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-002-DAR",
+      "component_id": "UI-SHP-002",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "상점 탭",
+      "name_en": "shop tab",
+      "description": "category tabs for weapons/armor/consumable/special",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, category tabs for weapons/armor/consumable/special, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: shop tab. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, category tabs for weapons/armor/consumable/special. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, shop tab, category tabs for weapons/armor/consumable/special, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-003-DAR",
+      "component_id": "UI-SHP-003",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "가격표 뱃지",
+      "name_en": "price tag badge",
+      "description": "small price display with coin icon, number area",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, small price display with coin icon, number area, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: price tag badge. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, small price display with coin icon, number area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, price tag badge, small price display with coin icon, number area, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-004-DAR",
+      "component_id": "UI-SHP-004",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "구매 버튼",
+      "name_en": "buy button",
+      "description": "green-accented purchase button, coin icon",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, green-accented purchase button, coin icon, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: buy button. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, green-accented purchase button, coin icon. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, buy button, green-accented purchase button, coin icon, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-005-DAR",
+      "component_id": "UI-SHP-005",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "판매 버튼",
+      "name_en": "sell button",
+      "description": "red-accented sell button, outgoing arrow",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, red-accented sell button, outgoing arrow, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: sell button. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, red-accented sell button, outgoing arrow. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, sell button, red-accented sell button, outgoing arrow, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-006-DAR",
+      "component_id": "UI-SHP-006",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "분류 드롭다운",
+      "name_en": "sort dropdown",
+      "description": "dropdown menu for sorting options",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, dropdown menu for sorting options, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: sort dropdown. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, dropdown menu for sorting options. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, sort dropdown, dropdown menu for sorting options, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-001-DAR",
+      "component_id": "UI-SET-001",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "설정 배경",
+      "name_en": "settings background",
+      "description": "settings panel, clean organized layout",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, settings panel, clean organized layout, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: settings background. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, settings panel, clean organized layout. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, settings background, settings panel, clean organized layout, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-002-DAR",
+      "component_id": "UI-SET-002",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "슬라이더",
+      "name_en": "slider",
+      "description": "horizontal slider bar with draggable thumb, fill indication",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal slider bar with draggable thumb, fill indication, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: slider. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, horizontal slider bar with draggable thumb, fill indication. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, slider, horizontal slider bar with draggable thumb, fill indication, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-003-DAR",
+      "component_id": "UI-SET-003",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "토글 스위치",
+      "name_en": "toggle switch",
+      "description": "on/off toggle, two states",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, on/off toggle, two states, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: toggle switch. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, on/off toggle, two states. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, toggle switch, on/off toggle, two states, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-004-DAR",
+      "component_id": "UI-SET-004",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "드롭다운 메뉴",
+      "name_en": "dropdown menu",
+      "description": "expandable dropdown with arrow indicator",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, expandable dropdown with arrow indicator, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: dropdown menu. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, expandable dropdown with arrow indicator. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, dropdown menu, expandable dropdown with arrow indicator, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-001-DAR",
+      "component_id": "UI-BTN-001",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "대형 버튼 (Normal)",
+      "name_en": "large button normal",
+      "description": "wide rectangular button, standard state, text area centered",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, wide rectangular button, standard state, text area centered, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button normal. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, wide rectangular button, standard state, text area centered. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button normal, wide rectangular button, standard state, text area centered, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-002-DAR",
+      "component_id": "UI-BTN-002",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "대형 버튼 (Hover)",
+      "name_en": "large button hover",
+      "description": "wide button with glow highlight, slightly brighter",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, wide button with glow highlight, slightly brighter, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button hover. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, wide button with glow highlight, slightly brighter. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button hover, wide button with glow highlight, slightly brighter, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-003-DAR",
+      "component_id": "UI-BTN-003",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "대형 버튼 (Pressed)",
+      "name_en": "large button pressed",
+      "description": "wide button depressed state, darker, inset shadow",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, wide button depressed state, darker, inset shadow, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button pressed. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, wide button depressed state, darker, inset shadow. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button pressed, wide button depressed state, darker, inset shadow, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-004-DAR",
+      "component_id": "UI-BTN-004",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "중형 버튼",
+      "name_en": "medium button",
+      "description": "medium-width button, standard proportions",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, medium-width button, standard proportions, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: medium button. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, medium-width button, standard proportions. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, medium button, medium-width button, standard proportions, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-005-DAR",
+      "component_id": "UI-BTN-005",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "소형 버튼",
+      "name_en": "small button",
+      "description": "small compact button, icon-compatible",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, small compact button, icon-compatible, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: small button. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, small compact button, icon-compatible. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, small button, small compact button, icon-compatible, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-006-DAR",
+      "component_id": "UI-BTN-006",
+      "theme": "dark",
+      "theme_name": "다크 (심연 테마)",
+      "name_ko": "비활성 버튼",
+      "name_en": "disabled button",
+      "description": "greyed-out button, no interaction state",
+      "colors": {
+        "bg": "#0A0A1E",
+        "border": "#1A1A3E",
+        "accent": "#FFD700"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, greyed-out button, no interaction state, palette (#0A0A1E/#1A1A3E/#FFD700), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: disabled button. abyss-themed UI, obsidian frame with memory crystal accents, deep void (#0A0A1E) background, golden (#FFD700) highlights, greyed-out button, no interaction state. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, disabled button, greyed-out button, no interaction state, 다크 (심연 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-001-SEA",
+      "component_id": "UI-HUD-001",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "HP 바 프레임",
+      "name_en": "HP bar frame",
+      "description": "horizontal health bar container with heart icon, red gradient fill area",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal health bar container with heart icon, red gradient fill area, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: HP bar frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal health bar container with heart icon, red gradient fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, HP bar frame, horizontal health bar container with heart icon, red gradient fill area, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-002-SEA",
+      "component_id": "UI-HUD-002",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "MP 바 프레임",
+      "name_en": "MP bar frame",
+      "description": "horizontal mana bar container with crystal icon, blue-purple gradient fill area",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal mana bar container with crystal icon, blue-purple gradient fill area, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: MP bar frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal mana bar container with crystal icon, blue-purple gradient fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, MP bar frame, horizontal mana bar container with crystal icon, blue-purple gradient fill area, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-003-SEA",
+      "component_id": "UI-HUD-003",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "EXP 바 프레임",
+      "name_en": "EXP bar frame",
+      "description": "horizontal experience bar, star icon, amber fill area",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal experience bar, star icon, amber fill area, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: EXP bar frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal experience bar, star icon, amber fill area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, EXP bar frame, horizontal experience bar, star icon, amber fill area, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-004-SEA",
+      "component_id": "UI-HUD-004",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "스킬바 슬롯",
+      "name_en": "skill bar slot",
+      "description": "square skill slot with cooldown overlay capability, number badge corner",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, square skill slot with cooldown overlay capability, number badge corner, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: skill bar slot. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, square skill slot with cooldown overlay capability, number badge corner. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, skill bar slot, square skill slot with cooldown overlay capability, number badge corner, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-005-SEA",
+      "component_id": "UI-HUD-005",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "미니맵 프레임",
+      "name_en": "minimap frame",
+      "description": "circular minimap border with compass rose, fog of war overlay",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, circular minimap border with compass rose, fog of war overlay, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: minimap frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, circular minimap border with compass rose, fog of war overlay. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, minimap frame, circular minimap border with compass rose, fog of war overlay, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-006-SEA",
+      "component_id": "UI-HUD-006",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "퀵슬롯 프레임",
+      "name_en": "quickslot frame",
+      "description": "horizontal quickslot bar, numbered item slots",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal quickslot bar, numbered item slots, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: quickslot frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal quickslot bar, numbered item slots. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, quickslot frame, horizontal quickslot bar, numbered item slots, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-007-SEA",
+      "component_id": "UI-HUD-007",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "대화창 프레임",
+      "name_en": "dialog frame",
+      "description": "text dialog box with character portrait area, name plate, scroll indicator",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, text dialog box with character portrait area, name plate, scroll indicator, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: dialog frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, text dialog box with character portrait area, name plate, scroll indicator. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, dialog frame, text dialog box with character portrait area, name plate, scroll indicator, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-HUD-008-SEA",
+      "component_id": "UI-HUD-008",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "알림 팝업",
+      "name_en": "notification popup",
+      "description": "small notification toast, icon area + text area, auto-dismiss",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, small notification toast, icon area + text area, auto-dismiss, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: notification popup. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, small notification toast, icon area + text area, auto-dismiss. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, notification popup, small notification toast, icon area + text area, auto-dismiss, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-001-SEA",
+      "component_id": "UI-INV-001",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "인벤토리 배경",
+      "name_en": "inventory background",
+      "description": "large panel background for item grid, ornate border corners",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, large panel background for item grid, ornate border corners, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory background. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, large panel background for item grid, ornate border corners. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory background, large panel background for item grid, ornate border corners, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-002-SEA",
+      "component_id": "UI-INV-002",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "인벤토리 슬롯",
+      "name_en": "inventory slot",
+      "description": "single item slot, empty state with subtle grid pattern",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, single item slot, empty state with subtle grid pattern, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory slot. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, single item slot, empty state with subtle grid pattern. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory slot, single item slot, empty state with subtle grid pattern, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-003-SEA",
+      "component_id": "UI-INV-003",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "인벤토리 탭",
+      "name_en": "inventory tab",
+      "description": "tab buttons for equipment/consumable/material/quest categories",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, tab buttons for equipment/consumable/material/quest categories, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: inventory tab. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, tab buttons for equipment/consumable/material/quest categories. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, inventory tab, tab buttons for equipment/consumable/material/quest categories, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-004-SEA",
+      "component_id": "UI-INV-004",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "스크롤바",
+      "name_en": "scrollbar",
+      "description": "vertical scrollbar with thumb and track, arrow buttons",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, vertical scrollbar with thumb and track, arrow buttons, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: scrollbar. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, vertical scrollbar with thumb and track, arrow buttons. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, scrollbar, vertical scrollbar with thumb and track, arrow buttons, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-005-SEA",
+      "component_id": "UI-INV-005",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "선택 틀",
+      "name_en": "selection frame",
+      "description": "highlighted selection border, glowing accent color outline",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, highlighted selection border, glowing accent color outline, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: selection frame. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, highlighted selection border, glowing accent color outline. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, selection frame, highlighted selection border, glowing accent color outline, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-INV-006-SEA",
+      "component_id": "UI-INV-006",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "툴팁 박스",
+      "name_en": "tooltip box",
+      "description": "item tooltip container with stat lines area, rarity stripe",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, item tooltip container with stat lines area, rarity stripe, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: tooltip box. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, item tooltip container with stat lines area, rarity stripe. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, tooltip box, item tooltip container with stat lines area, rarity stripe, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-001-SEA",
+      "component_id": "UI-SHP-001",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "상점 배경",
+      "name_en": "shop background",
+      "description": "shop panel with merchant area, item display grid",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, shop panel with merchant area, item display grid, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: shop background. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, shop panel with merchant area, item display grid. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, shop background, shop panel with merchant area, item display grid, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-002-SEA",
+      "component_id": "UI-SHP-002",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "상점 탭",
+      "name_en": "shop tab",
+      "description": "category tabs for weapons/armor/consumable/special",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, category tabs for weapons/armor/consumable/special, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: shop tab. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, category tabs for weapons/armor/consumable/special. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, shop tab, category tabs for weapons/armor/consumable/special, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-003-SEA",
+      "component_id": "UI-SHP-003",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "가격표 뱃지",
+      "name_en": "price tag badge",
+      "description": "small price display with coin icon, number area",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, small price display with coin icon, number area, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: price tag badge. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, small price display with coin icon, number area. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, price tag badge, small price display with coin icon, number area, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-004-SEA",
+      "component_id": "UI-SHP-004",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "구매 버튼",
+      "name_en": "buy button",
+      "description": "green-accented purchase button, coin icon",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, green-accented purchase button, coin icon, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: buy button. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, green-accented purchase button, coin icon. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, buy button, green-accented purchase button, coin icon, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-005-SEA",
+      "component_id": "UI-SHP-005",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "판매 버튼",
+      "name_en": "sell button",
+      "description": "red-accented sell button, outgoing arrow",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, red-accented sell button, outgoing arrow, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: sell button. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, red-accented sell button, outgoing arrow. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, sell button, red-accented sell button, outgoing arrow, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SHP-006-SEA",
+      "component_id": "UI-SHP-006",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "분류 드롭다운",
+      "name_en": "sort dropdown",
+      "description": "dropdown menu for sorting options",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, dropdown menu for sorting options, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: sort dropdown. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, dropdown menu for sorting options. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, sort dropdown, dropdown menu for sorting options, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-001-SEA",
+      "component_id": "UI-SET-001",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "설정 배경",
+      "name_en": "settings background",
+      "description": "settings panel, clean organized layout",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, settings panel, clean organized layout, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: settings background. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, settings panel, clean organized layout. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, settings background, settings panel, clean organized layout, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-002-SEA",
+      "component_id": "UI-SET-002",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "슬라이더",
+      "name_en": "slider",
+      "description": "horizontal slider bar with draggable thumb, fill indication",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal slider bar with draggable thumb, fill indication, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: slider. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, horizontal slider bar with draggable thumb, fill indication. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, slider, horizontal slider bar with draggable thumb, fill indication, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-003-SEA",
+      "component_id": "UI-SET-003",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "토글 스위치",
+      "name_en": "toggle switch",
+      "description": "on/off toggle, two states",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, on/off toggle, two states, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: toggle switch. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, on/off toggle, two states. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, toggle switch, on/off toggle, two states, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-SET-004-SEA",
+      "component_id": "UI-SET-004",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "드롭다운 메뉴",
+      "name_en": "dropdown menu",
+      "description": "expandable dropdown with arrow indicator",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, expandable dropdown with arrow indicator, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: dropdown menu. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, expandable dropdown with arrow indicator. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, dropdown menu, expandable dropdown with arrow indicator, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-001-SEA",
+      "component_id": "UI-BTN-001",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "대형 버튼 (Normal)",
+      "name_en": "large button normal",
+      "description": "wide rectangular button, standard state, text area centered",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, wide rectangular button, standard state, text area centered, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button normal. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, wide rectangular button, standard state, text area centered. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button normal, wide rectangular button, standard state, text area centered, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-002-SEA",
+      "component_id": "UI-BTN-002",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "대형 버튼 (Hover)",
+      "name_en": "large button hover",
+      "description": "wide button with glow highlight, slightly brighter",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, wide button with glow highlight, slightly brighter, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button hover. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, wide button with glow highlight, slightly brighter. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button hover, wide button with glow highlight, slightly brighter, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-003-SEA",
+      "component_id": "UI-BTN-003",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "대형 버튼 (Pressed)",
+      "name_en": "large button pressed",
+      "description": "wide button depressed state, darker, inset shadow",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, wide button depressed state, darker, inset shadow, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: large button pressed. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, wide button depressed state, darker, inset shadow. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, large button pressed, wide button depressed state, darker, inset shadow, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-004-SEA",
+      "component_id": "UI-BTN-004",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "중형 버튼",
+      "name_en": "medium button",
+      "description": "medium-width button, standard proportions",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, medium-width button, standard proportions, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: medium button. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, medium-width button, standard proportions. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, medium button, medium-width button, standard proportions, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-005-SEA",
+      "component_id": "UI-BTN-005",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "소형 버튼",
+      "name_en": "small button",
+      "description": "small compact button, icon-compatible",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, small compact button, icon-compatible, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: small button. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, small compact button, icon-compatible. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, small button, small compact button, icon-compatible, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "UI-BTN-006-SEA",
+      "component_id": "UI-BTN-006",
+      "theme": "season",
+      "theme_name": "시즌 (시간의균열 테마)",
+      "name_ko": "비활성 버튼",
+      "name_en": "disabled button",
+      "description": "greyed-out button, no interaction state",
+      "colors": {
+        "bg": "#1A0A2E",
+        "border": "#3D2A5E",
+        "accent": "#FF6B35"
+      },
+      "nine_slice": true,
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game UI component, dark fantasy Korean MMORPG style, temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, greyed-out button, no interaction state, palette (#1A0A2E/#3D2A5E/#FF6B35), (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 9-slice compatible borders, game UI element, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>",
+          "negative": "3D render, realistic, blurry, watermark, text content, low quality, noisy, modern UI, flat design, material design",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art game UI component: disabled button. temporal rift themed UI, cracked reality frame, time-purple (#1A0A2E) background, orange (#FF6B35) rift accents, greyed-out button, no interaction state. 9-slice compatible borders. Clean pixel edges, black outline. Dark fantasy MMORPG. No sample text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG UI, disabled button, greyed-out button, no interaction state, 시즌 (시간의균열 테마) theme, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

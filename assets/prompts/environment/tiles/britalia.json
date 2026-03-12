@@ -1,0 +1,366 @@
+{
+  "region": "브리탈리아",
+  "region_en": "Britalia",
+  "theme": "항구 도시 (Harbor City)",
+  "color_palette": {
+    "primary": "#2F4F4F",
+    "secondary": "#8B4513",
+    "accent": "#48D1CC",
+    "names": [
+      "바다 회녹",
+      "녹슨 갈색",
+      "해양 발광 시안"
+    ]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "BRT-G-01",
+      "name": "젖은 부두 목재",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Main walkable surface, Wet dock planks, dark weathered wood with seawater stains, barnacle patches",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Wet dock planks, dark weathered wood with seawater stains, barnacle patches, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Wet dock planks, dark weathered wood with seawater stains, barnacle patches. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, wet dock wooden planks, seawater stains, barnacles, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-02",
+      "name": "산호 암반",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Coral rock formation, pink-orange coral mixed with dark sea rock",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Coral rock formation, pink-orange coral mixed with dark sea rock, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Coral rock formation, pink-orange coral mixed with dark sea rock. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, coral rock formation, pink-orange coral, dark sea rock, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-03",
+      "name": "해변 모래",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Harbor beach sand, wet dark sand with shell fragments, seaweed strands",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Harbor beach sand, wet dark sand with shell fragments, seaweed strands, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Harbor beach sand, wet dark sand with shell fragments, seaweed strands. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, harbor beach sand, shell fragments, seaweed, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-04",
+      "name": "항구 포석",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Harbor cobblestone, sea-worn grey stone, salt crystallization in gaps",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Harbor cobblestone, sea-worn grey stone, salt crystallization in gaps, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Harbor cobblestone, sea-worn grey stone, salt crystallization in gaps. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, harbor cobblestone, sea-worn grey stone, salt crystals, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-05",
+      "name": "선박 갑판",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ship deck planks, polished oak with tar seams, rope coils",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ship deck planks, polished oak with tar seams, rope coils, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ship deck planks, polished oak with tar seams, rope coils. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ship deck planks, polished oak, tar seams, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-06",
+      "name": "수중 타일",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Underwater floor, sandy bottom with seagrass, light rays filtering",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Underwater floor, sandy bottom with seagrass, light rays filtering, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Underwater floor, sandy bottom with seagrass, light rays filtering. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, underwater sandy floor, seagrass, filtered light rays, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-07",
+      "name": "등대 내부",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Lighthouse interior, spiral staircase platform, brass fittings",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Lighthouse interior, spiral staircase platform, brass fittings, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Lighthouse interior, spiral staircase platform, brass fittings. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, lighthouse interior floor, spiral stair platform, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-08",
+      "name": "해적 동굴",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Pirate cave floor, damp rock with treasure coin scatter, torch light",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Pirate cave floor, damp rock with treasure coin scatter, torch light, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Pirate cave floor, damp rock with treasure coin scatter, torch light. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, pirate cave floor, damp rock, scattered coins, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "BRT-G-09",
+      "name": "심해 신전",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Deep sea temple, ancient coral-encrusted stone, bioluminescent (#48D1CC) lines",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Deep sea temple, ancient coral-encrusted stone, bioluminescent (#48D1CC) lines, palette: #2F4F4F/#8B4513/#48D1CC, dark fantasy 항구 도시 (Harbor City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Deep sea temple, ancient coral-encrusted stone, bioluminescent (#48D1CC) lines. Color palette: (#2F4F4F/#8B4513/#48D1CC). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, deep sea temple floor, coral-encrusted stone, bioluminescent lines, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

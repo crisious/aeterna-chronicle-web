@@ -1,0 +1,370 @@
+{
+  "region": "브리탈리아",
+  "region_en": "Britalia",
+  "theme": "항구 도시 (Harbor City)",
+  "color_palette": {
+    "primary": "#2F4F4F",
+    "secondary": "#8B4513",
+    "accent": "#48D1CC"
+  },
+  "spec": {
+    "format": "RGBA 32bit PNG",
+    "seamless": "horizontal seamless tiling required",
+    "layers": [
+      "sky",
+      "far",
+      "mid",
+      "near"
+    ]
+  },
+  "backgrounds": [
+    {
+      "id": "BRI-BG-SKY-DAY",
+      "layer": "sky",
+      "time": "day",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Coastal sky, scattered cumulus clouds, bright sun, seagulls silhouettes, salt haze",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background sky layer, Coastal sky, scattered cumulus clouds, bright sun, seagulls silhouettes, salt haze, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 360,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Coastal sky, scattered cumulus clouds, bright sun, seagulls silhouettes, salt haze. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, Coastal sky, scattered cumulus clouds, bright sun, seagulls silhouettes, salt haze, dark fantasy, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-SKY-NIGHT",
+      "layer": "sky",
+      "time": "night",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Dark sea sky, stars reflected in calm water, lighthouse beam sweeping, crescent moon",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background sky layer, Dark sea sky, stars reflected in calm water, lighthouse beam sweeping, crescent moon, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 360,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Dark sea sky, stars reflected in calm water, lighthouse beam sweeping, crescent moon. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, Dark sea sky, stars reflected in calm water, lighthouse beam sweeping, crescent moon, dark fantasy, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-SKY-DUSK",
+      "layer": "sky",
+      "time": "dusk",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Harbor sunset, dramatic orange-red clouds over dark sea, last light on wave crests",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background sky layer, Harbor sunset, dramatic orange-red clouds over dark sea, last light on wave crests, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 360,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Harbor sunset, dramatic orange-red clouds over dark sea, last light on wave crests. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, Harbor sunset, dramatic orange-red clouds over dark sea, last light on wave crests, dark fantasy, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-FAR-DAY",
+      "layer": "far",
+      "time": "day",
+      "size": "1920x480",
+      "scroll_speed": "0.15x",
+      "description": "Distant harbor panorama, tall ships at anchor, lighthouse on rocky point, distant islands",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background far layer, Distant harbor panorama, tall ships at anchor, lighthouse on rocky point, distant islands, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x480 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 480,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background far layer, 1920x480 pixels. Distant harbor panorama, tall ships at anchor, lighthouse on rocky point, distant islands. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x480"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background far layer, Distant harbor panorama, tall ships at anchor, lighthouse on rocky point, distant islands, dark fantasy, horizontal seamless, 1920x480, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-FAR-NIGHT",
+      "layer": "far",
+      "time": "night",
+      "size": "1920x480",
+      "scroll_speed": "0.15x",
+      "description": "Ship lanterns dotting dark harbor, lighthouse beam rotating, distant shore lights",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background far layer, Ship lanterns dotting dark harbor, lighthouse beam rotating, distant shore lights, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x480 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 480,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background far layer, 1920x480 pixels. Ship lanterns dotting dark harbor, lighthouse beam rotating, distant shore lights. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x480"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background far layer, Ship lanterns dotting dark harbor, lighthouse beam rotating, distant shore lights, dark fantasy, horizontal seamless, 1920x480, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-FAR-DUSK",
+      "layer": "far",
+      "time": "dusk",
+      "size": "1920x480",
+      "scroll_speed": "0.15x",
+      "description": "Harbor in golden hour, ship masts silhouetted, lighthouse beginning to glow",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background far layer, Harbor in golden hour, ship masts silhouetted, lighthouse beginning to glow, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x480 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 480,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background far layer, 1920x480 pixels. Harbor in golden hour, ship masts silhouetted, lighthouse beginning to glow. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x480"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background far layer, Harbor in golden hour, ship masts silhouetted, lighthouse beginning to glow, dark fantasy, horizontal seamless, 1920x480, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-MID-DAY",
+      "layer": "mid",
+      "time": "day",
+      "size": "1920x540",
+      "scroll_speed": "0.3x",
+      "description": "Mid-harbor scene, fishing boats, dock cranes, warehouse roofs, rope bridges between masts",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background mid layer, Mid-harbor scene, fishing boats, dock cranes, warehouse roofs, rope bridges between masts, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x540 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 540,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background mid layer, 1920x540 pixels. Mid-harbor scene, fishing boats, dock cranes, warehouse roofs, rope bridges between masts. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background mid layer, Mid-harbor scene, fishing boats, dock cranes, warehouse roofs, rope bridges between masts, dark fantasy, horizontal seamless, 1920x540, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-MID-NIGHT",
+      "layer": "mid",
+      "time": "night",
+      "size": "1920x540",
+      "scroll_speed": "0.3x",
+      "description": "Harbor buildings with warm tavern light, boats gently rocking, reflections on dark water",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background mid layer, Harbor buildings with warm tavern light, boats gently rocking, reflections on dark water, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x540 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 540,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background mid layer, 1920x540 pixels. Harbor buildings with warm tavern light, boats gently rocking, reflections on dark water. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background mid layer, Harbor buildings with warm tavern light, boats gently rocking, reflections on dark water, dark fantasy, horizontal seamless, 1920x540, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-MID-DUSK",
+      "layer": "mid",
+      "time": "dusk",
+      "size": "1920x540",
+      "scroll_speed": "0.3x",
+      "description": "Boats and buildings in warm light, fishermen returning, seagulls settling on masts",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background mid layer, Boats and buildings in warm light, fishermen returning, seagulls settling on masts, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x540 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 540,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background mid layer, 1920x540 pixels. Boats and buildings in warm light, fishermen returning, seagulls settling on masts. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background mid layer, Boats and buildings in warm light, fishermen returning, seagulls settling on masts, dark fantasy, horizontal seamless, 1920x540, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-NEAR-DAY",
+      "layer": "near",
+      "time": "day",
+      "size": "1920x640",
+      "scroll_speed": "0.6x",
+      "description": "Close dock detail, rope coils, barrels, fish crates, wet wooden planks, anchor chains",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background near layer, Close dock detail, rope coils, barrels, fish crates, wet wooden planks, anchor chains, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x640 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 640,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background near layer, 1920x640 pixels. Close dock detail, rope coils, barrels, fish crates, wet wooden planks, anchor chains. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x640"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background near layer, Close dock detail, rope coils, barrels, fish crates, wet wooden planks, anchor chains, dark fantasy, horizontal seamless, 1920x640, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-NEAR-NIGHT",
+      "layer": "near",
+      "time": "night",
+      "size": "1920x640",
+      "scroll_speed": "0.6x",
+      "description": "Nearby dock in lantern light, wet planks reflecting, mooring ropes, night fishing nets",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background near layer, Nearby dock in lantern light, wet planks reflecting, mooring ropes, night fishing nets, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x640 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 640,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background near layer, 1920x640 pixels. Nearby dock in lantern light, wet planks reflecting, mooring ropes, night fishing nets. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x640"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background near layer, Nearby dock in lantern light, wet planks reflecting, mooring ropes, night fishing nets, dark fantasy, horizontal seamless, 1920x640, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "BRI-BG-NEAR-DUSK",
+      "layer": "near",
+      "time": "dusk",
+      "size": "1920x640",
+      "scroll_speed": "0.6x",
+      "description": "Close dock in sunset, golden light on wet wood, long shadows from bollards and crates",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background near layer, Close dock in sunset, golden light on wet wood, long shadows from bollards and crates, dark fantasy 항구 도시 (Harbor City), palette (#2F4F4F/#8B4513/#48D1CC), horizontal seamless tileable, 1920x640 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 640,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background near layer, 1920x640 pixels. Close dock in sunset, golden light on wet wood, long shadows from bollards and crates. Palette: #2F4F4F/#8B4513/#48D1CC. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x640"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background near layer, Close dock in sunset, golden light on wet wood, long shadows from bollards and crates, dark fantasy, horizontal seamless, 1920x640, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    }
+  ]
+}

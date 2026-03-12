@@ -1,0 +1,63 @@
+{
+  "id": "TMP_MON_017",
+  "name_ko": "시간 전사 잔영",
+  "name_en": "Time Warrior Echo",
+  "grade": "normal",
+  "size": "M",
+  "pixel": "48x48",
+  "category": "humanoid",
+  "desc": "afterimage of ancient warrior frozen in attack pose, translucent golden, repeating motion loop",
+  "region": "시간의 균열",
+  "color_palette": {
+    "primary": "#1A0A2E",
+    "secondary": "#3D2A5E",
+    "glow": "#FFD700",
+    "rift": "#FF6B35",
+    "chrono": "#00FFFF"
+  },
+  "motions": [
+    "idle",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "frames": {
+    "idle": 4,
+    "attack": 4,
+    "hit": 2,
+    "death": 4
+  },
+  "directions": 2,
+  "prompts": {
+    "sd": {
+      "sprite": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG monster sprite, dark fantasy Korean MMORPG style, Time Warrior Echo, humanoid creature type, afterimage of ancient warrior frozen in attack pose, translucent golden, repeating motion loop, Temporal Rift region, time distortion, palette: #1A0A2E/#3D2A5E/#FFD700/#FF6B35, M size (48x48), idle pose front-facing, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, anti-aliased, cute, friendly, human anatomy, modern",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "seed": -1,
+          "width": 512,
+          "height": 512
+        }
+      }
+    },
+    "dalle": {
+      "sprite": {
+        "prompt": "Create a pixel art RPG monster sprite: Time Warrior Echo — afterimage of ancient warrior frozen in attack pose, translucent golden, repeating motion loop. Temporal Rift region with time distortion, spacetime warping. M size, 48x48 pixel art. Clean pixel edges, 2px black outline, no anti-aliasing. Transparent background. Dark fantasy MMORPG. DO NOT include text.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd"
+        }
+      }
+    },
+    "midjourney": {
+      "sprite": {
+        "prompt": "2D pixel art RPG monster, Time Warrior Echo, afterimage of ancient warrior frozen in attack pose, translucent golden, repeating motion loop, temporal rift region, time distortion, purple-gold-orange palette, 48x48 pixel art, clean edges, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+      }
+    }
+  }
+}

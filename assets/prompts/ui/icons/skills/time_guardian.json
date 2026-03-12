@@ -1,0 +1,1087 @@
+{
+  "class": "시간수호자",
+  "class_en": "Time Guardian",
+  "color": "#FFD700",
+  "skills": [
+    {
+      "asset_id": "SKL-TIM-001",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 정지",
+      "skill_name_en": "time stop",
+      "pixel_size": "64x64",
+      "description": "clock hands frozen, golden freeze field",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, clock hands frozen, golden freeze field, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time stop skill for Time Guardian class: clock hands frozen, golden freeze field. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time stop, clock hands frozen, golden freeze field, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-002",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "되감기",
+      "skill_name_en": "rewind",
+      "pixel_size": "64x64",
+      "description": "reverse clock motion, target reverting",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, reverse clock motion, target reverting, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. rewind skill for Time Guardian class: reverse clock motion, target reverting. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, rewind, reverse clock motion, target reverting, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-003",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "가속",
+      "skill_name_en": "haste",
+      "pixel_size": "64x64",
+      "description": "clock hands spinning fast, speed aura",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, clock hands spinning fast, speed aura, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. haste skill for Time Guardian class: clock hands spinning fast, speed aura. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, haste, clock hands spinning fast, speed aura, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-004",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 탄환",
+      "skill_name_en": "time bullet",
+      "pixel_size": "64x64",
+      "description": "golden projectile with clock trail",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, golden projectile with clock trail, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time bullet skill for Time Guardian class: golden projectile with clock trail. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time bullet, golden projectile with clock trail, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-005",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 장벽",
+      "skill_name_en": "time barrier",
+      "pixel_size": "64x64",
+      "description": "golden clock-face barrier",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, golden clock-face barrier, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time barrier skill for Time Guardian class: golden clock-face barrier. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time barrier, golden clock-face barrier, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-006",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "감속 필드",
+      "skill_name_en": "slow field",
+      "pixel_size": "64x64",
+      "description": "area with slowed clock gears",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, area with slowed clock gears, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. slow field skill for Time Guardian class: area with slowed clock gears. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, slow field, area with slowed clock gears, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-007",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 도약",
+      "skill_name_en": "time leap",
+      "pixel_size": "64x64",
+      "description": "jumping through time portal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, jumping through time portal, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time leap skill for Time Guardian class: jumping through time portal. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time leap, jumping through time portal, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-008",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 복제",
+      "skill_name_en": "time duplicate",
+      "pixel_size": "64x64",
+      "description": "afterimage of past self acting",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, afterimage of past self acting, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time duplicate skill for Time Guardian class: afterimage of past self acting. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time duplicate, afterimage of past self acting, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-009",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 치유",
+      "skill_name_en": "time heal",
+      "pixel_size": "64x64",
+      "description": "rewinding wounds, reverse injury",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, rewinding wounds, reverse injury, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time heal skill for Time Guardian class: rewinding wounds, reverse injury. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time heal, rewinding wounds, reverse injury, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-010",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 폭발",
+      "skill_name_en": "time burst",
+      "pixel_size": "64x64",
+      "description": "compressed time releasing",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, compressed time releasing, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time burst skill for Time Guardian class: compressed time releasing. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time burst, compressed time releasing, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-011",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 감옥",
+      "skill_name_en": "time prison",
+      "pixel_size": "64x64",
+      "description": "target frozen in time bubble",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, target frozen in time bubble, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time prison skill for Time Guardian class: target frozen in time bubble. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time prison, target frozen in time bubble, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-012",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간의 화살",
+      "skill_name_en": "time arrow",
+      "pixel_size": "64x64",
+      "description": "golden arrow piercing through time",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, golden arrow piercing through time, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time arrow skill for Time Guardian class: golden arrow piercing through time. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time arrow, golden arrow piercing through time, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-013",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "역류",
+      "skill_name_en": "time reversal",
+      "pixel_size": "64x64",
+      "description": "reversing cause and effect",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, reversing cause and effect, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time reversal skill for Time Guardian class: reversing cause and effect. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time reversal, reversing cause and effect, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-014",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 가속 장",
+      "skill_name_en": "acceleration field",
+      "pixel_size": "64x64",
+      "description": "party-wide speed buff",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, party-wide speed buff, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. acceleration field skill for Time Guardian class: party-wide speed buff. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, acceleration field, party-wide speed buff, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-015",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 압축",
+      "skill_name_en": "time compression",
+      "pixel_size": "64x64",
+      "description": "collapsing time around target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, collapsing time around target, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time compression skill for Time Guardian class: collapsing time around target. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time compression, collapsing time around target, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-016",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "예지",
+      "skill_name_en": "foresight",
+      "pixel_size": "64x64",
+      "description": "eye icon seeing future attacks",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, eye icon seeing future attacks, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. foresight skill for Time Guardian class: eye icon seeing future attacks. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, foresight, eye icon seeing future attacks, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-017",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 편집",
+      "skill_name_en": "time edit",
+      "pixel_size": "64x64",
+      "description": "rewriting recent action",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, rewriting recent action, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time edit skill for Time Guardian class: rewriting recent action. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time edit, rewriting recent action, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-018",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 폭풍",
+      "skill_name_en": "time storm",
+      "pixel_size": "64x64",
+      "description": "chaotic temporal energy storm",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, chaotic temporal energy storm, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time storm skill for Time Guardian class: chaotic temporal energy storm. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time storm, chaotic temporal energy storm, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-019",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 고정",
+      "skill_name_en": "time anchor",
+      "pixel_size": "64x64",
+      "description": "anchoring moment, auto-revive",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, anchoring moment, auto-revive, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time anchor skill for Time Guardian class: anchoring moment, auto-revive. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time anchor, anchoring moment, auto-revive, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-020",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 초월",
+      "skill_name_en": "time transcend",
+      "pixel_size": "64x64",
+      "description": "ultimate: stopping all time",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, ultimate: stopping all time, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time transcend skill for Time Guardian class: ultimate: stopping all time. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time transcend, ultimate: stopping all time, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-021",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 연쇄",
+      "skill_name_en": "time chain",
+      "pixel_size": "64x64",
+      "description": "linking targets in time",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, linking targets in time, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time chain skill for Time Guardian class: linking targets in time. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time chain, linking targets in time, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-022",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 분열",
+      "skill_name_en": "time split",
+      "pixel_size": "64x64",
+      "description": "splitting into past/future selves",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, splitting into past/future selves, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time split skill for Time Guardian class: splitting into past/future selves. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time split, splitting into past/future selves, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-023",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 방패",
+      "skill_name_en": "time shield",
+      "pixel_size": "64x64",
+      "description": "absorbing damage to time bank",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, absorbing damage to time bank, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time shield skill for Time Guardian class: absorbing damage to time bank. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time shield, absorbing damage to time bank, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-024",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "역행 포탈",
+      "skill_name_en": "reverse portal",
+      "pixel_size": "64x64",
+      "description": "portal to moments ago",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, portal to moments ago, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. reverse portal skill for Time Guardian class: portal to moments ago. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, reverse portal, portal to moments ago, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-025",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 집중",
+      "skill_name_en": "time focus",
+      "pixel_size": "64x64",
+      "description": "building temporal energy",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, building temporal energy, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time focus skill for Time Guardian class: building temporal energy. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time focus, building temporal energy, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-026",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 가속탄",
+      "skill_name_en": "time accel shot",
+      "pixel_size": "64x64",
+      "description": "rapid fire golden bolts",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, rapid fire golden bolts, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time accel shot skill for Time Guardian class: rapid fire golden bolts. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time accel shot, rapid fire golden bolts, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-027",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 소멸",
+      "skill_name_en": "time erasure",
+      "pixel_size": "64x64",
+      "description": "erasing target from timeline",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, erasing target from timeline, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time erasure skill for Time Guardian class: erasing target from timeline. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time erasure, erasing target from timeline, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-028",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 순환",
+      "skill_name_en": "time cycle",
+      "pixel_size": "64x64",
+      "description": "repeating action automatically",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, repeating action automatically, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time cycle skill for Time Guardian class: repeating action automatically. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time cycle, repeating action automatically, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-029",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "시간 심판",
+      "skill_name_en": "time judgment",
+      "pixel_size": "64x64",
+      "description": "ultimate temporal sentence",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, ultimate temporal sentence, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. time judgment skill for Time Guardian class: ultimate temporal sentence. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, time judgment, ultimate temporal sentence, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-TIM-030",
+      "class": "시간수호자",
+      "class_en": "Time Guardian",
+      "class_color": "#FFD700",
+      "skill_name_ko": "영원의 시간",
+      "skill_name_en": "eternal time",
+      "pixel_size": "64x64",
+      "description": "ultimate transcendence form",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Time Guardian, ultimate transcendence form, 시간 금색 (#FFD700) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. eternal time skill for Time Guardian class: ultimate transcendence form. Color accent: #FFD700. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, eternal time, ultimate transcendence form, 시간 금색 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

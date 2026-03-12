@@ -1,0 +1,366 @@
+{
+  "region": "시간의 균열",
+  "region_en": "Temporal Rift",
+  "theme": "시공 왜곡 (Spacetime Distortion)",
+  "color_palette": {
+    "primary": "#1A0A2E",
+    "secondary": "#3D2A5E",
+    "accent": "#FFD700",
+    "names": [
+      "시간 보라",
+      "정지된 구조 보라",
+      "시간 금색"
+    ]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "TMP-G-01",
+      "name": "왜곡된 포석",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Main walkable surface, Distorted cobblestone, reality-warped paving with temporal gold (#FFD700) cracks between stones",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Distorted cobblestone, reality-warped paving with temporal gold (#FFD700) cracks between stones, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Distorted cobblestone, reality-warped paving with temporal gold (#FFD700) cracks between stones. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, distorted cobblestone, reality-warped, temporal golden cracks, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-02",
+      "name": "시간 정지 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Time-frozen floor, half-decayed half-pristine split tiles, frozen mid-transformation",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Time-frozen floor, half-decayed half-pristine split tiles, frozen mid-transformation, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Time-frozen floor, half-decayed half-pristine split tiles, frozen mid-transformation. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, time-frozen floor, half-decayed half-pristine tiles, frozen transformation, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-03",
+      "name": "균열 에너지 경로",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Rift energy path, dark purple (#1A0A2E) base with orange (#FF6B35) rift lines pulsing",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Rift energy path, dark purple (#1A0A2E) base with orange (#FF6B35) rift lines pulsing, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Rift energy path, dark purple (#1A0A2E) base with orange (#FF6B35) rift lines pulsing. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, rift energy path, dark purple base, pulsing orange rift lines, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-04",
+      "name": "과거의 잔해",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Past remnant floor, overlapping historical eras — stone age/medieval/steampunk fragments",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Past remnant floor, overlapping historical eras — stone age/medieval/steampunk fragments, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Past remnant floor, overlapping historical eras — stone age/medieval/steampunk fragments. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, past remnant floor, overlapping historical era fragments, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-05",
+      "name": "미래의 파편",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Future fragment floor, crystalline/holographic tiles with data-stream patterns",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Future fragment floor, crystalline/holographic tiles with data-stream patterns, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Future fragment floor, crystalline/holographic tiles with data-stream patterns. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, future fragment floor, crystalline holographic tiles, data streams, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-06",
+      "name": "시공 격자",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Spacetime grid floor, geometric grid with warped perspective, gold (#FFD700) node intersections",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Spacetime grid floor, geometric grid with warped perspective, gold (#FFD700) node intersections, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Spacetime grid floor, geometric grid with warped perspective, gold (#FFD700) node intersections. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, spacetime grid floor, warped perspective, golden node intersections, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-07",
+      "name": "크로노 결정 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Chrono crystal floor, time-infused amber/gold crystals embedded in dark purple stone",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Chrono crystal floor, time-infused amber/gold crystals embedded in dark purple stone, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Chrono crystal floor, time-infused amber/gold crystals embedded in dark purple stone. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, chrono crystal floor, amber gold crystals in dark purple stone, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-08",
+      "name": "시간의 강 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, River of time floor, flowing golden (#FFD700) current with clock gear fragments floating",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, River of time floor, flowing golden (#FFD700) current with clock gear fragments floating, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, River of time floor, flowing golden (#FFD700) current with clock gear fragments floating. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, river of time floor, flowing golden current, clock gear fragments, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "TMP-G-09",
+      "name": "균열 심장부",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Rift core floor, convergence of all timeline energies, intense orange-gold-cyan glow vortex pattern",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Rift core floor, convergence of all timeline energies, intense orange-gold-cyan glow vortex pattern, palette: #1A0A2E/#3D2A5E/#FFD700, dark fantasy 시공 왜곡 (Spacetime Distortion), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Rift core floor, convergence of all timeline energies, intense orange-gold-cyan glow vortex pattern. Color palette: (#1A0A2E/#3D2A5E/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, rift core floor, timeline energy convergence, orange gold cyan vortex, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

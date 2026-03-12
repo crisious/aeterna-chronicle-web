@@ -1,0 +1,1087 @@
+{
+  "class": "허공의 방랑자",
+  "class_en": "Void Wanderer",
+  "color": "#FF00FF",
+  "skills": [
+    {
+      "asset_id": "SKL-VOI-001",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 이동",
+      "skill_name_en": "spatial shift",
+      "pixel_size": "64x64",
+      "description": "teleportation blink effect",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, teleportation blink effect, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. spatial shift skill for Void Wanderer class: teleportation blink effect. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, spatial shift, teleportation blink effect, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-002",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 절단",
+      "skill_name_en": "dimension slash",
+      "pixel_size": "64x64",
+      "description": "cut in space revealing void",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, cut in space revealing void, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension slash skill for Void Wanderer class: cut in space revealing void. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension slash, cut in space revealing void, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-003",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 왜곡",
+      "skill_name_en": "spatial distortion",
+      "pixel_size": "64x64",
+      "description": "warped space bubble",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, warped space bubble, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. spatial distortion skill for Void Wanderer class: warped space bubble. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, spatial distortion, warped space bubble, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-004",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공의 문",
+      "skill_name_en": "void gate",
+      "pixel_size": "64x64",
+      "description": "dark portal to void space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, dark portal to void space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void gate skill for Void Wanderer class: dark portal to void space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void gate, dark portal to void space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-005",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 압축",
+      "skill_name_en": "space compress",
+      "pixel_size": "64x64",
+      "description": "crushing spatial pressure",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, crushing spatial pressure, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space compress skill for Void Wanderer class: crushing spatial pressure. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space compress, crushing spatial pressure, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-006",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 방벽",
+      "skill_name_en": "dimension wall",
+      "pixel_size": "64x64",
+      "description": "barrier of folded space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, barrier of folded space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension wall skill for Void Wanderer class: barrier of folded space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension wall, barrier of folded space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-007",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 연쇄",
+      "skill_name_en": "void chain",
+      "pixel_size": "64x64",
+      "description": "spatial anchors chaining target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, spatial anchors chaining target, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void chain skill for Void Wanderer class: spatial anchors chaining target. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void chain, spatial anchors chaining target, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-008",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 분열",
+      "skill_name_en": "space split",
+      "pixel_size": "64x64",
+      "description": "reality fracturing around target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, reality fracturing around target, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space split skill for Void Wanderer class: reality fracturing around target. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space split, reality fracturing around target, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-009",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 도약",
+      "skill_name_en": "dimension leap",
+      "pixel_size": "64x64",
+      "description": "jumping through folded space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, jumping through folded space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension leap skill for Void Wanderer class: jumping through folded space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension leap, jumping through folded space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-010",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공의 손",
+      "skill_name_en": "void grasp",
+      "pixel_size": "64x64",
+      "description": "giant ethereal hand from portal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, giant ethereal hand from portal, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void grasp skill for Void Wanderer class: giant ethereal hand from portal. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void grasp, giant ethereal hand from portal, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-011",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 전이",
+      "skill_name_en": "space transfer",
+      "pixel_size": "64x64",
+      "description": "swapping positions with target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, swapping positions with target, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space transfer skill for Void Wanderer class: swapping positions with target. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space transfer, swapping positions with target, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-012",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 폭발",
+      "skill_name_en": "dimension blast",
+      "pixel_size": "64x64",
+      "description": "void energy explosion",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, void energy explosion, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension blast skill for Void Wanderer class: void energy explosion. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension blast, void energy explosion, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-013",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공의 눈",
+      "skill_name_en": "void eye",
+      "pixel_size": "64x64",
+      "description": "giant eye surveying from portal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, giant eye surveying from portal, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void eye skill for Void Wanderer class: giant eye surveying from portal. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void eye, giant eye surveying from portal, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-014",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 치환",
+      "skill_name_en": "spatial swap",
+      "pixel_size": "64x64",
+      "description": "swapping objects across space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, swapping objects across space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. spatial swap skill for Void Wanderer class: swapping objects across space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, spatial swap, swapping objects across space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-015",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 반사",
+      "skill_name_en": "dimension mirror",
+      "pixel_size": "64x64",
+      "description": "reflecting through dimension",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, reflecting through dimension, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension mirror skill for Void Wanderer class: reflecting through dimension. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension mirror, reflecting through dimension, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-016",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 산란",
+      "skill_name_en": "void scatter",
+      "pixel_size": "64x64",
+      "description": "scattering particles through space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, scattering particles through space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void scatter skill for Void Wanderer class: scattering particles through space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void scatter, scattering particles through space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-017",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 봉인",
+      "skill_name_en": "space seal",
+      "pixel_size": "64x64",
+      "description": "sealing area in spatial lock",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, sealing area in spatial lock, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space seal skill for Void Wanderer class: sealing area in spatial lock. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space seal, sealing area in spatial lock, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-018",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 소환",
+      "skill_name_en": "dimension summon",
+      "pixel_size": "64x64",
+      "description": "pulling entity from void",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, pulling entity from void, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension summon skill for Void Wanderer class: pulling entity from void. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension summon, pulling entity from void, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-019",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 폭풍",
+      "skill_name_en": "void storm",
+      "pixel_size": "64x64",
+      "description": "chaotic dimensional storm",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, chaotic dimensional storm, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void storm skill for Void Wanderer class: chaotic dimensional storm. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void storm, chaotic dimensional storm, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-020",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 초월",
+      "skill_name_en": "space transcend",
+      "pixel_size": "64x64",
+      "description": "becoming one with space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, becoming one with space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space transcend skill for Void Wanderer class: becoming one with space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space transcend, becoming one with space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-021",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 치유",
+      "skill_name_en": "void heal",
+      "pixel_size": "64x64",
+      "description": "healing through spatial reversal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, healing through spatial reversal, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void heal skill for Void Wanderer class: healing through spatial reversal. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void heal, healing through spatial reversal, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-022",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 강화",
+      "skill_name_en": "dimension empower",
+      "pixel_size": "64x64",
+      "description": "spatial energy buff",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, spatial energy buff, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension empower skill for Void Wanderer class: spatial energy buff. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension empower, spatial energy buff, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-023",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 은신",
+      "skill_name_en": "void hide",
+      "pixel_size": "64x64",
+      "description": "hiding in folded space",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, hiding in folded space, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void hide skill for Void Wanderer class: hiding in folded space. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void hide, hiding in folded space, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-024",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 덫",
+      "skill_name_en": "space trap",
+      "pixel_size": "64x64",
+      "description": "spatial anomaly trap",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, spatial anomaly trap, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space trap skill for Void Wanderer class: spatial anomaly trap. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space trap, spatial anomaly trap, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-025",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 집중",
+      "skill_name_en": "dimension focus",
+      "pixel_size": "64x64",
+      "description": "focusing dimensional energy",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, focusing dimensional energy, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension focus skill for Void Wanderer class: focusing dimensional energy. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension focus, focusing dimensional energy, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-026",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 충격",
+      "skill_name_en": "void shock",
+      "pixel_size": "64x64",
+      "description": "spatial shockwave",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, spatial shockwave, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void shock skill for Void Wanderer class: spatial shockwave. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void shock, spatial shockwave, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-027",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "공간 붕괴",
+      "skill_name_en": "space collapse",
+      "pixel_size": "64x64",
+      "description": "area collapsing inward",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, area collapsing inward, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. space collapse skill for Void Wanderer class: area collapsing inward. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, space collapse, area collapsing inward, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-028",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 순환",
+      "skill_name_en": "dimension cycle",
+      "pixel_size": "64x64",
+      "description": "cycling through dimensions",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, cycling through dimensions, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension cycle skill for Void Wanderer class: cycling through dimensions. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension cycle, cycling through dimensions, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-029",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "허공 심판",
+      "skill_name_en": "void judgment",
+      "pixel_size": "64x64",
+      "description": "ultimate spatial erasure",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, ultimate spatial erasure, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. void judgment skill for Void Wanderer class: ultimate spatial erasure. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, void judgment, ultimate spatial erasure, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-VOI-030",
+      "class": "허공의 방랑자",
+      "class_en": "Void Wanderer",
+      "class_color": "#FF00FF",
+      "skill_name_ko": "차원 해방",
+      "skill_name_en": "dimension liberation",
+      "pixel_size": "64x64",
+      "description": "releasing all spatial bonds",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Void Wanderer, releasing all spatial bonds, 공간 마젠타 (#FF00FF) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. dimension liberation skill for Void Wanderer class: releasing all spatial bonds. Color accent: #FF00FF. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, dimension liberation, releasing all spatial bonds, 공간 마젠타 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,370 @@
+{
+  "region": "시간의 균열",
+  "region_en": "Temporal Rift",
+  "theme": "시공 왜곡 (Spacetime Distortion)",
+  "color_palette": {
+    "primary": "#1A0A2E",
+    "secondary": "#3D2A5E",
+    "accent": "#FFD700"
+  },
+  "spec": {
+    "format": "RGBA 32bit PNG",
+    "seamless": "horizontal seamless tiling required",
+    "layers": [
+      "sky",
+      "far",
+      "mid",
+      "near"
+    ]
+  },
+  "backgrounds": [
+    {
+      "id": "TEM-BG-SKY-DAY",
+      "layer": "sky",
+      "time": "day",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Fractured sky — multiple overlapping time periods visible, clock gears floating, golden (#FFD700) rift lines across sky",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background sky layer, Fractured sky — multiple overlapping time periods visible, clock gears floating, golden (#FFD700) rift lines across sky, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 360,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Fractured sky — multiple overlapping time periods visible, clock gears floating, golden (#FFD700) rift lines across sky. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, Fractured sky — multiple overlapping time periods visible, clock gears floating, golden (#FFD700) rift lines across sky, dark fantasy, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-SKY-NIGHT",
+      "layer": "sky",
+      "time": "night",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Shattered dark sky, orange (#FF6B35) rift cracks revealing other timelines, frozen lightning bolts",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background sky layer, Shattered dark sky, orange (#FF6B35) rift cracks revealing other timelines, frozen lightning bolts, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 360,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Shattered dark sky, orange (#FF6B35) rift cracks revealing other timelines, frozen lightning bolts. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, Shattered dark sky, orange (#FF6B35) rift cracks revealing other timelines, frozen lightning bolts, dark fantasy, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-SKY-DUSK",
+      "layer": "sky",
+      "time": "dusk",
+      "size": "1920x360",
+      "scroll_speed": "0.05x",
+      "description": "Twilight sky splitting apart, time-frozen sunset repeating in segments, gold-orange rift energy",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background sky layer, Twilight sky splitting apart, time-frozen sunset repeating in segments, gold-orange rift energy, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x360 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 360,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background sky layer, 1920x360 pixels. Twilight sky splitting apart, time-frozen sunset repeating in segments, gold-orange rift energy. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x360"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background sky layer, Twilight sky splitting apart, time-frozen sunset repeating in segments, gold-orange rift energy, dark fantasy, horizontal seamless, 1920x360, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-FAR-DAY",
+      "layer": "far",
+      "time": "day",
+      "size": "1920x480",
+      "scroll_speed": "0.15x",
+      "description": "Distant landscape showing multiple eras simultaneously — ruins + pristine buildings + future structures overlapping",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background far layer, Distant landscape showing multiple eras simultaneously — ruins + pristine buildings + future structures overlapping, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x480 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 480,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background far layer, 1920x480 pixels. Distant landscape showing multiple eras simultaneously — ruins + pristine buildings + future structures overlapping. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x480"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background far layer, Distant landscape showing multiple eras simultaneously — ruins + pristine buildings + future structures overlapping, dark fantasy, horizontal seamless, 1920x480, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-FAR-NIGHT",
+      "layer": "far",
+      "time": "night",
+      "size": "1920x480",
+      "scroll_speed": "0.15x",
+      "description": "Far timeline collisions visible, buildings existing in multiple states, rift energy arcs",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background far layer, Far timeline collisions visible, buildings existing in multiple states, rift energy arcs, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x480 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 480,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background far layer, 1920x480 pixels. Far timeline collisions visible, buildings existing in multiple states, rift energy arcs. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x480"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background far layer, Far timeline collisions visible, buildings existing in multiple states, rift energy arcs, dark fantasy, horizontal seamless, 1920x480, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-FAR-DUSK",
+      "layer": "far",
+      "time": "dusk",
+      "size": "1920x480",
+      "scroll_speed": "0.15x",
+      "description": "Distant landscapes flickering between eras, golden temporal storms on horizon",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background far layer, Distant landscapes flickering between eras, golden temporal storms on horizon, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x480 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 480,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background far layer, 1920x480 pixels. Distant landscapes flickering between eras, golden temporal storms on horizon. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x480"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background far layer, Distant landscapes flickering between eras, golden temporal storms on horizon, dark fantasy, horizontal seamless, 1920x480, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-MID-DAY",
+      "layer": "mid",
+      "time": "day",
+      "size": "1920x540",
+      "scroll_speed": "0.3x",
+      "description": "Mid-ground time-fractured terrain, half-decayed half-new structures, floating clock fragments, time bubbles",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background mid layer, Mid-ground time-fractured terrain, half-decayed half-new structures, floating clock fragments, time bubbles, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x540 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 540,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background mid layer, 1920x540 pixels. Mid-ground time-fractured terrain, half-decayed half-new structures, floating clock fragments, time bubbles. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background mid layer, Mid-ground time-fractured terrain, half-decayed half-new structures, floating clock fragments, time bubbles, dark fantasy, horizontal seamless, 1920x540, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-MID-NIGHT",
+      "layer": "mid",
+      "time": "night",
+      "size": "1920x540",
+      "scroll_speed": "0.3x",
+      "description": "Time-frozen scenes suspended in darkness, orange rift energy illuminating, stopped motion",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background mid layer, Time-frozen scenes suspended in darkness, orange rift energy illuminating, stopped motion, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x540 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 540,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background mid layer, 1920x540 pixels. Time-frozen scenes suspended in darkness, orange rift energy illuminating, stopped motion. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background mid layer, Time-frozen scenes suspended in darkness, orange rift energy illuminating, stopped motion, dark fantasy, horizontal seamless, 1920x540, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-MID-DUSK",
+      "layer": "mid",
+      "time": "dusk",
+      "size": "1920x540",
+      "scroll_speed": "0.3x",
+      "description": "Fractured terrain in amber light, time loops visible as repeating motion ghosts",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background mid layer, Fractured terrain in amber light, time loops visible as repeating motion ghosts, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x540 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 540,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background mid layer, 1920x540 pixels. Fractured terrain in amber light, time loops visible as repeating motion ghosts. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x540"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background mid layer, Fractured terrain in amber light, time loops visible as repeating motion ghosts, dark fantasy, horizontal seamless, 1920x540, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-NEAR-DAY",
+      "layer": "near",
+      "time": "day",
+      "size": "1920x640",
+      "scroll_speed": "0.6x",
+      "description": "Close time distortion, warped stone surfaces, clock gear debris, golden chrono crystals, reality cracks",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background near layer, Close time distortion, warped stone surfaces, clock gear debris, golden chrono crystals, reality cracks, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x640 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 640,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background near layer, 1920x640 pixels. Close time distortion, warped stone surfaces, clock gear debris, golden chrono crystals, reality cracks. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x640"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background near layer, Close time distortion, warped stone surfaces, clock gear debris, golden chrono crystals, reality cracks, dark fantasy, horizontal seamless, 1920x640, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-NEAR-NIGHT",
+      "layer": "near",
+      "time": "night",
+      "size": "1920x640",
+      "scroll_speed": "0.6x",
+      "description": "Nearby surfaces with orange rift glow, frozen raindrops in air, time-crystal growth",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background near layer, Nearby surfaces with orange rift glow, frozen raindrops in air, time-crystal growth, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x640 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 640,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background near layer, 1920x640 pixels. Nearby surfaces with orange rift glow, frozen raindrops in air, time-crystal growth. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x640"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background near layer, Nearby surfaces with orange rift glow, frozen raindrops in air, time-crystal growth, dark fantasy, horizontal seamless, 1920x640, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    },
+    {
+      "id": "TEM-BG-NEAR-DUSK",
+      "layer": "near",
+      "time": "dusk",
+      "size": "1920x640",
+      "scroll_speed": "0.6x",
+      "description": "Close detail — surfaces aging and renewing in cycles, gold-amber temporal energy on surfaces",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D digital painting, parallax background near layer, Close detail — surfaces aging and renewing in cycles, gold-amber temporal energy on surfaces, dark fantasy 시공 왜곡 (Spacetime Distortion), palette (#1A0A2E/#3D2A5E/#FFD700), horizontal seamless tileable, 1920x640 resolution, painted style, atmospheric perspective, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, photo, bright cheerful, text, watermark, character, UI elements, pixel art",
+          "params": {
+            "steps": 40,
+            "cfg_scale": 8,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 1920,
+            "height": 640,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D digital painting parallax background near layer, 1920x640 pixels. Close detail — surfaces aging and renewing in cycles, gold-amber temporal energy on surfaces. Palette: #1A0A2E/#3D2A5E/#FFD700. Horizontal seamless tileable. Atmospheric dark fantasy art style. No characters, no text.",
+          "size": "1920x640"
+        },
+        "midjourney": {
+          "prompt": "2D parallax background near layer, Close detail — surfaces aging and renewing in cycles, gold-amber temporal energy on surfaces, dark fantasy, horizontal seamless, 1920x640, painted style --ar 16:3 --s 350 --style raw"
+        }
+      }
+    }
+  ]
+}

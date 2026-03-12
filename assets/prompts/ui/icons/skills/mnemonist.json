@@ -1,0 +1,1087 @@
+{
+  "class": "기억술사",
+  "class_en": "Mnemonist",
+  "color": "#9B59B6",
+  "skills": [
+    {
+      "asset_id": "SKL-MNE-001",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 탄환",
+      "skill_name_en": "memory bolt",
+      "pixel_size": "64x64",
+      "description": "purple energy projectile with memory sparks",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, purple energy projectile with memory sparks, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory bolt skill for Mnemonist class: purple energy projectile with memory sparks. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory bolt, purple energy projectile with memory sparks, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-002",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소환: 골렘",
+      "skill_name_en": "memory summon golem",
+      "pixel_size": "64x64",
+      "description": "summoning circle with golem silhouette",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, summoning circle with golem silhouette, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory summon golem skill for Mnemonist class: summoning circle with golem silhouette. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory summon golem, summoning circle with golem silhouette, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-003",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 회복",
+      "skill_name_en": "memory restore",
+      "pixel_size": "64x64",
+      "description": "gentle purple healing wisps",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, gentle purple healing wisps, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory restore skill for Mnemonist class: gentle purple healing wisps. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory restore, gentle purple healing wisps, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-004",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 폭발",
+      "skill_name_en": "memory burst",
+      "pixel_size": "64x64",
+      "description": "expanding purple explosion",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, expanding purple explosion, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory burst skill for Mnemonist class: expanding purple explosion. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory burst, expanding purple explosion, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-005",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 장벽",
+      "skill_name_en": "memory wall",
+      "pixel_size": "64x64",
+      "description": "vertical purple barrier of memories",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, vertical purple barrier of memories, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory wall skill for Mnemonist class: vertical purple barrier of memories. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory wall, vertical purple barrier of memories, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-006",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 흡수",
+      "skill_name_en": "memory absorb",
+      "pixel_size": "64x64",
+      "description": "pulling purple energy toward caster",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, pulling purple energy toward caster, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory absorb skill for Mnemonist class: pulling purple energy toward caster. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory absorb, pulling purple energy toward caster, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-007",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소환: 정령",
+      "skill_name_en": "memory summon spirit",
+      "pixel_size": "64x64",
+      "description": "spirit figure emerging from portal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, spirit figure emerging from portal, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory summon spirit skill for Mnemonist class: spirit figure emerging from portal. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory summon spirit, spirit figure emerging from portal, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-008",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 왜곡",
+      "skill_name_en": "memory distort",
+      "pixel_size": "64x64",
+      "description": "swirling distortion field",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, swirling distortion field, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory distort skill for Mnemonist class: swirling distortion field. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory distort, swirling distortion field, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-009",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 연쇄 번개",
+      "skill_name_en": "memory chain lightning",
+      "pixel_size": "64x64",
+      "description": "branching purple lightning",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, branching purple lightning, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory chain lightning skill for Mnemonist class: branching purple lightning. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory chain lightning, branching purple lightning, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-010",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 비",
+      "skill_name_en": "memory rain",
+      "pixel_size": "64x64",
+      "description": "raining memory fragments from above",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, raining memory fragments from above, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory rain skill for Mnemonist class: raining memory fragments from above. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory rain, raining memory fragments from above, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-011",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 독",
+      "skill_name_en": "memory poison",
+      "pixel_size": "64x64",
+      "description": "purple toxic cloud spreading",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, purple toxic cloud spreading, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory poison skill for Mnemonist class: purple toxic cloud spreading. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory poison, purple toxic cloud spreading, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-012",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 결빙",
+      "skill_name_en": "memory freeze",
+      "pixel_size": "64x64",
+      "description": "purple ice crystals forming",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, purple ice crystals forming, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory freeze skill for Mnemonist class: purple ice crystals forming. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory freeze, purple ice crystals forming, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-013",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 화염",
+      "skill_name_en": "memory flame",
+      "pixel_size": "64x64",
+      "description": "purple fire erupting",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, purple fire erupting, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory flame skill for Mnemonist class: purple fire erupting. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory flame, purple fire erupting, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-014",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 반사",
+      "skill_name_en": "memory reflect",
+      "pixel_size": "64x64",
+      "description": "mirror barrier reflecting projectile",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, mirror barrier reflecting projectile, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory reflect skill for Mnemonist class: mirror barrier reflecting projectile. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory reflect, mirror barrier reflecting projectile, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-015",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소용돌이",
+      "skill_name_en": "memory vortex",
+      "pixel_size": "64x64",
+      "description": "whirlpool of memory fragments",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, whirlpool of memory fragments, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory vortex skill for Mnemonist class: whirlpool of memory fragments. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory vortex, whirlpool of memory fragments, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-016",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 텔레포트",
+      "skill_name_en": "memory teleport",
+      "pixel_size": "64x64",
+      "description": "blink effect, arrival flash",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, blink effect, arrival flash, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory teleport skill for Mnemonist class: blink effect, arrival flash. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory teleport, blink effect, arrival flash, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-017",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 강화",
+      "skill_name_en": "memory empower",
+      "pixel_size": "64x64",
+      "description": "buff aura with rising symbols",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, buff aura with rising symbols, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory empower skill for Mnemonist class: buff aura with rising symbols. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory empower, buff aura with rising symbols, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-018",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 소환: 피닉스",
+      "skill_name_en": "memory summon phoenix",
+      "pixel_size": "64x64",
+      "description": "phoenix rising from purple fire",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, phoenix rising from purple fire, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory summon phoenix skill for Mnemonist class: phoenix rising from purple fire. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory summon phoenix, phoenix rising from purple fire, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-019",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "대기억술",
+      "skill_name_en": "grand mnemonics",
+      "pixel_size": "64x64",
+      "description": "massive ritual circle, intense power",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, massive ritual circle, intense power, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. grand mnemonics skill for Mnemonist class: massive ritual circle, intense power. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, grand mnemonics, massive ritual circle, intense power, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-020",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 폭풍",
+      "skill_name_en": "memory storm",
+      "pixel_size": "64x64",
+      "description": "area-wide purple lightning storm",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, area-wide purple lightning storm, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory storm skill for Mnemonist class: area-wide purple lightning storm. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory storm, area-wide purple lightning storm, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-021",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 차원문",
+      "skill_name_en": "memory gateway",
+      "pixel_size": "64x64",
+      "description": "portal to memory dimension",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, portal to memory dimension, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory gateway skill for Mnemonist class: portal to memory dimension. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory gateway, portal to memory dimension, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-022",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 분해",
+      "skill_name_en": "memory dissolve",
+      "pixel_size": "64x64",
+      "description": "target dissolving into memory dust",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, target dissolving into memory dust, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory dissolve skill for Mnemonist class: target dissolving into memory dust. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory dissolve, target dissolving into memory dust, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-023",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 봉인",
+      "skill_name_en": "memory seal",
+      "pixel_size": "64x64",
+      "description": "binding seal circle on target",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, binding seal circle on target, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory seal skill for Mnemonist class: binding seal circle on target. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory seal, binding seal circle on target, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-024",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 방어장",
+      "skill_name_en": "memory ward field",
+      "pixel_size": "64x64",
+      "description": "area defense circle",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, area defense circle, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory ward field skill for Mnemonist class: area defense circle. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory ward field, area defense circle, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-025",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 충전",
+      "skill_name_en": "memory charge",
+      "pixel_size": "64x64",
+      "description": "building energy in crystal staff",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, building energy in crystal staff, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory charge skill for Mnemonist class: building energy in crystal staff. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory charge, building energy in crystal staff, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-026",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 발사",
+      "skill_name_en": "memory launch",
+      "pixel_size": "64x64",
+      "description": "releasing charged energy beam",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, releasing charged energy beam, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory launch skill for Mnemonist class: releasing charged energy beam. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory launch, releasing charged energy beam, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-027",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 환영",
+      "skill_name_en": "memory illusion",
+      "pixel_size": "64x64",
+      "description": "creating illusory copies",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, creating illusory copies, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory illusion skill for Mnemonist class: creating illusory copies. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory illusion, creating illusory copies, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-028",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 치유의 빛",
+      "skill_name_en": "memory healing light",
+      "pixel_size": "64x64",
+      "description": "large area healing circle",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, large area healing circle, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory healing light skill for Mnemonist class: large area healing circle. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory healing light, large area healing circle, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-029",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "대소환술",
+      "skill_name_en": "grand summoning",
+      "pixel_size": "64x64",
+      "description": "massive creature emerging from portal",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, massive creature emerging from portal, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. grand summoning skill for Mnemonist class: massive creature emerging from portal. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, grand summoning, massive creature emerging from portal, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-MNE-030",
+      "class": "기억술사",
+      "class_en": "Mnemonist",
+      "class_color": "#9B59B6",
+      "skill_name_ko": "기억 심판",
+      "skill_name_en": "memory judgment",
+      "pixel_size": "64x64",
+      "description": "ultimate area bombardment from above",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Mnemonist, ultimate area bombardment from above, 기억 보라 (#9B59B6) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory judgment skill for Mnemonist class: ultimate area bombardment from above. Color accent: #9B59B6. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory judgment, ultimate area bombardment from above, 기억 보라 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

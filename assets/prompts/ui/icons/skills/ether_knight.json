@@ -1,0 +1,1087 @@
+{
+  "class": "에테르기사",
+  "class_en": "Ether Knight",
+  "color": "#89CFF0",
+  "skills": [
+    {
+      "asset_id": "SKL-ETH-001",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 베기",
+      "skill_name_en": "ether slash",
+      "pixel_size": "64x64",
+      "description": "cyan energy blade slash arc",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, cyan energy blade slash arc, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether slash skill for Ether Knight class: cyan energy blade slash arc. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether slash, cyan energy blade slash arc, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-002",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 방패",
+      "skill_name_en": "ether shield",
+      "pixel_size": "64x64",
+      "description": "hexagonal cyan energy barrier",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, hexagonal cyan energy barrier, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether shield skill for Ether Knight class: hexagonal cyan energy barrier. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether shield, hexagonal cyan energy barrier, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-003",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "돌진",
+      "skill_name_en": "ether charge",
+      "pixel_size": "64x64",
+      "description": "knight charging with cyan trail",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, knight charging with cyan trail, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether charge skill for Ether Knight class: knight charging with cyan trail. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether charge, knight charging with cyan trail, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-004",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "기억 참격",
+      "skill_name_en": "memory cleave",
+      "pixel_size": "64x64",
+      "description": "wide horizontal slash with memory fragments",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, wide horizontal slash with memory fragments, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory cleave skill for Ether Knight class: wide horizontal slash with memory fragments. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory cleave, wide horizontal slash with memory fragments, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-005",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 갑옷",
+      "skill_name_en": "ether armor",
+      "pixel_size": "64x64",
+      "description": "body coated in cyan crystal armor aura",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, body coated in cyan crystal armor aura, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether armor skill for Ether Knight class: body coated in cyan crystal armor aura. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether armor, body coated in cyan crystal armor aura, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-006",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "빛의 일격",
+      "skill_name_en": "radiant strike",
+      "pixel_size": "64x64",
+      "description": "downward sword strike with bright flash",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, downward sword strike with bright flash, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. radiant strike skill for Ether Knight class: downward sword strike with bright flash. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, radiant strike, downward sword strike with bright flash, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-007",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "수호의 맹세",
+      "skill_name_en": "guardian oath",
+      "pixel_size": "64x64",
+      "description": "golden shield symbol with ether glow",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, golden shield symbol with ether glow, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. guardian oath skill for Ether Knight class: golden shield symbol with ether glow. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, guardian oath, golden shield symbol with ether glow, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-008",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "검기 폭풍",
+      "skill_name_en": "blade storm",
+      "pixel_size": "64x64",
+      "description": "whirlwind of cyan energy blades",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, whirlwind of cyan energy blades, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. blade storm skill for Ether Knight class: whirlwind of cyan energy blades. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, blade storm, whirlwind of cyan energy blades, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-009",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 해방",
+      "skill_name_en": "ether release",
+      "pixel_size": "64x64",
+      "description": "explosive cyan energy burst from sword",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, explosive cyan energy burst from sword, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether release skill for Ether Knight class: explosive cyan energy burst from sword. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether release, explosive cyan energy burst from sword, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-010",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "신성 참격",
+      "skill_name_en": "divine cleave",
+      "pixel_size": "64x64",
+      "description": "massive golden-cyan energy slash",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, massive golden-cyan energy slash, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. divine cleave skill for Ether Knight class: massive golden-cyan energy slash. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, divine cleave, massive golden-cyan energy slash, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-011",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "기사의 의지",
+      "skill_name_en": "knight resolve",
+      "pixel_size": "64x64",
+      "description": "glowing determination aura, fist clenched",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, glowing determination aura, fist clenched, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. knight resolve skill for Ether Knight class: glowing determination aura, fist clenched. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, knight resolve, glowing determination aura, fist clenched, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-012",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 반격",
+      "skill_name_en": "ether counter",
+      "pixel_size": "64x64",
+      "description": "parry flash with counter-slash",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, parry flash with counter-slash, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether counter skill for Ether Knight class: parry flash with counter-slash. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether counter, parry flash with counter-slash, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-013",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "결계 전개",
+      "skill_name_en": "barrier deploy",
+      "pixel_size": "64x64",
+      "description": "expanding dome barrier",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, expanding dome barrier, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. barrier deploy skill for Ether Knight class: expanding dome barrier. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, barrier deploy, expanding dome barrier, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-014",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "빛의 심판",
+      "skill_name_en": "light judgment",
+      "pixel_size": "64x64",
+      "description": "pillar of light descending",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, pillar of light descending, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. light judgment skill for Ether Knight class: pillar of light descending. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, light judgment, pillar of light descending, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-015",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 연쇄",
+      "skill_name_en": "ether chain",
+      "pixel_size": "64x64",
+      "description": "chain of cyan energy links binding",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, chain of cyan energy links binding, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether chain skill for Ether Knight class: chain of cyan energy links binding. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether chain, chain of cyan energy links binding, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-016",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "대지 강타",
+      "skill_name_en": "earth smash",
+      "pixel_size": "64x64",
+      "description": "ground slam with shockwave",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, ground slam with shockwave, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. earth smash skill for Ether Knight class: ground slam with shockwave. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, earth smash, ground slam with shockwave, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-017",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "기억 수복",
+      "skill_name_en": "memory repair",
+      "pixel_size": "64x64",
+      "description": "healing light mending wounds",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, healing light mending wounds, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. memory repair skill for Ether Knight class: healing light mending wounds. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, memory repair, healing light mending wounds, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-018",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 집중",
+      "skill_name_en": "ether focus",
+      "pixel_size": "64x64",
+      "description": "concentration aura, power building",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, concentration aura, power building, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether focus skill for Ether Knight class: concentration aura, power building. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether focus, concentration aura, power building, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-019",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "최후의 방어",
+      "skill_name_en": "last stand",
+      "pixel_size": "64x64",
+      "description": "unbreakable shield at critical HP",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, unbreakable shield at critical HP, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. last stand skill for Ether Knight class: unbreakable shield at critical HP. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, last stand, unbreakable shield at critical HP, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-020",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 각성",
+      "skill_name_en": "ether awakening",
+      "pixel_size": "64x64",
+      "description": "full body transformation, intense glow",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, full body transformation, intense glow, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether awakening skill for Ether Knight class: full body transformation, intense glow. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether awakening, full body transformation, intense glow, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-021",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "광역 도발",
+      "skill_name_en": "mass taunt",
+      "pixel_size": "64x64",
+      "description": "roaring challenge, aggro waves",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, roaring challenge, aggro waves, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. mass taunt skill for Ether Knight class: roaring challenge, aggro waves. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, mass taunt, roaring challenge, aggro waves, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-022",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 치유",
+      "skill_name_en": "ether heal",
+      "pixel_size": "64x64",
+      "description": "gentle cyan healing light on ally",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, gentle cyan healing light on ally, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether heal skill for Ether Knight class: gentle cyan healing light on ally. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether heal, gentle cyan healing light on ally, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-023",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "기사의 돌격",
+      "skill_name_en": "knight rush",
+      "pixel_size": "64x64",
+      "description": "forward charge with lance",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, forward charge with lance, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. knight rush skill for Ether Knight class: forward charge with lance. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, knight rush, forward charge with lance, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-024",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "파멸의 검",
+      "skill_name_en": "doom blade",
+      "pixel_size": "64x64",
+      "description": "dark-edged blade with destructive aura",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, dark-edged blade with destructive aura, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. doom blade skill for Ether Knight class: dark-edged blade with destructive aura. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, doom blade, dark-edged blade with destructive aura, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-025",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "수호 결계",
+      "skill_name_en": "protective ward",
+      "pixel_size": "64x64",
+      "description": "rune circle barrier on ground",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, rune circle barrier on ground, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. protective ward skill for Ether Knight class: rune circle barrier on ground. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, protective ward, rune circle barrier on ground, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-026",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 강타",
+      "skill_name_en": "ether smite",
+      "pixel_size": "64x64",
+      "description": "overhead slam with energy explosion",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, overhead slam with energy explosion, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether smite skill for Ether Knight class: overhead slam with energy explosion. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether smite, overhead slam with energy explosion, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-027",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "빛의 쇄도",
+      "skill_name_en": "light surge",
+      "pixel_size": "64x64",
+      "description": "rapid forward thrust with light trail",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, rapid forward thrust with light trail, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. light surge skill for Ether Knight class: rapid forward thrust with light trail. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, light surge, rapid forward thrust with light trail, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-028",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 전진",
+      "skill_name_en": "ether advance",
+      "pixel_size": "64x64",
+      "description": "shielded advance, pushing enemies",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, shielded advance, pushing enemies, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether advance skill for Ether Knight class: shielded advance, pushing enemies. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether advance, shielded advance, pushing enemies, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-029",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "최종 해방",
+      "skill_name_en": "final liberation",
+      "pixel_size": "64x64",
+      "description": "ultimate ether explosion, area effect",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, ultimate ether explosion, area effect, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. final liberation skill for Ether Knight class: ultimate ether explosion, area effect. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, final liberation, ultimate ether explosion, area effect, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "asset_id": "SKL-ETH-030",
+      "class": "에테르기사",
+      "class_en": "Ether Knight",
+      "class_color": "#89CFF0",
+      "skill_name_ko": "에테르 심판",
+      "skill_name_en": "ether judgment",
+      "pixel_size": "64x64",
+      "description": "giant energy sword descending from above",
+      "type": "class_specific",
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art game icon, 64x64 pixel RPG skill icon, dark fantasy Korean MMORPG style, skill icon for Ether Knight, giant energy sword descending from above, 에테르 청백 (#89CFF0) color scheme, energy effect, centered composition, (clean pixel edges:1.4), (2px black outline:1.3), no anti-aliasing, 3-step cel shading, transparent background, game UI skill icon, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text overlay, logo, low quality, deformed, noisy, JPEG artifacts, soft edges, character full body, busy background",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 512,
+            "height": 512,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "2D pixel art RPG skill icon, 64x64 pixels. ether judgment skill for Ether Knight class: giant energy sword descending from above. Color accent: #89CFF0. Clean pixel edges, black outline, dark fantasy MMORPG. No text.",
+          "params": {
+            "model": "dall-e-3",
+            "size": "1024x1024",
+            "quality": "hd"
+          }
+        },
+        "midjourney": {
+          "prompt": "2D pixel art RPG skill icon, ether judgment, giant energy sword descending from above, 에테르 청백 accent, 64x64, clean edges, dark fantasy --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}

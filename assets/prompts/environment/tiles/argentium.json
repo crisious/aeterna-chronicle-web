@@ -1,0 +1,366 @@
+{
+  "region": "아르겐티움",
+  "region_en": "Argentium",
+  "theme": "기계 도시 (Clockwork City)",
+  "color_palette": {
+    "primary": "#3D3D3D",
+    "secondary": "#B8860B",
+    "accent": "#FFD700",
+    "names": [
+      "기계 회색",
+      "황동 금색",
+      "증기 발광 금색"
+    ]
+  },
+  "style_guide": {
+    "pixel_size": "32x32 per tile",
+    "outline": "2px black outline",
+    "shading": "3-step cel shading, top-left 45° light",
+    "anti_aliasing": false,
+    "format": "RGBA PNG 32bit"
+  },
+  "autotile_sets": [
+    {
+      "id": "ARG-G-01",
+      "name": "톱니 금속 바닥",
+      "type": "autotile_3x3",
+      "variants": 3,
+      "pieces": {
+        "center": "Main walkable surface, Gear-patterned metal floor, brass cogs embedded in iron plate, oil stains",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Gear-patterned metal floor, brass cogs embedded in iron plate, oil stains, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Gear-patterned metal floor, brass cogs embedded in iron plate, oil stains. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, clockwork city gear floor, brass cogs in iron, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-02",
+      "name": "증기 배관 통로",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Steam pipe corridor, brass pipes and pressure valves, condensation drips",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Steam pipe corridor, brass pipes and pressure valves, condensation drips, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Steam pipe corridor, brass pipes and pressure valves, condensation drips. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, steam pipe corridor, brass pipes pressure valves, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-03",
+      "name": "공장 컨베이어",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Factory conveyor belt floor, rubber track with metal rollers, grease marks",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Factory conveyor belt floor, rubber track with metal rollers, grease marks, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Factory conveyor belt floor, rubber track with metal rollers, grease marks. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, factory conveyor belt floor, metal rollers, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-04",
+      "name": "황동 격자판",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Brass grating floor, hexagonal grid pattern, warm orange glow from below",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Brass grating floor, hexagonal grid pattern, warm orange glow from below, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Brass grating floor, hexagonal grid pattern, warm orange glow from below. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, brass grating floor, hexagonal grid, warm glow from below, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-05",
+      "name": "산화된 철 바닥",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Oxidized iron floor, rust patches, corroded rivets, industrial decay",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Oxidized iron floor, rust patches, corroded rivets, industrial decay, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Oxidized iron floor, rust patches, corroded rivets, industrial decay. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, oxidized iron floor, rust patches, corroded rivets, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-06",
+      "name": "증기기관 플랫폼",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Steam engine platform, reinforced steel plate, pressure gauge mounts",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Steam engine platform, reinforced steel plate, pressure gauge mounts, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Steam engine platform, reinforced steel plate, pressure gauge mounts. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, steam engine platform, reinforced steel plate, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-07",
+      "name": "시계탑 내부",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Clocktower interior, pendulum mechanism base, numbered dial patterns",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Clocktower interior, pendulum mechanism base, numbered dial patterns, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Clocktower interior, pendulum mechanism base, numbered dial patterns. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, clocktower interior floor, pendulum mechanism, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-08",
+      "name": "광석 처리장",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ore processing floor, crushed metal debris, smelting channels",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ore processing floor, crushed metal debris, smelting channels, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ore processing floor, crushed metal debris, smelting channels. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ore processing floor, crushed metal, smelting channels, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    },
+    {
+      "id": "ARG-G-09",
+      "name": "에테르 동력로",
+      "type": "autotile_3x3",
+      "variants": 2,
+      "pieces": {
+        "center": "Main walkable surface, Ether power core floor, glowing conduit lines (#FFD700), energy grid",
+        "top": "Top edge border, transition zone",
+        "bottom": "Bottom edge border, terrain transition",
+        "left": "Left edge boundary",
+        "right": "Right edge boundary",
+        "corner_tl": "Top-left corner piece",
+        "corner_tr": "Top-right corner piece",
+        "corner_bl": "Bottom-left corner piece",
+        "corner_br": "Bottom-right corner piece"
+      },
+      "prompts": {
+        "sd": {
+          "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art tileset, top-down RPG tile, Ether power core floor, glowing conduit lines (#FFD700), energy grid, palette: #3D3D3D/#B8860B/#FFD700, dark fantasy 기계 도시 (Clockwork City), seamless edges, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 32x32 tile, 3-step cel shading, top-left 45-degree lighting, {piece_description}, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+          "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, noisy, JPEG artifacts, perspective view, isometric, character, modern",
+          "params": {
+            "steps": 30,
+            "cfg_scale": 7.5,
+            "sampler_name": "DPM++ 2M Karras",
+            "width": 256,
+            "height": 256,
+            "seed": -1
+          }
+        },
+        "dalle": {
+          "prompt": "Top-down 2D pixel art RPG tileset piece, 32x32 pixels, Ether power core floor, glowing conduit lines (#FFD700), energy grid. Color palette: (#3D3D3D/#B8860B/#FFD700). {piece_description}. Clean pixel edges, no anti-aliasing, 2px black outline, 3-step cel shading with top-left lighting. Seamless tile edges. Dark fantasy Korean MMORPG tilemap style.",
+          "size": "256x256"
+        },
+        "midjourney": {
+          "prompt": "top-down 2D pixel art RPG tile, ether power core floor, golden glowing conduits, energy grid, {piece_description}, 32x32 pixel tile, clean pixel edges, black outline, cel shading, seamless, dark fantasy MMORPG --ar 1:1 --s 250 --niji 6"
+        }
+      }
+    }
+  ]
+}
