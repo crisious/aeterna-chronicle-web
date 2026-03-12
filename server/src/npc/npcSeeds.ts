@@ -276,7 +276,7 @@ export const npcSeeds: NpcSeed[] = [
         { text: '나중에', nextId: 'bye' },
       ]},
       { id: 'shop', text: '다른 데서 못 구하는 것들이야!' },
-      { id: 'story', text: '에테르나의 끝에서 왔지. 거긴 시간이 거꾸로 흘러.' },
+      { id: 'story', text: '메모리아의 끝에서 왔지. 거긴 시간이 거꾸로 흘러.' },
       { id: 'bye', text: '다음 만남은 운명이 정하겠지!' },
     ],
     schedule: [
@@ -309,7 +309,7 @@ export const npcSeeds: NpcSeed[] = [
         { text: '무슨 일인데요?', nextId: 'quest_main' },
         { text: '시간의 균열에 대해 알려주세요', nextId: 'lore' },
       ]},
-      { id: 'quest_main', text: '에테르나의 핵심 — 시간의 수정이 부서지기 시작했다.' },
+      { id: 'quest_main', text: '메모리아의 핵심 — 시간의 수정이 부서지기 시작했다.' },
       { id: 'lore', text: '시간의 균열은 창조의 시대부터 봉인되어 있었지...' },
     ],
     behaviorTree: questGiverBt,
@@ -413,7 +413,7 @@ export const npcSeeds: NpcSeed[] = [
         { text: '이 마을에 대해 알려주세요', nextId: 'lore' },
       ]},
       { id: 'quest', text: '요즘 밭에서 이상한 벌레들이 나와서 큰일이야...' },
-      { id: 'lore', text: '이 마을은 에테르나에서 가장 오래된 정착지란다.' },
+      { id: 'lore', text: '이 마을은 메모리아에서 가장 오래된 정착지란다.' },
     ],
     behaviorTree: questGiverBt,
     giftPreferences: [
@@ -865,7 +865,7 @@ export const npcSeeds: NpcSeed[] = [
     behaviorTree: villagerBt,
   },
   {
-    name: '에테르나',
+    name: '메모리아',
     title: '봉인의 수호자',
     role: 'quest',
     location: 'mistsea_seal_altar',
@@ -895,7 +895,7 @@ export const npcSeeds: NpcSeed[] = [
     stats: { hp: 15000, attack: 180, defense: 250 },
   },
   {
-    name: '루미아',
+    name: '루나리아',
     title: '심해 연구자',
     role: 'quest',
     location: 'mistsea_observatory',
