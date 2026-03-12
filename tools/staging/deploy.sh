@@ -68,7 +68,7 @@ check_service() {
   fi
 }
 
-check_service "Server (API)" "http://localhost:3001/health"
+check_service "Server (API)" "http://localhost:3001/api/health"
 check_service "Client (Web)" "http://localhost:8080/"
 
 echo ""

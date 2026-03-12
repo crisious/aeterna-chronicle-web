@@ -6,7 +6,7 @@ WORKDIR /app
 # 의존성 설치
 COPY client/package.json client/package-lock.json* ./client/
 COPY shared/ ./shared/
-RUN cd client && npm ci
+RUN cd client && npm install
 
 # 소스 복사 + Vite 빌드
 COPY client/tsconfig.json client/vite.config.ts ./client/

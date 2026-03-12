@@ -2,15 +2,19 @@
   "name": "aeterna-chronicle-server",
   "version": "1.0.0",
   "description": "Game server for Aeterna Chronicle Phase 1",
-  "main": "dist/server.js",
+  "main": "dist/server/src/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/server/src/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate deploy",
+    "seed": "ts-node --project tsconfig.json ../tools/seed/masterSeed.ts",
+    "seed:dry": "ts-node --project tsconfig.json ../tools/seed/masterSeed.ts --dry-run",
+    "seed:check": "ts-node --project tsconfig.json ../tools/seed/integrityCheck.ts",
+    "seed:staging": "ts-node --project tsconfig.json ../tools/staging/seed.ts",
     "test:e2e": "node --experimental-vm-modules node_modules/.bin/jest --config ../tests/jest.config.ts --testPathPattern=tests/e2e"
   },
   "dependencies": {
@@ -26,6 +30,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.11.19",
     "prisma": "^5.10.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
   }

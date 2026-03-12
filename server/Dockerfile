@@ -6,16 +6,13 @@ WORKDIR /app
 # 의존성 설치 (캐시 레이어 분리)
 COPY server/package.json server/package-lock.json* ./server/
 COPY shared/ ./shared/
-RUN cd server && npm ci --ignore-scripts
+RUN cd server && npm install --ignore-scripts
 
 # 소스 복사 + 빌드
 COPY server/tsconfig.json ./server/
 COPY server/src/ ./server/src/
-RUN cd server && npx tsc
-
-# Prisma 클라이언트 생성
 COPY server/prisma/ ./server/prisma/
-RUN cd server && npx prisma generate
+RUN cd server && npx prisma generate && npx tsc
 
 # Stage 2: 런타임
 FROM node:20-alpine AS runtime
@@ -26,7 +23,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # 프로덕션 의존성만 설치
 COPY server/package.json server/package-lock.json* ./
-RUN npm ci --omit=dev --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts
 
 # 빌드 산출물 복사
 COPY --from=builder /app/server/dist ./dist

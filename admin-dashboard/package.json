@@ -1,7 +1,7 @@
 {
   "name": "aeterna-chronicle-admin",
   "version": "1.0.0",
-  "description": "P6-13: 에테르나 크로니클 운영 대시보드",
+  "description": "Admin dashboard for Aeterna Chronicle",
   "private": true,
   "type": "module",
   "scripts": {

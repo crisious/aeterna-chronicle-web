@@ -54,6 +54,17 @@ module.exports = {
     {
       // 테스트 파일: 완화된 규칙
       files: ['**/*.test.ts', '**/*.test.tsx', '**/tests/**'],
+      globals: {
+        afterAll: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        beforeEach: 'readonly',
+        describe: 'readonly',
+        expect: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        vi: 'readonly',
+      },
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unused-vars': 'off',

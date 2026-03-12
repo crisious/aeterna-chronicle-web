@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/etherna/etherna-server:latest
+          image: ghcr.io/crisious/aeterna-chronicle-web/etherna-server:latest
           ports:
             - containerPort: 3000
           envFrom:
@@ -39,21 +39,21 @@ spec:
               memory: "1Gi"
           readinessProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 5
           startupProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 3000
             failureThreshold: 30
             periodSeconds: 5

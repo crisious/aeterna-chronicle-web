@@ -1,5 +1,3 @@
-# ── 에테르나 크로니클 — 스테이징 자동 배포 ────────────────────
-# develop 브랜치 push 시 스테이징 환경에 자동 배포
 name: Staging Deploy
 
 on:
@@ -15,45 +13,42 @@ env:
   ENV_FILE: .env.staging
 
 jobs:
-  # ── 1. 빌드 + 타입체크 ──
   validate:
-    name: 🔍 Validate
+    name: Validate
     runs-on: ubuntu-latest
     steps:
-      - name: 소스 체크아웃
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Node.js 설정
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: server/package-lock.json
 
-      - name: 서버 의존성 설치 + Prisma 생성
-        run: |
-          cd server && npm ci
-          npx prisma generate
+      - name: Install server dependencies
+        run: cd server && npm install
 
-      - name: TypeScript 타입 체크
+      - name: Generate Prisma client
+        run: cd server && npx prisma generate
+
+      - name: Type check server
         run: cd server && npx tsc --noEmit
 
-  # ── 2. Docker 빌드 + 배포 ──
   deploy:
-    name: 🚀 Deploy to Staging
+    name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: validate
     environment: staging
     steps:
-      - name: 소스 체크아웃
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Docker Buildx 설정
+      - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 스테이징 환경변수 생성
+      - name: Create staging environment file
         run: |
-          cat > .env.staging << 'EOF'
+          cat > .env.staging <<'EOF'
           POSTGRES_DB=aeterna_staging
           POSTGRES_USER=aeterna_staging
           POSTGRES_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}
@@ -66,46 +61,46 @@ jobs:
           JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}
           VITE_SERVER_URL=${{ vars.STAGING_SERVER_URL || 'http://localhost:3001' }}
           VITE_WS_URL=${{ vars.STAGING_WS_URL || 'ws://localhost:3001' }}
+          VITE_API_BASE=${{ vars.STAGING_SERVER_URL || 'http://localhost:3001' }}/api
           EOF
 
-      - name: Docker Compose 빌드
-        run: |
-          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE build
+      - name: Build docker compose stack
+        run: docker compose -f $COMPOSE_FILE --env-file $ENV_FILE build
 
-      - name: DB + Redis 기동
+      - name: Start database and redis
         run: |
           docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d postgres redis
-          echo "⏳ DB 헬스체크 대기..."
           sleep 10
           docker compose -f $COMPOSE_FILE exec -T postgres pg_isready -U aeterna_staging
 
-      - name: Prisma 마이그레이션
+      - name: Run Prisma migrations
         run: |
           docker compose -f $COMPOSE_FILE --env-file $ENV_FILE run --rm \
             server npx prisma migrate deploy
 
-      - name: 시드 실행
+      - name: Seed staging data
         run: |
           docker compose -f $COMPOSE_FILE --env-file $ENV_FILE run --rm \
-            server npx ts-node tools/staging/seed.ts
+            server npm run seed:staging
 
-      - name: 전체 서비스 기동
-        run: |
-          docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d
+      - name: Start full stack
+        run: docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d
 
-      - name: 헬스체크
+      - name: Run smoke checks
         run: |
           sleep 10
-          echo "🩺 Server 헬스체크..."
-          curl -sf http://localhost:3001/health || echo "⚠️ Server 응답 대기 중"
-          echo "🩺 Client 헬스체크..."
-          curl -sf http://localhost:8080/ || echo "⚠️ Client 응답 대기 중"
+          echo "Checking server health..."
+          curl -sf http://localhost:3001/api/health > /dev/null
+          echo "Checking client health..."
+          curl -sf http://localhost:8080/ > /dev/null
 
-      - name: 배포 결과 요약
+      - name: Publish deployment summary
         if: always()
         run: |
-          echo "## 🚀 스테이징 배포 결과" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **브랜치:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **커밋:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **시각:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Staging deployment result"
+            echo ""
+            echo "- Branch: \`${{ github.ref_name }}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Time: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          } >> $GITHUB_STEP_SUMMARY

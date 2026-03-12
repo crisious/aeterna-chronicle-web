@@ -68,7 +68,7 @@ services:
     networks:
       - aeterna-staging
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -89,7 +89,7 @@ services:
     networks:
       - aeterna-staging
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/ || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
