@@ -78,6 +78,16 @@ export const CHAPTER_DEFINITIONS: ChapterDefinition[] = [
       { type: 'memory_fragment', value: 4 },
     ],
   },
+  // ── P8-12: 챕터 6 "깨어나는 봉인" ──
+  {
+    chapter: 6,
+    region: '무한 안개해', // 봉인 해제, 기억 파괴 습득
+    requiredLevel: 80,
+    gateConditions: [
+      { type: 'chapter_complete', value: 5 },
+      { type: 'memory_fragment', value: 4 },
+    ],
+  },
 ];
 
 // ── 챕터 진행도 관리 ────────────────────────────────────────────

@@ -91,16 +91,105 @@ export const SEASON_TIER_REWARDS: readonly SeasonTierReward[] = [
   },
 ] as const;
 
+// ─── 시즌 2 보상 테이블 (P8-15) ─────────────────────────────
+// 시즌 2 "깨어나는 봉인" — 보상 상향 + 신규 보상 타입 추가
+// 승급: 기존 대비 레이팅 기준 -50 (접근성 향상)
+// 강등: 시즌 비활성 14일 후 티어당 -100 레이팅 감소 (시즌 1: 없음)
+
+export const SEASON2_TIER_REWARDS: readonly SeasonTierReward[] = [
+  {
+    tier: 'bronze',
+    tierName: '브론즈',
+    minRating: 0,
+    maxRating: 1149,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 800 },
+      { type: 'title', name: '안개해 투사' },
+    ],
+  },
+  {
+    tier: 'silver',
+    tierName: '실버',
+    minRating: 1150,
+    maxRating: 1549,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 2000 },
+      { type: 'title', name: '안개해 도전자' },
+      { type: 'cosmetic_box', name: '시즌2 코스메틱 상자', amount: 2 },
+    ],
+  },
+  {
+    tier: 'gold',
+    tierName: '골드',
+    minRating: 1550,
+    maxRating: 1949,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 4000 },
+      { type: 'title', name: '안개해 전사' },
+      { type: 'cosmetic_box', name: '시즌2 코스메틱 상자', amount: 3 },
+      { type: 'season_skin', name: '심해 전투복', amount: 1 },
+    ],
+  },
+  {
+    tier: 'platinum',
+    tierName: '플래티넘',
+    minRating: 1950,
+    maxRating: 2349,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 7000 },
+      { type: 'title', name: '심해의 영웅' },
+      { type: 'cosmetic_box', name: '시즌2 코스메틱 상자', amount: 5 },
+      { type: 'season_skin', name: '심해 전투복', amount: 1 },
+      { type: 'legendary_weapon_skin', name: '심연의 무기', amount: 1 },
+    ],
+  },
+  {
+    tier: 'diamond',
+    tierName: '다이아몬드',
+    minRating: 2350,
+    maxRating: 99999,
+    rewards: [
+      { type: 'gold', name: '골드', amount: 15000 },
+      { type: 'legendary_title', name: '심해의 제왕' },
+      { type: 'cosmetic_box', name: '시즌2 코스메틱 상자', amount: 8 },
+      { type: 'season_skin', name: '심해 전투복', amount: 1 },
+      { type: 'legendary_weapon_skin', name: '심연의 무기', amount: 1 },
+      { type: 'crystal', name: '크리스탈', amount: 800 },
+    ],
+  },
+];
+
+/** 시즌 2 비활성 강등 기준 */
+export const SEASON2_DECAY = {
+  /** 비활성 판정 기간 (일) */
+  inactiveDays: 14,
+  /** 티어당 감소 레이팅 */
+  ratingDecayPerTier: 100,
+  /** 강등 최저 레이팅 (브론즈 하한) */
+  minDecayRating: 0,
+  /** 강등 면제 티어 (브론즈, 실버 면제) */
+  exemptTiers: ['bronze', 'silver'],
+} as const;
+
+/**
+ * 시즌 번호에 따라 보상 테이블 반환
+ */
+export function getSeasonRewards(season: number): readonly SeasonTierReward[] {
+  if (season >= 2) return SEASON2_TIER_REWARDS;
+  return SEASON_TIER_REWARDS;
+}
+
 // ─── 보상 조회 ──────────────────────────────────────────────
 
-/** 레이팅에 따른 보상 등급 결정 */
-export function getRewardTier(rating: number): SeasonTierReward {
-  for (let i = SEASON_TIER_REWARDS.length - 1; i >= 0; i--) {
-    if (rating >= SEASON_TIER_REWARDS[i].minRating) {
-      return SEASON_TIER_REWARDS[i];
+/** 레이팅에 따른 보상 등급 결정 (시즌 번호 지원) */
+export function getRewardTier(rating: number, season?: number): SeasonTierReward {
+  const table = season !== undefined ? getSeasonRewards(season) : SEASON_TIER_REWARDS;
+  for (let i = table.length - 1; i >= 0; i--) {
+    if (rating >= table[i].minRating) {
+      return table[i];
     }
   }
-  return SEASON_TIER_REWARDS[0];
+  return table[0];
 }
 
 // ─── 시즌 정보 ──────────────────────────────────────────────

@@ -713,5 +713,107 @@
     "noResults": "검색 결과가 없습니다",
     "registerSuccess": "아이템이 등록되었습니다",
     "bidSuccess": "입찰되었습니다"
+  },
+  "season2": {
+    "title": "시즌 2: 깨어나는 봉인",
+    "subtitle": "안개해 너머의 진실",
+    "chapter6": {
+      "title": "챕터 6: 안개해의 봉인",
+      "intro": "대망각 이후 잊혀진 바다, 무한 안개해. 봉인이 풀리기 시작한다.",
+      "quest_lighthouse": "등대의 기억",
+      "quest_lighthouse_desc": "토르가의 등대에서 세 개의 봉인석을 찾아라.",
+      "quest_seal": "봉인의 선택",
+      "quest_seal_desc": "에테르나와 만나 봉인의 운명을 결정하라.",
+      "quest_abyss": "심해의 비밀",
+      "quest_abyss_desc": "심해 콜로세움에 잠든 고대의 진실을 밝혀라.",
+      "scene_6_1": "안개해 도착",
+      "scene_6_2": "등대의 수수께끼",
+      "scene_6_3": "심해 탐사",
+      "scene_6_4": "봉인 제단",
+      "scene_6_5": "선택의 순간",
+      "scene_6_6": "깨어나는 봉인"
+    },
+    "mistsea": {
+      "region_name": "무한 안개해",
+      "region_desc": "끝없는 안개에 뒤덮인 미지의 바다. 봉인된 기억이 잠들어 있다.",
+      "zone_harbor": "잔해 항구",
+      "zone_lighthouse": "침묵의 등대",
+      "zone_coral_plaza": "산호 광장",
+      "zone_wreck_street": "난파선 거리",
+      "zone_observatory": "심해 관측소",
+      "zone_outpost": "외곽 초소",
+      "zone_tavern": "표류자의 술집",
+      "zone_memory_rift": "기억의 틈새",
+      "zone_seal_altar": "봉인 제단",
+      "zone_colosseum": "심해 콜로세움"
+    },
+    "memoryBreaker": {
+      "class_name": "기억 파괴자",
+      "class_desc": "봉인의 힘을 다루는 4번째 클래스. 기억을 대가로 강력한 힘을 발휘한다.",
+      "skill_category_seal": "봉인 계열",
+      "skill_category_memory": "기억 계열",
+      "skill_category_void": "공허 계열",
+      "passive_memory_cost": "기억 소비: 스킬 사용 시 기억 게이지 소모",
+      "class_change_confirm": "기억 파괴자로 전직하시겠습니까? 기억의 일부를 대가로 치르게 됩니다.",
+      "class_change_success": "전직 완료! 봉인의 힘이 당신에게 깃듭니다."
+    },
+    "housing": {
+      "title": "하우징",
+      "personal_house": "개인 하우스",
+      "guild_house": "길드 하우스",
+      "furniture_place": "가구 배치",
+      "furniture_remove": "가구 철거",
+      "slot_available": "사용 가능 슬롯: {available}/{total}",
+      "upgrade": "하우스 업그레이드",
+      "upgrade_confirm": "하우스를 Lv.{level}로 업그레이드하시겠습니까? (비용: {cost}G)",
+      "upgrade_success": "하우스가 Lv.{level}로 업그레이드되었습니다!",
+      "buff_active": "활성 버프",
+      "set_bonus": "{setName} 세트 효과 발동!",
+      "visit": "방문하기",
+      "invite": "초대하기"
+    },
+    "event": {
+      "title": "시즌 이벤트",
+      "deep_song": "심해의 노래",
+      "deep_song_desc": "세이렌의 부름에 응답하라. 심해에 잠든 보물이 깨어난다.",
+      "fog_festival": "안개 축제",
+      "fog_festival_desc": "안개해의 연례 축제. 특별 코스메틱과 한정 보상!",
+      "seal_trial": "봉인의 시련",
+      "seal_trial_desc": "봉인의 힘을 시험하는 한정 던전. 기억 파괴자 전용 보상.",
+      "time_remaining": "남은 시간: {time}",
+      "event_reward": "이벤트 보상",
+      "event_shop": "이벤트 상점",
+      "event_currency": "이벤트 토큰: {amount}"
+    },
+    "pvp": {
+      "season2_title": "PvP 시즌 2",
+      "map_mistsea_arena": "안개해 아레나",
+      "map_mistsea_arena_desc": "안개 속 폐선 위의 투기장. 시야 제한 환경 효과.",
+      "map_deepsea_colosseum": "심해 콜로세움",
+      "map_deepsea_colosseum_desc": "해저 고대 투기장. 수압과 심해 괴수 위험.",
+      "tier_mistsea": "안개해 {tier}",
+      "decay_warning": "비활성 강등 경고: {days}일 후 레이팅이 감소합니다."
+    },
+    "guild": {
+      "raid_title": "길드 레이드",
+      "raid_recruit": "레이드 모집 중 ({current}/{max})",
+      "raid_start": "레이드 시작",
+      "raid_boss_scaled": "보스 HP: {hp} (인원 보정 적용)",
+      "guild_house_title": "길드 하우스",
+      "guild_house_upgrade": "길드 하우스 업그레이드 (Lv.{level})",
+      "guild_house_buff": "길드 버프"
+    },
+    "npc": {
+      "naila": "나일라",
+      "torga": "토르가",
+      "milena": "밀레나",
+      "kobal": "코발",
+      "aetherna": "에테르나",
+      "hashir": "하쉬르",
+      "lumia": "루미아",
+      "veltus": "벨투스",
+      "okia": "오키아",
+      "seiren": "세이렌"
+    }
   }
 }

@@ -713,5 +713,107 @@
     "noResults": "No results found",
     "registerSuccess": "Item registered",
     "bidSuccess": "Bid placed"
+  },
+  "season2": {
+    "title": "Season 2: The Awakening Seal",
+    "subtitle": "Truth Beyond the Mist Sea",
+    "chapter6": {
+      "title": "Chapter 6: Seal of the Mist Sea",
+      "intro": "The Mist Sea, forgotten since the Great Oblivion. The seals begin to break.",
+      "quest_lighthouse": "Memory of the Lighthouse",
+      "quest_lighthouse_desc": "Find three seal stones at Torga's lighthouse.",
+      "quest_seal": "The Choice of Sealing",
+      "quest_seal_desc": "Meet Aetherna and decide the fate of the seal.",
+      "quest_abyss": "Secrets of the Deep",
+      "quest_abyss_desc": "Uncover the ancient truth sleeping in the Abyssal Colosseum.",
+      "scene_6_1": "Arrival at the Mist Sea",
+      "scene_6_2": "The Lighthouse Riddle",
+      "scene_6_3": "Deep Sea Expedition",
+      "scene_6_4": "The Seal Altar",
+      "scene_6_5": "The Moment of Choice",
+      "scene_6_6": "The Awakening Seal"
+    },
+    "mistsea": {
+      "region_name": "Infinite Mist Sea",
+      "region_desc": "An uncharted sea veiled in endless fog. Sealed memories slumber within.",
+      "zone_harbor": "Wreckage Harbor",
+      "zone_lighthouse": "Silent Lighthouse",
+      "zone_coral_plaza": "Coral Plaza",
+      "zone_wreck_street": "Shipwreck Alley",
+      "zone_observatory": "Deep Sea Observatory",
+      "zone_outpost": "Outer Outpost",
+      "zone_tavern": "Drifter's Tavern",
+      "zone_memory_rift": "Memory Rift",
+      "zone_seal_altar": "Seal Altar",
+      "zone_colosseum": "Abyssal Colosseum"
+    },
+    "memoryBreaker": {
+      "class_name": "Memory Breaker",
+      "class_desc": "The 4th class wielding the power of seals. Sacrifices memories for devastating power.",
+      "skill_category_seal": "Seal Tree",
+      "skill_category_memory": "Memory Tree",
+      "skill_category_void": "Void Tree",
+      "passive_memory_cost": "Memory Cost: Consumes memory gauge on skill use",
+      "class_change_confirm": "Change class to Memory Breaker? You will sacrifice a portion of your memories.",
+      "class_change_success": "Class change complete! The power of the seal dwells within you."
+    },
+    "housing": {
+      "title": "Housing",
+      "personal_house": "Personal House",
+      "guild_house": "Guild House",
+      "furniture_place": "Place Furniture",
+      "furniture_remove": "Remove Furniture",
+      "slot_available": "Available Slots: {available}/{total}",
+      "upgrade": "Upgrade House",
+      "upgrade_confirm": "Upgrade house to Lv.{level}? (Cost: {cost}G)",
+      "upgrade_success": "House upgraded to Lv.{level}!",
+      "buff_active": "Active Buffs",
+      "set_bonus": "{setName} set bonus activated!",
+      "visit": "Visit",
+      "invite": "Invite"
+    },
+    "event": {
+      "title": "Season Events",
+      "deep_song": "Song of the Deep",
+      "deep_song_desc": "Answer Seiren's call. Treasures sleeping in the deep sea awaken.",
+      "fog_festival": "Fog Festival",
+      "fog_festival_desc": "Annual Mist Sea festival. Exclusive cosmetics and limited rewards!",
+      "seal_trial": "Trial of the Seal",
+      "seal_trial_desc": "A limited dungeon testing the power of seals. Memory Breaker exclusive rewards.",
+      "time_remaining": "Time Remaining: {time}",
+      "event_reward": "Event Rewards",
+      "event_shop": "Event Shop",
+      "event_currency": "Event Tokens: {amount}"
+    },
+    "pvp": {
+      "season2_title": "PvP Season 2",
+      "map_mistsea_arena": "Mistsea Arena",
+      "map_mistsea_arena_desc": "A fighting pit on abandoned ships in the fog. Limited visibility.",
+      "map_deepsea_colosseum": "Abyssal Colosseum",
+      "map_deepsea_colosseum_desc": "An ancient arena in the deep sea. Water pressure and leviathan threats.",
+      "tier_mistsea": "Mistsea {tier}",
+      "decay_warning": "Inactivity decay warning: Rating will decrease in {days} days."
+    },
+    "guild": {
+      "raid_title": "Guild Raid",
+      "raid_recruit": "Recruiting for Raid ({current}/{max})",
+      "raid_start": "Start Raid",
+      "raid_boss_scaled": "Boss HP: {hp} (Scaled by party size)",
+      "guild_house_title": "Guild House",
+      "guild_house_upgrade": "Guild House Upgrade (Lv.{level})",
+      "guild_house_buff": "Guild Buff"
+    },
+    "npc": {
+      "naila": "Naila",
+      "torga": "Torga",
+      "milena": "Milena",
+      "kobal": "Kobal",
+      "aetherna": "Aetherna",
+      "hashir": "Hashir",
+      "lumia": "Lumia",
+      "veltus": "Veltus",
+      "okia": "Okia",
+      "seiren": "Seiren"
+    }
   }
 }

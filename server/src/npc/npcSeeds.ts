@@ -792,4 +792,166 @@ export const npcSeeds: NpcSeed[] = [
     behaviorTree: bossBt,
     stats: { hp: 120000, attack: 250, defense: 200, speed: 50 },
   },
+
+  // ── 시즌 2: 안개해 NPC 10명 (P8-17) ────────────────────────
+
+  {
+    name: '나일라',
+    title: '안개해 어선 수리공',
+    role: 'merchant',
+    location: 'mistsea_harbor',
+    dialogue: [
+      { id: 'greeting', text: '안개 속에서 부서진 건 배만이 아니야.' },
+      { id: 'shop', text: '자재 가격? 살아 돌아오면 싸게 해줄게.' },
+    ],
+    shopItems: [
+      { itemId: 'ship_timber', name: '선박 자재', price: 500, currency: 'gold' },
+      { itemId: 'waterproof_coat', name: '방수 코팅제', price: 300, currency: 'gold' },
+      { itemId: 'mistsea_map_fragment', name: '안개해 지도 조각', price: 1200, currency: 'gold' },
+    ],
+    behaviorTree: merchantBt,
+  },
+  {
+    name: '토르가',
+    title: '안개해 등대지기',
+    role: 'quest',
+    location: 'mistsea_lighthouse',
+    dialogue: [
+      { id: 'greeting', text: '안개가 걷힌 적은 한 번도 없어. 그건 걷히는 게 아니라, 사라지는 거야.' },
+      { id: 'quest_start', text: '등불은 길을 비추지 않아. 돌아올 곳을 알려줄 뿐.', options: [
+        { text: '등대의 기억에 대해 알려주세요', nextId: 'quest_accept' },
+        { text: '(떠난다)', nextId: 'farewell' },
+      ]},
+      { id: 'quest_accept', text: '좋아. 이 안개 속에서 세 개의 봉인석을 찾아와. 그러면 등대의 기억을 보여주지.' },
+      { id: 'farewell', text: '…바다는 기다려 주지 않아.' },
+    ],
+    behaviorTree: villagerBt,
+  },
+  {
+    name: '밀레나',
+    title: '안개해 유랑 약초사',
+    role: 'merchant',
+    location: 'mistsea_coral_plaza',
+    dialogue: [
+      { id: 'greeting', text: '이 약초는 기억을 되살려주기도 하고… 아, 그건 아직 검증 안 됐나.' },
+      { id: 'shop', text: '안개해 생물이 독이 강해서 해독제는 필수야!' },
+    ],
+    shopItems: [
+      { itemId: 'mistsea_antidote', name: '안개해 해독제', price: 200, currency: 'gold' },
+      { itemId: 'deep_recovery_potion', name: '심해 회복약', price: 400, currency: 'gold' },
+      { itemId: 'memory_purify_water', name: '기억 정화수', price: 800, currency: 'gold' },
+    ],
+    schedule: [
+      { hour: 8, location: 'mistsea_coral_plaza', action: 'sell' },
+      { hour: 14, location: 'mistsea_cliffs', action: 'gather' },
+      { hour: 20, location: 'mistsea_tavern', action: 'rest' },
+    ],
+    behaviorTree: merchantBt,
+  },
+  {
+    name: '코발',
+    title: '안개해 보물 사냥꾼',
+    role: 'quest',
+    location: 'mistsea_wreck_street',
+    dialogue: [
+      { id: 'greeting', text: '보물은 항상 가장 위험한 곳에 있어. 그래서 재미있지.' },
+      { id: 'daily_quest', text: '이번 건은 혼자 못 하겠더라. 같이 가자, 보수는 6:4다.', options: [
+        { text: '좋아, 같이 가자', nextId: 'quest_accept' },
+        { text: '비율이 맘에 안 드는데', nextId: 'negotiate' },
+      ]},
+      { id: 'negotiate', text: '…7:3? 됐어, 5:5로 하지. 대신 뒷정리는 네 몫이야.' },
+      { id: 'quest_accept', text: '좋아! 난파선 구역으로 가자. 보물 3개만 찾으면 돼.' },
+    ],
+    behaviorTree: villagerBt,
+  },
+  {
+    name: '에테르나',
+    title: '봉인의 수호자',
+    role: 'quest',
+    location: 'mistsea_seal_altar',
+    dialogue: [
+      { id: 'greeting', text: '봉인을 풀겠다는 거야? …그건 내 존재를 지우겠다는 뜻이야.' },
+      { id: 'story', text: '기억이란 건… 잊혀져야 비로소 완성되는 건지도 모르겠어.' },
+      { id: 'choice', text: '선택해. 봉인을 유지할 것인가, 해제할 것인가.', options: [
+        { text: '봉인을 유지한다', nextId: 'seal_keep', condition: 'chapter6_seal_choice' },
+        { text: '봉인을 해제한다', nextId: 'seal_break', condition: 'chapter6_seal_choice' },
+      ]},
+    ],
+    behaviorTree: villagerBt,
+  },
+  {
+    name: '하쉬르',
+    title: '안개해 경비대장',
+    role: 'guard',
+    location: 'mistsea_outpost',
+    dialogue: [
+      { id: 'greeting', text: '안개해는 관광지가 아니야. 여긴 살아서 나가는 게 목표인 곳이지.' },
+      { id: 'pass', text: '실력이 있군. 좋아, 통과시켜 주지.', options: [
+        { text: '(안개해로 들어간다)', nextId: 'enter', condition: 'level >= 50' },
+      ]},
+      { id: 'deny', text: '아직 이른 것 같군. 더 강해지고 와.' },
+    ],
+    behaviorTree: guardBt,
+    stats: { hp: 15000, attack: 180, defense: 250 },
+  },
+  {
+    name: '루미아',
+    title: '심해 연구자',
+    role: 'quest',
+    location: 'mistsea_observatory',
+    dialogue: [
+      { id: 'greeting', text: '이 생물의 발광 패턴이 에테르 결정의 파장과 일치해! 놀랍지 않아?' },
+      { id: 'quest', text: '데이터가 더 필요해. 저 던전 안에 샘플이 있을 거야.', options: [
+        { text: '조사를 도와줄게', nextId: 'quest_accept' },
+        { text: '위험하지 않아?', nextId: 'warn' },
+      ]},
+      { id: 'warn', text: '위험하지. 하지만 이건 세계의 비밀을 풀 수 있는 기회야!' },
+      { id: 'quest_accept', text: '고마워! 심해 샘플 5개만 가져와 줘.' },
+    ],
+    behaviorTree: villagerBt,
+  },
+  {
+    name: '벨투스',
+    title: '기억 파괴자 훈련사',
+    role: 'trainer',
+    location: 'mistsea_memory_rift',
+    dialogue: [
+      { id: 'greeting', text: '봉인의 힘을 쓴다는 건 네 기억의 일부를 대가로 치른다는 뜻이야.' },
+      { id: 'train', text: '준비됐나? 이 훈련에서 돌아오지 못한 자가 셋이나 있어.', options: [
+        { text: '기억 파괴자 전직을 하겠습니다', nextId: 'class_change', condition: 'level >= 50 AND class != memory_breaker' },
+        { text: '아직 준비가 안 됐어', nextId: 'farewell' },
+      ]},
+      { id: 'class_change', text: '좋은 각오다. 시작하자.' },
+      { id: 'farewell', text: '현명한 판단이야. 준비가 되면 다시 와.' },
+    ],
+    behaviorTree: villagerBt,
+  },
+  {
+    name: '오키아',
+    title: '안개해 술집 주인',
+    role: 'villager',
+    location: 'mistsea_tavern',
+    dialogue: [
+      { id: 'greeting', text: '이 동네 소식은 다 여기 모이지. 한 잔 할래?' },
+      { id: 'rumor', text: '최근 심해에서 이상한 울음소리가 들린다더라. 나라면 안 가겠지만.' },
+    ],
+    schedule: [
+      { hour: 10, location: 'mistsea_tavern', action: 'clean' },
+      { hour: 16, location: 'mistsea_tavern', action: 'serve' },
+      { hour: 23, location: 'mistsea_tavern', action: 'close' },
+    ],
+    behaviorTree: villagerBt,
+  },
+  {
+    name: '세이렌',
+    title: '심해의 목소리',
+    role: 'boss',
+    location: 'mistsea_colosseum_entrance',
+    dialogue: [
+      { id: 'greeting', text: '노래를 들으러 왔니, 아니면 침묵시키러 왔니?' },
+      { id: 'challenge', text: '이 바다의 기억은 내가 지키고 있어. 네가 그걸 감당할 수 있을까?' },
+    ],
+    behaviorTree: bossBt,
+    stats: { hp: 200000, attack: 350, defense: 180, speed: 60 },
+  },
 ];

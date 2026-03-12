@@ -713,5 +713,107 @@
     "noResults": "検索結果がありません",
     "registerSuccess": "アイテムが出品されました",
     "bidSuccess": "入札しました"
+  },
+  "season2": {
+    "title": "シーズン2：目覚める封印",
+    "subtitle": "霧海の彼方の真実",
+    "chapter6": {
+      "title": "第6章：霧海の封印",
+      "intro": "大忘却以来忘れ去られた海、無限霧海。封印が解け始める。",
+      "quest_lighthouse": "灯台の記憶",
+      "quest_lighthouse_desc": "トルガの灯台で三つの封印石を見つけよ。",
+      "quest_seal": "封印の選択",
+      "quest_seal_desc": "エテルナと出会い、封印の運命を決めよ。",
+      "quest_abyss": "深海の秘密",
+      "quest_abyss_desc": "深海コロセウムに眠る古代の真実を明らかにせよ。",
+      "scene_6_1": "霧海到着",
+      "scene_6_2": "灯台の謎",
+      "scene_6_3": "深海探査",
+      "scene_6_4": "封印の祭壇",
+      "scene_6_5": "選択の瞬間",
+      "scene_6_6": "目覚める封印"
+    },
+    "mistsea": {
+      "region_name": "無限霧海",
+      "region_desc": "果てしない霧に覆われた未知の海。封印された記憶が眠る。",
+      "zone_harbor": "残骸港",
+      "zone_lighthouse": "沈黙の灯台",
+      "zone_coral_plaza": "珊瑚広場",
+      "zone_wreck_street": "難破船通り",
+      "zone_observatory": "深海観測所",
+      "zone_outpost": "外郭哨所",
+      "zone_tavern": "漂流者の酒場",
+      "zone_memory_rift": "記憶の裂け目",
+      "zone_seal_altar": "封印の祭壇",
+      "zone_colosseum": "深海コロセウム"
+    },
+    "memoryBreaker": {
+      "class_name": "記憶破壊者",
+      "class_desc": "封印の力を操る第4のクラス。記憶を代償に強大な力を振るう。",
+      "skill_category_seal": "封印系統",
+      "skill_category_memory": "記憶系統",
+      "skill_category_void": "虚空系統",
+      "passive_memory_cost": "記憶消費：スキル使用時に記憶ゲージを消費",
+      "class_change_confirm": "記憶破壊者に転職しますか？記憶の一部を代償として支払います。",
+      "class_change_success": "転職完了！封印の力があなたに宿ります。"
+    },
+    "housing": {
+      "title": "ハウジング",
+      "personal_house": "個人ハウス",
+      "guild_house": "ギルドハウス",
+      "furniture_place": "家具配置",
+      "furniture_remove": "家具撤去",
+      "slot_available": "使用可能スロット：{available}/{total}",
+      "upgrade": "ハウスアップグレード",
+      "upgrade_confirm": "ハウスをLv.{level}にアップグレードしますか？（費用：{cost}G）",
+      "upgrade_success": "ハウスがLv.{level}にアップグレードされました！",
+      "buff_active": "アクティブバフ",
+      "set_bonus": "{setName}セット効果発動！",
+      "visit": "訪問する",
+      "invite": "招待する"
+    },
+    "event": {
+      "title": "シーズンイベント",
+      "deep_song": "深海の歌",
+      "deep_song_desc": "セイレンの呼び声に応えよ。深海に眠る宝が目覚める。",
+      "fog_festival": "霧祭り",
+      "fog_festival_desc": "霧海の年次祭り。限定コスメティックと報酬！",
+      "seal_trial": "封印の試練",
+      "seal_trial_desc": "封印の力を試す限定ダンジョン。記憶破壊者専用報酬。",
+      "time_remaining": "残り時間：{time}",
+      "event_reward": "イベント報酬",
+      "event_shop": "イベントショップ",
+      "event_currency": "イベントトークン：{amount}"
+    },
+    "pvp": {
+      "season2_title": "PvPシーズン2",
+      "map_mistsea_arena": "霧海アリーナ",
+      "map_mistsea_arena_desc": "霧の中の廃船上の闘技場。視界制限の環境効果。",
+      "map_deepsea_colosseum": "深海コロセウム",
+      "map_deepsea_colosseum_desc": "海底の古代闘技場。水圧と深海怪獣の脅威。",
+      "tier_mistsea": "霧海{tier}",
+      "decay_warning": "非活動降格警告：{days}日後にレーティングが低下します。"
+    },
+    "guild": {
+      "raid_title": "ギルドレイド",
+      "raid_recruit": "レイド募集中（{current}/{max}）",
+      "raid_start": "レイド開始",
+      "raid_boss_scaled": "ボスHP：{hp}（人数補正適用）",
+      "guild_house_title": "ギルドハウス",
+      "guild_house_upgrade": "ギルドハウスアップグレード（Lv.{level}）",
+      "guild_house_buff": "ギルドバフ"
+    },
+    "npc": {
+      "naila": "ナイラ",
+      "torga": "トルガ",
+      "milena": "ミレナ",
+      "kobal": "コバル",
+      "aetherna": "エテルナ",
+      "hashir": "ハシル",
+      "lumia": "ルミア",
+      "veltus": "ヴェルトゥス",
+      "okia": "オキア",
+      "seiren": "セイレン"
+    }
   }
 }

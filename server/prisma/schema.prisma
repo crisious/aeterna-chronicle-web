@@ -1158,6 +1158,53 @@ model Sanction {
   @@index([isActive, expiresAt])
 }
 
+// ─── 길드 하우스 (P8-16) ─────────────────────────────────────
+model GuildHouse {
+  guildId        String   @id @map("guild_id")
+  level          Int      @default(1)
+  furnitureSlots Int      @default(10) @map("furniture_slots")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  furniture GuildHouseFurniture[]
+
+  @@map("guild_houses")
+}
+
+model GuildHouseFurniture {
+  id          String   @id @default(uuid())
+  guildId     String   @map("guild_id")
+  slotIndex   Int      @map("slot_index")
+  furnitureId String   @map("furniture_id")
+  placedBy    String   @map("placed_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  house GuildHouse @relation(fields: [guildId], references: [guildId])
+
+  @@unique([guildId, slotIndex])
+  @@map("guild_house_furniture")
+  @@index([guildId])
+}
+
+// ─── 길드 레이드 (P8-16) ─────────────────────────────────────
+model GuildRaid {
+  id           String    @id
+  guildId      String    @map("guild_id")
+  bossId       String    @map("boss_id")
+  leaderId     String    @map("leader_id")
+  participants String[]
+  status       String    // recruiting, in_progress, completed, failed
+  scaledBossHp Int?      @map("scaled_boss_hp")
+  totalDamage  BigInt?   @map("total_damage")
+  durationMs   Int?      @map("duration_ms")
+  completedAt  DateTime? @map("completed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("guild_raids")
+  @@index([guildId])
+  @@index([guildId, createdAt])
+}
+
 // ─── KPI 스냅샷 (P6-14) ──────────────────────────────────────
 model KpiSnapshot {
   id        String   @id @default(uuid())
@@ -1171,4 +1218,54 @@ model KpiSnapshot {
   @@map("kpi_snapshots")
   @@index([metric])
   @@index([date])
+}
+
+// ─── 플레이어 하우스 (P8-09) ──────────────────────────────────
+model PlayerHouse {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  themeCode   String   @map("theme_code")
+  maxSlots    Int      @default(10) @map("max_slots")
+  maxVisitors Int      @default(4) @map("max_visitors")
+  furniture   Json     @default("[]") // FurniturePlacement[]
+  isPublic    Boolean  @default(true) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("player_houses")
+  @@index([isPublic])
+}
+
+// ─── 하우스 가구 인벤토리 (P8-09) ─────────────────────────────
+model HouseFurniture {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  furnitureId String   @map("furniture_id")
+  name        String
+  category    String   // table, chair, light, decoration, storage, bed, rug, wall, outdoor, special
+  rarity      String   @default("common") // common, uncommon, rare, epic, legendary
+  isPlaced    Boolean  @default(false) @map("is_placed")
+  acquiredAt  DateTime @default(now()) @map("acquired_at")
+
+  @@map("house_furniture")
+  @@index([userId])
+  @@index([userId, isPlaced])
+}
+
+// ─── 이벤트 참여 기록 (P8-11) ─────────────────────────────────
+model EventParticipation {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  eventId     String   @map("event_id")
+  score       Int      @default(0)
+  rank        Int?
+  rewards     Json     @default("[]")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, eventId])
+  @@map("event_participations")
+  @@index([eventId])
+  @@index([eventId, score])
 }

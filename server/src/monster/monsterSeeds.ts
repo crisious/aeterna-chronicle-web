@@ -1,17 +1,18 @@
 /**
- * monsterSeeds.ts — 100개 몬스터 시드 데이터
+ * monsterSeeds.ts — 133개 몬스터 시드 데이터
  *
  * 분포:
- *   일반(normal) 60마리 — 지역당 10마리 × 6지역
- *   엘리트(elite) 20마리 — 지역당 3~4마리
- *   던전 보스(boss) 12마리 — 던전당 1마리
+ *   일반(normal) 80마리 — 지역당 10마리 × 7지역 + 안개해 10
+ *   엘리트(elite) 25마리 — 기존 20 + 안개해 5
+ *   던전 보스(boss) 17마리 — 기존 12 + 안개해 5
  *   필드 보스(field_boss) 5마리
- *   레이드 보스(raid_boss) 3마리
+ *   레이드 보스(raid_boss) 6마리 — 기존 3 + 안개해 3
  *
  * 지역: twilight_forest(Lv.1~15), kronos_city(Lv.10~25), aetheria_village(Lv.20~35),
- *        shadow_fortress(Lv.30~50), crystal_cavern(Lv.45~65), void_abyss(Lv.60~80)
+ *        shadow_fortress(Lv.30~50), crystal_cavern(Lv.45~65), void_abyss(Lv.60~80),
+ *        mist_sea(Lv.70~90) [P8-08/P8-14]
  *
- * 레벨 분포: 1~80
+ * 레벨 분포: 1~90
  */
 import { prisma } from '../db';
 
@@ -1779,6 +1780,624 @@ const fieldBosses: MonsterSeed[] = [
   },
 ];
 
+// ─── 지역 7: 무한 안개해 (mist_sea) Lv.70~90 [P8-14] ───────────
+
+const mistSeaNormals: MonsterSeed[] = [
+  {
+    code: 'MON_MS_001', name: '안개 해파리', type: 'normal', element: 'ice', level: 70,
+    hp: 520, attack: 72, defense: 18, speed: 8,
+    skills: [
+      { name: '안개 촉수', damage: 85, cooldown: 5, element: 'ice', effectType: 'damage' },
+      { name: '기억 독소', damage: 60, cooldown: 8, element: 'dark', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_JELLY', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_FOG_ESSENCE', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 680, goldReward: 210,
+    behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 35,
+    lore: '안개해 수면에 떠다니는 반투명 해파리. 촉수에 닿으면 기억이 흐려지며 독소가 스며든다.',
+  },
+  {
+    code: 'MON_MS_002', name: '기억 갈매기', type: 'normal', element: 'neutral', level: 71,
+    hp: 380, attack: 78, defense: 10, speed: 18,
+    skills: [
+      { name: '급강하 쪼기', damage: 90, cooldown: 4, element: 'neutral', effectType: 'damage' },
+      { name: '기억 탈취 울음', damage: 0, cooldown: 12, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_FEATHER', rate: 0.45, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_MEMORY_BEAD', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 700, goldReward: 215,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 25,
+    lore: '안개 속을 비행하며 지나가는 자의 기억 조각을 훔치는 변이 갈매기. 울음소리에 기억이 흔들린다.',
+  },
+  {
+    code: 'MON_MS_003', name: '안개 뱀장어', type: 'normal', element: 'lightning', level: 72,
+    hp: 450, attack: 80, defense: 14, speed: 14,
+    skills: [
+      { name: '전기 감기', damage: 92, cooldown: 5, element: 'lightning', effectType: 'damage' },
+      { name: '안개 방전', damage: 75, cooldown: 8, element: 'lightning', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_EEL_SKIN', rate: 0.4, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_THUNDER_SCALE', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 720, goldReward: 220,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 30,
+    lore: '안개해 수중에 서식하는 거대 뱀장어. 전기를 축적한 몸으로 물 위의 적까지 감전시킨다.',
+  },
+  {
+    code: 'MON_MS_004', name: '봉인석 파편', type: 'normal', element: 'aether', level: 73,
+    hp: 600, attack: 68, defense: 28, speed: 4,
+    skills: [
+      { name: '봉인 에너지 방출', damage: 88, cooldown: 6, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 흡수', damage: 70, cooldown: 10, element: 'aether', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SEAL_FRAGMENT', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AETHER_RESIDUE', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 740, goldReward: 228,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 40,
+    lore: '12인의 봉인이 깨지며 흩어진 봉인석 파편. 에테르 에너지를 머금고 공격적으로 변했다.',
+  },
+  {
+    code: 'MON_MS_005', name: '기억 포식 산호', type: 'normal', element: 'dark', level: 74,
+    hp: 550, attack: 74, defense: 22, speed: 2,
+    skills: [
+      { name: '기억 흡수 촉수', damage: 82, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '망각 포자', damage: 65, cooldown: 10, element: 'dark', effectType: 'dot' },
+      { name: '산호 방벽', damage: 0, cooldown: 18, element: 'earth', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MEMORY_CORAL', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_OBLIVION_SPORE', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 760, goldReward: 235,
+    behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 35,
+    lore: '안개해 바닥에 뿌리내린 거대 산호. 지나가는 생물의 기억을 빨아먹고 망각 포자를 뿌린다.',
+  },
+  {
+    code: 'MON_MS_006', name: '안개 유령선원', type: 'normal', element: 'dark', level: 75,
+    hp: 480, attack: 82, defense: 16, speed: 10,
+    skills: [
+      { name: '유령 검격', damage: 95, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '안개 은신', damage: 0, cooldown: 12, element: 'dark', effectType: 'debuff' },
+      { name: '저주의 닻', damage: 78, cooldown: 8, element: 'dark', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GHOST_ANCHOR', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_WRAITH_COIN', rate: 0.35, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 780, goldReward: 242,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 30,
+    lore: '안개해에서 조난된 선원들의 원혼. 기억을 잃고 영원히 항해하며, 살아있는 자를 동료로 삼으려 한다.',
+  },
+  {
+    code: 'MON_MS_007', name: '심해 갑오징어', type: 'normal', element: 'ice', level: 76,
+    hp: 500, attack: 86, defense: 20, speed: 12,
+    skills: [
+      { name: '먹물 안개', damage: 0, cooldown: 10, element: 'dark', effectType: 'debuff' },
+      { name: '빙결 촉수', damage: 98, cooldown: 5, element: 'ice', effectType: 'damage' },
+      { name: '심해 수압', damage: 80, cooldown: 8, element: 'ice', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SQUID_INK', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_FROZEN_TENTACLE', rate: 0.25, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 800, goldReward: 250,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 30,
+    lore: '안개해 심층에서 올라온 거대 갑오징어. 먹물로 시야를 가리고 빙결 촉수로 사냥감을 얼린다.',
+  },
+  {
+    code: 'MON_MS_008', name: '봉인 감시체', type: 'normal', element: 'light', level: 78,
+    hp: 580, attack: 80, defense: 24, speed: 9,
+    skills: [
+      { name: '봉인 광선', damage: 100, cooldown: 6, element: 'light', effectType: 'damage' },
+      { name: '감시의 눈', damage: 0, cooldown: 15, element: 'light', effectType: 'debuff' },
+      { name: '봉인 결계', damage: 85, cooldown: 10, element: 'aether', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SEAL_LENS', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_WARDEN_CORE', rate: 0.12, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 830, goldReward: 260,
+    behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'mist_sea', respawnTime: 40,
+    lore: '12인의 봉인자가 남긴 자동 감시 장치. 봉인을 해치려는 자를 감지하면 무차별 공격한다.',
+  },
+  {
+    code: 'MON_MS_009', name: '안개 켈피', type: 'normal', element: 'ice', level: 80,
+    hp: 540, attack: 88, defense: 18, speed: 16,
+    skills: [
+      { name: '물의 돌진', damage: 102, cooldown: 4, element: 'ice', effectType: 'damage' },
+      { name: '익사의 포옹', damage: 80, cooldown: 8, element: 'dark', effectType: 'damage' },
+      { name: '안개 질주', damage: 0, cooldown: 12, element: 'neutral', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_KELPIE_MANE', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_MIST_HORSESHOE', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 860, goldReward: 270,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 30,
+    lore: '안개해 수면을 질주하는 유령 말. 아름다운 외형으로 유인한 뒤 등에 탄 자를 심해로 끌고 간다.',
+  },
+  {
+    code: 'MON_MS_010', name: '레테의 잔영', type: 'normal', element: 'dark', level: 82,
+    hp: 620, attack: 92, defense: 22, speed: 11,
+    skills: [
+      { name: '망각의 파동', damage: 108, cooldown: 6, element: 'dark', effectType: 'aoe' },
+      { name: '기억 절단', damage: 98, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '레테의 속삭임', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_LETHE_SHADOW', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_OBLIVION_ESSENCE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 900, goldReward: 285,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'mist_sea', respawnTime: 40,
+    lore: '레테의 잔류 의식이 안개에 스며들어 형상화된 존재. 기억을 먹고 자라며 점점 강해진다.',
+  },
+  {
+    code: 'MON_MS_011', name: '안개 가오리', type: 'normal', element: 'ice', level: 72,
+    hp: 460, attack: 76, defense: 16, speed: 13,
+    skills: [
+      { name: '독가시 꼬리', damage: 88, cooldown: 5, element: 'dark', effectType: 'dot' },
+      { name: '활공 돌격', damage: 82, cooldown: 7, element: 'ice', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_RAY_WING', rate: 0.4, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_POISON_BARB', rate: 0.25, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 710, goldReward: 218,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 28,
+    lore: '안개 위를 활공하는 거대 가오리. 꼬리의 독가시에 찔리면 기억이 한동안 흐릿해진다.',
+  },
+  {
+    code: 'MON_MS_012', name: '봉인 수호 골렘', type: 'normal', element: 'earth', level: 75,
+    hp: 680, attack: 70, defense: 32, speed: 4,
+    skills: [
+      { name: '봉인 주먹', damage: 95, cooldown: 6, element: 'earth', effectType: 'damage' },
+      { name: '지진', damage: 78, cooldown: 10, element: 'earth', effectType: 'aoe' },
+      { name: '봉인 재구축', damage: 0, cooldown: 20, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SEAL_STONE', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_ANCIENT_MORTAR', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 770, goldReward: 240,
+    behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'mist_sea', respawnTime: 40,
+    lore: '봉인의 첨탑을 수호하던 골렘. 봉인이 약해지면서 제어를 잃고 근처 모든 것을 공격한다.',
+  },
+  {
+    code: 'MON_MS_013', name: '망각의 바다뱀', type: 'normal', element: 'dark', level: 77,
+    hp: 510, attack: 84, defense: 18, speed: 14,
+    skills: [
+      { name: '기억 독니', damage: 96, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '안개 조임', damage: 80, cooldown: 7, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SEA_SERPENT_SCALE', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_AMNESIA_FANG', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 810, goldReward: 252,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 32,
+    lore: '안개해 심층을 누비는 거대 바다뱀. 물린 자는 점차 기억을 잃어간다.',
+  },
+  {
+    code: 'MON_MS_014', name: '안개 인어', type: 'normal', element: 'ice', level: 78,
+    hp: 470, attack: 86, defense: 15, speed: 13,
+    skills: [
+      { name: '세이렌 노래', damage: 0, cooldown: 12, element: 'dark', effectType: 'debuff' },
+      { name: '빙하 창', damage: 100, cooldown: 5, element: 'ice', effectType: 'damage' },
+      { name: '물결 파동', damage: 82, cooldown: 8, element: 'ice', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SIREN_SCALE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FROZEN_PEARL', rate: 0.12, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 835, goldReward: 258,
+    behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 30,
+    lore: '안개해에 살던 인어가 레테의 영향으로 변이한 존재. 아름다운 노래로 선원을 유인한다.',
+  },
+  {
+    code: 'MON_MS_015', name: '폭풍 갈매기 대장', type: 'normal', element: 'lightning', level: 79,
+    hp: 420, attack: 90, defense: 12, speed: 19,
+    skills: [
+      { name: '번개 급강하', damage: 105, cooldown: 4, element: 'lightning', effectType: 'damage' },
+      { name: '폭풍 울음', damage: 88, cooldown: 8, element: 'lightning', effectType: 'aoe' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_STORM_FEATHER', rate: 0.4, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_GALE_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 850, goldReward: 265,
+    behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 25,
+    lore: '안개해 상공을 지배하는 거대 갈매기. 날개에 번개를 두르고 급강하하며 배를 공격한다.',
+  },
+  {
+    code: 'MON_MS_016', name: '심해 해골병사', type: 'normal', element: 'dark', level: 80,
+    hp: 560, attack: 84, defense: 24, speed: 8,
+    skills: [
+      { name: '녹슨 검격', damage: 96, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '해골 방패', damage: 0, cooldown: 15, element: 'dark', effectType: 'heal' },
+      { name: '심해의 저주', damage: 74, cooldown: 10, element: 'dark', effectType: 'dot' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_SUNKEN_ARMOR', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_DEEP_BONE', rate: 0.3, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 870, goldReward: 272,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 32,
+    lore: '안개해에 가라앉은 고대 함대의 병사가 레테의 힘으로 부활한 것. 녹슨 무기로도 치명적이다.',
+  },
+  {
+    code: 'MON_MS_017', name: '안개 원소체', type: 'normal', element: 'aether', level: 82,
+    hp: 490, attack: 90, defense: 16, speed: 11,
+    skills: [
+      { name: '안개 폭발', damage: 104, cooldown: 6, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 응축', damage: 92, cooldown: 8, element: 'aether', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_ELEMENT', rate: 0.35, minQty: 1, maxQty: 2 },
+      { itemId: 'MAT_CONDENSED_AETHER', rate: 0.12, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 890, goldReward: 280,
+    behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
+    location: 'mist_sea', respawnTime: 35,
+    lore: '안개 자체가 에테르로 뭉쳐 형태를 갖춘 원소 생물. 불안정하여 가끔 자폭한다.',
+  },
+  {
+    code: 'MON_MS_018', name: '침몰선 미믹', type: 'normal', element: 'dark', level: 84,
+    hp: 640, attack: 88, defense: 26, speed: 6,
+    skills: [
+      { name: '보물 함정', damage: 0, cooldown: 10, element: 'dark', effectType: 'debuff' },
+      { name: '이빨 분쇄', damage: 110, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '심해 삼킴', damage: 95, cooldown: 8, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIMIC_TOOTH', rate: 0.35, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SUNKEN_TREASURE', rate: 0.2, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 920, goldReward: 295,
+    behavior: { aggro_range: 3, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
+    location: 'mist_sea', respawnTime: 40,
+    lore: '침몰한 배의 보물 상자로 위장한 미믹. 보물에 끌려 다가오면 거대한 이빨로 물어뜯는다.',
+  },
+  {
+    code: 'MON_MS_019', name: '안개 거북이', type: 'normal', element: 'earth', level: 86,
+    hp: 780, attack: 76, defense: 35, speed: 3,
+    skills: [
+      { name: '안개 쉘 돌진', damage: 100, cooldown: 7, element: 'earth', effectType: 'damage' },
+      { name: '봉인 수증기', damage: 85, cooldown: 10, element: 'aether', effectType: 'aoe' },
+      { name: '고대 껍질', damage: 0, cooldown: 18, element: 'earth', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_TURTLE_SHELL', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_ANCIENT_MOSS', rate: 0.35, minQty: 1, maxQty: 2 },
+    ],
+    expReward: 950, goldReward: 305,
+    behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
+    location: 'mist_sea', respawnTime: 45,
+    lore: '수백 년간 안개해를 떠돈 고대 거북이. 등에 산호와 이끼가 자라 섬처럼 보인다.',
+  },
+  {
+    code: 'MON_MS_020', name: '봉인 탐식자 유충', type: 'normal', element: 'dark', level: 88,
+    hp: 700, attack: 95, defense: 20, speed: 10,
+    skills: [
+      { name: '봉인 포식', damage: 112, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '레테의 아우라', damage: 90, cooldown: 8, element: 'dark', effectType: 'aoe' },
+      { name: '기억 부식', damage: 0, cooldown: 12, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DEVOURER_LARVA', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_LETHE_SHARD', rate: 0.15, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 980, goldReward: 320,
+    behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'mist_sea', respawnTime: 45,
+    lore: '레테의 분신이 낳은 유충. 봉인석의 에너지를 갉아먹으며 성장하며, 성체가 되면 보스급이 된다.',
+  },
+];
+
+// ─── 안개해 엘리트 5마리 [P8-14] ───────────────────────────────
+
+const mistSeaElites: MonsterSeed[] = [
+  {
+    code: 'MON_MS_E01', name: '안개 폭풍 드레이크', type: 'elite', element: 'ice', level: 78,
+    hp: 1600, attack: 100, defense: 30, speed: 14,
+    skills: [
+      { name: '안개 브레스', damage: 130, cooldown: 7, element: 'ice', effectType: 'aoe' },
+      { name: '폭풍 질주', damage: 110, cooldown: 5, element: 'lightning', effectType: 'damage' },
+      { name: '안개 은신', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '빙결 재생', damage: 0, cooldown: 22, element: 'ice', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MIST_DRAKE_SCALE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_STORM_ICE_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_LANCE_MIST', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1300, goldReward: 420,
+    behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'mist_sea', respawnTime: 300,
+    lore: '안개해 상공을 비행하는 소형 드래곤. 안개와 폭풍을 동시에 다루며 배를 전복시킨다.',
+  },
+  {
+    code: 'MON_MS_E02', name: '봉인자 후손 수호병', type: 'elite', element: 'light', level: 82,
+    hp: 1800, attack: 95, defense: 35, speed: 10,
+    skills: [
+      { name: '봉인의 빛', damage: 120, cooldown: 6, element: 'light', effectType: 'damage' },
+      { name: '고대 결계', damage: 0, cooldown: 15, element: 'aether', effectType: 'debuff' },
+      { name: '봉인 창술', damage: 105, cooldown: 8, element: 'light', effectType: 'aoe' },
+      { name: '봉인 재생', damage: 0, cooldown: 20, element: 'light', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_DESCENDANT_BADGE', rate: 0.3, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SEAL_LIGHT', rate: 0.12, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SHIELD_SEAL', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1400, goldReward: 450,
+    behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 300,
+    lore: '봉인자 후손 마을의 정예 수호병. 침입자를 봉인의 에너지로 심판한다.',
+  },
+  {
+    code: 'MON_MS_E03', name: '심해 해골 제독', type: 'elite', element: 'dark', level: 84,
+    hp: 1700, attack: 105, defense: 28, speed: 11,
+    skills: [
+      { name: '유령 함포', damage: 140, cooldown: 8, element: 'dark', effectType: 'aoe' },
+      { name: '제독의 검', damage: 120, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '해골 선원 소환', damage: 0, cooldown: 18, element: 'dark', effectType: 'debuff' },
+      { name: '심해 회복', damage: 0, cooldown: 22, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ADMIRAL_SWORD', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_GHOST_SHIP_PLANK', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_HAT_ADMIRAL', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1500, goldReward: 480,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 300,
+    lore: '안개해에 침몰한 고대 함대의 제독. 죽어서도 함대를 지휘하며 유령 함포를 쏜다.',
+  },
+  {
+    code: 'MON_MS_E04', name: '기억의 포식자', type: 'elite', element: 'dark', level: 86,
+    hp: 1500, attack: 112, defense: 24, speed: 13,
+    skills: [
+      { name: '기억 대흡수', damage: 135, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '망각의 파도', damage: 115, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '기억 방패', damage: 0, cooldown: 15, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_MEMORY_DEVOURER_EYE', rate: 0.25, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FORGOTTEN_CORE', rate: 0.1, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_ORB_MEMORY', rate: 0.03, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1600, goldReward: 510,
+    behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'mist_sea', respawnTime: 300,
+    lore: '레테의 힘으로 태어난 기억 포식자. 주변 생물의 기억을 대량으로 흡수해 자신의 힘으로 변환한다.',
+  },
+  {
+    code: 'MON_MS_E05', name: '봉인 침식 거인', type: 'elite', element: 'aether', level: 88,
+    hp: 2000, attack: 108, defense: 38, speed: 6,
+    skills: [
+      { name: '봉인 파괴 주먹', damage: 145, cooldown: 6, element: 'aether', effectType: 'damage' },
+      { name: '에테르 폭풍', damage: 120, cooldown: 10, element: 'aether', effectType: 'aoe' },
+      { name: '침식 흡수', damage: 0, cooldown: 18, element: 'aether', effectType: 'heal' },
+      { name: '봉인 분쇄', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_EROSION_GIANT_HEART', rate: 0.2, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SEAL_BREAKER', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_GAUNTLET_SEAL', rate: 0.02, minQty: 1, maxQty: 1 },
+    ],
+    expReward: 1800, goldReward: 550,
+    behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 360,
+    lore: '봉인석을 깨뜨리며 커가는 거대 인형. 레테의 의지로 봉인을 물리적으로 파괴하려는 병기.',
+  },
+];
+
+// ─── 안개해 던전 보스 5마리 [P8-14] ────────────────────────────
+
+const mistSeaDungeonBosses: MonsterSeed[] = [
+  {
+    code: 'MON_BOSS_MS01', name: '기억의 등대지기 메모리아', type: 'boss', element: 'dark', level: 78,
+    hp: 10000, attack: 100, defense: 38, speed: 10,
+    skills: [
+      { name: '기억 조작', damage: 130, cooldown: 8, element: 'dark', effectType: 'aoe' },
+      { name: '등대의 광선', damage: 150, cooldown: 10, element: 'light', effectType: 'damage' },
+      { name: '기억 흡수 치유', damage: 0, cooldown: 20, element: 'dark', effectType: 'heal' },
+      { name: '과거 재현', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_LIGHTHOUSE_KEY', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_LANTERN_MEMORIA', rate: 0.08, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_MEMORY_CORAL', rate: 0.5, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 4000, goldReward: 1500,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'mist_sea', respawnTime: 900,
+    lore: '기억의 등대를 지키는 봉인자 메모리아의 기억이 실체화된 보스. 기억을 조작해 환각을 보여준다.',
+  },
+  {
+    code: 'MON_BOSS_MS02', name: '침몰 함대 함장 레버넌트', type: 'boss', element: 'dark', level: 82,
+    hp: 11000, attack: 110, defense: 35, speed: 11,
+    skills: [
+      { name: '유령 대함포 일제사격', damage: 160, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '칼바람', damage: 130, cooldown: 5, element: 'dark', effectType: 'damage' },
+      { name: '심해 소용돌이', damage: 140, cooldown: 12, element: 'ice', effectType: 'aoe' },
+      { name: '불사의 선장', damage: 0, cooldown: 25, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_CAPTAIN_COMPASS', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_CAPTAIN', rate: 0.06, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_GHOST_ANCHOR', rate: 0.5, minQty: 2, maxQty: 4 },
+    ],
+    expReward: 4500, goldReward: 1800,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 900,
+    lore: '안개해 최대 침몰 함대의 함장. 레테의 힘으로 부활해 영원히 항해를 계속한다.',
+  },
+  {
+    code: 'MON_BOSS_MS03', name: '봉인 균열 가디언', type: 'boss', element: 'aether', level: 85,
+    hp: 12000, attack: 105, defense: 42, speed: 8,
+    skills: [
+      { name: '봉인 폭발', damage: 170, cooldown: 10, element: 'aether', effectType: 'aoe' },
+      { name: '에테르 감옥', damage: 0, cooldown: 15, element: 'aether', effectType: 'debuff' },
+      { name: '고대 봉인 복원', damage: 0, cooldown: 22, element: 'aether', effectType: 'heal' },
+      { name: '봉인 광선', damage: 150, cooldown: 7, element: 'light', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_GUARDIAN_SEAL', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SHIELD_GUARDIAN', rate: 0.06, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_SEAL_FRAGMENT', rate: 0.5, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 5000, goldReward: 2000,
+    behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 900,
+    lore: '봉인 균열을 지키도록 프로그래밍된 고대 가디언. 봉인이 손상될수록 폭주하며 아군조차 공격한다.',
+  },
+  {
+    code: 'MON_BOSS_MS04', name: '안개해 대해마 츠나미', type: 'boss', element: 'ice', level: 88,
+    hp: 13000, attack: 115, defense: 38, speed: 12,
+    skills: [
+      { name: '대해일', damage: 180, cooldown: 10, element: 'ice', effectType: 'aoe' },
+      { name: '심해 수압 분쇄', damage: 160, cooldown: 6, element: 'ice', effectType: 'damage' },
+      { name: '해류 치유', damage: 0, cooldown: 20, element: 'ice', effectType: 'heal' },
+      { name: '빙결 파도', damage: 140, cooldown: 8, element: 'ice', effectType: 'aoe' },
+      { name: '소용돌이 속박', damage: 0, cooldown: 15, element: 'ice', effectType: 'debuff' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_TSUNAMI_HEART', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_TRIDENT_TSUNAMI', rate: 0.05, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FROZEN_PEARL', rate: 0.4, minQty: 2, maxQty: 4 },
+    ],
+    expReward: 5500, goldReward: 2200,
+    behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
+    location: 'mist_sea', respawnTime: 900,
+    lore: '안개해 심층을 지배하는 거대 해마. 대해일을 일으켜 전장 전체를 물바다로 만든다.',
+  },
+  {
+    code: 'MON_BOSS_MS05', name: '봉인 탐식자 — 레테의 분신', type: 'boss', element: 'dark', level: 90,
+    hp: 15000, attack: 125, defense: 40, speed: 13,
+    skills: [
+      { name: '망각 대폭발', damage: 200, cooldown: 12, element: 'dark', effectType: 'aoe' },
+      { name: '기억 소멸', damage: 180, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '레테의 흡수', damage: 0, cooldown: 20, element: 'dark', effectType: 'heal' },
+      { name: '봉인 침식', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      { name: '존재 부정', damage: 220, cooldown: 18, element: 'dark', effectType: 'damage' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_LETHE_AVATAR_CORE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_SWORD_LETHE', rate: 0.04, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_OBLIVION_ESSENCE', rate: 0.5, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 6000, goldReward: 2500,
+    behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
+    location: 'mist_sea', respawnTime: 1200,
+    lore: '레테의 잔류 의식이 물리적 형태를 취한 분신. 챕터 6 보스전의 대상이며 기억 파괴로만 완전히 소멸시킬 수 있다.',
+  },
+];
+
+// ─── 안개해 12인 레이드 보스 3마리 [P8-08] ──────────────────────
+
+const mistSeaRaidBosses: MonsterSeed[] = [
+  {
+    code: 'MON_RAID_MS01', name: '안개 거신 네뷸로스', type: 'raid_boss', element: 'aether', level: 90,
+    hp: 60000, attack: 170, defense: 65, speed: 8,
+    skills: [
+      // 페이즈 1: 안개 형태 (HP 100%~70%)
+      { name: '안개 대파동', damage: 280, cooldown: 10, element: 'aether', effectType: 'aoe' },
+      { name: '기억 소용돌이', damage: 200, cooldown: 6, element: 'dark', effectType: 'damage' },
+      // 페이즈 2: 응축 형태 (HP 70%~30%)
+      { name: '응축 주먹', damage: 350, cooldown: 8, element: 'earth', effectType: 'damage' },
+      { name: '안개 결계 — 기억 봉쇄', damage: 0, cooldown: 20, element: 'dark', effectType: 'debuff' },
+      // 페이즈 3: 폭주 형태 (HP 30% 이하)
+      { name: '안개 대붕괴', damage: 450, cooldown: 15, element: 'aether', effectType: 'aoe' },
+      { name: '거신 재생', damage: 0, cooldown: 30, element: 'aether', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_NEBULOS_HEART', rate: 1.0, minQty: 1, maxQty: 2 },
+      { itemId: 'EQUIP_LEGENDARY_STAFF_NEBULOS', rate: 0.01, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_CONDENSED_AETHER', rate: 0.6, minQty: 5, maxQty: 8 },
+      { itemId: 'MAT_FOG_ESSENCE', rate: 0.8, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 25000, goldReward: 12000,
+    behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
+    location: 'mist_sea', respawnTime: 86400,
+    lore: '안개해 전체를 감싸는 거대한 안개의 의지체. 3페이즈로 형태가 변하며, 최종 형태에서는 안개해 자체가 무기가 된다. 12인 레이드 필수.',
+  },
+  {
+    code: 'MON_RAID_MS02', name: '심해 크라켄 아비살', type: 'raid_boss', element: 'ice', level: 90,
+    hp: 65000, attack: 180, defense: 55, speed: 10,
+    skills: [
+      // 페이즈 1: 촉수 전 (HP 100%~70%)
+      { name: '촉수 8연타', damage: 250, cooldown: 5, element: 'ice', effectType: 'damage' },
+      { name: '먹물 안개 필드', damage: 0, cooldown: 15, element: 'dark', effectType: 'debuff' },
+      // 페이즈 2: 본체 노출 (HP 70%~30%)
+      { name: '대해일 분쇄', damage: 380, cooldown: 10, element: 'ice', effectType: 'aoe' },
+      { name: '심해 수압 감옥', damage: 300, cooldown: 12, element: 'ice', effectType: 'damage' },
+      // 페이즈 3: 광폭화 (HP 30% 이하)
+      { name: '크라켄 대격류', damage: 500, cooldown: 15, element: 'ice', effectType: 'aoe' },
+      { name: '심해 재생', damage: 0, cooldown: 30, element: 'ice', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_ABYSSAL_KRAKEN_EYE', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_LEGENDARY_TRIDENT_ABYSSAL', rate: 0.01, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_FROZEN_TENTACLE', rate: 0.6, minQty: 5, maxQty: 8 },
+      { itemId: 'MAT_SQUID_INK', rate: 0.8, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 28000, goldReward: 14000,
+    behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
+    location: 'mist_sea', respawnTime: 86400,
+    lore: '안개해 최심부에 잠든 고대 크라켄. 봉인 해제로 깨어나 수면 위까지 촉수를 뻗친다. 촉수를 먼저 처리하지 않으면 본체에 접근 불가.',
+  },
+  {
+    code: 'MON_RAID_MS03', name: '망각의 파수꾼 옵리비온', type: 'raid_boss', element: 'dark', level: 90,
+    hp: 70000, attack: 190, defense: 60, speed: 12,
+    skills: [
+      // 페이즈 1: 파수꾼 형태 (HP 100%~70%)
+      { name: '망각의 대검', damage: 300, cooldown: 6, element: 'dark', effectType: 'damage' },
+      { name: '기억 말소 필드', damage: 0, cooldown: 18, element: 'dark', effectType: 'debuff' },
+      // 페이즈 2: 레테 흡수 형태 (HP 70%~30%)
+      { name: '존재 소거 파동', damage: 400, cooldown: 10, element: 'dark', effectType: 'aoe' },
+      { name: '기억 포식', damage: 350, cooldown: 8, element: 'dark', effectType: 'damage' },
+      // 페이즈 3: 레테 화신 (HP 30% 이하)
+      { name: '완전 망각', damage: 550, cooldown: 15, element: 'dark', effectType: 'aoe' },
+      { name: '레테의 귀환', damage: 0, cooldown: 35, element: 'dark', effectType: 'heal' },
+    ],
+    dropTable: [
+      { itemId: 'MAT_OBLIVION_CROWN', rate: 1.0, minQty: 1, maxQty: 1 },
+      { itemId: 'EQUIP_LEGENDARY_BLADE_OBLIVION', rate: 0.01, minQty: 1, maxQty: 1 },
+      { itemId: 'MAT_OBLIVION_ESSENCE', rate: 0.6, minQty: 5, maxQty: 8 },
+      { itemId: 'MAT_LETHE_SHARD', rate: 0.5, minQty: 3, maxQty: 5 },
+    ],
+    expReward: 30000, goldReward: 15000,
+    behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
+    location: 'mist_sea', respawnTime: 86400,
+    lore: '봉인의 첨탑 최심부에서 레테의 귀환을 준비하는 궁극의 파수꾼. 3페이즈에서 레테의 화신으로 변신하며, 기억 파괴 스킬 없이는 최종 페이즈 돌파 불가.',
+  },
+];
+
 // ─── 레이드 보스 3마리 (기존 raidBoss 모델과 연동) ──────────────
 
 const raidBosses: MonsterSeed[] = [
@@ -1861,10 +2480,14 @@ export async function seedMonsters(): Promise<{ created: number; updated: number
     ...shadowFortressNormals,   // 10
     ...crystalCavernNormals,    // 10
     ...voidAbyssNormals,        // 10
+    ...mistSeaNormals,          // 20 [P8-14]
     ...eliteMonsters,           // 20
+    ...mistSeaElites,           // 5  [P8-14]
     ...dungeonBosses,           // 12
+    ...mistSeaDungeonBosses,    // 5  [P8-14]
     ...fieldBosses,             // 5
     ...raidBosses,              // 3
+    ...mistSeaRaidBosses,       // 3  [P8-08]
   ];
 
   let created = 0;
@@ -1933,9 +2556,13 @@ export function getAllMonsterSeeds(): MonsterSeed[] {
     ...shadowFortressNormals,
     ...crystalCavernNormals,
     ...voidAbyssNormals,
+    ...mistSeaNormals,
     ...eliteMonsters,
+    ...mistSeaElites,
     ...dungeonBosses,
+    ...mistSeaDungeonBosses,
     ...fieldBosses,
     ...raidBosses,
+    ...mistSeaRaidBosses,
   ];
 }
