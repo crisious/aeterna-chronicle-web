@@ -115,19 +115,49 @@ export async function shopRoutes(fastify: FastifyInstance): Promise<void> {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return reply.status(404).send({ error: '유저를 찾을 수 없습니다.' });
 
-    // TODO: 실제 화폐 잔액 검증 (현재 User 모델에 잔액 필드 미존재)
-    // 잔액 차감 로직은 화폐 시스템 구현 후 추가 예정
+    // 화폐 잔액 검증 + 차감
+    const currencyField = item.currency as 'gold' | 'crystal' | 'diamond' | 'eventCoin';
+    const validCurrencies = ['gold', 'crystal', 'diamond', 'eventCoin'] as const;
+    if (!validCurrencies.includes(currencyField as typeof validCurrencies[number])) {
+      return reply.status(400).send({ error: `지원하지 않는 화폐 타입: ${item.currency}` });
+    }
 
-    // 구매 기록 생성
-    const purchase = await prisma.purchase.create({
-      data: {
-        userId,
-        itemId,
-        price: item.price,
+    const balance = (user as Record<string, unknown>)[currencyField] as number;
+    if (balance < item.price) {
+      return reply.status(400).send({
+        error: '잔액이 부족합니다.',
+        required: item.price,
+        current: balance,
         currency: item.currency,
-      },
-      include: { item: true },
-    });
+      });
+    }
+
+    // 잔액 차감 + 구매 기록 생성 (트랜잭션)
+    const [, purchase] = await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { [currencyField]: { decrement: item.price } },
+      }),
+      prisma.purchase.create({
+        data: {
+          userId,
+          itemId,
+          price: item.price,
+          currency: item.currency,
+        },
+        include: { item: true },
+      }),
+      prisma.transactionLog.create({
+        data: {
+          userId,
+          currency: item.currency,
+          amount: -item.price,
+          balance: balance - item.price,
+          reason: 'shop_purchase',
+          referenceId: itemId,
+        },
+      }),
+    ]);
 
     return reply.status(201).send(purchase);
   });

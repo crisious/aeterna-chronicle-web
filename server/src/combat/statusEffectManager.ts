@@ -601,6 +601,21 @@ export class StatusEffectManager {
       };
     });
   }
+  /**
+   * 전체 활성 상태이상 요약 (P7-08: 월드 브로드캐스트용)
+   * 존별 브로드캐스트에서 가볍게 포함할 수 있도록 카운트 요약만 반환.
+   */
+  getActiveEffectsSummary(): { totalTargets: number; totalEffects: number } {
+    let totalTargets = 0;
+    let totalEffects = 0;
+    for (const effects of this.activeEffects.values()) {
+      if (effects.length > 0) {
+        totalTargets++;
+        totalEffects += effects.length;
+      }
+    }
+    return { totalTargets, totalEffects };
+  }
 }
 
 // ─── 싱글턴 인스턴스 ───────────────────────────────────────────

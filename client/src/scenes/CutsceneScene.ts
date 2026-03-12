@@ -44,6 +44,7 @@ export class CutsceneScene extends Phaser.Scene {
   private titleText!: Phaser.GameObjects.Text;
   private autoTimer?: Phaser.Time.TimerEvent;
   private isAutoPlay = false;
+  private portraitSprite?: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: 'CutsceneScene' });
@@ -170,8 +171,8 @@ export class CutsceneScene extends Phaser.Scene {
     this.speakerText.setText(line.speaker);
     this.bodyText.setText(line.text);
 
-    // 포트레이트 처리 (TODO: 캐릭터 이미지 로드 시스템 연동)
-    // if (line.portrait && this.textures.exists(line.portrait)) { ... }
+    // P7-09: 캐릭터 포트레이트 이미지 로드 시스템
+    this._updatePortrait(line);
 
     // 자동 진행 타이머
     if (this.autoTimer) {

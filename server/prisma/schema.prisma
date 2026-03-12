@@ -196,6 +196,7 @@ model Guild {
   leaderId    String   @map("leader_id")
   level       Int      @default(1)
   exp         Int      @default(0)
+  gold        Int      @default(0)  // P7-03: 길드 골드 (스킬 해금/업그레이드 비용)
   maxMembers  Int      @default(30) @map("max_members")
   notice      String?  @db.Text
   createdAt   DateTime @default(now()) @map("created_at")
@@ -417,7 +418,24 @@ model Title {
   achievementId String?  @map("achievement_id")  // 연동 업적
   createdAt     DateTime @default(now()) @map("created_at")
 
+  userTitles    UserTitle[]
+
   @@map("titles")
+}
+
+// ─── 유저 칭호 소유 (P7-07) ─────────────────────────────────────
+model UserTitle {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  titleId    String    @map("title_id")
+  equippedAt DateTime? @map("equipped_at")  // null이면 미장착, 값이 있으면 현재 장착 중
+  grantedAt  DateTime  @default(now()) @map("granted_at")
+
+  title      Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+  @@map("user_titles")
+  @@index([userId])
 }
 
 // ─── 레이드 보스 시스템 ─────────────────────────────────────────

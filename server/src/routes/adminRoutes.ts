@@ -7,7 +7,17 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 import { requireAdmin, getAdminUser } from '../admin/authMiddleware';
 import { writeAuditLog, queryAuditLogs } from '../admin/auditLogger';
+import { inventoryManager } from '../inventory/inventoryManager';
+import type { Server as SocketServer } from 'socket.io';
 import os from 'os';
+
+// Socket.io 인스턴스 참조 (서버 초기화 시 설정)
+let ioRef: SocketServer | null = null;
+
+/** Socket.io 인스턴스를 어드민 라우트에 바인딩 */
+export function setAdminSocketIo(io: SocketServer): void {
+  ioRef = io;
+}
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 interface UserSearchQuery {
@@ -193,15 +203,20 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) return reply.status(404).send({ error: '유저를 찾을 수 없습니다.' });
 
-    // TODO: 실제 인벤토리 시스템 연동 — 현재는 감사 로그만 기록
+    // 인벤토리 시스템 연동: 아이템 지급
+    const grantResult = await inventoryManager.addItem(id, itemId, count);
+    if (!grantResult.success) {
+      return reply.status(400).send({ error: `아이템 지급 실패: ${grantResult.message}` });
+    }
+
     await writeAuditLog({
       adminId: admin.userId, action: 'item_grant',
       targetType: 'item', targetId: id,
-      details: { itemId, count, recipientUserId: id } as Prisma.InputJsonValue,
+      details: { itemId, count, recipientUserId: id, slotId: grantResult.slotId } as Prisma.InputJsonValue,
       ip: request.ip,
     });
 
-    return reply.send({ success: true, userId: id, itemId, count });
+    return reply.send({ success: true, userId: id, itemId, count, slotId: grantResult.slotId });
   });
 
   // ════════════════════════════════════════════════════════════
@@ -326,9 +341,8 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
       where: { createdAt: { gte: monthStart } },
     });
 
-    // 동시접속 — Redis/Socket.io 기반 실제 값이 없으므로 추정치
-    // TODO: Socket.io 연결 수를 주입받아 실수치로 교체
-    const concurrentEstimate = Math.floor(dau * 0.3);
+    // 동시접속 — Socket.io 실제 연결 수
+    const concurrentUsers = ioRef ? ioRef.engine.clientsCount : 0;
 
     return reply.send({
       dau,
@@ -336,7 +350,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
       totalUsers,
       bannedUsers,
       monthlyRevenue: revenueResult._sum.price ?? 0,
-      concurrentUsers: concurrentEstimate,
+      concurrentUsers,
       timestamp: now.toISOString(),
     });
   });

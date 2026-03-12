@@ -173,7 +173,27 @@ export async function upgradeGuildSkill(
 
   const cost = getUpgradeCost(skill.level);
 
-  // TODO: 길드 골드 차감 로직 연동 (currencyManager)
+  // 길드 골드 잔액 검증
+  const guild = await prisma.guild.findUnique({ where: { id: guildId } });
+  if (!guild) {
+    return { success: false, error: '길드를 찾을 수 없습니다', skillCode, prevLevel: skill.level, newLevel: skill.level, cost };
+  }
+  if (guild.gold < cost) {
+    return {
+      success: false,
+      error: `길드 골드가 부족합니다 (필요: ${cost}, 보유: ${guild.gold})`,
+      skillCode,
+      prevLevel: skill.level,
+      newLevel: skill.level,
+      cost,
+    };
+  }
+
+  // 길드 골드 차감
+  await prisma.guild.update({
+    where: { id: guildId },
+    data: { gold: { decrement: cost } },
+  });
 
   await guildSkillModel.update({
     where: { guildId_skillCode: { guildId, skillCode } },

@@ -247,7 +247,41 @@ export async function npcRoutes(fastify: FastifyInstance): Promise<void> {
     const unitPrice = Math.floor(item.price * (1 - discountRate));
     const totalPrice = unitPrice * quantity;
 
-    // TODO: 실제 인벤토리/골드 차감 로직 연동
+    // 화폐 잔액 검증 + 차감
+    const currencyField = (item.currency === 'gold' ? 'gold' : item.currency) as keyof typeof user;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return reply.status(404).send({ error: '유저를 찾을 수 없습니다.' });
+    }
+
+    const balance = (user as Record<string, unknown>)[currencyField] as number | undefined;
+    if (balance === undefined || balance < totalPrice) {
+      return reply.status(400).send({
+        error: '잔액이 부족합니다.',
+        required: totalPrice,
+        current: balance ?? 0,
+        currency: item.currency,
+      });
+    }
+
+    // 트랜잭션: 화폐 차감 + 거래 로그 기록
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { [currencyField]: { decrement: totalPrice } },
+      }),
+      prisma.transactionLog.create({
+        data: {
+          userId,
+          currency: item.currency,
+          amount: -totalPrice,
+          balance: balance - totalPrice,
+          reason: 'npc_trade',
+          referenceId: `${id}:${item.itemId}`,
+        },
+      }),
+    ]);
+
     return {
       npcId: id,
       npcName: npc.name,

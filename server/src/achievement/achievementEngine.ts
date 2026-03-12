@@ -178,19 +178,32 @@ class AchievementEngine extends EventEmitter {
   /**
    * 연동 칭호 자동 부여
    * - Title 테이블에서 achievementId가 매칭되는 칭호 확인
-   * - TODO: UserTitle 중간 테이블 추가 시 실제 부여 로직 구현
+   * - UserTitle 중간 테이블에 실제 부여 기록
    */
   private async grantLinkedTitle(userId: string, achievementId: string): Promise<void> {
     const title = await prisma.title.findFirst({
       where: { achievementId },
     });
 
-    if (title) {
-      // Redis에 유저 칭호 목록 기록 (실제 DB 칭호 소유 테이블은 추후 확장)
+    if (!title) return;
+
+    // UserTitle에 부여 (중복 방지 — unique constraint)
+    try {
+      await prisma.userTitle.create({
+        data: {
+          userId,
+          titleId: title.id,
+        },
+      });
+
+      // Redis 캐시에도 기록 (빠른 조회용)
       if (redisConnected) {
         await redisClient.sAdd(`user:titles:${userId}`, title.id);
       }
+
       this.emit('title_granted', { userId, title });
+    } catch {
+      // unique constraint 위반 → 이미 보유한 칭호, 무시
     }
   }
 

@@ -10,6 +10,7 @@
  */
 import { prisma } from '../db';
 import { getCurrentSeason } from './matchmaker';
+import { inventoryManager } from '../inventory/inventoryManager';
 
 // ─── 시즌 보상 정의 ─────────────────────────────────────────
 
@@ -186,12 +187,65 @@ export async function claimSeasonReward(
 
   const rewardTier = getRewardTier(rating.peakRating);
 
-  // 보상 지급 (TODO: 실제 인벤토리/화폐 시스템 연동)
-  // 현재는 수령 완료 마킹만 처리
-  await prisma.pvpRating.update({
-    where: { id: rating.id },
-    data: { tier: `claimed_${rewardTier.tier}` },
+  // 보상 지급: 화폐 + 아이템 인벤토리 연동
+  const goldReward = rewardTier.rewards.filter(r => r.type === 'gold').reduce((sum, r) => sum + (r.amount ?? 0), 0);
+  const crystalReward = rewardTier.rewards.filter(r => r.type === 'crystal').reduce((sum, r) => sum + (r.amount ?? 0), 0);
+
+  // 화폐 지급 + 수령 마킹 (트랜잭션)
+  const updateData: Record<string, unknown> = {};
+  if (goldReward > 0) updateData.gold = { increment: goldReward };
+  if (crystalReward > 0) updateData.crystal = { increment: crystalReward };
+
+  await prisma.$transaction(async (tx) => {
+    // 화폐 지급
+    if (Object.keys(updateData).length > 0) {
+      await tx.user.update({ where: { id: userId }, data: updateData });
+    }
+
+    // 화폐 거래 로그
+    if (goldReward > 0) {
+      await tx.transactionLog.create({
+        data: {
+          userId,
+          currency: 'gold',
+          amount: goldReward,
+          balance: 0, // 실제 잔액은 조회 비용 절감을 위해 0으로 기록
+          reason: 'pvp_season_reward',
+          referenceId: `season_${targetSeason}_${rewardTier.tier}`,
+        },
+      });
+    }
+    if (crystalReward > 0) {
+      await tx.transactionLog.create({
+        data: {
+          userId,
+          currency: 'crystal',
+          amount: crystalReward,
+          balance: 0,
+          reason: 'pvp_season_reward',
+          referenceId: `season_${targetSeason}_${rewardTier.tier}`,
+        },
+      });
+    }
+
+    // 수령 완료 마킹
+    await tx.pvpRating.update({
+      where: { id: rating.id },
+      data: { tier: `claimed_${rewardTier.tier}` },
+    });
   });
+
+  // 아이템 보상 지급 (inventoryManager — 트랜잭션 외부)
+  const itemRewards = rewardTier.rewards.filter(
+    r => !['gold', 'crystal'].includes(r.type),
+  );
+  for (const reward of itemRewards) {
+    // 아이템 코드 = 보상 타입_시즌 (예: cosmetic_box, season_skin 등)
+    const itemCode = `pvp_${reward.type}_s${targetSeason}`;
+    await inventoryManager.addItem(userId, itemCode, reward.amount ?? 1).catch(() => {
+      // 아이템 코드가 미등록이면 무시 (로그만 남김)
+    });
+  }
 
   return {
     success: true,

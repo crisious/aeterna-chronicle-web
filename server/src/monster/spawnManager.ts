@@ -365,6 +365,26 @@ class SpawnManager {
     return total;
   }
 
+  /**
+   * 특정 존의 활성 몬스터 요약 반환 (P7-08: 월드 브로드캐스트용)
+   */
+  getActiveSpawns(zoneId: string): Array<{ id: string; code: string; hp: number; x: number; y: number }> {
+    const zoneMap = this.zoneMonsters.get(zoneId);
+    if (!zoneMap) return [];
+
+    const result: Array<{ id: string; code: string; hp: number; x: number; y: number }> = [];
+    for (const [id, monster] of zoneMap) {
+      result.push({
+        id,
+        code: monster.code ?? id,
+        hp: monster.hp ?? 0,
+        x: monster.x ?? 0,
+        y: monster.y ?? 0,
+      });
+    }
+    return result;
+  }
+
   /** 정리 (서버 종료 시) */
   shutdown(): void {
     this.zoneMonsters.clear();

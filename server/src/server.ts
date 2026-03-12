@@ -79,6 +79,7 @@ import { resetAllDr } from './pvp/pvpNormalizer';
 import { opsRoutes } from './routes/opsRoutes';
 import { opsAlertManager } from './ops/opsAlertManager';
 import { betaRoutes } from './routes/betaRoutes';
+import { getCharacterMaxHp } from './combat/hpResolver';
 
 const fastify = Fastify({ logger: true });
 
@@ -375,15 +376,32 @@ async function startServer() {
 
         // ── 틱 매니저 초기화 (P3-18: 서버 틱 계층화) ──
         // 물리 틱 (20Hz): 충돌/위치 계산
-        tickManager.on('physics', (deltaMs) => {
-            // TODO: 물리 시뮬레이션 콜백 연결
-            void deltaMs;
+        // Note: 현재 클라이언트 사이드 물리(Phaser Arcade/Matter)를 사용하며,
+        // 서버 물리 시뮬레이션은 Phase 8+ 권위적 서버 아키텍처에서 도입 예정.
+        // P7-08: 물리 틱은 향후 서버 권위 물리 도입 시 활성화한다.
+        tickManager.on('physics', (_deltaMs) => {
+            // Reserved: 서버 권위적 물리 시뮬레이션 (Phase 8+)
         });
 
-        // 네트워크 틱 (10Hz): 상태 브로드캐스트
+        // 네트워크 틱 (10Hz): 상태 브로드캐스트 (P7-08)
         tickManager.on('network', (_deltaMs) => {
-            // TODO: io.emit으로 월드 상태 브로드캐스트
-            void _deltaMs;
+            // 존(Zone) 기반 월드 상태 브로드캐스트
+            // 각 존 Room에 소속된 플레이어들에게 해당 존의 활성 엔티티 상태를 전송
+            const rooms = io.sockets.adapter.rooms;
+            for (const [roomName] of rooms) {
+                if (!roomName.startsWith('zone:')) continue;
+                const zoneCode = roomName.slice(5); // 'zone:xxx' → 'xxx'
+
+                // 존별 활성 상태 수집: 몬스터 스폰 + 상태이상 + 레이드 상태
+                const worldState = {
+                    zone: zoneCode,
+                    timestamp: Date.now(),
+                    spawns: spawnManager.getActiveSpawns(zoneCode),
+                    activeEffects: statusEffectManager.getActiveEffectsSummary(),
+                };
+
+                io.to(roomName).emit('world:state', worldState);
+            }
         });
 
         // 로직 틱 (2Hz): AI/스폰/버프 만료/상태이상 틱
@@ -393,9 +411,10 @@ async function startServer() {
             // 몬스터 스폰 매니저 틱 (AI + 리스폰 + 필드 보스 스케줄)
             spawnManager.tick(deltaMs, (_zoneId: string) => []);
             // 상태이상 DoT 틱 처리 (P6-04)
+            // P7-10: 캐릭터 레벨+클래스 기반 maxHp 조회 연동
             const _dotResults = statusEffectManager.tick(
                 deltaMs / 1000,
-                (_targetId: string) => 1000, // TODO: 실제 maxHp 조회 연결
+                (targetId: string) => getCharacterMaxHp(targetId),
             );
         });
 

@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../db';
+import { inventoryManager } from '../inventory/inventoryManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -123,14 +124,23 @@ export async function collectAttachments(mailId: string, userId: string) {
     throw new Error('첨부 아이템이 없습니다.');
   }
 
-  // TODO: 실제 인벤토리에 아이템 추가 로직 연동
-  // 여기서는 수령 플래그만 처리
+  // 인벤토리에 아이템 추가
+  const addResults = [];
+  for (const att of attachments) {
+    const result = await inventoryManager.addItem(userId, att.itemId, att.count);
+    if (!result.success) {
+      throw new Error(`아이템 수령 실패 (${att.itemId}): ${result.message}`);
+    }
+    addResults.push({ itemId: att.itemId, count: att.count, slotId: result.slotId });
+  }
+
+  // 수령 완료 플래그 처리
   const updated = await prisma.mail.update({
     where: { id: mailId },
     data: { isCollected: true, isRead: true },
   });
 
-  return { mail: updated, collectedItems: attachments };
+  return { mail: updated, collectedItems: attachments, addResults };
 }
 
 // ═══════════════════════════════════════════════════════════════
