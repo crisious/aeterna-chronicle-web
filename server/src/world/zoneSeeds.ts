@@ -33,7 +33,7 @@ const ZONE_SEEDS: ZoneSeed[] = [
     levelRange: { min: 1, max: 15 },
     connections: ['argentium_market', 'argentium_sewer', 'argentium_tower'],
     npcs: [
-      { npcId: 'npc_guild_master', name: '길드 마스터 카엘', posX: 100, posY: 200, role: 'quest' },
+      { npcId: 'npc_guild_master', name: '길드 마스터 하쉬르', posX: 100, posY: 200, role: 'quest' },
       { npcId: 'npc_weapon_shop', name: '대장장이 토르발', posX: 150, posY: 180, role: 'shop' },
       { npcId: 'npc_potion_shop', name: '연금술사 리나', posX: 200, posY: 190, role: 'shop' },
     ],

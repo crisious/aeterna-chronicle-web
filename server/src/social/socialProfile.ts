@@ -295,8 +295,8 @@ export async function getGuildRanking(limit = 50): Promise<GuildRankingEntry[]> 
     guildName: g.name,
     level: g.level,
     memberCount: g.memberCount,
-    totalPower: 0, // TODO: 길드 전투력 합산
-    warWins: 0,    // TODO: 길드전 승수 조회
+    totalPower: 0, // P14: 길드 전투력 합산 — 추후 guildPowerService 연동
+    warWins: 0,    // P14: 길드전 승수 조회 — 추후 guildWarStats 연동
   }));
 
   if (redisConnected() && entries.length > 0) {

@@ -1,7 +1,7 @@
 /**
  * CharacterSelectScene.ts — 캐릭터 생성/선택 씬 (P5-18)
  *
- * - 3클래스 선택: 에테르 기사 / 기억술사 / 그림자 직조사
+ * - 5클래스 선택: 에테르 기사 / 기억술사 / 그림자 직조사 / 기억 파괴자 / 시간 수호자
  * - 캐릭터명 입력 (DOM 기반 input)
  * - 생성 버튼 → LobbyScene 전환
  */
@@ -22,17 +22,17 @@ interface CharacterClass {
 
 const CLASSES: CharacterClass[] = [
   {
-    id: 'aether_knight',
+    id: 'ether_knight',
     name: '에테르 기사',
-    nameEn: 'Aether Knight',
+    nameEn: 'Ether Knight',
     color: 0x4488ff,
     description: '에테르를 갑옷과 검에 주입하여 싸우는 근접 전사. 높은 HP와 방어력.',
     stats: { hp: 500, mp: 150, atk: 45, def: 35 },
   },
   {
-    id: 'mnemonist',
+    id: 'memory_weaver',
     name: '기억술사',
-    nameEn: 'Mnemonist',
+    nameEn: 'Memory Weaver',
     color: 0xaa44ff,
     description: '잃어버린 기억의 파편을 마법으로 구현하는 원거리 마법사. 높은 MP와 공격력.',
     stats: { hp: 300, mp: 400, atk: 55, def: 15 },
@@ -44,6 +44,22 @@ const CLASSES: CharacterClass[] = [
     color: 0x44cc88,
     description: '그림자 실을 직조하여 함정과 디버프를 거는 전략형 클래스. 균형잡힌 스탯.',
     stats: { hp: 380, mp: 280, atk: 40, def: 25 },
+  },
+  {
+    id: 'memory_breaker',
+    name: '기억 파괴자',
+    nameEn: 'Memory Breaker',
+    color: 0xff6644,
+    description: '기억을 파괴하는 힘을 무기에 담아 싸우는 근접 딜러. 높은 공격력.',
+    stats: { hp: 450, mp: 180, atk: 60, def: 20 },
+  },
+  {
+    id: 'time_guardian',
+    name: '시간 수호자',
+    nameEn: 'Time Guardian',
+    color: 0xffcc44,
+    description: '시간의 흐름을 조작하여 아군을 보호하는 지원형 클래스. 균형잡힌 스탯.',
+    stats: { hp: 400, mp: 350, atk: 35, def: 30 },
   },
 ];
 

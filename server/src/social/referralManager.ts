@@ -205,7 +205,7 @@ export async function claimReward(rewardId: string, userId: string): Promise<boo
     data: { claimed: true, claimedAt: new Date() },
   });
 
-  // TODO: 실제 재화 지급 연동 (currencyManager.addCurrency)
+  // P14: 실제 재화 지급 연동 (currencyManager.addCurrency) — 결제/재화 시스템 통합 시 구현
   console.log(`[Referral] 보상 수령: ${rewardId} (${reward.rewardType} x${reward.amount})`);
   return true;
 }
