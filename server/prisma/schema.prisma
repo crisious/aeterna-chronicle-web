@@ -1269,3 +1269,40 @@ model EventParticipation {
   @@index([eventId])
   @@index([eventId, score])
 }
+
+// ─── 동의 기록 (P9-12 GDPR) ──────────────────────────────────
+model ConsentRecord {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  consentType String    @map("consent_type") // terms, privacy, marketing, analytics
+  granted     Boolean   @default(false)
+  version     String    // 동의 약관 버전
+  grantedAt   DateTime? @map("granted_at")
+  revokedAt   DateTime? @map("revoked_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@unique([userId, consentType])
+  @@map("consent_records")
+  @@index([userId])
+  @@index([consentType])
+}
+
+// ─── 로그인 세션 (P9-13 계정 보안) ───────────────────────────
+model LoginSession {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  deviceName   String   @map("device_name")
+  deviceType   String   @map("device_type") // web, mobile, desktop, system
+  ipAddress    String   @map("ip_address")
+  userAgent    String   @map("user_agent") @db.Text
+  accessToken  String?  @map("access_token") @db.Text
+  isActive     Boolean  @default(true) @map("is_active")
+  lastActiveAt DateTime @default(now()) @map("last_active_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("login_sessions")
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([isActive])
+}
