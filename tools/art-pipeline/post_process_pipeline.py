@@ -95,6 +95,13 @@ REGION_PALETTES = {
         "shadow": "#050000",
         "highlight": "#FF4444",
     },
+    "temporal_rift": {
+        "name": "시간의 균열",
+        "primary": ["#1A0A2A", "#2A1A4A", "#0F0520"],
+        "accent": ["#9B59B6", "#E74C3C", "#F39C12"],
+        "shadow": "#050010",
+        "highlight": "#9B59B6",
+    },
 }
 
 # ── 스프라이트 시트 규격 ──────────────────────────────────

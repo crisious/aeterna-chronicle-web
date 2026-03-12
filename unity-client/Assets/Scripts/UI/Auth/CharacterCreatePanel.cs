@@ -68,6 +68,12 @@ namespace EternaChronicle.UI.Auth
 
                 description = "봉인 해제 클래스. 대상의 기억을 조작하여 약화시키는 이능 전사.",
                 stats = "STR ★★ | DEX ★★ | INT ★★★★ | VIT ★★★"
+            },
+            new ClassInfo {
+                id = "void_wanderer", name = "공허 방랑자",
+                description = "공허의 차원을 넘나드는 방랑자. 차원 이동과 디버프에 특화.",
+                icon = "class-void-wanderer",
+                stats = "STR ★★★ | DEX ★★★ | INT ★★★ | VIT ★★"
             }
         };
 

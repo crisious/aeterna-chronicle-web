@@ -61,6 +61,14 @@ const CLASSES: CharacterClass[] = [
     description: '시간의 흐름을 조작하여 아군을 보호하는 지원형 클래스. 균형잡힌 스탯.',
     stats: { hp: 400, mp: 350, atk: 35, def: 30 },
   },
+  {
+    id: 'void_wanderer',
+    name: '공허 방랑자',
+    nameEn: 'Void Wanderer',
+    color: 0x8844cc,
+    description: '공허의 차원을 넘나드는 방랑자. 차원 이동과 디버프에 특화.',
+    stats: { hp: 360, mp: 320, atk: 50, def: 22 },
+  },
 ];
 
 // ── 상수 ────────────────────────────────────────────────────
