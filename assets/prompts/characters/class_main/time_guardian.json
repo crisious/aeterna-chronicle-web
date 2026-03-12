@@ -1,0 +1,123 @@
+{
+  "asset_id": "char_illust_time_guardian",
+  "class": "시간수호자",
+  "class_en": "Time Guardian",
+  "tier": "base",
+  "category": "character_illust",
+  "views": [
+    "front",
+    "side",
+    "back"
+  ],
+  "color_palette": {
+    "primary": "#DAA520",
+    "secondary": "#CD7F32",
+    "dark": "#C0C0C0",
+    "glow": "#00FFFF"
+  },
+  "design": {
+    "silhouette": "중간, 기어 돌출",
+    "armor": "로브+경갑 하이브리드, 시계 기어 장식, 어깨에 미니 시계탑",
+    "weapon": "시계 지팡이 (상단에 회전하는 시계 문자판) + 부유 기어",
+    "accessories": "주변에 부유하는 미니 기어 3~5개",
+    "proportions": "2.5~3등신"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Time Guardian chronomancer, hybrid robe and light armor, clock gear decorations all over, miniature clock tower on shoulder plates, wielding clock staff with rotating clock face at the top, 3-5 floating mini gears hovering around body, time gold (#DAA520) and bronze (#CD7F32) with silver (#C0C0C0) and cyan time glow (#00FFFF), dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "side": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, left-facing side view, full body, Time Guardian chronomancer, hybrid robe and light armor, clock gear decorations all over, miniature clock tower on shoulder plates, wielding clock staff with rotating clock face at the top, 3-5 floating mini gears hovering around body, time gold (#DAA520) and bronze (#CD7F32) with silver (#C0C0C0) and cyan time glow (#00FFFF), dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, back-facing",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "back": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, back view, full body, Time Guardian chronomancer, hybrid robe and light armor, clock gear decorations all over, miniature clock tower on shoulder plates, wielding clock staff with rotating clock face at the top, 3-5 floating mini gears hovering around body, time gold (#DAA520) and bronze (#CD7F32) with silver (#C0C0C0) and cyan time glow (#00FFFF), dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, face visible",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body, standing idle pose. The character is a Time Guardian — a chronomancer in dark fantasy Korean MMORPG style. They wear a hybrid of robes and light armor decorated with clock gears. Miniature clock towers adorn their shoulder plates. They wield a staff topped with a rotating clock face, and 3-5 floating mini gears hover around their body. Colors: time gold, bronze, silver, with cyan time glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "side": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, left-facing side view, full body. The character is a Time Guardian — a chronomancer in dark fantasy Korean MMORPG style. They wear a hybrid of robes and light armor decorated with clock gears. Miniature clock towers adorn their shoulder plates. They wield a staff topped with a rotating clock face, and 3-5 floating mini gears hover around their body. Colors: time gold, bronze, silver, with cyan time glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "back": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, back view, full body, rear perspective. The character is a Time Guardian — a chronomancer in dark fantasy Korean MMORPG style. They wear a hybrid of robes and light armor decorated with clock gears. Miniature clock towers adorn their shoulder plates. They wield a staff topped with a rotating clock face, and 3-5 floating mini gears hover around their body. Colors: time gold, bronze, silver, with cyan time glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Time Guardian chronomancer, hybrid robe light armor, clock gear decorations, miniature clock tower shoulders, clock staff rotating face, 3-5 floating mini gears, time gold bronze silver cyan time glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "side": {
+        "prompt": "2D pixel art RPG character design sheet::2, left-facing side view full body::1.5, Time Guardian chronomancer, hybrid robe light armor, clock gear decorations, miniature clock tower shoulders, clock staff rotating face, 3-5 floating mini gears, time gold bronze silver cyan time glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "back": {
+        "prompt": "2D pixel art RPG character design sheet::2, back view full body rear::1.5, Time Guardian chronomancer, hybrid robe light armor, clock gear decorations, miniature clock tower shoulders, clock staff rotating face, 3-5 floating mini gears, time gold bronze silver cyan time glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

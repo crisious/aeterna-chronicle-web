@@ -1,0 +1,53 @@
+{
+  "asset_id": "char_illust_shadow_weaver_adv3",
+  "class": "그림자직조사",
+  "class_en": "Shadow Weaver",
+  "advancement": "그림자 군주",
+  "advancement_en": "Shadow Lord",
+  "tier": "3rd",
+  "category": "character_illust",
+  "color_palette": {
+    "primary": "#2F2F2F",
+    "secondary": "#8B0000",
+    "dark": "#301934",
+    "glow": "#006400"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Shadow Lord (Shadow Weaver 3rd advancement), ultimate Shadow Weaver with shadow crystal armor (semi-transparent materializing and dematerializing), crown-shaped hood, shadow weapons freely manifested (sword/bow/chains switching), pure black (#0A0A0A) and red eyes (#FF0000) added, shadow pool always expanded beneath feet, 2-4 shadow tendrils floating around body, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body standing idle pose. The character is a Shadow Lord — the 3rd advancement of the Shadow Weaver class in a dark fantasy Korean MMORPG style. Description: ultimate Shadow Weaver with shadow crystal armor (semi-transparent materializing and dematerializing), crown-shaped hood, shadow weapons freely manifested (sword/bow/chains switching), pure black (#0A0A0A) and red eyes (#FF0000) added, shadow pool always expanded beneath feet, 2-4 shadow tendrils floating around body. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Shadow Lord Shadow Weaver 3rd advancement, ultimate Shadow Weaver with shadow crystal armor (semi-transparent materializing and dematerializing), crown-shaped hood, shadow weapons freely manifested (sword/bow/chains switching), pure black (#0A0A0A) and red eyes (#FF0000) added, shadow pool always expanded beneath feet, 2-4 shadow tendrils floating around body, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

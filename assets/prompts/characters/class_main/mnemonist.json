@@ -1,0 +1,123 @@
+{
+  "asset_id": "char_illust_mnemonist",
+  "class": "기억술사",
+  "class_en": "Mnemonist",
+  "tier": "base",
+  "category": "character_illust",
+  "views": [
+    "front",
+    "side",
+    "back"
+  ],
+  "color_palette": {
+    "primary": "#4B0082",
+    "secondary": "#FFD700",
+    "dark": "#008080",
+    "glow": "#DC143C"
+  },
+  "design": {
+    "silhouette": "길고 가느다란 삼각형, 후드/로브",
+    "armor": "긴 다크 로브, 기억 수정 장식, 후드 + 룬 트림",
+    "weapon": "오브 장착 지팡이 + 부유하는 아케인 토메",
+    "accessories": "허리 벨트에 기억 수정 3개 매달림",
+    "proportions": "2.5~3등신"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Mnemonist mage, long dark purple robe with memory crystal decorations, hood with rune trim, wielding orb-mounted staff in right hand, floating arcane tome hovering near left hand, three memory crystals dangling from waist belt, deep purple (#4B0082) and gold (#FFD700) with teal (#008080) accents, crimson (#DC143C) glow details, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "side": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, left-facing side view, full body, Mnemonist mage, long dark purple robe with memory crystal decorations, hood with rune trim, wielding orb-mounted staff in right hand, floating arcane tome hovering near left hand, three memory crystals dangling from waist belt, deep purple (#4B0082) and gold (#FFD700) with teal (#008080) accents, crimson (#DC143C) glow details, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, back-facing",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "back": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, back view, full body, Mnemonist mage, long dark purple robe with memory crystal decorations, hood with rune trim, wielding orb-mounted staff in right hand, floating arcane tome hovering near left hand, three memory crystals dangling from waist belt, deep purple (#4B0082) and gold (#FFD700) with teal (#008080) accents, crimson (#DC143C) glow details, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, face visible",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body, standing idle pose. The character is a Mnemonist — a robed mage in a dark fantasy Korean MMORPG style. They wear a long dark purple robe decorated with memory crystals, a hood with rune trim. They wield an orb-mounted staff and have a floating arcane tome hovering nearby. Three memory crystals dangle from their waist belt. Colors: deep purple, gold accents, teal and crimson glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "side": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, left-facing side view, full body. The character is a Mnemonist — a robed mage in a dark fantasy Korean MMORPG style. They wear a long dark purple robe decorated with memory crystals, a hood with rune trim. They wield an orb-mounted staff and have a floating arcane tome hovering nearby. Three memory crystals dangle from their waist belt. Colors: deep purple, gold accents, teal and crimson glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "back": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, back view, full body, rear perspective. The character is a Mnemonist — a robed mage in a dark fantasy Korean MMORPG style. They wear a long dark purple robe decorated with memory crystals, a hood with rune trim. They wield an orb-mounted staff and have a floating arcane tome hovering nearby. Three memory crystals dangle from their waist belt. Colors: deep purple, gold accents, teal and crimson glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Mnemonist mage, long dark purple robe memory crystal decorations, hood rune trim, orb-mounted staff, floating arcane tome, three memory crystals waist belt, deep purple gold teal crimson glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "side": {
+        "prompt": "2D pixel art RPG character design sheet::2, left-facing side view full body::1.5, Mnemonist mage, long dark purple robe memory crystal decorations, hood rune trim, orb-mounted staff, floating arcane tome, three memory crystals waist belt, deep purple gold teal crimson glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "back": {
+        "prompt": "2D pixel art RPG character design sheet::2, back view full body rear::1.5, Mnemonist mage, long dark purple robe memory crystal decorations, hood rune trim, orb-mounted staff, floating arcane tome, three memory crystals waist belt, deep purple gold teal crimson glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

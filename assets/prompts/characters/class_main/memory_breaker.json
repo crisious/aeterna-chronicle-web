@@ -1,0 +1,123 @@
+{
+  "asset_id": "char_illust_memory_breaker",
+  "class": "기억파괴자",
+  "class_en": "Memory Breaker",
+  "tier": "base",
+  "category": "character_illust",
+  "views": [
+    "front",
+    "side",
+    "back"
+  ],
+  "color_palette": {
+    "primary": "#2C3539",
+    "secondary": "#660000",
+    "dark": "#B8860B",
+    "glow": "#89CFF0"
+  },
+  "design": {
+    "silhouette": "매우 넓은 사각형, 다른 클래스보다 1.2배 넓음",
+    "armor": "중갑+가죽 혼합, 넓은 어깨 보호대, 팔에 기억 쇄도 문양",
+    "weapon": "거대 워해머 (기억 파편 박힘)",
+    "accessories": "전신 기억 균열 문양",
+    "proportions": "2.5~3등신, 넓은 실루엣"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Memory Breaker heavy warrior, mixed heavy plate and leather armor, extra-wide shoulder guards, memory surge patterns etched on arms, wielding massive two-handed warhammer embedded with memory crystal fragments, wider body silhouette 1.2x normal width, gunmetal (#2C3539) and blood red (#660000) with dark gold (#B8860B) and ether blue (#89CFF0) crack glow lines, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "side": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, left-facing side view, full body, Memory Breaker heavy warrior, mixed heavy plate and leather armor, extra-wide shoulder guards, memory surge patterns etched on arms, wielding massive two-handed warhammer embedded with memory crystal fragments, wider body silhouette 1.2x normal width, gunmetal (#2C3539) and blood red (#660000) with dark gold (#B8860B) and ether blue (#89CFF0) crack glow lines, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, back-facing",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "back": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, back view, full body, Memory Breaker heavy warrior, mixed heavy plate and leather armor, extra-wide shoulder guards, memory surge patterns etched on arms, wielding massive two-handed warhammer embedded with memory crystal fragments, wider body silhouette 1.2x normal width, gunmetal (#2C3539) and blood red (#660000) with dark gold (#B8860B) and ether blue (#89CFF0) crack glow lines, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, face visible",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body, standing idle pose. The character is a Memory Breaker — a massive heavy warrior in dark fantasy Korean MMORPG style. They wear mixed heavy plate and leather armor with extra-wide shoulder guards and memory surge patterns etched on their arms. They wield a massive two-handed warhammer embedded with glowing memory crystal fragments. Wider body than normal. Colors: gunmetal, blood red, dark gold, with ether blue glowing crack lines. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "side": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, left-facing side view, full body. The character is a Memory Breaker — a massive heavy warrior in dark fantasy Korean MMORPG style. They wear mixed heavy plate and leather armor with extra-wide shoulder guards and memory surge patterns etched on their arms. They wield a massive two-handed warhammer embedded with glowing memory crystal fragments. Wider body than normal. Colors: gunmetal, blood red, dark gold, with ether blue glowing crack lines. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "back": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, back view, full body, rear perspective. The character is a Memory Breaker — a massive heavy warrior in dark fantasy Korean MMORPG style. They wear mixed heavy plate and leather armor with extra-wide shoulder guards and memory surge patterns etched on their arms. They wield a massive two-handed warhammer embedded with glowing memory crystal fragments. Wider body than normal. Colors: gunmetal, blood red, dark gold, with ether blue glowing crack lines. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Memory Breaker heavy warrior, mixed plate leather armor, extra-wide shoulders, memory surge patterns arms, massive warhammer memory crystal fragments, wider body silhouette, gunmetal blood red dark gold ether blue crack glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "side": {
+        "prompt": "2D pixel art RPG character design sheet::2, left-facing side view full body::1.5, Memory Breaker heavy warrior, mixed plate leather armor, extra-wide shoulders, memory surge patterns arms, massive warhammer memory crystal fragments, wider body silhouette, gunmetal blood red dark gold ether blue crack glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "back": {
+        "prompt": "2D pixel art RPG character design sheet::2, back view full body rear::1.5, Memory Breaker heavy warrior, mixed plate leather armor, extra-wide shoulders, memory surge patterns arms, massive warhammer memory crystal fragments, wider body silhouette, gunmetal blood red dark gold ether blue crack glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "entity_type": "character",
+  "direction": "UL",
+  "direction_name": "위왼쪽",
+  "motion": "death",
+  "motion_name": "사망",
+  "frame": 3,
+  "total_frames": 5,
+  "fps": 8,
+  "loop": false,
+  "canvas": {
+    "width": 64,
+    "height": 64
+  },
+  "mirrored_from": null,
+  "keypoints": {
+    "format": "openpose_18",
+    "points": [
+      [
+        33.75,
+        21.25,
+        0.0
+      ],
+      [
+        33.75,
+        27.25,
+        1.0
+      ],
+      [
+        25.75,
+        29.25,
+        1.0
+      ],
+      [
+        23.75,
+        39.25,
+        1.0
+      ],
+      [
+        25.75,
+        47.25,
+        1.0
+      ],
+      [
+        39.75,
+        29.25,
+        1.0
+      ],
+      [
+        40.75,
+        39.25,
+        1.0
+      ],
+      [
+        41.75,
+        47.25,
+        1.0
+      ],
+      [
+        28.75,
+        47.25,
+        1.0
+      ],
+      [
+        28.75,
+        57.25,
+        1.0
+      ],
+      [
+        28.75,
+        64,
+        1.0
+      ],
+      [
+        38.75,
+        47.25,
+        1.0
+      ],
+      [
+        38.75,
+        57.25,
+        1.0
+      ],
+      [
+        38.75,
+        64,
+        1.0
+      ],
+      [
+        30.75,
+        19.25,
+        0.0
+      ],
+      [
+        36.75,
+        19.25,
+        0.0
+      ],
+      [
+        27.75,
+        20.25,
+        1.0
+      ],
+      [
+        39.75,
+        20.25,
+        1.0
+      ]
+    ],
+    "names": [
+      "nose",
+      "neck",
+      "right_shoulder",
+      "right_elbow",
+      "right_wrist",
+      "left_shoulder",
+      "left_elbow",
+      "left_wrist",
+      "right_hip",
+      "right_knee",
+      "right_ankle",
+      "left_hip",
+      "left_knee",
+      "left_ankle",
+      "right_eye",
+      "left_eye",
+      "right_ear",
+      "left_ear"
+    ]
+  }
+}

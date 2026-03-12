@@ -1,0 +1,53 @@
+{
+  "asset_id": "char_illust_memory_breaker_adv2",
+  "class": "기억파괴자",
+  "class_en": "Memory Breaker",
+  "advancement": "심연의 전사",
+  "advancement_en": "Abyss Warrior",
+  "tier": "2nd",
+  "category": "character_illust",
+  "color_palette": {
+    "primary": "#2C3539",
+    "secondary": "#660000",
+    "dark": "#B8860B",
+    "glow": "#89CFF0"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Abyss Warrior (Memory Breaker 2nd advancement), advanced Memory Breaker with bone-and-metal hybrid armor coated in abyss energy, dual weapons (axe + hammer or dual axes) wreathed in abyss aura, one arm partially transformed into semi-transparent dark abyss energy, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body standing idle pose. The character is a Abyss Warrior — the 2nd advancement of the Memory Breaker class in a dark fantasy Korean MMORPG style. Description: advanced Memory Breaker with bone-and-metal hybrid armor coated in abyss energy, dual weapons (axe + hammer or dual axes) wreathed in abyss aura, one arm partially transformed into semi-transparent dark abyss energy. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Abyss Warrior Memory Breaker 2nd advancement, advanced Memory Breaker with bone-and-metal hybrid armor coated in abyss energy, dual weapons (axe + hammer or dual axes) wreathed in abyss aura, one arm partially transformed into semi-transparent dark abyss energy, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

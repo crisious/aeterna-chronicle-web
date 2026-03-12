@@ -1,0 +1,69 @@
+{
+  "asset_id": "char_illust_ether_knight",
+  "class": "에테르기사",
+  "class_en": "Ether Knight",
+  "tier": "base",
+  "category": "character_illust",
+  "views": ["front", "side", "back"],
+  "color_palette": {
+    "primary": "#4682B4",
+    "secondary": "#C0C0C0",
+    "dark": "#191970",
+    "glow": "#89CFF0"
+  },
+  "design": {
+    "silhouette": "넓고 단단한 사각형, 넓은 어깨",
+    "armor": "중갑 판금, 어깨 보호대에 에테르 룬 각인, 가슴판 중앙에 기억 문장",
+    "weapon": "한손검(에테르 푸른 빛) + 카이트 실드",
+    "helmet": "바이저 개폐형, 기본 열린 상태, 이마에 룬 발광",
+    "cape": "짧은 하프 케이프, 파란 안감",
+    "proportions": "2.5~3등신 SD 픽셀아트 비율"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Ether Knight, male heavy plate armor warrior, steel blue (#4682B4) and silver (#C0C0C0) plate armor, wide shoulder pauldrons with glowing cyan ether rune engravings, memory crest on center chestplate, open-face visor helmet with forehead rune glow (#89CFF0), wielding one-handed sword with ethereal blue glow in right hand, kite shield with ether crystal emblem in left hand, short half-cape with blue lining, midnight blue (#191970) dark accents, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {"steps": 35, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "clip_skip": 2, "width": 512, "height": 512, "seed": -1}
+      },
+      "side": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character, left-facing side view, full body, Ether Knight, same design as front view, heavy plate armor visible from side profile, shield held at left side, sword sheathed at hip, pauldron rune glowing from side angle, cape flowing behind, steel blue and silver color scheme, midnight blue accents, cyan ether glow (#89CFF0), dark fantasy Korean MMORPG, 2.5 head ratio, top-left 45-degree lighting, 3-step shading, (2px black outline:1.3), (clean pixel edges:1.4), 512x512, transparent background, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, bad anatomy, Western cartoon, noisy, JPEG artifacts, front-facing, back-facing",
+        "params": {"steps": 35, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "clip_skip": 2, "width": 512, "height": 512, "seed": -1}
+      },
+      "back": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character, back view, full body, Ether Knight, rear view of heavy plate armor, cape fully visible flowing down, shield strapped to back, sword sheath at waist, back of helmet with neck guard, pauldron rune engravings visible from behind, steel blue and silver plate, midnight blue cape exterior, blue inner lining visible at edges, dark fantasy Korean MMORPG, 2.5 head ratio, top-left lighting, 3-step shading, (2px black outline:1.3), (clean pixel edges:1.4), 512x512, transparent background, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, blurry, watermark, text, logo, low quality, deformed, extra limbs, bad anatomy, Western cartoon, noisy, JPEG artifacts, front-facing, face visible",
+        "params": {"steps": 35, "cfg_scale": 8, "sampler_name": "DPM++ 2M Karras", "clip_skip": 2, "width": 512, "height": 512, "seed": -1}
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body. The character is an Ether Knight — a heavy plate armor warrior in a dark fantasy Korean MMORPG style. He wears steel blue and silver plate armor with wide shoulder pauldrons engraved with glowing cyan ether runes. A memory crest adorns the center chestplate. His open-face visor helmet has a glowing rune on the forehead emitting soft cyan light. He wields a one-handed sword with ethereal blue energy in his right hand and a kite shield with an ether crystal emblem in his left. A short half-cape with blue lining flows behind him. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {"model": "dall-e-3", "size": "1024x1024", "quality": "hd", "style": "natural"}
+      },
+      "side": {
+        "prompt": "Create a 2D pixel art RPG character, left-facing side view, full body. The character is an Ether Knight in heavy steel blue and silver plate armor, shown from the side profile. The shield is held at his left side, sword sheathed at the hip. Shoulder pauldron runes glow with cyan light from the side angle. A short cape flows behind. Same dark fantasy Korean MMORPG pixel art style, 2.5 head ratio chibi proportions, 512x512 with 2px black outline, clean pixel edges, transparent background. Top-left lighting, 3-step shading. NO text, NO watermarks, NO 3D effects.",
+        "params": {"model": "dall-e-3", "size": "1024x1024", "quality": "hd", "style": "natural"}
+      },
+      "back": {
+        "prompt": "Create a 2D pixel art RPG character, back view, full body. The character is an Ether Knight shown from behind. The cape is fully visible flowing down, shield strapped to his back, sword sheath at waist. Heavy steel blue and silver plate armor with glowing cyan rune engravings visible on the pauldrons from behind. The midnight blue cape exterior with blue inner lining shows at the edges. Dark fantasy Korean MMORPG pixel art, 2.5 head ratio, 512x512, 2px black outline, transparent background. NO text, watermarks, or 3D effects.",
+        "params": {"model": "dall-e-3", "size": "1024x1024", "quality": "hd", "style": "natural"}
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Ether Knight heavy plate armor warrior, steel blue and silver plate armor, wide shoulder pauldrons with glowing cyan ether rune engravings, memory crest chestplate, open-face visor helmet with forehead rune glow, one-handed sword ethereal blue glow, kite shield ether crystal emblem, short half-cape blue lining, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {"version": "6.1", "stylize": 200, "aspect": "1:1"}
+      },
+      "side": {
+        "prompt": "2D pixel art RPG character::2, left-facing side view full body::1.5, Ether Knight, heavy plate armor side profile, shield at left side, sword sheathed hip, pauldron rune glow side angle, cape flowing behind, steel blue silver midnight blue, cyan ether glow, dark fantasy MMORPG::1.5, 2.5 head ratio, 2px outline clean pixel edges::2, 512x512 transparent background --ar 1:1 --v 6.1 --s 200 --no 3d photo realistic front-facing text watermark",
+        "params": {"version": "6.1", "stylize": 200, "aspect": "1:1"}
+      },
+      "back": {
+        "prompt": "2D pixel art RPG character::2, back view full body::1.5, Ether Knight rear view, heavy plate armor from behind, cape fully visible flowing, shield strapped to back, sword sheath waist, pauldron rune engravings behind, steel blue silver plate, midnight blue cape, dark fantasy Korean MMORPG::1.5, 2.5 head ratio, 2px outline clean pixel edges::2, 512x512 transparent background --ar 1:1 --v 6.1 --s 200 --no 3d photo realistic front-facing face-visible text",
+        "params": {"version": "6.1", "stylize": 200, "aspect": "1:1"}
+      }
+    }
+  }
+}

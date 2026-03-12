@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "entity_type": "character",
+  "direction": "UR",
+  "direction_name": "위오른쪽",
+  "motion": "walk",
+  "motion_name": "이동",
+  "frame": 2,
+  "total_frames": 6,
+  "fps": 10,
+  "loop": true,
+  "canvas": {
+    "width": 64,
+    "height": 64
+  },
+  "mirrored_from": "UL",
+  "keypoints": {
+    "format": "openpose_18",
+    "points": [
+      [
+        34.0,
+        10,
+        0.0
+      ],
+      [
+        34.0,
+        16,
+        1.0
+      ],
+      [
+        28.0,
+        18,
+        1.0
+      ],
+      [
+        27.0,
+        29.175570504584947,
+        1.0
+      ],
+      [
+        26.0,
+        36,
+        1.0
+      ],
+      [
+        42.0,
+        18,
+        1.0
+      ],
+      [
+        44.0,
+        26.824429495415053,
+        1.0
+      ],
+      [
+        42.0,
+        36,
+        1.0
+      ],
+      [
+        29.0,
+        36,
+        1.0
+      ],
+      [
+        29.0,
+        44.23664424312258,
+        1.0
+      ],
+      [
+        29.0,
+        54.82442949541505,
+        1.0
+      ],
+      [
+        39.0,
+        36,
+        1.0
+      ],
+      [
+        39.0,
+        47.76335575687742,
+        1.0
+      ],
+      [
+        39.0,
+        57.17557050458495,
+        1.0
+      ],
+      [
+        31.0,
+        8,
+        0.0
+      ],
+      [
+        37.0,
+        8,
+        0.0
+      ],
+      [
+        28.0,
+        9,
+        1.0
+      ],
+      [
+        40.0,
+        9,
+        1.0
+      ]
+    ],
+    "names": [
+      "nose",
+      "neck",
+      "right_shoulder",
+      "right_elbow",
+      "right_wrist",
+      "left_shoulder",
+      "left_elbow",
+      "left_wrist",
+      "right_hip",
+      "right_knee",
+      "right_ankle",
+      "left_hip",
+      "left_knee",
+      "left_ankle",
+      "right_eye",
+      "left_eye",
+      "right_ear",
+      "left_ear"
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "asset_id": "char_illust_shadow_weaver",
+  "class": "그림자직조사",
+  "class_en": "Shadow Weaver",
+  "tier": "base",
+  "category": "character_illust",
+  "views": [
+    "front",
+    "side",
+    "back"
+  ],
+  "color_palette": {
+    "primary": "#2F2F2F",
+    "secondary": "#8B0000",
+    "dark": "#301934",
+    "glow": "#006400"
+  },
+  "design": {
+    "silhouette": "날렵한 역삼각형, 후드 망토",
+    "armor": "경장 레더 아머, 그림자 직조 망토(반투명 가장자리), 후드",
+    "weapon": "복합 단궁 + 그림자 화살 퀴버",
+    "accessories": "벨트 파우치 다수, 허벅지 단검",
+    "proportions": "2.5~3등신"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Shadow Weaver rogue archer, light leather armor, shadow-woven cloak with semi-transparent edges, deep hood covering upper face, composite shortbow with shadow arrows in quiver on back, multiple belt pouches, thigh-mounted dagger, dark charcoal (#2F2F2F) and crimson (#8B0000) with shadow purple (#301934) and poison green (#006400) accents, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "side": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, left-facing side view, full body, Shadow Weaver rogue archer, light leather armor, shadow-woven cloak with semi-transparent edges, deep hood covering upper face, composite shortbow with shadow arrows in quiver on back, multiple belt pouches, thigh-mounted dagger, dark charcoal (#2F2F2F) and crimson (#8B0000) with shadow purple (#301934) and poison green (#006400) accents, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, back-facing",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "back": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, back view, full body, Shadow Weaver rogue archer, light leather armor, shadow-woven cloak with semi-transparent edges, deep hood covering upper face, composite shortbow with shadow arrows in quiver on back, multiple belt pouches, thigh-mounted dagger, dark charcoal (#2F2F2F) and crimson (#8B0000) with shadow purple (#301934) and poison green (#006400) accents, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, face visible",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body, standing idle pose. The character is a Shadow Weaver — a rogue archer in dark fantasy Korean MMORPG style. They wear light leather armor with a shadow-woven cloak that has semi-transparent edges, and a deep hood. They carry a composite shortbow with shadow arrows in a back quiver, have multiple belt pouches, and a thigh-mounted dagger. Colors: dark charcoal, crimson, shadow purple, and poison green accents. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "side": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, left-facing side view, full body. The character is a Shadow Weaver — a rogue archer in dark fantasy Korean MMORPG style. They wear light leather armor with a shadow-woven cloak that has semi-transparent edges, and a deep hood. They carry a composite shortbow with shadow arrows in a back quiver, have multiple belt pouches, and a thigh-mounted dagger. Colors: dark charcoal, crimson, shadow purple, and poison green accents. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "back": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, back view, full body, rear perspective. The character is a Shadow Weaver — a rogue archer in dark fantasy Korean MMORPG style. They wear light leather armor with a shadow-woven cloak that has semi-transparent edges, and a deep hood. They carry a composite shortbow with shadow arrows in a back quiver, have multiple belt pouches, and a thigh-mounted dagger. Colors: dark charcoal, crimson, shadow purple, and poison green accents. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Shadow Weaver rogue archer, light leather armor, shadow-woven cloak semi-transparent edges, deep hood, composite shortbow shadow arrows quiver, belt pouches thigh dagger, dark charcoal crimson shadow purple poison green, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "side": {
+        "prompt": "2D pixel art RPG character design sheet::2, left-facing side view full body::1.5, Shadow Weaver rogue archer, light leather armor, shadow-woven cloak semi-transparent edges, deep hood, composite shortbow shadow arrows quiver, belt pouches thigh dagger, dark charcoal crimson shadow purple poison green, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "back": {
+        "prompt": "2D pixel art RPG character design sheet::2, back view full body rear::1.5, Shadow Weaver rogue archer, light leather armor, shadow-woven cloak semi-transparent edges, deep hood, composite shortbow shadow arrows quiver, belt pouches thigh dagger, dark charcoal crimson shadow purple poison green, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

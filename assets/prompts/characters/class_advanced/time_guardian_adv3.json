@@ -1,0 +1,53 @@
+{
+  "asset_id": "char_illust_time_guardian_adv3",
+  "class": "시간수호자",
+  "class_en": "Time Guardian",
+  "advancement": "영원의 관리자",
+  "advancement_en": "Eternal Keeper",
+  "tier": "3rd",
+  "category": "character_illust",
+  "color_palette": {
+    "primary": "#DAA520",
+    "secondary": "#CD7F32",
+    "dark": "#C0C0C0",
+    "glow": "#00FFFF"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Eternal Keeper (Time Guardian 3rd advancement), ultimate Time Guardian with spacetime robe (interior texture like starry night sky), golden crown with time crystal, great clock of time weapon (massive floating clock with spacetime portal summoning), cosmic purple (#1A0033) and starlight (#FFFACD) added, time flow visualization as semi-transparent clock marks forming circle in background, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body standing idle pose. The character is a Eternal Keeper — the 3rd advancement of the Time Guardian class in a dark fantasy Korean MMORPG style. Description: ultimate Time Guardian with spacetime robe (interior texture like starry night sky), golden crown with time crystal, great clock of time weapon (massive floating clock with spacetime portal summoning), cosmic purple (#1A0033) and starlight (#FFFACD) added, time flow visualization as semi-transparent clock marks forming circle in background. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Eternal Keeper Time Guardian 3rd advancement, ultimate Time Guardian with spacetime robe (interior texture like starry night sky), golden crown with time crystal, great clock of time weapon (massive floating clock with spacetime portal summoning), cosmic purple (#1A0033) and starlight (#FFFACD) added, time flow visualization as semi-transparent clock marks forming circle in background, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

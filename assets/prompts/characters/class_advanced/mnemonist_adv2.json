@@ -1,0 +1,53 @@
+{
+  "asset_id": "char_illust_mnemonist_adv2",
+  "class": "기억술사",
+  "class_en": "Mnemonist",
+  "advancement": "대기억술사",
+  "advancement_en": "Grand Mnemonist",
+  "tier": "2nd",
+  "category": "character_illust",
+  "color_palette": {
+    "primary": "#4B0082",
+    "secondary": "#FFD700",
+    "dark": "#008080",
+    "glow": "#DC143C"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Grand Mnemonist (Mnemonist 2nd advancement), advanced Mnemonist with robe evolved into coat-style, large memory crystal embedded in chest area, three floating memory spheres replacing staff (hovering in triangle formation), auto-writing tome floating nearby, memory fragments floating around like twinkling stars, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body standing idle pose. The character is a Grand Mnemonist — the 2nd advancement of the Mnemonist class in a dark fantasy Korean MMORPG style. Description: advanced Mnemonist with robe evolved into coat-style, large memory crystal embedded in chest area, three floating memory spheres replacing staff (hovering in triangle formation), auto-writing tome floating nearby, memory fragments floating around like twinkling stars. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Grand Mnemonist Mnemonist 2nd advancement, advanced Mnemonist with robe evolved into coat-style, large memory crystal embedded in chest area, three floating memory spheres replacing staff (hovering in triangle formation), auto-writing tome floating nearby, memory fragments floating around like twinkling stars, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "entity_type": "character",
+  "direction": "DL",
+  "direction_name": "아래왼쪽",
+  "motion": "attack_melee",
+  "motion_name": "근접 공격",
+  "frame": 3,
+  "total_frames": 6,
+  "fps": 12,
+  "loop": false,
+  "canvas": {
+    "width": 64,
+    "height": 64
+  },
+  "mirrored_from": null,
+  "keypoints": {
+    "format": "openpose_18",
+    "points": [
+      [
+        30.0,
+        10,
+        1.0
+      ],
+      [
+        30.0,
+        17,
+        1.0
+      ],
+      [
+        23.0,
+        18,
+        1.0
+      ],
+      [
+        20.0,
+        28,
+        0.7
+      ],
+      [
+        22.0,
+        36,
+        0.5
+      ],
+      [
+        38.0,
+        18,
+        1.0
+      ],
+      [
+        40.0,
+        30,
+        1.0
+      ],
+      [
+        46.0,
+        42,
+        1.0
+      ],
+      [
+        25.0,
+        36,
+        1.0
+      ],
+      [
+        25.0,
+        46,
+        1.0
+      ],
+      [
+        25.0,
+        56,
+        1.0
+      ],
+      [
+        35.0,
+        36,
+        1.0
+      ],
+      [
+        35.0,
+        46,
+        1.0
+      ],
+      [
+        35.0,
+        56,
+        1.0
+      ],
+      [
+        27.0,
+        8,
+        1.0
+      ],
+      [
+        33.0,
+        8,
+        1.0
+      ],
+      [
+        24.0,
+        9,
+        1.0
+      ],
+      [
+        36.0,
+        9,
+        1.0
+      ]
+    ],
+    "names": [
+      "nose",
+      "neck",
+      "right_shoulder",
+      "right_elbow",
+      "right_wrist",
+      "left_shoulder",
+      "left_elbow",
+      "left_wrist",
+      "right_hip",
+      "right_knee",
+      "right_ankle",
+      "left_hip",
+      "left_knee",
+      "left_ankle",
+      "right_eye",
+      "left_eye",
+      "right_ear",
+      "left_ear"
+    ]
+  }
+}

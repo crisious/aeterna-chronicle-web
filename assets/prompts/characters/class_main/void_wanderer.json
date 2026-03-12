@@ -1,0 +1,123 @@
+{
+  "asset_id": "char_illust_void_wanderer",
+  "class": "허공의방랑자",
+  "class_en": "Void Wanderer",
+  "tier": "base",
+  "category": "character_illust",
+  "views": [
+    "front",
+    "side",
+    "back"
+  ],
+  "color_palette": {
+    "primary": "#1A1A2E",
+    "secondary": "#E0E0FF",
+    "dark": "#0D0D1A",
+    "glow": "#FF00FF"
+  },
+  "design": {
+    "silhouette": "불규칙한 윤곽, 에테르 잔상이 실루엣을 번지게 함",
+    "armor": "감각 차단 경갑 + 허공 에너지로 짜인 반투명 외투",
+    "weapon": "허공 단열검 (칼날이 차원 균열로 구성) + 부유 결정",
+    "accessories": "팔에 차원 균열 문양, 발밑 공간 왜곡 이펙트",
+    "proportions": "2.5~3등신"
+  },
+  "prompts": {
+    "sd": {
+      "front": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, front view, full body standing idle pose, Void Wanderer dimensional traveler, sensory-dampening light armor with semi-transparent void-energy woven overcoat, irregular silhouette with ether afterimage blur at edges, wielding void fracture blade (blade made of dimensional rift energy glowing magenta), floating void crystal near off-hand, dimensional crack patterns on arms, space distortion effect at feet, deep midnight (#1A1A2E) and pale silver-blue (#E0E0FF) with void black (#0D0D1A) and magenta void glow (#FF00FF), dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "side": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, left-facing side view, full body, Void Wanderer dimensional traveler, sensory-dampening light armor with semi-transparent void-energy woven overcoat, irregular silhouette with ether afterimage blur at edges, wielding void fracture blade (blade made of dimensional rift energy glowing magenta), floating void crystal near off-hand, dimensional crack patterns on arms, space distortion effect at feet, deep midnight (#1A1A2E) and pale silver-blue (#E0E0FF) with void black (#0D0D1A) and magenta void glow (#FF00FF), dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, back-facing",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      },
+      "back": {
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character design sheet, back view, full body, Void Wanderer dimensional traveler, sensory-dampening light armor with semi-transparent void-energy woven overcoat, irregular silhouette with ether afterimage blur at edges, wielding void fracture blade (blade made of dimensional rift energy glowing magenta), floating void crystal near off-hand, dimensional crack patterns on arms, space distortion effect at feet, deep midnight (#1A1A2E) and pale silver-blue (#E0E0FF) with void black (#0D0D1A) and magenta void glow (#FF00FF), dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body ratio chibi proportion, top-left 45-degree lighting, 3-step cel shading, (2px black outline:1.3), (no anti-aliasing:1.2), (clean pixel edges:1.4), 512x512 pixel art, transparent background, game character concept art, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "negative": "3D render, realistic photo, photorealistic, blurry, watermark, text overlay, logo, signature, low quality, worst quality, deformed, extra limbs, disfigured, bad anatomy, bad proportions, Western cartoon style, noisy, grain, JPEG artifacts, cropped, out of frame, duplicate, morbid, mutilated, poorly drawn face, mutation, modern clothes, sci-fi, front-facing, face visible",
+        "params": {
+          "steps": 35,
+          "cfg_scale": 8,
+          "sampler_name": "DPM++ 2M Karras",
+          "clip_skip": 2,
+          "width": 512,
+          "height": 512,
+          "seed": -1
+        }
+      }
+    },
+    "dalle": {
+      "front": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, front view, full body, standing idle pose. The character is a Void Wanderer — a dimensional traveler in dark fantasy Korean MMORPG style. They wear sensory-dampening light armor with a semi-transparent overcoat woven from void energy. Their silhouette is irregular with ether afterimage blur at the edges. They wield a void fracture blade whose blade is made of dimensional rift energy glowing magenta. A floating void crystal hovers near their off-hand. Dimensional crack patterns mark their arms, and space distortion effects warp at their feet. Colors: deep midnight, pale silver-blue, void black, and magenta glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "side": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, left-facing side view, full body. The character is a Void Wanderer — a dimensional traveler in dark fantasy Korean MMORPG style. They wear sensory-dampening light armor with a semi-transparent overcoat woven from void energy. Their silhouette is irregular with ether afterimage blur at the edges. They wield a void fracture blade whose blade is made of dimensional rift energy glowing magenta. A floating void crystal hovers near their off-hand. Dimensional crack patterns mark their arms, and space distortion effects warp at their feet. Colors: deep midnight, pale silver-blue, void black, and magenta glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      },
+      "back": {
+        "prompt": "Create a 2D pixel art RPG character design sheet, back view, full body, rear perspective. The character is a Void Wanderer — a dimensional traveler in dark fantasy Korean MMORPG style. They wear sensory-dampening light armor with a semi-transparent overcoat woven from void energy. Their silhouette is irregular with ether afterimage blur at the edges. They wield a void fracture blade whose blade is made of dimensional rift energy glowing magenta. A floating void crystal hovers near their off-hand. Dimensional crack patterns mark their arms, and space distortion effects warp at their feet. Colors: deep midnight, pale silver-blue, void black, and magenta glow. Art style: 512x512 pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing on borders, 2.5 head-to-body chibi proportions. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "params": {
+          "model": "dall-e-3",
+          "size": "1024x1024",
+          "quality": "hd",
+          "style": "natural"
+        }
+      }
+    },
+    "mj": {
+      "front": {
+        "prompt": "2D pixel art RPG character design sheet::2, front view full body standing idle::1.5, Void Wanderer dimensional traveler, sensory-dampening light armor, semi-transparent void-energy overcoat, irregular silhouette ether afterimage, void fracture blade dimensional rift magenta, floating void crystal, dimensional crack arms, space distortion feet, deep midnight pale silver-blue void black magenta glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "side": {
+        "prompt": "2D pixel art RPG character design sheet::2, left-facing side view full body::1.5, Void Wanderer dimensional traveler, sensory-dampening light armor, semi-transparent void-energy overcoat, irregular silhouette ether afterimage, void fracture blade dimensional rift magenta, floating void crystal, dimensional crack arms, space distortion feet, deep midnight pale silver-blue void black magenta glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      },
+      "back": {
+        "prompt": "2D pixel art RPG character design sheet::2, back view full body rear::1.5, Void Wanderer dimensional traveler, sensory-dampening light armor, semi-transparent void-energy overcoat, irregular silhouette ether afterimage, void fracture blade dimensional rift magenta, floating void crystal, dimensional crack arms, space distortion feet, deep midnight pale silver-blue void black magenta glow, dark fantasy Korean MMORPG::1.5, 2.5 head chibi proportion, 2px black outline clean pixel edges::2, 512x512 pixel art, transparent background, game character concept art, masterpiece quality --ar 1:1 --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi",
+        "params": {
+          "version": "6.1",
+          "stylize": 200,
+          "aspect": "1:1"
+        }
+      }
+    }
+  }
+}
