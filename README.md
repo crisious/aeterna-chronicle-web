@@ -4,7 +4,7 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-9%20GA%20RELEASE-green?style=for-the-badge)](01_코어기획/P9_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-10%20ARCHITECTURE%20REFACTOR-blue?style=for-the-badge)](01_코어기획/P10_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-21%20Design%20Docs-orange?style=for-the-badge)](#-코어기획-문서-21개)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
@@ -279,6 +279,7 @@ Phase 6  ████████████████████  100%  수
 Phase 7  ████████████████████  100%  시스템 연동 완성 + 프로덕션 품질 — 128/128 GA ✅
 Phase 8  ████████████████████  100%  시즌2 깨어나는 봉인 — 148/148 시즌2 출시 ✅
 Phase 9  ████████████████████  100%  멀티 플랫폼 + 실서비스 — 168/168 GA 출시 🚀
+Phase 10 ████████████████████  100%  웹 아키텍처 리팩터링 — 188/188 구조 개선 🏗️
 ```
 
 ### 정합성 검증 (2026-03-11)
@@ -297,7 +298,18 @@ Phase 9  ████████████████████  100%  멀
 | [🎮 플레이 가이드](01_코어기획/에테르나크로니클_플레이_가이드.md) | 클래스 선택, 전투, 챕터 공략, 던전, 제작, PvP, 멀티엔딩 — 747줄 완전 공략 |
 | [🔧 설치 가이드](01_코어기획/에테르나크로니클_설치_가이드.md) | Quick Start, DB/Redis, Docker, k8s, CI/CD, 테스트 — 개발 환경 세팅 |
 
+### 🏗️ Architecture
+
+| 문서 | 설명 |
+|------|------|
+| [전체 구조 개요](docs/architecture/overview.md) | client/server/admin/shared 역할 분리 |
+| [서버 부트스트랩](docs/architecture/server-bootstrap.md) | 4-모듈 분해 (compositionRoot → featureRegistry → runtimeServices → shutdown) |
+| [공유 계약 계층](docs/architecture/shared-contracts.md) | proto/codec/DTO SSOT 사용법 |
+| [기능 토글 가이드](docs/architecture/feature-flags.md) | 환경변수/런타임 기능 on/off |
+
 ### 최근 업데이트
+
+> **2026-03-12** — **Phase 10 웹 아키텍처 리팩터링 완료** (20/20, 188/188). server.ts 350줄→16줄 분해 + ServiceContainer DI + 기능토글 20개 + 선언형 라우트 매니페스트 + shared SSOT + 구조문서 4건 + 테스트 7건 신규 + ESLint 통일 + TODO 0건 → **구조 개선 완료** 🏗️
 
 > **2026-03-12** — **Phase 9 GA 출시 승인** (20/20, 168/168). Unity WebGL 클라이언트 + Stripe 실결제 + 안티치트/어뷰징 탐지 + GDPR + 계정보안(2FA) + 법적문서 6종 + 고객지원 + 크로스 클라이언트 검증 + OWASP 보안감사 v2 + 통합 테스트 → **실서비스 GA 출시**
 

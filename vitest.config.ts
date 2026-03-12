@@ -15,6 +15,8 @@ export default defineConfig({
       'tests/unit/**/*.test.ts',
       'tests/integration/**/*.test.ts',
       'tests/e2e/**/*.test.ts',
+      'tests/contract/**/*.test.ts',
+      'admin-dashboard/src/__tests__/**/*.test.{ts,tsx}',
     ],
     globals: true,
     environment: 'node',
@@ -30,6 +32,7 @@ export default defineConfig({
         'server/src/**/*.ts',
         'client/src/**/*.ts',
         'shared/**/*.ts',
+        'admin-dashboard/src/**/*.{ts,tsx}',
       ],
       exclude: [
         '**/*.test.ts',

@@ -28,6 +28,20 @@ export const FURNITURE_SLOTS_BY_LEVEL: Record<number, number> = {
   5: 80,
 };
 
+/** 가구 마스터 데이터 (P10-19: TODO 해소) */
+const FURNITURE_MASTER: Record<string, { name: string }> = {
+  guild_banner: { name: '길드 깃발' },
+  trophy_case: { name: '트로피 진열장' },
+  war_table: { name: '전쟁 탁자' },
+  buff_altar: { name: '버프 제단' },
+  storage_chest: { name: '공용 창고' },
+  training_dummy: { name: '훈련 허수아비' },
+  guild_forge: { name: '길드 대장간' },
+  healing_fountain: { name: '치유의 샘' },
+  alchemy_table: { name: '연금술 탁자' },
+  garden_plot: { name: '정원 화단' },
+};
+
 /** 길드 하우스 레벨업 비용 (길드 골드) */
 export const HOUSE_UPGRADE_COST: Record<number, number> = {
   2: 10000,
@@ -271,7 +285,7 @@ async function toGuildHouseData(house: any): Promise<GuildHouseData> {
     placedFurniture: furniture.map(f => ({
       slotIndex: f.slotIndex,
       furnitureId: f.furnitureId,
-      furnitureName: f.furnitureId, // TODO: 가구 마스터 데이터에서 이름 조회
+      furnitureName: FURNITURE_MASTER[f.furnitureId]?.name ?? f.furnitureId,
       placedAt: f.createdAt,
     })),
     activeBuffs,
