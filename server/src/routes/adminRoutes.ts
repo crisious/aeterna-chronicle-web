@@ -115,16 +115,36 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
     if (role) where.role = role;
     if (isBanned !== undefined) where.isBanned = isBanned === 'true';
 
-    const [users, total] = await Promise.all([
+    const [rawUsers, total] = await Promise.all([
       prisma.user.findMany({
         where,
-        select: { id: true, email: true, role: true, isBanned: true, bannedAt: true, banReason: true, createdAt: true },
+        select: {
+          id: true, email: true, role: true,
+          isBanned: true, bannedAt: true, banReason: true, createdAt: true,
+          // P10-03: admin-dashboard 기대 필드 추가
+          characters: { select: { name: true, level: true }, take: 1, orderBy: { level: 'desc' } },
+          updatedAt: true,
+        },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
       prisma.user.count({ where }),
     ]);
+
+    // P10-03: AdminUserRow DTO로 매핑 (nickname/level/lastLoginAt)
+    const users = rawUsers.map((u) => ({
+      id: u.id,
+      email: u.email,
+      nickname: u.characters[0]?.name ?? u.email.split('@')[0],
+      role: u.role,
+      isBanned: u.isBanned,
+      bannedAt: u.bannedAt,
+      banReason: u.banReason,
+      level: u.characters[0]?.level ?? 1,
+      lastLoginAt: u.updatedAt,
+      createdAt: u.createdAt,
+    }));
 
     return reply.send({ users, total, page, limit, totalPages: Math.ceil(total / limit) });
   });
@@ -143,7 +163,15 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
       },
     });
     if (!user) return reply.status(404).send({ error: '유저를 찾을 수 없습니다.' });
-    return reply.send(user);
+
+    // P10-03: AdminUserDetail DTO로 매핑
+    const topChar = user.characters[0];
+    return reply.send({
+      ...user,
+      nickname: topChar?.name ?? user.email.split('@')[0],
+      level: topChar?.level ?? 1,
+      lastLoginAt: user.updatedAt,
+    });
   });
 
   /** PATCH /admin/users/:id/ban — 유저 밴 */

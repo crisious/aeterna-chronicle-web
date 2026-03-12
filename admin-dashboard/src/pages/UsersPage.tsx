@@ -2,30 +2,13 @@
  * P6-13: 유저 관리 페이지 — 검색/상세/밴/제재 이력
  */
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 import { DataTable, type Column } from '../components/DataTable';
-import { API_BASE } from '../App';
+import type { AdminUserRow, AdminSanctionRow } from '../../../shared/types/admin';
 
-interface UserRow {
-  id: string;
-  email: string;
-  nickname: string;
-  role: string;
-  isBanned: boolean;
-  level: number;
-  lastLoginAt: string;
-  createdAt: string;
-}
-
-interface SanctionRow {
-  id: string;
-  type: string;
-  reason: string;
-  isActive: boolean;
-  duration: number | null;
-  expiresAt: string | null;
-  createdAt: string;
-}
+// P10-03: shared DTO 타입 사용
+type UserRow = AdminUserRow;
+type SanctionRow = AdminSanctionRow;
 
 const USER_COLUMNS: Column<UserRow>[] = [
   { key: 'nickname', label: '닉네임' },
@@ -56,9 +39,8 @@ export const UsersPage: React.FC = () => {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/admin/users`, {
+      const res = await apiClient.get('/admin/users', {
         params: { search, page, limit: 20 },
-        headers: authHeaders(),
       });
       setUsers(res.data.users || []);
       setTotalPages(res.data.totalPages || 1);
@@ -75,9 +57,7 @@ export const UsersPage: React.FC = () => {
   const handleUserClick = async (user: UserRow) => {
     setSelectedUser(user);
     try {
-      const res = await axios.get(`${API_BASE}/admin/sanctions/${user.id}`, {
-        headers: authHeaders(),
-      });
+      const res = await apiClient.get(`/admin/sanctions/${user.id}`);
       setSanctions(res.data.sanctions || []);
     } catch {
       setSanctions([]);
@@ -92,15 +72,15 @@ export const UsersPage: React.FC = () => {
         // 밴 해제: 활성 제재 해제
         const activeSanction = sanctions.find(s => s.isActive && s.type === 'ban');
         if (activeSanction) {
-          await axios.post(`${API_BASE}/admin/sanctions/lift`, {
+          await apiClient.post('/admin/sanctions/lift', {
             sanctionId: activeSanction.id,
-          }, { headers: authHeaders() });
+          });
         }
       } else {
         // 밴: 직접 제재 생성 (7일 기본)
-        await axios.post(`${API_BASE}/admin/users/${selectedUser.id}/ban`, {
+        await apiClient.post(`/admin/users/${selectedUser.id}/ban`, {
           reason: '어드민 수동 밴',
-        }, { headers: authHeaders() });
+        });
       }
       void fetchUsers();
       void handleUserClick(selectedUser);
@@ -189,7 +169,4 @@ export const UsersPage: React.FC = () => {
   );
 };
 
-function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('admin_token') || '';
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// authHeaders() 제거 — apiClient의 authInterceptor로 대체 (P10-09)

@@ -1,0 +1,118 @@
+# ── 에테르나 크로니클 — shared 계약 변경 감지 CI ─────────────
+# P10-07: shared/ 변경 시 client + server + admin-dashboard 테스트 모두 실행
+name: Shared Contract CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'shared/**'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'shared/**'
+
+concurrency:
+  group: shared-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. 서버 타입 체크 + 빌드 ──
+  server-check:
+    name: 🔧 Server TypeCheck & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: 의존성 설치
+        run: cd server && npm ci
+
+      - name: Prisma 생성
+        run: cd server && npx prisma generate
+
+      - name: TypeScript 타입 체크
+        run: cd server && npx tsc --noEmit
+
+      - name: 빌드
+        run: cd server && npm run build
+
+  # ── 2. 클라이언트 타입 체크 + 빌드 ──
+  client-check:
+    name: 🎮 Client TypeCheck & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: 의존성 설치
+        run: cd client && npm ci
+
+      - name: TypeScript 타입 체크
+        run: cd client && npx tsc --noEmit
+
+      - name: 빌드
+        run: cd client && npm run build
+
+  # ── 3. 어드민 대시보드 타입 체크 + 빌드 ──
+  admin-check:
+    name: 📊 Admin Dashboard TypeCheck & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: admin-dashboard/package-lock.json
+
+      - name: 의존성 설치
+        run: cd admin-dashboard && npm ci
+
+      - name: TypeScript 타입 체크
+        run: cd admin-dashboard && npx tsc --noEmit
+
+      - name: 빌드
+        run: cd admin-dashboard && npm run build
+
+  # ── 4. 통합 테스트 (shared 변경 영향 검증) ──
+  integration-test:
+    name: 🧪 Integration Tests
+    runs-on: ubuntu-latest
+    needs: [server-check, client-check, admin-check]
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 서버 의존성 설치
+        run: cd server && npm ci
+
+      - name: Prisma 생성
+        run: cd server && npx prisma generate
+
+      - name: 루트 테스트 실행
+        run: npm install && npm test
+        env:
+          NODE_ENV: test

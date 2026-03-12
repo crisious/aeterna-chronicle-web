@@ -2,10 +2,9 @@
  * P6-13: 대시보드 메인 페이지 — KPI 요약 (DAU/MAU/매출/동접)
  */
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 import { StatCard } from '../components/StatCard';
 import { LineChart } from '../components/Chart';
-import { API_BASE } from '../App';
 
 interface KpiSummary {
   dau: number;
@@ -33,9 +32,8 @@ export const DashboardPage: React.FC = () => {
     const fetchData = async () => {
       try {
         // KPI 스냅샷 조회 (최근 30일)
-        const res = await axios.get(`${API_BASE}/analytics/kpi`, {
+        const res = await apiClient.get('/analytics/kpi', {
           params: { startDate: thirtyDaysAgo(), endDate: today() },
-          headers: authHeaders(),
         });
         const snapshots: KpiSnapshot[] = res.data.snapshots || [];
         setChartData(snapshots);

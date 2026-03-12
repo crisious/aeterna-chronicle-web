@@ -4,13 +4,19 @@
  * Socket.IO 고빈도 이벤트(playerMove, playerAction, joinRoom, playerJoined)를
  * Protobuf 바이너리로 변환하여 패킷 크기를 30~50% 절감한다.
  *
- * 서버(CommonJS)와 클라이언트(ESM/Vite) 양쪽에서 동작해야 하므로
- * .proto 파일 로드 대신 인라인 proto 문자열 + protobuf.parse() 방식을 사용한다.
+ * P10-05: .proto 파일을 SSOT(Single Source of Truth)로 사용.
+ * - 서버(Node.js): loadSync()로 .proto 파일 직접 로드
+ * - 클라이언트(브라우저/Vite): 인라인 fallback 문자열 사용
  */
 import * as protobuf from 'protobufjs';
+import * as path from 'path';
 
-/** 인라인 proto 정의 — 파일시스템 의존성 제거 */
-const PROTO_DEFINITION = `
+/**
+ * 인라인 proto 정의 — 브라우저 환경 fallback 전용.
+ * ⚠️ 이 문자열은 shared/proto/game.proto와 반드시 동일해야 합니다.
+ * 서버 환경에서는 .proto 파일을 직접 로드하므로 이 문자열은 사용되지 않습니다.
+ */
+const PROTO_FALLBACK = `
 syntax = "proto3";
 package aeterna;
 
@@ -101,14 +107,31 @@ let PvpActionType: protobuf.Type | null = null;
 let PvpResultType: protobuf.Type | null = null;
 let _initialized = false;
 
+/** Node.js 환경 여부 판별 */
+function isNodeEnv(): boolean {
+  return typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+}
+
 /**
  * Proto 정의 로드 — 서버/클라이언트 시작 시 한 번만 호출
+ * - Node.js: shared/proto/game.proto 파일을 직접 로드 (SSOT)
+ * - 브라우저: 인라인 fallback 문자열 파싱
  * 중복 호출 시 무시한다.
  */
 export async function loadProto(): Promise<void> {
   if (_initialized) return;
 
-  const root = protobuf.parse(PROTO_DEFINITION).root;
+  let root: protobuf.Root;
+
+  if (isNodeEnv()) {
+    // P10-05: .proto 파일을 SSOT로 직접 로드
+    const protoPath = path.resolve(__dirname, '../proto/game.proto');
+    root = protobuf.loadSync(protoPath);
+  } else {
+    // 브라우저 환경: 인라인 fallback
+    root = protobuf.parse(PROTO_FALLBACK).root;
+  }
+
   PlayerMoveType = root.lookupType('aeterna.PlayerMove');
   PlayerActionType = root.lookupType('aeterna.PlayerAction');
   JoinRoomType = root.lookupType('aeterna.JoinRoom');

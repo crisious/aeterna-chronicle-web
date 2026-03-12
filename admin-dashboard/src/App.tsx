@@ -12,8 +12,8 @@ import { ReportsPage } from './pages/ReportsPage';
 import { AnnouncementsPage } from './pages/AnnouncementsPage';
 import { EconomyPage } from './pages/EconomyPage';
 
-/** API 베이스 URL (환경변수 또는 기본값) */
-export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
+/** API 베이스 URL — apiClient.ts에서 관리 (P10-09) */
+export { API_BASE } from './api/apiClient';
 
 const App: React.FC = () => {
   return (

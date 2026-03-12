@@ -1,25 +1,17 @@
+/**
+ * GameScene — 메인 게임 씬 (P10-08 리팩터링)
+ *
+ * 네트워크/HUD/텔레메트리/전투이펙트를 서비스로 분리하고,
+ * 이 씬은 서비스 조합 + 입력 + 렌더 루프만 담당한다.
+ */
+
 import * as Phaser from 'phaser';
-import { io, Socket } from 'socket.io-client';
-import {
-  DialogueData,
-  HudOverlay,
-  HudStatusProps,
-  QuickSlotData,
-  makeDefaultQuests,
-  makeDefaultSlots
-} from '../ui/HudOverlay';
-import { buildDialogueChoiceTelemetry, DialogueChoiceTelemetryEvent } from '../telemetry/dialogueTelemetry';
-import {
-  loadProto,
-  encodePlayerMove,
-  decodePlayerMove,
-  encodeJoinRoom,
-  decodePlayerJoined,
-  decodePlayerAction
-} from '../../../shared/codec/gameCodec';
-import { EffectManager, HitEffectType } from '../effects/EffectManager';
-import { runPoolBenchmark } from '../utils/PoolBenchmark';
+import { NetworkService } from '../services/NetworkService';
+import { HUDOrchestrator } from '../services/HUDOrchestrator';
+import { TelemetryEmitter } from '../services/TelemetryEmitter';
+import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
+import { runPoolBenchmark } from '../utils/PoolBenchmark';
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -27,44 +19,24 @@ export class GameScene extends Phaser.Scene {
   private wasdKeys!: Record<string, Phaser.Input.Keyboard.Key>;
   private numberKeys: Phaser.Input.Keyboard.Key[] = [];
 
-  private socket?: Socket;
-  private hud!: HudOverlay;
-  private effectManager!: EffectManager;
+  // ── 서비스 인스턴스 (P10-08) ──
+  private networkService!: NetworkService;
+  private hudOrchestrator!: HUDOrchestrator;
+  private telemetryEmitter!: TelemetryEmitter;
+  private combatEffectManager!: CombatEffectManager;
   private soundManager!: SoundManager;
 
-  private hudStatus: HudStatusProps = {
-    hpCurrent: 415,
-    hpMax: 415,
-    mpCurrent: 208,
-    mpMax: 208,
-    level: 15,
-    expRatio: 0.42,
-    characterName: 'Erien',
-    dangerHpThreshold: 0.2
-  };
-
-  private quickSlots: QuickSlotData[] = [];
   private readonly sessionId = `sess_${Date.now().toString(36)}`;
-  private dialogueOpenAtMs = 0;
-  private lastMoveEmitTime = 0;
-
-  /** Delta accumulator: HUD 상태 시뮬레이션을 100ms 주기로 제한 (매 프레임 → 10fps HUD) */
-  private statusTickAccumulator = 0;
-  private static readonly STATUS_TICK_INTERVAL_MS = 100;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
   preload(): void {
-    // ── 텍스처 아틀라스 로드 (이미지 없으면 로드 실패 → fallback) ──
-    // 아틀라스 PNG가 존재하면 draw call 최소화 + VRAM 절약 효과.
-    // PNG 없이 JSON만 있으면 로드 실패하므로, on FILE_LOAD_ERROR로 무시.
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Atlas] 로드 실패 (fallback 사용): ${file.key}`);
     });
 
-    // ── 사운드 매니저 프리로드 (P4-05) ──
     this.soundManager = new SoundManager(this);
     this.soundManager.preloadAll();
 
@@ -72,7 +44,6 @@ export class GameScene extends Phaser.Scene {
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
 
-    // ── Fallback: generateTexture로 플레이어 임시 스프라이트 ──
     const graphics = this.add.graphics();
     graphics.fillStyle(0xf5a623, 1);
     graphics.fillRoundedRect(0, 0, 48, 64, 8);
@@ -84,17 +55,64 @@ export class GameScene extends Phaser.Scene {
     this.createWorld();
     this.createPlayer();
     this.createInputs();
-    this.createHud();
-    this.setupNetwork();
 
-    // ── SoundManager 초기화 (P4-05) ──
+    // ── 서비스 초기화 ──
+    this.networkService = new NetworkService();
+    this.hudOrchestrator = new HUDOrchestrator(this);
+    this.telemetryEmitter = new TelemetryEmitter(this.networkService);
+    this.combatEffectManager = new CombatEffectManager(this);
+
+    this.hudOrchestrator.init();
     this.soundManager.init();
+    this.combatEffectManager.init();
+    this.combatEffectManager.setupDebugTrigger(() => ({
+      x: this.player.x,
+      y: this.player.y,
+    }));
 
-    // ── EffectManager 초기화 (풀 워밍업 포함) ──
-    this.effectManager = new EffectManager(this);
-    this.setupCombatEvents();
+    // 대화 선택 이벤트 → 텔레메트리 발행
+    this.events.on('ui.event.dialogue.choice_confirm', ({ choiceId }: { choiceId: string }) => {
+      console.log(`[HUD] dialogue choice -> ${choiceId}`);
 
-    // 개발 모드: 풀 벤치마크 실행
+      const latencyMs = this.hudOrchestrator.dialogueOpenAtMs > 0
+        ? Date.now() - this.hudOrchestrator.dialogueOpenAtMs
+        : undefined;
+
+      this.telemetryEmitter.emitDialogueChoice({
+        sessionId: this.sessionId,
+        playerId: 'debug-player-001',
+        chapterId: 'CH2',
+        sceneId: 'C2-N2',
+        npcId: 'NUARIEL',
+        dialogueNodeId: 'C2_N2_SAMPLE_01',
+        choiceId,
+        choiceTextKey: `dialogue.c2.n2.choice.${choiceId.toLowerCase()}`,
+        inputMode: 'keyboard',
+        latencyMs,
+        partyComp: ['ERIEN', 'SERAPHINE'],
+        difficultyTier: 'normal',
+        buildVersion: '0.9.12-alpha',
+        platform: 'web',
+        region: 'KR',
+      });
+
+      this.hudOrchestrator.hideDialogue();
+    });
+
+    // 네트워크 연결
+    void this.networkService.connect();
+
+    // HUD 안내 텍스트
+    this.add
+      .text(20, 20, '[WASD/방향키] 이동  [1~0,-,=] 슬롯 사용  [T] 대화창 토글', {
+        fontSize: '18px',
+        color: '#F0F0F0',
+        fontFamily: 'Noto Sans KR',
+      })
+      .setScrollFactor(0)
+      .setDepth(10000);
+
+    // 개발 모드: 풀 벤치마크
     if ((import.meta as unknown as Record<string, Record<string, unknown>>).env?.DEV) {
       runPoolBenchmark(1000);
     }
@@ -109,47 +127,32 @@ export class GameScene extends Phaser.Scene {
     const isUp = this.cursors.up?.isDown || this.wasdKeys.up.isDown;
     const isDown = this.cursors.down?.isDown || this.wasdKeys.down.isDown;
 
-    if (isLeft) {
-      this.player.setVelocityX(-moveSpeed);
-    } else if (isRight) {
-      this.player.setVelocityX(moveSpeed);
-    }
+    if (isLeft) this.player.setVelocityX(-moveSpeed);
+    else if (isRight) this.player.setVelocityX(moveSpeed);
 
-    if (isUp) {
-      this.player.setVelocityY(-moveSpeed);
-    } else if (isDown) {
-      this.player.setVelocityY(moveSpeed);
-    }
+    if (isUp) this.player.setVelocityY(-moveSpeed);
+    else if (isDown) this.player.setVelocityY(moveSpeed);
 
     if (this.player.body.velocity.x !== 0 && this.player.body.velocity.y !== 0) {
       this.player.body.velocity.normalize().scale(moveSpeed);
     }
 
-    this.hud.update(delta);
-    this.effectManager.update(delta);
+    // 서비스 업데이트
+    this.hudOrchestrator.update(delta);
+    this.combatEffectManager.update(delta);
 
-    // HUD 상태 시뮬레이션: 매 프레임이 아닌 100ms 간격으로만 실행
-    this.statusTickAccumulator += delta;
-    if (this.statusTickAccumulator >= GameScene.STATUS_TICK_INTERVAL_MS) {
-      this.simulateStatusTick(this.statusTickAccumulator);
-      this.statusTickAccumulator = 0;
-    }
-
-    if ((this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) && this.socket?.connected) {
-      const now = Date.now();
-      if (now - this.lastMoveEmitTime >= 200) {
-        this.lastMoveEmitTime = now;
-        // Protobuf 바이너리로 인코딩하여 전송
-        const moveBuf = encodePlayerMove({
-          characterId: this.socket.id ?? '',
-          x: this.player.x,
-          y: this.player.y,
-          state: 'moving'
-        });
-        this.socket.emit('playerMove', moveBuf);
-      }
+    // 이동 중이면 네트워크 전송
+    if (this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) {
+      this.networkService.emitPlayerMove({
+        characterId: this.networkService.getSocketId() ?? '',
+        x: this.player.x,
+        y: this.player.y,
+        state: 'moving',
+      });
     }
   }
+
+  // ── 월드/플레이어/입력 생성 (변경 없음) ──
 
   private createWorld(): void {
     const gridSize = 64;
@@ -165,14 +168,12 @@ export class GameScene extends Phaser.Scene {
       gridGraphics.lineTo(2000, j);
     }
     gridGraphics.strokePath();
-
     this.physics.world.setBounds(0, 0, 2000, 2000);
   }
 
   private createPlayer(): void {
     this.player = this.physics.add.sprite(640, 360, 'player_sprite');
     this.player.setCollideWorldBounds(true);
-
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
   }
@@ -184,7 +185,7 @@ export class GameScene extends Phaser.Scene {
       up: Phaser.Input.Keyboard.KeyCodes.W,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       left: Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D
+      right: Phaser.Input.Keyboard.KeyCodes.D,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     this.numberKeys = [
@@ -199,232 +200,18 @@ export class GameScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.NINE,
       Phaser.Input.Keyboard.KeyCodes.ZERO,
       Phaser.Input.Keyboard.KeyCodes.MINUS,
-      Phaser.Input.Keyboard.KeyCodes.PLUS
+      Phaser.Input.Keyboard.KeyCodes.PLUS,
     ].map((code) => this.input.keyboard!.addKey(code));
 
     this.numberKeys.forEach((key, index) => {
       key.on('down', () => {
         const hotkeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='];
-        this.hud.triggerSlotByHotkey(hotkeys[index]);
+        this.hudOrchestrator.triggerSlotByHotkey(hotkeys[index]);
       });
     });
 
     this.input.keyboard!.on('keydown-T', () => {
-      this.toggleSampleDialogue();
+      this.hudOrchestrator.toggleSampleDialogue();
     });
-  }
-
-  private createHud(): void {
-    this.hud = new HudOverlay(this);
-
-    this.quickSlots = makeDefaultSlots();
-    this.hud.setStatus(this.hudStatus);
-    this.hud.setQuickSlots(this.quickSlots, 'keyboard');
-    this.hud.setQuests(makeDefaultQuests());
-
-    this.events.on('ui.event.quickslot.use', ({ slotIndex }: { slotIndex: number }) => {
-      console.log(`[HUD] quickslot use -> ${slotIndex}`);
-    });
-
-    this.events.on('ui.event.quickslot.invalid_use', ({ slotIndex }: { slotIndex: number }) => {
-      console.warn(`[HUD] quickslot invalid -> ${slotIndex}`);
-    });
-
-    this.events.on('ui.event.status.avatar_click', () => {
-      console.log('[HUD] avatar clicked');
-    });
-
-    this.events.on('ui.event.status.hp_critical', () => {
-      console.warn('[HUD] HP critical');
-    });
-
-    this.events.on('ui.event.dialogue.choice_confirm', ({ choiceId }: { choiceId: string }) => {
-      console.log(`[HUD] dialogue choice -> ${choiceId}`);
-
-      const latencyMs = this.dialogueOpenAtMs > 0 ? Date.now() - this.dialogueOpenAtMs : undefined;
-      const telemetry = buildDialogueChoiceTelemetry({
-        sessionId: this.sessionId,
-        playerId: 'debug-player-001',
-        chapterId: 'CH2',
-        sceneId: 'C2-N2',
-        npcId: 'NUARIEL',
-        dialogueNodeId: 'C2_N2_SAMPLE_01',
-        choiceId,
-        choiceTextKey: `dialogue.c2.n2.choice.${choiceId.toLowerCase()}`,
-        inputMode: 'keyboard',
-        latencyMs,
-        partyComp: ['ERIEN', 'SERAPHINE'],
-        difficultyTier: 'normal',
-        buildVersion: '0.9.12-alpha',
-        platform: 'web',
-        region: 'KR'
-      });
-
-      this.emitTelemetry(telemetry);
-      this.hud.hideDialogue();
-    });
-
-    this.add
-      .text(20, 20, '[WASD/방향키] 이동  [1~0,-,=] 슬롯 사용  [T] 대화창 토글', {
-        fontSize: '18px',
-        color: '#F0F0F0',
-        fontFamily: 'Noto Sans KR'
-      })
-      .setScrollFactor(0)
-      .setDepth(10000);
-  }
-
-  /**
-   * 전투 이벤트 리스너 설정 — EffectManager와 연동
-   * 서버/로컬 전투 시스템에서 이벤트를 emit하면 이펙트가 스폰된다.
-   */
-  private setupCombatEvents(): void {
-    // 데미지 발생 이벤트
-    this.events.on('combat.damage', (data: {
-      x: number; y: number; damage: number; isCritical: boolean
-    }) => {
-      this.effectManager.spawnDamageText(data.x, data.y, data.damage, data.isCritical);
-    });
-
-    // 히트 이펙트 이벤트
-    this.events.on('combat.hit', (data: {
-      x: number; y: number; type: HitEffectType
-    }) => {
-      this.effectManager.spawnHitEffect(data.x, data.y, data.type);
-    });
-
-    // 버프/디버프 적용 이벤트
-    this.events.on('combat.buff', (data: {
-      x: number; y: number; buffId: string
-    }) => {
-      this.effectManager.spawnBuffIcon(data.x, data.y, data.buffId);
-    });
-
-    // [디버그] 스페이스바로 테스트 이펙트 발동
-    this.input.keyboard!.on('keydown-SPACE', () => {
-      const px = this.player.x;
-      const py = this.player.y;
-      const testDamage = Math.floor(Math.random() * 500) + 100;
-      const isCrit = Math.random() < 0.3;
-      const hitTypes: HitEffectType[] = ['slash', 'blunt', 'magic'];
-      const hitType = hitTypes[Math.floor(Math.random() * hitTypes.length)];
-
-      this.effectManager.spawnDamageText(
-        px + (Math.random() - 0.5) * 40,
-        py - 40,
-        testDamage,
-        isCrit
-      );
-      this.effectManager.spawnHitEffect(px, py, hitType);
-
-      console.log(`[Combat] 테스트 — ${testDamage}${isCrit ? ' (CRIT!)' : ''} [${hitType}]`,
-        this.effectManager.getStats());
-    });
-  }
-
-  private setupNetwork(): void {
-    try {
-      const serverUrl = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3000';
-      this.socket = io(serverUrl, { reconnectionAttempts: 3 });
-
-      this.socket.on('connect', () => {
-        console.log(`[네트워크] 서버 접속 성공: ${this.socket?.id}`);
-
-        // Protobuf 코덱 초기화 후 joinRoom 바이너리 전송
-        loadProto().then(() => {
-          console.log('[Protobuf] 클라이언트 코덱 초기화 완료');
-          const joinBuf = encodeJoinRoom({
-            roomId: 'tutorial_map',
-            characterId: this.socket?.id ?? ''
-          });
-          this.socket?.emit('joinRoom', joinBuf);
-        });
-      });
-
-      // playerMoved 수신: Protobuf 바이너리 디코딩
-      this.socket.on('playerMoved', (data: unknown) => {
-        if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
-          const decoded = decodePlayerMove(
-            data instanceof ArrayBuffer ? new Uint8Array(data) : data
-          );
-          console.log('[네트워크] playerMoved (proto):', decoded);
-        } else {
-          // JSON fallback
-          console.log('[네트워크] playerMoved (json):', data);
-        }
-      });
-
-      // playerJoined 수신: Protobuf 바이너리 디코딩
-      this.socket.on('playerJoined', (data: unknown) => {
-        if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
-          const decoded = decodePlayerJoined(
-            data instanceof ArrayBuffer ? new Uint8Array(data) : data
-          );
-          console.log('[네트워크] playerJoined (proto):', decoded);
-        } else {
-          console.log('[네트워크] playerJoined (json):', data);
-        }
-      });
-
-      // playerActionCasted 수신: Protobuf 바이너리 디코딩
-      this.socket.on('playerActionCasted', (data: unknown) => {
-        if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
-          const decoded = decodePlayerAction(
-            data instanceof ArrayBuffer ? new Uint8Array(data) : data
-          );
-          console.log('[네트워크] playerActionCasted (proto):', decoded);
-        } else {
-          console.log('[네트워크] playerActionCasted (json):', data);
-        }
-      });
-
-      this.socket.on('connect_error', () => {
-        console.warn('[네트워크] 서버 오프라인. 싱글 모드 유지.');
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  private simulateStatusTick(delta: number): void {
-    const hpDrainPerSec = 1.2;
-    const mpRegenPerSec = 0.8;
-
-    const nextHp = Math.max(1, this.hudStatus.hpCurrent - (hpDrainPerSec * delta) / 1000);
-    const nextMp = Math.min(this.hudStatus.mpMax, this.hudStatus.mpCurrent + (mpRegenPerSec * delta) / 1000);
-
-    this.hudStatus = {
-      ...this.hudStatus,
-      hpCurrent: Math.round(nextHp),
-      mpCurrent: Math.round(nextMp)
-    };
-
-    this.hud.setStatus(this.hudStatus);
-  }
-
-  private toggleSampleDialogue(): void {
-    const sample: DialogueData = {
-      speakerName: '누아리엘',
-      bodyText: '버티는 건 치료가 아니에요. 선택하세요. 짧게 버틸지, 길게 살아남을지.',
-      choices: [
-        { choiceId: 'A', text: '바로 다녀올게.', disabled: false },
-        { choiceId: 'B', text: '대체 재료는 없어?', disabled: false },
-        { choiceId: 'C', text: '지금은 시간이 없어.', disabled: false }
-      ],
-      canSkip: true
-    };
-
-    this.dialogueOpenAtMs = Date.now();
-    this.hud.showDialogue(sample);
-  }
-
-  private emitTelemetry(event: DialogueChoiceTelemetryEvent): void {
-    if (this.socket?.connected) {
-      this.socket.emit('telemetry:dialogue_choice', event);
-      return;
-    }
-
-    console.log('[Telemetry:offline]', event);
   }
 }
-
