@@ -12,6 +12,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { pushToLoki } from './lokiTransport';
 
 // ── 로그 레벨 ────────────────────────────────────────────────
 
@@ -164,6 +165,9 @@ export class StructuredLogger {
     if (stream) {
       stream.write(json + '\n');
     }
+
+    // Loki 전송 (P7-16)
+    pushToLoki(entry);
   }
 
   debug(message: string, metadata?: Record<string, unknown>): void {

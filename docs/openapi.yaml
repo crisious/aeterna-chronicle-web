@@ -1,0 +1,793 @@
+openapi: 3.1.0
+info:
+  title: 에테르나 크로니클 API
+  description: |
+    Aeterna Chronicle 게임 서버 REST API.
+    실시간 반자동 전투 RPG — P7 프로덕션 품질 기준.
+  version: 1.0.0
+  contact:
+    name: Aeterna Dev Team
+
+servers:
+  - url: http://localhost:3000
+    description: 로컬 개발
+  - url: https://api.aeterna.gg
+    description: 프로덕션
+
+tags:
+  - name: Auth
+    description: 인증/인가
+  - name: Character
+    description: 캐릭터/클래스/전직
+  - name: Combat
+    description: 전투/스킬
+  - name: Inventory
+    description: 인벤토리/아이템
+  - name: Economy
+    description: 화폐/거래소/상점
+  - name: Dungeon
+    description: 던전/월드
+  - name: Social
+    description: 길드/PvP/레이드/매칭
+  - name: Story
+    description: 스토리/대화/엔딩
+  - name: Content
+    description: 펫/제작/업적/도감/퀘스트
+  - name: Monetization
+    description: 결제/코스메틱/시즌패스
+  - name: Admin
+    description: 어드민/운영
+  - name: Analytics
+    description: KPI/텔레메트리
+  - name: System
+    description: APM/알림/에러/베타
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        statusCode:
+          type: integer
+      required: [error, statusCode]
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string, format: email }
+        nickname: { type: string }
+        level: { type: integer }
+        classId: { type: string }
+        gold: { type: integer }
+        crystal: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    TokenPair:
+      type: object
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+
+    Item:
+      type: object
+      properties:
+        id: { type: string }
+        code: { type: string }
+        name: { type: string }
+        type: { type: string }
+        rarity: { type: string }
+        quantity: { type: integer }
+
+    Monster:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        level: { type: integer }
+        hp: { type: integer }
+        type: { type: string }
+
+    Dungeon:
+      type: object
+      properties:
+        code: { type: string }
+        name: { type: string }
+        region: { type: string }
+        difficulty: { type: string }
+        waves: { type: integer }
+
+    Guild:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        level: { type: integer }
+        memberCount: { type: integer }
+
+    Pet:
+      type: object
+      properties:
+        id: { type: string }
+        code: { type: string }
+        name: { type: string }
+        level: { type: integer }
+        rarity: { type: string }
+
+    Achievement:
+      type: object
+      properties:
+        id: { type: string }
+        code: { type: string }
+        title: { type: string }
+        progress: { type: number }
+        completed: { type: boolean }
+
+    SeasonPass:
+      type: object
+      properties:
+        tier: { type: integer }
+        isPremium: { type: boolean }
+        xp: { type: integer }
+
+    KpiSnapshot:
+      type: object
+      properties:
+        dau: { type: integer }
+        avgSessionMin: { type: number }
+        retentionD1: { type: number }
+        revenue: { type: number }
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ── Auth ────────────────────────────────────────────────
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: 회원가입
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+              required: [email, password]
+      responses:
+        '201': { description: 생성 완료, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+        '409': { description: 이메일 중복 }
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: 로그인
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+              required: [email, password]
+      responses:
+        '200': { description: 로그인 성공, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+        '401': { description: 인증 실패 }
+
+  /api/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: 토큰 갱신
+      responses:
+        '200': { description: 갱신 완료, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: 로그아웃
+      responses:
+        '200': { description: 로그아웃 완료 }
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: 내 정보 조회
+      responses:
+        '200': { description: 유저 정보, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
+
+  # ── Character/Class ─────────────────────────────────────
+  /api/class/tree:
+    get:
+      tags: [Character]
+      summary: 전체 전직 트리
+      responses:
+        '200': { description: 전직 트리 }
+
+  /api/class/tree/{baseClass}:
+    get:
+      tags: [Character]
+      summary: 특정 클래스 전직 경로
+      parameters:
+        - name: baseClass
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 전직 경로 }
+
+  /api/class/advance:
+    post:
+      tags: [Character]
+      summary: 전직 실행
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId: { type: string }
+                targetClass: { type: string }
+              required: [userId, targetClass]
+      responses:
+        '200': { description: 전직 성공 }
+
+  # ── Combat ──────────────────────────────────────────────
+  /api/combat/start:
+    post:
+      tags: [Combat]
+      summary: 전투 시작
+      responses:
+        '200': { description: 전투 인스턴스 생성 }
+
+  /api/combat/action:
+    post:
+      tags: [Combat]
+      summary: 전투 액션 (스킬 사용)
+      responses:
+        '200': { description: 액션 결과 }
+
+  /api/skills:
+    get:
+      tags: [Combat]
+      summary: 스킬 목록
+      responses:
+        '200': { description: 스킬 배열 }
+
+  # ── Inventory ───────────────────────────────────────────
+  /api/inventory/{userId}:
+    get:
+      tags: [Inventory]
+      summary: 인벤토리 조회
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 인벤토리 아이템, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Item' } } } } }
+
+  /api/inventory/add:
+    post:
+      tags: [Inventory]
+      summary: 아이템 추가
+      responses:
+        '200': { description: 추가 완료 }
+
+  /api/inventory/equip:
+    post:
+      tags: [Inventory]
+      summary: 장착
+      responses:
+        '200': { description: 장착 완료 }
+
+  /api/inventory/sell:
+    post:
+      tags: [Inventory]
+      summary: 판매
+      responses:
+        '200': { description: 판매 완료 }
+
+  # ── Economy ─────────────────────────────────────────────
+  /api/shop/catalog:
+    get:
+      tags: [Economy]
+      summary: 상점 카탈로그
+      responses:
+        '200': { description: 상점 아이템 목록 }
+
+  /api/shop/buy:
+    post:
+      tags: [Economy]
+      summary: 상점 구매 (화폐 차감)
+      responses:
+        '200': { description: 구매 완료 }
+
+  /api/auction:
+    get:
+      tags: [Economy]
+      summary: 거래소 매물 목록
+      responses:
+        '200': { description: 매물 목록 }
+
+  /api/auction/list:
+    post:
+      tags: [Economy]
+      summary: 매물 등록
+      responses:
+        '200': { description: 등록 완료 }
+
+  /api/auction/bid:
+    post:
+      tags: [Economy]
+      summary: 입찰
+      responses:
+        '200': { description: 입찰 완료 }
+
+  /api/auction/buyout:
+    post:
+      tags: [Economy]
+      summary: 즉시구매
+      responses:
+        '200': { description: 구매 완료 }
+
+  /api/currency/balance/{userId}:
+    get:
+      tags: [Economy]
+      summary: 화폐 잔액 조회
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 잔액 }
+
+  /api/economy/report:
+    get:
+      tags: [Economy]
+      summary: 일일 경제 리포트
+      responses:
+        '200': { description: 경제 리포트 }
+
+  # ── Dungeon/World ───────────────────────────────────────
+  /api/dungeons:
+    get:
+      tags: [Dungeon]
+      summary: 던전 목록
+      responses:
+        '200': { description: 던전 배열, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Dungeon' } } } } }
+
+  /api/dungeons/{code}:
+    get:
+      tags: [Dungeon]
+      summary: 던전 상세
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 던전 상세 }
+
+  /api/dungeons/enter:
+    post:
+      tags: [Dungeon]
+      summary: 던전 입장
+      responses:
+        '200': { description: 입장 완료 }
+
+  /api/world/zones:
+    get:
+      tags: [Dungeon]
+      summary: 월드 존 목록
+      responses:
+        '200': { description: 존 목록 }
+
+  /api/monsters:
+    get:
+      tags: [Dungeon]
+      summary: 몬스터 목록
+      responses:
+        '200': { description: 몬스터 배열, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Monster' } } } } }
+
+  # ── Social ──────────────────────────────────────────────
+  /api/guild:
+    get:
+      tags: [Social]
+      summary: 길드 정보
+      responses:
+        '200': { description: 길드 정보, content: { application/json: { schema: { $ref: '#/components/schemas/Guild' } } } }
+
+  /api/guild/create:
+    post:
+      tags: [Social]
+      summary: 길드 생성
+      responses:
+        '201': { description: 길드 생성 완료 }
+
+  /api/pvp/match:
+    post:
+      tags: [Social]
+      summary: PvP 매칭 요청
+      responses:
+        '200': { description: 매칭 시작 }
+
+  /api/pvp/season:
+    get:
+      tags: [Social]
+      summary: PvP 시즌 정보
+      responses:
+        '200': { description: 시즌 정보 }
+
+  /api/raid/list:
+    get:
+      tags: [Social]
+      summary: 레이드 목록
+      responses:
+        '200': { description: 레이드 목록 }
+
+  /api/matchmaking/queue:
+    post:
+      tags: [Social]
+      summary: 매칭 큐 등록
+      responses:
+        '200': { description: 큐 등록 완료 }
+
+  /api/social/friends/{userId}:
+    get:
+      tags: [Social]
+      summary: 친구 목록
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 친구 목록 }
+
+  /api/social/mail/{userId}:
+    get:
+      tags: [Social]
+      summary: 우편함 조회
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 우편 목록 }
+
+  /api/ranking:
+    get:
+      tags: [Social]
+      summary: 랭킹 조회
+      responses:
+        '200': { description: 랭킹 }
+
+  /api/chat/send:
+    post:
+      tags: [Social]
+      summary: 채팅 메시지 전송
+      responses:
+        '200': { description: 전송 완료 }
+
+  # ── Story/Dialogue ──────────────────────────────────────
+  /api/story/chapters:
+    get:
+      tags: [Story]
+      summary: 챕터 목록
+      responses:
+        '200': { description: 챕터 배열 }
+
+  /api/dialogue/start:
+    post:
+      tags: [Story]
+      summary: 대화 시작
+      responses:
+        '200': { description: 대화 노드 }
+
+  /api/dialogue/choose:
+    post:
+      tags: [Story]
+      summary: 선택지 선택
+      responses:
+        '200': { description: 다음 노드 }
+
+  /api/ending/judge/{userId}:
+    post:
+      tags: [Story]
+      summary: 엔딩 판정
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 엔딩 결과 }
+
+  /api/npcs:
+    get:
+      tags: [Story]
+      summary: NPC 목록
+      responses:
+        '200': { description: NPC 배열 }
+
+  # ── Content ─────────────────────────────────────────────
+  /api/pets/{userId}:
+    get:
+      tags: [Content]
+      summary: 유저 펫 목록
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 펫 배열, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Pet' } } } } }
+
+  /api/craft/recipes:
+    get:
+      tags: [Content]
+      summary: 제작 레시피 목록
+      responses:
+        '200': { description: 레시피 목록 }
+
+  /api/craft/execute:
+    post:
+      tags: [Content]
+      summary: 제작 실행
+      responses:
+        '200': { description: 제작 결과 }
+
+  /api/achievements/{userId}:
+    get:
+      tags: [Content]
+      summary: 업적 목록
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 업적 배열, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Achievement' } } } } }
+
+  /api/codex/{userId}:
+    get:
+      tags: [Content]
+      summary: 도감 조회
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 도감 데이터 }
+
+  /api/quests/{userId}:
+    get:
+      tags: [Content]
+      summary: 퀘스트 목록
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 퀘스트 배열 }
+
+  /api/tutorial/progress/{userId}:
+    get:
+      tags: [Content]
+      summary: 튜토리얼 진행도
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 튜토리얼 상태 }
+
+  # ── Monetization ────────────────────────────────────────
+  /api/payment/products:
+    get:
+      tags: [Monetization]
+      summary: IAP 상품 카탈로그
+      responses:
+        '200': { description: 상품 목록 }
+
+  /api/payment/purchase:
+    post:
+      tags: [Monetization]
+      summary: 결제 생성
+      responses:
+        '200': { description: 결제 정보 }
+
+  /api/payment/verify:
+    post:
+      tags: [Monetization]
+      summary: 영수증 검증 + 지급
+      responses:
+        '200': { description: 검증 완료 }
+
+  /api/cosmetics:
+    get:
+      tags: [Monetization]
+      summary: 코스메틱 카탈로그
+      responses:
+        '200': { description: 코스메틱 목록 }
+
+  /api/cosmetics/buy:
+    post:
+      tags: [Monetization]
+      summary: 코스메틱 구매
+      responses:
+        '200': { description: 구매 완료 }
+
+  /api/seasonpass/{userId}:
+    get:
+      tags: [Monetization]
+      summary: 시즌패스 진행도
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 시즌패스 정보, content: { application/json: { schema: { $ref: '#/components/schemas/SeasonPass' } } } }
+
+  /api/seasonpass/claim:
+    post:
+      tags: [Monetization]
+      summary: 시즌패스 보상 수령
+      responses:
+        '200': { description: 수령 완료 }
+
+  # ── Analytics ───────────────────────────────────────────
+  /analytics/kpi:
+    get:
+      tags: [Analytics]
+      summary: KPI 스냅샷 조회
+      responses:
+        '200': { description: KPI 데이터, content: { application/json: { schema: { $ref: '#/components/schemas/KpiSnapshot' } } } }
+
+  /analytics/retention:
+    get:
+      tags: [Analytics]
+      summary: 리텐션 곡선
+      responses:
+        '200': { description: 리텐션 데이터 }
+
+  /analytics/economy:
+    get:
+      tags: [Analytics]
+      summary: 경제 지표
+      responses:
+        '200': { description: 경제 데이터 }
+
+  /analytics/revenue:
+    get:
+      tags: [Analytics]
+      summary: 매출 시계열
+      responses:
+        '200': { description: 매출 데이터 }
+
+  # ── Admin ───────────────────────────────────────────────
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: 유저 목록 (관리자)
+      responses:
+        '200': { description: 유저 목록 }
+
+  /admin/grant-item:
+    post:
+      tags: [Admin]
+      summary: 아이템 지급 (관리자)
+      responses:
+        '200': { description: 지급 완료 }
+
+  /admin/ban:
+    post:
+      tags: [Admin]
+      summary: 유저 제재
+      responses:
+        '200': { description: 제재 완료 }
+
+  /api/report/submit:
+    post:
+      tags: [Admin]
+      summary: 신고 접수
+      responses:
+        '200': { description: 신고 접수 완료 }
+
+  # ── System ──────────────────────────────────────────────
+  /api/apm/metrics:
+    get:
+      tags: [System]
+      summary: APM 메트릭 조회
+      responses:
+        '200': { description: 메트릭 JSON }
+
+  /api/apm/health:
+    get:
+      tags: [System]
+      summary: 상세 헬스체크
+      responses:
+        '200': { description: 헬스 상태 }
+
+  /api/errors:
+    post:
+      tags: [System]
+      summary: 클라이언트 에러 리포트
+      security: []
+      responses:
+        '200': { description: 수신 완료 }
+
+  /api/notifications/{userId}:
+    get:
+      tags: [System]
+      summary: 알림 목록
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 알림 배열 }
+
+  /api/save/{userId}:
+    get:
+      tags: [System]
+      summary: 세이브 데이터 조회
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: 세이브 데이터 }
+
+  /beta/validate-code:
+    post:
+      tags: [System]
+      summary: 베타 초대 코드 검증
+      security: []
+      responses:
+        '200': { description: 코드 검증 결과 }
+
+  /beta/feedback:
+    post:
+      tags: [System]
+      summary: 베타 피드백 접수
+      responses:
+        '200': { description: 접수 완료 }
+
+  /ops/alerts/history:
+    get:
+      tags: [System]
+      summary: 운영 알림 이력
+      responses:
+        '200': { description: 알림 이력 }
+
+  /api/events/active:
+    get:
+      tags: [Content]
+      summary: 활성 이벤트 목록
+      responses:
+        '200': { description: 이벤트 목록 }

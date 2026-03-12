@@ -14,6 +14,7 @@ import {
 import { startAlertChecker, stopAlertChecker } from './alerts';
 import { registerApmHooks } from './middleware';
 import { registerApmRoutes } from './dashboard';
+import { initSentryDatadog, shutdownSentryDatadog, captureError, getErrorBufferStatus } from './sentryInit';
 
 // 외부에서 사용할 메트릭 함수 re-export
 export {
@@ -25,6 +26,7 @@ export {
 } from './metrics';
 
 export { startAlertChecker, stopAlertChecker } from './alerts';
+export { captureError, getErrorBufferStatus } from './sentryInit';
 
 /**
  * APM 전체 초기화
@@ -60,6 +62,9 @@ export async function initApm(
     // 5) 알림 체커 시작 (10초 간격)
     startAlertChecker();
 
+    // 6) Sentry + Datadog 외부 APM 연동 (P7-15)
+    await initSentryDatadog(fastify);
+
     console.log('[APM] 초기화 완료');
 }
 
@@ -67,6 +72,7 @@ export async function initApm(
  * APM 종료 — 타이머 정리
  */
 export async function shutdownApm(): Promise<void> {
+    await shutdownSentryDatadog();
     stopAlertChecker();
     stopMetricsCollection();
     console.log('[APM] 종료 완료');
