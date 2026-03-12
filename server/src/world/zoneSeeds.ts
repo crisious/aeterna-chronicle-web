@@ -571,6 +571,87 @@ const abyssOfMemoryZones: ZoneSeed[] = [
 // 기억의 심연 존 병합
 ZONE_SEEDS.push(...abyssOfMemoryZones);
 
+// ═══ 시간의 균열 (Temporal Rift) — Lv.75-100 ═══════════════════ P14-06
+const temporalRiftZones: ZoneSeed[] = [
+  {
+    code: 'rift_threshold',
+    name: '경계의 문턱',
+    description: '시간의 균열 입구. 현실과 왜곡된 시공간의 경계. 보라색 에너지 파동이 맥동한다.',
+    region: 'temporal_rift',
+    levelRange: { min: 75, max: 85 },
+    connections: ['erebos_seal_altar', 'rift_mirror_city', 'rift_frozen_battlefield'],
+    npcs: [
+      { npcId: 'npc_bellatrix', name: '벨라트릭스', posX: 100, posY: 100, role: 'quest' },
+      { npcId: 'npc_rift_merchant', name: '차원 틈새 상인 노크스', posX: 150, posY: 120, role: 'shop' },
+      { npcId: 'npc_arcana', name: '시간 수호자 장로 아르카나', posX: 80, posY: 150, role: 'quest' },
+    ],
+    ambientSound: 'rift_hum',
+    bgm: 'bgm_temporal_rift_threshold',
+    isHub: true,
+  },
+  {
+    code: 'rift_mirror_city',
+    name: '반영의 도시',
+    description: '대망각 직전의 아르겐티움이 겹쳐 보이는 왜곡 공간. 과거의 건물과 현재가 중첩되어 있다.',
+    region: 'temporal_rift',
+    levelRange: { min: 80, max: 90 },
+    connections: ['rift_threshold', 'rift_frozen_battlefield'],
+    npcs: [
+      { npcId: 'npc_past_scholar', name: '기억의 잔상: 학자 테오도르', posX: 200, posY: 100, role: 'quest' },
+      { npcId: 'npc_past_librarian', name: '기억의 잔상: 사서 엘레아', posX: 250, posY: 180, role: 'quest' },
+    ],
+    ambientSound: 'echo_voices',
+    bgm: 'bgm_mirror_city',
+    isHub: false,
+  },
+  {
+    code: 'rift_frozen_battlefield',
+    name: '정지된 전장',
+    description: '봉인 12인과 레테가 격돌한 최종 전투 장면이 시간 정지 상태로 보존된 곳.',
+    region: 'temporal_rift',
+    levelRange: { min: 85, max: 95 },
+    connections: ['rift_threshold', 'rift_mirror_city', 'rift_reverse_forest'],
+    npcs: [
+      { npcId: 'npc_seal_remnant_1', name: '봉인자의 잔상: 제1봉인자 칼던', posX: 300, posY: 200, role: 'quest' },
+      { npcId: 'npc_seal_remnant_7', name: '봉인자의 잔상: 제7봉인자 미레이', posX: 350, posY: 250, role: 'quest' },
+    ],
+    ambientSound: 'frozen_silence',
+    bgm: 'bgm_frozen_battlefield',
+    isHub: false,
+  },
+  {
+    code: 'rift_reverse_forest',
+    name: '역행의 숲',
+    description: '시간이 거꾸로 흐르는 구역. 나무가 자라다 씨앗으로, 강물이 원천으로 역류한다.',
+    region: 'temporal_rift',
+    levelRange: { min: 88, max: 95 },
+    connections: ['rift_frozen_battlefield', 'rift_core'],
+    npcs: [
+      { npcId: 'npc_time_gardener', name: '역행의 정원사 루시엔', posX: 150, posY: 300, role: 'quest' },
+    ],
+    ambientSound: 'reverse_waterfall',
+    bgm: 'bgm_reverse_forest',
+    isHub: false,
+  },
+  {
+    code: 'rift_core',
+    name: '시간의 심핵',
+    description: '시간의 균열 최심부. 차원 사이의 감옥이 있으며, 봉인된 레테의 본체가 잠들어 있다.',
+    region: 'temporal_rift',
+    levelRange: { min: 92, max: 100 },
+    connections: ['rift_reverse_forest'],
+    npcs: [
+      { npcId: 'npc_lethe_sealed', name: '봉인된 레테', posX: 200, posY: 200, role: 'boss' },
+    ],
+    ambientSound: 'void_whisper',
+    bgm: 'bgm_rift_core',
+    isHub: false,
+  },
+];
+
+// 시간의 균열 존 병합
+ZONE_SEEDS.push(...temporalRiftZones);
+
 // ─── 시드 함수 ──────────────────────────────────────────────────
 
 export async function seedZones(): Promise<void> {

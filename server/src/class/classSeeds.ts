@@ -306,6 +306,84 @@ const timeGuardianTier3: ClassSeedData = {
 
 ALL_CLASS_SEEDS.push(timeGuardianTier1, timeGuardianTier2, timeGuardianTier3);
 
+// ════════════════════════════════════════════════════════════════
+// 허공의 방랑자 (Void Wanderer) 전직 트리 — P14-05
+// ════════════════════════════════════════════════════════════════
+
+const voidWandererTier1: ClassSeedData = {
+  baseClass: 'void_wanderer',
+  advancedClass: 'rift_walker',      // 균열 보행자
+  tier: 1,
+  requiredLevel: 30,
+  questId: 'quest_vw_t1_rift_walker',
+  skills: [
+    { id: 'vw_t1_s1', name: '공간 도약', description: '지정 위치로 순간이동 (최대 15m). 이동 경로의 적에게 공격력 80% 피해', type: 'active', cooldown: 8, mpCost: 25 },
+    { id: 'vw_t1_s2', name: '차원 절단', description: '공간을 잘라 전방 부채꼴 적에게 공격력 150% 피해 + 방어력 10% 감소 (5초)', type: 'active', cooldown: 12, mpCost: 30 },
+    { id: 'vw_t1_s3', name: '허공 감지', description: '주변 15m 내 은폐/투명 적 탐지 + 회피율 5% 증가', type: 'passive' },
+    { id: 'vw_t1_s4', name: '공간 왜곡장', description: '피격 시 10% 확률로 공간 왜곡 발동, 적 공격 무효화', type: 'passive' },
+  ],
+  statBonus: { hp: 120, attack: 35, defense: 15, speed: 30, critRate: 5 },
+};
+
+const voidWandererTier2: ClassSeedData = {
+  baseClass: 'void_wanderer',
+  advancedClass: 'dimension_weaver',  // 차원 직조사
+  tier: 2,
+  requiredLevel: 50,
+  questId: 'quest_vw_t2_dimension_weaver',
+  skills: [
+    { id: 'vw_t2_s1', name: '포탈 설치', description: '2개의 연결 포탈 설치 (30초 유지). 아군 자유 이동 가능', type: 'active', cooldown: 30, mpCost: 50 },
+    { id: 'vw_t2_s2', name: '공간 압축', description: '대상 주변 공간을 압축, 3초간 이동불가 + 공격력 200% 피해', type: 'active', cooldown: 18, mpCost: 45 },
+    { id: 'vw_t2_s3', name: '차원 갑옷', description: '피격 시 받는 피해의 15%를 허공으로 전이 (방어력 실질 증가)', type: 'passive' },
+    { id: 'vw_t2_s4', name: '공간 인식', description: '회피율 8% 증가, 크리티컬 확률 5% 증가', type: 'passive' },
+  ],
+  statBonus: { hp: 300, attack: 45, defense: 25, speed: 35, critRate: 8, critDamage: 10 },
+};
+
+const voidWandererTier3: ClassSeedData = {
+  baseClass: 'void_wanderer',
+  advancedClass: 'void_sovereign',    // 허공의 지배자
+  tier: 3,
+  requiredLevel: 70,
+  questId: 'quest_vw_t3_void_sovereign',
+  skills: [
+    { id: 'vw_t3_s1', name: '차원 붕괴', description: '지정 영역의 공간을 붕괴시켜 범위 내 적에게 공격력 350% 피해 + 3초 공중 부양 (행동불가)', type: 'active', cooldown: 35, mpCost: 65 },
+    { id: 'vw_t3_s2', name: '허공의 감옥', description: '대상을 차원 틈새에 2초간 격리 (무적이지만 행동불가). 격리 해제 시 공격력 250% 폭발', type: 'active', cooldown: 40, mpCost: 60 },
+    { id: 'vw_t3_s3', name: '공간의 군주', description: '모든 공간 계열 스킬 효과 20% 증가 + 쿨다운 15% 감소', type: 'passive' },
+    { id: 'vw_t3_s4', name: '차원 간 존재', description: '사망 시 50% 확률로 차원 틈새에서 HP 15%로 부활 (전투당 1회)', type: 'passive' },
+  ],
+  statBonus: { hp: 500, attack: 60, defense: 30, speed: 40, critRate: 12, critDamage: 15 },
+  ultimateSkill: {
+    id: 'vw_ult', name: '허공의 심판', description: '3,200년간 축적된 차원 에너지 해방. 범위 내 모든 적을 허공으로 끌어들여 공격력 550% 피해 + 방어력/이동속도 40% 감소 (6초). 아군 전원 쿨다운 초기화',
+    type: 'active', cooldown: 120, mpCost: 100,
+  },
+};
+
+ALL_CLASS_SEEDS.push(voidWandererTier1, voidWandererTier2, voidWandererTier3);
+
+// ─── 허공의 방랑자 베이스 스킬 (17개) — 전직 전 사용 가능 ────
+
+export const VOID_WANDERER_BASE_SKILLS: ClassSkill[] = [
+  { id: 'vw_b01', name: '허공 타격', description: '공간 에너지를 담은 근접 공격. 공격력 110%', type: 'active', cooldown: 0, mpCost: 0 },
+  { id: 'vw_b02', name: '차원 베기', description: '공간을 가르는 참격. 공격력 130% + 관통', type: 'active', cooldown: 5, mpCost: 15 },
+  { id: 'vw_b03', name: '단거리 전이', description: '5m 순간이동. 기본 이동기', type: 'active', cooldown: 3, mpCost: 10 },
+  { id: 'vw_b04', name: '공간 흐트림', description: '자신 주변 3m 적 이동속도 20% 감소 (3초)', type: 'active', cooldown: 10, mpCost: 20 },
+  { id: 'vw_b05', name: '허공의 눈', description: '10m 범위 미니맵 공개 (15초)', type: 'active', cooldown: 20, mpCost: 15 },
+  { id: 'vw_b06', name: '차원 방패', description: '전방 공간 왜곡 방패. 1회 공격 흡수', type: 'active', cooldown: 15, mpCost: 25 },
+  { id: 'vw_b07', name: '공간 수렴', description: '전방 8m 적을 자신 앞으로 끌어당김', type: 'active', cooldown: 18, mpCost: 30 },
+  { id: 'vw_b08', name: '허공 연쇄', description: '연속 3회 공간 참격. 각 타 공격력 90%', type: 'active', cooldown: 12, mpCost: 25 },
+  { id: 'vw_b09', name: '차원 반사', description: '2초간 원거리 공격 반사 (피해의 50%)', type: 'active', cooldown: 25, mpCost: 35 },
+  { id: 'vw_b10', name: '공간 치유', description: '차원 에너지로 HP 10% 회복', type: 'active', cooldown: 30, mpCost: 20 },
+  { id: 'vw_b11', name: '허공 적응', description: '이동속도 5% 증가', type: 'passive' },
+  { id: 'vw_b12', name: '차원 친화', description: 'MP 최대치 8% 증가', type: 'passive' },
+  { id: 'vw_b13', name: '공간 지각', description: '회피율 3% 증가', type: 'passive' },
+  { id: 'vw_b14', name: '허공 순환', description: 'MP 자연 회복 10% 증가', type: 'passive' },
+  { id: 'vw_b15', name: '차원 강화', description: '공간 계열 스킬 피해 5% 증가', type: 'passive' },
+  { id: 'vw_b16', name: '왜곡 체질', description: '상태이상 저항 5% 증가', type: 'passive' },
+  { id: 'vw_b17', name: '방랑자의 직감', description: '아이템 드롭률 3% 증가', type: 'passive' },
+];
+// 베이스 17 + 전직 12 + 궁극기 1 = 30스킬
+
 // ─── 베이스 클래스 한글 매핑 ──────────────────────────────────
 export const BASE_CLASS_NAMES: Record<string, string> = {
   ether_knight: '에테르 기사',
@@ -313,6 +391,7 @@ export const BASE_CLASS_NAMES: Record<string, string> = {
   shadow_weaver: '그림자 직조사',
   memory_breaker: '기억 파괴자',
   time_guardian: '시간 수호자',
+  void_wanderer: '허공의 방랑자',
 };
 
 // ─── 전직 클래스 한글 매핑 ────────────────────────────────────
@@ -332,4 +411,7 @@ export const ADVANCED_CLASS_NAMES: Record<string, string> = {
   chrono_warden: '시간 감시자',
   temporal_knight: '시간 기사',
   epoch_sovereign: '시대의 지배자',
+  rift_walker: '균열 보행자',
+  dimension_weaver: '차원 직조사',
+  void_sovereign: '허공의 지배자',
 };
