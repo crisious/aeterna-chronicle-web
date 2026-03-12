@@ -13,7 +13,7 @@ import { prisma } from '../db';
 export const MEMORY_DESTROYER_REQUIRED_CHAPTER = 6;
 
 /** 기억파괴자 기본 클래스 코드 */
-export const MEMORY_DESTROYER_CLASS_CODE = 'memory_destroyer';
+export const MEMORY_BREAKER_CLASS_CODE = 'memory_breaker';
 
 // ─── 타입 ───────────────────────────────────────────────────
 
@@ -112,7 +112,7 @@ export async function enforceClassGate(
   requestedClass: string
 ): Promise<GateCheckResult | null> {
   // 기억파괴자가 아니면 게이트 적용 안 함
-  if (requestedClass !== MEMORY_DESTROYER_CLASS_CODE) {
+  if (requestedClass !== MEMORY_BREAKER_CLASS_CODE) {
     return null;
   }
 

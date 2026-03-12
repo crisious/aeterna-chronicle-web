@@ -691,7 +691,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     entryCount: 1,
   },
 
-  // ═══ 기억의 심연 (Lv.90-100) [P11-19] ═══════════════════════════
+  // ═══ 기억의 심연 (Lv.70-80) [P11-19] ═══════════════════════════
 
   // ── 1. 침묵의 해구 ────────────────────────────────────────────
   {
@@ -700,7 +700,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '심연의 입구. 빛이 닿지 않는 해구에서 기억을 잃은 생물들이 배회한다.',
     zoneCode: 'memory_abyss_trench',
     difficulty: 'normal',
-    requiredLevel: 90,
+    requiredLevel: 70,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_abyss_angler', count: 4 }, { monsterId: 'mob_memory_eel', count: 2 }], isBoss: false },
@@ -718,7 +718,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '강화된 심연 생물들이 출몰한다. 산소 관리에 유의하라.',
     zoneCode: 'memory_abyss_trench',
     difficulty: 'hard',
-    requiredLevel: 93,
+    requiredLevel: 73,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_abyss_angler', count: 6 }, { monsterId: 'mob_memory_eel', count: 3 }], isBoss: false },
@@ -737,7 +737,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '심연의 모든 공포가 해방된다. 최정예 파티만 도전하라.',
     zoneCode: 'memory_abyss_trench',
     difficulty: 'nightmare',
-    requiredLevel: 96,
+    requiredLevel: 76,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_abyss_angler', count: 8 }, { monsterId: 'mob_forgotten_wraith', count: 4 }], isBoss: false },
@@ -758,7 +758,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '시간이 나선형으로 흐르는 회랑. 과거와 미래의 몬스터가 동시에 출현한다.',
     zoneCode: 'memory_abyss_spiral',
     difficulty: 'normal',
-    requiredLevel: 92,
+    requiredLevel: 72,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_time_jellyfish', count: 5 }, { monsterId: 'mob_chrono_barnacle', count: 3 }], isBoss: false },
@@ -776,7 +776,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '시간 왜곡이 심화된 회랑. 스킬 쿨다운이 무작위로 변한다.',
     zoneCode: 'memory_abyss_spiral',
     difficulty: 'hard',
-    requiredLevel: 95,
+    requiredLevel: 75,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_time_jellyfish', count: 6 }, { monsterId: 'mob_warp_squid', count: 3 }], isBoss: false },
@@ -795,7 +795,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '시간이 완전히 붕괴한 회랑. 우로보로스가 완전한 힘을 발휘한다.',
     zoneCode: 'memory_abyss_spiral',
     difficulty: 'nightmare',
-    requiredLevel: 98,
+    requiredLevel: 78,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_warp_squid', count: 5 }, { monsterId: 'mob_chrono_nautilus', count: 4 }], isBoss: false },
@@ -816,7 +816,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '기억이 결정화된 산호가 가득한 정원. 아름답지만 위험하다.',
     zoneCode: 'memory_abyss_garden',
     difficulty: 'normal',
-    requiredLevel: 91,
+    requiredLevel: 72,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_memory_leech', count: 5 }, { monsterId: 'mob_memory_starfish', count: 3 }], isBoss: false },
@@ -834,7 +834,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '기억 산호가 폭주하여 정원 전체가 기억 침식 상태이다.',
     zoneCode: 'memory_abyss_garden',
     difficulty: 'hard',
-    requiredLevel: 94,
+    requiredLevel: 75,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_memory_leech', count: 6 }, { monsterId: 'mob_echo_manta', count: 3 }], isBoss: false },
@@ -853,7 +853,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '대망각의 기억이 폭주한다. 기억의 거신이 완전 각성한다.',
     zoneCode: 'memory_abyss_garden',
     difficulty: 'nightmare',
-    requiredLevel: 97,
+    requiredLevel: 78,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_echo_manta', count: 5 }, { monsterId: 'mob_memory_leech', count: 6 }], isBoss: false },
@@ -874,7 +874,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '공허의 여제가 군림하는 심연의 궁전.',
     zoneCode: 'memory_abyss_throne',
     difficulty: 'normal',
-    requiredLevel: 94,
+    requiredLevel: 74,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_void_crab', count: 4 }, { monsterId: 'mob_void_anemone', count: 3 }], isBoss: false },
@@ -892,7 +892,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '여제의 친위대가 해방된 공허의 궁전.',
     zoneCode: 'memory_abyss_throne',
     difficulty: 'hard',
-    requiredLevel: 97,
+    requiredLevel: 77,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_void_crab', count: 5 }, { monsterId: 'mob_drift_phantom', count: 4 }], isBoss: false },
@@ -911,7 +911,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '공허의 여제가 차원을 열어 최종 형태로 변신한다.',
     zoneCode: 'memory_abyss_throne',
     difficulty: 'nightmare',
-    requiredLevel: 99,
+    requiredLevel: 80,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_drift_phantom', count: 6 }, { monsterId: 'mob_void_crab', count: 5 }], isBoss: false },
@@ -932,7 +932,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '기억의 심연 최심부. 원초의 괴수가 잠들어 있다.',
     zoneCode: 'memory_abyss_nest',
     difficulty: 'normal',
-    requiredLevel: 96,
+    requiredLevel: 76,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_abyss_angler', count: 5 }, { monsterId: 'mob_pressure_serpent', count: 3 }], isBoss: false },
@@ -950,7 +950,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '레비아탄이 각성하기 시작했다. 아종들이 둥지를 수호한다.',
     zoneCode: 'memory_abyss_nest',
     difficulty: 'hard',
-    requiredLevel: 98,
+    requiredLevel: 78,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'mob_abyss_angler', count: 6 }, { monsterId: 'mob_abyss_urchin', count: 4 }], isBoss: false },
@@ -969,7 +969,7 @@ const DUNGEON_SEEDS: DungeonSeed[] = [
     description: '시조 레비아탄이 완전 각성. 심연 전체가 진동한다. 최고 난이도 콘텐츠.',
     zoneCode: 'memory_abyss_nest',
     difficulty: 'nightmare',
-    requiredLevel: 100,
+    requiredLevel: 80,
     maxPlayers: 4,
     waves: [
       { wave: 1, monsters: [{ monsterId: 'elite_leviathan_spawn', count: 3 }, { monsterId: 'mob_abyss_angler', count: 6 }], isBoss: false },

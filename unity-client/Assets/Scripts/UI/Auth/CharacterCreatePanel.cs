@@ -60,6 +60,12 @@ namespace EternaChronicle.UI.Auth
             new ClassInfo
             {
                 id = "memory_breaker", name = "기억 파괴자",
+            },
+            new ClassInfo {
+                id = "time_guardian", name = "시간 수호자",
+                description = "봉인 12인의 힘을 계승한 시간의 수호자. 챕터 7 이후 해금.",
+                icon = "class-time-guardian"
+
                 description = "봉인 해제 클래스. 대상의 기억을 조작하여 약화시키는 이능 전사.",
                 stats = "STR ★★ | DEX ★★ | INT ★★★★ | VIT ★★★"
             }

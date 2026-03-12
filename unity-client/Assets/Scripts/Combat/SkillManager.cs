@@ -99,7 +99,7 @@ namespace EternaChronicle.Combat
         public string id;
         public string name;
         public string description;
-        public string className;     // ether_knight, memory_weaver, shadow_weaver, memory_breaker, common
+        public string className;     // ether_knight, memory_weaver, shadow_weaver, memory_breaker, time_guardian, common
         public SkillType type;
         public int level;
         public int maxLevel;
