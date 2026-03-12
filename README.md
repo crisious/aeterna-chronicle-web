@@ -4,11 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-15%20GRAPHIC%20ASSETS-blue?style=for-the-badge)](01_코어기획/P15_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-16%20ASSET%20COMPLETE-blue?style=for-the-badge)](01_코어기획/P16_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
-[![Docs](https://img.shields.io/badge/Docs-720%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-124%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-288%2F288%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Docs](https://img.shields.io/badge/Docs-750%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
+[![Assets](https://img.shields.io/badge/Assets-1%2C248%20Prompted-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
+[![Commits](https://img.shields.io/badge/Commits-130%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Tickets](https://img.shields.io/badge/Notion-308%2F308%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -281,6 +282,30 @@ graph LR
     style G fill:#ef4444,color:#fff
     style F fill:#3b82f6,color:#fff
 ```
+
+---
+
+## 🎨 에셋 파이프라인
+
+> **P16 완결** — 1,248개 에셋 프롬프트 100% 완성
+
+| 카테고리 | 수량 | 상태 |
+|----------|------|------|
+| 캐릭터 (일러스트+스프라이트) | 42 | ✅ Prompted |
+| 몬스터 (Normal~Raid+시간균열) | 228 | ✅ Prompted |
+| NPC (초상화+스프라이트) | 60 | ✅ Prompted |
+| 환경 (타일셋+배경) | 193 | ✅ Prompted |
+| UI (아이콘 275+프레임 90) | 365 | ✅ Prompted |
+| VFX (스킬 180+공통 30) | 210 | ✅ Prompted |
+| 코스메틱 (3시즌 × 50) | 150 | ✅ Prompted |
+| **합계** | **1,248** | **100%** |
+
+**파이프라인 구성:**
+- 프롬프트 설계 (`style-guide.md` + `ai-prompt-master.md`)
+- 카탈로그 (`assets/catalog.json` — 1,248 entries)
+- CI/CD (`asset-pipeline.yml` — QA → 아틀라스 → 매니페스트 → 카탈로그)
+- Unity 통합 (`integration-guide.md` + `optimization-guide.md`)
+- E2E 테스트 (로딩 100%, 렌더링 이상 0건, VRAM 256MB 이내)
 
 ---
 
