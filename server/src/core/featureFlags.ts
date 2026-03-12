@@ -80,6 +80,9 @@ const DEFAULT_FEATURES: FeatureDefinition[] = [
   { key: 'beta',           defaultEnabled: false, description: '오픈 베타 기능' },
   { key: 'payment',        defaultEnabled: true,  description: '결제/프리미엄 화폐' },
   { key: 'story',          defaultEnabled: true,  description: '스토리 챕터' },
+  { key: 'endless_dungeon', defaultEnabled: true,  description: '무한 던전 (시간의 탑)' },
+  { key: 'world_boss',     defaultEnabled: true,  description: '월드 보스' },
+  { key: 'transcendence',  defaultEnabled: true,  description: '장비 초월/강화' },
 ];
 
 // ── FeatureFlags 클래스 ───────────────────────────────────────

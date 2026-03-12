@@ -97,6 +97,11 @@ export const ROUTE_MANIFEST: RouteEntry[] = [
   { name: 'analytics',     plugin: reg(() => import('./analyticsRoutes'),     'analyticsRoutes'),     style: 'register', feature: 'analytics' },
   { name: 'ops',           plugin: reg(() => import('./opsRoutes'),           'opsRoutes'),           style: 'register' },
   { name: 'beta',          plugin: reg(() => import('./betaRoutes'),          'betaRoutes'),          style: 'register', feature: 'beta' },
+
+  // ── P11 엔드게임 컨텐츠 ──
+  { name: 'endlessDungeon',  plugin: reg(() => import('./endlessDungeonRoutes'),  'endlessDungeonRoutes'),  style: 'register', feature: 'endless_dungeon' },
+  { name: 'worldBoss',       plugin: reg(() => import('./worldBossRoutes'),       'worldBossRoutes'),       style: 'register', feature: 'world_boss' },
+  { name: 'transcendence',   plugin: reg(() => import('./transcendenceRoutes'),   'transcendenceRoutes'),   style: 'register', feature: 'transcendence' },
 ];
 
 // ── 자동 등록 함수 ────────────────────────────────────────────

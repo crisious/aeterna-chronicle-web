@@ -46,6 +46,9 @@ import { reportRoutes } from '../routes/reportRoutes';
 import { analyticsRoutes } from '../routes/analyticsRoutes';
 import { opsRoutes } from '../routes/opsRoutes';
 import { betaRoutes } from '../routes/betaRoutes';
+import { endlessDungeonRoutes } from '../routes/endlessDungeonRoutes';
+import { worldBossRoutes } from '../routes/worldBossRoutes';
+import { transcendenceRoutes } from '../routes/transcendenceRoutes';
 
 // ─── 소켓 핸들러 임포트 ─────────────────────────────────────
 import { setupSocketHandlers } from '../socket/socketHandler';
@@ -62,6 +65,9 @@ import { setupWorldSocketHandlers } from '../socket/worldSocketHandler';
 import { setupNotificationSocketHandlers } from '../socket/notificationSocketHandler';
 import { setupAuctionSocketHandlers } from '../socket/auctionSocketHandler';
 import { setupMatchmakingSocketHandlers } from '../socket/matchmakingSocketHandler';
+
+// ─── 기능 토글 ──────────────────────────────────────────────
+import { featureFlags } from '../core/featureFlags';
 
 // ─── 기타 초기화 ────────────────────────────────────────────
 import { dialogueLoader } from '../dialogue/dialogueLoader';
@@ -121,6 +127,10 @@ const ROUTE_MANIFEST: RouteEntry[] = [
   { plugin: analyticsRoutes, name: 'Analytics' },
   { plugin: opsRoutes, name: 'Ops alert' },
   { plugin: betaRoutes, name: 'Beta' },
+  // P11 엔드게임 컨텐츠
+  { plugin: endlessDungeonRoutes, name: 'Endless Dungeon' },
+  { plugin: worldBossRoutes, name: 'World Boss' },
+  { plugin: transcendenceRoutes, name: 'Transcendence' },
 ];
 
 /**
@@ -141,8 +151,21 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
   await registerPvpRoutes(fastify);
   fastify.log.info('PvP API routes registered');
 
+  // P11 기능 토글 연동 라우트 (featureFlags 체크)
+  const FEATURE_GATED: Record<string, string> = {
+    'Endless Dungeon': 'endless_dungeon',
+    'World Boss': 'world_boss',
+    'Transcendence': 'transcendence',
+  };
+
   // 매니페스트 기반 등록
   for (const entry of ROUTE_MANIFEST) {
+    // 기능 토글 체크
+    const featureKey = FEATURE_GATED[entry.name];
+    if (featureKey && featureFlags.isDisabled(featureKey)) {
+      fastify.log.info(`${entry.name} routes skipped (feature '${featureKey}' disabled)`);
+      continue;
+    }
     await fastify.register(entry.plugin as any, entry.options);
     fastify.log.info(`${entry.name} routes registered`);
   }
