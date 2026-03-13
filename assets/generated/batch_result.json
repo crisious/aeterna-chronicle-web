@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-03-13 11:04:29",
+  "timestamp": "2026-03-13 14:34:40",
   "total": 702,
-  "success": 0,
+  "success": 702,
   "failed": 0,
-  "skipped": 702,
+  "skipped": 0,
   "errors": []
 }
