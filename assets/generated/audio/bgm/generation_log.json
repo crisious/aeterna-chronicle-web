@@ -1,17 +1,11 @@
 {
-  "timestamp": "2026-03-13 18:12:03",
+  "timestamp": "2026-03-13 22:17:03",
   "results": [
     {
-      "id": "BGM-ERB-01",
-      "status": "ffmpeg_error"
-    },
-    {
-      "id": "BGM-SYL-01",
-      "status": "ffmpeg_error"
-    },
-    {
-      "id": "BGM-SYL-02",
-      "status": "ffmpeg_error"
+      "id": "BGM-ERB-02",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/memory_phantom_assault.ogg",
+      "size_kb": 403.802734375
     }
   ]
 }
