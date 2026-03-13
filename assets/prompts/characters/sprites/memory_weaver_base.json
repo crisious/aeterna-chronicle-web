@@ -1,9 +1,9 @@
 {
-  "asset_id": "char_sprite_mnemonist_2nd",
+  "asset_id": "char_sprite_memory_weaver_base",
   "class": "기억술사",
   "class_en": "Mnemonist",
-  "advancement": "2nd",
-  "advancement_kr": "2차 전직",
+  "advancement": "base",
+  "advancement_kr": "기본직",
   "category": "character_sprite_sheet",
   "frame_size": "64x64",
   "directions": [
@@ -34,7 +34,7 @@
   "prompts": {
     "sd": {
       "sprite_sheet": {
-        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character sprite sheet, Mnemonist (기억술사) 2차 전직, memory mage with floating tomes, blue and white, enhanced equipment, additional ornaments, faint aura glow, 64x64 pixel frame size, 5 directional views (front/front-left/left/back-left/back), 7 motion animations (idle 4f/walk 6f/melee attack 6f/ranged attack 6f/cast 5f/hit 3f/death 5f), sprite sheet layout, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body chibi proportions, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "prompt": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character sprite sheet, Mnemonist (기억술사) 기본직, memory mage with floating tomes, blue and white, basic equipment, simple design, 64x64 pixel frame size, 5 directional views (front/front-left/left/back-left/back), 7 motion animations (idle 4f/walk 6f/melee attack 6f/ranged attack 6f/cast 5f/hit 3f/death 5f), sprite sheet layout, dark fantasy Korean MMORPG aesthetic, 2.5 head-to-body chibi proportions, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
         "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines, inconsistent frame sizes, overlapping frames, missing directions",
         "params": {
           "steps": 35,
@@ -47,7 +47,7 @@
         }
       },
       "per_frame_template": {
-        "prompt_template": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character sprite, single frame, Mnemonist 2차 전직, memory mage with floating tomes, blue and white, enhanced equipment, additional ornaments, faint aura glow, {direction} facing, {motion} pose frame {frame_num}, 64x64 pixel art, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
+        "prompt_template": "(masterpiece:1.3), (best quality:1.2), 2D pixel art RPG character sprite, single frame, Mnemonist 기본직, memory mage with floating tomes, blue and white, basic equipment, simple design, {direction} facing, {motion} pose frame {frame_num}, 64x64 pixel art, 2D pixel art, dark fantasy RPG, hand-painted style, consistent art direction, top-left 45-degree lighting, 3-step shading, 2px black outline, no anti-aliasing, clean pixel edges, transparent background (PNG), game asset ready, <lora:pixel-art-style-v2:0.7>, <lora:custom-aeterna-v1:0.8>, aeterna_style",
         "negative": "3D render, realistic, photorealistic, blurry, watermark, text overlay, logo, low quality, deformed, extra limbs, Western cartoon, chibi, noisy, grain, JPEG artifacts, soft edges, gradient shading, anti-aliased edges, smooth lines",
         "params": {
           "steps": 35,
@@ -80,7 +80,7 @@
     },
     "dalle": {
       "sprite_sheet": {
-        "prompt": "Create a pixel art RPG character sprite sheet for Mnemonist (2차 전직). memory mage with floating tomes, blue and white, enhanced equipment, additional ornaments, faint aura glow. Sheet layout: 5 rows (one per direction: front, front-left, left, back-left, back), each row contains 35 frames of animation (idle 4, walk 6, attacks 12, cast 5, hit 3, death 5). 64x64 pixels per frame. Dark fantasy Korean MMORPG style, 2.5 head chibi proportions. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
+        "prompt": "Create a pixel art RPG character sprite sheet for Mnemonist (기본직). memory mage with floating tomes, blue and white, basic equipment, simple design. Sheet layout: 5 rows (one per direction: front, front-left, left, back-left, back), each row contains 35 frames of animation (idle 4, walk 6, attacks 12, cast 5, hit 3, death 5). 64x64 pixels per frame. Dark fantasy Korean MMORPG style, 2.5 head chibi proportions. Art style: pixel art with clean sharp pixel edges, 2px black outline, no anti-aliasing. Transparent background. Top-left 45-degree lighting with 3-step cel shading. Dark fantasy atmosphere with subtle glowing elements. DO NOT include text, watermarks, or 3D effects.",
         "params": {
           "model": "dall-e-3",
           "size": "1024x1024",
@@ -91,7 +91,7 @@
     },
     "mj": {
       "sprite_sheet": {
-        "prompt": "2D pixel art RPG character sprite sheet::2, Mnemonist 2차 전직::1.5, memory mage with floating tomes, blue and white, enhanced equipment, additional ornaments, faint aura glow, 5 directional rows, 7 animation sequences per row, 64x64 frames, dark fantasy MMORPG::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 11:5",
+        "prompt": "2D pixel art RPG character sprite sheet::2, Mnemonist 기본직::1.5, memory mage with floating tomes, blue and white, basic equipment, simple design, 5 directional rows, 7 animation sequences per row, 64x64 frames, dark fantasy MMORPG::2, dark fantasy Korean MMORPG::1.5, 2px black outline clean pixel edges::2, transparent background, masterpiece quality --v 6.1 --s 200 --no 3d render photo realistic blurry watermark text modern sci-fi --ar 11:5",
         "params": {
           "version": "6.1",
           "stylize": 200,

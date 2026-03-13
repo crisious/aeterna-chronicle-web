@@ -150,7 +150,7 @@ class AssetCatalog:
         # 캐릭터 일러스트 (6클래스 × 3뷰 = 18)
         classes = [
             ("ether_knight", "에테르기사"),
-            ("mnemonist", "기억술사"),
+            ("memory_weaver", "기억술사"),
             ("shadow_weaver", "그림자직조사"),
             ("memory_breaker", "기억파괴자"),
             ("time_guardian", "시간수호자"),

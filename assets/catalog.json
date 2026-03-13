@@ -54,57 +54,6 @@
         "view": "back"
       }
     },
-    "char_illust_mnemonist_front": {
-      "id": "char_illust_mnemonist_front",
-      "category": "character_illust",
-      "name": "기억술사 front",
-      "status": "prompted",
-      "depends_on": [],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.132891",
-      "updated_at": "2026-03-13T00:21:00.132892",
-      "metadata": {
-        "class": "기억술사",
-        "view": "front"
-      }
-    },
-    "char_illust_mnemonist_side": {
-      "id": "char_illust_mnemonist_side",
-      "category": "character_illust",
-      "name": "기억술사 side",
-      "status": "prompted",
-      "depends_on": [],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.133017",
-      "updated_at": "2026-03-13T00:21:00.133018",
-      "metadata": {
-        "class": "기억술사",
-        "view": "side"
-      }
-    },
-    "char_illust_mnemonist_back": {
-      "id": "char_illust_mnemonist_back",
-      "category": "character_illust",
-      "name": "기억술사 back",
-      "status": "prompted",
-      "depends_on": [],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.133138",
-      "updated_at": "2026-03-13T00:21:00.133139",
-      "metadata": {
-        "class": "기억술사",
-        "view": "back"
-      }
-    },
     "char_illust_shadow_weaver_front": {
       "id": "char_illust_shadow_weaver_front",
       "category": "character_illust",
@@ -382,82 +331,6 @@
       "updated_at": "2026-03-13T00:21:00.137043",
       "metadata": {
         "class": "에테르기사",
-        "advancement": "adv3"
-      }
-    },
-    "char_sprite_mnemonist_base": {
-      "id": "char_sprite_mnemonist_base",
-      "category": "character_sprite",
-      "name": "기억술사 base 시트",
-      "status": "prompted",
-      "depends_on": [
-        "char_illust_mnemonist_front"
-      ],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.137310",
-      "updated_at": "2026-03-13T00:21:00.137311",
-      "metadata": {
-        "class": "기억술사",
-        "advancement": "base"
-      }
-    },
-    "char_sprite_mnemonist_adv1": {
-      "id": "char_sprite_mnemonist_adv1",
-      "category": "character_sprite",
-      "name": "기억술사 adv1 시트",
-      "status": "prompted",
-      "depends_on": [
-        "char_illust_mnemonist_front"
-      ],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.137598",
-      "updated_at": "2026-03-13T00:21:00.137599",
-      "metadata": {
-        "class": "기억술사",
-        "advancement": "adv1"
-      }
-    },
-    "char_sprite_mnemonist_adv2": {
-      "id": "char_sprite_mnemonist_adv2",
-      "category": "character_sprite",
-      "name": "기억술사 adv2 시트",
-      "status": "prompted",
-      "depends_on": [
-        "char_illust_mnemonist_front"
-      ],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.137897",
-      "updated_at": "2026-03-13T00:21:00.137898",
-      "metadata": {
-        "class": "기억술사",
-        "advancement": "adv2"
-      }
-    },
-    "char_sprite_mnemonist_adv3": {
-      "id": "char_sprite_mnemonist_adv3",
-      "category": "character_sprite",
-      "name": "기억술사 adv3 시트",
-      "status": "prompted",
-      "depends_on": [
-        "char_illust_mnemonist_front"
-      ],
-      "prompt_file": "",
-      "output_file": "",
-      "engine": "",
-      "seed": -1,
-      "created_at": "2026-03-13T00:21:00.138195",
-      "updated_at": "2026-03-13T00:21:00.138196",
-      "metadata": {
-        "class": "기억술사",
         "advancement": "adv3"
       }
     },
@@ -20529,6 +20402,133 @@
       "metadata": {
         "type": "event_cg",
         "index": 4
+      }
+    },
+    "char_illust_memory_weaver_front": {
+      "id": "char_illust_memory_weaver_front",
+      "category": "character_illust",
+      "name": "기억술사 front",
+      "status": "prompted",
+      "depends_on": [],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.132891",
+      "updated_at": "2026-03-13T00:21:00.132892",
+      "metadata": {
+        "class": "기억술사",
+        "view": "front"
+      }
+    },
+    "char_illust_memory_weaver_side": {
+      "id": "char_illust_memory_weaver_side",
+      "category": "character_illust",
+      "name": "기억술사 side",
+      "status": "prompted",
+      "depends_on": [],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.133017",
+      "updated_at": "2026-03-13T00:21:00.133018",
+      "metadata": {
+        "class": "기억술사",
+        "view": "side"
+      }
+    },
+    "char_illust_memory_weaver_back": {
+      "id": "char_illust_memory_weaver_back",
+      "category": "character_illust",
+      "name": "기억술사 back",
+      "status": "prompted",
+      "depends_on": [],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.133138",
+      "updated_at": "2026-03-13T00:21:00.133139",
+      "metadata": {
+        "class": "기억술사",
+        "view": "back"
+      }
+    },
+    "char_sprite_memory_weaver_base": {
+      "id": "char_sprite_memory_weaver_base",
+      "category": "character_sprite",
+      "name": "기억술사 base 시트",
+      "status": "prompted",
+      "depends_on": [
+        "char_illust_memory_weaver_front"
+      ],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.137310",
+      "updated_at": "2026-03-13T00:21:00.137311",
+      "metadata": {
+        "class": "기억술사",
+        "advancement": "base"
+      }
+    },
+    "char_sprite_memory_weaver_adv1": {
+      "id": "char_sprite_memory_weaver_adv1",
+      "category": "character_sprite",
+      "name": "기억술사 adv1 시트",
+      "status": "prompted",
+      "depends_on": [
+        "char_illust_memory_weaver_front"
+      ],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.137598",
+      "updated_at": "2026-03-13T00:21:00.137599",
+      "metadata": {
+        "class": "기억술사",
+        "advancement": "adv1"
+      }
+    },
+    "char_sprite_memory_weaver_adv2": {
+      "id": "char_sprite_memory_weaver_adv2",
+      "category": "character_sprite",
+      "name": "기억술사 adv2 시트",
+      "status": "prompted",
+      "depends_on": [
+        "char_illust_memory_weaver_front"
+      ],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.137897",
+      "updated_at": "2026-03-13T00:21:00.137898",
+      "metadata": {
+        "class": "기억술사",
+        "advancement": "adv2"
+      }
+    },
+    "char_sprite_memory_weaver_adv3": {
+      "id": "char_sprite_memory_weaver_adv3",
+      "category": "character_sprite",
+      "name": "기억술사 adv3 시트",
+      "status": "prompted",
+      "depends_on": [
+        "char_illust_memory_weaver_front"
+      ],
+      "prompt_file": "",
+      "output_file": "",
+      "engine": "",
+      "seed": -1,
+      "created_at": "2026-03-13T00:21:00.138195",
+      "updated_at": "2026-03-13T00:21:00.138196",
+      "metadata": {
+        "class": "기억술사",
+        "advancement": "adv3"
       }
     }
   },
