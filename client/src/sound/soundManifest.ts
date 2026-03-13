@@ -1,6 +1,6 @@
 /**
- * 사운드 매니페스트 — 100개 사운드 에셋 정의
- * P4-05: 사운드 시스템
+ * 사운드 매니페스트 — P19 확장 (BGM 41 + SFX 75 + Voice 20 = 136 에셋)
+ * P19-07/P19-19: 사운드 매니페스트 통합 검증
  */
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
@@ -10,6 +10,7 @@ export type SoundCategory =
   | 'bgm_dungeon'
   | 'bgm_battle'
   | 'bgm_ui'
+  | 'bgm_event'
   | 'sfx_combat'
   | 'sfx_ui'
   | 'sfx_system'
@@ -32,23 +33,69 @@ export interface SoundEntry {
   category: SoundCategory;
 }
 
-// ─── BGM (15) ───────────────────────────────────────────────────
-const BGM_ENTRIES: SoundEntry[] = [
-  { key: 'bgm_main_theme', path: 'audio/bgm/main_theme.ogg', type: 'bgm', volume: 0.7, loop: true, category: 'bgm_field' },
-  { key: 'bgm_argentium', path: 'audio/bgm/argentium.ogg', type: 'bgm', volume: 0.65, loop: true, category: 'bgm_field' },
-  { key: 'bgm_veiled_forest', path: 'audio/bgm/veiled_forest.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_field' },
-  { key: 'bgm_crystal_cavern', path: 'audio/bgm/crystal_cavern.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_dungeon' },
-  { key: 'bgm_abyssal_rift', path: 'audio/bgm/abyssal_rift.ogg', type: 'bgm', volume: 0.65, loop: true, category: 'bgm_dungeon' },
-  { key: 'bgm_forgotten_archive', path: 'audio/bgm/forgotten_archive.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_dungeon' },
-  { key: 'bgm_boss_generic', path: 'audio/bgm/boss_generic.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_battle' },
-  { key: 'bgm_boss_chronos', path: 'audio/bgm/boss_chronos.ogg', type: 'bgm', volume: 0.85, loop: true, category: 'bgm_battle' },
-  { key: 'bgm_boss_oblivion', path: 'audio/bgm/boss_oblivion.ogg', type: 'bgm', volume: 0.85, loop: true, category: 'bgm_battle' },
-  { key: 'bgm_pvp_arena', path: 'audio/bgm/pvp_arena.ogg', type: 'bgm', volume: 0.75, loop: true, category: 'bgm_battle' },
-  { key: 'bgm_guild_hall', path: 'audio/bgm/guild_hall.ogg', type: 'bgm', volume: 0.5, loop: true, category: 'bgm_field' },
-  { key: 'bgm_village_peace', path: 'audio/bgm/village_peace.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
-  { key: 'bgm_title_screen', path: 'audio/bgm/title_screen.ogg', type: 'bgm', volume: 0.7, loop: true, category: 'bgm_ui' },
-  { key: 'bgm_ending_memory', path: 'audio/bgm/ending_memory.ogg', type: 'bgm', volume: 0.75, loop: false, category: 'bgm_ui' },
-  { key: 'bgm_ending_oblivion', path: 'audio/bgm/ending_oblivion.ogg', type: 'bgm', volume: 0.75, loop: false, category: 'bgm_ui' },
+// ─── BGM 탐색 (12곡) ───────────────────────────────────────────
+const BGM_EXPLORATION: SoundEntry[] = [
+  { key: 'bgm_erb_01', path: 'audio/bgm/bgm_erb_01_streets_of_oblivion.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_field' },
+  { key: 'bgm_syl_01', path: 'audio/bgm/bgm_syl_01_forest_of_memory.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_field' },
+  { key: 'bgm_syl_02', path: 'audio/bgm/bgm_syl_02_night_bioluminescence.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_sol_01', path: 'audio/bgm/bgm_sol_01_land_of_flames.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_field' },
+  { key: 'bgm_sol_02', path: 'audio/bgm/bgm_sol_02_ether_desert_night.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_bor_01', path: 'audio/bgm/bgm_bor_01_land_time_stopped.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_bor_02', path: 'audio/bgm/bgm_bor_02_memories_in_ice.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_arg_01', path: 'audio/bgm/bgm_arg_01_golden_spire.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_field' },
+  { key: 'bgm_arg_02', path: 'audio/bgm/bgm_arg_02_shadows_below.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_brt_01', path: 'audio/bgm/bgm_brt_01_morning_fog.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_brt_02', path: 'audio/bgm/bgm_brt_02_rusty_compass.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_field' },
+  { key: 'bgm_plt_01', path: 'audio/bgm/bgm_plt_01_plateau_oblivion.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_field' },
+];
+
+// ─── BGM 전투/보스 (10곡) ───────────────────────────────────────
+const BGM_COMBAT: SoundEntry[] = [
+  { key: 'bgm_erb_02', path: 'audio/bgm/bgm_erb_02_phantom_assault.ogg', type: 'bgm', volume: 0.7, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_erb_03', path: 'audio/bgm/bgm_erb_03_memory_golem.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_syl_03', path: 'audio/bgm/bgm_syl_03_malatus.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_sol_03', path: 'audio/bgm/bgm_sol_03_lawar.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_arg_03', path: 'audio/bgm/bgm_arg_03_kain.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_plt_02', path: 'audio/bgm/bgm_plt_02_lethe.ogg', type: 'bgm', volume: 0.85, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_plt_03', path: 'audio/bgm/bgm_plt_03_remembered.ogg', type: 'bgm', volume: 0.85, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_btl_01', path: 'audio/bgm/bgm_btl_01_memory_clash.ogg', type: 'bgm', volume: 0.7, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_btl_02', path: 'audio/bgm/bgm_btl_02_elite_pressure.ogg', type: 'bgm', volume: 0.75, loop: true, category: 'bgm_battle' },
+  { key: 'bgm_btl_03', path: 'audio/bgm/bgm_btl_03_abyssal_assault.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_battle' },
+];
+
+// ─── BGM 시스템/UI (5곡) ────────────────────────────────────────
+const BGM_SYSTEM: SoundEntry[] = [
+  { key: 'bgm_sys_01', path: 'audio/bgm/bgm_sys_01_dawn_etherna.ogg', type: 'bgm', volume: 0.7, loop: true, category: 'bgm_ui' },
+  { key: 'bgm_sys_02', path: 'audio/bgm/bgm_sys_02_garden_memory.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_ui' },
+  { key: 'bgm_sys_03', path: 'audio/bgm/bgm_sys_03_forge_flames.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_ui' },
+  { key: 'bgm_sys_04', path: 'audio/bgm/bgm_sys_04_guild_bond.ogg', type: 'bgm', volume: 0.5, loop: true, category: 'bgm_ui' },
+  { key: 'bgm_sys_05', path: 'audio/bgm/bgm_sys_05_victory_record.ogg', type: 'bgm', volume: 0.7, loop: false, category: 'bgm_ui' },
+];
+
+// ─── BGM 엔딩/이벤트 (4곡) ─────────────────────────────────────
+const BGM_ENDING: SoundEntry[] = [
+  { key: 'bgm_evt_01', path: 'audio/bgm/bgm_evt_01_awakening.ogg', type: 'bgm', volume: 0.7, loop: false, category: 'bgm_ui' },
+  { key: 'bgm_evt_02', path: 'audio/bgm/bgm_evt_02_farewell.ogg', type: 'bgm', volume: 0.75, loop: false, category: 'bgm_ui' },
+  { key: 'bgm_evt_03', path: 'audio/bgm/bgm_evt_03_revelation.ogg', type: 'bgm', volume: 0.7, loop: false, category: 'bgm_ui' },
+  { key: 'bgm_aby_05', path: 'audio/bgm/bgm_aby_05_return_memory.ogg', type: 'bgm', volume: 0.75, loop: false, category: 'bgm_ui' },
+];
+
+// ─── BGM 던전 (6곡) ─────────────────────────────────────────────
+const BGM_DUNGEON: SoundEntry[] = [
+  { key: 'bgm_aby_01', path: 'audio/bgm/bgm_aby_01_descent.ogg', type: 'bgm', volume: 0.6, loop: true, category: 'bgm_dungeon' },
+  { key: 'bgm_aby_02', path: 'audio/bgm/bgm_aby_02_fragments.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_dungeon' },
+  { key: 'bgm_aby_03', path: 'audio/bgm/bgm_aby_03_residual_will.ogg', type: 'bgm', volume: 0.8, loop: true, category: 'bgm_dungeon' },
+  { key: 'bgm_aby_04', path: 'audio/bgm/bgm_aby_04_end_of_time.ogg', type: 'bgm', volume: 0.85, loop: true, category: 'bgm_dungeon' },
+  { key: 'bgm_end_01', path: 'audio/bgm/bgm_end_01_endless_trial.ogg', type: 'bgm', volume: 0.65, loop: true, category: 'bgm_dungeon' },
+  { key: 'bgm_end_02', path: 'audio/bgm/bgm_end_02_floor_100.ogg', type: 'bgm', volume: 0.85, loop: true, category: 'bgm_dungeon' },
+];
+
+// ─── BGM 시즌 이벤트 (4곡) ──────────────────────────────────────
+const BGM_EVENT: SoundEntry[] = [
+  { key: 'bgm_ssn_01', path: 'audio/bgm/bgm_ssn_01_spring_memory.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_event' },
+  { key: 'bgm_ssn_02', path: 'audio/bgm/bgm_ssn_02_summer_illusion.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_event' },
+  { key: 'bgm_ssn_03', path: 'audio/bgm/bgm_ssn_03_autumn_reminiscence.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_event' },
+  { key: 'bgm_ssn_04', path: 'audio/bgm/bgm_ssn_04_winter_promise.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_event' },
 ];
 
 // ─── SFX 전투 (25) ──────────────────────────────────────────────
@@ -158,9 +205,14 @@ const VOICE_ENTRIES: SoundEntry[] = [
   { key: 'voice_combat_victory', path: 'audio/voice/combat/victory.ogg', type: 'voice', volume: 0.7, loop: false, category: 'voice_combat' },
 ];
 
-// ─── 전체 매니페스트 (100개) ────────────────────────────────────
+// ─── 전체 매니페스트 ────────────────────────────────────────────
 export const SOUND_MANIFEST: ReadonlyArray<SoundEntry> = [
-  ...BGM_ENTRIES,
+  ...BGM_EXPLORATION,
+  ...BGM_COMBAT,
+  ...BGM_SYSTEM,
+  ...BGM_ENDING,
+  ...BGM_DUNGEON,
+  ...BGM_EVENT,
   ...SFX_COMBAT_ENTRIES,
   ...SFX_UI_ENTRIES,
   ...SFX_SYSTEM_ENTRIES,
@@ -181,4 +233,9 @@ export function getSoundsByCategory(category: SoundCategory): SoundEntry[] {
 /** 타입별 필터 헬퍼 */
 export function getSoundsByType(type: SoundType): SoundEntry[] {
   return SOUND_MANIFEST.filter((e) => e.type === type);
+}
+
+/** BGM 전체 (41곡) */
+export function getAllBGM(): SoundEntry[] {
+  return SOUND_MANIFEST.filter((e) => e.type === 'bgm');
 }

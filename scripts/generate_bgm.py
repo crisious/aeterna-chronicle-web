@@ -243,29 +243,35 @@ def generate_bgm(tracks_to_gen, device="cpu", model_size="small"):
         model.set_generation_params(duration=duration)
         wav = model.generate([prompt], progress=True)
 
-        # Save raw WAV (32kHz from MusicGen) — use soundfile as fallback
-        try:
-            torchaudio.save(str(raw_path), wav[0].cpu(), model.sample_rate)
-        except ImportError:
-            import soundfile as sf
-            audio_np = wav[0].cpu().numpy()
-            # Shape: (channels, samples) → (samples, channels) for soundfile
-            if audio_np.ndim == 2:
-                audio_np = audio_np.T
-            sf.write(str(raw_path), audio_np, model.sample_rate)
+        # Save raw WAV — use temp path to avoid Korean char issues with soundfile/ffmpeg
+        import tempfile, shutil
+        import soundfile as sf
+        audio_np = wav[0].cpu().numpy()
+        if audio_np.ndim == 2:
+            audio_np = audio_np.T
+        tmp_wav = os.path.join(tempfile.gettempdir(), f"{filename}.wav")
+        sf.write(tmp_wav, audio_np, model.sample_rate)
+        shutil.copy2(tmp_wav, str(raw_path))
         elapsed = time.time() - t0
         print(f"  Raw WAV saved ({elapsed:.1f}s generation time)")
 
-        # Convert to OGG Opus: resample 32kHz→48kHz, normalize, encode
+        # Convert to OGG Opus via temp paths (avoid Korean char issues)
         try:
+            tmp_ogg = os.path.join(tempfile.gettempdir(), f"{filename}.ogg")
             subprocess.run([
-                "ffmpeg", "-y", "-i", str(raw_path),
-                "-ar", "48000",          # Resample to 48kHz (Opus standard)
-                "-ac", "2",              # Stereo
+                "ffmpeg", "-y", "-i", tmp_wav,
+                "-ar", "48000",
+                "-ac", "2",
                 "-c:a", "libopus",
-                "-b:a", "128k",          # 128kbps Opus (high quality)
-                str(ogg_path)
+                "-b:a", "128k",
+                tmp_ogg
             ], check=True, capture_output=True)
+            shutil.copy2(tmp_ogg, str(ogg_path))
+            try:
+                os.remove(tmp_ogg)
+                os.remove(tmp_wav)
+            except OSError:
+                pass
             size_kb = ogg_path.stat().st_size / 1024
             print(f"  OGG saved: {ogg_path.name} ({size_kb:.0f} KB)")
             results.append({"id": track_id, "status": "ok", "path": str(ogg_path), "size_kb": size_kb})
