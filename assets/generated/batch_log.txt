@@ -1,0 +1,21 @@
+11:05:35 [INFO] 몬스터(일반): 120건
+11:05:35 [INFO] 몬스터(엘리트/보스): 62건
+11:05:35 [INFO] 몬스터(레이드): 32건
+11:05:35 [INFO] 환경(타일+배경): 153건
+11:05:35 [INFO] 아이콘: 335건
+11:05:35 [INFO] 전체 태스크: 702건
+11:05:35 [INFO] ComfyUI 0.16.4 연결 성공 (device: mps)
+11:05:35 [INFO] [1/702] GEN: mon_abyss_data_worm_normal (monster_normal)
+11:05:35 [INFO] 큐 제출 완료: 2240cefd-432...
+11:08:28 [INFO] 저장: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/monsters/normal/mon_abyss_data_worm_normal.png (605KB)
+11:08:28 [INFO] [2/702] GEN: mon_abyss_distortion_shade_normal (monster_normal)
+11:08:28 [INFO] 큐 제출 완료: 1e9a7abe-53d...
+11:09:04 [INFO] 저장: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/monsters/normal/mon_abyss_distortion_shade_normal.png (667KB)
+11:09:04 [INFO] [3/702] GEN: mon_abyss_echo_phantom_normal (monster_normal)
+11:09:04 [INFO] 큐 제출 완료: 5cde4600-49e...
+11:09:42 [INFO] 저장: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/monsters/normal/mon_abyss_echo_phantom_normal.png (570KB)
+11:09:42 [INFO] [4/702] GEN: mon_abyss_ether_serpent_normal (monster_normal)
+11:09:42 [INFO] 큐 제출 완료: a894c264-6f3...
+11:10:19 [INFO] 저장: /Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/monsters/normal/mon_abyss_ether_serpent_normal.png (681KB)
+11:10:19 [INFO] [5/702] GEN: mon_abyss_ether_wisp_normal (monster_normal)
+11:10:19 [INFO] 큐 제출 완료: a8bfd4ee-409...
