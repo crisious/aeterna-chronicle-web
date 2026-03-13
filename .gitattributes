@@ -1,0 +1,19 @@
+# 에테르나 크로니클 — Git LFS 추적 설정
+# P18-03: 이미지 리소스 대용량 파일 관리
+
+# 이미지 파일
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.bmp filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+
+# PSD/포토샵 원본
+*.psd filter=lfs diff=lfs merge=lfs -text
+
+# 모델/체크포인트 (실수 커밋 방지)
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.ckpt filter=lfs diff=lfs merge=lfs -text
+*.pt filter=lfs diff=lfs merge=lfs -text
