@@ -1,0 +1,381 @@
+{
+  "timestamp": "2026-03-14 01:43:45",
+  "elapsed_sec": 4558.4,
+  "summary": {
+    "success": 74,
+    "fail": 0,
+    "skip": 0
+  },
+  "details": [
+    {
+      "file": "sword_slash_1",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/sword_slash_1.ogg"
+    },
+    {
+      "file": "sword_slash_2",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/sword_slash_2.ogg"
+    },
+    {
+      "file": "sword_slash_3",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/sword_slash_3.ogg"
+    },
+    {
+      "file": "heavy_strike",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/heavy_strike.ogg"
+    },
+    {
+      "file": "arrow_shoot",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/arrow_shoot.ogg"
+    },
+    {
+      "file": "arrow_hit",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/arrow_hit.ogg"
+    },
+    {
+      "file": "guard_block",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/guard_block.ogg"
+    },
+    {
+      "file": "guard_break",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/guard_break.ogg"
+    },
+    {
+      "file": "dodge_roll",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/dodge_roll.ogg"
+    },
+    {
+      "file": "hit_flesh",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/hit_flesh.ogg"
+    },
+    {
+      "file": "hit_metal",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/hit_metal.ogg"
+    },
+    {
+      "file": "hit_magic",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/hit_magic.ogg"
+    },
+    {
+      "file": "critical_hit",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/critical_hit.ogg"
+    },
+    {
+      "file": "magic_fire",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/magic_fire.ogg"
+    },
+    {
+      "file": "magic_ice",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/magic_ice.ogg"
+    },
+    {
+      "file": "magic_lightning",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/magic_lightning.ogg"
+    },
+    {
+      "file": "magic_heal",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/magic_heal.ogg"
+    },
+    {
+      "file": "magic_dark",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/magic_dark.ogg"
+    },
+    {
+      "file": "skill_activate",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/skill_activate.ogg"
+    },
+    {
+      "file": "skill_ultimate",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/skill_ultimate.ogg"
+    },
+    {
+      "file": "buff_apply",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/buff_apply.ogg"
+    },
+    {
+      "file": "debuff_apply",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/debuff_apply.ogg"
+    },
+    {
+      "file": "enemy_death",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/enemy_death.ogg"
+    },
+    {
+      "file": "player_death",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/player_death.ogg"
+    },
+    {
+      "file": "revive",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/combat/revive.ogg"
+    },
+    {
+      "file": "click",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/click.ogg"
+    },
+    {
+      "file": "hover",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/hover.ogg"
+    },
+    {
+      "file": "open",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/open.ogg"
+    },
+    {
+      "file": "close",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/close.ogg"
+    },
+    {
+      "file": "confirm",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/confirm.ogg"
+    },
+    {
+      "file": "cancel",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/cancel.ogg"
+    },
+    {
+      "file": "error",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/error.ogg"
+    },
+    {
+      "file": "level_up",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/level_up.ogg"
+    },
+    {
+      "file": "achievement",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/achievement.ogg"
+    },
+    {
+      "file": "quest_accept",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/quest_accept.ogg"
+    },
+    {
+      "file": "quest_complete",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/quest_complete.ogg"
+    },
+    {
+      "file": "item_pickup",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/item_pickup.ogg"
+    },
+    {
+      "file": "item_equip",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/item_equip.ogg"
+    },
+    {
+      "file": "gold_gain",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/gold_gain.ogg"
+    },
+    {
+      "file": "notification",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ui/notification.ogg"
+    },
+    {
+      "file": "login",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/login.ogg"
+    },
+    {
+      "file": "logout",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/logout.ogg"
+    },
+    {
+      "file": "mail_arrive",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/mail_arrive.ogg"
+    },
+    {
+      "file": "party_invite",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/party_invite.ogg"
+    },
+    {
+      "file": "party_join",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/party_join.ogg"
+    },
+    {
+      "file": "guild_notice",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/guild_notice.ogg"
+    },
+    {
+      "file": "trade_request",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/trade_request.ogg"
+    },
+    {
+      "file": "chat_whisper",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/chat_whisper.ogg"
+    },
+    {
+      "file": "screenshot",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/screenshot.ogg"
+    },
+    {
+      "file": "server_message",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/system/server_message.ogg"
+    },
+    {
+      "file": "forest_day",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/forest_day.ogg"
+    },
+    {
+      "file": "forest_night",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/forest_night.ogg"
+    },
+    {
+      "file": "ocean_waves",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/ocean_waves.ogg"
+    },
+    {
+      "file": "river_stream",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/river_stream.ogg"
+    },
+    {
+      "file": "cave_drip",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/cave_drip.ogg"
+    },
+    {
+      "file": "cave_wind",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/cave_wind.ogg"
+    },
+    {
+      "file": "rain_light",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/rain_light.ogg"
+    },
+    {
+      "file": "rain_heavy",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/rain_heavy.ogg"
+    },
+    {
+      "file": "snow_wind",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/snow_wind.ogg"
+    },
+    {
+      "file": "volcano_rumble",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/volcano_rumble.ogg"
+    },
+    {
+      "file": "city_crowd",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/city_crowd.ogg"
+    },
+    {
+      "file": "market_bustle",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/market_bustle.ogg"
+    },
+    {
+      "file": "dungeon_eerie",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/dungeon_eerie.ogg"
+    },
+    {
+      "file": "ether_hum",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/ether_hum.ogg"
+    },
+    {
+      "file": "clockwork_tick",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/ambient/clockwork_tick.ogg"
+    },
+    {
+      "file": "fragment_detect",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/fragment_detect.ogg"
+    },
+    {
+      "file": "fragment_collect",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/fragment_collect.ogg"
+    },
+    {
+      "file": "resonance_trigger",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/resonance_trigger.ogg"
+    },
+    {
+      "file": "memory_restore",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/memory_restore.ogg"
+    },
+    {
+      "file": "memory_dissolve",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/memory_dissolve.ogg"
+    },
+    {
+      "file": "oblivion_fog",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/oblivion_fog.ogg"
+    },
+    {
+      "file": "memory_summon",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/memory_summon.ogg"
+    },
+    {
+      "file": "oblivion_arrow",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/oblivion_arrow.ogg"
+    },
+    {
+      "file": "memory_explosion",
+      "status": "ok",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/sfx/memory/memory_explosion.ogg"
+    }
+  ]
+}
