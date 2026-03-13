@@ -1,0 +1,50 @@
+[
+  {
+    "id": "BGM-ABY-01",
+    "title": "심연으로의 하강 / Descent into the Abyss",
+    "prompt": "Abyssal deep descent exploration BGM, 64 BPM, C sharp minor, sub-bass drone with distant sonar pings, pressure-building low strings, sporadic memory fragment chimes, claustrophobic and vast, underwater reverb space, seamless loop, no vocals",
+    "duration": 120,
+    "subfolder": "dungeon",
+    "filename": "bgm_aby_01_descent"
+  },
+  {
+    "id": "BGM-ABY-02",
+    "title": "파편의 춤 / Dance of Fragments",
+    "prompt": "Memory fragment active zone BGM, 78 BPM, E minor, crystalline arpeggios with floating synth pads, occasional dissonant string swells, beautiful but unsettling, memories swirling atmosphere, loop-friendly, no vocals",
+    "duration": 120,
+    "subfolder": "dungeon",
+    "filename": "bgm_aby_02_fragments"
+  },
+  {
+    "id": "BGM-ABY-03",
+    "title": "잔류 의지 / Residual Will",
+    "prompt": "Residual boss battle theme in deep dungeon, 134 BPM, F minor, fragmented leitmotifs woven into aggressive arrangement, distorted choir, glitched orchestral hits, memory-corruption audio effects, boss loop structure, no vocals",
+    "duration": 120,
+    "subfolder": "dungeon",
+    "filename": "bgm_aby_03_residual_will"
+  },
+  {
+    "id": "BGM-ABY-04",
+    "title": "시간의 종말 / End of Time",
+    "prompt": "Season 3 final boss theme, 142 BPM, B flat minor, time-collapse sound design with reversed orchestral elements, massive sub drops, clock mechanism percussion, building to overwhelming climax, phase transitions, no vocals",
+    "duration": 120,
+    "subfolder": "dungeon",
+    "filename": "bgm_aby_04_end_of_time"
+  },
+  {
+    "id": "BGM-END-01",
+    "title": "끝없는 시련 / Endless Trial",
+    "prompt": "Endless dungeon exploration combat BGM, 110 BPM, A minor, layered build-up structure starting minimal and adding instruments, adaptive intensity, tense but sustainable for long sessions, dark dungeon atmosphere, seamless loop, no vocals",
+    "duration": 120,
+    "subfolder": "dungeon",
+    "filename": "bgm_end_01_endless_trial"
+  },
+  {
+    "id": "BGM-END-02",
+    "title": "100층의 끝 / Floor 100",
+    "prompt": "Ultimate challenge floor 100 boss music, 148 BPM, E minor, fastest and most intense track, full hybrid orchestra with electronic elements, relentless double-kick drums, ascending chromatic brass, choir singing in canon, boss loop, no vocals",
+    "duration": 120,
+    "subfolder": "dungeon",
+    "filename": "bgm_end_02_floor_100"
+  }
+]

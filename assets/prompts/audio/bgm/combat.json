@@ -1,0 +1,82 @@
+[
+  {
+    "id": "BGM-ERB-02",
+    "title": "기억 유령의 습격 / Memory Phantom Assault",
+    "prompt": "Combat cue in a forgotten city, 118 BPM, D minor, urgent staccato strings and taiko-lite hits, spectral choir pad in background, rising tension but medium intensity for repeat battles, loopable 90s structure, no vocals",
+    "duration": 90,
+    "subfolder": "combat",
+    "filename": "bgm_erb_02_phantom_assault"
+  },
+  {
+    "id": "BGM-ERB-03",
+    "title": "기억의 골렘 / Memory Golem",
+    "prompt": "Chapter 1 boss music, 128 BPM, C sharp minor, heavy low strings, metallic impacts, ancient stone golem rhythm motif, dramatic brass swells with restrained choir, phase-ready structure with clear loop point, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_erb_03_memory_golem"
+  },
+  {
+    "id": "BGM-SYL-03",
+    "title": "말라투스 — 천년의 기억 / Malatus",
+    "prompt": "Chapter 2 boss theme, 122 BPM, F minor, primal drum ostinato, deep choir textures, distorted wood resonance and string tremolo, ancient tree guardian identity, escalating mid-boss intensity, clean loop end, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_syl_03_malatus"
+  },
+  {
+    "id": "BGM-SOL-03",
+    "title": "라와르 — 3천 년의 배회 / Lawar",
+    "prompt": "Chapter 3 boss theme, 130 BPM, B minor, regal but broken orchestral motif, aggressive percussion, lamenting solo cello phrases, fallen king tragedy energy, high-intensity combat loop with distinct cadence, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_sol_03_lawar"
+  },
+  {
+    "id": "BGM-ARG-03",
+    "title": "케인 — 굳어버린 슬픔 / Kain",
+    "prompt": "Chapter 4 boss track, 132 BPM, C sharp minor, hard-hitting hybrid drums, sharp string ostinato, tragic villain leitmotif on solo violin, relentless pursuit energy, boss loop with dramatic break section, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_arg_03_kain"
+  },
+  {
+    "id": "BGM-PLT-02",
+    "title": "레테 — 망각의 신 / Lethe — God of Oblivion",
+    "prompt": "Final boss phase 1-2 theme, 138 BPM, C minor, massive hybrid orchestra with dark choir and sub impacts, cosmic dread and divine scale, aggressive rhythm with clear phase transition markers, boss loop, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_plt_02_lethe"
+  },
+  {
+    "id": "BGM-PLT-03",
+    "title": "기억되고 싶었어 / I Wanted to Be Remembered",
+    "prompt": "Final boss phase 3 emotional climax, 96 BPM, A minor to C major lift, solo piano and cello opening into full bittersweet orchestral swell, redemption and sorrow blend, cinematic ending-combat cue with loop-capable tail, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_plt_03_remembered"
+  },
+  {
+    "id": "BGM-BTL-01",
+    "title": "기억의 충돌 / Memory Clash",
+    "prompt": "Generic RPG combat music, 120 BPM, D minor, driving string ostinato with snare groove, light brass punctuation, medium intensity, combat-ready loop, dark fantasy, no vocals",
+    "duration": 90,
+    "subfolder": "combat",
+    "filename": "bgm_btl_01_memory_clash"
+  },
+  {
+    "id": "BGM-BTL-02",
+    "title": "엘리트의 위압 / Elite Pressure",
+    "prompt": "Elite enemy combat theme, 126 BPM, A minor, heavy taiko and orchestral hits, tense string tremolo, choir stabs on accents, higher intensity than normal battle, loopable, no vocals",
+    "duration": 90,
+    "subfolder": "combat",
+    "filename": "bgm_btl_02_elite_pressure"
+  },
+  {
+    "id": "BGM-BTL-03",
+    "title": "심연의 습격 / Abyssal Assault",
+    "prompt": "Raid boss combat music, 140 BPM, C minor, full hybrid orchestra with massive choir, relentless percussion, epic brass fanfares, maximum intensity, phase-ready boss loop structure, no vocals",
+    "duration": 120,
+    "subfolder": "combat",
+    "filename": "bgm_btl_03_abyssal_assault"
+  }
+]

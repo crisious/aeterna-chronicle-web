@@ -1,0 +1,98 @@
+[
+  {
+    "id": "BGM-ERB-01",
+    "title": "망각의 거리 / Streets of Oblivion",
+    "prompt": "Dark fantasy exploration BGM for a ruined ghost city, 72 BPM, D minor, sparse music box motif with distant cello and low drone, cold foggy atmosphere, subtle memory-echo shimmer, minimal percussion, seamless loop for field exploration, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_erb_01_streets_of_oblivion"
+  },
+  {
+    "id": "BGM-SYL-01",
+    "title": "기억이 자라는 숲 / Forest of Growing Memory",
+    "prompt": "Daytime enchanted forest exploration track, 84 BPM, G minor, wooden flute lead with soft harp arpeggio and warm strings, mystical but calm, organic ambience, gentle pulse for long traversal, seamless loop, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_syl_01_forest_of_memory"
+  },
+  {
+    "id": "BGM-SYL-02",
+    "title": "발광균의 밤 / Night of Bioluminescence",
+    "prompt": "Night forest ambient exploration BGM, 76 BPM, E minor, glassy bells and airy synth pad with light ethnic percussion, bioluminescent magical feeling, dreamy and slightly melancholic tone, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_syl_02_night_bioluminescence"
+  },
+  {
+    "id": "BGM-SOL-01",
+    "title": "불꽃의 땅 / Land of Flames",
+    "prompt": "Desert daytime exploration track, 96 BPM, A minor, oud-like plucked motif with frame drum groove and warm brass accents, heat haze atmosphere, adventurous and tense, suitable for long walking loop, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_sol_01_land_of_flames"
+  },
+  {
+    "id": "BGM-SOL-02",
+    "title": "에테르 결정 사막의 밤 / Ether Crystal Desert Night",
+    "prompt": "Desert night exploration BGM with glowing crystals, 82 BPM, C minor, shimmering mallet synth, soft choir pad and low pulse bass, mysterious cosmic beauty, wide stereo ambience, seamless looping, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_sol_02_ether_desert_night"
+  },
+  {
+    "id": "BGM-BOR-01",
+    "title": "시간이 멈춘 땅 / Land Where Time Stopped",
+    "prompt": "Frozen north exploration BGM, 70 BPM, D minor, slow bowed strings with icy bell textures and deep wind drone, time-slowing sensation, solemn and spacious mix, minimal rhythm, seamless loop, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_bor_01_land_time_stopped"
+  },
+  {
+    "id": "BGM-BOR-02",
+    "title": "빙정 속의 기억 / Memories in the Ice",
+    "prompt": "Aurora event exploration music, 78 BPM, F sharp minor, crystalline plucks, soft female-like choir pad wordless, distant horn swells, memory-reversal wonder and sadness, long evolving loop, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_bor_02_memories_in_ice"
+  },
+  {
+    "id": "BGM-ARG-01",
+    "title": "황금 첨탑 / Golden Spire",
+    "prompt": "Imperial capital upper district exploration, 92 BPM, E minor, elegant chamber strings with clockwork percussion and subtle brass, steampunk aristocratic mood, polished and controlled tension, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_arg_01_golden_spire"
+  },
+  {
+    "id": "BGM-ARG-02",
+    "title": "탑 아래의 그림자 / Shadows Below the Spire",
+    "prompt": "Lower district and slum exploration BGM, 88 BPM, C minor, muted piano motif with gritty percussion and low synth drone, noir stealth feeling, urban despair under imperial light, seamless loop, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_arg_02_shadows_below"
+  },
+  {
+    "id": "BGM-BRT-01",
+    "title": "자유항의 아침 안개 / Morning Fog of the Free Harbor",
+    "prompt": "Harbor exploration morning theme, 86 BPM, G minor, accordion and light fiddle over brushed percussion, misty sea breeze ambience, bustling yet suspicious free-port mood, loopable field track, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_brt_01_morning_fog"
+  },
+  {
+    "id": "BGM-BRT-02",
+    "title": "녹슨 나침반의 밤 / Night at the Rusty Compass",
+    "prompt": "Tavern and information-gathering BGM, 90 BPM, D minor, upright bass groove, muted trumpet, smoky jazz-dungeon hybrid texture, warm but dangerous undertone, conversation-friendly mix, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_brt_02_rusty_compass"
+  },
+  {
+    "id": "BGM-PLT-01",
+    "title": "망각의 고원 / Plateau of Oblivion",
+    "prompt": "Final chapter pre-boss exploration music, 74 BPM, C minor, ritualistic low drum pulse, dissonant strings and distant choir haze, impending apocalypse atmosphere, heavy reverb space, seamless loop, no vocals",
+    "duration": 90,
+    "subfolder": "exploration",
+    "filename": "bgm_plt_01_plateau_oblivion"
+  }
+]

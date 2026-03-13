@@ -1,0 +1,42 @@
+[
+  {
+    "id": "BGM-SYS-01",
+    "title": "에테르나의 여명 / Dawn of Etherna",
+    "prompt": "Dark fantasy RPG title screen music, 80 BPM, C minor resolving to E minor, majestic orchestral opening, memory crystal chimes, building from intimate to grand, emotional and mysterious, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "system",
+    "filename": "bgm_sys_01_dawn_etherna"
+  },
+  {
+    "id": "BGM-SYS-02",
+    "title": "기억의 정원 / Garden of Memory",
+    "prompt": "Main menu ambient music, 72 BPM, A minor, solo piano with soft string pad, gentle memory crystal bell accents, peaceful but melancholic, suitable for menu navigation, seamless loop, no vocals",
+    "duration": 90,
+    "subfolder": "system",
+    "filename": "bgm_sys_02_garden_memory"
+  },
+  {
+    "id": "BGM-SYS-03",
+    "title": "대장간의 불꽃 / Forge Flames",
+    "prompt": "Blacksmith workshop music, 90 BPM, D minor, rhythmic anvil hits as percussion, warm strings and bellows drone, focused crafting atmosphere, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "system",
+    "filename": "bgm_sys_03_forge_flames"
+  },
+  {
+    "id": "BGM-SYS-04",
+    "title": "길드의 유대 / Guild Bond",
+    "prompt": "Guild hall gathering music, 88 BPM, G major, warm fiddle lead with lute and light percussion, camaraderie and warmth, tavern-meets-hall atmosphere, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "system",
+    "filename": "bgm_sys_04_guild_bond"
+  },
+  {
+    "id": "BGM-SYS-05",
+    "title": "승리의 기록 / Victory Record",
+    "prompt": "Victory fanfare and results screen music, 100 BPM, C major, triumphant brass fanfare into celebratory strings and light percussion, rewarding and uplifting, short intro into calm looping section, no vocals",
+    "duration": 60,
+    "subfolder": "system",
+    "filename": "bgm_sys_05_victory_record"
+  }
+]

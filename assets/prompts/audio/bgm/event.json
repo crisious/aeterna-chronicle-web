@@ -1,0 +1,34 @@
+[
+  {
+    "id": "BGM-SSN-01",
+    "title": "봄의 기억 / Spring Memory",
+    "prompt": "Seasonal spring event BGM for dark fantasy RPG, 88 BPM, D major, gentle harp arpeggios with flute melody, warm strings, blooming nature feeling mixed with memory crystal shimmer, festive but bittersweet, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "event",
+    "filename": "bgm_ssn_01_spring_memory"
+  },
+  {
+    "id": "BGM-SSN-02",
+    "title": "여름의 환상 / Summer Illusion",
+    "prompt": "Seasonal summer event BGM for dark fantasy RPG, 96 BPM, A major, bright percussion with steel drum accents, ocean wave textures, energetic and adventurous festival mood, warm synth pads, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "event",
+    "filename": "bgm_ssn_02_summer_illusion"
+  },
+  {
+    "id": "BGM-SSN-03",
+    "title": "가을의 회상 / Autumn Reminiscence",
+    "prompt": "Seasonal autumn event BGM for dark fantasy RPG, 78 BPM, E minor, acoustic guitar fingerpicking with cello, falling leaves atmosphere, nostalgic and warm, subtle memory motif, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "event",
+    "filename": "bgm_ssn_03_autumn_reminiscence"
+  },
+  {
+    "id": "BGM-SSN-04",
+    "title": "겨울의 약속 / Winter Promise",
+    "prompt": "Seasonal winter event BGM for dark fantasy RPG, 72 BPM, F minor, music box melody with soft choir and glass bells, snow falling ambience, peaceful yet melancholic, crystalline textures, loop-friendly, no vocals",
+    "duration": 90,
+    "subfolder": "event",
+    "filename": "bgm_ssn_04_winter_promise"
+  }
+]

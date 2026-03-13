@@ -1,0 +1,34 @@
+[
+  {
+    "id": "BGM-EVT-01",
+    "title": "각성의 순간 / Moment of Awakening",
+    "prompt": "Class advancement cutscene music, 90 BPM, A minor to E minor, building anticipation with soft strings into triumphant brass reveal, magical transformation energy, power awakening moment, cinematic one-shot with tail, no vocals",
+    "duration": 60,
+    "subfolder": "ending",
+    "filename": "bgm_evt_01_awakening"
+  },
+  {
+    "id": "BGM-EVT-02",
+    "title": "이별의 기억 / Memory of Farewell",
+    "prompt": "Tragic cutscene music, 68 BPM, F minor, solo violin lament with piano accompaniment, building to full string section emotional climax, heartbreak and loss, cinematic piece with fade ending, no vocals",
+    "duration": 90,
+    "subfolder": "ending",
+    "filename": "bgm_evt_02_farewell"
+  },
+  {
+    "id": "BGM-EVT-03",
+    "title": "대망각의 진실 / Truth of the Great Oblivion",
+    "prompt": "Revelation cutscene music, 82 BPM, C minor, unsettling low brass with memory crystal motif, building tension with dissonant strings, shocking revelation impact hit, aftermath of quiet dread, cinematic piece, no vocals",
+    "duration": 90,
+    "subfolder": "ending",
+    "filename": "bgm_evt_03_revelation"
+  },
+  {
+    "id": "BGM-ABY-05",
+    "title": "기억의 귀환 / Return of Memory",
+    "prompt": "Season 3 ending theme, 76 BPM, D flat major resolving to F major, redemptive orchestral swell from solo cello, memory crystal bells returning, bittersweet to hopeful, cinematic resolution, fading tail for credits, no vocals",
+    "duration": 120,
+    "subfolder": "ending",
+    "filename": "bgm_aby_05_return_memory"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-03-13 18:12:03",
+  "results": [
+    {
+      "id": "BGM-ERB-01",
+      "status": "ffmpeg_error"
+    },
+    {
+      "id": "BGM-SYL-01",
+      "status": "ffmpeg_error"
+    },
+    {
+      "id": "BGM-SYL-02",
+      "status": "ffmpeg_error"
+    }
+  ]
+}
