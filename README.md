@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-17%20LAUNCH%20PREP-blue?style=for-the-badge)](01_코어기획/P17_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-18%20ASSET%20GEN-blue?style=for-the-badge)](01_코어기획/P18_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
-[![Docs](https://img.shields.io/badge/Docs-750%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Assets](https://img.shields.io/badge/Assets-1%2C248%20Prompted-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
-[![Commits](https://img.shields.io/badge/Commits-130%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-328%2F328%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Docs](https://img.shields.io/badge/Docs-765%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
+[![Assets](https://img.shields.io/badge/Assets-777%2B%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
+[![Commits](https://img.shields.io/badge/Commits-144%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Tickets](https://img.shields.io/badge/Notion-348%2F348%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -287,7 +287,7 @@ graph LR
 
 ## 🎨 에셋 파이프라인
 
-> **P16 완결** — 1,248개 에셋 프롬프트 100% 완성
+> **P18 진행 중** — 1,248개 에셋 중 777장 실제 AI 생성 완료 (ComfyUI SD 1.5)
 
 | 카테고리 | 수량 | 상태 |
 |----------|------|------|
@@ -332,6 +332,7 @@ Phase 14 ████████████████████  100%  데
 Phase 15 ████████████████████  100%  그래픽 리소스 제작 — 288/288 에셋 생산 체계 🎨
 Phase 16 ████████████████████  100%  잔여 에셋 + 게임 적용 — 308/308 에셋 완결 🖼️
 Phase 17 ████████████████████  100%  출시 준비 + 접근성 — 328/328 출시 준비 완료 🚀
+Phase 18 ████████████████░░░░   80%  이미지 리소스 생성 — 777/1,248 AI 생성 완료 🎨
 ```
 
 **18 Phase 완료 · 328 Notion 티켓 전부 Done · TODO/FIXME 0건**
