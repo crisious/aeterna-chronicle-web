@@ -1,0 +1,234 @@
+{
+  "total": 41,
+  "success": 25,
+  "failed": 2,
+  "skipped": 14,
+  "errors": [
+    {
+      "id": "BGM-SYS-03",
+      "error": "[Errno 2] No such file or directory: '/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/audio/bgm/bgm_sys_03_forge_flames.ogg'"
+    },
+    {
+      "id": "BGM-SYS-04",
+      "error": "[Errno 2] No such file or directory: '/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/audio/bgm/bgm_sys_04_guild_bond.ogg'"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "BGM-ERB-01",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-SYL-01",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-SYL-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/exploration/bgm_syl_02_night_bioluminescence.ogg",
+      "size": 1582781
+    },
+    {
+      "id": "BGM-SOL-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/exploration/bgm_sol_01_land_of_flames.ogg",
+      "size": 1469387
+    },
+    {
+      "id": "BGM-SOL-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/exploration/bgm_sol_02_ether_desert_night.ogg",
+      "size": 1509830
+    },
+    {
+      "id": "BGM-BOR-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/exploration/bgm_bor_01_land_time_stopped.ogg",
+      "size": 1497326
+    },
+    {
+      "id": "BGM-BOR-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/exploration/bgm_bor_02_memories_in_ice.ogg",
+      "size": 1479674
+    },
+    {
+      "id": "BGM-ARG-01",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-ARG-02",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-BRT-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/exploration/bgm_brt_01_morning_fog.ogg",
+      "size": 1546259
+    },
+    {
+      "id": "BGM-BRT-02",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-PLT-01",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-ERB-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/combat/bgm_erb_02_phantom_assault.ogg",
+      "size": 1462337
+    },
+    {
+      "id": "BGM-ERB-03",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-SYL-03",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-SOL-03",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/combat/bgm_sol_03_lawar.ogg",
+      "size": 1899686
+    },
+    {
+      "id": "BGM-ARG-03",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-PLT-02",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-PLT-03",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-BTL-01",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-BTL-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/combat/bgm_btl_02_elite_pressure.ogg",
+      "size": 1434775
+    },
+    {
+      "id": "BGM-BTL-03",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-SYS-01",
+      "status": "skipped"
+    },
+    {
+      "id": "BGM-SYS-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/system/bgm_sys_02_garden_memory.ogg",
+      "size": 1522727
+    },
+    {
+      "id": "BGM-SYS-03",
+      "status": "failed",
+      "error": "[Errno 2] No such file or directory: '/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/audio/bgm/bgm_sys_03_forge_flames.ogg'"
+    },
+    {
+      "id": "BGM-SYS-04",
+      "status": "failed",
+      "error": "[Errno 2] No such file or directory: '/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/audio/bgm/bgm_sys_04_guild_bond.ogg'"
+    },
+    {
+      "id": "BGM-SYS-05",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/system/bgm_sys_05_victory_record.ogg",
+      "size": 972218
+    },
+    {
+      "id": "BGM-EVT-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/ending/bgm_evt_01_awakening.ogg",
+      "size": 940095
+    },
+    {
+      "id": "BGM-EVT-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/ending/bgm_evt_02_farewell.ogg",
+      "size": 1509978
+    },
+    {
+      "id": "BGM-EVT-03",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/ending/bgm_evt_03_revelation.ogg",
+      "size": 1387646
+    },
+    {
+      "id": "BGM-ABY-05",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/ending/bgm_aby_05_return_memory.ogg",
+      "size": 1948332
+    },
+    {
+      "id": "BGM-ABY-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/dungeon/bgm_aby_01_descent.ogg",
+      "size": 1912516
+    },
+    {
+      "id": "BGM-ABY-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/dungeon/bgm_aby_02_fragments.ogg",
+      "size": 1918567
+    },
+    {
+      "id": "BGM-ABY-03",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/dungeon/bgm_aby_03_residual_will.ogg",
+      "size": 1881246
+    },
+    {
+      "id": "BGM-ABY-04",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/dungeon/bgm_aby_04_end_of_time.ogg",
+      "size": 1988815
+    },
+    {
+      "id": "BGM-END-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/dungeon/bgm_end_01_endless_trial.ogg",
+      "size": 1868007
+    },
+    {
+      "id": "BGM-END-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/dungeon/bgm_end_02_floor_100.ogg",
+      "size": 1938224
+    },
+    {
+      "id": "BGM-SSN-01",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/event/bgm_ssn_01_spring_memory.ogg",
+      "size": 1495659
+    },
+    {
+      "id": "BGM-SSN-02",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/event/bgm_ssn_02_summer_illusion.ogg",
+      "size": 1484279
+    },
+    {
+      "id": "BGM-SSN-03",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/event/bgm_ssn_03_autumn_reminiscence.ogg",
+      "size": 1546474
+    },
+    {
+      "id": "BGM-SSN-04",
+      "status": "success",
+      "path": "/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클/assets/generated/audio/bgm/event/bgm_ssn_04_winter_promise.ogg",
+      "size": 1560880
+    }
+  ]
+}
