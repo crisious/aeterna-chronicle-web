@@ -203,10 +203,11 @@ def scan_existing_prompts() -> Dict[str, dict]:
 
 def _extract_sd_prompt(data: dict) -> str:
     """JSON 데이터에서 SD 프롬프트 추출 (다양한 구조 대응)"""
-    # prompts.sd.sprite.prompt
     p = data.get("prompts", {}).get("sd", {})
     if isinstance(p, dict):
-        for view_key in ["sprite", "illustration", "prompt", "icon"]:
+        # prompts.sd.sprite / prompts.sd.phase1 / prompts.sd.illustration 등
+        for view_key in ["sprite", "illustration", "prompt", "icon",
+                         "phase1", "phase_1", "front", "idle"]:
             if view_key in p:
                 val = p[view_key]
                 if isinstance(val, dict):
