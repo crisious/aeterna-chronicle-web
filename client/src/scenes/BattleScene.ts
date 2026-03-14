@@ -1,5 +1,5 @@
 /**
- * BattleScene.ts — 실시간 반자동 전투 씬 (P5-05)
+ * BattleScene.ts — 실시간 반자동 전투 씬 (P5-05 → P25-05 전투 API 연동)
  *
  * - 좌측 아군 / 우측 적군 배치
  * - 공격 속도 기반 자동 기본 공격
@@ -9,6 +9,8 @@
  * - 데미지 텍스트 팝업 (EffectManager 연동)
  * - 전투 종료 판정 (승리/패배)
  * - 전리품 표시 팝업
+ * - P25-05: NetworkManager 전투 API 연동
+ *   (POST /api/combat/start, /action, 소켓 combat:tick, combat:result)
  */
 
 import * as Phaser from 'phaser';
@@ -18,6 +20,7 @@ import { BattleUI } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
+import { networkManager, CombatResult } from '../network/NetworkManager';
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
 
@@ -35,6 +38,11 @@ export interface BattleSceneData {
   bgKey?: string;
   /** 서버 전투 ID */
   battleId?: string;
+  /** P25-05: 전투 시작을 위한 추가 데이터 */
+  zoneId?: string;
+  monsterId?: string;
+  monsterName?: string;
+  characterId?: string;
 }
 
 // ─── 상수 ──────────────────────────────────────────────────────
@@ -89,6 +97,10 @@ export class BattleScene extends Phaser.Scene {
   // P6-04/05: 상태이상 렌더러 + 콤보 UI
   private statusEffectRenderer!: StatusEffectRenderer;
   private comboUI!: ComboUI;
+
+  // P25-05: 소켓 이벤트 클린업
+  private socketCleanups: Array<() => void> = [];
+  private serverCombatId: string | null = null;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -159,12 +171,63 @@ export class BattleScene extends Phaser.Scene {
     // P6-05: 콤보 UI 초기화
     this.comboUI = new ComboUI(this);
 
+    // P25-05: 서버 전투 시작 + 소켓 이벤트 바인딩
+    this._startServerCombat();
+    this._setupCombatSocket();
+
     // 인트로 연출 (0.5초 후 전투 시작)
     this.time.delayedCall(500, () => {
       this.phase = 'fighting';
       this.battleUI.addLog('⚔️ 전투 시작!');
       this.soundManager.playSfx('battle_start');
     });
+  }
+
+  // ─── P25-05: 서버 전투 시작 ───────────────────────────────────
+
+  private async _startServerCombat(): Promise<void> {
+    try {
+      const result = await networkManager.combatStart({
+        characterId: this._initData.characterId ?? networkManager.userId ?? '',
+        zoneId: this._initData.zoneId,
+        monsterId: this._initData.monsterId,
+      });
+      this.serverCombatId = result.combatId;
+      this.battleUI.addLog(`[서버] 전투 ID: ${result.combatId}`);
+    } catch (err) {
+      console.warn('[BattleScene] 서버 전투 시작 실패 (로컬 모드):', err);
+    }
+  }
+
+  private _setupCombatSocket(): void {
+    const unsub1 = networkManager.on('combat:tick', (data) => {
+      const d = data as { combatId: string; turn: number; actions: unknown[] };
+      if (d.combatId === this.serverCombatId) {
+        this.battleUI.addLog(`[서버] 턴 ${d.turn}`);
+      }
+    });
+
+    const unsub2 = networkManager.on('combat:result', (data) => {
+      const result = data as CombatResult;
+      if (result.combatId === this.serverCombatId) {
+        if (result.victory) {
+          this.phase = 'victory';
+          this.battleUI.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
+          if (result.levelUp) {
+            this.battleUI.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`);
+          }
+        }
+      }
+    });
+
+    const unsub3 = networkManager.on('combat:effectApplied', (data) => {
+      const d = data as { combatId: string; targetId: string; effectId: string; value: number };
+      if (d.combatId === this.serverCombatId) {
+        (this.statusEffectRenderer as any).applyEffect?.(d.targetId, d.effectId, d.value);
+      }
+    });
+
+    this.socketCleanups = [unsub1, unsub2, unsub3];
   }
 
   update(_time: number, delta: number): void {
@@ -520,7 +583,18 @@ export class BattleScene extends Phaser.Scene {
     container.add(closeBtn);
   }
 
-  private _exitBattle(): void {
+  private async _exitBattle(): Promise<void> {
+    // P25-05: 서버 전투 종료
+    if (this.serverCombatId) {
+      try {
+        await networkManager.combatEnd(this.serverCombatId);
+      } catch { /* 이미 종료되었을 수 있음 */ }
+    }
+
+    // 소켓 이벤트 클린업
+    this.socketCleanups.forEach((fn) => fn());
+    this.socketCleanups = [];
+
     // GameScene으로 복귀
     this.scene.start('GameScene');
   }

@@ -1,14 +1,16 @@
 /**
- * DungeonScene.ts — 던전 전투 씬 (P5-18)
+ * DungeonScene.ts — 던전 전투 씬 (P5-18 → P25-06 API 연동)
  *
  * - 웨이브 카운터 (Wave 1/5 등)
  * - 보스 경고 연출
  * - 전투 타이머
  * - 웨이브 완료 → 다음 웨이브 or 보스 → 클리어 → 보상
+ * - P25-06: NetworkManager 던전 API 연동 (입장/진행/클리어)
  */
 
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
+import { networkManager } from '../network/NetworkManager';
 
 // ── 타입 ────────────────────────────────────────────────────
 
@@ -55,6 +57,9 @@ export class DungeonScene extends Phaser.Scene {
   private currentWave = 0;
   private elapsedSec = 0;
   private enemies: EnemySprite[] = [];
+
+  // P25-06: 서버 던전 세션
+  private serverSessionId: string | null = null;
 
   // UI 요소
   private waveText!: Phaser.GameObjects.Text;

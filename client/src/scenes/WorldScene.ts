@@ -1,5 +1,5 @@
 /**
- * WorldScene.ts — 월드맵 오버뷰 씬 (P5-18)
+ * WorldScene.ts — 월드맵 오버뷰 씬 (P5-18 → P25-06 API 연동)
  *
  * - 6개 지역 표시 (에테르 평원 / 기억의 숲 / 그림자 협곡 / 결정 동굴 / 잊혀진 성채 / 시간의 첨탑)
  * - 존 선택 → 이동 애니메이션 → 해당 씬 전환
@@ -8,6 +8,7 @@
 
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
+import { networkManager } from '../network/NetworkManager';
 
 // ── 지역 정의 ───────────────────────────────────────────────
 
@@ -198,10 +199,15 @@ export class WorldScene extends Phaser.Scene {
       onComplete: () => {
         this.currentZoneId = zone.id;
 
+        // P25-06: 소켓으로 텔레포트 요청
+        networkManager.emit('world:teleport', {
+          characterId: networkManager.socketId ?? '',
+          zoneId: zone.id,
+        });
+
         // 페이드 아웃 후 씬 전환
         this.cameras.main.fadeOut(300, 0, 0, 0);
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-          // 게임 씬으로 전환 (존 데이터 전달)
           this.scene.start('GameScene', { zoneId: zone.id, zoneName: zone.name });
         });
       },
