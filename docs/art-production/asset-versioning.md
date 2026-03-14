@@ -152,7 +152,7 @@ assets/
 │   │   ├── sheets/           ← 조립된 스프라이트 시트
 │   │   ├── portraits/        ← 초상화/대화창 이미지
 │   │   └── concept/          ← 컨셉 아트
-│   ├── mnemonist/
+│   ├── memory_weaver/
 │   ├── shadow-weaver/
 │   ├── memory-breaker/
 │   └── time-keeper/
@@ -196,7 +196,7 @@ assets/
 │   │   └── materials/
 │   ├── skills/
 │   │   ├── ether-knight/
-│   │   ├── mnemonist/
+│   │   ├── memory_weaver/
 │   │   └── ...
 │   ├── buffs/
 │   └── status/

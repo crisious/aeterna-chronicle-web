@@ -1,5 +1,5 @@
 /**
- * dungeonSeeds.ts — 20개 던전 시드 데이터 (P5-03)
+ * dungeonSeeds.ts — 69개 던전 시드 데이터 (P5-03, P8/P11/P14 확장)
  *
  * 지역당 3~4개, 난이도 3단계 (normal / hard / nightmare)
  * 웨이브 구성: 일반 3~5웨이브 + 보스 1웨이브

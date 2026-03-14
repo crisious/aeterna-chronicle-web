@@ -94,7 +94,7 @@
 
 **[Seoul, South Korea — Month XX, 2026]** — Solo indie developer Crisious has confirmed the Steam release of 'Aeterna Chronicle,' a real-time semi-auto combat RPG themed around memory and oblivion.
 
-Aeterna Chronicle follows Aerian, the last mnemonist, on a journey across ten regions to recover four divine memory fragments, 212 years after the Great Oblivion consumed the world. The game features six classes, 65 dungeons, 193 monster types, eight raid bosses, and 4+1 endings determined by player choices.
+Aeterna Chronicle follows Aerian, the last memory weaver, on a journey across ten regions to recover four divine memory fragments, 212 years after the Great Oblivion consumed the world. The game features six classes, 65 dungeons, 193 monster types, eight raid bosses, and 4+1 endings determined by player choices.
 
 "Even if memories fade, the story remains." Starting from this single line, Crisious handled all planning, coding, and art production solo. Completing 16 development phases and 308 tickets from P0 to P16, the project is a Unity WebGL-based RPG playable instantly in web browsers without installation.
 

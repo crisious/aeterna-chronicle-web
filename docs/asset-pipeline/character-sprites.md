@@ -223,7 +223,7 @@ char_{class}_{job}_{gender}_{motion}.json
 
 예시:
   char_ether_knight_base_male_idle.png
-  char_mnemonist_memory_overlord_female_walk.png
+  char_memory_weaver_memory_overlord_female_walk.png
   npc_eva_idle.png
   npc_kain_walk.png
   portrait_eva_happy.png

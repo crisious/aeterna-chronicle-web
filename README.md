@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-18%20ASSET%20GEN-blue?style=for-the-badge)](01_코어기획/P18_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-20%20INTEGRITY-blue?style=for-the-badge)](01_코어기획/P20_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
-[![Docs](https://img.shields.io/badge/Docs-765%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
+[![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C137%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
-[![Commits](https://img.shields.io/badge/Commits-147%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-368%2F368%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Commits](https://img.shields.io/badge/Commits-156%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Tickets](https://img.shields.io/badge/Notion-448%2F448%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -31,7 +31,7 @@
 플레이어는 **에리언** — 잊혀진 기억을 되살릴 수 있는 마지막 기억술사. 4개의 신성 기억 파편을 찾아 대륙을 횡단하며, 기억과 망각 사이에서 세계의 운명을 결정한다.
 
 <details>
-<summary><b>🗺️ 9개 지역 상세</b></summary>
+<summary><b>🗺️ 10개 지역 상세</b></summary>
 
 <br>
 
@@ -333,23 +333,27 @@ Phase 15 ████████████████████  100%  그
 Phase 16 ████████████████████  100%  잔여 에셋 + 게임 적용 — 308/308 에셋 완결 🖼️
 Phase 17 ████████████████████  100%  출시 준비 + 접근성 — 328/328 출시 준비 완료 🚀
 Phase 18 ████████████████████  100%  이미지 리소스 생성 — 1,137장 AI 생성 완료 🎨
+Phase 19 ████████████████████  100%  사운드 시스템 — BGM 42곡 + SFX 75 + Voice 20 🎵
+Phase 20 ████████████████████  100%  전역 정합성 최종 패스 — 문서 최종화 + 정합성 0건 ✅
 ```
 
-**18 Phase 완료 · 368 Notion 티켓 전부 Done · TODO/FIXME 0건**
+**20 Phase 완료 · 448 Notion 티켓 전부 Done · TODO/FIXME 0건**
 
-### 정합성 검증 (2026-03-12)
+### 정합성 검증 (2026-03-14)
 
 ```
-누적 검증     166항목 검증 → 80건 수정 완료
+누적 검증     210항목 검증 → 108건 수정 완료
 ─────────────────────────────────────────────
 시나리오       14항목 → 치명 2 + 중요 5 수정
 캐릭터         18항목 → 치명 2 + 중요 3 수정
 월드맵         14항목 → 치명 6 + 중요 2 수정
 전역 패치       25곳 / 11파일 — 대망각·파편·나이·NPC 통일
-md 기획문서     10항목 → 8건 수정 (클래스 5종/던전 30개/챕터 7개/DB 72모델 현행화)
+md 기획문서     10항목 → 8건 수정 (클래스 6종/던전 69개/챕터 8개/DB 78모델 현행화)
 P9 GA검증      12항목 → 5건 수정 (Unity WebGL/Stripe/GDPR/보안감사/법적문서)
 P10 구조검증    15항목 → 8건 수정 (DI컨테이너/기능토글/선언형라우트/ESLint/SSOT)
 P11 시즌3검증   20항목 → 7건 수정 (시간수호자/심연던전/월드보스/코스메틱/에셋파이프라인)
+P19 사운드검증  22항목 → 12건 수정 (BGM경로/NPC보이스/클래스ID/파일명SSOT)
+P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역수통일/수치정합/문서최종화)
 ```
 
 ### 📖 가이드 문서

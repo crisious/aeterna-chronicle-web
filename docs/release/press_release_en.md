@@ -15,7 +15,7 @@
 
 **Seoul, South Korea — [Month] [Day], 2026** — Indie developer Crisious today announced that **Aeterna Chronicle**, a real-time semi-auto combat RPG exploring themes of memory and forgetting, will launch on Steam in 2026.
 
-Set 212 years after the catastrophic Great Oblivion erased the memories of gods, players assume the role of **Aerian**, the last mnemonist capable of restoring lost memories. The journey spans **10 distinct regions**, from the fog-shrouded ruins of Erebos to the time-warped Temporal Rift, as players seek four divine memory fragments that hold the key to the world's forgotten past.
+Set 212 years after the catastrophic Great Oblivion erased the memories of gods, players assume the role of **Aerian**, the last memory weaver capable of restoring lost memories. The journey spans **10 distinct regions**, from the fog-shrouded ruins of Erebos to the time-warped Temporal Rift, as players seek four divine memory fragments that hold the key to the world's forgotten past.
 
 ### Key Features
 

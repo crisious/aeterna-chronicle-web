@@ -52,13 +52,13 @@ export const CHAPTER_6_SCENES: SceneData[] = [
     questTriggers: ['QST_CH6_01_INVESTIGATE_FOG'],
     dialogueNodes: [
       { id: 'CH6_S01_001', speaker: '나레이션', text: '아르겐티움 중앙광장. 서쪽에서 비정상적 안개가 피어오른다.' },
-      { id: 'CH6_S01_002', speaker: '카엘', text: '서쪽 전초기지에서 연락이 끊겼다. 3일 전부터.', portrait: 'kael_serious' },
-      { id: 'CH6_S01_003', speaker: '카엘', text: '안개가 점점 내륙으로 밀려오고 있다.' },
+      { id: 'CH6_S01_002', speaker: '마테우스', text: '서쪽 전초기지에서 연락이 끊겼다. 3일 전부터.', portrait: 'mateus_serious' },
+      { id: 'CH6_S01_003', speaker: '마테우스', text: '안개가 점점 내륙으로 밀려오고 있다.' },
       { id: 'CH6_S01_004', speaker: '세라핀', text: '이건... 레테의 잔향이야. 200년 만에 처음이다.', portrait: 'seraphin_worried' },
       { id: 'CH6_S01_005', speaker: '에리언', text: '봉인이 약해지고 있는 건가요?', portrait: 'erion_concerned' },
       { id: 'CH6_S01_006', speaker: '세라핀', text: '약해지는 정도가 아니야. 풀리고 있어.', portrait: 'seraphin_grim' },
       { id: 'CH6_S01_007', speaker: '나레이션', text: '길드에 전령이 도착한다. 브리탈리아 방면에서 선원 3명이 기억을 잃은 채 표류.' },
-      { id: 'CH6_S01_008', speaker: '카엘', text: '에리언. 네가 가야 한다. 파편 4개를 모은 사람은 너뿐이야.', portrait: 'kael_determined' },
+      { id: 'CH6_S01_008', speaker: '마테우스', text: '에리언. 네가 가야 한다. 파편 4개를 모은 사람은 너뿐이야.', portrait: 'mateus_determined' },
     ],
     choices: [{
       parentNodeId: 'CH6_S01_008',

@@ -87,7 +87,7 @@ Dir 4(U) [....] [......] [......] [......] [.....] [...] [.....]
 예시:
   ether_knight_base_sprites.png      — 에테르 기사 기본직
   ether_knight_base_sprites.json     — 메타데이터 (atlas)
-  mnemonist_2nd_sprites.png          — 기억술사 2차 전직
+  memory_weaver_2nd_sprites.png          — 기억술사 2차 전직
   shadow_weaver_3rd_sprites.png      — 그림자 직조사 3차 전직
 
 Atlas JSON 구조:

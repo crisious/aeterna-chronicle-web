@@ -1,5 +1,5 @@
 /**
- * monsterSeeds.ts — 193개 몬스터 시드 데이터
+ * monsterSeeds.ts — 197개 몬스터 시드 데이터
  *
  * 분포 (실제 카운트):
  *   일반(normal) 101마리 — 8지역 분배

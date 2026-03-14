@@ -114,8 +114,8 @@
   npc.seraphin.battle.skill_01  → "나무의 힘을 빌려!"
   system.error.connection_lost  → "서버 연결이 끊어졌습니다"
   achievement.memory_restorer.title → "역사의 복원자"
-  class.mnemonist.name          → "기억술사"
-  class.mnemonist.skill.fireball.name → "파이어볼"
+  class.memory_weaver.name          → "기억술사"
+  class.memory_weaver.skill.fireball.name → "파이어볼"
 ```
 
 ### 3.2 도메인 목록

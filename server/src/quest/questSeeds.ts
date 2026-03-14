@@ -62,12 +62,12 @@ const MAIN_QUESTS: QuestSeedData[] = [
     ],
   },
   {
-    code: 'MQ_CH04', name: '카엘의 배신', description: '동료 카엘의 진짜 목적을 추적하고 에테르 연구소에서 진실을 밝힌다.',
+    code: 'MQ_CH04', name: '베르나르도의 배신', description: '동료 베르나르도의 진짜 목적을 추적하고 에테르 연구소에서 진실을 밝힌다.',
     type: 'main', chapter: 4, requiredLevel: 10, prerequisites: ['MQ_CH03'], isRepeatable: false,
     objectives: [
-      { type: 'talk', target: 'npc_kael', count: 1, description: '카엘과 대화' },
+      { type: 'talk', target: 'npc_bernardo', count: 1, description: '베르나르도와 대화' },
       { type: 'explore', target: 'zone_ether_lab', count: 1, description: '에테르 연구소 조사' },
-      { type: 'collect', target: 'kael_journal', count: 3, description: '카엘의 일지 수집 (0/3)' },
+      { type: 'collect', target: 'bernardo_journal', count: 3, description: '베르나르도의 일지 수집 (0/3)' },
     ],
     rewards: [
       { type: 'exp', amount: 1600, description: '경험치 1600' },
@@ -168,11 +168,11 @@ const MAIN_QUESTS: QuestSeedData[] = [
     ],
   },
   {
-    code: 'MQ_CH12', name: '배반자의 선택', description: '카엘과의 최종 대결. 구원할 것인가, 심판할 것인가.',
+    code: 'MQ_CH12', name: '배반자의 선택', description: '베르나르도와의 최종 대결. 구원할 것인가, 심판할 것인가.',
     type: 'main', chapter: 12, requiredLevel: 45, prerequisites: ['MQ_CH11'], isRepeatable: false,
     objectives: [
-      { type: 'talk', target: 'npc_kael_final', count: 1, description: '카엘과의 최후 대화' },
-      { type: 'kill', target: 'boss_kael_corrupted', count: 1, description: '타락한 카엘 처치' },
+      { type: 'talk', target: 'npc_bernardo_final', count: 1, description: '베르나르도와의 최후 대화' },
+      { type: 'kill', target: 'boss_bernardo_corrupted', count: 1, description: '타락한 베르나르도 처치' },
     ],
     rewards: [
       { type: 'exp', amount: 9000, description: '경험치 9000' },

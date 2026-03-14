@@ -95,11 +95,11 @@
 
 ### 짧은 설명 (300자, 한국어)
 
-> 대망각이 세계를 덮친 지 212년. 당신은 에리언 — 잊혀진 기억을 되살리는 마지막 기억술사. 4개의 신성 파편을 찾아 9개 지역을 횡단하고, 6종 클래스로 전투하며, 기억과 망각 사이에서 세계의 운명을 결정하라. 실시간 반자동 전투 RPG.
+> 대망각이 세계를 덮친 지 212년. 당신은 에리언 — 잊혀진 기억을 되살리는 마지막 기억술사. 4개의 신성 파편을 찾아 10개 지역을 횡단하고, 6종 클래스로 전투하며, 기억과 망각 사이에서 세계의 운명을 결정하라. 실시간 반자동 전투 RPG.
 
 ### 짧은 설명 (300자, 영어)
 
-> 212 years since the Great Oblivion consumed the world. You are Aerian — the last mnemonist who can restore lost memories. Seek four divine fragments across nine regions, fight with six classes, and decide the fate of a world torn between memory and oblivion. Real-time semi-auto combat RPG.
+> 212 years since the Great Oblivion consumed the world. You are Aerian — the last memory weaver who can restore lost memories. Seek four divine fragments across ten regions, fight with six classes, and decide the fate of a world torn between memory and oblivion. Real-time semi-auto combat RPG.
 
 ### 긴 설명 (한국어, 4000자)
 
