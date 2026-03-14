@@ -90,11 +90,17 @@ export class DialogueUI {
 
     // 서버에서 대화 데이터 로드
     try {
-      const resp = await this.net.get<{ nodes: DialogueNode[] }>(`/api/dialogue/${npcId}`, { characterId });
+      // 서버 엔드포인트: POST /api/dialogue/start { userId, npcId }
+      const resp = await this.net.post<{ nodes?: DialogueNode[]; currentNode?: DialogueNode }>('/api/dialogue/start', { userId: characterId, npcId });
       this.nodes.clear();
-      resp.nodes.forEach(n => this.nodes.set(n.nodeId, n));
-      const firstNode = resp.nodes[0];
-      if (firstNode) this._showNode(firstNode);
+      if (resp.nodes) {
+        resp.nodes.forEach(n => this.nodes.set(n.nodeId, n));
+        const firstNode = resp.nodes[0];
+        if (firstNode) this._showNode(firstNode);
+      } else if (resp.currentNode) {
+        this.nodes.set(resp.currentNode.nodeId, resp.currentNode);
+        this._showNode(resp.currentNode);
+      }
     } catch (e) {
       console.error('[DialogueUI] load failed', e);
       this.close();

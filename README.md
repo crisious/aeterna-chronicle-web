@@ -4,8 +4,8 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-30%20Complete-blue?style=for-the-badge)](#-개발-현황)
-[![Tickets](https://img.shields.io/badge/Notion-568%2F568%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Phase](https://img.shields.io/badge/Phase-31%20Complete-blue?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-588%2F588%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-839%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4?style=for-the-badge)](#-프로젝트-통계)
 [![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
@@ -87,14 +87,14 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 30 (P0~P29) | 커밋 | 170+ |
-| Notion 티켓 | 568/568 Done | 문서 | 839+ MD |
+| Phase | 31 (P0~P30) | 커밋 | 175+ |
+| Notion 티켓 | 588/588 Done | 문서 | 839+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
 | 이미지 | 1,383장 (AI) | 오디오 | BGM 42 + SFX 75 + Voice 20 |
 | 아틀라스 | 56개 | DB 모델 | 78 (Prisma) |
 | API | 44 REST + 8 Socket | UI | 18종 |
-| 정합성 검증 | 280+ 항목, 160+ 수정 | TODO/FIXME | 0건 |
+| 정합성 검증 | 290+ 항목, 170+ 수정 | TODO/FIXME | 0건 |
 
 ---
 
@@ -121,10 +121,11 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**30 Phase 완료 · 568 티켓 전부 Done · 170+ 커밋 · v1.0 릴리즈 준비 완료**
+**31 Phase 완료 · 588 티켓 전부 Done · 175+ 커밋 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
+| P30 | 실플레이 QA | 서버-클라이언트 전수 대조 · E2E 186/199 통과 · ShopUI/SkillTree/Dialogue 정합 |
 | P29 | QA 핫픽스 | API 정합성 전수 수정 + 자동 언래핑 + tsc 54건 해소 |
 | P28 | v1.0 폴리싱 | 밸런스 패스 · 오디오 씬 연결 · VFX 17종 · 튜토리얼 · 접근성 WCAG 2.1 AA · 보안 20항목 PASS |
 | P27 | 멀티플레이어 소셜 | 파티/거래/경매/채팅/길드/PvP UI 11종 + 44 라우트 |
@@ -132,7 +133,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 <details>
 <summary><b>정합성 검증 상세</b></summary>
 
-누적 280+ 항목 검증, 160+ 건 수정 완료 (P0~P29).
+누적 290+ 항목 검증, 170+ 건 수정 완료 (P0~P30).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
 
 </details>

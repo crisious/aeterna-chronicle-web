@@ -107,6 +107,20 @@ export async function socialRoutes(fastify: FastifyInstance): Promise<void> {
     }
   });
 
+  /** 친구 요청 거절 (P30 추가) */
+  fastify.post('/api/friends/reject', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { userId, friendId } = request.body as FriendAcceptBody;
+    if (!userId || !friendId) return reply.status(400).send({ error: 'userId, friendId 필수' });
+
+    try {
+      const result = await rejectFriendRequest(userId, friendId);
+      return reply.send(result);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return reply.status(400).send({ error: message });
+    }
+  });
+
   /** 사용자 차단 */
   fastify.post('/api/friends/block', async (request: FastifyRequest, reply: FastifyReply) => {
     const { userId, targetId } = request.body as FriendBlockBody;

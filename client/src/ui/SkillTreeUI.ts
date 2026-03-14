@@ -311,7 +311,12 @@ export class SkillTreeUI {
 
   private async _upgradeSkill(skill: SkillDef): Promise<void> {
     try {
-      await this.net.post(`/api/skills/${this.characterId}/upgrade`, { skillId: skill.id });
+      // 서버 엔드포인트: POST /api/skills/levelup { userId, skillCode, characterLevel }
+      await this.net.post('/api/skills/levelup', {
+        userId: this.characterId,
+        skillCode: skill.id,
+        characterLevel: this.characterLevel,
+      });
       if (!skill.unlocked) skill.unlocked = true;
       else skill.currentLevel++;
       this.skillPoints--;

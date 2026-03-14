@@ -79,9 +79,9 @@ describe('Analytics E2E', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/analytics/kpi?startDate=2026-02-01&endDate=2026-03-01',
-      ...authHeader(adminUser),
+      headers: authHeader(adminUser),
     });
-    expectStatus(res, 200);
+    expectStatus(res.statusCode, 200);
     const body = JSON.parse(res.body);
     expectKeys(body, ['startDate', 'endDate', 'snapshots']);
     expect(body.snapshots.length).toBeGreaterThan(0);
@@ -92,9 +92,9 @@ describe('Analytics E2E', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/analytics/session-time?date=2026-03-12',
-      ...authHeader(adminUser),
+      headers: authHeader(adminUser),
     });
-    expectStatus(res, 200);
+    expectStatus(res.statusCode, 200);
     const body = JSON.parse(res.body);
     expectKeys(body, ['date', 'avgSessionTimeSeconds']);
     expect(body.avgSessionTimeSeconds).toBeGreaterThanOrEqual(0);
@@ -105,9 +105,9 @@ describe('Analytics E2E', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/analytics/clear-rate',
-      ...authHeader(adminUser),
+      headers: authHeader(adminUser),
     });
-    expectStatus(res, 200);
+    expectStatus(res.statusCode, 200);
     const body = JSON.parse(res.body);
     expectKeys(body, ['totalRuns', 'clearedRuns', 'clearRate', 'byDungeon']);
     expect(body.clearRate).toBeGreaterThanOrEqual(0);
@@ -119,9 +119,9 @@ describe('Analytics E2E', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/analytics/economy',
-      ...authHeader(adminUser),
+      headers: authHeader(adminUser),
     });
-    expectStatus(res, 200);
+    expectStatus(res.statusCode, 200);
     const body = JSON.parse(res.body);
     expectKeys(body, ['inflation', 'totalGold', 'totalDiamond']);
   });
@@ -131,9 +131,9 @@ describe('Analytics E2E', () => {
     const res = await app.inject({
       method: 'GET',
       url: '/api/analytics/revenue',
-      ...authHeader(adminUser),
+      headers: authHeader(adminUser),
     });
-    expectStatus(res, 200);
+    expectStatus(res.statusCode, 200);
     const body = JSON.parse(res.body);
     expectKeys(body, ['startDate', 'endDate', 'series']);
   });
@@ -143,9 +143,9 @@ describe('Analytics E2E', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/analytics/snapshot',
-      ...authHeader(adminUser),
+      headers: authHeader(adminUser),
     });
-    expectStatus(res, 200);
+    expectStatus(res.statusCode, 200);
     const body = JSON.parse(res.body);
     expect(body.success).toBe(true);
     expectKeys(body, ['date', 'metrics']);

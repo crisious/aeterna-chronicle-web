@@ -1,14 +1,16 @@
-/**
- * Vitest 설정 — 에테르나 크로니클 (P5-13)
- *
- * 테스트 구분:
- *   - unit:        tests/unit/**/*.test.ts        (100개)
- *   - integration: tests/integration/**/*.test.ts  (50개)
- *   - e2e:         tests/e2e/**/*.test.ts          (100개)
- */
+// Vitest 설정 — 에테르나 크로니클 (P5-13)
+// 테스트 구분: unit | integration | e2e | contract
 import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      // server/node_modules 의존성을 테스트에서 사용 가능하도록 리졸빙
+      fastify: path.resolve(__dirname, 'server/node_modules/fastify'),
+      jsonwebtoken: path.resolve(__dirname, 'server/node_modules/jsonwebtoken'),
+    },
+  },
   test: {
     // 기본 설정 (test:all 또는 vitest 실행 시)
     include: [

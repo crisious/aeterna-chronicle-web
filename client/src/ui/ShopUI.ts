@@ -255,9 +255,26 @@ export class ShopUI {
     }
   }
 
-  private async _executeTrade(_item: ShopItem | InventoryItem, _price: number): Promise<void> {
-    // TODO: POST /api/shop/buy or /api/shop/sell via NetworkManager
-    // For now, refresh inventory after trade
+  private async _executeTrade(item: ShopItem | InventoryItem, _price: number): Promise<void> {
+    try {
+      if (this.tab === 'buy') {
+        // POST /api/shop/purchase — 서버 엔드포인트 정합
+        await this.net.post('/api/shop/purchase', {
+          userId: this.characterId,
+          itemId: (item as ShopItem).itemId ?? item.id,
+          quantity: 1,
+        });
+      } else {
+        // POST /api/inventory/sell — 서버 엔드포인트 정합
+        await this.net.post('/api/inventory/sell', {
+          userId: this.characterId,
+          slotId: (item as InventoryItem).id,
+          quantity: 1,
+        });
+      }
+    } catch (err) {
+      console.error('[ShopUI] 거래 실패:', err);
+    }
     await this._refreshPlayerData();
     this._renderList();
   }
