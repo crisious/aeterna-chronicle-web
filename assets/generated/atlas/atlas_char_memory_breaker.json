@@ -1,0 +1,73 @@
+{
+  "atlas": "atlas_char_memory_breaker",
+  "size": {
+    "w": 2048,
+    "h": 2048
+  },
+  "sprites": [
+    {
+      "file": "char_illust_memory_breaker_adv1_front.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_memory_breaker_adv2_front.png",
+      "x": 514,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_memory_breaker_adv3_front.png",
+      "x": 1028,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_memory_breaker_back.png",
+      "x": 0,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_memory_breaker_front.png",
+      "x": 514,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_memory_breaker_side.png",
+      "x": 1028,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_sprite_memory_breaker_adv1_sprite_sheet.png",
+      "x": 0,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_sprite_memory_breaker_adv2_sprite_sheet.png",
+      "x": 514,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_sprite_memory_breaker_adv3_sprite_sheet.png",
+      "x": 1028,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 9
+}

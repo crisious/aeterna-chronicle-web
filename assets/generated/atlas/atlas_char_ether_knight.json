@@ -1,0 +1,59 @@
+{
+  "atlas": "atlas_char_ether_knight",
+  "size": {
+    "w": 2048,
+    "h": 2048
+  },
+  "sprites": [
+    {
+      "file": "char_illust_ether_knight_adv1_front.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_ether_knight_adv2_front.png",
+      "x": 514,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_ether_knight_adv3_front.png",
+      "x": 1028,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_ether_knight_back.png",
+      "x": 0,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_ether_knight_front.png",
+      "x": 514,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_illust_ether_knight_side.png",
+      "x": 1028,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "char_sprite_ether_knight_2nd_sprite_sheet.png",
+      "x": 0,
+      "y": 1028,
+      "w": 1408,
+      "h": 640
+    }
+  ],
+  "count": 7
+}

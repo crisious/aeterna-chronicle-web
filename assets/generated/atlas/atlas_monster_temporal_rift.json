@@ -1,0 +1,17 @@
+{
+  "atlas": "atlas_monster_temporal_rift",
+  "size": {
+    "w": 512,
+    "h": 512
+  },
+  "sprites": [
+    {
+      "file": "BOSS-TEM-CHRONO.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 1
+}

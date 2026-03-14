@@ -1,0 +1,94 @@
+{
+  "atlas": "atlas_bg_solaris",
+  "size": {
+    "w": 4096,
+    "h": 1024
+  },
+  "sprites": [
+    {
+      "file": "SOL-BG-FAR-DAY.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "SOL-BG-FAR-DUSK.png",
+      "x": 512,
+      "y": 0,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-FAR-NIGHT.png",
+      "x": 1024,
+      "y": 0,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-MID-DAY.png",
+      "x": 1536,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "SOL-BG-MID-DUSK.png",
+      "x": 2048,
+      "y": 0,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-MID-NIGHT.png",
+      "x": 2560,
+      "y": 0,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-NEAR-DAY.png",
+      "x": 3072,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "SOL-BG-NEAR-DUSK.png",
+      "x": 3584,
+      "y": 0,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-NEAR-NIGHT.png",
+      "x": 0,
+      "y": 512,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-SKY-DAY.png",
+      "x": 512,
+      "y": 512,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "SOL-BG-SKY-DUSK.png",
+      "x": 1024,
+      "y": 512,
+      "w": 512,
+      "h": 256
+    },
+    {
+      "file": "SOL-BG-SKY-NIGHT.png",
+      "x": 1536,
+      "y": 512,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 12
+}

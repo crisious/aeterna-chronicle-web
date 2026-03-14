@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-20%20INTEGRITY-blue?style=for-the-badge)](01_코어기획/P20_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-21%20ASSET%20GAP-blue?style=for-the-badge)](01_코어기획/P21_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Assets](https://img.shields.io/badge/Assets-1%2C137%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
-[![Commits](https://img.shields.io/badge/Commits-156%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-448%2F448%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
+[![Commits](https://img.shields.io/badge/Commits-158%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Tickets](https://img.shields.io/badge/Notion-468%2F468%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -287,7 +287,7 @@ graph LR
 
 ## 🎨 에셋 파이프라인
 
-> **P18 완료** — 1,137장 AI 생성 완료 (ComfyUI SD 1.5) · QA PASS · 에러율 0%
+> **P21 완료** — 1,383장 AI 생성 완료 (ComfyUI SD 1.5) · 스프라이트 시트 24장 · 아틀라스 50장 · manifest 전수 검증 PASS
 
 | 카테고리 | 수량 | 상태 |
 |----------|------|------|
@@ -335,9 +335,10 @@ Phase 17 ████████████████████  100%  출
 Phase 18 ████████████████████  100%  이미지 리소스 생성 — 1,137장 AI 생성 완료 🎨
 Phase 19 ████████████████████  100%  사운드 시스템 — BGM 42곡 + SFX 75 + Voice 20 🎵
 Phase 20 ████████████████████  100%  전역 정합성 최종 패스 — 문서 최종화 + 정합성 0건 ✅
+Phase 21 ████████████████████  100%  에셋 갭 해소 + 스프라이트 시트 + 아틀라스 — 468/468 에셋 완결 🎨
 ```
 
-**20 Phase 완료 · 448 Notion 티켓 전부 Done · TODO/FIXME 0건**
+**21 Phase 완료 · 468 Notion 티켓 전부 Done · TODO/FIXME 0건**
 
 ### 정합성 검증 (2026-03-14)
 
@@ -420,6 +421,8 @@ P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역
 
 > **2026-03-13** — **Phase 17 출시 준비 + 접근성 완료** (20/20, 328/328). Steam 스토어 페이지 + 트레일러 3종 + 프레스 킷 + 보도자료(한/영) + 소셜 미디어 전략 + 커뮤니티 빌딩 + 베타 테스트 계획 + Steam/itch.io 배포 + 출시 체크리스트 62항목 + 색약 모드 3종 + 키 리바인딩 26액션 + 화면 낭독기 ARIA + UI 스케일링 5단계 + 고대비 7:1 + 난이도 5프리셋 + 튜토리얼 재설계 + 온보딩 FTUE + 자막/청각 접근성 + 모션 감소 + WCAG 2.1 AA 38항목 RC → **출시 준비 완료** 🚀
 >
+> **2026-03-14** — **Phase 21 에셋 갭 해소 + 스프라이트 시트 완성** (20/20, 468/468). 갭 분석 189장→0 해소 (환경 40 + 몬스터 14 + NPC스프라이트 30 + UI프레임 90 + 캐릭터진화 15) · 총 1,383장 · 스프라이트 시트 24장 (6클래스×4단계) · 아틀라스 50장 패킹 · manifest.json 1,383 에셋 전수 검증 · 개연성 검토 PASS (mnemonist 0, 카엘 0) → **에셋 완결** 🎨
+
 > **2026-03-13** — **Phase 18 이미지 리소스 생성 완료** (20/20, 368/368). 1,137장 AI 생성 (characters 75 + cosmetics 150 + environment 153 + monsters 214 + ui 335 + vfx 210) · QA 전수 검증 PASS · 에러율 0% · 410MB · 후처리 파이프라인 문서화 → **에셋 생성 완료** 🎨
 >
 > **2026-03-13** — **Phase 16 잔여 에셋 + 게임 적용 완료** (20/20, 308/308). 6지역 타일셋/배경 + 스킬 아이콘 150종 + UI 프레임 90종 + 시간균열 몬스터 30종 + VFX 프롬프트 + 에셋 통합 빌드 → **에셋 완결** 🖼️

@@ -1,0 +1,122 @@
+{
+  "atlas": "atlas_monster_argentium",
+  "size": {
+    "w": 4096,
+    "h": 2048
+  },
+  "sprites": [
+    {
+      "file": "BOSS-ARG-AUTOMATON.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_automaton_soldier_normal.png",
+      "x": 514,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_brass_wasp_normal.png",
+      "x": 1028,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_clockwork_bird_normal.png",
+      "x": 1542,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_cogwork_sentinel_normal.png",
+      "x": 2056,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_furnace_imp_normal.png",
+      "x": 2570,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_gear_rat_normal.png",
+      "x": 3084,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_gear_spider_normal.png",
+      "x": 0,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_overheated_core_normal.png",
+      "x": 514,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_pipe_worm_normal.png",
+      "x": 1028,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_piston_hound_normal.png",
+      "x": 1542,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_rust_beetle_normal.png",
+      "x": 2056,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_scrap_golem_normal.png",
+      "x": 2570,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_steam_sprite_normal.png",
+      "x": 3084,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_tesla_orb_normal.png",
+      "x": 0,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_tin_soldier_normal.png",
+      "x": 514,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 16
+}

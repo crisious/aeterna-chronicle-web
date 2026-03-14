@@ -1,0 +1,101 @@
+{
+  "atlas": "atlas_monster_britalia",
+  "size": {
+    "w": 4096,
+    "h": 2048
+  },
+  "sprites": [
+    {
+      "file": "mon_britalia_sea_rat_normal.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_britalia_sea_serpent_young_normal.png",
+      "x": 514,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_britalia_seaweed_strangler_normal.png",
+      "x": 1028,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_britalia_shipwreck_crab_normal.png",
+      "x": 1542,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_britalia_siren_hatchling_normal.png",
+      "x": 2056,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_britalia_tide_elemental_normal.png",
+      "x": 2570,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_afterimage_soldier_normal.png",
+      "x": 3084,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_broken_golem_normal.png",
+      "x": 0,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_crumbling_shade_normal.png",
+      "x": 514,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_echo_wisp_normal.png",
+      "x": 1028,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_floating_lantern_normal.png",
+      "x": 1542,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_fog_rat_normal.png",
+      "x": 2056,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_fog_wolf_normal.png",
+      "x": 2570,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 13
+}
