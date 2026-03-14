@@ -4,21 +4,15 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-29%20QA%20Hotfix-blue?style=for-the-badge)](04_검증_P0/P29/P29-15_API_대조표.md)
+[![Phase](https://img.shields.io/badge/Phase-30%20Complete-blue?style=for-the-badge)](#-개발-현황)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
-[![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
-[![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 [![Tickets](https://img.shields.io/badge/Notion-568%2F568%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Assets](https://img.shields.io/badge/Assets-1%2C383%20AI%20Generated-ff69b4?style=for-the-badge)](#-에셋)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
-<br>
+*실시간 반자동 전투 RPG — Phaser.js 웹 클라이언트 + Fastify 서버*
 
-*실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱 (콘솔 배포 제외)*
-
-<br>
-
-[📋 기획 문서](#-프로젝트-구조) · [🎮 핵심 시스템](#-핵심-시스템) · [🛠️ 기술 스택](#️-기술-스택) · [🚀 개발 현황](#-개발-현황) · [🔧 로컬 개발](#-로컬-개발)
+[🌍 세계관](#-세계관) · [🎮 게임플레이](#-게임플레이) · [🛠️ 기술 스택](#-기술-스택) · [🚀 Getting Started](#-getting-started) · [📊 통계](#-프로젝트-통계)
 
 </div>
 
@@ -30,578 +24,128 @@
 
 플레이어는 **에리언** — 잊혀진 기억을 되살릴 수 있는 마지막 기억술사. 4개의 신성 기억 파편을 찾아 대륙을 횡단하며, 기억과 망각 사이에서 세계의 운명을 결정한다.
 
-<details>
-<summary><b>🗺️ 10개 지역 상세</b></summary>
-
-<br>
-
-| 지역 | 테마 | 특징 | 챕터 |
-|------|------|------|------|
-| 🌑 에레보스 | 망각의 폐허 | 칸텔라 사건, 기억 각성 | Ch.1 |
-| 🌳 실반헤임 | 기억의 숲 | 엘프 영토, 첫 파편 | Ch.2 |
-| 🏜️ 솔라리스 사막 | 불꽃의 땅 | 고대 유적, 이프리타 | Ch.3 |
-| 🏰 아르겐티움 | 제국의 심장 | 황궁 잠입, 배신 | Ch.4 |
-| 🏔️ 북방 영원빙원 | 얼어붙은 기억 | 기억석 사원 | Ch.4 |
-| ⚓ 브리탈리아 | 자유항 | 무역 거점, 정보 허브 | Ch.3~4 |
-| 💀 망각의 고원 | 최종 결전 | 레테와의 대결 | Ch.5 |
-| 🌊 무한 안개해 | 봉인의 바다 | 시즌 2 안개해 던전 | Ch.6 |
-| 🌀 기억의 심연 | 심해 심연 | 시즌 3 해저 던전 | Ch.7 |
-| ⏳ 시간의 균열 | 왜곡된 시공간 | 시즌 4 시간 왜곡 던전 | Ch.8 |
-
-</details>
+- **10개 지역** — 에레보스, 실반헤임, 솔라리스, 아르겐티움, 영원빙원, 브리탈리아, 망각의 고원, 무한 안개해, 기억의 심연, 시간의 균열
+- **8개 챕터** — 4개 시즌에 걸친 메인 스토리
+- **4+1 멀티엔딩** — 파편 수집, 배신 점수, 히든 유물에 따른 분기
 
 ---
 
-## 🎮 핵심 시스템
+## 🎮 게임플레이
 
-<details>
-<summary><b>⚔️ 클래스 시스템 (6종)</b></summary>
+### 클래스 (6종)
 
-<br>
+| 클래스 | 역할 | 전직 (Lv.30→50→80) |
+|--------|------|---------------------|
+| ⚔️ 에테르 기사 | 근접 탱커/딜러 | 수호자 → 파멸자 → 에테르 폭주자 |
+| 🔮 기억술사 | 원거리 마법 | 기억 직조사 → 시간 조율사 → 기억 지배자 |
+| 🗡️ 그림자 직조사 | 암살/서포터 | 환영사 → 영혼 수확자 → 공허의 군주 |
+| 💥 기억 파괴자 | 근접 딜러 | 파편 수집자 → 기억 침식자 → 망각의 지배자 |
+| ⏳ 시간 수호자 | 서포터 | 시간 관측자 → 시간 조율자 → 영원의 수호자 |
+| 🌀 허공의 방랑자 | 컨트롤러 | — |
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    에테르 기사                            │
-│              ⚔️ 근접 탱커/딜러                           │
-│     Lv.30 수호자 → Lv.50 파멸자 → Lv.80 에테르 폭주자   │
-├─────────────────────────────────────────────────────────┤
-│                     기억술사                              │
-│              🔮 원거리 마법 딜러                          │
-│   Lv.30 기억 직조사 → Lv.50 시간 조율사 → Lv.80 기억 지배자 │
-├─────────────────────────────────────────────────────────┤
-│                   그림자 직조사                            │
-│              🗡️ 암살/서포터                              │
-│    Lv.30 환영사 → Lv.50 영혼 수확자 → Lv.80 공허의 군주   │
-├─────────────────────────────────────────────────────────┤
-│                   기억 파괴자 ★ [Ch.6 해금]               │
-│              💥 근접 딜러/디버퍼                          │
-│   Lv.30 파편 수집자 → Lv.50 기억 침식자 → Lv.80 망각의 지배자│
-├─────────────────────────────────────────────────────────┤
-│                  시간 수호자 ★ [P11 신규]                 │
-│              ⏳ 서포터/컨트롤러                           │
-│  Lv.30 시간 관측자 → Lv.50 시간 조율자 → Lv.80 영원의 수호자│
-└─────────────────────────────────────────────────────────┘
-```
+### 핵심 시스템
 
-</details>
-
-<details>
-<summary><b>🎯 전투 시스템</b></summary>
-
-<br>
-
-- **실시간 반자동 전투** — 스킬 8슬롯 + 소비아이템 4슬롯
-- **Active Pause** (`Space`) — 전술적 일시정지로 동료에게 직접 명령
-- **기억 공명** — 에테르 결정 기반 특수 스킬 발동
-- **장비** — 12 카테고리 (14 착용 포지션) / 6등급 (일반~신화)
-- **에테르 소켓** — 장비에 에테르 결정 장착으로 커스텀 빌드
-
-</details>
-
-<details>
-<summary><b>🌟 멀티 엔딩 (4+1종)</b></summary>
-
-<br>
-
-```mermaid
-graph TD
-    A[게임 클리어] --> B{판정 우선순위}
-    B -->|sacred_artifacts=12| D["👁️ 신들의 귀환<br/>(히든 엔딩)"]
-    B -->|betrayal_score≥70| C["🌑 망각의 선택<br/>(배신 루트)"]
-    B -->|fragment=4 & 전원생존| E["🌟 기억의 수호자<br/>(트루 엔딩)"]
-    B -->|fragment≥3| F["📖 마지막 증인의 선택<br/>(기본 엔딩)"]
-    
-    style D fill:#9333ea,color:#fff
-    style C fill:#1f2937,color:#fff
-    style E fill:#f59e0b,color:#000
-    style F fill:#3b82f6,color:#fff
-```
-
-</details>
-
----
-
-## 📁 프로젝트 구조
-
-<details>
-<summary><b>전체 디렉토리 트리 펼치기</b></summary>
-
-<br>
-
-```
-에테르나크로니클/
-├── 📋 00_인덱스/           # 시나리오·월드맵·캐릭터 인덱스
-├── 📋 01_코어기획/         # 핵심 설계 문서 (21개)
-│   ├── GDD_final.md            # 게임 디자인 문서 v2.2
-│   ├── story_design.md         # 스토리 기획서 v1.1
-│   ├── game_systems.md         # 게임 시스템 v1.1
-│   ├── worldmap_design.md      # 월드맵 기획 v1.1
-│   ├── 멀티엔딩_플래그_설계.md   # 엔딩 조건 SSOT
-│   ├── 기술아키텍처_멀티엔진.md  # 기술 스택 v2.0
-│   ├── monetization_design.md  # 수익화 모델
-│   ├── qa_test_plan.md         # QA 전략
-│   ├── sound_design.md         # 사운드 디자인
-│   ├── npc_ai_design.md        # NPC AI 설계
-│   ├── guild_system_design.md  # 길드 시스템
-│   ├── pvp_balance_design.md   # PvP 밸런스
-│   └── ...                     # +9 more
-├── 🎨 02_UI_UX/            # UI/UX, BGM, 인트로 영상
-├── 📊 03_데이터테이블/      # 전투·몬스터·아이템 밸런스
-├── ✅ 04_검증_P0/
-│   ├── P0/                     # 전투·엔딩·수직슬라이스 검증
-│   ├── P1/                     # HUD포팅·QA·텔레메트리
-│   └── P2/                     # 픽셀패리티·KPI·L10N
-├── 📖 시나리오/
-│   ├── 챕터/                   # 챕터 1~7 메인 시나리오
-│   ├── NPC대화/                # 대화 스크립트 12개
-│   └── 세계관외전/             # 발견 문서·이벤트
-├── 🌍 월드맵/               # 8개 지역 상세 설계
-├── 👤 캐릭터/               # 37파일: 30명 프로필 + 5 외전 + 마스터
-├── 💻 client/               # Phaser.js 웹 클라이언트 (43 files)
-│   ├── src/scenes/             # GameScene (Protobuf emit, 200ms 스로틀)
-│   ├── src/ui/                 # UI 16종 (GameHUD + Inventory + Shop + SkillTree + Quest + Minimap + WorldMap + Dialogue + ...)
-│   ├── src/utils/              # ObjectPool 유틸
-│   └── src/telemetry/          # NPC 대화 텔레메트리
-├── 🖥️ server/               # Fastify + Prisma 서버 (176 files)
-│   ├── src/db.ts               # Prisma 클라이언트
-│   ├── src/redis.ts            # Redis (graceful degradation)
-│   ├── src/socket/             # Room 기반 브로드캐스트 (Protobuf) — 34 핸들러
-│   ├── src/routes/             # 55 라우트 (REST API)
-│   ├── src/pvp/                # 매칭 큐 + ELO 아레나
-│   ├── src/shop/               # P2W 가드
-│   ├── src/ending/             # 엔딩 판정 엔진 + 플래그 추적
-│   ├── src/apm/                # APM 메트릭 + 알림 + 대시보드
-│   ├── src/telemetry/          # 이중 기록 (Redis + PostgreSQL)
-│   └── prisma/schema.prisma    # 72 모델
-├── 📦 shared/               # 클라이언트-서버 공유 코덱/타입 (3 files)
-│   ├── proto/game.proto        # Protobuf 스키마 (PlayerMove/Action/Room)
-│   ├── codec/gameCodec.ts      # 바이너리 인코더/디코더
-│   └── types/telemetry.ts      # DialogueChoiceTelemetryEvent
-├── 🎮 ue5_umg/              # UE5 HUD (C++ UMG)
-├── 🎮 unity_ui_toolkit/     # Unity HUD (C# UI Toolkit, 19 files)
-├── 🛡️ admin/               # 어드민 대시보드 (React + TailwindCSS, 18 files)
-├── 📚 docs/                 # 구조 문서 + 에셋 파이프라인
-│   ├── architecture/           # 아키텍처 문서 4개
-│   ├── asset-pipeline/         # AI 에셋 파이프라인 문서 8개
-│   └── art-production/        # 아트 프로덕션 문서 18개 (P13)
-└── 🔧 tools/
-    ├── art-pipeline/           # 에셋 후처리 자동화 (P13)
-    ├── notion_sync/            # Obsidian → Notion 자동 동기화
-    └── regression/             # 엔딩·SaveLoad·L10N 자동 테스트
-```
-
-</details>
+- **실시간 반자동 전투** — ATB 스킬 8슬롯, Active Pause 전술 모드
+- **기억 공명** — 에테르 결정 기반 특수 스킬
+- **장비 강화** — 12카테고리 / 6등급 / 에테르 소켓
+- **파티** — 4인 파티, 8~12인 레이드
+- **PvP** — ELO 아레나, 시즌제
+- **길드** — 길드전, 레이드, 하우징
+- **P2W 제로** — 코스메틱 전용 과금
 
 ---
 
 ## 🛠️ 기술 스택
 
-<table>
-<tr>
-<td align="center" width="96">
-<b>Phaser.js</b><br>
-<sub>웹 클라이언트</sub>
-</td>
-<td align="center" width="96">
-<b>Unity</b><br>
-<sub>데스크톱/모바일</sub>
-</td>
-<td align="center" width="96">
-<b>UE5</b><br>
-<sub>고사양 PC</sub>
-</td>
-<td align="center" width="96">
-<b>TypeScript</b><br>
-<sub>클라이언트/서버</sub>
-</td>
-<td align="center" width="96">
-<b>Node.js</b><br>
-<sub>서버 런타임</sub>
-</td>
-<td align="center" width="96">
-<b>Fastify</b><br>
-<sub>REST API</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="96">
-<b>PostgreSQL</b><br>
-<sub>메인 DB</sub>
-</td>
-<td align="center" width="96">
-<b>Redis</b><br>
-<sub>캐시/세션</sub>
-</td>
-<td align="center" width="96">
-<b>Prisma</b><br>
-<sub>ORM (72 모델)</sub>
-</td>
-<td align="center" width="96">
-<b>Socket.io</b><br>
-<sub>실시간 통신</sub>
-</td>
-<td align="center" width="96">
-<b>Docker</b><br>
-<sub>컨테이너</sub>
-</td>
-<td align="center" width="96">
-<b>Obsidian</b><br>
-<sub>문서 관리</sub>
-</td>
-</tr>
-</table>
-
-### 아키텍처
+```
+클라이언트:  Phaser.js + TypeScript + Vite
+서버:       Fastify + Socket.io + Prisma (78 모델)
+DB:        PostgreSQL 16 + Redis
+인프라:     Docker + k8s + CI/CD
+통신:       Protobuf (고빈도) + JSON (저빈도)
+```
 
 ```mermaid
 graph LR
-    subgraph Clients
-        A[🌐 Phaser.js Web]
-        B[🎮 Unity]
-        C[🎮 UE5]
-    end
-
-    subgraph Backend
-        D[⚡ Fastify API]
-        E[🔌 Socket.io]
-    end
-
-    subgraph Data
-        F[(PostgreSQL)]
-        G[(Redis Cache)]
-    end
-
-    A & B & C -->|Protobuf/JSON| D & E
-    D & E --> G
-    G -->|30s sync| F
-
-    style A fill:#4f46e5,color:#fff
-    style B fill:#059669,color:#fff
-    style C fill:#dc2626,color:#fff
-    style D fill:#f59e0b,color:#000
-    style G fill:#ef4444,color:#fff
-    style F fill:#3b82f6,color:#fff
+    A[🌐 Phaser.js] -->|REST + WebSocket| B[⚡ Fastify + Socket.io]
+    B --> C[(PostgreSQL)]
+    B --> D[(Redis)]
 ```
 
 ---
 
-## 🎨 에셋 파이프라인
+## 🚀 Getting Started
 
-> **P21 완료** — 1,383장 AI 생성 완료 (ComfyUI SD 1.5) · 스프라이트 시트 24장 · 아틀라스 50장 · manifest 전수 검증 PASS
+```bash
+# 사전 요구: PostgreSQL 16 + Redis + Node.js 20+
 
-| 카테고리 | 수량 | 상태 |
-|----------|------|------|
-| 캐릭터 (일러스트+스프라이트) | 42 | ✅ Prompted |
-| 몬스터 (Normal~Raid+시간균열) | 228 | ✅ Prompted |
-| NPC (초상화+스프라이트) | 60 | ✅ Prompted |
-| 환경 (타일셋+배경) | 193 | ✅ Prompted |
-| UI (아이콘 275+프레임 90) | 365 | ✅ Prompted |
-| VFX (스킬 180+공통 30) | 210 | ✅ Prompted |
-| 코스메틱 (3시즌 × 50) | 150 | ✅ Prompted |
-| **합계** | **1,248** | **100%** |
+# 환경 설정
+cp .env.example .env    # DATABASE_URL 수정
 
-**파이프라인 구성:**
-- 프롬프트 설계 (`style-guide.md` + `ai-prompt-master.md`)
-- 카탈로그 (`assets/catalog.json` — 1,248 entries)
-- CI/CD (`asset-pipeline.yml` — QA → 아틀라스 → 매니페스트 → 카탈로그)
-- Unity 통합 (`integration-guide.md` + `optimization-guide.md`)
-- E2E 테스트 (로딩 100%, 렌더링 이상 0건, VRAM 256MB 이내)
+# 서버
+cd server && npm install
+npx prisma generate && npx prisma db push
+npm run seed            # DB 시딩 (647건)
+npm run dev             # → http://localhost:3000
+
+# 클라이언트 (새 터미널)
+cd client && npm install
+npm run dev             # → http://localhost:5173
+```
+
+**E2E 플로우:** 가입 → 로그인 → 캐릭터 생성 → 로비 → 월드맵/던전 → 전투
 
 ---
 
-## 🚀 개발 현황
+## 🎨 에셋
 
-### Phase 로드맵
-
-```
-Phase 0  ████████████████████  100%  코어 설계 + 세계관 + 시나리오
-Phase 1  ████████████████████  100%  웹 프로토타입 + HUD + 챕터 1~2
-Phase 2  ████████████████████  100%  멀티엔진 포팅 + 텔레메트리 + QA
-Phase 3  ████████████████████  100%  길드/PvP/과금/UE5/k8s/CI — 18/20 RC
-Phase 4  ████████████████████  100%  펫/제작/NPC/소셜/사운드/E2E — 20/20 RC
-Phase 5  ████████████████████  100%  몬스터/스킬/던전/월드/L10N — 50/50 출시 RC
-Phase 6  ████████████████████  100%  수익화/길드전/PvP정규화/프로덕션 — 60/60 오픈 베타 ✅
-Phase 7  ████████████████████  100%  시스템 연동 완성 + 프로덕션 품질 — 128/128 GA ✅
-Phase 8  ████████████████████  100%  시즌2 깨어나는 봉인 — 148/148 시즌2 출시 ✅
-Phase 9  ████████████████████  100%  멀티 플랫폼 + 실서비스 — 168/168 GA 출시 🚀
-Phase 10 ████████████████████  100%  웹 아키텍처 리팩터링 — 188/188 구조 개선 🏗️
-Phase 11 ████████████████████  100%  시즌3 기억의 심연 + 비주얼 폴리싱 — 208/208 시즌3 출시 🌊
-Phase 12 ████████████████████  100%  커뮤니티 + 기술부채 — 228/228 품질 개선 🔧
-Phase 13 ████████████████████  100%  아트 프로덕션 파이프라인 — 248/248 생산 체계 🎨
-Phase 14 ████████████████████  100%  데이터/ML + 시즌4 — 268/268 지능화 🧠
-Phase 15 ████████████████████  100%  그래픽 리소스 제작 — 288/288 에셋 생산 체계 🎨
-Phase 16 ████████████████████  100%  잔여 에셋 + 게임 적용 — 308/308 에셋 완결 🖼️
-Phase 17 ████████████████████  100%  출시 준비 + 접근성 — 328/328 출시 준비 완료 🚀
-Phase 18 ████████████████████  100%  이미지 리소스 생성 — 1,137장 AI 생성 완료 🎨
-Phase 27 ████████████████████  100%  멀티플레이어 소셜 — 파티/거래/경매/채팅/길드/PvP UI 🤝
-Phase 19 ████████████████████  100%  사운드 시스템 — BGM 42곡 + SFX 75 + Voice 20 🎵
-Phase 20 ████████████████████  100%  전역 정합성 최종 패스 — 문서 최종화 + 정합성 0건 ✅
-Phase 21 ████████████████████  100%  에셋 갭 해소 + 스프라이트 시트 + 아틀라스 — 468/468 에셋 완결 🎨
-Phase 22 ████████████████████  100%  통합 빌드 기반 — 서버+클라이언트 빌드 검증 + DB 시딩 🔨
-Phase 23 ████████████████████  100%  통합 E2E — 라우트 매핑 + API 검증 + 개연성 검토 + README 🧪
-Phase 24 ████████████████████  100%  전투 엔진 — combatEngine 9모듈 + REST 8 API + 소켓 핸들러 ⚔️
-Phase 25 ████████████████████  100%  클라이언트-서버 연동 — NetworkManager + 씬 API 연결 + 에셋 로딩 🔗
-Phase 26 ████████████████████  100%  게임플레이 루프 — UI 7종 + 전투→보상→레벨업 풀 루프 🎮
-Phase 28 ████████████████████  100%  v1.0 폴리싱 + 플레이테스트 + RC — 밸런스/오디오/VFX/E2E/보안/접근성 🏁
-Phase 29 ████████████████████  100%  QA 핫픽스 — 서버-클라이언트 API 정합성 전수 수정 + 자동 언래핑 🔧
-```
-
-**29 Phase 완료 · 568 Notion 티켓 전부 Done · TODO/FIXME 0건 · v1.0 릴리즈 준비 완료**
-
-### 정합성 검증 (2026-03-14)
-
-```
-누적 검증     216항목 검증 → 114건 수정 완료
-─────────────────────────────────────────────
-시나리오       14항목 → 치명 2 + 중요 5 수정
-캐릭터         18항목 → 치명 2 + 중요 3 수정
-월드맵         14항목 → 치명 6 + 중요 2 수정
-전역 패치       25곳 / 11파일 — 대망각·파편·나이·NPC 통일
-md 기획문서     10항목 → 8건 수정 (클래스 6종/던전 69개/챕터 8개/DB 78모델 현행화)
-P9 GA검증      12항목 → 5건 수정 (Unity WebGL/Stripe/GDPR/보안감사/법적문서)
-P10 구조검증    15항목 → 8건 수정 (DI컨테이너/기능토글/선언형라우트/ESLint/SSOT)
-P11 시즌3검증   20항목 → 7건 수정 (시간수호자/심연던전/월드보스/코스메틱/에셋파이프라인)
-P19 사운드검증  22항목 → 12건 수정 (BGM경로/NPC보이스/클래스ID/파일명SSOT)
-P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역수통일/수치정합/문서최종화)
-P23 통합E2E     6항목 → 6건 수정 (characterRoutes생성/featureRegistry등록/Vite-proxy/ENV/proto복사/async수정)
-P25 클라이언트   7항목 → 0건 수정 (mnemonist 0/카엘 0/클래스ID 정합/API매핑 17라우트/tsc 0에러/에셋경로 정상)
-P28 최종검증    40항목 → 0건 수정 (SSOT 6클래스/카엘0/P2W0/수치정합/신규14파일/교차참조 — 전부 PASS)
-P29 QA 핫픽스   16항목 검증, 15건 수정 (API 자동 언래핑 + 경로 6곳 수정 + 레거시 호환 레이어 + tsc 54건 해소)
-```
-**누적 총계: 152항목 검증, 73건 수정 (P0~P28)**
-
-### 📖 가이드 문서
-
-| 문서 | 설명 |
-|------|------|
-| [🎮 플레이 가이드](01_코어기획/에테르나크로니클_플레이_가이드.md) | 클래스 선택, 전투, 챕터 공략, 던전, 제작, PvP, 멀티엔딩 — 747줄 완전 공략 |
-| [🔧 설치 가이드](01_코어기획/에테르나크로니클_설치_가이드.md) | Quick Start, DB/Redis, Docker, k8s, CI/CD, 테스트 — 개발 환경 세팅 |
-
-### 🏗️ Architecture
-
-| 문서 | 설명 |
-|------|------|
-| [전체 구조 개요](docs/architecture/overview.md) | client/server/admin/shared 역할 분리 |
-| [서버 부트스트랩](docs/architecture/server-bootstrap.md) | 4-모듈 분해 (compositionRoot → featureRegistry → runtimeServices → shutdown) |
-| [공유 계약 계층](docs/architecture/shared-contracts.md) | proto/codec/DTO SSOT 사용법 |
-| [기능 토글 가이드](docs/architecture/feature-flags.md) | 환경변수/런타임 기능 on/off (31개 토글) |
-
-### 🎨 에셋 파이프라인
-
-> P11에서 추가된 AI 에셋 생성·관리 파이프라인. `docs/asset-pipeline/` 하위 8개 문서.
-
-| 문서 | 설명 |
-|------|------|
-| [파이프라인 개요](docs/asset-pipeline/overview.md) | AI 에셋 생성 워크플로우 전체 구조 |
-| [BGM 디자인](docs/asset-pipeline/bgm-design.md) | 지역별 BGM 생성·편집 가이드 |
-| [캐릭터 스프라이트](docs/asset-pipeline/character-sprites.md) | 캐릭터/NPC 스프라이트 생성 규격 |
-| [아이콘 스펙](docs/asset-pipeline/icon-spec.md) | UI 아이콘 해상도·스타일 가이드 |
-| [몬스터 아트 가이드](docs/asset-pipeline/monster-art-guide.md) | 몬스터 비주얼 디자인 기준 |
-| [프롬프트 템플릿](docs/asset-pipeline/prompt-templates.md) | AI 생성용 프롬프트 표준 템플릿 |
-| [SFX 카탈로그](docs/asset-pipeline/sfx-catalog.md) | 효과음 분류·명명 규칙 |
-| [타일맵 스펙](docs/asset-pipeline/tilemap-spec.md) | 지역별 타일맵 규격·레이어 구조 |
-
-### 🎨 아트 프로덕션 (P13 신규)
-
-> P13에서 추가된 그래픽 생산 파이프라인. `docs/art-production/` 18개 문서 + `tools/art-pipeline/` 5개 스크립트.
-
-| 문서 | 설명 |
-|------|------|
-| [스타일 가이드](docs/art-production/style-guide.md) | 비주얼 톤, 색상 팔레트 9지역, 라인/셰이딩 규칙 |
-| [캐릭터 디자인](docs/art-production/character-design/overview.md) | 플레이어·동료 캐릭터 디자인 시트 |
-| [NPC 디자인](docs/art-production/npc-design/overview.md) | NPC 비주얼 가이드 |
-| [몬스터 디자인](docs/art-production/monster-design/overview.md) | 몬스터 비주얼 디자인 기준 |
-| [보스 디자인](docs/art-production/boss-design/overview.md) | 보스 비주얼·페이즈별 연출 |
-| [스프라이트 규격](docs/art-production/sprite-spec.md) | 8방향×7모션, 프레임 수, 시트 레이아웃 |
-| [애니메이션 규격](docs/art-production/animation-spec.md) | 모션별 FPS, 프레임 수, 이징 |
-| [타일맵 디자인](docs/art-production/tilemap-design/overview.md) | 지역별 타일맵 레이어·규격 |
-| [배경 디자인](docs/art-production/background-design/overview.md) | 지역별 배경 아트 가이드 |
-| [UI 스킨 디자인](docs/art-production/ui-skin-design.md) | HUD·메뉴·팝업 스킨 규격 |
-| [아이콘 디자인](docs/art-production/icon-design/overview.md) | 아이템·스킬·UI 아이콘 가이드 |
-| [VFX 디자인](docs/art-production/vfx-design/overview.md) | 스킬·환경 이펙트 규격 |
-| [코스메틱 디자인](docs/art-production/cosmetic-design/overview.md) | 시즌별 코스메틱 비주얼 기준 |
-| [컷씬 스토리보드](docs/art-production/cutscene-storyboard/overview.md) | 챕터별 컷씬 연출 보드 |
-| [AI 마스터 프롬프트](docs/art-production/ai-prompt-master.md) | SD/DALL-E/MJ 카테고리별 프롬프트 + LoRA/ControlNet |
-| [에셋 버전 관리](docs/art-production/asset-versioning.md) | Git LFS, 네이밍, 폴더 구조, 브랜치 전략 |
-| [생산 일정](docs/art-production/production-schedule.md) | 1,248 에셋 우선순위 매트릭스, MVP 12주 로드맵 |
-| [QA 체크리스트](docs/art-production/qa-checklist.md) | 자동+수동 품질 검증 기준 |
-
-| 도구 | 설명 |
-|------|------|
-| [후처리 파이프라인](tools/art-pipeline/README.md) | 배경제거→색보정→QA→시트조립 자동화 |
-
-### 🎮 E2E 데모 상태
-
-| 시스템 | 상태 | 검증 방법 |
-|--------|------|-----------|
-| 회원가입/로그인 | ✅ 동작 | POST /api/auth/register → 201, POST /api/auth/login → 200 |
-| 캐릭터 생성 | ✅ 동작 | POST /api/characters → 201 (6클래스 지원) |
-| 캐릭터 조회 | ✅ 동작 | GET /api/characters → 200 |
-| 전직 트리 | ✅ 동작 | GET /api/class/tree → 200 (6클래스 × 3티어) |
-| 상점 | ✅ 동작 | GET /api/shop/items → 200 |
-| Health Check | ✅ 동작 | GET /api/health → `{"status":"ok"}` |
-| Socket.io | ✅ 연결 | 8종 핸들러 attach 확인 |
-| TickManager | ✅ 가동 | physics:20Hz, network:10Hz, logic:2Hz |
-
-### 🚀 Getting Started
-
-```bash
-# 1. 사전 요구: PostgreSQL 16 + Redis + Node.js 20+
-# 2. 환경 설정
-cp .env.example .env
-# .env에서 DATABASE_URL을 로컬 DB에 맞게 수정
-
-# 3. 서버 시작
-cd server
-npm install
-npx prisma generate
-npx prisma db push
-npm run seed        # DB 시딩 (647건)
-npx tsc --noEmitOnError false
-cp ../shared/proto/game.proto dist/shared/proto/
-node dist/server/src/server.js
-# → http://localhost:3000
-
-# 4. 클라이언트 시작 (새 터미널)
-cd client
-npm install
-npm run dev
-# → http://localhost:5173 (Vite proxy → :3000)
-# E2E 플로우: 로그인 → 캐릭터 생성/선택 → 로비 → 월드맵/던전 → 전투
-```
-
-### 최근 업데이트
-
-> **2026-03-14** — **Phase 28 v1.0 폴리싱 + 플레이테스트 + RC 완료** (20/20, 548/548). 밸런스 패스 (197종 몬스터 HP/ATK/DEF 곡선 + 6클래스 24스킬 DPS 시뮬 + 장비 6등급 스탯 곡선 + 강화 +1~+20 확률 + 드롭률 4등급) · 오디오 씬 연결 (BGM 42곡 존별 크로스페이드 + SFX 75개 이벤트 매핑 + 볼륨 설정 UI) · 씬 전환 애니메이션 (페이드/슬라이드/와이프 + 로딩 인디케이터) · VFX 17종 (전투 히트/스킬/크리티컬 + 레벨업/강화 + 환경 파티클 비/눈/에테르빔) · 튜토리얼 16스텝 (이동→전투→퀘스트→인벤토리→상점 + 스킵) · 설정 4카테고리 (그래픽/오디오/조작/접근성 + 키 리바인딩) · E2E 테스트 (챕터1 9시나리오 + 소셜 8시나리오) · 성능 최적화 (TextureProfiler + ObjectPool + SocketDebouncer + DeltaEncoder) · 접근성 WCAG 2.1 AA (색상대비 12쌍 + 키보드 6항목 + 색맹 3종) · 보안 검증 (JWT/SQL인젝션/XSS/RateLimit/CORS 20항목 전부 PASS) · 에러 핸들링 (글로벌 ErrorBoundary + 크래시 리포팅 + 오프라인 감지) · 빌드 최적화 (Vite 코드 스플리팅 + 번들 분석) · 배포 구성 최종화 (Docker + k8s + CI/CD) · 개연성 검토 PASS (152항목/73수정 누적, P28 40항목/0수정) · **에테르나 크로니클 v1.0 — Go 판정** 🏁
-
-> **2026-03-14** — **Phase 27 멀티플레이어 소셜 UI 완성** (20/20, 568/568). 서버 partyRoutes(초대/수락/거절/해산/추방/검색/전투동기화/보상분배) + tradeRoutes(거래 요청/수락/오퍼/확인/완료 양측확인 트랜잭션) · 클라이언트 UI 11종 (PartyUI 4인파티+전투준비 + TradeUI 1:1거래+골드교환 + AuctionUI 경매검색/등록/입찰/즉시구매 + MailUI 수신함/첨부수령/발송 + ChatUI 4채널탭+이모지+귓속말 + FriendListUI 온라인표시+컨텍스트메뉴 + GuildUI 정보/멤버/스킬/검색 + GuildRaidUI 로비/보스HP/데미지랭킹/보상 + PvpUI 매칭큐/레이팅/결과 + RankingUI 4카테고리Top100 + NotificationUI 토스트+알림패널) · routeManifest 44라우트 · SSOT 6클래스 정합 · 금지어 0건 · 개연성 검토 10항목/0수정 PASS → **멀티플레이어 소셜 기능 완비** 🤝
-
-> **2026-03-14** — **Phase 26 게임플레이 루프 완성** (20/20, 548/548). UI 7종 (InventoryUI + ShopUI + SkillTreeUI + QuestTracker + Minimap + WorldMapUI + GameHUD) · 게임플레이 시스템 7종 (DialogueUI NPC 대화 + QuestFlowManager 퀘스트 수락→완료→보상 + CombatRewardFlow 전투→보상→레벨업→스탯분배 + ZoneTeleportManager 존 이동/포탈 + DungeonFlowManager 던전 입장→웨이브→보스→클리어 + EnhancementSystem 장비 강화 확률 + DeathReviveSystem 사망→페널티→부활) · 6클래스 30스킬 트리 · 10지역 월드맵 · tsc 에러 0건 · 개연성 검토 75항목/14수정 PASS → **풀 게임플레이 루프 완성** 🎮
-
-> **2026-03-14** — **Phase 25 클라이언트-서버 연동 완료** (20/20, 528/528). NetworkManager 전면 확장 (Auth JWT + 전투 8 API + 캐릭터/퀘스트/인벤토리/존/던전 API + 소켓 이벤트 타입) · 씬 6개 API 연결 (MainMenu 로그인 + CharSelect 캐릭터 CRUD + Lobby 소켓 + GameScene 존/NPC/몬스터 + BattleScene 전투 동기화 + WorldScene 텔레포트) · AssetManager 에셋 경로 매핑 + LoadingScene 로딩 화면 · JWT 자동 갱신 + 지수 백오프 재접속 · tsc 에러 0건 · SSOT 검증 PASS → **클라이언트-서버 연동 완료** 🔗
->
-> **2026-03-14** — **Phase 24 전투 엔진 구현 완료** (20/20, 508/508). combatEngine + damageCalculator + monsterAI + rewardEngine + levelUpSystem + skillSystem + bossPhaseManager + combatLogger + combatSocketHandler 9개 모듈 · REST 8 API (start/action/tick/state/end/log/replay/active) · 실시간 소켓 핸들러 → **서버사이드 전투 시스템 완비** ⚔️
->
-> **2026-03-14** — **Phase 23 통합 빌드 + E2E 검증 완료** (20/20, 488/488). 캐릭터 CRUD 라우트 신규 구현 + Vite proxy 설정 + 서버-클라이언트 통합 가동 검증 + Register→Login→CharCreate→List E2E PASS + Socket.io 8종 핸들러 attach + TickManager 3레이어 가동 + SSOT 검증 (mnemonist 0, 카엘 0) + 개연성 검토 PASS → **통합 E2E 검증 완료** 🧪
->
-> **2026-03-14** — **Phase 22 통합 빌드 기반** (서버 빌드 + 클라이언트 빌드 + DB 시딩 647건 + Redis 연결) → **빌드 인프라 검증 완료** 🔨
-
-> **2026-03-13** — **Phase 17 출시 준비 + 접근성 완료** (20/20, 328/328). Steam 스토어 페이지 + 트레일러 3종 + 프레스 킷 + 보도자료(한/영) + 소셜 미디어 전략 + 커뮤니티 빌딩 + 베타 테스트 계획 + Steam/itch.io 배포 + 출시 체크리스트 62항목 + 색약 모드 3종 + 키 리바인딩 26액션 + 화면 낭독기 ARIA + UI 스케일링 5단계 + 고대비 7:1 + 난이도 5프리셋 + 튜토리얼 재설계 + 온보딩 FTUE + 자막/청각 접근성 + 모션 감소 + WCAG 2.1 AA 38항목 RC → **출시 준비 완료** 🚀
->
-> **2026-03-14** — **Phase 21 에셋 갭 해소 + 스프라이트 시트 완성** (20/20, 468/468). 갭 분석 189장→0 해소 (환경 40 + 몬스터 14 + NPC스프라이트 30 + UI프레임 90 + 캐릭터진화 15) · 총 1,383장 · 스프라이트 시트 24장 (6클래스×4단계) · 아틀라스 50장 패킹 · manifest.json 1,383 에셋 전수 검증 · 개연성 검토 PASS (mnemonist 0, 카엘 0) → **에셋 완결** 🎨
-
-> **2026-03-13** — **Phase 18 이미지 리소스 생성 완료** (20/20, 368/368). 1,137장 AI 생성 (characters 75 + cosmetics 150 + environment 153 + monsters 214 + ui 335 + vfx 210) · QA 전수 검증 PASS · 에러율 0% · 410MB · 후처리 파이프라인 문서화 → **에셋 생성 완료** 🎨
->
-> **2026-03-13** — **Phase 16 잔여 에셋 + 게임 적용 완료** (20/20, 308/308). 6지역 타일셋/배경 + 스킬 아이콘 150종 + UI 프레임 90종 + 시간균열 몬스터 30종 + VFX 프롬프트 + 에셋 통합 빌드 → **에셋 완결** 🖼️
->
-> **2026-03-13** — **Phase 15 그래픽 리소스 제작 완료** (20/20, 288/288). ControlNet 포즈 50개 + 배치 생성 엔진(SD/DALL-E/MJ) + 후처리 파이프라인 + QA 자동 검증 6항목 + 에셋 카탈로그 363개 + 클래스/전직/NPC/몬스터/레이드보스 프롬프트 ~312개 + 3지역 타일셋(오토타일 9조각+장식 15종) + 3지역 배경(4레이어×3시간대=36장) + Makefile 빌드 시스템 + 생산 시뮬(~$88/8h) + 5/5 E2E 통합 테스트 + 프로덕션 가이드 → **에셋 생산 체계 완비** 🎨
-
-> **2026-03-12** — **Phase 14 데이터/ML + 시즌 4 완료** (20/20, 268/268). ClickHouse 웨어하우스 + 이벤트 수집 SDK + 이탈 예측 + 추천 시스템 + 밸런스 자동 조정 + A/B 테스트 + 실시간 운영 대시보드 (CCU/매출/이탈/추천CTR) + Grafana 임베드 + 이상 탐지 v2 (Isolation Forest/골드 세탁 그래프/Win-Trading) + 챕터 8 "시간의 균열" + 6번째 클래스 허공의 방랑자 + 시간의 균열 지역 + 시즌 4 시즌패스 + 8인 레이드 + 펫 진화 + PvP 시즌 3 + Lv.100 캡 + 몬스터 30종 + 던전 5개 + 월드 이벤트 3종 → **데이터 기반 운영 자동화 + 시즌 4 콘텐츠 완비** 🧠
-
-> **2026-03-12** — **Phase 13 아트 프로덕션 파이프라인 완료** (20/20, 248/248). 아트 스타일 가이드 + 캐릭터/NPC/몬스터/보스 디자인 시트 + 타일맵/배경/UI/아이콘/이펙트/코스메틱/컷씬 기획 + AI 마스터 프롬프트 (SD/DALL-E/MJ) + 후처리 파이프라인 5개 스크립트 + QA 체크리스트 + 에셋 버전 관리 + 생산 일정 (1,248 에셋, MVP 363) → **생산 체계 완비** 🎨
-
-> **2026-03-12** — **Phase 12 커뮤니티 + 기술부채 완료** (20/20, 228/228). 커뮤니티 시스템 + 기술부채 해소 → **품질 개선 완료** 🔧
-
-> **2026-03-12** — **Phase 11 시즌 3 "기억의 심연" 완료** (20/20, 208/208). 챕터 7 + 시간 수호자 + 무한 던전 + 월드 보스 + AI 에셋 파이프라인 + 코스메틱 50개 + 몬스터 30종 + 던전 5개 + 엔딩D 유물 12개 문서화 + 기억파괴자 게이트 구현 → **시즌 3 출시** 🌊
-
-> **2026-03-12** — **Phase 10 웹 아키텍처 리팩터링 완료** (20/20, 188/188). server.ts 350줄→16줄 분해 + ServiceContainer DI + 기능토글 20개 + 선언형 라우트 매니페스트 + shared SSOT + 구조문서 4건 + 테스트 7건 신규 + ESLint 통일 + TODO 0건 → **구조 개선 완료** 🏗️
-
-> **2026-03-12** — **Phase 9 GA 출시 승인** (20/20, 168/168). Unity WebGL 클라이언트 + Stripe 실결제 + 안티치트/어뷰징 탐지 + GDPR + 계정보안(2FA) + 법적문서 6종 + 고객지원 + 크로스 클라이언트 검증 + OWASP 보안감사 v2 + 통합 테스트 → **실서비스 GA 출시** 🚀
-
-> **2026-03-12** — **Phase 8 시즌 2 출시 RC PASS** (20/20, 148/148). PvP 시즌2 (맵 2개+보상+강등) + 길드 레이드/하우스 + NPC 10명 + L10N 3언어 + E2E 통합 테스트 → 시즌 2 "깨어나는 봉인" 출시 승인
-
-> **2026-03-12** — **Phase 7 GA 판정 PASS** (20/20, 128/128). APM(Sentry/Datadog) + 구조화 로그(Loki/Grafana) + CDN + DB 백업 + OWASP 보안감사 + OpenAPI 문서화 + 통합 RC 완료 → 정식 출시 준비 완료
->
-> **2026-03-12** — **플레이 가이드 & 설치 가이드** 추가. 정합성 전역 패치 완료 (시나리오·캐릭터·월드맵 46항목 검증, 25곳 수정)
->
-> **2026-03-11** — **Phase 6 오픈 베타 승인** (20/20, 60/60 PASS). 수익화·전투 고도화·소셜·프로덕션 배포 전부 구현
-
-<details>
-<summary><b>📋 코어기획 문서 (21개)</b></summary>
-
-<br>
-
-| 분류 | 문서 | 버전 | 설명 |
-|------|------|------|------|
-| 🎯 핵심 | GDD_final.md | v2.2 | 게임 디자인 문서 (통합 참조) |
-| 🎯 핵심 | story_design.md | v1.1 | 스토리·세계관·캐릭터 |
-| 🎯 핵심 | game_systems.md | v1.1 | 클래스·전투·아이템·경제 |
-| 🎯 핵심 | worldmap_design.md | v1.1 | 8개 지역 설계 |
-| 🎯 핵심 | 멀티엔딩_플래그_설계.md | v1.0 | 엔딩 조건 SSOT |
-| 🔧 기술 | 기술아키텍처_멀티엔진.md | v2.0 | 멀티엔진 아키텍처 (정본) |
-| 🔧 기술 | tech_architecture.md | v1.0 | 웹 전용 (아카이브) |
-| 💰 비즈 | monetization_design.md | v1.0 | P2W 제로 수익화 모델 |
-| 🧪 QA | qa_test_plan.md | v1.0 | 테스트 피라미드·릴리즈 게이트 |
-| 🎵 오디오 | sound_design.md | v1.0 | 지역별 BGM·SFX·인터랙티브 |
-| 🌐 L10N | localization_strategy.md | v1.0 | ko/en/ja/zh 로컬라이제이션 |
-| 🐾 시스템 | pet_system_design.md | v1.0 | 펫 획득·성장·전투 |
-| ⚒️ 시스템 | crafting_system_design.md | v1.0 | 에테르 결정 제작 |
-| 🤖 AI | npc_ai_design.md | v1.0 | FSM/BT 몬스터·보스 AI |
-| 🏰 소셜 | guild_system_design.md | v1.0 | 길드 생성·전쟁·레이드 |
-| ⚔️ PvP | pvp_balance_design.md | v1.0 | 아레나·정규화·시즌 |
-| ♿ 접근성 | accessibility_design.md | v1.0 | WCAG 2.1 AA 준수 |
-| 🔑 운영 | admin_tools_design.md | v1.0 | GM 도구·밴·대시보드 |
-| 💬 소셜 | social_system_design.md | v1.0 | 친구·차단·신고·우편 |
-| 📋 관리 | 작업 티켓 보드 리스트 | v1.0 | Phase 2 작업 보드 |
-| 🐛 관리 | 이슈_트래커.md | — | 이슈 추적 |
-
-</details>
+| 카테고리 | 수량 |
+|----------|------|
+| AI 생성 이미지 | 1,383장 (ComfyUI SD 1.5) |
+| 스프라이트 시트 | 24장 (6클래스 × 4진화) |
+| 아틀라스 | 56장 |
+| BGM | 42곡 (MusicGen) |
+| SFX | 75개 (AudioGen) |
+| Voice | 20개 |
 
 ---
 
-## 📋 설계 원칙
+## 📁 프로젝트 구조
 
-| 원칙 | 설명 |
-|------|------|
-| 📌 **SSOT** | 각 설계 요소의 정본 문서를 1개만 지정 |
-| 🚫 **P2W 제로** | 코스메틱/편의 과금만 — 스탯 직접 판매 금지 |
-| ♿ **WCAG 2.1 AA** | 색맹 모드, 키보드 전용, 난이도 조절 |
-| 🤖 **자동화 우선** | 엔딩 회귀 · SaveLoad · L10N 자동 검증 |
-| 🔄 **Obsidian ↔ Notion** | 양방향 문서 동기화 파이프라인 |
+```
+에테르나크로니클/
+├── 01_코어기획/         # GDD, 시스템 설계, 수익화, QA (21개)
+├── 02_UI_UX/            # UI/UX 디자인
+├── 03_데이터테이블/      # 밸런스 데이터
+├── 04_검증_P0/          # 정합성 검증 리포트
+├── 시나리오/             # 챕터 1~8, NPC 대화, 외전
+├── 월드맵/               # 10개 지역 설계
+├── 캐릭터/               # 37파일 캐릭터 프로필
+├── client/              # Phaser.js 웹 클라이언트
+├── server/              # Fastify API 서버 (78 Prisma 모델)
+├── shared/              # Protobuf + 공유 타입
+├── docs/                # 아키텍처 + 에셋 파이프라인
+└── tools/               # Notion 동기화, 회귀 테스트
+```
 
 ---
 
-## 🔧 로컬 개발
+## 📈 개발 현황
 
-<details>
-<summary><b>웹 클라이언트</b></summary>
+**30 Phase 완료 · 568 Notion 티켓 전부 Done · v1.0 RC**
 
-```bash
-cd client
-npm install
-npm run dev
-# → http://localhost:5173
-```
-
-</details>
-
-<details>
-<summary><b>서버</b></summary>
-
-```bash
-cd server
-npm install
-npx prisma generate
-npm run dev
-# → http://localhost:3000
-```
-
-</details>
-
-<details>
-<summary><b>자동화 도구</b></summary>
-
-```bash
-# Obsidian → Notion 동기화
-python3 tools/notion_sync/sync_runner.py --mode incremental
-
-# 회귀 테스트
-python3 tools/regression/ending_regression_runner.py
-python3 tools/regression/saveload_integrity_runner.py
-python3 tools/regression/l10n_key_integrity_runner.py
-```
-
-</details>
+| Phase | 내용 | 상태 |
+|-------|------|------|
+| P0~P2 | 코어 설계 + 프로토타입 + 멀티엔진 | ✅ 28 |
+| P3~P6 | 길드/PvP/과금/소셜/시즌1 출시 | ✅ 80 |
+| P7~P8 | GA + 시즌2 | ✅ 40 |
+| P9~P11 | 멀티플랫폼 + 리팩터링 + 시즌3 | ✅ 60 |
+| P12~P14 | 커뮤니티 + 아트 파이프라인 + 시즌4 | ✅ 60 |
+| P15~P17 | 에셋 생산 + 출시 준비 | ✅ 60 |
+| P18~P21 | 이미지/사운드 생성 + 정합성 + 에셋 완결 | ✅ 80 |
+| P22~P25 | 통합 빌드 + 전투 엔진 + 연동 | ✅ 80 |
+| P26~P28 | 게임플레이 루프 + 소셜 + v1.0 RC | ✅ 60 |
+| P29 | QA 핫픽스 (API 정합성 전수 수정) | ✅ 20 |
 
 ---
 
@@ -609,64 +153,51 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 커밋 | 175개+ |
-| Notion 티켓 | 548개 (전부 Done) |
-| 기획 문서 | 750개+ (.md) |
-| 코어기획 | 21개 |
-| 캐릭터 | 47개 (프로필 40 + 외전 5 + 마스터 1 + 인덱스 1) |
-| 시나리오 | 24개 (챕터 7 + NPC대화 12 + 세계관외전 2 + 마스터 3) |
-| 월드맵 | 10개 (8지역 + 마스터 2) |
-| 지역 | 10개 (45개 존) — 시즌4 시간의 균열 포함 |
-| 챕터 | 8개 |
-| 시즌 | 4개 (대망각의 잔향 / 깨어나는 봉인 / 심연의 메아리 / 균열의 메아리) |
-| 엔딩 | 4+1종 (히든 엔딩D 유물 12개 문서화 완료) |
-| 클래스 | 6종 (에테르 기사/기억술사/그림자 직조사/기억 파괴자/시간 수호자/허공의 방랑자) |
-| 스킬 | 180개 (6클래스 × 30) |
-| 던전 | 69종 × 3난이도 |
-| 몬스터 | 197종 (일반 125+/엘리트 35/보스 27/필드보스 5/레이드 6) |
-| 코스메틱 | 200개 (시즌1 50 + 시즌2 50 + 시즌3 50 + 시즌4 50) |
-| 검증 리포트 | 55개+ (P0~P11) |
-| 서버 | Fastify + Socket.io + Prisma (192 files) |
-| 클라이언트 | Phaser.js + TypeScript (43 files) |
-| Unity | C# UI Toolkit (19 files) |
-| 어드민 | React + TailwindCSS (18 files) |
-| 테스트 | 46 files |
-| DB 모델 | 78개 (Prisma) |
-| API 라우트 | 61개 REST (6개 대시보드 API 추가) |
-| 소켓 핸들러 | 34개 |
+| 커밋 | 170+ |
+| 기획 문서 | 750+ (.md) |
+| 클래스 / 스킬 | 6종 / 180개 |
+| 지역 / 존 | 10 / 45 |
+| 던전 / 몬스터 | 69종 / 197종 |
+| API 라우트 | 61 REST + 34 Socket |
+| DB 모델 | 78 (Prisma) |
 | 기능 토글 | 31개 |
-| CI 워크플로우 | 9개 |
+| i18n | ko / en / ja |
+| 정합성 검증 | 152항목, 73건 수정 |
 | TODO/FIXME | 0건 |
-| 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
-| 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
-| i18n | 한/영/일 3언어 (시즌3 키 포함) |
-| 수익화 | 시즌 패스 50단계 × 4시즌 + IAP 6종 + 코스메틱 200개 (P2W 제로) |
-| PvP 맵 | 5개 (기본 1 + 시즌2: 안개해 아레나, 심해 콜로세움 + 시즌3: 시간 왜곡 투기장, 균열 전장) |
-| 레이드 보스 | 8종 (8~12인 레이드) |
-| 하우징 | 개인 + 길드 하우스, 가구 50종 |
-| 이벤트 | 13종 (로그인 2 + 더블 2 + 챌린지 2 + 토벌 2 + PvP 2 + 시간균열 3) |
-| 정합성 검증 | 152항목 검증, 73건 수정 완료 (P0~P28 누적) |
-| ML/분석 | ClickHouse 웨어하우스 + 이벤트SDK + 이탈예측 + 추천 + 밸런스자동 + A/B + 이상탐지v2 |
-| 에셋 카탈로그 | 363개 (MVP 기준) |
-| AI 프롬프트 | ~312개+ (SD/DALL-E/MJ 3엔진) |
-| 파이프라인 도구 | 9개 스크립트 + Makefile (생성→후처리→QA→조립→카탈로그) |
-| 에셋 타일셋 | 3지역 (에레보스/실반헤임/솔라리스) 오토타일+장식 |
-| 에셋 배경 | 36장 (3지역×4레이어×3시간대) Parallax |
-| 인프라 | k8s 20매니페스트 + Docker + CI/CD 8워크플로우 + 프로덕션 블루/그린 |
+
+---
+
+## 📋 설계 원칙
+
+- **SSOT** — 각 설계 요소의 정본 문서 1개
+- **P2W 제로** — 코스메틱 전용, 스탯 판매 금지
+- **WCAG 2.1 AA** — 색맹 모드, 키보드 전용, 난이도 조절
+- **자동화** — 엔딩 회귀 / SaveLoad / L10N 자동 검증
+
+---
+
+<details>
+<summary><b>📖 상세 문서 목록</b></summary>
+
+### 코어기획 (21개)
+GDD_final · story_design · game_systems · worldmap_design · 멀티엔딩_플래그_설계 · 기술아키텍처_멀티엔진 · monetization_design · qa_test_plan · sound_design · localization_strategy · pet_system · crafting_system · npc_ai_design · guild_system · pvp_balance · accessibility_design · admin_tools · social_system · 에테르나크로니클_플레이_가이드 · 에테르나크로니클_설치_가이드
+
+### 아키텍처 (4개)
+[전체 구조](docs/architecture/overview.md) · [서버 부트스트랩](docs/architecture/server-bootstrap.md) · [공유 계약](docs/architecture/shared-contracts.md) · [기능 토글](docs/architecture/feature-flags.md)
+
+### 에셋 파이프라인 (8개)
+[개요](docs/asset-pipeline/overview.md) · [BGM](docs/asset-pipeline/bgm-design.md) · [캐릭터](docs/asset-pipeline/character-sprites.md) · [아이콘](docs/asset-pipeline/icon-spec.md) · [몬스터](docs/asset-pipeline/monster-art-guide.md) · [프롬프트](docs/asset-pipeline/prompt-templates.md) · [SFX](docs/asset-pipeline/sfx-catalog.md) · [타일맵](docs/asset-pipeline/tilemap-spec.md)
+
+### 아트 프로덕션 (18개)
+[스타일 가이드](docs/art-production/style-guide.md) · 캐릭터/NPC/몬스터/보스 디자인 · 스프라이트/애니메이션 규격 · 타일맵/배경/UI/아이콘/VFX/코스메틱/컷씬 · [AI 마스터 프롬프트](docs/art-production/ai-prompt-master.md) · 버전 관리 · 생산 일정 · QA 체크리스트
+
+</details>
 
 ---
 
 <div align="center">
 
-### 🤝 기여
-
-이 프로젝트는 현재 공개되어 있습니다.
-
----
-
 <sub>Built with ⚔️ and ☕ — 기억과 망각의 경계에서</sub>
-
-<br>
 
 [![GitHub](https://img.shields.io/badge/GitHub-crisious-181717?style=flat-square&logo=github)](https://github.com/crisious)
 
