@@ -233,8 +233,14 @@ export class MainMenuScene extends Phaser.Scene {
       } else {
         errorText?.setText(res.error ?? '로그인 실패');
       }
-    } catch (err) {
-      errorText?.setText('서버 연결 실패');
+    } catch (err: any) {
+      let msg = '서버 연결 실패';
+      try {
+        const body = err?.responseBody ?? '';
+        const parsed = typeof body === 'string' && body.startsWith('{') ? JSON.parse(body) : null;
+        if (parsed?.error) msg = parsed.error;
+      } catch { /* 무시 */ }
+      errorText?.setText(msg);
       console.error('[MainMenu] 로그인 에러:', err);
     }
   }
@@ -248,8 +254,8 @@ export class MainMenuScene extends Phaser.Scene {
       errorText?.setText('아이디와 비밀번호를 입력해 주세요.');
       return;
     }
-    if (password.length < 4) {
-      errorText?.setText('비밀번호는 4자 이상이어야 합니다.');
+    if (password.length < 6) {
+      errorText?.setText('비밀번호는 6자 이상이어야 합니다.');
       return;
     }
 
@@ -263,8 +269,14 @@ export class MainMenuScene extends Phaser.Scene {
       } else {
         errorText?.setText(res.error ?? '가입 실패');
       }
-    } catch (err) {
-      errorText?.setText('서버 연결 실패');
+    } catch (err: any) {
+      let msg = '서버 연결 실패';
+      try {
+        const body = err?.responseBody ?? '';
+        const parsed = typeof body === 'string' && body.startsWith('{') ? JSON.parse(body) : null;
+        if (parsed?.error) msg = parsed.error;
+      } catch { /* 파싱 실패 무시 */ }
+      errorText?.setText(msg);
       console.error('[MainMenu] 가입 에러:', err);
     }
   }

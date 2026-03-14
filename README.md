@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-28%20v1.0%20RELEASE-blue?style=for-the-badge)](01_코어기획/P28_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-29%20QA%20Hotfix-blue?style=for-the-badge)](04_검증_P0/P29/P29-15_API_대조표.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
 [![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-548%2F548%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-568%2F568%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -343,9 +343,10 @@ Phase 24 ████████████████████  100%  전
 Phase 25 ████████████████████  100%  클라이언트-서버 연동 — NetworkManager + 씬 API 연결 + 에셋 로딩 🔗
 Phase 26 ████████████████████  100%  게임플레이 루프 — UI 7종 + 전투→보상→레벨업 풀 루프 🎮
 Phase 28 ████████████████████  100%  v1.0 폴리싱 + 플레이테스트 + RC — 밸런스/오디오/VFX/E2E/보안/접근성 🏁
+Phase 29 ████████████████████  100%  QA 핫픽스 — 서버-클라이언트 API 정합성 전수 수정 + 자동 언래핑 🔧
 ```
 
-**28 Phase 완료 · 548 Notion 티켓 전부 Done · TODO/FIXME 0건 · v1.0 릴리즈 준비 완료**
+**29 Phase 완료 · 568 Notion 티켓 전부 Done · TODO/FIXME 0건 · v1.0 릴리즈 준비 완료**
 
 ### 정합성 검증 (2026-03-14)
 
@@ -365,6 +366,7 @@ P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역
 P23 통합E2E     6항목 → 6건 수정 (characterRoutes생성/featureRegistry등록/Vite-proxy/ENV/proto복사/async수정)
 P25 클라이언트   7항목 → 0건 수정 (mnemonist 0/카엘 0/클래스ID 정합/API매핑 17라우트/tsc 0에러/에셋경로 정상)
 P28 최종검증    40항목 → 0건 수정 (SSOT 6클래스/카엘0/P2W0/수치정합/신규14파일/교차참조 — 전부 PASS)
+P29 QA 핫픽스   16항목 검증, 15건 수정 (API 자동 언래핑 + 경로 6곳 수정 + 레거시 호환 레이어 + tsc 54건 해소)
 ```
 **누적 총계: 152항목 검증, 73건 수정 (P0~P28)**
 

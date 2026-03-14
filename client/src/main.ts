@@ -7,6 +7,8 @@ import { GameScene } from './scenes/GameScene';
 import { BattleScene } from './scenes/BattleScene';
 import { DungeonScene } from './scenes/DungeonScene';
 import { EndingScene } from './scenes/EndingScene';
+import { SettingsScene } from './scenes/SettingsScene';
+import { CutsceneScene } from './scenes/CutsceneScene';
 import { sceneManager } from './scenes/SceneManager';
 import { errorBoundary } from './error/ErrorBoundary';
 
@@ -38,6 +40,8 @@ const config: Phaser.Types.Core.GameConfig = {
         BattleScene,
         DungeonScene,
         EndingScene,
+        SettingsScene,
+        CutsceneScene,
     ],
     pixelArt: true,
 };

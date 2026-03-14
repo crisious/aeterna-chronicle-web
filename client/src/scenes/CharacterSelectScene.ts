@@ -135,14 +135,19 @@ export class CharacterSelectScene extends Phaser.Scene {
     try {
       const serverClasses = await networkManager.getClasses();
       if (serverClasses && serverClasses.length > 0) {
-        this.classes = serverClasses.map((c) => ({
-          id: c.id,
-          name: c.name,
-          nameEn: c.nameEn,
-          color: CLASS_COLORS[c.id] ?? 0x888888,
-          description: c.description,
-          stats: c.stats as { hp: number; mp: number; atk: number; def: number },
-        }));
+        // 서버 응답과 로컬 fallback 병합 — 서버에 description/stats 없으면 fallback 사용
+        const fallbackMap = new Map(FALLBACK_CLASSES.map(c => [c.id, c]));
+        this.classes = serverClasses.map((c) => {
+          const fb = fallbackMap.get(c.id);
+          return {
+            id: c.id,
+            name: c.name || fb?.name || c.id,
+            nameEn: c.nameEn || fb?.nameEn || c.id,
+            color: CLASS_COLORS[c.id] ?? fb?.color ?? 0x888888,
+            description: c.description || fb?.description || '',
+            stats: (c.stats && c.stats.hp) ? c.stats as { hp: number; mp: number; atk: number; def: number } : (fb?.stats ?? { hp: 400, mp: 200, atk: 40, def: 25 }),
+          };
+        });
       }
     } catch (err) {
       console.warn('[CharSelect] 클래스 목록 로드 실패 (로컬 폴백):', err);

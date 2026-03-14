@@ -36,6 +36,11 @@ export interface AuthResponse {
   refreshToken?: string;
   user?: { id: string; username: string };
   error?: string;
+  // 서버 실제 응답 필드
+  accessToken?: string;
+  userId?: string;
+  email?: string;
+  role?: string;
 }
 
 // ── 캐릭터 타입 ───────────────────────────────────────────────
@@ -166,7 +171,7 @@ export interface SocketEvents {
 
 const DEFAULT_CONFIG: NetworkConfig = {
   serverUrl: (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_SERVER_URL)
-    || 'http://localhost:3000',
+    || window.location.origin,
   maxReconnectAttempts: 10,
   reconnectIntervalMs: 3000,
   restTimeoutMs: 15_000,
@@ -247,21 +252,31 @@ class NetworkManager {
   // ── Auth API (P25-03) ───────────────────────────────────────
 
   async register(creds: AuthCredentials): Promise<AuthResponse> {
-    const res = await this.post<AuthResponse>('/auth/register', creds);
-    if (res.token) {
-      this._saveTokens(res.token, res.refreshToken);
-      this._userId = res.user?.id ?? null;
-      this._username = res.user?.username ?? null;
+    const body = { email: creds.email ?? creds.username, password: creds.password, username: creds.username };
+    const res = await this.post<AuthResponse>('/api/auth/register', body);
+    // 서버 응답: { userId, email, role, accessToken, refreshToken }
+    const token = res.token ?? res.accessToken;
+    if (token) {
+      this._saveTokens(token, res.refreshToken);
+      this._userId = res.user?.id ?? res.userId ?? null;
+      this._username = res.user?.username ?? creds.username ?? null;
+      res.success = true;
+      res.token = token;
     }
     return res;
   }
 
   async login(creds: AuthCredentials): Promise<AuthResponse> {
-    const res = await this.post<AuthResponse>('/auth/login', creds);
-    if (res.token) {
-      this._saveTokens(res.token, res.refreshToken);
-      this._userId = res.user?.id ?? null;
-      this._username = res.user?.username ?? null;
+    const body = { email: creds.email ?? creds.username, password: creds.password };
+    const res = await this.post<AuthResponse>('/api/auth/login', body);
+    // 서버 응답: { userId, email, role, accessToken, refreshToken }
+    const token = res.token ?? res.accessToken;
+    if (token) {
+      this._saveTokens(token, res.refreshToken);
+      this._userId = res.user?.id ?? res.userId ?? null;
+      this._username = res.user?.username ?? creds.username ?? null;
+      res.success = true;
+      res.token = token;
     }
     return res;
   }
@@ -269,9 +284,10 @@ class NetworkManager {
   async refreshAuth(): Promise<boolean> {
     if (!this._refreshToken) return false;
     try {
-      const res = await this.post<AuthResponse>('/auth/refresh', { refreshToken: this._refreshToken });
-      if (res.token) {
-        this._saveTokens(res.token, res.refreshToken);
+      const res = await this.post<AuthResponse>('/api/auth/refresh', { refreshToken: this._refreshToken });
+      const token = res.token ?? res.accessToken;
+      if (token) {
+        this._saveTokens(token, res.refreshToken);
         return true;
       }
     } catch {
@@ -303,47 +319,55 @@ class NetworkManager {
   }
 
   async getClasses(): Promise<Array<{ id: string; name: string; nameEn: string; description: string; stats: Record<string, number> }>> {
-    return this.get('/api/class');
+    const classes = await this.get<Array<{ baseClass: string; baseClassName: string }>>('/api/class/tree');
+    return (Array.isArray(classes) ? classes : []).map(c => ({
+      id: c.baseClass,
+      name: c.baseClassName,
+      nameEn: c.baseClass,
+      description: '',
+      stats: {},
+    }));
   }
 
   // ── 전투 API (P25-05) ──────────────────────────────────────
 
   async combatStart(req: CombatStartRequest): Promise<CombatState> {
-    return this.post<CombatState>('/api/combat/start', req);
+    return this.post<CombatState>('/combat/start', req);
   }
 
   async combatAction(req: CombatActionRequest): Promise<CombatState> {
-    return this.post<CombatState>('/api/combat/action', req);
+    return this.post<CombatState>('/combat/action', req);
   }
 
   async combatTick(combatId: string): Promise<CombatState> {
-    return this.post<CombatState>('/api/combat/tick', { combatId });
+    return this.post<CombatState>(`/combat/${combatId}/tick`, { combatId });
   }
 
   async combatGetState(combatId: string): Promise<CombatState> {
-    return this.get<CombatState>(`/api/combat/state/${combatId}`);
+    return this.get<CombatState>(`/combat/${combatId}/state`);
   }
 
   async combatEnd(combatId: string): Promise<CombatResult> {
-    return this.post<CombatResult>('/api/combat/end', { combatId });
+    return this.post<CombatResult>(`/combat/${combatId}/end`, { combatId });
   }
 
   async combatLog(combatId: string): Promise<{ log: string[] }> {
-    return this.get<{ log: string[] }>(`/api/combat/log/${combatId}`);
+    return this.get<{ log: string[] }>(`/combat/${combatId}/log`);
   }
 
   async combatReplay(combatId: string): Promise<{ actions: unknown[] }> {
-    return this.get<{ actions: unknown[] }>(`/api/combat/replay/${combatId}`);
+    return this.get<{ actions: unknown[] }>(`/combat/${combatId}/replay`);
   }
 
   async combatActive(): Promise<{ combats: CombatState[] }> {
-    return this.get<{ combats: CombatState[] }>('/api/combat/active');
+    return this.get<{ combats: CombatState[] }>('/combat/active');
   }
 
   // ── 퀘스트 API (P25-04) ────────────────────────────────────
 
   async getQuests(characterId: string): Promise<QuestData[]> {
-    return this.get<QuestData[]>(`/api/quests`, { characterId });
+    const res = await this.get<QuestData[] | QuestData>('/api/quests', { characterId });
+    return Array.isArray(res) ? res : [];
   }
 
   async acceptQuest(questId: string, characterId: string): Promise<QuestData> {
@@ -357,15 +381,17 @@ class NetworkManager {
   // ── 인벤토리 API (P25-04) ──────────────────────────────────
 
   async getInventory(characterId: string): Promise<InventoryItem[]> {
-    return this.get<InventoryItem[]>(`/api/inventory/${characterId}`);
+    const res = await this.get<{ items?: InventoryItem[]; slots?: InventoryItem[] } | InventoryItem[]>(`/api/inventory/${characterId}`);
+    if (Array.isArray(res)) return res;
+    return (res as any)?.items ?? (res as any)?.slots ?? [];
   }
 
-  async equipItem(characterId: string, itemId: string): Promise<{ success: boolean }> {
-    return this.post(`/api/inventory/${characterId}/equip`, { itemId });
+  async equipItem(characterId: string, slotId: string): Promise<{ success: boolean }> {
+    return this.post('/api/inventory/equip', { slotId, equipSlot: 'weapon', userId: characterId });
   }
 
-  async useItem(characterId: string, itemId: string): Promise<{ success: boolean; effect?: unknown }> {
-    return this.post(`/api/inventory/${characterId}/use`, { itemId });
+  async useItem(characterId: string, slotId: string): Promise<{ success: boolean; effect?: unknown }> {
+    return this.post('/api/inventory/use', { slotId, userId: characterId });
   }
 
   // ── 존 / NPC API (P25-04) ──────────────────────────────────
@@ -379,7 +405,7 @@ class NetworkManager {
   }
 
   async getNpcs(zoneId: string): Promise<Array<{ id: string; name: string; role: string; dialogueId?: string }>> {
-    return this.get(`/api/npc`, { zoneId });
+    return this.get('/api/npcs', { zoneId });
   }
 
   // ── 던전 API (P25-06) ──────────────────────────────────────
@@ -393,7 +419,56 @@ class NetworkManager {
   }
 
   async clearDungeon(sessionId: string): Promise<CombatResult> {
-    return this.post('/api/dungeons/clear', { sessionId });
+    return this.post(`/api/dungeons/runs/${sessionId}/clear`, {});
+  }
+
+  // ── HTTP 메서드 호환 레이어 (P29-16) ─────────────────────────
+  // UI 컴포넌트(AuctionUI, ChatUI, GuildUI 등)가 사용하는 레거시 API 호환
+
+  /** @deprecated use get() */
+  async httpGet<T = unknown>(path: string, params?: Record<string, string>): Promise<T> {
+    return this.get<T>(path, params);
+  }
+
+  /** @deprecated use post() */
+  async httpPost<T = unknown>(path: string, body?: unknown): Promise<T> {
+    return this.post<T>(path, body);
+  }
+
+  /** PATCH 요청 + 자동 언래핑 */
+  async httpPatch<T = unknown>(path: string, body?: unknown): Promise<T> {
+    const url = this._buildUrl(path);
+    const response = await this._fetchWithRetry(url, {
+      method: 'PATCH',
+      headers: this._buildHeaders(),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return this._unwrapResponse<T>(response);
+  }
+
+  /** DELETE 요청 + 자동 언래핑 */
+  async httpDelete<T = unknown>(path: string): Promise<T> {
+    const url = this._buildUrl(path);
+    const response = await this._fetchWithRetry(url, {
+      method: 'DELETE',
+      headers: this._buildHeaders(),
+    });
+    return this._unwrapResponse<T>(response);
+  }
+
+  /** @deprecated use userId */
+  getUserId(): string | null {
+    return this._userId;
+  }
+
+  /** @deprecated use socketId */
+  getCharacterId(): string | null {
+    return this.socketId ?? null;
+  }
+
+  /** @deprecated — 직접 소켓 접근. 필요 시 on()/emit() 사용 권장 */
+  getSocket(): unknown {
+    return this.socket;
   }
 
   // ── Socket 연결 (P25-07 강화) ───────────────────────────────
@@ -514,32 +589,51 @@ class NetworkManager {
     return headers;
   }
 
-  async get<T = unknown>(path: string, params?: Record<string, string>): Promise<T> {
-    const url = new URL(path, this.config.serverUrl);
+  private _buildUrl(path: string, params?: Record<string, string>): string {
+    // 상대경로로 요청하여 Vite proxy 경유
+    let url = path;
     if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        url.searchParams.set(key, value);
-      }
+      const qs = new URLSearchParams(params).toString();
+      url += (url.includes('?') ? '&' : '?') + qs;
     }
+    return url;
+  }
 
-    const response = await this._fetchWithRetry(url.toString(), {
+  async get<T = unknown>(path: string, params?: Record<string, string>): Promise<T> {
+    const url = this._buildUrl(path, params);
+
+    const response = await this._fetchWithRetry(url, {
       method: 'GET',
       headers: this._buildHeaders(),
     });
 
-    return response.json() as Promise<T>;
+    return this._unwrapResponse<T>(response);
   }
 
   async post<T = unknown>(path: string, body?: unknown): Promise<T> {
-    const url = new URL(path, this.config.serverUrl);
+    const url = this._buildUrl(path);
 
-    const response = await this._fetchWithRetry(url.toString(), {
+    const response = await this._fetchWithRetry(url, {
       method: 'POST',
       headers: this._buildHeaders(),
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    return response.json() as Promise<T>;
+    return this._unwrapResponse<T>(response);
+  }
+
+  /**
+   * 서버 응답 자동 언래핑 (P29-01)
+   * 서버가 { success: boolean, data: T } 형태로 래핑하는 경우 data를 추출.
+   * Auth 응답처럼 래핑하지 않는 경우 원본 반환.
+   */
+  private async _unwrapResponse<T>(response: Response): Promise<T> {
+    const json = await response.json();
+    // { success: ..., data: ... } 래핑 패턴 감지 → data 추출
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json.data as T;
+    }
+    return json as T;
   }
 
   /**
