@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-25%20CLIENT--SERVER-blue?style=for-the-badge)](01_코어기획/P25_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-26%20GAMEPLAY--LOOP-blue?style=for-the-badge)](01_코어기획/P26_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
 [![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-528%2F528%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-548%2F548%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -159,7 +159,7 @@ graph TD
 ├── 👤 캐릭터/               # 37파일: 30명 프로필 + 5 외전 + 마스터
 ├── 💻 client/               # Phaser.js 웹 클라이언트 (43 files)
 │   ├── src/scenes/             # GameScene (Protobuf emit, 200ms 스로틀)
-│   ├── src/ui/                 # HudOverlay (부분 렌더링)
+│   ├── src/ui/                 # UI 16종 (GameHUD + Inventory + Shop + SkillTree + Quest + Minimap + WorldMap + Dialogue + ...)
 │   ├── src/utils/              # ObjectPool 유틸
 │   └── src/telemetry/          # NPC 대화 텔레메트리
 ├── 🖥️ server/               # Fastify + Prisma 서버 (176 files)
@@ -340,9 +340,10 @@ Phase 22 ████████████████████  100%  통
 Phase 23 ████████████████████  100%  통합 E2E — 라우트 매핑 + API 검증 + 개연성 검토 + README 🧪
 Phase 24 ████████████████████  100%  전투 엔진 — combatEngine 9모듈 + REST 8 API + 소켓 핸들러 ⚔️
 Phase 25 ████████████████████  100%  클라이언트-서버 연동 — NetworkManager + 씬 API 연결 + 에셋 로딩 🔗
+Phase 26 ████████████████████  100%  게임플레이 루프 — UI 7종 + 전투→보상→레벨업 풀 루프 🎮
 ```
 
-**25 Phase 완료 · 528 Notion 티켓 전부 Done · TODO/FIXME 0건**
+**26 Phase 완료 · 548 Notion 티켓 전부 Done · TODO/FIXME 0건**
 
 ### 정합성 검증 (2026-03-14)
 
@@ -464,6 +465,8 @@ npm run dev
 ```
 
 ### 최근 업데이트
+
+> **2026-03-14** — **Phase 26 게임플레이 루프 완성** (20/20, 548/548). UI 7종 (InventoryUI + ShopUI + SkillTreeUI + QuestTracker + Minimap + WorldMapUI + GameHUD) · 게임플레이 시스템 7종 (DialogueUI NPC 대화 + QuestFlowManager 퀘스트 수락→완료→보상 + CombatRewardFlow 전투→보상→레벨업→스탯분배 + ZoneTeleportManager 존 이동/포탈 + DungeonFlowManager 던전 입장→웨이브→보스→클리어 + EnhancementSystem 장비 강화 확률 + DeathReviveSystem 사망→페널티→부활) · 6클래스 30스킬 트리 · 10지역 월드맵 · tsc 에러 0건 · 개연성 검토 75항목/14수정 PASS → **풀 게임플레이 루프 완성** 🎮
 
 > **2026-03-14** — **Phase 25 클라이언트-서버 연동 완료** (20/20, 528/528). NetworkManager 전면 확장 (Auth JWT + 전투 8 API + 캐릭터/퀘스트/인벤토리/존/던전 API + 소켓 이벤트 타입) · 씬 6개 API 연결 (MainMenu 로그인 + CharSelect 캐릭터 CRUD + Lobby 소켓 + GameScene 존/NPC/몬스터 + BattleScene 전투 동기화 + WorldScene 텔레포트) · AssetManager 에셋 경로 매핑 + LoadingScene 로딩 화면 · JWT 자동 갱신 + 지수 백오프 재접속 · tsc 에러 0건 · SSOT 검증 PASS → **클라이언트-서버 연동 완료** 🔗
 >
