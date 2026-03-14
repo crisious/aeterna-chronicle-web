@@ -55,6 +55,7 @@ export const ROUTE_MANIFEST: RouteEntry[] = [
   // ── 인증/관리 (항상 활성) ──
   { name: 'auth',          plugin: reg(() => import('./authRoutes'),          'authRoutes'),          style: 'register' },
   { name: 'admin',         plugin: reg(() => import('./adminRoutes'),         'adminRoutes'),         style: 'register' },
+  { name: 'character',     plugin: reg(() => import('./characterRoutes'),     'characterRoutes'),     style: 'register' },
   { name: 'error',         plugin: reg(() => import('./errorRoutes'),         'errorRoutes'),         style: 'register' },
 
   // ── 핵심 게임플레이 (항상 활성) ──

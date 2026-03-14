@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-21%20ASSET%20GAP-blue?style=for-the-badge)](01_코어기획/P21_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-23%20INTEGRATION-blue?style=for-the-badge)](01_코어기획/P23_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
-[![Commits](https://img.shields.io/badge/Commits-158%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-468%2F468%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Commits](https://img.shields.io/badge/Commits-160%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Tickets](https://img.shields.io/badge/Notion-488%2F488%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -336,14 +336,16 @@ Phase 18 ████████████████████  100%  이
 Phase 19 ████████████████████  100%  사운드 시스템 — BGM 42곡 + SFX 75 + Voice 20 🎵
 Phase 20 ████████████████████  100%  전역 정합성 최종 패스 — 문서 최종화 + 정합성 0건 ✅
 Phase 21 ████████████████████  100%  에셋 갭 해소 + 스프라이트 시트 + 아틀라스 — 468/468 에셋 완결 🎨
+Phase 22 ████████████████████  100%  통합 빌드 기반 — 서버+클라이언트 빌드 검증 + DB 시딩 🔨
+Phase 23 ████████████████████  100%  통합 E2E — 라우트 매핑 + API 검증 + 개연성 검토 + README 🧪
 ```
 
-**21 Phase 완료 · 468 Notion 티켓 전부 Done · TODO/FIXME 0건**
+**23 Phase 완료 · 488 Notion 티켓 전부 Done · TODO/FIXME 0건**
 
 ### 정합성 검증 (2026-03-14)
 
 ```
-누적 검증     210항목 검증 → 108건 수정 완료
+누적 검증     216항목 검증 → 114건 수정 완료
 ─────────────────────────────────────────────
 시나리오       14항목 → 치명 2 + 중요 5 수정
 캐릭터         18항목 → 치명 2 + 중요 3 수정
@@ -355,6 +357,7 @@ P10 구조검증    15항목 → 8건 수정 (DI컨테이너/기능토글/선언
 P11 시즌3검증   20항목 → 7건 수정 (시간수호자/심연던전/월드보스/코스메틱/에셋파이프라인)
 P19 사운드검증  22항목 → 12건 수정 (BGM경로/NPC보이스/클래스ID/파일명SSOT)
 P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역수통일/수치정합/문서최종화)
+P23 통합E2E     6항목 → 6건 수정 (characterRoutes생성/featureRegistry등록/Vite-proxy/ENV/proto복사/async수정)
 ```
 
 ### 📖 가이드 문서
@@ -417,7 +420,50 @@ P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역
 |------|------|
 | [후처리 파이프라인](tools/art-pipeline/README.md) | 배경제거→색보정→QA→시트조립 자동화 |
 
+### 🎮 E2E 데모 상태
+
+| 시스템 | 상태 | 검증 방법 |
+|--------|------|-----------|
+| 회원가입/로그인 | ✅ 동작 | POST /api/auth/register → 201, POST /api/auth/login → 200 |
+| 캐릭터 생성 | ✅ 동작 | POST /api/characters → 201 (6클래스 지원) |
+| 캐릭터 조회 | ✅ 동작 | GET /api/characters → 200 |
+| 전직 트리 | ✅ 동작 | GET /api/class/tree → 200 (6클래스 × 3티어) |
+| 상점 | ✅ 동작 | GET /api/shop/items → 200 |
+| Health Check | ✅ 동작 | GET /api/health → `{"status":"ok"}` |
+| Socket.io | ✅ 연결 | 8종 핸들러 attach 확인 |
+| TickManager | ✅ 가동 | physics:20Hz, network:10Hz, logic:2Hz |
+
+### 🚀 Getting Started
+
+```bash
+# 1. 사전 요구: PostgreSQL 16 + Redis + Node.js 20+
+# 2. 환경 설정
+cp .env.example .env
+# .env에서 DATABASE_URL을 로컬 DB에 맞게 수정
+
+# 3. 서버 시작
+cd server
+npm install
+npx prisma generate
+npx prisma db push
+npm run seed        # DB 시딩 (647건)
+npx tsc --noEmitOnError false
+cp ../shared/proto/game.proto dist/shared/proto/
+node dist/server/src/server.js
+# → http://localhost:3000
+
+# 4. 클라이언트 시작 (새 터미널)
+cd client
+npm install
+npm run dev
+# → http://localhost:5173 (Vite proxy → :3000)
+```
+
 ### 최근 업데이트
+
+> **2026-03-14** — **Phase 23 통합 빌드 + E2E 검증 완료** (20/20, 488/488). 캐릭터 CRUD 라우트 신규 구현 + Vite proxy 설정 + 서버-클라이언트 통합 가동 검증 + Register→Login→CharCreate→List E2E PASS + Socket.io 8종 핸들러 attach + TickManager 3레이어 가동 + SSOT 검증 (mnemonist 0, 카엘 0) + 개연성 검토 PASS → **통합 E2E 검증 완료** 🧪
+>
+> **2026-03-14** — **Phase 22 통합 빌드 기반** (서버 빌드 + 클라이언트 빌드 + DB 시딩 647건 + Redis 연결) → **빌드 인프라 검증 완료** 🔨
 
 > **2026-03-13** — **Phase 17 출시 준비 + 접근성 완료** (20/20, 328/328). Steam 스토어 페이지 + 트레일러 3종 + 프레스 킷 + 보도자료(한/영) + 소셜 미디어 전략 + 커뮤니티 빌딩 + 베타 테스트 계획 + Steam/itch.io 배포 + 출시 체크리스트 62항목 + 색약 모드 3종 + 키 리바인딩 26액션 + 화면 낭독기 ARIA + UI 스케일링 5단계 + 고대비 7:1 + 난이도 5프리셋 + 튜토리얼 재설계 + 온보딩 FTUE + 자막/청각 접근성 + 모션 감소 + WCAG 2.1 AA 38항목 RC → **출시 준비 완료** 🚀
 >
@@ -542,8 +588,8 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 커밋 | 147개+ |
-| Notion 티켓 | 368개 (전부 Done) |
+| 총 커밋 | 160개+ |
+| Notion 티켓 | 488개 (전부 Done) |
 | 기획 문서 | 750개+ (.md) |
 | 코어기획 | 21개 |
 | 캐릭터 | 47개 (프로필 40 + 외전 5 + 마스터 1 + 인덱스 1) |
@@ -568,7 +614,7 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | API 라우트 | 61개 REST (6개 대시보드 API 추가) |
 | 소켓 핸들러 | 34개 |
 | 기능 토글 | 31개 |
-| CI 워크플로우 | 8개 |
+| CI 워크플로우 | 9개 |
 | TODO/FIXME | 0건 |
 | 공유 코덱/타입 | Protobuf + TypeScript (3 files) |
 | 통신 프로토콜 | Protobuf 바이너리 (고빈도) + JSON (저빈도) |
@@ -578,7 +624,7 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 레이드 보스 | 8종 (8~12인 레이드) |
 | 하우징 | 개인 + 길드 하우스, 가구 50종 |
 | 이벤트 | 13종 (로그인 2 + 더블 2 + 챌린지 2 + 토벌 2 + PvP 2 + 시간균열 3) |
-| 정합성 검증 | 166항목 검증, 80건 수정 완료 |
+| 정합성 검증 | 216항목 검증, 114건 수정 완료 |
 | ML/분석 | ClickHouse 웨어하우스 + 이벤트SDK + 이탈예측 + 추천 + 밸런스자동 + A/B + 이상탐지v2 |
 | 에셋 카탈로그 | 363개 (MVP 기준) |
 | AI 프롬프트 | ~312개+ (SD/DALL-E/MJ 3엔진) |

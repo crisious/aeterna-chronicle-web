@@ -25,6 +25,7 @@ import { eventRoutes } from '../routes/eventRoutes';
 import { currencyRoutes } from '../routes/currencyRoutes';
 import { adminRoutes, setAdminSocketIo } from '../routes/adminRoutes';
 import { authRoutes } from '../routes/authRoutes';
+import { characterRoutes } from '../routes/characterRoutes';
 import { tutorialRoutes } from '../routes/tutorialRoutes';
 import { dungeonRoutes } from '../routes/dungeonRoutes';
 import { worldRoutes } from '../routes/worldRoutes';
@@ -107,6 +108,7 @@ const ROUTE_MANIFEST: RouteEntry[] = [
   // P10-02: admin routes 는 /api prefix로 등록하여 /api/admin/* 경로 통일
   { plugin: adminRoutes, name: 'Admin', options: { prefix: '/api' } },
   { plugin: authRoutes, name: 'Auth' },
+  { plugin: characterRoutes, name: 'Character' },
   { plugin: tutorialRoutes, name: 'Tutorial' },
   { plugin: dungeonRoutes, name: 'Dungeon' },
   { plugin: worldRoutes, name: 'World' },

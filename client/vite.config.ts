@@ -7,6 +7,21 @@ export default defineConfig(({ mode }) => ({
     server: {
         port: 5173,
         open: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
+            '/auth': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
+            '/socket.io': {
+                target: 'http://localhost:3000',
+                ws: true,
+                changeOrigin: true,
+            },
+        },
     },
 
     // 프로덕션 base path (CDN 배포 시 변경)
