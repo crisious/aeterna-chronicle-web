@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-27%20MULTIPLAYER--SOCIAL-blue?style=for-the-badge)](01_코어기획/P27_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-28%20v1.0%20RELEASE-blue?style=for-the-badge)](01_코어기획/P28_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
 [![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-568%2F568%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-548%2F548%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -342,9 +342,10 @@ Phase 23 ████████████████████  100%  통
 Phase 24 ████████████████████  100%  전투 엔진 — combatEngine 9모듈 + REST 8 API + 소켓 핸들러 ⚔️
 Phase 25 ████████████████████  100%  클라이언트-서버 연동 — NetworkManager + 씬 API 연결 + 에셋 로딩 🔗
 Phase 26 ████████████████████  100%  게임플레이 루프 — UI 7종 + 전투→보상→레벨업 풀 루프 🎮
+Phase 28 ████████████████████  100%  v1.0 폴리싱 + 플레이테스트 + RC — 밸런스/오디오/VFX/E2E/보안/접근성 🏁
 ```
 
-**27 Phase 완료 · 568 Notion 티켓 전부 Done · TODO/FIXME 0건**
+**28 Phase 완료 · 548 Notion 티켓 전부 Done · TODO/FIXME 0건 · v1.0 릴리즈 준비 완료**
 
 ### 정합성 검증 (2026-03-14)
 
@@ -363,7 +364,9 @@ P19 사운드검증  22항목 → 12건 수정 (BGM경로/NPC보이스/클래스
 P20 최종패스    44항목 → 28건 수정 (mnemonist근절/kael교체/지역수통일/수치정합/문서최종화)
 P23 통합E2E     6항목 → 6건 수정 (characterRoutes생성/featureRegistry등록/Vite-proxy/ENV/proto복사/async수정)
 P25 클라이언트   7항목 → 0건 수정 (mnemonist 0/카엘 0/클래스ID 정합/API매핑 17라우트/tsc 0에러/에셋경로 정상)
+P28 최종검증    40항목 → 0건 수정 (SSOT 6클래스/카엘0/P2W0/수치정합/신규14파일/교차참조 — 전부 PASS)
 ```
+**누적 총계: 152항목 검증, 73건 수정 (P0~P28)**
 
 ### 📖 가이드 문서
 
@@ -466,6 +469,8 @@ npm run dev
 ```
 
 ### 최근 업데이트
+
+> **2026-03-14** — **Phase 28 v1.0 폴리싱 + 플레이테스트 + RC 완료** (20/20, 548/548). 밸런스 패스 (197종 몬스터 HP/ATK/DEF 곡선 + 6클래스 24스킬 DPS 시뮬 + 장비 6등급 스탯 곡선 + 강화 +1~+20 확률 + 드롭률 4등급) · 오디오 씬 연결 (BGM 42곡 존별 크로스페이드 + SFX 75개 이벤트 매핑 + 볼륨 설정 UI) · 씬 전환 애니메이션 (페이드/슬라이드/와이프 + 로딩 인디케이터) · VFX 17종 (전투 히트/스킬/크리티컬 + 레벨업/강화 + 환경 파티클 비/눈/에테르빔) · 튜토리얼 16스텝 (이동→전투→퀘스트→인벤토리→상점 + 스킵) · 설정 4카테고리 (그래픽/오디오/조작/접근성 + 키 리바인딩) · E2E 테스트 (챕터1 9시나리오 + 소셜 8시나리오) · 성능 최적화 (TextureProfiler + ObjectPool + SocketDebouncer + DeltaEncoder) · 접근성 WCAG 2.1 AA (색상대비 12쌍 + 키보드 6항목 + 색맹 3종) · 보안 검증 (JWT/SQL인젝션/XSS/RateLimit/CORS 20항목 전부 PASS) · 에러 핸들링 (글로벌 ErrorBoundary + 크래시 리포팅 + 오프라인 감지) · 빌드 최적화 (Vite 코드 스플리팅 + 번들 분석) · 배포 구성 최종화 (Docker + k8s + CI/CD) · 개연성 검토 PASS (152항목/73수정 누적, P28 40항목/0수정) · **에테르나 크로니클 v1.0 — Go 판정** 🏁
 
 > **2026-03-14** — **Phase 27 멀티플레이어 소셜 UI 완성** (20/20, 568/568). 서버 partyRoutes(초대/수락/거절/해산/추방/검색/전투동기화/보상분배) + tradeRoutes(거래 요청/수락/오퍼/확인/완료 양측확인 트랜잭션) · 클라이언트 UI 11종 (PartyUI 4인파티+전투준비 + TradeUI 1:1거래+골드교환 + AuctionUI 경매검색/등록/입찰/즉시구매 + MailUI 수신함/첨부수령/발송 + ChatUI 4채널탭+이모지+귓속말 + FriendListUI 온라인표시+컨텍스트메뉴 + GuildUI 정보/멤버/스킬/검색 + GuildRaidUI 로비/보스HP/데미지랭킹/보상 + PvpUI 매칭큐/레이팅/결과 + RankingUI 4카테고리Top100 + NotificationUI 토스트+알림패널) · routeManifest 44라우트 · SSOT 6클래스 정합 · 금지어 0건 · 개연성 검토 10항목/0수정 PASS → **멀티플레이어 소셜 기능 완비** 🤝
 
@@ -602,21 +607,21 @@ python3 tools/regression/l10n_key_integrity_runner.py
 
 | 항목 | 수치 |
 |------|------|
-| 총 커밋 | 160개+ |
-| Notion 티켓 | 488개 (전부 Done) |
+| 총 커밋 | 175개+ |
+| Notion 티켓 | 548개 (전부 Done) |
 | 기획 문서 | 750개+ (.md) |
 | 코어기획 | 21개 |
 | 캐릭터 | 47개 (프로필 40 + 외전 5 + 마스터 1 + 인덱스 1) |
 | 시나리오 | 24개 (챕터 7 + NPC대화 12 + 세계관외전 2 + 마스터 3) |
 | 월드맵 | 10개 (8지역 + 마스터 2) |
-| 지역 | 9개 (45개 존) — 시즌4 시간의 균열 포함 |
+| 지역 | 10개 (45개 존) — 시즌4 시간의 균열 포함 |
 | 챕터 | 8개 |
 | 시즌 | 4개 (대망각의 잔향 / 깨어나는 봉인 / 심연의 메아리 / 균열의 메아리) |
 | 엔딩 | 4+1종 (히든 엔딩D 유물 12개 문서화 완료) |
 | 클래스 | 6종 (에테르 기사/기억술사/그림자 직조사/기억 파괴자/시간 수호자/허공의 방랑자) |
 | 스킬 | 180개 (6클래스 × 30) |
-| 던전 | 65종 (기본20+안개해5+심연5+시간균열5 + P5/P8/P11/P14 추가) × 3난이도 |
-| 몬스터 | 193종 (일반 120+/엘리트 35/보스 27/필드보스 5/레이드 6) |
+| 던전 | 69종 × 3난이도 |
+| 몬스터 | 197종 (일반 125+/엘리트 35/보스 27/필드보스 5/레이드 6) |
 | 코스메틱 | 200개 (시즌1 50 + 시즌2 50 + 시즌3 50 + 시즌4 50) |
 | 검증 리포트 | 55개+ (P0~P11) |
 | 서버 | Fastify + Socket.io + Prisma (192 files) |
@@ -638,7 +643,7 @@ python3 tools/regression/l10n_key_integrity_runner.py
 | 레이드 보스 | 8종 (8~12인 레이드) |
 | 하우징 | 개인 + 길드 하우스, 가구 50종 |
 | 이벤트 | 13종 (로그인 2 + 더블 2 + 챌린지 2 + 토벌 2 + PvP 2 + 시간균열 3) |
-| 정합성 검증 | 216항목 검증, 114건 수정 완료 |
+| 정합성 검증 | 152항목 검증, 73건 수정 완료 (P0~P28 누적) |
 | ML/분석 | ClickHouse 웨어하우스 + 이벤트SDK + 이탈예측 + 추천 + 밸런스자동 + A/B + 이상탐지v2 |
 | 에셋 카탈로그 | 363개 (MVP 기준) |
 | AI 프롬프트 | ~312개+ (SD/DALL-E/MJ 3엔진) |
