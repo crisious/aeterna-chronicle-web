@@ -44,9 +44,13 @@ export async function registerMiddleware(fastify: FastifyInstance): Promise<void
  * APM + Redis 초기화
  */
 export async function initInfraServices(fastify: FastifyInstance, io: SocketServer): Promise<void> {
-  // APM
-  await initApm(fastify, io);
-  fastify.log.info('APM monitoring initialized');
+  // APM (graceful — 실패해도 서버 가동)
+  try {
+    await initApm(fastify, io);
+    fastify.log.info('APM monitoring initialized');
+  } catch (err) {
+    fastify.log.warn({ err }, 'APM init skipped (non-critical)');
+  }
 
   // Redis (graceful degradation)
   try {

@@ -1,7 +1,7 @@
 // ── 에테르나 크로니클 클라이언트 — Vite 설정 ──────────────
 // P12-09: 번들 최적화 — tree-shaking, 코드 스플리팅, 동적 import, 번들 분석
 import { defineConfig } from 'vite';
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer'; // ESM-only, disabled for now
 
 export default defineConfig(({ mode }) => ({
     server: {
@@ -44,17 +44,7 @@ export default defineConfig(({ mode }) => ({
             },
             plugins: [
                 // 번들 분석 — `npx vite build` 후 stats.html 생성
-                ...(mode === 'production'
-                    ? [
-                        visualizer({
-                            filename: 'dist/stats.html',
-                            open: false,
-                            gzipSize: true,
-                            brotliSize: true,
-                            template: 'treemap',
-                        }),
-                    ]
-                    : []),
+                // visualizer disabled (ESM-only module)
             ],
         },
 

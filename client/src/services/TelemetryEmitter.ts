@@ -41,7 +41,7 @@ export class TelemetryEmitter {
    * 대화 선택지 텔레메트리 발행
    */
   emitDialogueChoice(params: DialogueChoiceParams): void {
-    const event = buildDialogueChoiceTelemetry(params);
+    const event = buildDialogueChoiceTelemetry(params as any);
     this.emit('telemetry:dialogue_choice', event);
   }
 

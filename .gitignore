@@ -46,3 +46,7 @@ client/src/test_write.txt
 캐릭터/에테르나크로니클_캐릭터_마스터.md
 *_unlocked*
 tools/audiocraft_venv/
+shared/node_modules
+node_modules
+server/.env
+client/.env

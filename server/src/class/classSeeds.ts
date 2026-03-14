@@ -248,7 +248,7 @@ const memoryBreakerTier3: ClassSeedData = {
 };
 
 // 기존 시드에 기억 파괴자 추가
-ALL_CLASS_SEEDS.push(memoryBreakerTier1, memoryBreakerTier2, memoryBreakerTier3);
+CLASS_ADVANCEMENT_SEEDS.push(memoryBreakerTier1, memoryBreakerTier2, memoryBreakerTier3);
 
 // ════════════════════════════════════════════════════════════════
 // 시간 수호자 (Time Guardian) 전직 트리 — P11-03
@@ -304,7 +304,7 @@ const timeGuardianTier3: ClassSeedData = {
   },
 };
 
-ALL_CLASS_SEEDS.push(timeGuardianTier1, timeGuardianTier2, timeGuardianTier3);
+CLASS_ADVANCEMENT_SEEDS.push(timeGuardianTier1, timeGuardianTier2, timeGuardianTier3);
 
 // ════════════════════════════════════════════════════════════════
 // 허공의 방랑자 (Void Wanderer) 전직 트리 — P14-05
@@ -359,7 +359,7 @@ const voidWandererTier3: ClassSeedData = {
   },
 };
 
-ALL_CLASS_SEEDS.push(voidWandererTier1, voidWandererTier2, voidWandererTier3);
+CLASS_ADVANCEMENT_SEEDS.push(voidWandererTier1, voidWandererTier2, voidWandererTier3);
 
 // ─── 허공의 방랑자 베이스 스킬 (17개) — 전직 전 사용 가능 ────
 

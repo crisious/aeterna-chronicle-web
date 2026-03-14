@@ -12,6 +12,7 @@
     "dependencies": {
         "phaser": "^3.70.0",
         "protobufjs": "^7.2.6",
+        "rollup-plugin-visualizer": "^7.0.1",
         "socket.io-client": "^4.7.4"
     },
     "devDependencies": {

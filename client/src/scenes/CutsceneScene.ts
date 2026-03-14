@@ -295,7 +295,7 @@ export class CutsceneScene extends Phaser.Scene {
     // 페이드 아웃 후 씬 전환
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start(this.config.returnScene, this.config.returnData);
+      this.scene.start(this.config.returnScene, this.config.returnData as object | undefined);
     });
   }
 }

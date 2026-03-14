@@ -7,7 +7,7 @@
  *   - 2.4.7 포커스 가시성: 포커스 인디케이터 항상 표시
  */
 
-import { getAriaMap, type ScreenAriaMap, type AriaElementDef } from './AriaLabelMap';
+import { getAriaMap, type ScreenAriaMap } from './AriaLabelMap';
 
 // ─── 타입 ───────────────────────────────────────────────────────
 

@@ -25,7 +25,8 @@ export interface ColorBlindFilterConfig {
 }
 
 /** 팔레트 키 타입 */
-type PaletteKey = keyof typeof palettes.modes.none.palette;
+type PaletteKey = keyof typeof palettes.modes.none.palette; // eslint-disable-line @typescript-eslint/no-unused-vars
+export type { PaletteKey };
 
 // ─── 상수 ───────────────────────────────────────────────────────
 
