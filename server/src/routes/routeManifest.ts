@@ -106,6 +106,10 @@ export const ROUTE_MANIFEST: RouteEntry[] = [
 
   // ── P12 커뮤니티 확장 ──
   { name: 'community',       plugin: reg(() => import('./shareRoutes'),           'communityRoutes'),       style: 'register', feature: 'social' },
+
+  // ── P27 멀티플레이어 소셜 ──
+  { name: 'party',            plugin: reg(() => import('./partyRoutes'),           'partyRoutes'),           style: 'register', feature: 'social' },
+  { name: 'trade',            plugin: reg(() => import('./tradeRoutes'),           'tradeRoutes'),           style: 'register', feature: 'social' },
 ];
 
 // ── 자동 등록 함수 ────────────────────────────────────────────

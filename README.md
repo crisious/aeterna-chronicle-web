@@ -4,12 +4,12 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-26%20GAMEPLAY--LOOP-blue?style=for-the-badge)](01_코어기획/P26_작업_리스트_v1.md)
+[![Phase](https://img.shields.io/badge/Phase-27%20MULTIPLAYER--SOCIAL-blue?style=for-the-badge)](01_코어기획/P27_작업_리스트_v1.md)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PC-green?style=for-the-badge)](#-기술-스택)
 [![Docs](https://img.shields.io/badge/Docs-339%2B%20Documents-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4-ff69b4?style=for-the-badge)](#-에셋-파이프라인)
 [![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![Tickets](https://img.shields.io/badge/Notion-548%2F548%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-568%2F568%20Done-success?style=for-the-badge)](#-개발-현황)
 [![License](https://img.shields.io/badge/License-Public-brightgreen?style=for-the-badge)](#)
 
 <br>
@@ -333,6 +333,7 @@ Phase 15 ████████████████████  100%  그
 Phase 16 ████████████████████  100%  잔여 에셋 + 게임 적용 — 308/308 에셋 완결 🖼️
 Phase 17 ████████████████████  100%  출시 준비 + 접근성 — 328/328 출시 준비 완료 🚀
 Phase 18 ████████████████████  100%  이미지 리소스 생성 — 1,137장 AI 생성 완료 🎨
+Phase 27 ████████████████████  100%  멀티플레이어 소셜 — 파티/거래/경매/채팅/길드/PvP UI 🤝
 Phase 19 ████████████████████  100%  사운드 시스템 — BGM 42곡 + SFX 75 + Voice 20 🎵
 Phase 20 ████████████████████  100%  전역 정합성 최종 패스 — 문서 최종화 + 정합성 0건 ✅
 Phase 21 ████████████████████  100%  에셋 갭 해소 + 스프라이트 시트 + 아틀라스 — 468/468 에셋 완결 🎨
@@ -343,7 +344,7 @@ Phase 25 ████████████████████  100%  클
 Phase 26 ████████████████████  100%  게임플레이 루프 — UI 7종 + 전투→보상→레벨업 풀 루프 🎮
 ```
 
-**26 Phase 완료 · 548 Notion 티켓 전부 Done · TODO/FIXME 0건**
+**27 Phase 완료 · 568 Notion 티켓 전부 Done · TODO/FIXME 0건**
 
 ### 정합성 검증 (2026-03-14)
 
@@ -465,6 +466,8 @@ npm run dev
 ```
 
 ### 최근 업데이트
+
+> **2026-03-14** — **Phase 27 멀티플레이어 소셜 UI 완성** (20/20, 568/568). 서버 partyRoutes(초대/수락/거절/해산/추방/검색/전투동기화/보상분배) + tradeRoutes(거래 요청/수락/오퍼/확인/완료 양측확인 트랜잭션) · 클라이언트 UI 11종 (PartyUI 4인파티+전투준비 + TradeUI 1:1거래+골드교환 + AuctionUI 경매검색/등록/입찰/즉시구매 + MailUI 수신함/첨부수령/발송 + ChatUI 4채널탭+이모지+귓속말 + FriendListUI 온라인표시+컨텍스트메뉴 + GuildUI 정보/멤버/스킬/검색 + GuildRaidUI 로비/보스HP/데미지랭킹/보상 + PvpUI 매칭큐/레이팅/결과 + RankingUI 4카테고리Top100 + NotificationUI 토스트+알림패널) · routeManifest 44라우트 · SSOT 6클래스 정합 · 금지어 0건 · 개연성 검토 10항목/0수정 PASS → **멀티플레이어 소셜 기능 완비** 🤝
 
 > **2026-03-14** — **Phase 26 게임플레이 루프 완성** (20/20, 548/548). UI 7종 (InventoryUI + ShopUI + SkillTreeUI + QuestTracker + Minimap + WorldMapUI + GameHUD) · 게임플레이 시스템 7종 (DialogueUI NPC 대화 + QuestFlowManager 퀘스트 수락→완료→보상 + CombatRewardFlow 전투→보상→레벨업→스탯분배 + ZoneTeleportManager 존 이동/포탈 + DungeonFlowManager 던전 입장→웨이브→보스→클리어 + EnhancementSystem 장비 강화 확률 + DeathReviveSystem 사망→페널티→부활) · 6클래스 30스킬 트리 · 10지역 월드맵 · tsc 에러 0건 · 개연성 검토 75항목/14수정 PASS → **풀 게임플레이 루프 완성** 🎮
 
