@@ -21,6 +21,7 @@ import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/Combat
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
+import { playSfx, playRandomVoice, COMBAT_VOICE, UI_SFX } from '../utils/SFXHelper';
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
 
@@ -131,6 +132,12 @@ export class BattleScene extends Phaser.Scene {
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
       this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
+    }
+
+    // P34-A: 전투 VFX 이미지 (공통 히트 이펙트)
+    for (let i = 1; i <= 10; i++) {
+      const padded = String(i).padStart(3, '0');
+      this.load.image(`vfx_common_${padded}`, `assets/generated/vfx/common/VFX-CMN-${padded}.png`);
     }
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
@@ -460,8 +467,9 @@ export class BattleScene extends Phaser.Scene {
 
   private _executeAutoAttack(attacker: UnitSprite, target: UnitSprite): void {
     const rawDmg = Math.max(1, attacker.unit.attack - (target.unit.defense ?? 0));
+    const isCritical = Math.random() < 0.15;
     const variance = 0.85 + Math.random() * 0.3;
-    const dmg = Math.round(rawDmg * variance);
+    const dmg = Math.round(rawDmg * variance * (isCritical ? 1.8 : 1));
 
     // 서버 동기화 요청
     this.combatManager.requestAttack(attacker.unit.id, target.unit.id, dmg);
@@ -470,17 +478,61 @@ export class BattleScene extends Phaser.Scene {
     target.unit.hp = Math.max(0, target.unit.hp - dmg);
 
     // 이펙트
-    this.effectManager.spawnDamageText(target.sprite.x, target.sprite.y, dmg);
-    this.soundManager.playSfx('hit_normal');
+    this.effectManager.spawnDamageText(target.sprite.x, target.sprite.y, dmg, isCritical);
+    this.soundManager.playHitSound('flesh');
+
+    // P34-A: VFX 히트 이펙트 (랜덤 common VFX)
+    this._showHitVFX(target.sprite.x, target.sprite.y);
+
+    // P34-A: Voice 연결
+    if (attacker.isAlly) {
+      if (isCritical) {
+        playSfx(this, COMBAT_VOICE.CRITICAL, 0.7);
+      } else {
+        playRandomVoice(this, [...COMBAT_VOICE.ATTACK], 0.5);
+      }
+    }
+    if (!target.isAlly) {
+      // 적 피격 — 무음 (적 보이스 없음)
+    } else {
+      // 아군 피격
+      playRandomVoice(this, [...COMBAT_VOICE.HIT], 0.4);
+    }
 
     // 로그
-    this.battleUI.addLog(`${attacker.unit.name} → ${target.unit.name} : ${dmg} 데미지`);
+    const critLabel = isCritical ? ' 💥크리티컬!' : '';
+    this.battleUI.addLog(`${attacker.unit.name} → ${target.unit.name} : ${dmg} 데미지${critLabel}`);
 
     // 사망 처리
     if (target.unit.hp <= 0) {
       target.sprite.setAlpha(0.3);
       this.battleUI.addLog(`💀 ${target.unit.name} 쓰러짐!`);
+      if (target.isAlly) {
+        playSfx(this, COMBAT_VOICE.DEATH, 0.7);
+      }
     }
+  }
+
+  /** P34-A: 히트 지점에 VFX 이미지 표시 (페이드 + 스케일) */
+  private _showHitVFX(x: number, y: number): void {
+    const idx = Phaser.Math.Between(1, 10);
+    const padded = String(idx).padStart(3, '0');
+    const key = `vfx_common_${padded}`;
+    if (!this.textures.exists(key)) return;
+
+    const vfx = this.add.image(x, y, key)
+      .setDisplaySize(48, 48)
+      .setAlpha(0.9)
+      .setDepth(8000);
+
+    this.tweens.add({
+      targets: vfx,
+      scaleX: 1.5, scaleY: 1.5,
+      alpha: 0,
+      duration: 350,
+      ease: 'Sine.easeOut',
+      onComplete: () => vfx.destroy(),
+    });
   }
 
   // ─── 스킬 사용 ────────────────────────────────────────────────
@@ -542,7 +594,16 @@ export class BattleScene extends Phaser.Scene {
       this.selectedTarget.sprite.x, this.selectedTarget.sprite.y,
       dmg, false,
     );
-    this.soundManager.playSfx(slot.sfxKey ?? 'skill_generic');
+    this.soundManager.playSfx(slot.sfxKey ?? 'sfx_skill_activate');
+
+    // P34-A: 스킬 VFX + Voice
+    this._showHitVFX(this.selectedTarget.sprite.x, this.selectedTarget.sprite.y);
+    if (slotIndex === 4) {
+      // 궁극기 (5번 슬롯)
+      playSfx(this, COMBAT_VOICE.ULTIMATE, 0.8);
+    } else {
+      playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.6);
+    }
 
     // 로그
     this.battleUI.addLog(`⚡ ${slot.name} → ${this.selectedTarget.unit.name} : ${dmg}`);
@@ -599,12 +660,13 @@ export class BattleScene extends Phaser.Scene {
     if (allEnemiesDead) {
       this.phase = 'victory';
       this.battleUI.addLog('🎉 승리!');
-      this.soundManager.playSfx('battle_victory');
+      this.soundManager.playSfx('sfx_enemy_death');
+      playSfx(this, COMBAT_VOICE.VICTORY, 0.8);
       this._showLootPopup();
     } else if (allAlliesDead) {
       this.phase = 'defeat';
       this.battleUI.addLog('💔 패배...');
-      this.soundManager.playSfx('battle_defeat');
+      this.soundManager.playSfx('sfx_player_death');
       this._showDefeatPopup();
     }
   }

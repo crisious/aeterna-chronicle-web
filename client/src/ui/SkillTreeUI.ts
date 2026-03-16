@@ -12,6 +12,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { playSfx, UI_SFX } from '../utils/SFXHelper';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -153,6 +154,7 @@ export class SkillTreeUI {
     this.skillPoints = skillPoints;
     this.visible = true;
     this.container.setVisible(true);
+    playSfx(this.scene, UI_SFX.OPEN);
     await this._loadSkills();
     this._renderTree();
   }
@@ -161,6 +163,7 @@ export class SkillTreeUI {
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
+    playSfx(this.scene, UI_SFX.CLOSE);
   }
 
   isOpen(): boolean { return this.visible; }
@@ -222,6 +225,20 @@ export class SkillTreeUI {
     const gapY = 80;
     const centerX = 210;
 
+    // P34-A: 전직 캐릭터 이미지 표시 (트리 상단)
+    for (let adv = 1; adv <= 3; adv++) {
+      const advKey = `char_adv_${this.classId}_${adv}`;
+      if (this.scene.textures.exists(advKey)) {
+        const advImg = this.scene.add.image(centerX + (adv - 2) * 80, -20, advKey)
+          .setDisplaySize(52, 68)
+          .setAlpha(0.7);
+        const advLabel = this.scene.add.text(centerX + (adv - 2) * 80, 20, `${adv}차 전직`, {
+          fontSize: '8px', color: '#aaaacc',
+        }).setOrigin(0.5);
+        this.treeContainer.add([advImg, advLabel]);
+      }
+    }
+
     // 티어별 연결선
     for (let tier = 1; tier <= 4; tier++) {
       const line = this.scene.add.rectangle(centerX, tier * gapY + nodeSize / 2 + 10, 2, gapY - nodeSize, 0x3a3a5e);
@@ -238,11 +255,25 @@ export class SkillTreeUI {
       const nodeBg = this.scene.add.rectangle(centerX, y, nodeSize, nodeSize, bgColor, alpha)
         .setStrokeStyle(2, skill.unlocked ? 0xffffff : 0x4a4a6a)
         .setInteractive({ useHandCursor: true })
-        .on('pointerdown', () => this._showSkillDetail(skill));
+        .on('pointerdown', () => {
+          playSfx(this.scene, UI_SFX.CLICK);
+          this._showSkillDetail(skill);
+        });
 
-      const icon = this.scene.add.text(centerX, y - 6, skill.icon, {
-        fontSize: '22px',
-      }).setOrigin(0.5).setAlpha(alpha);
+      // P34-A: 스킬 아이콘 이미지 사용 (fallback: emoji)
+      const skillIdx = this.skills.indexOf(skill) + 1;
+      const iconKey = `icon_skill_${String(skillIdx).padStart(3, '0')}`;
+      let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
+      if (this.scene.textures.exists(iconKey)) {
+        icon = this.scene.add.image(centerX, y - 2, iconKey)
+          .setDisplaySize(nodeSize - 12, nodeSize - 12)
+          .setOrigin(0.5)
+          .setAlpha(alpha);
+      } else {
+        icon = this.scene.add.text(centerX, y - 6, skill.icon, {
+          fontSize: '22px',
+        }).setOrigin(0.5).setAlpha(alpha);
+      }
 
       const label = this.scene.add.text(centerX, y + 18, `Lv.${skill.currentLevel}/${skill.maxLevel}`, {
         fontSize: '9px', color: '#cccccc',
@@ -321,6 +352,7 @@ export class SkillTreeUI {
       else skill.currentLevel++;
       this.skillPoints--;
       this.pointsText.setText(`스킬 포인트: ${this.skillPoints}`);
+      playSfx(this.scene, UI_SFX.LEVEL_UP);
       this._renderTree();
       this._closeDetail();
     } catch (e) {

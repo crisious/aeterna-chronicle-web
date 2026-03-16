@@ -11,6 +11,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager, CharacterData } from '../network/NetworkManager';
+import { playSfx, UI_SFX } from '../utils/SFXHelper';
 import { QuestTracker } from './QuestTracker';
 import { Minimap } from './Minimap';
 import { InventoryUI } from './InventoryUI';
@@ -254,8 +255,8 @@ export class GameHUD {
       const bg = this.scene.add.rectangle(slotSize / 2, slotSize / 2, slotSize, slotSize, 0x12122a, 0.85)
         .setStrokeStyle(1, 0x4a4a7e);
 
-      // 스킬 아이콘 placeholder (이미지 에셋 로드 시 교체)
-      const iconKey = `assets/generated/ui/icons/skills/CMN-SKL-00${i + 1}.png`;
+      // P34-A: 스킬 아이콘 이미지 (AssetManager에서 preload된 키 사용)
+      const iconKey = `icon_skill_${String(i + 1).padStart(3, '0')}`;
       let iconObj: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
       if (this.scene.textures.exists(iconKey)) {
         iconObj = this.scene.add.image(slotSize / 2, slotSize / 2 - 2, iconKey)
@@ -381,7 +382,10 @@ export class GameHUD {
       const btn = this.scene.add.text(x, y, `${b.label}[${b.key}]`, {
         fontSize: '12px', color: '#aaaacc', backgroundColor: '#1a1a2e',
         padding: { x: 4, y: 2 },
-      }).setInteractive({ useHandCursor: true }).on('pointerdown', b.action);
+      }).setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+        playSfx(this.scene, UI_SFX.CLICK);
+        b.action();
+      });
       this.container.add(btn);
       this.hotbarButtons.push(btn);
     });
@@ -415,6 +419,7 @@ export class GameHUD {
     this.net.on('system:notification', (raw: unknown) => {
       const data = raw as { type: string; message: string };
       this._addChatMessage('⚙️ 시스템', data.message);
+      playSfx(this.scene, UI_SFX.NOTIFICATION);
     });
   }
 

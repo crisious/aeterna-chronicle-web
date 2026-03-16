@@ -4,10 +4,10 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-33B%20Complete-blue?style=for-the-badge)](#-개발-현황)
-[![Tickets](https://img.shields.io/badge/Notion-668%2F668%20Done-success?style=for-the-badge)](#-개발-현황)
-[![Docs](https://img.shields.io/badge/Docs-839%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4?style=for-the-badge)](#-프로젝트-통계)
+[![Phase](https://img.shields.io/badge/Phase-34B%20Complete-blue?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-688%2F688%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
+[![Assets](https://img.shields.io/badge/Assets-1%2C575%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
 [![Commits](https://img.shields.io/badge/Commits-195%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 
 *실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱*
@@ -87,14 +87,14 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 33B (P0~P33B) | 커밋 | 195+ |
-| Notion 티켓 | 668/668 Done | 문서 | 839+ MD |
+| Phase | 34B (P0~P34B) | 커밋 | 195+ |
+| Notion 티켓 | 688/688 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
-| 이미지 | 1,383장 (AI) | 오디오 | BGM 42 + SFX 75 + Voice 20 |
-| 아틀라스 | 56개 | DB 모델 | 110 (Prisma) |
+| 이미지 | 1,383장 (AI) | 오디오 | BGM 42 + SFX 75 + Voice 20 = 138 |
+| 아틀라스 | 50 PNG + 50 JSON | DB 모델 | 110 (Prisma) |
 | API | 44 REST + 8 Socket | UI | 18종 |
-| 정합성 검증 | 348+ 항목, 177+ 수정 | TODO/FIXME | 0건 |
+| 에셋 총계 | 1,575개 | 정합성 검증 | 360+ 항목, 177+ 수정 |
 
 ---
 
@@ -107,7 +107,7 @@ cp .env.example .env          # DATABASE_URL 수정
 # 서버
 cd server && npm install
 npx prisma generate && npx prisma db push
-npm run seed                   # DB 시딩 (1118건 — 18단계: class/items/recipes/monsters/pets/skills/npcs/quests/achievements/events/zones/dungeons/furniture/cosmetics/seasonPass/pvpMaps/worldBoss/dialogues)
+npm run seed                   # DB 시딩 (1118건 — 18단계)
 npx tsc --noEmitOnError false
 cp ../shared/proto/game.proto dist/shared/proto/
 node dist/server/src/server.js # → http://localhost:3000
@@ -121,25 +121,28 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**33B Phase 완료 · 668 티켓 전부 Done · 195+ 커밋 · v1.0 릴리즈 준비 완료**
+**34B Phase 완료 · 688 티켓 전부 Done · 195+ 커밋 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
-| P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 에셋 경로 정합 · 42 BGM 정적 서빙 |
-| P33 | 시딩 완전 복구 + E2E 테스트 | 4모델 추가 · seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 · 풀루프 검증 |
-| P32 | 시딩 복구 + Docker + 프로덕션 빌드 | seed 933건 · Dockerfile 검증 · vite 389KB · tsc 0에러 · 오디오 갭 분석 |
-| P31 | tsc 전수 수정 | 서버 389→0 · 클라이언트 63→0 · Prisma 106모델 · 224파일 +784/-241 |
-| P30 | 실플레이 QA | 서버-클라이언트 전수 대조 · E2E 186/199 통과 · ShopUI/SkillTree/Dialogue 정합 |
-| P29 | QA 핫픽스 | API 정합성 전수 수정 + 자동 언래핑 + tsc 54건 해소 |
-| P28 | v1.0 폴리싱 | 밸런스 패스 · 오디오 씬 연결 · VFX 17종 · 튜토리얼 · 접근성 WCAG 2.1 AA · 보안 20항목 PASS |
-| P27 | 멀티플레이어 소셜 | 파티/거래/경매/채팅/길드/PvP UI 11종 + 44 라우트 |
+| P34B | 에셋 매니페스트 + 전수 검증 | 오디오 138개 연결 · 이미지 1,383장 확인 · 에셋 완전체 1,575개 |
+| P34 | 오디오 SFX 75+Voice 20 완성 | SFX 75개 생성 · Voice 20개 생성 · 오디오 파이프라인 완료 |
+| P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
+| P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
+| P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
+| P31 | tsc 전수 수정 | 서버 389→0 · 클라이언트 63→0 · 224파일 수정 |
+| P30 | 실플레이 QA | E2E 186/199 통과 · 정합 수정 |
+| P29 | QA 핫픽스 | API 정합성 전수 수정 + tsc 54건 해소 |
+| P28 | v1.0 폴리싱 | 밸런스 · 오디오 · VFX · 접근성 WCAG 2.1 AA |
+| P27 | 멀티플레이어 소셜 | 파티/거래/경매/채팅/길드/PvP UI 11종 |
 
 <details>
 <summary><b>정합성 검증 상세</b></summary>
 
-누적 348+ 항목 검증, 177+ 건 수정 완료 (P0~P33B).
+누적 360+ 항목 검증, 177+ 건 수정 완료 (P0~P34B).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
 DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
+에셋 전수 확인: 이미지 1,383장 + 오디오 138개 + 아틀라스/JSON 54개 = 1,575개.
 
 </details>
 
@@ -156,7 +159,7 @@ DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
 | 아키텍처 | `docs/architecture/` | 서버 부트스트랩 · 공유 계약 · 기능 토글 |
 | 에셋 파이프라인 | `docs/asset-pipeline/` | 8개 (프롬프트 · 스프라이트 · BGM · SFX 등) |
 | 아트 프로덕션 | `docs/art-production/` | 18개 (스타일 가이드 · AI 프롬프트 · QA 등) |
-| 가이드 | `01_코어기획/` | [플레이 가이드](01_코어기획/에테르나크로니클_플레이_가이드.md) · [설치 가이드](01_코어기획/에테르나크로니클_설치_가이드.md) |
+| 검증 | `04_검증_P0/` | P0~P34B 개연성 검토 + 에셋 매니페스트 |
 
 ---
 

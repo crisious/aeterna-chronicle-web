@@ -10,6 +10,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager, InventoryItem } from '../network/NetworkManager';
+import { playSfx, UI_SFX } from '../utils/SFXHelper';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -79,6 +80,7 @@ export class ShopUI {
     this.tab = 'buy';
     this.visible = true;
     this.container.setVisible(true);
+    playSfx(this.scene, UI_SFX.OPEN);
     await this._refreshPlayerData();
     this._renderList();
   }
@@ -87,6 +89,7 @@ export class ShopUI {
     this.visible = false;
     this.container.setVisible(false);
     this._closeConfirm();
+    playSfx(this.scene, UI_SFX.CLOSE);
   }
 
   isOpen(): boolean { return this.visible; }
@@ -233,6 +236,7 @@ export class ShopUI {
       fontSize: '14px', color: '#55cc55', backgroundColor: '#2a2a4e', padding: { x: 8, y: 4 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', async () => {
+        playSfx(this.scene, UI_SFX.CONFIRM);
         await this._executeTrade(item, price);
         this._closeConfirm();
       });
@@ -242,7 +246,10 @@ export class ShopUI {
     const noBtn = this.scene.add.text(cx + 50, cy + 30, '[ 취소 ]', {
       fontSize: '14px', color: '#ff6666', backgroundColor: '#2a2a4e', padding: { x: 8, y: 4 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this._closeConfirm());
+      .on('pointerdown', () => {
+        playSfx(this.scene, UI_SFX.CANCEL);
+        this._closeConfirm();
+      });
     this.confirmDialog.add(noBtn);
 
     this.container.add(this.confirmDialog);
@@ -272,8 +279,11 @@ export class ShopUI {
           quantity: 1,
         });
       }
+      // P34-A: 거래 성공 SFX
+      playSfx(this.scene, this.tab === 'buy' ? UI_SFX.ITEM_PICKUP : UI_SFX.GOLD_GAIN);
     } catch (err) {
       console.error('[ShopUI] 거래 실패:', err);
+      playSfx(this.scene, UI_SFX.ERROR);
     }
     await this._refreshPlayerData();
     this._renderList();

@@ -9,6 +9,7 @@
 
 import * as Phaser from 'phaser';
 import { AssetManager, LOADING_TIPS } from '../assets/AssetManager';
+import { SoundManager } from '../sound/SoundManager';
 
 interface LoadingSceneData {
   /** 로딩 완료 후 전환할 씬 키 */
@@ -146,6 +147,13 @@ export class LoadingScene extends Phaser.Scene {
     this.assetManager.preloadAudio(this.sceneData.zoneId);
     this.assetManager.preloadCharacters();
     this.assetManager.createPlaceholders();
+
+    // P34-A: SoundManager 전수 오디오 로딩 (soundManifest 기반 138개)
+    const soundMgr = new SoundManager(this);
+    soundMgr.preloadAll();
+
+    // P34-A: 비주얼 에셋 전수 로딩 (VFX 210, 아이콘 335, 코스메틱 150, 전직 18)
+    this.assetManager.preloadAllVisuals();
 
     // 팁 순환 (6초마다)
     this.time.addEvent({

@@ -12,6 +12,7 @@
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
+import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
 
 // ── 타입 ────────────────────────────────────────────────────
 
@@ -240,8 +241,14 @@ export class LobbyScene extends Phaser.Scene {
       container.add([body, label, roleTag]);
       this.npcSprites.push(container);
 
-      body.on('pointerdown', () => this._openNpcDialogue(npc));
-      body.on('pointerover', () => body.setScale(1.15));
+      body.on('pointerdown', () => {
+        playSfx(this, UI_SFX.CLICK);
+        this._openNpcDialogue(npc);
+      });
+      body.on('pointerover', () => {
+        body.setScale(1.15);
+        playSfx(this, UI_SFX.HOVER);
+      });
       body.on('pointerout', () => body.setScale(1.0));
     }
   }
@@ -278,6 +285,7 @@ export class LobbyScene extends Phaser.Scene {
       fontSize: '14px', color: '#88ff88', fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     acceptBtn.on('pointerdown', () => {
+      playSfx(this, UI_SFX.CONFIRM);
       panel.destroy();
       this.dialoguePanel = null;
       this._executeNpcAction(npc);
@@ -287,8 +295,18 @@ export class LobbyScene extends Phaser.Scene {
     const closeBtn = this.add.text(60, 50, '[ 닫기 ]', {
       fontSize: '14px', color: '#888888', fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => { panel.destroy(); this.dialoguePanel = null; });
+    closeBtn.on('pointerdown', () => {
+      playSfx(this, UI_SFX.CANCEL);
+      panel.destroy();
+      this.dialoguePanel = null;
+    });
     panel.add(closeBtn);
+
+    // P34-A: NPC 인사 보이스
+    const voiceKey = NPC_VOICE[npc.id];
+    if (voiceKey) playSfx(this, voiceKey, 0.7);
+
+    playSfx(this, UI_SFX.OPEN);
 
     this.dialoguePanel = panel;
   }
@@ -351,7 +369,10 @@ export class LobbyScene extends Phaser.Scene {
       const buyBtn = this.add.text(180, y, '[구매]', {
         fontSize: '12px', color: '#88ff88', fontFamily: 'monospace',
       }).setInteractive({ useHandCursor: true });
-      buyBtn.on('pointerdown', () => this._showNotification(`${item.name}을(를) 구매했습니다!`));
+      buyBtn.on('pointerdown', () => {
+        playSfx(this, UI_SFX.GOLD_GAIN);
+        this._showNotification(`${item.name}을(를) 구매했습니다!`);
+      });
       panel.add(buyBtn);
     });
 
@@ -464,7 +485,10 @@ export class LobbyScene extends Phaser.Scene {
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         .on('pointerover', function (this: Phaser.GameObjects.Text) { this.setColor('#ffffff'); })
         .on('pointerout', function (this: Phaser.GameObjects.Text) { this.setColor('#cccccc'); })
-        .on('pointerdown', def.action);
+        .on('pointerdown', () => {
+          playSfx(this, UI_SFX.CLICK);
+          def.action();
+        });
     }
   }
 

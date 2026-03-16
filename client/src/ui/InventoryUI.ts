@@ -10,6 +10,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager, InventoryItem } from '../network/NetworkManager';
+import { playSfx, UI_SFX } from '../utils/SFXHelper';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -87,6 +88,7 @@ export class InventoryUI {
     this.characterId = characterId;
     this.visible = true;
     this.container.setVisible(true);
+    playSfx(this.scene, UI_SFX.OPEN);
     await this.refresh();
   }
 
@@ -94,6 +96,7 @@ export class InventoryUI {
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
+    playSfx(this.scene, UI_SFX.CLOSE);
   }
 
   toggle(characterId: string): void {
@@ -140,10 +143,12 @@ export class InventoryUI {
     if (!this.selectedItem) return;
     try {
       await this.net.equipItem(this.characterId, this.selectedItem.id);
+      playSfx(this.scene, UI_SFX.ITEM_EQUIP);
       await this.refresh();
       this._closeDetail();
     } catch (e) {
       console.error('[InventoryUI] equip failed', e);
+      playSfx(this.scene, UI_SFX.ERROR);
     }
   }
 
@@ -151,10 +156,12 @@ export class InventoryUI {
     if (!this.selectedItem) return;
     try {
       await this.net.useItem(this.characterId, this.selectedItem.id);
+      playSfx(this.scene, UI_SFX.CONFIRM);
       await this.refresh();
       this._closeDetail();
     } catch (e) {
       console.error('[InventoryUI] use failed', e);
+      playSfx(this.scene, UI_SFX.ERROR);
     }
   }
 
@@ -303,6 +310,7 @@ export class InventoryUI {
     const slot = this.slots[index];
     if (!slot.item) return;
 
+    playSfx(this.scene, UI_SFX.CLICK);
     this.selectedItem = slot.item;
     this._renderSlots();
     this._showDetail(slot.item);
