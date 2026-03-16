@@ -44,6 +44,8 @@ import { matchmakingRoutes } from '../routes/matchmakingRoutes';
 import { storyRoutes } from '../routes/storyRoutes';
 import { saveRoutes } from '../routes/saveRoutes';
 import { reportRoutes } from '../routes/reportRoutes';
+import { tradeRoutes } from '../routes/tradeRoutes';
+import { partyRoutes } from '../routes/partyRoutes';
 import { analyticsRoutes } from '../routes/analyticsRoutes';
 import { opsRoutes } from '../routes/opsRoutes';
 import { betaRoutes } from '../routes/betaRoutes';
@@ -138,6 +140,9 @@ const ROUTE_MANIFEST: RouteEntry[] = [
   { plugin: transcendenceRoutes, name: 'Transcendence' },
   // P12 커뮤니티 확장
   { plugin: communityRoutes, name: 'Community (P12)' },
+  // P32-A: 누락된 소셜 라우트
+  { plugin: tradeRoutes, name: 'Trade' },
+  { plugin: partyRoutes, name: 'Party' },
 ];
 
 /**

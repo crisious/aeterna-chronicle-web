@@ -5,7 +5,7 @@
 **기억은 사라져도, 이야기는 남는다.**
 
 [![Phase](https://img.shields.io/badge/Phase-32%20Complete-blue?style=for-the-badge)](#-개발-현황)
-[![Tickets](https://img.shields.io/badge/Notion-608%2F608%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-628%2F628%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-839%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C383%20Generated-ff69b4?style=for-the-badge)](#-프로젝트-통계)
 [![Commits](https://img.shields.io/badge/Commits-170%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
@@ -87,8 +87,8 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 32 (P0~P31) | 커밋 | 180+ |
-| Notion 티켓 | 608/608 Done | 문서 | 839+ MD |
+| Phase | 32 (P0~P32) | 커밋 | 185+ |
+| Notion 티켓 | 628/628 Done | 문서 | 839+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
 | 이미지 | 1,383장 (AI) | 오디오 | BGM 42 + SFX 75 + Voice 20 |
@@ -107,7 +107,7 @@ cp .env.example .env          # DATABASE_URL 수정
 # 서버
 cd server && npm install
 npx prisma generate && npx prisma db push
-npm run seed                   # DB 시딩 (647건)
+npm run seed                   # DB 시딩 (933건 — users/characters/monsters/items/quests/zones/npcs/skills/achievements/dungeons/recipes)
 npx tsc --noEmitOnError false
 cp ../shared/proto/game.proto dist/shared/proto/
 node dist/server/src/server.js # → http://localhost:3000
@@ -121,10 +121,11 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**32 Phase 완료 · 608 티켓 전부 Done · 180+ 커밋 · v1.0 릴리즈 준비 완료**
+**32 Phase 완료 · 628 티켓 전부 Done · 185+ 커밋 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
+| P32 | 시딩 복구 + Docker + 프로덕션 빌드 | seed 933건 · Dockerfile 검증 · vite 389KB · tsc 0에러 · 오디오 갭 분석 |
 | P31 | tsc 전수 수정 | 서버 389→0 · 클라이언트 63→0 · Prisma 106모델 · 224파일 +784/-241 |
 | P30 | 실플레이 QA | 서버-클라이언트 전수 대조 · E2E 186/199 통과 · ShopUI/SkillTree/Dialogue 정합 |
 | P29 | QA 핫픽스 | API 정합성 전수 수정 + 자동 언래핑 + tsc 54건 해소 |
@@ -134,8 +135,9 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 <details>
 <summary><b>정합성 검증 상세</b></summary>
 
-누적 300+ 항목 검증, 170+ 건 수정 완료 (P0~P31).
+누적 330+ 항목 검증, 170+ 건 수정 완료 (P0~P32).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
+DB 시딩 933건 (11테이블) 정합성 확인 완료.
 
 </details>
 
