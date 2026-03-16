@@ -83,6 +83,27 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    try {
+      this._createSafe();
+    } catch (err) {
+      console.error('[GameScene] create 에러:', err);
+      // 에러 표시 후 월드맵으로 복귀
+      const { width, height } = this.cameras.main;
+      this.cameras.main.setBackgroundColor('#1a0a0a');
+      this.add.text(width / 2, height / 2 - 30, `⚠️ 존 로딩 실패: ${this.currentZoneName}`, {
+        fontSize: '16px', color: '#ff6644', fontFamily: 'monospace',
+      }).setOrigin(0.5);
+      this.add.text(width / 2, height / 2 + 10, `${(err as Error)?.message ?? '알 수 없는 오류'}`, {
+        fontSize: '12px', color: '#888888', fontFamily: 'monospace', wordWrap: { width: 500 },
+      }).setOrigin(0.5);
+      const backBtn = this.add.text(width / 2, height / 2 + 60, '[ 월드맵으로 돌아가기 ]', {
+        fontSize: '14px', color: '#88ccff', fontFamily: 'monospace',
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      backBtn.on('pointerdown', () => this.scene.start('WorldScene'));
+    }
+  }
+
+  private _createSafe(): void {
     this.createWorld();
     this.createPlayer();
     this.createInputs();
