@@ -275,7 +275,7 @@ export class GameHUD {
         slotSize / 2, slotSize / 2, slotSize, slotSize, 0x000000, 0,
       );
 
-      slotC.add([bg, icon, hotkey]);
+      slotC.add([bg, iconObj, hotkey, cooldownOverlay]);
       this.container.add(slotC);
       this.quickSlots.push(slotC);
     }

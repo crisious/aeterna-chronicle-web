@@ -132,6 +132,15 @@ export class MainMenuScene extends Phaser.Scene {
       this.tweens.add({ targets: btn, alpha: 1, duration: 500, delay: 800 + i * 150, ease: 'Power2' });
     });
 
+    // P33-B: 타이틀 BGM 재생 (사용자 인터랙션 후)
+    this.input.once('pointerdown', () => {
+      this._startTitleBgm();
+    });
+    // 키보드 입력으로도 BGM 시작
+    this.input.keyboard?.once('keydown', () => {
+      this._startTitleBgm();
+    });
+
     // P25-03: 자동 로그인 시도 (기존 토큰 존재 시)
     if (networkManager.isAuthenticated) {
       this.statusText.setText('기존 세션 확인 중...');
@@ -144,6 +153,24 @@ export class MainMenuScene extends Phaser.Scene {
       }).catch(() => {
         this.statusText.setText('');
       });
+    }
+  }
+
+  // ── P33-B: 타이틀 BGM ───────────────────────────────────
+
+  private _bgmStarted = false;
+
+  private _startTitleBgm(): void {
+    if (this._bgmStarted) return;
+    this._bgmStarted = true;
+
+    // soundManifest 키: bgm_sys_02 = title_screen.ogg
+    const bgmKey = 'bgm_sys_02';
+    if (this.cache.audio.exists(bgmKey)) {
+      this.sound.play(bgmKey, { loop: true, volume: 0.3 });
+    } else if (this.cache.audio.exists('bgm_sys_01')) {
+      // fallback: main_theme
+      this.sound.play('bgm_sys_01', { loop: true, volume: 0.3 });
     }
   }
 
