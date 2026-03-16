@@ -151,19 +151,35 @@ export class GameHUD {
     const y = 16;
     const barW = 200;
     const barH = 18;
+    const iconSize = 20;
+    const iconOffset = iconSize + 4;
 
-    // HP
-    this.hpBarBg = this.scene.add.rectangle(x, y, barW, barH, 0x2a0a0a).setOrigin(0);
-    this.hpBarFill = this.scene.add.rectangle(x, y, barW, barH, 0xcc2222).setOrigin(0);
-    this.hpText = this.scene.add.text(x + barW / 2, y + barH / 2, 'HP', {
+    // HP 아이콘 (하트)
+    const hpIcon = this.scene.add.text(x, y + barH / 2, '❤️', {
+      fontSize: '14px',
+    }).setOrigin(0, 0.5);
+
+    // HP 바 (아이콘 오른쪽에 배치)
+    const hpBarX = x + iconOffset;
+    this.hpBarBg = this.scene.add.rectangle(hpBarX, y, barW, barH, 0x2a0a0a)
+      .setOrigin(0).setStrokeStyle(1, 0x4a1a1a);
+    this.hpBarFill = this.scene.add.rectangle(hpBarX, y, barW, barH, 0xcc2222).setOrigin(0);
+    this.hpText = this.scene.add.text(hpBarX + barW / 2, y + barH / 2, 'HP', {
       fontSize: '11px', color: '#ffffff',
     }).setOrigin(0.5);
 
-    // MP
+    // MP 아이콘 (마나)
     const my = y + barH + 4;
-    this.mpBarBg = this.scene.add.rectangle(x, my, barW, barH, 0x0a0a2a).setOrigin(0);
-    this.mpBarFill = this.scene.add.rectangle(x, my, barW, barH, 0x2244cc).setOrigin(0);
-    this.mpText = this.scene.add.text(x + barW / 2, my + barH / 2, 'MP', {
+    const mpIcon = this.scene.add.text(x, my + barH / 2, '💎', {
+      fontSize: '14px',
+    }).setOrigin(0, 0.5);
+
+    // MP 바
+    const mpBarX = x + iconOffset;
+    this.mpBarBg = this.scene.add.rectangle(mpBarX, my, barW, barH, 0x0a0a2a)
+      .setOrigin(0).setStrokeStyle(1, 0x1a1a4a);
+    this.mpBarFill = this.scene.add.rectangle(mpBarX, my, barW, barH, 0x2244cc).setOrigin(0);
+    this.mpText = this.scene.add.text(mpBarX + barW / 2, my + barH / 2, 'MP', {
       fontSize: '11px', color: '#ffffff',
     }).setOrigin(0.5);
 
@@ -186,8 +202,8 @@ export class GameHUD {
     });
 
     this.container.add([
-      this.hpBarBg, this.hpBarFill, this.hpText,
-      this.mpBarBg, this.mpBarFill, this.mpText,
+      hpIcon, this.hpBarBg, this.hpBarFill, this.hpText,
+      mpIcon, this.mpBarBg, this.mpBarFill, this.mpText,
       this.levelText, this.expBarBg, this.expBarFill, this.expText,
       this.goldText,
     ]);
@@ -235,16 +251,29 @@ export class GameHUD {
       const sx = startX + i * (slotSize + gap);
       const slotC = this.scene.add.container(sx, y);
 
-      const bg = this.scene.add.rectangle(slotSize / 2, slotSize / 2, slotSize, slotSize, 0x1a1a2e)
-        .setStrokeStyle(1, 0x3a3a5e);
+      const bg = this.scene.add.rectangle(slotSize / 2, slotSize / 2, slotSize, slotSize, 0x12122a, 0.85)
+        .setStrokeStyle(1, 0x4a4a7e);
 
-      const icon = this.scene.add.text(slotSize / 2, slotSize / 2 - 4, '', {
-        fontSize: '20px',
-      }).setOrigin(0.5);
+      // 스킬 아이콘 placeholder (이미지 에셋 로드 시 교체)
+      const iconKey = `assets/generated/ui/icons/skills/CMN-SKL-00${i + 1}.png`;
+      let iconObj: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
+      if (this.scene.textures.exists(iconKey)) {
+        iconObj = this.scene.add.image(slotSize / 2, slotSize / 2 - 2, iconKey)
+          .setDisplaySize(slotSize - 8, slotSize - 8).setAlpha(0.7);
+      } else {
+        iconObj = this.scene.add.text(slotSize / 2, slotSize / 2 - 4, '', {
+          fontSize: '20px',
+        }).setOrigin(0.5);
+      }
 
       const hotkey = this.scene.add.text(4, 2, `${i + 1}`, {
-        fontSize: '9px', color: '#666688',
+        fontSize: '9px', color: '#7777aa', fontStyle: 'bold',
       });
+
+      // 쿨다운 오버레이
+      const cooldownOverlay = this.scene.add.rectangle(
+        slotSize / 2, slotSize / 2, slotSize, slotSize, 0x000000, 0,
+      );
 
       slotC.add([bg, icon, hotkey]);
       this.container.add(slotC);

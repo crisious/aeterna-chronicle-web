@@ -46,6 +46,15 @@ const TOWN_NPCS: NpcEntry[] = [
 const MINIMAP_SIZE = 140;
 const MINIMAP_MARGIN = 12;
 
+// P33-A: NPC id → 스프라이트 파일명 매핑
+const NPC_SPRITE_MAP: Record<string, string> = {
+  blacksmith: '19_kalen_sprite',   // 대장장이 카론 → 칼렌 스프라이트
+  merchant: '25_fiona_sprite',     // 상인 레나 → 피오나 스프라이트
+  quest_board: '18_memory_fragment_sprite', // 게시판 → 기억 파편
+  party_recruit: '13_hashir_sprite', // 모험가 길드 → 하시르 스프라이트
+  elder: '04_mateus_sprite',       // 장로 마테우스
+};
+
 // ── LobbyScene ──────────────────────────────────────────────
 
 export class LobbyScene extends Phaser.Scene {
@@ -63,6 +72,27 @@ export class LobbyScene extends Phaser.Scene {
 
   init(data: LobbySceneData): void {
     this.characterData = data;
+  }
+
+  preload(): void {
+    // P33-A: 타운 배경 (실반헤임 숲)
+    this.load.image('town_bg', 'assets/generated/environment/backgrounds/SYL-BG-FAR-DAY.png');
+    this.load.image('town_bg_mid', 'assets/generated/environment/backgrounds/SYL-BG-MID-DAY.png');
+
+    // P33-A: NPC 스프라이트
+    for (const [npcId, spriteFile] of Object.entries(NPC_SPRITE_MAP)) {
+      this.load.image(
+        `npc_${npcId}`,
+        `assets/generated/characters/npc_sprites/${spriteFile}.png`,
+      );
+    }
+    // 추가 NPC 초상화 (대화 패널용)
+    this.load.image('npc_portrait_mateus', 'assets/generated/characters/npc_sprites/04_mateus_sprite.png');
+    this.load.image('npc_portrait_lumina', 'assets/generated/characters/npc_sprites/03_lumina_sprite.png');
+
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[Lobby] 이미지 로드 실패: ${file.key}`);
+    });
   }
 
   create(): void {
@@ -140,14 +170,27 @@ export class LobbyScene extends Phaser.Scene {
   // ── 배경 ─────────────────────────────────────────────────
 
   private _drawTownBackground(w: number, h: number): void {
-    const gfx = this.add.graphics();
-    gfx.fillStyle(0x1a3322, 1);
-    gfx.fillRect(0, 0, w, h);
+    // P33-A: 실제 배경 이미지 사용 (fallback: 기존 프로그래매틱 배경)
+    if (this.textures.exists('town_bg')) {
+      this.add.image(w / 2, h / 2, 'town_bg').setDisplaySize(w, h).setAlpha(0.8);
+    }
+    if (this.textures.exists('town_bg_mid')) {
+      this.add.image(w / 2, h / 2, 'town_bg_mid').setDisplaySize(w, h).setAlpha(0.3);
+    }
 
-    gfx.lineStyle(1, 0x224433, 0.3);
-    const tileSize = 48;
-    for (let x = 0; x < w; x += tileSize) gfx.lineBetween(x, 0, x, h);
-    for (let y = 0; y < h; y += tileSize) gfx.lineBetween(0, y, w, y);
+    // 배경 이미지가 없으면 기존 프로그래매틱 배경
+    if (!this.textures.exists('town_bg')) {
+      const gfx = this.add.graphics();
+      gfx.fillStyle(0x1a3322, 1);
+      gfx.fillRect(0, 0, w, h);
+      gfx.lineStyle(1, 0x224433, 0.3);
+      const tileSize = 48;
+      for (let x = 0; x < w; x += tileSize) gfx.lineBetween(x, 0, x, h);
+      for (let y = 0; y < h; y += tileSize) gfx.lineBetween(0, y, w, y);
+    }
+
+    // 반투명 오버레이 (UI 가독성)
+    this.add.rectangle(w / 2, h / 2, w, h, 0x0a1a12, 0.4);
 
     this.add.text(w / 2, 80, '☆ 아에테리아 마을 ☆', {
       fontSize: '20px', fontFamily: 'monospace', color: '#88cc88',
@@ -175,8 +218,17 @@ export class LobbyScene extends Phaser.Scene {
     for (const npc of TOWN_NPCS) {
       const container = this.add.container(npc.x, npc.y);
 
-      const body = this.add.circle(0, 0, 20, npc.color)
-        .setInteractive({ useHandCursor: true });
+      // P33-A: 실제 NPC 스프라이트 사용 (fallback: 원형 도형)
+      const npcTexKey = `npc_${npc.id}`;
+      let body: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
+      if (this.textures.exists(npcTexKey)) {
+        body = this.add.image(0, 0, npcTexKey)
+          .setDisplaySize(48, 64)
+          .setInteractive({ useHandCursor: true });
+      } else {
+        body = this.add.circle(0, 0, 20, npc.color)
+          .setInteractive({ useHandCursor: true });
+      }
       const label = this.add.text(0, -32, npc.name, {
         fontSize: '12px', fontFamily: 'monospace', color: '#ffffff',
         backgroundColor: '#00000088', padding: { x: 4, y: 2 },
@@ -206,6 +258,12 @@ export class LobbyScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 420, 200, 0x000000, 0.9)
       .setStrokeStyle(1, 0x446644);
     panel.add(bg);
+
+    // P33-A: NPC 대화 초상화
+    const npcPortraitKey = `npc_${npc.id}`;
+    if (this.textures.exists(npcPortraitKey)) {
+      panel.add(this.add.image(-160, 0, npcPortraitKey).setDisplaySize(56, 72));
+    }
 
     panel.add(this.add.text(0, -70, `💬 ${npc.name}`, {
       fontSize: '16px', color: '#ffffff', fontFamily: 'monospace',
@@ -360,10 +418,16 @@ export class LobbyScene extends Phaser.Scene {
     const panel = this.add.container(width / 2, height / 2);
     const bg = this.add.rectangle(0, 0, 500, 300, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xcc88ff);
     panel.add(bg);
+
+    // P33-A: NPC 초상화 (마테우스)
+    if (this.textures.exists('npc_portrait_mateus')) {
+      panel.add(this.add.image(-200, -30, 'npc_portrait_mateus').setDisplaySize(80, 100));
+    }
+
     panel.add(this.add.text(0, -120, `📖 ${npc.name} — 메인 스토리`, {
       fontSize: '18px', color: '#cc88ff', fontFamily: 'monospace',
     }).setOrigin(0.5));
-    panel.add(this.add.text(0, -50, '"대망각이 세계를 덮친 지 212년...\n에리언이여, 기억의 파편을 찾아야 한다.\n에레보스의 폐허에서 첫 번째 단서가 기다리고 있다."', {
+    panel.add(this.add.text(20, -50, '"대망각이 세계를 덮친 지 212년...\n에리언이여, 기억의 파편을 찾아야 한다.\n에레보스의 폐허에서 첫 번째 단서가 기다리고 있다."', {
       fontSize: '12px', color: '#cccccc', fontFamily: 'monospace',
       align: 'center', wordWrap: { width: 440 },
     }).setOrigin(0.5));

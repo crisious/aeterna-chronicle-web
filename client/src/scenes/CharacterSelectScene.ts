@@ -83,11 +83,31 @@ export class CharacterSelectScene extends Phaser.Scene {
   private charListContainer: Phaser.GameObjects.Container | null = null;
   private mode: 'select' | 'create' = 'select';
 
+  // P33-A: 클래스 일러스트 키 매핑
+  private static readonly CLASS_IDS = [
+    'ether_knight', 'memory_weaver', 'shadow_weaver',
+    'memory_breaker', 'time_guardian', 'void_wanderer',
+  ];
+
   constructor() {
     super({ key: 'CharacterSelectScene' });
   }
 
   // ── 라이프사이클 ─────────────────────────────────────────
+
+  preload(): void {
+    // P33-A: 6클래스 front 일러스트 로드
+    for (const classId of CharacterSelectScene.CLASS_IDS) {
+      this.load.image(
+        `char_${classId}`,
+        `assets/generated/characters/class_main/char_illust_${classId}_front.png`,
+      );
+    }
+
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[CharSelect] 이미지 로드 실패: ${file.key}`);
+    });
+  }
 
   async create(): Promise<void> {
     const { width, height } = this.cameras.main;
@@ -181,7 +201,14 @@ export class CharacterSelectScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true });
 
       const classColor = CLASS_COLORS[char.classId] ?? 0x888888;
-      const icon = this.add.circle(-210, 0, 18, classColor);
+      // P33-A: 캐릭터 목록에도 일러스트 사용
+      const charTexKey = `char_${char.classId}`;
+      let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
+      if (this.textures.exists(charTexKey)) {
+        icon = this.add.image(-210, 0, charTexKey).setDisplaySize(36, 48);
+      } else {
+        icon = this.add.circle(-210, 0, 18, classColor);
+      }
       const nameText = this.add.text(-170, -12, `${char.name} (Lv.${char.level})`, {
         fontSize: '16px', color: '#ffffff', fontFamily: 'monospace',
       });
@@ -253,7 +280,18 @@ export class CharacterSelectScene extends Phaser.Scene {
 
     const bg = this.add.rectangle(0, 0, CARD_WIDTH, CARD_HEIGHT, 0x1a1a2e, 0.9)
       .setStrokeStyle(2, 0x333366).setInteractive({ useHandCursor: true });
-    const icon = this.add.circle(0, -80, 24, cls.color);
+
+    // P33-A: 실제 일러스트 사용 (텍스처 없으면 fallback 원형)
+    const texKey = `char_${cls.id}`;
+    let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
+    if (this.textures.exists(texKey)) {
+      const img = this.add.image(0, -70, texKey);
+      // 카드 내 영역에 맞게 리사이즈
+      img.setDisplaySize(CARD_WIDTH - 20, 100);
+      icon = img;
+    } else {
+      icon = this.add.circle(0, -80, 24, cls.color);
+    }
     const name = this.add.text(0, -40, cls.name, {
       fontSize: '15px', fontFamily: 'monospace', color: '#ffffff',
     }).setOrigin(0.5);
@@ -289,10 +327,22 @@ export class CharacterSelectScene extends Phaser.Scene {
     });
 
     this.previewContainer.removeAll(true);
-    const txt = this.add.text(0, 0, `선택: ${cls.name} — ${cls.nameEn}`, {
-      fontSize: '14px', color: '#c8a2ff', fontFamily: 'monospace',
-    }).setOrigin(0.5);
-    this.previewContainer.add(txt);
+
+    // P33-A: 선택 시 큰 미리보기 이미지
+    const previewTexKey = `char_${cls.id}`;
+    if (this.textures.exists(previewTexKey)) {
+      const previewImg = this.add.image(-100, 0, previewTexKey)
+        .setDisplaySize(120, 160);
+      this.previewContainer.add(previewImg);
+    }
+
+    const txt = this.add.text(40, -20, `선택: ${cls.name}`, {
+      fontSize: '16px', color: '#c8a2ff', fontFamily: 'monospace',
+    }).setOrigin(0, 0.5);
+    const subTxt = this.add.text(40, 10, cls.nameEn, {
+      fontSize: '12px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0, 0.5);
+    this.previewContainer.add([txt, subTxt]);
     this.errorText.setText('');
   }
 

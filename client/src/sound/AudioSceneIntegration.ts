@@ -52,14 +52,14 @@ export const SCENE_BGM_MAP: SceneBgmMapping[] = [
   { sceneKey: 'DungeonScene', bgmKey: 'bgm_dungeon_02', subZone: 'deep' },
   { sceneKey: 'DungeonScene', bgmKey: 'bgm_dungeon_03', subZone: 'boss_room' },
 
-  // ── 시스템 씬 BGM ───────────────────────────────
-  { sceneKey: 'MainMenuScene',       bgmKey: 'bgm_title' },
-  { sceneKey: 'CharacterSelectScene', bgmKey: 'bgm_char_select' },
-  { sceneKey: 'LobbyScene',          bgmKey: 'bgm_lobby' },
-  { sceneKey: 'CutsceneScene',       bgmKey: 'bgm_cutscene_01' },
-  { sceneKey: 'EndingScene',         bgmKey: 'bgm_ending_01' },
-  { sceneKey: 'SettingsScene',       bgmKey: 'bgm_settings' },
-  { sceneKey: 'WorldScene',          bgmKey: 'bgm_worldmap' },
+  // ── 시스템 씬 BGM (soundManifest 키 매핑) ────────
+  { sceneKey: 'MainMenuScene',       bgmKey: 'bgm_sys_02' },  // title_screen.ogg
+  { sceneKey: 'CharacterSelectScene', bgmKey: 'bgm_sys_01' }, // main_theme.ogg
+  { sceneKey: 'LobbyScene',          bgmKey: 'bgm_sys_03' },  // guild_hall.ogg
+  { sceneKey: 'CutsceneScene',       bgmKey: 'bgm_evt_01' },  // awakening.ogg
+  { sceneKey: 'EndingScene',         bgmKey: 'bgm_evt_02' },  // farewell.ogg
+  { sceneKey: 'SettingsScene',       bgmKey: 'bgm_sys_04' },  // guild_bond.ogg
+  { sceneKey: 'WorldScene',          bgmKey: 'bgm_sys_01' },  // main_theme.ogg
 ];
 
 // ─── 이벤트별 SFX 매핑 ──────────────────────────────────────────

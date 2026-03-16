@@ -43,10 +43,37 @@ export class MainMenuScene extends Phaser.Scene {
 
   // ── 라이프사이클 ─────────────────────────────────────────
 
+  preload(): void {
+    // P33-A: 타이틀 배경 이미지 로드
+    this.load.image('title_bg', 'assets/generated/environment/backgrounds/ERB-BG-SKY-DUSK.png');
+    this.load.image('title_bg_mid', 'assets/generated/environment/backgrounds/ERB-BG-MID-DUSK.png');
+
+    // 로드 실패 시 무시 (fallback으로 기존 그라디언트 유지)
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[MainMenu] 이미지 로드 실패: ${file.key}`);
+    });
+  }
+
   create(): void {
     const { width, height } = this.cameras.main;
 
     this._drawGradientBg(width, height);
+
+    // P33-A: 배경 이미지 레이어 (텍스처 존재 시)
+    if (this.textures.exists('title_bg')) {
+      this.add.image(width / 2, height / 2, 'title_bg')
+        .setDisplaySize(width, height)
+        .setAlpha(0.9);
+    }
+    if (this.textures.exists('title_bg_mid')) {
+      this.add.image(width / 2, height / 2, 'title_bg_mid')
+        .setDisplaySize(width, height)
+        .setAlpha(0.4);
+    }
+
+    // P33-A: 반투명 오버레이 (텍스트 가독성)
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a2e, 0.45);
+
     this._spawnAetherParticles(width, height);
 
     this.titleText = this.add.text(width / 2, height * 0.25, TITLE_TEXT, {

@@ -60,7 +60,7 @@ const AUTO_ATTACK_BASE_DELAY = 1500; // ms (공격 속도 1.0 기준)
 
 interface UnitSprite {
   unit: CombatUnit;
-  sprite: Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
   hpBar: Phaser.GameObjects.Rectangle;
   hpBarBg: Phaser.GameObjects.Rectangle;
   mpBar: Phaser.GameObjects.Rectangle;
@@ -108,6 +108,36 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 라이프사이클 ─────────────────────────────────────────────
 
+  preload(): void {
+    // P33-A: 전투 배경
+    this.load.image('battle_bg', 'assets/generated/environment/backgrounds/ERB-BG-FAR-DAY.png');
+
+    // P33-A: 몬스터 이미지 로드 — _initData에서 monsterId/monsterName 기반
+    // 범용 몬스터 스프라이트 몇 종 프리로드
+    const preloadMonsters = [
+      { key: 'mon_void_beetle', path: 'assets/generated/monsters/normal/mon_abyss_void_beetle_normal.png' },
+      { key: 'mon_echo_phantom', path: 'assets/generated/monsters/normal/mon_abyss_echo_phantom_normal.png' },
+      { key: 'mon_memory_golem', path: 'assets/generated/monsters/normal/mon_abyss_memory_golem_normal.png' },
+      { key: 'mon_null_slime', path: 'assets/generated/monsters/normal/mon_abyss_null_slime_normal.png' },
+      { key: 'mon_glitch_spider', path: 'assets/generated/monsters/normal/mon_abyss_glitch_spider_normal.png' },
+      { key: 'mon_boss_shadow', path: 'assets/generated/monsters/elite_boss/BOSS-ERB-SHADOW.png' },
+      { key: 'mon_boss_void', path: 'assets/generated/monsters/elite_boss/BOSS-ABY-VOID.png' },
+    ];
+    for (const m of preloadMonsters) {
+      this.load.image(m.key, m.path);
+    }
+
+    // P33-A: 캐릭터 일러스트 (전투 아군용)
+    const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
+    for (const cid of classIds) {
+      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
+    }
+
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
+    });
+  }
+
   init(data: BattleSceneData): void {
     this.phase = 'intro';
     this.allySprites = [];
@@ -128,6 +158,16 @@ export class BattleScene extends Phaser.Scene {
   create(): void {
     // 배경
     this.cameras.main.setBackgroundColor('#1a1a2e');
+
+    // P33-A: 전투 배경 이미지
+    const { width: scW, height: scH } = this.cameras.main;
+    if (this.textures.exists('battle_bg')) {
+      this.add.image(scW / 2, scH / 2, 'battle_bg')
+        .setDisplaySize(scW, scH)
+        .setAlpha(0.6);
+      // 어두운 오버레이 (전투 분위기)
+      this.add.rectangle(scW / 2, scH / 2, scW, scH, 0x0a0a1e, 0.5);
+    }
 
     // 이펙트 & 사운드 매니저
     this.effectManager = new EffectManager(this);
@@ -266,14 +306,61 @@ export class BattleScene extends Phaser.Scene {
   private _spawnUnits(units: CombatUnit[], isAlly: boolean, baseX: number): void {
     const list = isAlly ? this.allySprites : this.enemySprites;
 
+    // P33-A: 적 몬스터 텍스처 키 풀
+    const monsterTexKeys = [
+      'mon_void_beetle', 'mon_echo_phantom', 'mon_memory_golem',
+      'mon_null_slime', 'mon_glitch_spider', 'mon_boss_shadow', 'mon_boss_void',
+    ];
+
     units.forEach((unit, idx) => {
       const x = baseX;
       const y = UNIT_Y_START + idx * UNIT_Y_GAP;
       const color = isAlly ? 0x4488ff : 0xff4444;
 
-      // 유닛 사각형 (스프라이트 대체)
-      const sprite = this.add.rectangle(x, y, 48, 48, color)
-        .setInteractive({ useHandCursor: true });
+      // P33-A: 실제 이미지 사용 (fallback: 사각형)
+      let sprite: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
+      let usedImage = false;
+
+      if (isAlly) {
+        // 아군: classId 기반 side 일러스트 (CombatUnit에 classId가 없으므로 _initData에서 참조)
+        const classId = (unit as any).classId ?? this._initData?.monsterId ?? '';
+        const allyTexKey = `char_battle_${classId}`;
+        if (classId && this.textures.exists(allyTexKey)) {
+          sprite = this.add.image(x, y, allyTexKey)
+            .setDisplaySize(56, 72)
+            .setInteractive({ useHandCursor: true });
+          usedImage = true;
+        } else {
+          sprite = this.add.rectangle(x, y, 48, 48, color)
+            .setInteractive({ useHandCursor: true });
+        }
+      } else {
+        // 적: 몬스터 이미지 (이름 기반 매칭 또는 순환 할당)
+        let monTexKey = '';
+        // 이름 기반 매칭 시도
+        const unitNameLower = unit.name?.toLowerCase() ?? '';
+        for (const mk of monsterTexKeys) {
+          if (unitNameLower.includes(mk.replace('mon_', '').replace(/_/g, ' ')) ||
+              mk.includes(unitNameLower.replace(/ /g, '_'))) {
+            monTexKey = mk;
+            break;
+          }
+        }
+        // 매칭 안 되면 인덱스 기반 할당
+        if (!monTexKey) {
+          monTexKey = monsterTexKeys[idx % monsterTexKeys.length];
+        }
+
+        if (this.textures.exists(monTexKey)) {
+          sprite = this.add.image(x, y, monTexKey)
+            .setDisplaySize(64, 64)
+            .setInteractive({ useHandCursor: true });
+          usedImage = true;
+        } else {
+          sprite = this.add.rectangle(x, y, 48, 48, color)
+            .setInteractive({ useHandCursor: true });
+        }
+      }
 
       // 클릭 타겟팅
       sprite.on('pointerdown', () => {
