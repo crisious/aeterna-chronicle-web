@@ -108,24 +108,33 @@ export class GameScene extends Phaser.Scene {
     this.createPlayer();
     this.createInputs();
 
-    // 서비스 초기화
-    this.hudOrchestrator = new HUDOrchestrator(this);
-    // TelemetryEmitter는 이제 NetworkManager 사용이 아닌 별도 인스턴스 — 호환을 위해 간이 래퍼
-    const telemetryNetworkShim = {
-      emit: (event: string, data: unknown) => networkManager.emit(event, data),
-      getSocketId: () => networkManager.socketId ?? '',
-      isConnected: networkManager.isConnected,
-    };
-    this.telemetryEmitter = new TelemetryEmitter(telemetryNetworkShim as any);
-    this.combatEffectManager = new CombatEffectManager(this);
+    // 서비스 초기화 — 각각 독립적으로 실패 허용
+    try {
+      this.hudOrchestrator = new HUDOrchestrator(this);
+      this.hudOrchestrator.init();
+    } catch (e) { console.warn('[GameScene] HUDOrchestrator 초기화 실패:', e); }
 
-    this.hudOrchestrator.init();
-    this.soundManager.init();
-    this.combatEffectManager.init();
-    this.combatEffectManager.setupDebugTrigger(() => ({
-      x: this.player.x,
-      y: this.player.y,
-    }));
+    try {
+      const telemetryNetworkShim = {
+        emit: (event: string, data: unknown) => networkManager.emit(event, data),
+        getSocketId: () => networkManager.socketId ?? '',
+        isConnected: networkManager.isConnected,
+      };
+      this.telemetryEmitter = new TelemetryEmitter(telemetryNetworkShim as any);
+    } catch (e) { console.warn('[GameScene] TelemetryEmitter 초기화 실패:', e); }
+
+    try {
+      this.combatEffectManager = new CombatEffectManager(this);
+      this.combatEffectManager.init();
+      this.combatEffectManager.setupDebugTrigger(() => ({
+        x: this.player?.x ?? 0,
+        y: this.player?.y ?? 0,
+      }));
+    } catch (e) { console.warn('[GameScene] CombatEffectManager 초기화 실패:', e); }
+
+    try {
+      this.soundManager?.init();
+    } catch (e) { console.warn('[GameScene] SoundManager 초기화 실패:', e); }
 
     // 대화 선택 이벤트 → 텔레메트리 발행
     this.events.on('ui.event.dialogue.choice_confirm', ({ choiceId }: { choiceId: string }) => {
