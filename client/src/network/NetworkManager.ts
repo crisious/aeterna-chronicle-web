@@ -208,6 +208,8 @@ class NetworkManager {
     try {
       this._token = localStorage.getItem(TOKEN_KEY);
       this._refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+      this._userId = localStorage.getItem('aeterna_user_id');
+      this._username = localStorage.getItem('aeterna_username');
     } catch {
       // SSR / 테스트 환경에서 무시
     }
@@ -225,9 +227,13 @@ class NetworkManager {
   private _clearTokens(): void {
     this._token = null;
     this._refreshToken = null;
+    this._userId = null;
+    this._username = null;
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.removeItem('aeterna_user_id');
+      localStorage.removeItem('aeterna_username');
     } catch { /* noop */ }
   }
 
@@ -260,6 +266,10 @@ class NetworkManager {
       this._saveTokens(token, res.refreshToken);
       this._userId = res.user?.id ?? res.userId ?? null;
       this._username = res.user?.username ?? creds.username ?? null;
+      try {
+        if (this._userId) localStorage.setItem('aeterna_user_id', this._userId);
+        if (this._username) localStorage.setItem('aeterna_username', this._username);
+      } catch { /* noop */ }
       res.success = true;
       res.token = token;
     }
@@ -275,6 +285,10 @@ class NetworkManager {
       this._saveTokens(token, res.refreshToken);
       this._userId = res.user?.id ?? res.userId ?? null;
       this._username = res.user?.username ?? creds.username ?? null;
+      try {
+        if (this._userId) localStorage.setItem('aeterna_user_id', this._userId);
+        if (this._username) localStorage.setItem('aeterna_username', this._username);
+      } catch { /* noop */ }
       res.success = true;
       res.token = token;
     }
