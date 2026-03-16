@@ -11,9 +11,9 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate deploy",
-    "seed": "ts-node --project tsconfig.json ../tools/seed/masterSeed.ts",
-    "seed:dry": "ts-node --project tsconfig.json ../tools/seed/masterSeed.ts --dry-run",
-    "seed:check": "ts-node --project tsconfig.json ../tools/seed/integrityCheck.ts",
+    "seed": "ts-node --transpile-only --project tsconfig.json ../tools/seed/masterSeed.ts",
+    "seed:dry": "ts-node --transpile-only --project tsconfig.json ../tools/seed/masterSeed.ts --dry-run",
+    "seed:check": "ts-node --transpile-only --project tsconfig.json ../tools/seed/integrityCheck.ts",
     "seed:staging": "ts-node --project tsconfig.json ../tools/staging/seed.ts",
     "test:e2e": "node --experimental-vm-modules node_modules/.bin/jest --config ../tests/jest.config.ts --testPathPattern=tests/e2e"
   },
