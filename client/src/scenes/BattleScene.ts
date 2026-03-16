@@ -304,7 +304,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    if (this.phase !== 'fighting') return;
+    if (!this.phase || this.phase !== 'fighting') return;
 
     // 자동 기본 공격 처리
     this._processAutoAttacks(delta);
@@ -322,16 +322,16 @@ export class BattleScene extends Phaser.Scene {
     this._checkBattleEnd();
 
     // 이펙트 업데이트
-    this.effectManager.update(delta);
+    this.effectManager?.update(delta);
 
     // P6-04: 상태이상 렌더러 업데이트
-    this.statusEffectRenderer.update(delta);
+    this.statusEffectRenderer?.update(delta);
 
     // P6-05: 콤보 UI 업데이트
-    this.comboUI.update(delta);
+    this.comboUI?.update(delta);
 
     // UI 업데이트
-    this.battleUI.update(delta);
+    this.battleUI?.update(delta);
   }
 
   // ─── P35: 기본 유닛 생성 (데이터 미전달 시 폴백) ────────────────
