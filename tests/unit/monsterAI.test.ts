@@ -37,11 +37,10 @@ function canUseSkill(lastUsed: number, cooldown: number, now: number): boolean {
 }
 
 function getCurrentBossPhase(hpPct: number, phases: BossPhase[]): BossPhase | null {
-  const sorted = [...phases].sort((a, b) => b.hpPercent - a.hpPercent);
-  for (const phase of sorted) {
-    if (hpPct <= phase.hpPercent) return phase;
-  }
-  return null;
+  // hpPct 이하인 모든 페이즈 중 가장 낮은 hpPercent(= 가장 진행된 페이즈)를 반환
+  const triggered = phases.filter(p => hpPct <= p.hpPercent);
+  if (triggered.length === 0) return null;
+  return triggered.reduce((min, p) => p.hpPercent < min.hpPercent ? p : min);
 }
 
 function isEnraged(hpPct: number, enrageThreshold: number): boolean {

@@ -23,7 +23,7 @@ import { seedRecipes } from '../../server/src/craft/recipeSeeds';
 import { seedMonsters } from '../../server/src/monster/monsterSeeds';
 import { PET_SPECIES, PET_SKILLS } from '../../server/src/pet/petSeeds';
 import { seedSkills } from '../../server/src/skill/skillSeeds';
-import { NPC_SEEDS } from '../../server/src/npc/npcSeeds';
+import { npcSeeds as NPC_SEEDS } from '../../server/src/npc/npcSeeds';
 import { seedQuests } from '../../server/src/quest/questSeeds';
 import { achievementSeeds } from '../../server/src/achievement/achievementSeeds';
 import { seedEvents } from '../../server/src/event/eventSeeds';
@@ -209,16 +209,22 @@ const SEED_STEPS: SeedStep[] = [
     expectedCount: 10,
   },
   {
-    name: 'dungeonSeeds',
+    name: 'zoneSeeds',
     order: 11,
-    execute: async () => seedDungeons(),
-    expectedCount: 20,
+    execute: async () => {
+      await seedZones();
+      return prisma.zone.count();
+    },
+    expectedCount: 30,
   },
   {
-    name: 'zoneSeeds',
+    name: 'dungeonSeeds',
     order: 12,
-    execute: async () => seedZones(),
-    expectedCount: 30,
+    execute: async () => {
+      await seedDungeons();
+      return prisma.dungeon.count();
+    },
+    expectedCount: 20,
   },
 ];
 
@@ -263,7 +269,7 @@ async function runMasterSeed(): Promise<void> {
         try {
           const count = await step.execute();
           const duration = Date.now() - stepStart;
-          const countNum = typeof count === 'number' ? count : (count as any)?.created ?? (count as any)?.updated ?? 0;
+          const countNum = typeof count === 'number' ? count : ((count as any)?.created ?? 0) + ((count as any)?.updated ?? (count as any)?.skipped ?? 0);
           const passed = countNum >= step.expectedCount * 0.8; // 80% 이상이면 통과
 
           results.push({

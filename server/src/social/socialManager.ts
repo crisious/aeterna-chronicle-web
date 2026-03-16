@@ -201,73 +201,80 @@ export async function refreshOnlineStatus(userId: string): Promise<void> {
 
 /** 파티 생성 */
 export async function createParty(leaderId: string, name?: string) {
-  const leaderMember: PartyMember = {
-    userId: leaderId,
-    role: 'leader',
-    joinedAt: new Date().toISOString(),
-  };
-
   return prisma.party.create({
     data: {
       leaderId,
       name: name ?? null,
-      members: toJson([leaderMember]) as any,
       status: 'open',
+      members: {
+        create: {
+          userId: leaderId,
+          role: 'leader',
+        },
+      },
     },
+    include: { members: true },
   });
 }
 
 /** 파티 참가 */
 export async function joinParty(partyId: string, userId: string) {
-  const party = await prisma.party.findUnique({ where: { id: partyId } });
+  const party = await prisma.party.findUnique({
+    where: { id: partyId },
+    include: { members: true },
+  });
   if (!party) throw new Error('파티를 찾을 수 없습니다.');
 
-  const members = toMembers((party as any).members);
-  if (members.some((m) => m.userId === userId)) {
+  if (party.members.some((m) => m.userId === userId)) {
     throw new Error('이미 파티에 참가 중입니다.');
   }
-  if (members.length >= party.maxSize) {
+  if (party.members.length >= party.maxSize) {
     throw new Error('파티가 가득 찼습니다.');
   }
   if (party.status === 'in_dungeon') {
     throw new Error('던전 진행 중인 파티에는 참가할 수 없습니다.');
   }
 
-  const newMember: PartyMember = {
-    userId,
-    role: 'member',
-    joinedAt: new Date().toISOString(),
-  };
-
-  const updatedMembers = [...members, newMember];
-  const newStatus = updatedMembers.length >= party.maxSize ? 'full' : 'open';
+  const newMemberCount = party.members.length + 1;
+  const newStatus = newMemberCount >= party.maxSize ? 'full' : 'open';
 
   return prisma.party.update({
     where: { id: partyId },
-    data: { members: toJson(updatedMembers) as any, status: newStatus },
+    data: {
+      status: newStatus,
+      members: {
+        create: { userId, role: 'member' },
+      },
+    },
+    include: { members: true },
   });
 }
 
 /** 파티 탈퇴 */
 export async function leaveParty(partyId: string, userId: string) {
-  const party = await prisma.party.findUnique({ where: { id: partyId } });
+  const party = await prisma.party.findUnique({
+    where: { id: partyId },
+    include: { members: true },
+  });
   if (!party) throw new Error('파티를 찾을 수 없습니다.');
 
-  const members = toMembers((party as any).members);
-  const memberIndex = members.findIndex((m) => m.userId === userId);
-  if (memberIndex === -1) throw new Error('파티 멤버가 아닙니다.');
+  const member = party.members.find((m) => m.userId === userId);
+  if (!member) throw new Error('파티 멤버가 아닙니다.');
 
   // 리더가 나가면 파티 해산
   if (party.leaderId === userId) {
+    await prisma.partyMember.deleteMany({ where: { partyId } });
     return prisma.party.delete({ where: { id: partyId } });
   }
 
-  const updatedMembers = members.filter((m) => m.userId !== userId);
-  const newStatus = updatedMembers.length < party.maxSize ? 'open' : party.status;
+  await prisma.partyMember.delete({ where: { id: member.id } });
+  const remainingCount = party.members.length - 1;
+  const newStatus = remainingCount < party.maxSize ? 'open' : party.status;
 
   return prisma.party.update({
     where: { id: partyId },
-    data: { members: toJson(updatedMembers) as any, status: newStatus },
+    data: { status: newStatus },
+    include: { members: true },
   });
 }
 
@@ -282,24 +289,31 @@ export async function disbandParty(partyId: string, leaderId: string) {
 
 /** 리더 위임 */
 export async function transferLeader(partyId: string, currentLeaderId: string, newLeaderId: string) {
-  const party = await prisma.party.findUnique({ where: { id: partyId } });
+  const party = await prisma.party.findUnique({
+    where: { id: partyId },
+    include: { members: true },
+  });
   if (!party) throw new Error('파티를 찾을 수 없습니다.');
   if (party.leaderId !== currentLeaderId) throw new Error('리더만 위임할 수 있습니다.');
 
-  const members = toMembers((party as any).members);
-  if (!members.some((m) => m.userId === newLeaderId)) {
+  if (!party.members.some((m) => m.userId === newLeaderId)) {
     throw new Error('위임 대상이 파티 멤버가 아닙니다.');
   }
 
-  const updatedMembers = members.map((m) => {
-    if (m.userId === newLeaderId) return { ...m, role: 'leader' as const };
-    if (m.userId === currentLeaderId) return { ...m, role: 'member' as const };
-    return m;
+  // 역할 교체: 새 리더 → leader, 기존 리더 → member
+  await prisma.partyMember.updateMany({
+    where: { partyId, userId: newLeaderId },
+    data: { role: 'leader' },
+  });
+  await prisma.partyMember.updateMany({
+    where: { partyId, userId: currentLeaderId },
+    data: { role: 'member' },
   });
 
   return prisma.party.update({
     where: { id: partyId },
-    data: { leaderId: newLeaderId, members: toJson(updatedMembers) as any },
+    data: { leaderId: newLeaderId },
+    include: { members: true },
   });
 }
 
@@ -313,14 +327,14 @@ export async function setPartyStatus(partyId: string, status: string) {
 
 /** 파티 조회 */
 export async function getParty(partyId: string) {
-  return prisma.party.findUnique({ where: { id: partyId } });
+  return prisma.party.findUnique({ where: { id: partyId }, include: { members: true } });
 }
 
 /** 유저가 속한 파티 조회 */
 export async function getPartyByUserId(userId: string) {
-  const parties = await prisma.party.findMany({ include: { members: true } });
-  return parties.find((p) => {
-    const members = toMembers((p as any).members);
-    return members.some((m) => m.userId === userId);
-  }) ?? null;
+  const member = await prisma.partyMember.findFirst({
+    where: { userId },
+    include: { party: { include: { members: true } } },
+  });
+  return member?.party ?? null;
 }

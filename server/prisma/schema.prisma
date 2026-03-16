@@ -428,6 +428,7 @@ model Achievement {
   points      Int      @default(10)
   isHidden    Boolean  @default(false) @map("is_hidden")
   condition   Json     // 달성 조건 정의 {type, target, count}
+  reward      String?  @db.Text  // 보상 JSON (nullable)
   createdAt   DateTime @default(now()) @map("created_at")
 
   unlocks           AchievementUnlock[]

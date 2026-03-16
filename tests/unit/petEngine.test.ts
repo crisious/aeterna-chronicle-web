@@ -116,7 +116,7 @@ describe('petEngine', () => {
 
   // 10. 최대 레벨 100 캡
   test('10. 레벨 100 캡 — 초과 경험치 무시', () => {
-    const result = calculateLevelUp(99, 0, 999999);
+    const result = calculateLevelUp(99, 0, Number.MAX_SAFE_INTEGER);
     expect(result.level).toBe(100);
   });
 });
