@@ -1948,3 +1948,79 @@ model CharacterSkill {
   @@map("character_skills")
   @@index([characterId])
 }
+
+// ─── 가구 시스템 (P8-10) ────────────────────────────────────────
+model Furniture {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  category    String   // table, chair, light, decoration, storage, bed, rug, wall, outdoor, special
+  rarity      String   @default("common")
+  description String?  @db.Text
+  effect      Json?    // {type, value}
+  recipe      Json?    // {materials, requiredLevel, craftTime, successRate}
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("furnitures")
+  @@index([category])
+}
+
+// ─── PvP 맵 (P8-15) ────────────────────────────────────────────
+model PvpMap {
+  id                 String   @id @default(uuid())
+  code               String   @unique
+  name               String
+  nameEn             String?  @map("name_en")
+  nameJa             String?  @map("name_ja")
+  season             Int      @default(1)
+  description        String?  @db.Text
+  width              Int      @default(20)
+  height             Int      @default(20)
+  environmentEffects Json?    @map("environment_effects")
+  terrainFeatures    Json?    @map("terrain_features")
+  spawnPoints        Json?    @map("spawn_points")
+  minRating          Int      @default(0) @map("min_rating")
+  unlockCondition    String?  @map("unlock_condition")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@map("pvp_maps")
+  @@index([season])
+}
+
+// ─── 월드 보스 (P11-05) ─────────────────────────────────────────
+model WorldBoss {
+  id             String   @id @default(uuid())
+  code           String   @unique
+  name           String
+  description    String?  @db.Text
+  maxHp          Int      @map("max_hp")
+  attack         Int      @default(0)
+  defense        Int      @default(0)
+  skills         Json?
+  phases         Json?
+  lootTable      Json?    @map("loot_table")
+  requiredLevel  Int      @default(1) @map("required_level")
+  weeklySchedule Int      @default(0) @map("weekly_schedule")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("world_bosses")
+}
+
+// ─── 대화/스토리 노드 (P8-12) ───────────────────────────────────
+model Dialogue {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  chapter   Int      @default(0)
+  scene     String?
+  speaker   String
+  text      String   @db.Text
+  portrait  String?
+  voiceKey  String?  @map("voice_key")
+  order     Int      @default(0)
+  nextCode  String?  @map("next_code")
+  choices   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("dialogues")
+  @@index([chapter, scene])
+}

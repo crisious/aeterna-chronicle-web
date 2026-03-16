@@ -29,6 +29,12 @@ import { achievementSeeds } from '../../server/src/achievement/achievementSeeds'
 import { seedEvents } from '../../server/src/event/eventSeeds';
 import { seedDungeons } from '../../server/src/dungeon/dungeonSeeds';
 import { seedZones } from '../../server/src/world/zoneSeeds';
+import { getAllFurnitureSeeds } from '../../server/src/housing/furnitureSeeds';
+import { COSMETIC_SEEDS } from '../../server/src/cosmetic/cosmeticSeeds';
+import { PVP_MAP_SEEDS } from '../../server/src/pvp/pvpMapSeeds';
+import { WORLD_BOSSES } from '../../server/src/world/worldBossManager';
+import { CHAPTER_6_SCENES } from '../../server/src/story/chapter6Seeds';
+import { SEASON_1_FREE_REWARDS, SEASON_1_PREMIUM_REWARDS } from '../../server/src/seasonpass/seasonPassSeeds';
 
 // ─── 타입 정의 ──────────────────────────────────────────────
 
@@ -114,30 +120,12 @@ const SEED_STEPS: SeedStep[] = [
     name: 'petSeeds',
     order: 5,
     execute: async () => {
-      // petSpecies/petSkill 스키마 불일치 — 전체 스킵
-      console.log('  ℹ️  petSeeds 스키마 불일치로 스킵');
-      return 0;
-      /* DISABLED — code/element 필드 미존재
-      let count = 0;
-      for (const skill of PET_SKILLS) {
-        await prisma.petSkill.upsert({
-          where: { code: skill.code },
-          update: {},
-          create: {
-            code: skill.code,
-            name: skill.name,
-            damage: skill.damage,
-            cooldown: skill.cooldown,
-            element: skill.element,
-            description: skill.description,
-          },
-        });
-        count++;
-      }
-      return count;
-      */
+      // Pet/PetSkill은 플레이어 소유 데이터 — 글로벌 시드 불필요
+      // PET_SPECIES/PET_SKILLS는 코드 상수로만 사용됨
+      console.log(`  ℹ️  petSeeds: ${PET_SPECIES.length}종 + ${PET_SKILLS.length}스킬 (코드 상수, DB 시드 불필요)`);
+      return PET_SPECIES.length + PET_SKILLS.length;
     },
-    expectedCount: 0, // 스킵됨
+    expectedCount: 35, // 15 species + 20 skills (코드 검증용)
   },
   {
     name: 'skillSeeds',
@@ -225,6 +213,169 @@ const SEED_STEPS: SeedStep[] = [
       return prisma.dungeon.count();
     },
     expectedCount: 20,
+  },
+  {
+    name: 'furnitureSeeds',
+    order: 13,
+    execute: async () => {
+      const allFurniture = getAllFurnitureSeeds();
+      let count = 0;
+      for (const f of allFurniture) {
+        await prisma.furniture.upsert({
+          where: { code: f.id },
+          update: {},
+          create: {
+            code: f.id,
+            name: f.name,
+            category: f.category,
+            rarity: f.rarity,
+            description: f.description,
+            effect: f.effect ? f.effect : undefined,
+            recipe: f.recipe,
+          },
+        });
+        count++;
+      }
+      return count;
+    },
+    expectedCount: 50,
+  },
+  {
+    name: 'cosmeticSeeds',
+    order: 14,
+    execute: async () => {
+      let count = 0;
+      for (const c of COSMETIC_SEEDS) {
+        await prisma.cosmeticItem.upsert({
+          where: { code: c.code },
+          update: {},
+          create: {
+            code: c.code,
+            name: c.name,
+            category: c.category,
+            rarity: c.rarity,
+            priceType: c.priceType,
+            price: c.price,
+            affectsStats: c.affectsStats,
+            description: c.description,
+            isLimited: c.isLimited,
+          },
+        });
+        count++;
+      }
+      return count;
+    },
+    expectedCount: 150,
+  },
+  {
+    name: 'seasonPassSeeds',
+    order: 15,
+    execute: async () => {
+      await prisma.seasonPass.upsert({
+        where: { season: 1 },
+        update: {},
+        create: {
+          season: 1,
+          name: '대망각의 잔향',
+          startDate: new Date('2026-01-01'),
+          endDate: new Date('2026-03-31'),
+          freeRewards: SEASON_1_FREE_REWARDS,
+          premiumRewards: SEASON_1_PREMIUM_REWARDS,
+          isActive: true,
+        },
+      });
+      return 1;
+    },
+    expectedCount: 1,
+  },
+  {
+    name: 'pvpMapSeeds',
+    order: 16,
+    execute: async () => {
+      let count = 0;
+      for (const m of PVP_MAP_SEEDS) {
+        await prisma.pvpMap.upsert({
+          where: { code: m.id },
+          update: {},
+          create: {
+            code: m.id,
+            name: m.name,
+            nameEn: m.nameEn,
+            nameJa: m.nameJa,
+            season: m.season,
+            description: m.description,
+            width: m.width,
+            height: m.height,
+            environmentEffects: m.environmentEffects,
+            terrainFeatures: m.terrainFeatures,
+            spawnPoints: m.spawnPoints,
+            minRating: m.minRating,
+            unlockCondition: m.unlockCondition ?? null,
+          },
+        });
+        count++;
+      }
+      return count;
+    },
+    expectedCount: 4,
+  },
+  {
+    name: 'worldBossSeeds',
+    order: 17,
+    execute: async () => {
+      let count = 0;
+      for (const wb of WORLD_BOSSES) {
+        await prisma.worldBoss.upsert({
+          where: { code: wb.id },
+          update: {},
+          create: {
+            code: wb.id,
+            name: wb.name,
+            description: wb.description,
+            maxHp: wb.maxHp,
+            attack: wb.attack,
+            defense: wb.defense,
+            skills: wb.skills,
+            phases: wb.phases,
+            lootTable: wb.lootTable,
+            requiredLevel: wb.requiredLevel,
+            weeklySchedule: wb.weeklySchedule,
+          },
+        });
+        count++;
+      }
+      return count;
+    },
+    expectedCount: 3,
+  },
+  {
+    name: 'dialogueSeeds',
+    order: 18,
+    execute: async () => {
+      let count = 0;
+      for (const scene of CHAPTER_6_SCENES) {
+        for (const node of scene.dialogueNodes) {
+          await prisma.dialogue.upsert({
+            where: { code: node.id },
+            update: {},
+            create: {
+              code: node.id,
+              chapter: scene.chapter,
+              scene: scene.sceneId,
+              speaker: node.speaker,
+              text: node.text,
+              portrait: node.portrait ?? null,
+              voiceKey: node.voiceKey ?? null,
+              order: count,
+              nextCode: node.next ?? null,
+            },
+          });
+          count++;
+        }
+      }
+      return count;
+    },
+    expectedCount: 40,
   },
 ];
 
