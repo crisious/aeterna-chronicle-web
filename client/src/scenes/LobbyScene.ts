@@ -219,7 +219,11 @@ export class LobbyScene extends Phaser.Scene {
     const acceptBtn = this.add.text(-60, 50, '[ 이용하기 ]', {
       fontSize: '14px', color: '#88ff88', fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    acceptBtn.on('pointerdown', () => { panel.destroy(); this.dialoguePanel = null; });
+    acceptBtn.on('pointerdown', () => {
+      panel.destroy();
+      this.dialoguePanel = null;
+      this._executeNpcAction(npc);
+    });
     panel.add(acceptBtn);
 
     const closeBtn = this.add.text(60, 50, '[ 닫기 ]', {
@@ -229,6 +233,153 @@ export class LobbyScene extends Phaser.Scene {
     panel.add(closeBtn);
 
     this.dialoguePanel = panel;
+  }
+
+  // ── NPC 액션 실행 ────────────────────────────────────────
+
+  private _executeNpcAction(npc: NpcEntry): void {
+    switch (npc.id) {
+      case 'merchant':
+        this._showNotification(`🛒 ${npc.name}: 상점을 열었습니다. (아이템 ${80}종 판매 중)`);
+        // TODO: ShopUI 통합 후 교체
+        this._showShopPanel(npc);
+        break;
+      case 'blacksmith':
+        this._showNotification(`🔨 ${npc.name}: 장비 강화 서비스를 준비합니다.`);
+        this._showEnhancePanel(npc);
+        break;
+      case 'quest_board':
+        this._showNotification(`📜 ${npc.name}: 의뢰 게시판을 엽니다.`);
+        this._showQuests();
+        break;
+      case 'party_recruit':
+        this._showNotification(`⚔️ ${npc.name}: 파티원을 모집합니다.`);
+        this._showPartyPanel(npc);
+        break;
+      case 'elder':
+        this._showNotification(`📖 ${npc.name}: 메인 스토리를 진행합니다.`);
+        this._showStoryPanel(npc);
+        break;
+      default:
+        this._showNotification(`${npc.name}과(와) 대화를 마쳤습니다.`);
+    }
+  }
+
+  private _showShopPanel(npc: NpcEntry): void {
+    const { width, height } = this.cameras.main;
+    const panel = this.add.container(width / 2, height / 2);
+    const bg = this.add.rectangle(0, 0, 500, 350, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x44cc88);
+    panel.add(bg);
+    panel.add(this.add.text(0, -150, `🛒 ${npc.name} — 아이템 상점`, {
+      fontSize: '18px', color: '#44cc88', fontFamily: 'monospace',
+    }).setOrigin(0.5));
+
+    const shopItems = [
+      { name: '체력 포션 (소)', price: 50, desc: 'HP 100 회복' },
+      { name: '체력 포션 (중)', price: 150, desc: 'HP 300 회복' },
+      { name: '마나 포션 (소)', price: 80, desc: 'MP 80 회복' },
+      { name: '해독제', price: 60, desc: '독 상태 해제' },
+      { name: '귀환 스크롤', price: 200, desc: '마을로 귀환' },
+    ];
+
+    shopItems.forEach((item, i) => {
+      const y = -80 + i * 40;
+      panel.add(this.add.text(-200, y, item.name, {
+        fontSize: '13px', color: '#ffffff', fontFamily: 'monospace',
+      }));
+      panel.add(this.add.text(100, y, `${item.price}G`, {
+        fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+      }));
+      const buyBtn = this.add.text(180, y, '[구매]', {
+        fontSize: '12px', color: '#88ff88', fontFamily: 'monospace',
+      }).setInteractive({ useHandCursor: true });
+      buyBtn.on('pointerdown', () => this._showNotification(`${item.name}을(를) 구매했습니다!`));
+      panel.add(buyBtn);
+    });
+
+    const closeBtn = this.add.text(0, 140, '[ 닫기 ]', {
+      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => panel.destroy());
+    panel.add(closeBtn);
+  }
+
+  private _showEnhancePanel(npc: NpcEntry): void {
+    const { width, height } = this.cameras.main;
+    const panel = this.add.container(width / 2, height / 2);
+    const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xff8844);
+    panel.add(bg);
+    panel.add(this.add.text(0, -90, `🔨 ${npc.name} — 장비 강화`, {
+      fontSize: '18px', color: '#ff8844', fontFamily: 'monospace',
+    }).setOrigin(0.5));
+    panel.add(this.add.text(0, -30, '"장비를 가져오면 강화해주지.\n강화 재료와 골드가 필요하다."', {
+      fontSize: '13px', color: '#cccccc', fontFamily: 'monospace',
+      align: 'center',
+    }).setOrigin(0.5));
+    panel.add(this.add.text(0, 30, '장비를 선택하세요 (인벤토리에서 장비 보유 필요)', {
+      fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0.5));
+    const closeBtn = this.add.text(0, 90, '[ 닫기 ]', {
+      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => panel.destroy());
+    panel.add(closeBtn);
+  }
+
+  private _showPartyPanel(npc: NpcEntry): void {
+    const { width, height } = this.cameras.main;
+    const panel = this.add.container(width / 2, height / 2);
+    const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x4488ff);
+    panel.add(bg);
+    panel.add(this.add.text(0, -90, `⚔️ ${npc.name} — 파티 모집`, {
+      fontSize: '18px', color: '#4488ff', fontFamily: 'monospace',
+    }).setOrigin(0.5));
+    panel.add(this.add.text(0, -20, '"파티원을 모집하거나 참여할 수 있다.\n함께라면 더 강한 적도 쓰러뜨릴 수 있지."', {
+      fontSize: '13px', color: '#cccccc', fontFamily: 'monospace',
+      align: 'center',
+    }).setOrigin(0.5));
+    const createBtn = this.add.text(-80, 50, '[ 파티 생성 ]', {
+      fontSize: '13px', color: '#88ff88', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    createBtn.on('pointerdown', () => { panel.destroy(); this._showNotification('파티를 생성했습니다!'); });
+    panel.add(createBtn);
+    const searchBtn = this.add.text(80, 50, '[ 파티 검색 ]', {
+      fontSize: '13px', color: '#88ccff', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    searchBtn.on('pointerdown', () => { panel.destroy(); this._showNotification('현재 모집 중인 파티가 없습니다.'); });
+    panel.add(searchBtn);
+    const closeBtn = this.add.text(0, 90, '[ 닫기 ]', {
+      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => panel.destroy());
+    panel.add(closeBtn);
+  }
+
+  private _showStoryPanel(npc: NpcEntry): void {
+    const { width, height } = this.cameras.main;
+    const panel = this.add.container(width / 2, height / 2);
+    const bg = this.add.rectangle(0, 0, 500, 300, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xcc88ff);
+    panel.add(bg);
+    panel.add(this.add.text(0, -120, `📖 ${npc.name} — 메인 스토리`, {
+      fontSize: '18px', color: '#cc88ff', fontFamily: 'monospace',
+    }).setOrigin(0.5));
+    panel.add(this.add.text(0, -50, '"대망각이 세계를 덮친 지 212년...\n에리언이여, 기억의 파편을 찾아야 한다.\n에레보스의 폐허에서 첫 번째 단서가 기다리고 있다."', {
+      fontSize: '12px', color: '#cccccc', fontFamily: 'monospace',
+      align: 'center', wordWrap: { width: 440 },
+    }).setOrigin(0.5));
+    const startBtn = this.add.text(-80, 80, '[ 챕터 1 시작 ]', {
+      fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    startBtn.on('pointerdown', () => {
+      panel.destroy();
+      this.scene.start('WorldScene', this.characterData);
+    });
+    panel.add(startBtn);
+    const closeBtn = this.add.text(80, 80, '[ 닫기 ]', {
+      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => panel.destroy());
+    panel.add(closeBtn);
   }
 
   // ── 하단 네비게이션 ──────────────────────────────────────
