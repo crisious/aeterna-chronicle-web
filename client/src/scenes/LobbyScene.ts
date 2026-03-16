@@ -497,7 +497,6 @@ export class LobbyScene extends Phaser.Scene {
   // ── P25-04: 인벤토리 / 퀘스트 표시 ─────────────────────
 
   private async _showInventory(): Promise<void> {
-    // 인벤토리는 userId 기반 — characterId가 아닌 userId로 조회
     const userId = networkManager.getUserId();
     if (!userId) {
       this._showNotification('로그인이 필요합니다.');
@@ -506,10 +505,94 @@ export class LobbyScene extends Phaser.Scene {
     try {
       const items = await networkManager.getInventory(userId);
       console.log('[Lobby] 인벤토리:', items);
-      this._showNotification(`인벤토리: ${items.length}개 아이템`);
+      this._showInventoryPanel(items);
     } catch {
       this._showNotification('인벤토리 로드 실패');
     }
+  }
+
+  private _showInventoryPanel(items: any[]): void {
+    // 기존 패널 제거
+    if (this.dialoguePanel) {
+      this.dialoguePanel.destroy();
+      this.dialoguePanel = null;
+    }
+
+    const { width, height } = this.cameras.main;
+    const panel = this.add.container(width / 2, height / 2);
+
+    const panelH = Math.min(400, 120 + items.length * 36);
+    const bg = this.add.rectangle(0, 0, 520, panelH, 0x0a0a1a, 0.95)
+      .setStrokeStyle(2, 0xcc8844);
+    panel.add(bg);
+
+    panel.add(this.add.text(0, -panelH / 2 + 20, `🎒 인벤토리 (${items.length}개)`, {
+      fontSize: '18px', color: '#cc8844', fontFamily: 'monospace',
+    }).setOrigin(0.5));
+
+    if (items.length === 0) {
+      panel.add(this.add.text(0, 0, '아이템이 없습니다.', {
+        fontSize: '13px', color: '#888888', fontFamily: 'monospace',
+      }).setOrigin(0.5));
+    } else {
+      // 헤더
+      const headerY = -panelH / 2 + 50;
+      panel.add(this.add.text(-220, headerY, '아이템', {
+        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+      }));
+      panel.add(this.add.text(80, headerY, '수량', {
+        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+      }));
+      panel.add(this.add.text(160, headerY, '상태', {
+        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+      }));
+
+      items.forEach((item: any, i: number) => {
+        if (i >= 8) return; // 최대 8개 표시
+        const y = headerY + 30 + i * 36;
+        const itemName = item.item?.name ?? item.itemCode ?? item.itemId ?? '???';
+        const qty = item.quantity ?? 1;
+        const equipped = item.isEquipped ? '장착중' : '';
+        const rarity = item.item?.rarity ?? '';
+
+        // 등급별 색상
+        const rarityColors: Record<string, string> = {
+          common: '#cccccc', uncommon: '#44cc44', rare: '#4488ff',
+          epic: '#aa44ff', legendary: '#ffaa00', mythic: '#ff4444',
+        };
+        const nameColor = rarityColors[rarity] ?? '#ffffff';
+
+        panel.add(this.add.text(-220, y, itemName, {
+          fontSize: '13px', color: nameColor, fontFamily: 'monospace',
+        }));
+        panel.add(this.add.text(80, y, `×${qty}`, {
+          fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+        }));
+        if (equipped) {
+          panel.add(this.add.text(160, y, equipped, {
+            fontSize: '11px', color: '#88ff88', fontFamily: 'monospace',
+          }));
+        }
+      });
+
+      if (items.length > 8) {
+        panel.add(this.add.text(0, headerY + 30 + 8 * 36, `... 외 ${items.length - 8}개`, {
+          fontSize: '11px', color: '#666666', fontFamily: 'monospace',
+        }).setOrigin(0.5));
+      }
+    }
+
+    const closeBtn = this.add.text(0, panelH / 2 - 25, '[ 닫기 ]', {
+      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => {
+      playSfx(this, UI_SFX.CANCEL);
+      panel.destroy();
+      this.dialoguePanel = null;
+    });
+    panel.add(closeBtn);
+
+    this.dialoguePanel = panel;
   }
 
   private async _showQuests(): Promise<void> {
