@@ -37,9 +37,9 @@ interface NpcEntry {
 // ── 상수 ────────────────────────────────────────────────────
 
 const TOWN_NPCS: NpcEntry[] = [
-  { id: 'blacksmith', name: '대장장이 카론', role: '장비 강화', x: 200, y: 300, color: 0xff8844 },
-  { id: 'merchant', name: '상인 레나', role: '아이템 상점', x: 400, y: 250, color: 0x44cc88 },
-  { id: 'quest_board', name: '게시판', role: '퀘스트 수주', x: 600, y: 300, color: 0xcccc44 },
+  { id: 'blacksmith', name: '대장장이 칼렌', role: '장비 강화', x: 200, y: 300, color: 0xff8844 },
+  { id: 'merchant', name: '상인 미라', role: '아이템 상점', x: 400, y: 250, color: 0x44cc88 },
+  { id: 'quest_board', name: '기억의 게시판', role: '퀘스트 수주', x: 600, y: 300, color: 0xcccc44 },
   { id: 'party_recruit', name: '모험가 길드', role: '파티 모집', x: 800, y: 250, color: 0x4488ff },
   { id: 'elder', name: '장로 마테우스', role: '메인 스토리', x: 1000, y: 300, color: 0xcc88ff },
 ];
@@ -49,9 +49,9 @@ const MINIMAP_MARGIN = 12;
 
 // P33-A: NPC id → 스프라이트 파일명 매핑
 const NPC_SPRITE_MAP: Record<string, string> = {
-  blacksmith: '19_kalen_sprite',   // 대장장이 카론 → 칼렌 스프라이트
-  merchant: '25_fiona_sprite',     // 상인 레나 → 피오나 스프라이트
-  quest_board: '18_memory_fragment_sprite', // 게시판 → 기억 파편
+  blacksmith: '19_kalen_sprite',   // 대장장이 칼렌
+  merchant: '20_mira_sprite',      // 상인 미라
+  quest_board: '18_memory_fragment_sprite', // 기억의 게시판 (기억 파편 컨셉)
   party_recruit: '13_hashir_sprite', // 모험가 길드 → 하시르 스프라이트
   elder: '04_mateus_sprite',       // 장로 마테우스
 };

@@ -113,19 +113,33 @@ export class BattleScene extends Phaser.Scene {
     // P33-A: 전투 배경
     this.load.image('battle_bg', 'assets/generated/environment/backgrounds/ERB-BG-FAR-DAY.png');
 
-    // P33-A: 몬스터 이미지 로드 — _initData에서 monsterId/monsterName 기반
-    // 범용 몬스터 스프라이트 몇 종 프리로드
+    // P35: 몬스터 이미지 — 범용 프리로드 + _initData 기반 동적 로드
     const preloadMonsters = [
       { key: 'mon_void_beetle', path: 'assets/generated/monsters/normal/mon_abyss_void_beetle_normal.png' },
       { key: 'mon_echo_phantom', path: 'assets/generated/monsters/normal/mon_abyss_echo_phantom_normal.png' },
       { key: 'mon_memory_golem', path: 'assets/generated/monsters/normal/mon_abyss_memory_golem_normal.png' },
       { key: 'mon_null_slime', path: 'assets/generated/monsters/normal/mon_abyss_null_slime_normal.png' },
       { key: 'mon_glitch_spider', path: 'assets/generated/monsters/normal/mon_abyss_glitch_spider_normal.png' },
+      { key: 'mon_data_worm', path: 'assets/generated/monsters/normal/mon_abyss_data_worm_normal.png' },
+      { key: 'mon_ether_wisp', path: 'assets/generated/monsters/normal/mon_abyss_ether_wisp_normal.png' },
+      { key: 'mon_void_moth', path: 'assets/generated/monsters/normal/mon_abyss_void_moth_normal.png' },
+      { key: 'mon_paradox_bat', path: 'assets/generated/monsters/normal/mon_abyss_paradox_bat_normal.png' },
+      { key: 'mon_forgotten_warrior', path: 'assets/generated/monsters/normal/mon_abyss_forgotten_warrior_normal.png' },
       { key: 'mon_boss_shadow', path: 'assets/generated/monsters/elite_boss/BOSS-ERB-SHADOW.png' },
       { key: 'mon_boss_void', path: 'assets/generated/monsters/elite_boss/BOSS-ABY-VOID.png' },
     ];
     for (const m of preloadMonsters) {
       this.load.image(m.key, m.path);
+    }
+
+    // P35: monsterId 기반 동적 로드 (서버에서 전달받는 ID → 파일 매핑 시도)
+    if (this._initData?.monsterId) {
+      const mid = this._initData.monsterId;
+      const dynamicKey = `mon_dynamic_${mid}`;
+      // 지역 접두사별 시도
+      for (const region of ['abyss', 'argentium', 'erebus', 'solaris', 'sylvanheim', 'fog', 'nordheim', 'temporal']) {
+        this.load.image(dynamicKey, `assets/generated/monsters/normal/mon_${region}_${mid}_normal.png`);
+      }
     }
 
     // P33-A: 캐릭터 일러스트 (전투 아군용)
@@ -183,9 +197,13 @@ export class BattleScene extends Phaser.Scene {
     // 전투 매니저 (서버 동기화)
     this.combatManager = new CombatManager(this.battleId);
 
+    // P35: allies/enemies가 없으면 기본 유닛 생성
+    const allies = this._initData.allies ?? this._createDefaultAllies();
+    const enemies = this._initData.enemies ?? this._createDefaultEnemies();
+
     // 유닛 스프라이트 생성
-    this._spawnUnits(this._initData.allies, true, ALLY_START_X);
-    this._spawnUnits(this._initData.enemies, false, ENEMY_START_X);
+    this._spawnUnits(allies, true, ALLY_START_X);
+    this._spawnUnits(enemies, false, ENEMY_START_X);
     this.allSprites = [...this.allySprites, ...this.enemySprites];
 
     // 타겟 인디케이터
@@ -197,6 +215,11 @@ export class BattleScene extends Phaser.Scene {
     }
 
     // 키 바인딩 (1~6 스킬, TAB 타겟 순환)
+    // Phaser 3.60+: keyboard가 null이면 createCursorKeys()로 활성화 시도
+    if (!this.input.keyboard) {
+      (this.input as any).keyboard = (this.input as any).keyboard ?? this.input.keyboard;
+      console.warn('[Battle] this.input.keyboard is null — keyboard disabled in config?');
+    }
     if (this.input.keyboard) {
       for (let i = 0; i < 6; i++) {
         this.skillKeys.push(
@@ -205,6 +228,9 @@ export class BattleScene extends Phaser.Scene {
       }
       this.tabKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
     }
+
+    // 마우스/터치 전투 액션 버튼 (키보드 대체)
+    this._createActionButtons();
 
     // 전투 UI (하단 스킬바, 로그, 상태창)
     this.battleUI = new BattleUI(this, this.skillSlots);
@@ -308,15 +334,53 @@ export class BattleScene extends Phaser.Scene {
     this.battleUI.update(delta);
   }
 
+  // ─── P35: 기본 유닛 생성 (데이터 미전달 시 폴백) ────────────────
+
+  private _createDefaultAllies(): CombatUnit[] {
+    // 로컬 스토리지 또는 _initData에서 캐릭터 정보 추출
+    const classId = (this._initData as any)?.characterClass ?? 'ether_knight';
+    const charName = (this._initData as any)?.characterName ?? '모험자';
+    const level = (this._initData as any)?.level ?? 1;
+    return [{
+      id: this._initData.characterId ?? 'player_1',
+      name: charName,
+      hp: 500, maxHp: 500,
+      mp: 150, maxMp: 150,
+      attack: 30,
+      defense: 10,
+      attackSpeed: 1.0,
+      level,
+      isAlly: true,
+      classId,
+    }];
+  }
+
+  private _createDefaultEnemies(): CombatUnit[] {
+    const monsterName = this._initData.monsterName ?? '공허 딱정벌레';
+    return [{
+      id: this._initData.monsterId ?? 'enemy_1',
+      name: monsterName,
+      hp: 300, maxHp: 300,
+      mp: 0, maxMp: 0,
+      attack: 15,
+      defense: 5,
+      attackSpeed: 0.8,
+      level: 1,
+      isAlly: false,
+    }];
+  }
+
   // ─── 유닛 스폰 ───────────────────────────────────────────────
 
   private _spawnUnits(units: CombatUnit[], isAlly: boolean, baseX: number): void {
     const list = isAlly ? this.allySprites : this.enemySprites;
 
-    // P33-A: 적 몬스터 텍스처 키 풀
+    // P35: 적 몬스터 텍스처 키 풀 (확장)
     const monsterTexKeys = [
       'mon_void_beetle', 'mon_echo_phantom', 'mon_memory_golem',
-      'mon_null_slime', 'mon_glitch_spider', 'mon_boss_shadow', 'mon_boss_void',
+      'mon_null_slime', 'mon_glitch_spider', 'mon_data_worm',
+      'mon_ether_wisp', 'mon_void_moth', 'mon_paradox_bat',
+      'mon_forgotten_warrior', 'mon_boss_shadow', 'mon_boss_void',
     ];
 
     units.forEach((unit, idx) => {
@@ -329,8 +393,8 @@ export class BattleScene extends Phaser.Scene {
       let usedImage = false;
 
       if (isAlly) {
-        // 아군: classId 기반 side 일러스트 (CombatUnit에 classId가 없으므로 _initData에서 참조)
-        const classId = (unit as any).classId ?? this._initData?.monsterId ?? '';
+        // 아군: classId 기반 side 일러스트
+        const classId = unit.classId ?? '';
         const allyTexKey = `char_battle_${classId}`;
         if (classId && this.textures.exists(allyTexKey)) {
           sprite = this.add.image(x, y, allyTexKey)
@@ -344,13 +408,22 @@ export class BattleScene extends Phaser.Scene {
       } else {
         // 적: 몬스터 이미지 (이름 기반 매칭 또는 순환 할당)
         let monTexKey = '';
+
+        // P35: 동적 로드 키 우선 체크
+        const dynamicKey = `mon_dynamic_${unit.id}`;
+        if (this.textures.exists(dynamicKey)) {
+          monTexKey = dynamicKey;
+        }
+
         // 이름 기반 매칭 시도
-        const unitNameLower = unit.name?.toLowerCase() ?? '';
-        for (const mk of monsterTexKeys) {
-          if (unitNameLower.includes(mk.replace('mon_', '').replace(/_/g, ' ')) ||
-              mk.includes(unitNameLower.replace(/ /g, '_'))) {
-            monTexKey = mk;
-            break;
+        if (!monTexKey) {
+          const unitNameLower = unit.name?.toLowerCase() ?? '';
+          for (const mk of monsterTexKeys) {
+            const mkNorm = mk.replace('mon_', '').replace(/_/g, ' ');
+            if (unitNameLower.includes(mkNorm) || mkNorm.includes(unitNameLower.replace(/ /g, '_'))) {
+              monTexKey = mk;
+              break;
+            }
           }
         }
         // 매칭 안 되면 인덱스 기반 할당
@@ -535,17 +608,60 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  // ─── 마우스/터치 전투 액션 버튼 ────────────────────────────────
+
+  private _createActionButtons(): void {
+    const btnY = 620;
+    const btnStyle = {
+      fontSize: '13px',
+      color: '#ffffff',
+      backgroundColor: '#333355',
+      padding: { x: 12, y: 6 },
+    };
+
+    const actions = [
+      { label: '⚔️ 공격', x: 540, action: () => this._forceAutoAttack() },
+      { label: '🎯 타겟', x: 640, action: () => this._cycleTarget() },
+      { label: '⏸ 일시정지', x: 740, action: () => this.scene.isPaused() ? this.scene.resume() : this.scene.pause() },
+    ];
+
+    for (const btn of actions) {
+      const text = this.add.text(btn.x, btnY, btn.label, btnStyle)
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .setDepth(9000);
+      text.on('pointerdown', btn.action);
+    }
+  }
+
+  /** 수동 즉시 공격 (버튼 클릭용) */
+  private _forceAutoAttack(): void {
+    if (this.phase !== 'fighting') return;
+    const player = this.allySprites[0];
+    if (!player || player.unit.hp <= 0) return;
+    if (!this.selectedTarget || this.selectedTarget.unit.hp <= 0) {
+      const living = this.enemySprites.filter(e => e.unit.hp > 0);
+      if (living.length > 0) this._selectTarget(living[0]);
+      else return;
+    }
+    this._executeAutoAttack(player, this.selectedTarget!);
+    player.autoAttackTimer = AUTO_ATTACK_BASE_DELAY / (player.unit.attackSpeed ?? 1);
+  }
+
   // ─── 스킬 사용 ────────────────────────────────────────────────
 
   private _handleInput(): void {
+    // 키보드가 없으면 스킵 (마우스 버튼으로 대체)
+    if (!this.input.keyboard) return;
+
     // TAB 타겟 순환
-    if (Phaser.Input.Keyboard.JustDown(this.tabKey)) {
+    if (this.tabKey && Phaser.Input.Keyboard.JustDown(this.tabKey)) {
       this._cycleTarget();
     }
 
     // 스킬 단축키 (1~6)
     for (let i = 0; i < this.skillKeys.length; i++) {
-      if (Phaser.Input.Keyboard.JustDown(this.skillKeys[i])) {
+      if (this.skillKeys[i] && Phaser.Input.Keyboard.JustDown(this.skillKeys[i])) {
         this._useSkill(i);
       }
     }

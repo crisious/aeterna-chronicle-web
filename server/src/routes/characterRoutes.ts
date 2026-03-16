@@ -9,6 +9,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { verifyAccessToken, TokenPayload } from '../security/jwtManager';
+import { inventoryManager } from '../inventory/inventoryManager';
 
 // ── 클래스 초기 스탯 ─────────────────────────────────────────
 
@@ -22,6 +23,32 @@ const CLASS_STATS: Record<string, { hp: number; mp: number }> = {
 };
 
 const VALID_CLASSES = Object.keys(CLASS_STATS);
+
+// ── P35: 클래스별 초기 무기 + 방어구 매핑 ────────────────────────
+
+const CLASS_STARTER_WEAPON: Record<string, string> = {
+  ether_knight:    'WPN_SWORD_C',   // 수련용 장검
+  memory_weaver:   'WPN_STAFF_C',   // 나무 지팡이
+  shadow_weaver:   'WPN_DAGGER_C',  // 녹슨 단검
+  memory_breaker:  'WPN_SWORD_C',   // 수련용 장검 (파괴 망치 → 장검 대체)
+  time_guardian:   'WPN_STAFF_C',   // 나무 지팡이 (시간 시계 → 지팡이 대체)
+  void_wanderer:   'WPN_STAFF_C',   // 나무 지팡이 (공허 구슬 → 지팡이 대체)
+};
+
+const CLASS_STARTER_ARMOR: Record<string, string> = {
+  ether_knight:    'ARM_PLATE_C',   // 수련용 갑옷
+  memory_weaver:   'ARM_ROBE_C',    // 낡은 로브
+  shadow_weaver:   'ARM_LEATHER_C', // 가죽 조끼
+  memory_breaker:  'ARM_PLATE_C',   // 수련용 갑옷
+  time_guardian:   'ARM_ROBE_C',    // 낡은 로브
+  void_wanderer:   'ARM_LEATHER_C', // 가죽 조끼
+};
+
+// 공통 초기 소비 아이템
+const STARTER_CONSUMABLES: Array<{ code: string; qty: number }> = [
+  { code: 'CON_HP_S', qty: 5 },  // HP 포션 (소) × 5
+  { code: 'CON_MP_S', qty: 3 },  // MP 포션 (소) × 3
+];
 
 // ── 인증 헬퍼 ────────────────────────────────────────────────
 
@@ -93,6 +120,27 @@ export async function characterRoutes(fastify: FastifyInstance): Promise<void> {
           mp: stats.mp,
         },
       });
+
+      // P35: 초기 아이템 지급 (무기 + 방어구 + 소비 아이템)
+      try {
+        const starterWeapon = CLASS_STARTER_WEAPON[classId];
+        const starterArmor = CLASS_STARTER_ARMOR[classId];
+
+        if (starterWeapon) {
+          await inventoryManager.addItem(userId, starterWeapon, 1);
+        }
+        if (starterArmor) {
+          await inventoryManager.addItem(userId, starterArmor, 1);
+        }
+        for (const item of STARTER_CONSUMABLES) {
+          await inventoryManager.addItem(userId, item.code, item.qty);
+        }
+
+        console.log(`[Character] 초기 아이템 지급 완료: ${name} (${classId})`);
+      } catch (err) {
+        // 아이템 지급 실패해도 캐릭터 생성은 성공 처리
+        console.error(`[Character] 초기 아이템 지급 실패: ${name}`, err);
+      }
 
       return reply.status(201).send({ success: true, data: character });
     }

@@ -26,6 +26,7 @@ export interface CombatUnit {
   attackSpeed?: number;  // 1.0 기준 (높을수록 빠름)
   level: number;
   isAlly: boolean;
+  classId?: string;      // P35: 아군 클래스 ID (그래픽 매핑용)
   buffs?: ActiveBuff[];
 }
 
