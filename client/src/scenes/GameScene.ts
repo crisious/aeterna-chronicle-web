@@ -288,6 +288,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
+    if (!this.player) return; // create 실패 시 안전 종료
     const moveSpeed = 300;
     this.player.setVelocity(0);
 
@@ -305,8 +306,8 @@ export class GameScene extends Phaser.Scene {
       this.player.body.velocity.normalize().scale(moveSpeed);
     }
 
-    this.hudOrchestrator.update(delta);
-    this.combatEffectManager.update(delta);
+    this.hudOrchestrator?.update(delta);
+    this.combatEffectManager?.update(delta);
 
     // P25-04: NetworkManager로 이동 전송
     if (this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) {
