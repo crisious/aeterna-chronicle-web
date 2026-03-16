@@ -407,18 +407,15 @@ export class CharacterSelectScene extends Phaser.Scene {
         baseStats: this.selectedClass.stats,
         level: char.level ?? 1,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('[CharSelect] 캐릭터 생성 실패:', err);
-
-      // 서버 미연결 시 로컬 폴백
-      if (this.nameInput) { this.nameInput.remove(); this.nameInput = null; }
-
-      this.scene.start('LobbyScene', {
-        characterName: name,
-        characterClass: this.selectedClass.id,
-        className: this.selectedClass.name,
-        baseStats: this.selectedClass.stats,
-      });
+      let msg = '캐릭터 생성 실패';
+      try {
+        const body = err?.responseBody ?? '';
+        const parsed = typeof body === 'string' && body.startsWith('{') ? JSON.parse(body) : null;
+        if (parsed?.error) msg = parsed.error;
+      } catch { /* 무시 */ }
+      this.errorText.setText(msg);
     }
   }
 }

@@ -245,11 +245,13 @@ export class LobbyScene extends Phaser.Scene {
         playSfx(this, UI_SFX.CLICK);
         this._openNpcDialogue(npc);
       });
+      const baseScaleX = body.scaleX;
+      const baseScaleY = body.scaleY;
       body.on('pointerover', () => {
-        body.setScale(1.15);
+        body.setScale(baseScaleX * 1.15, baseScaleY * 1.15);
         playSfx(this, UI_SFX.HOVER);
       });
-      body.on('pointerout', () => body.setScale(1.0));
+      body.on('pointerout', () => body.setScale(baseScaleX, baseScaleY));
     }
   }
 
@@ -495,12 +497,14 @@ export class LobbyScene extends Phaser.Scene {
   // ── P25-04: 인벤토리 / 퀘스트 표시 ─────────────────────
 
   private async _showInventory(): Promise<void> {
-    if (!this.characterData.characterId) {
-      this._showNotification('캐릭터 ID가 없습니다.');
+    // 인벤토리는 userId 기반 — characterId가 아닌 userId로 조회
+    const userId = networkManager.getUserId();
+    if (!userId) {
+      this._showNotification('로그인이 필요합니다.');
       return;
     }
     try {
-      const items = await networkManager.getInventory(this.characterData.characterId);
+      const items = await networkManager.getInventory(userId);
       console.log('[Lobby] 인벤토리:', items);
       this._showNotification(`인벤토리: ${items.length}개 아이템`);
     } catch {

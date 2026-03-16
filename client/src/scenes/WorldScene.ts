@@ -152,16 +152,34 @@ export class WorldScene extends Phaser.Scene {
 
     const container = this.add.container(x, y);
 
-    // 노드 원
+    // 존 아이콘: 배경 이미지 썸네일 사용 (fallback: 원형 도형)
     const alpha = zone.unlocked ? 1 : 0.4;
-    const circle = this.add.circle(0, 0, NODE_RADIUS, zone.color, alpha)
-      .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444);
+    const zoneTexKey = `zone_bg_${zone.id}`;
+    let nodeVisual: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
+
+    if (this.textures.exists(zoneTexKey)) {
+      // 원형 마스크된 썸네일
+      nodeVisual = this.add.image(0, 0, zoneTexKey)
+        .setDisplaySize(NODE_RADIUS * 2, NODE_RADIUS * 2)
+        .setAlpha(alpha);
+
+      // 원형 테두리
+      const border = this.add.circle(0, 0, NODE_RADIUS)
+        .setStrokeStyle(3, zone.unlocked ? 0xffffff : 0x444444)
+        .setFillStyle(0x000000, 0);
+      container.add(border);
+    } else {
+      nodeVisual = this.add.circle(0, 0, NODE_RADIUS, zone.color, alpha)
+        .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444);
+    }
 
     if (zone.unlocked) {
-      circle.setInteractive({ useHandCursor: true });
-      circle.on('pointerdown', () => this._onZoneClick(zone));
-      circle.on('pointerover', () => circle.setScale(1.15));
-      circle.on('pointerout', () => circle.setScale(1.0));
+      nodeVisual.setInteractive({ useHandCursor: true });
+      const baseScaleX = nodeVisual.scaleX;
+      const baseScaleY = nodeVisual.scaleY;
+      nodeVisual.on('pointerdown', () => this._onZoneClick(zone));
+      nodeVisual.on('pointerover', () => nodeVisual.setScale(baseScaleX * 1.15, baseScaleY * 1.15));
+      nodeVisual.on('pointerout', () => nodeVisual.setScale(baseScaleX, baseScaleY));
     }
 
     // 이름 라벨
@@ -179,7 +197,7 @@ export class WorldScene extends Phaser.Scene {
       container.add(lock);
     }
 
-    container.add([circle, label]);
+    container.add([nodeVisual, label]);
     return container;
   }
 
