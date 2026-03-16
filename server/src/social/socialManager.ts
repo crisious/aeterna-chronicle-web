@@ -170,28 +170,28 @@ export async function getPendingRequests(userId: string) {
 
 /** 유저 온라인 등록 */
 export async function setUserOnline(userId: string): Promise<void> {
-  if (!redisConnected) return;
+  if (!redisConnected()) return;
   await redisClient.set(userOnlineKey(userId), Date.now().toString(), { EX: ONLINE_TTL });
   await redisClient.hSet(ONLINE_KEY, userId, Date.now().toString());
 }
 
 /** 유저 오프라인 처리 */
 export async function setUserOffline(userId: string): Promise<void> {
-  if (!redisConnected) return;
+  if (!redisConnected()) return;
   await redisClient.del(userOnlineKey(userId));
   await redisClient.hDel(ONLINE_KEY, userId);
 }
 
 /** 온라인 여부 확인 */
 export async function isUserOnline(userId: string): Promise<boolean> {
-  if (!redisConnected) return false;
+  if (!redisConnected()) return false;
   const val = await redisClient.get(userOnlineKey(userId));
   return val !== null;
 }
 
 /** 온라인 heartbeat 갱신 */
 export async function refreshOnlineStatus(userId: string): Promise<void> {
-  if (!redisConnected) return;
+  if (!redisConnected()) return;
   await redisClient.set(userOnlineKey(userId), Date.now().toString(), { EX: ONLINE_TTL });
 }
 
@@ -211,7 +211,7 @@ export async function createParty(leaderId: string, name?: string) {
     data: {
       leaderId,
       name: name ?? null,
-      members: toJson([leaderMember]),
+      members: toJson([leaderMember]) as any,
       status: 'open',
     },
   });
@@ -222,7 +222,7 @@ export async function joinParty(partyId: string, userId: string) {
   const party = await prisma.party.findUnique({ where: { id: partyId } });
   if (!party) throw new Error('파티를 찾을 수 없습니다.');
 
-  const members = toMembers(party.members);
+  const members = toMembers((party as any).members);
   if (members.some((m) => m.userId === userId)) {
     throw new Error('이미 파티에 참가 중입니다.');
   }
@@ -244,7 +244,7 @@ export async function joinParty(partyId: string, userId: string) {
 
   return prisma.party.update({
     where: { id: partyId },
-    data: { members: toJson(updatedMembers), status: newStatus },
+    data: { members: toJson(updatedMembers) as any, status: newStatus },
   });
 }
 
@@ -253,7 +253,7 @@ export async function leaveParty(partyId: string, userId: string) {
   const party = await prisma.party.findUnique({ where: { id: partyId } });
   if (!party) throw new Error('파티를 찾을 수 없습니다.');
 
-  const members = toMembers(party.members);
+  const members = toMembers((party as any).members);
   const memberIndex = members.findIndex((m) => m.userId === userId);
   if (memberIndex === -1) throw new Error('파티 멤버가 아닙니다.');
 
@@ -267,7 +267,7 @@ export async function leaveParty(partyId: string, userId: string) {
 
   return prisma.party.update({
     where: { id: partyId },
-    data: { members: toJson(updatedMembers), status: newStatus },
+    data: { members: toJson(updatedMembers) as any, status: newStatus },
   });
 }
 
@@ -286,7 +286,7 @@ export async function transferLeader(partyId: string, currentLeaderId: string, n
   if (!party) throw new Error('파티를 찾을 수 없습니다.');
   if (party.leaderId !== currentLeaderId) throw new Error('리더만 위임할 수 있습니다.');
 
-  const members = toMembers(party.members);
+  const members = toMembers((party as any).members);
   if (!members.some((m) => m.userId === newLeaderId)) {
     throw new Error('위임 대상이 파티 멤버가 아닙니다.');
   }
@@ -299,7 +299,7 @@ export async function transferLeader(partyId: string, currentLeaderId: string, n
 
   return prisma.party.update({
     where: { id: partyId },
-    data: { leaderId: newLeaderId, members: toJson(updatedMembers) },
+    data: { leaderId: newLeaderId, members: toJson(updatedMembers) as any },
   });
 }
 
@@ -318,9 +318,9 @@ export async function getParty(partyId: string) {
 
 /** 유저가 속한 파티 조회 */
 export async function getPartyByUserId(userId: string) {
-  const parties = await prisma.party.findMany();
+  const parties = await prisma.party.findMany({ include: { members: true } });
   return parties.find((p) => {
-    const members = toMembers(p.members);
+    const members = toMembers((p as any).members);
     return members.some((m) => m.userId === userId);
   }) ?? null;
 }

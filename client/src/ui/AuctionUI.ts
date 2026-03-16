@@ -191,14 +191,14 @@ export class AuctionUI {
       if (this.activeTab === 'myListings') {
         endpoint = `/api/auction/history/${this.net.getUserId()}`;
       } else if (this.activeTab === 'myBids') {
-        params.set('bidderId', this.net.getUserId());
+        params.set('bidderId', this.net.getUserId() ?? '');
       }
 
       if (this.filter.type) params.set('type', this.filter.type);
       if (this.filter.rarity) params.set('rarity', this.filter.rarity);
       if (this.filter.query) params.set('q', this.filter.query);
 
-      const resp = await this.net.httpGet(`${endpoint}?${params.toString()}`);
+      const resp = await this.net.httpGet<{ listings?: any[]; data?: any[]; pages?: number }>(`${endpoint}?${params.toString()}`);
       this.listings = resp.listings ?? resp.data ?? [];
       this.totalPages = resp.pages ?? 1;
       this.refreshContent();

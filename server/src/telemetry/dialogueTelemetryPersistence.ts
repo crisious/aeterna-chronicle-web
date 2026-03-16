@@ -16,7 +16,7 @@ export async function persistDialogueTelemetry(
   payload: DialogueChoiceTelemetryEvent,
   deduped: boolean
 ): Promise<void> {
-  if (redisConnected) {
+  if (redisConnected()) {
     await persistToRedis(payload, deduped);
   }
   await persistToPostgresBestEffort(payload, deduped);

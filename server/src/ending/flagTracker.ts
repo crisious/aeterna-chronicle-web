@@ -62,7 +62,7 @@ function recordToFlags(rec: Record<string, string>): EndingFlags {
 
 // ── 플래그 조회 ─────────────────────────────────────────────
 export async function getFlags(userId: string): Promise<EndingFlags> {
-  if (redisConnected) {
+  if (redisConnected()) {
     const data = await redisClient.hGetAll(redisKey(userId));
     if (Object.keys(data).length === 0) {
       return defaultFlags();
@@ -78,7 +78,7 @@ export async function getFlags(userId: string): Promise<EndingFlags> {
 export async function setFlags(userId: string, flags: EndingFlags): Promise<void> {
   const sanitized = sanitizeFlags(flags);
 
-  if (redisConnected) {
+  if (redisConnected()) {
     await redisClient.hSet(redisKey(userId), flagsToRecord(sanitized));
   } else {
     memoryStore.set(userId, sanitized);

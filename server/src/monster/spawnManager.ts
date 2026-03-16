@@ -377,9 +377,9 @@ class SpawnManager {
       result.push({
         id,
         code: monster.code ?? id,
-        hp: monster.hp ?? 0,
-        x: monster.x ?? 0,
-        y: monster.y ?? 0,
+        hp: monster.currentHp ?? 0,
+        x: monster.posX ?? 0,
+        y: monster.posY ?? 0,
       });
     }
     return result;

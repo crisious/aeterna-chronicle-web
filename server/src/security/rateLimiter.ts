@@ -208,7 +208,7 @@ export async function rateLimitMiddleware(
 
   let currentCount: number;
 
-  if (redisConnected) {
+  if (redisConnected()) {
     // Redis 슬라이딩 윈도우 (Sorted Set)
     try {
       const multi = redisClient.multi();

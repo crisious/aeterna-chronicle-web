@@ -171,9 +171,7 @@ export class AudioSceneController {
 
     const mapping = this.findBgmMapping(sceneKey, subZone);
     if (mapping) {
-      this.soundManager.playBgm(mapping.bgmKey, {
-        crossfadeMs: mapping.crossfadeMs ?? 1500,
-      });
+      this.soundManager.playBgm(mapping.bgmKey, mapping.crossfadeMs ?? 1500);
     }
   }
 
@@ -186,9 +184,7 @@ export class AudioSceneController {
 
     const mapping = this.findBgmMapping(this.currentSceneKey, subZone);
     if (mapping) {
-      this.soundManager.playBgm(mapping.bgmKey, {
-        crossfadeMs: mapping.crossfadeMs ?? 2000,
-      });
+      this.soundManager.playBgm(mapping.bgmKey, mapping.crossfadeMs ?? 2000);
     }
   }
 

@@ -132,7 +132,7 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
       if (invite.status !== 'pending') {
         return reply.status(400).send({ error: `이미 처리된 초대입니다 (${invite.status})` });
       }
-      if (invite.expiresAt < new Date()) {
+      if (invite.expiresAt && invite.expiresAt < new Date()) {
         await prisma.partyInvite.update({ where: { id: inviteId }, data: { status: 'expired' } });
         return reply.status(410).send({ error: '만료된 초대입니다' });
       }
@@ -280,7 +280,7 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
       if (!party) return reply.status(404).send({ error: '파티를 찾을 수 없습니다' });
 
-      const combatState = party.members.map(m => {
+      const combatState = ((party as any).members as any[]).map(m => {
         const char = m.user.characters[0];
         return {
           userId: m.userId,
@@ -342,7 +342,7 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
       const memberCount = party.members.length;
       const goldPerMember = Math.floor(goldTotal / memberCount);
 
-      const distributions = party.members.map(m => ({
+      const distributions = ((party as any).members as any[]).map(m => ({
         userId: m.userId,
         gold: distribution === 'leader' && m.userId === party.leaderId
           ? goldTotal

@@ -82,8 +82,10 @@ import { getMetricsSummary } from '../apm';
  * 선언형 라우트 매니페스트 — Fastify 플러그인 배열
  * 각 항목은 { plugin, name, options? } 구조
  */
+type AnyPlugin = (fastify: FastifyInstance, opts?: any) => Promise<void>;
+
 interface RouteEntry {
-  plugin: Parameters<FastifyInstance['register']>[0];
+  plugin: AnyPlugin;
   name: string;
   options?: Record<string, unknown>;
 }

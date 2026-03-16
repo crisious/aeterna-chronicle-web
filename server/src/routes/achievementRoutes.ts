@@ -163,7 +163,7 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     if (!title) return reply.status(404).send({ error: '칭호를 찾을 수 없습니다.' });
 
     // 유저가 해당 칭호를 소유하고 있는지 확인 (Redis 기반)
-    if (redisConnected) {
+    if (redisConnected()) {
       const owns = await redisClient.sIsMember(`user:titles:${userId}`, titleId);
       if (!owns) {
         return reply.status(403).send({ error: '소유하지 않은 칭호입니다.' });
@@ -171,7 +171,7 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     }
 
     // Redis에 장착 칭호 저장
-    if (redisConnected) {
+    if (redisConnected()) {
       await redisClient.set(`user:equipped_title:${userId}`, titleId);
     }
 

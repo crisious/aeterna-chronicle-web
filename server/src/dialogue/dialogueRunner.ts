@@ -125,7 +125,7 @@ async function evaluateCondition(userId: string, cond: DialogueCondition): Promi
     }
 
     case 'flag': {
-      if (redisConnected) {
+      if (redisConnected()) {
         const hasFlag = await redisClient.sIsMember(`story:flags:${userId}`, cond.target);
         return cond.operator === 'has' ? hasFlag : !hasFlag;
       }
@@ -236,14 +236,14 @@ async function applyEffect(userId: string, effect: DialogueEffect): Promise<void
     }
 
     case 'flag_set': {
-      if (redisConnected) {
+      if (redisConnected()) {
         await redisClient.sAdd(`story:flags:${userId}`, effect.target);
       }
       break;
     }
 
     case 'flag_clear': {
-      if (redisConnected) {
+      if (redisConnected()) {
         await redisClient.sRem(`story:flags:${userId}`, effect.target);
       }
       break;
@@ -290,7 +290,7 @@ class DialogueRunner {
       startedAt: Date.now(),
     };
 
-    if (redisConnected) {
+    if (redisConnected()) {
       await redisClient.set(sessionKey(userId), JSON.stringify(session), { EX: 3600 });
     }
 
@@ -323,7 +323,7 @@ class DialogueRunner {
   async choose(userId: string, choiceId: string): Promise<DialogueResponse> {
     // 세션 복구
     let session: DialogueSession | null = null;
-    if (redisConnected) {
+    if (redisConnected()) {
       const raw = await redisClient.get(sessionKey(userId));
       if (raw) session = JSON.parse(raw) as DialogueSession;
     }
@@ -372,7 +372,7 @@ class DialogueRunner {
 
     // 세션 갱신
     session.currentNodeId = chosen.nextNodeId;
-    if (redisConnected) {
+    if (redisConnected()) {
       await redisClient.set(sessionKey(userId), JSON.stringify(session), { EX: 3600 });
     }
 
@@ -380,7 +380,7 @@ class DialogueRunner {
     const isEnd = nextNode.isEnd ?? (!nextNode.next && availableOptions.length === 0);
 
     // 종료 시 세션 정리
-    if (isEnd && redisConnected) {
+    if (isEnd && redisConnected()) {
       await redisClient.del(sessionKey(userId));
     }
 
@@ -399,7 +399,7 @@ class DialogueRunner {
    * 대화 이력 조회
    */
   async getHistory(userId: string, limit: number = 50): Promise<Array<{ npcId: string; nodeId: string; choiceId: string | null; timestamp: number }>> {
-    if (!redisConnected) return [];
+    if (!redisConnected()) return [];
 
     const raw = await redisClient.lRange(historyKey(userId), 0, limit - 1);
     return raw.map(r => JSON.parse(r) as { npcId: string; nodeId: string; choiceId: string | null; timestamp: number });
@@ -422,7 +422,7 @@ class DialogueRunner {
 
   /** 이력 Redis 저장 */
   private async saveHistory(userId: string, npcId: string, nodeId: string, choiceId: string | null): Promise<void> {
-    if (!redisConnected) return;
+    if (!redisConnected()) return;
 
     const entry = JSON.stringify({ npcId, nodeId, choiceId, timestamp: Date.now() });
     await redisClient.lPush(historyKey(userId), entry);

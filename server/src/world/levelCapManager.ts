@@ -353,9 +353,9 @@ export class LevelCapManager {
         await tx.characterSkill.create({
           data: {
             characterId,
+            skillId: skill.skillCode,
             skillCode: skill.skillCode,
             level: 1,
-            unlockedAt: new Date(),
           },
         });
       }

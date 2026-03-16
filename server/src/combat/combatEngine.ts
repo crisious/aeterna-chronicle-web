@@ -293,9 +293,14 @@ export class CombatEngine {
     this.manaManager.tickRegen();
 
     // 3. 상태이상 틱
-    for (const p of this.participants.values()) {
-      if (!p.alive) continue;
-      const dotDamage = statusEffectManager.processTick(p.id);
+    const tickResults = statusEffectManager.tick(1, (targetId: string) => {
+      const target = this.participants.get(targetId);
+      return target ? target.maxHp ?? target.hp : 0;
+    });
+    for (const result of tickResults) {
+      const p = this.participants.get(result.targetId);
+      if (!p || !p.alive) continue;
+      const dotDamage = result.damage;
       if (dotDamage > 0) {
         p.hp = Math.max(0, p.hp - dotDamage);
         if (p.hp <= 0) {
@@ -478,7 +483,7 @@ export class CombatEngine {
 
     // 콤보 기록
     if (!actor.isMonster) {
-      comboManager.recordSkillHit(actor.id, 'basic_attack', actor.classId, 1);
+      comboManager.recordSkillUse(actor.id, 'basic_attack', actor.classId, 1);
     }
 
     this.logger.logDamage(actor.id, target.id, result.damage, result.isCritical);
@@ -568,7 +573,7 @@ export class CombatEngine {
 
     // 콤보
     if (!actor.isMonster) {
-      comboManager.recordSkillHit(actor.id, skillId, actor.classId, 1);
+      comboManager.recordSkillUse(actor.id, skillId, actor.classId, 1);
     }
 
     this.logger.logDamage(actor.id, target.id, result.damage, result.isCritical, skillId, skill.element);

@@ -130,8 +130,8 @@ export class RankingUI {
   private async loadRanking(): Promise<void> {
     try {
       const [topResp, meResp] = await Promise.all([
-        this.net.httpGet(`/api/ranking/${this.activeCategory}?limit=100`),
-        this.net.httpGet(`/api/ranking/${this.activeCategory}/me?userId=${this.net.getUserId()}`),
+        this.net.httpGet<{ data?: { entries?: RankingEntry[] } }>(`/api/ranking/${this.activeCategory}?limit=100`),
+        this.net.httpGet<{ data?: { entry?: any } }>(`/api/ranking/${this.activeCategory}/me?userId=${this.net.getUserId()}`),
       ]);
 
       this.entries = (topResp.data?.entries ?? []).map((e: RankingEntry) => ({

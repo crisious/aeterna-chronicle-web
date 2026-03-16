@@ -177,7 +177,7 @@ export async function seedChapter6(): Promise<{ scenes: number }> {
         category: 'chapter_script',
         title: `[CH6] ${scene.sceneName}`,
         content: JSON.stringify(scene),
-        unlockCondition: { chapter: 6, order: scene.order },
+        unlockCondition: JSON.stringify({ chapter: 6, order: scene.order }),
       },
     });
   }

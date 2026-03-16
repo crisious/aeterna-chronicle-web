@@ -133,8 +133,8 @@ export async function startStreaming(
 
   // Redis에 라이브 상태 저장
   if (redisConnected()) {
-    await redisClient.setex(`streamer:live:${userId}`, SESSION_TTL, JSON.stringify(session));
-    await redisClient.sadd('streamer:live_set', userId);
+    await redisClient.setEx(`streamer:live:${userId}`, SESSION_TTL, JSON.stringify(session));
+    await redisClient.sAdd('streamer:live_set', userId);
   }
 
   console.log(`[StreamerMode] ${userId} 스트리밍 시작`);
@@ -152,7 +152,7 @@ export async function stopStreaming(userId: string): Promise<boolean> {
 
   if (redisConnected()) {
     await redisClient.del(`streamer:live:${userId}`);
-    await redisClient.srem('streamer:live_set', userId);
+    await redisClient.sRem('streamer:live_set', userId);
     await redisClient.del(`streamer:overlay:${userId}`);
   }
 
@@ -190,7 +190,7 @@ export async function updateOverlayData(userId: string, data: OverlayData): Prom
   const filtered = filterOverlayData(data, session.settings);
 
   if (redisConnected()) {
-    await redisClient.setex(
+    await redisClient.setEx(
       `streamer:overlay:${userId}`,
       OVERLAY_CACHE_TTL,
       JSON.stringify(filtered),

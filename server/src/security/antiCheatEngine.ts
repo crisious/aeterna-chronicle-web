@@ -105,7 +105,7 @@ const memoryStore = new Map<string, SuspicionState>();
 
 /** 의심 점수 조회 */
 export async function getSuspicionScore(userId: string): Promise<number> {
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       const val = await redisClient.get(`ac:score:${userId}`);
       return val ? parseInt(val, 10) : 0;
@@ -123,7 +123,7 @@ async function addViolation(
   const points = VIOLATION_SCORES[type];
   let newScore: number;
 
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       newScore = await redisClient.incrBy(`ac:score:${userId}`, points);
       // 24시간 TTL — 자연 만료
@@ -281,7 +281,7 @@ export async function getViolationHistory(
   userId: string,
   limit = 50,
 ): Promise<ViolationRecord[]> {
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       const raw = await redisClient.lRange(`ac:violations:${userId}`, 0, limit - 1);
       return raw.map((r) => JSON.parse(r));
@@ -292,7 +292,7 @@ export async function getViolationHistory(
 
 /** 의심 점수 초기화 (어드민 수동) */
 export async function resetSuspicion(userId: string): Promise<void> {
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       await redisClient.del(`ac:score:${userId}`);
       await redisClient.del(`ac:violations:${userId}`);

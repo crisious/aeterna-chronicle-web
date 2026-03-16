@@ -56,7 +56,7 @@ export async function setupSocketHandlers(io: Server) {
             console.log(`[Socket] Character ${characterId} joined Room ${roomId}`);
 
             // Redis에 현재 사용자의 위치 및 상태 저장
-            if (redisConnected) {
+            if (redisConnected()) {
                 await redisClient.hSet(`userState:${characterId}`, {
                     socketId: socket.id,
                     roomId: roomId,
@@ -157,7 +157,7 @@ export async function setupSocketHandlers(io: Server) {
             lastMoveTimestamps.delete(socket.id);
 
             // Redis 내 유저 상태 정리
-            if (redisConnected) {
+            if (redisConnected()) {
                 try {
                     await redisClient.del(`userState:${socket.id}`);
                     console.log(`[Socket] Redis userState cleaned for ${socket.id}`);

@@ -259,7 +259,7 @@ export class PartyUI {
 
   private async createParty(): Promise<void> {
     try {
-      const resp = await this.net.httpPost('/api/party/create', { leaderId: this.net.getUserId() });
+      const resp = await this.net.httpPost<{ id?: string }>('/api/party/create', { leaderId: this.net.getUserId() });
       if (resp.id) {
         this.partyId = resp.id;
       }
@@ -380,7 +380,7 @@ export class PartyUI {
     this.searchPanel.add([bg, title]);
 
     try {
-      const resp = await this.net.httpGet('/api/party/search');
+      const resp = await this.net.httpGet<{ parties?: any[] }>('/api/party/search');
       this.searchResults = resp.parties ?? [];
 
       this.searchResults.forEach((result, idx) => {

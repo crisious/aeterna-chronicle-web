@@ -302,9 +302,10 @@ export async function applySanction(
   await prisma.sanction.create({
     data: {
       userId,
-      level,
+      type: level,
       reason,
       evidence: detectionEvidence,
+      issuedBy: adminId ?? 'SYSTEM_AUTO',
       expiresAt,
       appliedBy: adminId ?? 'SYSTEM_AUTO',
     },
@@ -357,7 +358,7 @@ export async function getActiveSanctions(page = 1, limit = 20) {
           { expiresAt: { gt: new Date() } }, // 아직 유효한 정지
         ],
       },
-      include: { user: { select: { id: true, username: true, email: true } } },
+      
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,

@@ -9,7 +9,7 @@ import { prisma } from '../db';
 export interface AuditLogParams {
   adminId: string;
   action: string;       // user_ban, user_unban, item_grant, announcement_create 등
-  targetType: string;    // user, item, announcement, event
+  targetType?: string;    // user, item, announcement, event
   targetId?: string;
   details?: Prisma.InputJsonValue;
   ip?: string;
@@ -25,7 +25,7 @@ export async function writeAuditLog(params: AuditLogParams): Promise<void> {
       data: {
         adminId: params.adminId,
         action: params.action,
-        targetType: params.targetType,
+        targetType: params.targetType ?? "unknown",
         targetId: params.targetId ?? null,
         details: params.details ?? undefined,
         ip: params.ip ?? null,

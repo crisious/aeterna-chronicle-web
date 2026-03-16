@@ -4,6 +4,7 @@
  * 친구/길드 활동 피드: 레벨업, 업적 달성, 던전 클리어, PvP 승리, 아이템 획득.
  * Prisma ActivityFeedEntry 모델 + 조회 API(페이지네이션/필터) + 실시간 소켓 푸시.
  */
+import { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
 
@@ -111,7 +112,7 @@ export async function createFeedEntry(params: {
       displayName: params.displayName,
       eventType: params.eventType,
       visibility: params.visibility ?? 'FRIENDS',
-      payload: params.payload ?? {},
+      payload: (params.payload ?? {}) as Prisma.InputJsonValue,
       summary: params.summary,
     },
   });
@@ -144,7 +145,7 @@ export async function createFeedEntriesBatch(
       displayName: e.displayName,
       eventType: e.eventType,
       visibility: e.visibility ?? 'FRIENDS',
-      payload: e.payload ?? {},
+      payload: (e.payload ?? {}) as Prisma.InputJsonValue,
       summary: e.summary,
     })),
   });
@@ -214,7 +215,7 @@ export async function getFeed(filter: FeedFilter): Promise<FeedPage> {
 
   // 3) 캐시 저장
   if (redisConnected()) {
-    await redisClient.setex(cacheKey, FEED_CACHE_TTL, JSON.stringify(result));
+    await redisClient.setEx(cacheKey, FEED_CACHE_TTL, JSON.stringify(result));
   }
 
   return result;
@@ -420,8 +421,7 @@ export function registerFeedSocketHandlers(io: any): void {
   // Redis 구독 → 소켓 브로드캐스트
   if (redisConnected()) {
     const subscriber = redisClient.duplicate();
-    subscriber.subscribe(FEED_REALTIME_CHANNEL);
-    subscriber.on('message', (_channel: string, message: string) => {
+    subscriber.subscribe(FEED_REALTIME_CHANNEL, (message: string) => {
       try {
         const parsed = JSON.parse(message);
         const entry = parsed.data;
@@ -589,6 +589,6 @@ async function invalidateFeedCache(userId: string): Promise<void> {
   // 패턴 매칭으로 관련 캐시 삭제
   const keys = await redisClient.keys(`${FEED_CACHE_PREFIX}*u:${userId}*`);
   if (keys.length > 0) {
-    await redisClient.del(...keys);
+    await redisClient.del(keys);
   }
 }

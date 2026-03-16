@@ -1,3 +1,6 @@
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 /**
  * pvpMapSeeds.ts — PvP 맵 시드 데이터 (P8-15)
  *

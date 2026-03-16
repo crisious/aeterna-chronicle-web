@@ -88,7 +88,7 @@ async function sendWebhook(payload: AlertPayload): Promise<void> {
 
 /** Redis pub/sub 알림 (선택적) */
 async function publishRedisAlert(payload: AlertPayload): Promise<void> {
-    if (!redisConnected) return;
+    if (!redisConnected()) return;
 
     try {
         await redisClient.publish('apm:alerts', JSON.stringify(payload));

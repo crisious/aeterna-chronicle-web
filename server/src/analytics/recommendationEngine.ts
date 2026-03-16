@@ -494,7 +494,7 @@ export class RecommendationEngine {
           tags: (d.tags as string[] | null) ?? [],
           levelReq: d.recommendedLevel ?? 0,
           classReq: null,
-          difficulty: (d.difficulty ?? 5) / 10,
+          difficulty: (Number(d.difficulty) || 5) / 10,
           popularity: d.dailyRunCount ?? 0,
         }));
       }

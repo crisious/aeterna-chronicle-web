@@ -64,7 +64,7 @@ export function resetCacheMetrics(): void {
  * Redis 미연결 시 null 반환 (graceful degradation).
  */
 export async function cacheGet<T>(namespace: string, key: string): Promise<T | null> {
-  if (!redisConnected) return null;
+  if (!redisConnected()) return null;
 
   const fullKey = `${KEY_PREFIX}${namespace}:${key}`;
   try {
@@ -91,7 +91,7 @@ export async function cacheSet<T>(
   value: T,
   ttlOverride?: number,
 ): Promise<void> {
-  if (!redisConnected) return;
+  if (!redisConnected()) return;
 
   const fullKey = `${KEY_PREFIX}${namespace}:${key}`;
   const ttl = ttlOverride ?? CACHE_TTL[namespace] ?? 300; // 기본 5분
@@ -109,7 +109,7 @@ export async function cacheSet<T>(
  * key를 생략하면 해당 네임스페이스 전체 무효화 (SCAN + DEL).
  */
 export async function cacheInvalidate(namespace: string, key?: string): Promise<number> {
-  if (!redisConnected) return 0;
+  if (!redisConnected()) return 0;
 
   try {
     if (key) {

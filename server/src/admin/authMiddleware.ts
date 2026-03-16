@@ -18,6 +18,7 @@ export type AdminRole = 'moderator' | 'admin' | 'superadmin';
 
 /** JWT 페이로드에서 추출할 사용자 정보 */
 export interface AdminTokenPayload {
+  id: string;
   userId: string;
   email: string;
   role: string;

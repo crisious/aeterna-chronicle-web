@@ -117,12 +117,12 @@ export async function createCommunityEvent(config: CommunityEventConfig): Promis
 
   // Redis 캐시
   if (redisConnected()) {
-    await redisClient.setex(
+    await redisClient.setEx(
       `${CACHE_KEY_PREFIX}${event.id}`,
       CACHE_TTL,
       JSON.stringify(activeEvent),
     );
-    await redisClient.sadd(ACTIVE_EVENTS_KEY, event.id);
+    await redisClient.sAdd(ACTIVE_EVENTS_KEY, event.id);
   }
 
   console.log(`[CommunityEvent] 이벤트 생성: ${event.id} (${config.name}, ${status})`);
@@ -168,7 +168,7 @@ export async function cancelEvent(eventId: string): Promise<boolean> {
   activeEventsCache.delete(eventId);
   if (redisConnected()) {
     await redisClient.del(`${CACHE_KEY_PREFIX}${eventId}`);
-    await redisClient.srem(ACTIVE_EVENTS_KEY, eventId);
+    await redisClient.sRem(ACTIVE_EVENTS_KEY, eventId);
   }
 
   console.log(`[CommunityEvent] 이벤트 취소: ${eventId}`);

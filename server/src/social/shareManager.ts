@@ -159,7 +159,7 @@ export async function createShare(payload: SharePayload): Promise<ShareResult> {
 
   // Redis 캐시
   if (redisConnected()) {
-    await redisClient.setex(
+    await redisClient.setEx(
       `share:${shortCode}`,
       SHARE_CACHE_TTL,
       JSON.stringify({ ogMeta, type: payload.type, resourceId: payload.resourceId }),

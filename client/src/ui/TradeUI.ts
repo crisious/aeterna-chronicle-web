@@ -195,7 +195,7 @@ export class TradeUI {
 
   public async requestTrade(targetUserId: string): Promise<void> {
     try {
-      const resp = await this.net.httpPost('/api/trade/request', {
+      const resp = await this.net.httpPost<{ trade?: any }>('/api/trade/request', {
         requesterId: this.net.getUserId(),
         targetId: targetUserId,
       });

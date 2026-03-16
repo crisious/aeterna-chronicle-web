@@ -161,8 +161,8 @@ export class FriendListUI {
   public async loadFriends(): Promise<void> {
     try {
       const [friendsResp, requestsResp] = await Promise.all([
-        this.net.httpGet(`/api/friends?userId=${this.net.getUserId()}`),
-        this.net.httpGet(`/api/friends/pending?userId=${this.net.getUserId()}`),
+        this.net.httpGet<{ friends?: any[] }>(`/api/friends?userId=${this.net.getUserId()}`),
+        this.net.httpGet<{ requests?: any[] }>(`/api/friends/pending?userId=${this.net.getUserId()}`),
       ]);
       this.friends = friendsResp.friends ?? [];
       this.pendingRequests = requestsResp.requests ?? [];

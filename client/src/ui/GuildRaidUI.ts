@@ -155,7 +155,7 @@ export class GuildRaidUI {
   public async loadRaidList(): Promise<void> {
     this.viewState = 'list';
     try {
-      const resp = await this.net.httpGet('/api/raid');
+      const resp = await this.net.httpGet<{ raids?: any[] }>('/api/raid');
       this.raids = resp.raids ?? [];
       this.showList();
     } catch (err) {
@@ -193,7 +193,7 @@ export class GuildRaidUI {
 
   private async enterRaid(raidId: string): Promise<void> {
     try {
-      const resp = await this.net.httpPost(`/api/raid/${raidId}/join`, { userId: this.net.getUserId() });
+      const resp = await this.net.httpPost<{ raid: any; participants?: any[] }>(`/api/raid/${raidId}/join`, { userId: this.net.getUserId() });
       this.currentRaid = resp.raid;
       this.participants = resp.participants ?? [];
       this.viewState = 'lobby';
@@ -206,7 +206,7 @@ export class GuildRaidUI {
   private async loadLobby(): Promise<void> {
     if (!this.currentRaid) return;
     try {
-      const resp = await this.net.httpGet(`/api/raid/${this.currentRaid.id}/status`);
+      const resp = await this.net.httpGet<{ participants?: any[] }>(`/api/raid/${this.currentRaid.id}/status`);
       this.participants = resp.participants ?? [];
       this.showLobby();
     } catch (err) {

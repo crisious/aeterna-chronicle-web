@@ -66,7 +66,7 @@ class AchievementEngine extends EventEmitter {
     const results: UnlockResult[] = [];
 
     // 1) Redis 진행도 업데이트
-    if (redisConnected) {
+    if (redisConnected()) {
       await redisClient.incrBy(progressKey(userId, type), value);
       if (flag) {
         await redisClient.sAdd(flagSetKey(userId), flag);
@@ -136,7 +136,7 @@ class AchievementEngine extends EventEmitter {
     switch (condition.type) {
       case 'count': {
         // Redis 카운터 확인
-        if (!redisConnected) return false;
+        if (!redisConnected()) return false;
         const current = parseInt(
           (await redisClient.get(progressKey(userId, condition.target))) || '0',
           10
@@ -146,7 +146,7 @@ class AchievementEngine extends EventEmitter {
 
       case 'threshold': {
         // 임계값 — count와 동일 로직이지만 의미가 다름 (누적이 아닌 최고 기록 등)
-        if (!redisConnected) return false;
+        if (!redisConnected()) return false;
         const val = parseInt(
           (await redisClient.get(progressKey(userId, condition.target))) || '0',
           10
@@ -156,13 +156,13 @@ class AchievementEngine extends EventEmitter {
 
       case 'flag': {
         // 특정 플래그가 설정되어 있는지 확인
-        if (!redisConnected) return false;
+        if (!redisConnected()) return false;
         return await redisClient.sIsMember(flagSetKey(userId), condition.target);
       }
 
       case 'combo': {
         // 복합 조건 — 모든 플래그가 설정되어 있어야 함
-        if (!redisConnected || !condition.flags) return false;
+        if (!redisConnected() || !condition.flags) return false;
         for (const f of condition.flags) {
           const has = await redisClient.sIsMember(flagSetKey(userId), f);
           if (!has) return false;
@@ -197,7 +197,7 @@ class AchievementEngine extends EventEmitter {
       });
 
       // Redis 캐시에도 기록 (빠른 조회용)
-      if (redisConnected) {
+      if (redisConnected()) {
         await redisClient.sAdd(`user:titles:${userId}`, title.id);
       }
 
@@ -224,7 +224,7 @@ class AchievementEngine extends EventEmitter {
       const completed = ach.unlocks.length > 0;
 
       let progress = 0;
-      if (redisConnected && !completed) {
+      if (redisConnected() && !completed) {
         if (condition.type === 'count' || condition.type === 'threshold') {
           progress = parseInt(
             (await redisClient.get(progressKey(userId, condition.target))) || '0',

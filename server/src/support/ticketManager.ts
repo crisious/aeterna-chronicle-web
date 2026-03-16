@@ -203,7 +203,6 @@ export async function getAdminTicketList(options: TicketFilterOptions) {
     prisma.supportTicket.findMany({
       where,
       include: {
-        user: { select: { id: true, username: true, email: true } },
         messages: { orderBy: { createdAt: 'desc' }, take: 1 },
       },
       orderBy: { [sortBy]: sortOrder },

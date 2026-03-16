@@ -133,14 +133,14 @@ export class EndlessDungeonLeaderboard {
     const key = `${REDIS_WEEKLY_KEY_PREFIX}${this.weekId}`;
     const score = floor * 100000 - clearTime; // 높은 층 우선, 같은 층이면 빠른 클리어 우선
 
-    await redisClient.zadd(key, score, JSON.stringify({
+    await redisClient.zAdd(key, { score, value: JSON.stringify({
       playerId,
       playerName,
       highestFloor: floor,
       clearTime,
       weekId: this.weekId,
       timestamp: new Date().toISOString(),
-    }));
+    }) });
 
     // 주간 만료: 8일 (여유 포함)
     await redisClient.expire(key, 8 * 86400);
@@ -149,14 +149,14 @@ export class EndlessDungeonLeaderboard {
   /** 상위 N명 조회 */
   async getTopRanks(count: number = 100): Promise<LeaderboardEntry[]> {
     const key = `${REDIS_WEEKLY_KEY_PREFIX}${this.weekId}`;
-    const entries = await redisClient.zrevrange(key, 0, count - 1);
+    const entries = await redisClient.zRange(key, 0, count - 1, { REV: true });
     return entries.map((e: string) => JSON.parse(e) as LeaderboardEntry);
   }
 
   /** 플레이어 순위 조회 */
   async getPlayerRank(playerId: string): Promise<number | null> {
     const key = `${REDIS_WEEKLY_KEY_PREFIX}${this.weekId}`;
-    const entries = await redisClient.zrevrange(key, 0, -1);
+    const entries = await redisClient.zRange(key, 0, -1, { REV: true });
     const idx = entries.findIndex((e: string) => {
       const parsed = JSON.parse(e) as LeaderboardEntry;
       return parsed.playerId === playerId;

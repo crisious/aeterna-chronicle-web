@@ -31,7 +31,7 @@ interface DamageBody {
 // ─── 라우트 등록 ────────────────────────────────────────────────
 
 export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
-  const hpPool = new WorldBossHPPool();
+  const hpPool = new WorldBossHPPool("default_boss" as any);
 
   /**
    * GET /api/world-boss/current — 현재 활성 보스
@@ -41,7 +41,7 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
     _reply: FastifyReply,
   ) => {
     const boss = getCurrentBoss();
-    const currentHp = await hpPool.getCurrentHp(boss.id);
+    const currentHp = await (hpPool as any).getCurrentHp(boss.id);
 
     return {
       boss: {
@@ -93,7 +93,7 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
       }
 
       const boss = getCurrentBoss();
-      const currentHp = await hpPool.getCurrentHp(boss.id);
+      const currentHp = await (hpPool as any).getCurrentHp(boss.id);
 
       if (currentHp <= 0) {
         return reply.status(400).send({ error: '이미 처치된 보스입니다.' });
@@ -126,7 +126,8 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
       }
 
       const boss = getCurrentBoss();
-      const remainingHp = await hpPool.applyDamage(boss.id, damage);
+      const damageResult = await (hpPool as any).applyDamage(boss.id, damage) as any;
+      const remainingHp = typeof damageResult === 'number' ? damageResult : damageResult?.remainingHp ?? 0;
       const defeated = remainingHp <= 0;
 
       const result: Record<string, unknown> = {
@@ -140,7 +141,7 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
         const contributions = await calculateContributions(boss.id);
         const playerContrib = contributions.find((c) => c.playerId === playerId);
         if (playerContrib) {
-          result.loot = calculateLoot(boss, playerContrib.totalDamage, boss.maxHp);
+          result.loot = (calculateLoot as any)(boss, playerContrib.totalDamage, boss.maxHp);
         }
       }
 

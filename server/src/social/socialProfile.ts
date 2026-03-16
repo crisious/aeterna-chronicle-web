@@ -132,7 +132,7 @@ export async function getPublicProfile(
 
   const profile: PublicProfile = {
     userId: user.id,
-    displayName: user.username,
+    displayName: user.username ?? '',
     level: state.level || 1,
     className: state.className || '전사',
     guildName: guildMember?.guild?.name || null,
@@ -157,7 +157,7 @@ export async function getPublicProfile(
 
   // 캐시 저장
   if (redisConnected()) {
-    await redisClient.setex(
+    await redisClient.setEx(
       `profile:public:${userId}`,
       PROFILE_CACHE_TTL,
       JSON.stringify(profile),
@@ -233,7 +233,7 @@ export async function getLeaderboard(
 
   // 캐시 저장
   if (redisConnected() && entries.length > 0) {
-    await redisClient.setex(cacheKey, LEADERBOARD_CACHE_TTL, JSON.stringify(entries));
+    await redisClient.setEx(cacheKey, LEADERBOARD_CACHE_TTL, JSON.stringify(entries));
   }
 
   return entries;
@@ -300,7 +300,7 @@ export async function getGuildRanking(limit = 50): Promise<GuildRankingEntry[]> 
   }));
 
   if (redisConnected() && entries.length > 0) {
-    await redisClient.setex(cacheKey, LEADERBOARD_CACHE_TTL, JSON.stringify(entries));
+    await redisClient.setEx(cacheKey, LEADERBOARD_CACHE_TTL, JSON.stringify(entries));
   }
 
   return entries;

@@ -23,7 +23,7 @@ function getStripe(): Stripe {
     if (!STRIPE_SECRET_KEY) {
       throw new Error('STRIPE_SECRET_KEY 환경변수가 설정되지 않았습니다.');
     }
-    stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2024-12-18.acacia' });
+    stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2026-02-25.clover' as any });
   }
   return stripe;
 }

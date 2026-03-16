@@ -96,7 +96,7 @@ export async function checkMemoryDestroyerByCharacter(
     };
   }
 
-  return checkMemoryDestroyerEligibility(character.accountId);
+  return checkMemoryDestroyerEligibility(character.accountId!);
 }
 
 /**

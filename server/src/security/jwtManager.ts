@@ -96,7 +96,7 @@ setInterval(() => {
 /** 토큰을 블랙리스트에 등록 */
 export async function blacklistToken(token: string, ttlSec: number): Promise<void> {
   const key = `bl:${token}`;
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       await redisClient.set(key, '1', { EX: ttlSec });
       return;
@@ -110,7 +110,7 @@ export async function blacklistToken(token: string, ttlSec: number): Promise<voi
 /** 블랙리스트 여부 확인 */
 export async function isBlacklisted(token: string): Promise<boolean> {
   const key = `bl:${token}`;
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       const val = await redisClient.get(key);
       return val !== null;

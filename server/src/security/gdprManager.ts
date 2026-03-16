@@ -94,8 +94,6 @@ export async function exportUserData(userId: string): Promise<DataExportPackage>
       where: { userId },
       include: {
         inventoryItems: true,
-        questProgress: true,
-        skills: true,
       },
     }),
     prisma.paymentReceipt.findMany({

@@ -181,7 +181,7 @@ export class BalanceAutoTuner {
       });
     }
 
-    console.log(`[BalanceAutoTuner] 분석 완료: ${metrics.length ?? '?'}개 타겟, ${proposals.length}개 제안 생성`);
+    console.log(`[BalanceAutoTuner] 분석 완료: ${proposals.length}개 타겟, ${proposals.length}개 제안 생성`);
     return proposals;
   }
 

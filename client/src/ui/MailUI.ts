@@ -152,7 +152,7 @@ export class MailUI {
 
   private async loadMails(): Promise<void> {
     try {
-      const resp = await this.net.httpGet(`/api/mail/inbox?userId=${this.net.getUserId()}&page=${this.currentPage}`);
+      const resp = await this.net.httpGet<{ mails?: any[] }>(`/api/mail/inbox?userId=${this.net.getUserId()}&page=${this.currentPage}`);
       this.mails = resp.mails ?? [];
       this.refreshMailList();
 

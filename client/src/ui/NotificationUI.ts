@@ -224,10 +224,10 @@ export class NotificationUI {
 
   public async loadNotifications(): Promise<void> {
     try {
-      const resp = await this.net.httpGet(`/api/notifications/${this.net.getUserId()}`);
+      const resp = await this.net.httpGet<{ notifications?: any[] }>(`/api/notifications/${this.net.getUserId()}`);
       this.notifications = resp.notifications ?? [];
 
-      const unreadResp = await this.net.httpGet(`/api/notifications/${this.net.getUserId()}/unread`);
+      const unreadResp = await this.net.httpGet<{ count?: number }>(`/api/notifications/${this.net.getUserId()}/unread`);
       this.unreadCount = unreadResp.count ?? 0;
 
       this.updateBadge();

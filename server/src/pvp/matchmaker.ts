@@ -41,7 +41,7 @@ export async function enqueue(entry: QueueEntry): Promise<void> {
   matchQueue.set(entry.userId, entry);
 
   // Redis 백업 (비동기, 실패해도 무시)
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       await redisClient.hSet('pvp:queue', entry.userId, JSON.stringify(entry));
     } catch (err) {
@@ -54,7 +54,7 @@ export async function enqueue(entry: QueueEntry): Promise<void> {
 export async function dequeue(userId: string): Promise<boolean> {
   const removed = matchQueue.delete(userId);
 
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       await redisClient.hDel('pvp:queue', userId);
     } catch {

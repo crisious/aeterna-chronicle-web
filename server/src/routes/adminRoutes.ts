@@ -99,7 +99,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /admin/users — 유저 목록 (검색/필터/페이지네이션) */
   fastify.get<{ Querystring: UserSearchQuery }>('/admin/users', {
-    preHandler: requireAdmin('moderator'),
+    preHandler: requireAdmin('moderator') as any,
   }, async (request, reply) => {
     const { search, role, isBanned, page: pageStr, limit: limitStr } = request.query;
     const page = Math.max(parseInt(pageStr || '1', 10), 1);
@@ -151,7 +151,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /admin/users/:id — 유저 상세 */
   fastify.get<{ Params: UserIdParams }>('/admin/users/:id', {
-    preHandler: requireAdmin('moderator'),
+    preHandler: requireAdmin('moderator') as any,
   }, async (request, reply) => {
     const user = await prisma.user.findUnique({
       where: { id: request.params.id },
@@ -176,7 +176,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** PATCH /admin/users/:id/ban — 유저 밴 */
   fastify.patch<{ Params: UserIdParams; Body: BanBody }>('/admin/users/:id/ban', {
-    preHandler: requireAdmin('admin', 'user_ban'),
+    preHandler: requireAdmin('admin', 'user_ban') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { id } = request.params;
@@ -199,7 +199,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** PATCH /admin/users/:id/unban — 유저 밴 해제 */
   fastify.patch<{ Params: UserIdParams }>('/admin/users/:id/unban', {
-    preHandler: requireAdmin('admin', 'user_unban'),
+    preHandler: requireAdmin('admin', 'user_unban') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { id } = request.params;
@@ -221,7 +221,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /admin/users/:id/grant-item — 아이템 지급 */
   fastify.post<{ Params: UserIdParams; Body: GrantItemBody }>('/admin/users/:id/grant-item', {
-    preHandler: requireAdmin('admin', 'item_grant'),
+    preHandler: requireAdmin('admin', 'item_grant') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { id } = request.params;
@@ -255,7 +255,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /admin/announcements — 공지 생성 */
   fastify.post<{ Body: AnnouncementBody }>('/admin/announcements', {
-    preHandler: requireAdmin('admin', 'announcement_create'),
+    preHandler: requireAdmin('admin', 'announcement_create') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { title, content, type, startAt, endAt } = request.body;
@@ -286,7 +286,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /admin/announcements — 공지 목록 */
   fastify.get('/admin/announcements', {
-    preHandler: requireAdmin('moderator'),
+    preHandler: requireAdmin('moderator') as any,
   }, async (_request, reply) => {
     const announcements = await prisma.announcement.findMany({
       orderBy: { createdAt: 'desc' },
@@ -297,7 +297,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** DELETE /admin/announcements/:id — 공지 삭제 */
   fastify.delete<{ Params: AnnouncementIdParams }>('/admin/announcements/:id', {
-    preHandler: requireAdmin('admin', 'announcement_delete'),
+    preHandler: requireAdmin('admin', 'announcement_delete') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { id } = request.params;
@@ -323,7 +323,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /admin/logs — 감사 로그 조회 (타입/날짜 필터) */
   fastify.get<{ Querystring: LogQuery }>('/admin/logs', {
-    preHandler: requireAdmin('admin'),
+    preHandler: requireAdmin('admin') as any,
   }, async (request, reply) => {
     const { action, adminId, from, to, page, limit } = request.query;
     const result = await queryAuditLogs({
@@ -343,7 +343,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /admin/stats — 대시보드 통계 */
   fastify.get('/admin/stats', {
-    preHandler: requireAdmin('admin'),
+    preHandler: requireAdmin('admin') as any,
   }, async (_request, reply) => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -391,7 +391,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /admin/server-health — 서버 헬스 체크 */
   fastify.get('/admin/server-health', {
-    preHandler: requireAdmin('moderator'),
+    preHandler: requireAdmin('moderator') as any,
   }, async (_request, reply) => {
     const uptime = process.uptime();
     const mem = process.memoryUsage();
@@ -430,7 +430,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /admin/events — 이벤트 생성 */
   fastify.post<{ Body: EventBody }>('/admin/events', {
-    preHandler: requireAdmin('admin', 'event_create'),
+    preHandler: requireAdmin('admin', 'event_create') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { code, name, description, type, config, rewards, startAt, endAt } = request.body;
@@ -463,7 +463,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** PATCH /admin/events/:id — 이벤트 수정 */
   fastify.patch<{ Params: EventIdParams; Body: EventPatchBody }>('/admin/events/:id', {
-    preHandler: requireAdmin('admin', 'event_update'),
+    preHandler: requireAdmin('admin', 'event_update') as any,
   }, async (request, reply) => {
     const admin = getAdminUser(request);
     const { id } = request.params;
@@ -497,7 +497,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   // ─── P9-14: 제재 관리 API ──────────────────────────────────────
 
   /** 활성 제재 목록 조회 */
-  fastify.get('/admin/sanctions', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply: FastifyReply) => {
+  fastify.get('/admin/sanctions', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply: FastifyReply) => {
     const page = parseInt(request.query.page ?? '1', 10);
     const limit = parseInt(request.query.limit ?? '20', 10);
     const result = await getActiveSanctions(page, limit);
@@ -505,13 +505,13 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   /** 특정 유저 제재 이력 조회 */
-  fastify.get('/admin/sanctions/user/:id', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  fastify.get('/admin/sanctions/user/:id', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const sanctions = await getUserSanctions(request.params.id);
     return reply.send({ userId: request.params.id, sanctions });
   });
 
   /** 수동 제재 적용 */
-  fastify.post('/admin/sanctions', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Body: { userId: string; level: string; reason: string; evidence?: string } }>, reply: FastifyReply) => {
+  fastify.post('/admin/sanctions', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Body: { userId: string; level: string; reason: string; evidence?: string } }>, reply: FastifyReply) => {
     const admin = getAdminUser(request);
     const { userId, level, reason, evidence } = request.body as any;
     if (!Object.values(SanctionLevel).includes(level)) {
@@ -522,7 +522,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   /** 제재 해제 */
-  fastify.delete('/admin/sanctions/:id', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { reason: string } }>, reply: FastifyReply) => {
+  fastify.delete('/admin/sanctions/:id', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { reason: string } }>, reply: FastifyReply) => {
     const admin = getAdminUser(request);
     const { reason } = request.body as any;
     await revokeSanction(request.params.id, admin.id, reason);
@@ -532,7 +532,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   // ─── P9-16: 어드민 티켓 관리 API ──────────────────────────────
 
   /** 티켓 목록 (필터) */
-  fastify.get('/admin/tickets', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Querystring: Record<string, string> }>, reply: FastifyReply) => {
+  fastify.get('/admin/tickets', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Querystring: Record<string, string> }>, reply: FastifyReply) => {
     const q = request.query;
     const result = await getAdminTicketList({
       status: q.status as any,
@@ -547,20 +547,20 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   /** 티켓 통계 */
-  fastify.get('/admin/tickets/stats', { preHandler: [requireAdmin] }, async (_request, reply: FastifyReply) => {
+  fastify.get('/admin/tickets/stats', { preHandler: [requireAdmin as any] }, async (_request, reply: FastifyReply) => {
     const stats = await getTicketStats();
     return reply.send(stats);
   });
 
   /** 티켓 할당 */
-  fastify.post('/admin/tickets/:id/assign', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  fastify.post('/admin/tickets/:id/assign', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const admin = getAdminUser(request);
     const ticket = await assignTicket(request.params.id, admin.id);
     return reply.send(ticket);
   });
 
   /** 티켓 답변 */
-  fastify.post('/admin/tickets/:id/reply', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { content: string; attachments?: string[] } }>, reply: FastifyReply) => {
+  fastify.post('/admin/tickets/:id/reply', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { content: string; attachments?: string[] } }>, reply: FastifyReply) => {
     const admin = getAdminUser(request);
     const { content, attachments } = request.body as any;
     const message = await addAdminReply(request.params.id, admin.id, content, attachments);
@@ -568,7 +568,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   /** 티켓 종료 */
-  fastify.post('/admin/tickets/:id/close', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { resolution: string } }>, reply: FastifyReply) => {
+  fastify.post('/admin/tickets/:id/close', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { resolution: string } }>, reply: FastifyReply) => {
     const admin = getAdminUser(request);
     const { resolution } = request.body as any;
     const ticket = await closeTicket(request.params.id, admin.id, resolution);
@@ -576,7 +576,7 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   /** 티켓 우선순위 변경 */
-  fastify.patch('/admin/tickets/:id/priority', { preHandler: [requireAdmin] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { priority: string } }>, reply: FastifyReply) => {
+  fastify.patch('/admin/tickets/:id/priority', { preHandler: [requireAdmin as any] }, async (request: FastifyRequest<{ Params: { id: string }; Body: { priority: string } }>, reply: FastifyReply) => {
     const admin = getAdminUser(request);
     const { priority } = request.body as any;
     if (!Object.values(TicketPriority).includes(priority as TicketPriority)) {

@@ -124,7 +124,7 @@ async function pushHistory(channelId: string, msg: ChatMessage): Promise<void> {
   const key = `chat:history:${channelId}`;
   const json = JSON.stringify(msg);
 
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       await redisClient.lPush(key, json);
       await redisClient.lTrim(key, 0, MAX_HISTORY - 1);
@@ -145,7 +145,7 @@ async function pushHistory(channelId: string, msg: ChatMessage): Promise<void> {
 export async function getHistory(channelId: string, limit = 50): Promise<ChatMessage[]> {
   const key = `chat:history:${channelId}`;
 
-  if (redisConnected) {
+  if (redisConnected()) {
     try {
       const items = await redisClient.lRange(key, 0, limit - 1);
       return items.map((s) => JSON.parse(s) as ChatMessage);

@@ -181,7 +181,7 @@ export class WorldBossHPPool {
   /** 데미지 적용 (원자적) */
   async applyDamage(playerId: string, damage: number): Promise<{ remainingHp: number; defeated: boolean }> {
     const key = `${REDIS_BOSS_HP_KEY}:${this.bossId}`;
-    const newHp = await redisClient.decrby(key, damage);
+    const newHp = await redisClient.decrBy(key, damage);
     const defeated = newHp <= 0;
 
     if (defeated) {
@@ -189,7 +189,7 @@ export class WorldBossHPPool {
     }
 
     // 기여도 기록
-    await redisClient.hincrbyfloat(
+    await redisClient.hIncrByFloat(
       `${REDIS_BOSS_PARTICIPANTS}:${this.bossId}`,
       playerId,
       damage,
@@ -215,7 +215,7 @@ export class WorldBossHPPool {
 
 export async function calculateContributions(bossId: string): Promise<ParticipantRecord[]> {
   const key = `${REDIS_BOSS_PARTICIPANTS}:${bossId}`;
-  const data = await redisClient.hgetall(key);
+  const data = await redisClient.hGetAll(key);
 
   if (!data || Object.keys(data).length === 0) return [];
 

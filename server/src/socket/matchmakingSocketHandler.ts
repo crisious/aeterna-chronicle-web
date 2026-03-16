@@ -110,7 +110,7 @@ export function setupMatchmakingSocketHandlers(io: Server): void {
             return;
           }
 
-          const members = (party.members as Array<{ userId: string }>).map(m => m.userId);
+          const members = (((party as any).members) as Array<{ userId: string }>).map(m => m.userId);
           const timer = setTimeout(() => {
             // 타임아웃: 수락하지 않은 유저에게 알림
             const pending = pendingAccepts.get(partyId);

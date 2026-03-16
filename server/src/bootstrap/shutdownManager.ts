@@ -78,7 +78,7 @@ export function registerShutdownHandlers(
     }
 
     // Redis
-    if (redisConnected) {
+    if (redisConnected()) {
       try {
         await redisClient.quit();
         console.log('[Shutdown] Redis disconnected');

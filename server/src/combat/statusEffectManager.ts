@@ -608,7 +608,7 @@ export class StatusEffectManager {
   getActiveEffectsSummary(): { totalTargets: number; totalEffects: number } {
     let totalTargets = 0;
     let totalEffects = 0;
-    for (const effects of this.activeEffects.values()) {
+    for (const effects of this.effects.values()) {
       if (effects.length > 0) {
         totalTargets++;
         totalEffects += effects.length;

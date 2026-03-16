@@ -62,7 +62,7 @@ class RankingManager {
     }
 
     // Redis sorted set 갱신
-    if (redisConnected) {
+    if (redisConnected()) {
       try {
         await redisClient.zAdd(redisKey(category, season), [{ score, value: userId }]);
       } catch (err) {
@@ -97,7 +97,7 @@ class RankingManager {
     if (!this.isValidCategory(category)) return [];
 
     // Redis 우선
-    if (redisConnected) {
+    if (redisConnected()) {
       try {
         const results = await redisClient.zRangeWithScores(
           redisKey(category, season),
@@ -142,7 +142,7 @@ class RankingManager {
     if (!this.isValidCategory(category)) return null;
 
     // Redis 우선
-    if (redisConnected) {
+    if (redisConnected()) {
       try {
         const rank = await redisClient.zRevRank(redisKey(category, season), userId);
         if (rank === null) return null;
@@ -196,7 +196,7 @@ class RankingManager {
     if (!this.isValidCategory(category)) return [];
 
     // Redis 우선
-    if (redisConnected) {
+    if (redisConnected()) {
       try {
         const myRank = await redisClient.zRevRank(redisKey(category, season), userId);
         if (myRank === null) return [];
@@ -290,7 +290,7 @@ class RankingManager {
       }
 
       // Redis 키 삭제 (새 시즌 시작)
-      if (redisConnected) {
+      if (redisConnected()) {
         try {
           await redisClient.del(redisKey(category, currentSeason));
         } catch {

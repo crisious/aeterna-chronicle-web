@@ -4,12 +4,16 @@ export const redisClient = createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379'
 });
 
-export let redisConnected = false;
+let _redisConnected = false;
+
+export function redisConnected(): boolean {
+    return _redisConnected;
+}
 
 redisClient.on('connect', () => {
-    redisConnected = true;
+    _redisConnected = true;
 });
 
 redisClient.on('error', () => {
-    redisConnected = false;
+    _redisConnected = false;
 });

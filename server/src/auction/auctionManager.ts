@@ -142,7 +142,7 @@ class AuctionManager {
     this._onListed?.(listing);
 
     // Redis 알림 (선택)
-    if (redisConnected) {
+    if (redisConnected()) {
       await redisClient.publish('auction:listed', JSON.stringify({ listingId: listing.id, itemId }));
     }
 

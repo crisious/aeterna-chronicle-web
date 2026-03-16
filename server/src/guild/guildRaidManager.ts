@@ -236,7 +236,7 @@ export async function completeRaid(
     }
 
     // 길드 XP 부여
-    await addGuildXp(lobby.guildId, guildXpReward);
+    await addGuildXp(lobby.guildId, 'RAID_CLEAR');
   }
 
   // DB 업데이트

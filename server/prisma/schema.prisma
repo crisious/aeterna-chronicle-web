@@ -10,11 +10,14 @@ datasource db {
 model User {
   id        String      @id @default(uuid())
   email     String      @unique
-  password  String      // 실제로는 bcrypt 등으로 해싱하여 저장
-  role      String      @default("user")  // user, moderator, admin, superadmin
+  username  String?
+  name      String?
+  password  String
+  role      String      @default("user")
   isBanned  Boolean     @default(false) @map("is_banned")
   bannedAt  DateTime?   @map("banned_at")
-  banReason String?     @map("ban_reason")
+  banReason    String?     @map("ban_reason")
+  banExpiresAt DateTime?  @map("ban_expires_at")
   gold      Int         @default(0)
   diamond   Int         @default(0)
   crystal       Int         @default(0)  // P6-02: 프리미엄 화폐 (유료 크리스탈)
@@ -26,6 +29,8 @@ model User {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   characters Character[]
+  partyMembers PartyMember[]
+  equipment    Equipment[]
 
   // P7-14: DAU/MAU 집계 + 밴 필터 + 역할 조회 최적화
   @@index([lastLoginAt])
@@ -133,24 +138,34 @@ model TransactionLog {
 }
 
 model Character {
-  id        String   @id @default(uuid())
-  userId    String
-  name      String   @unique
-  classId   String   // 직업 ID (예: Warrior, Mage 등)
-  level     Int      @default(1)
-  exp       Int      @default(0)
-  hp        Int      @default(200)
-  mp        Int      @default(100)
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid())
+  userId          String
+  accountId       String?  @map("account_id")
+  name            String   @unique
+  classId         String
+  level           Int      @default(1)
+  exp             Int      @default(0)
+  hp              Int      @default(200)
+  maxHp           Int      @default(200) @map("max_hp")
+  mp              Int      @default(100)
+  maxMp           Int      @default(100) @map("max_mp")
+  gold            Int      @default(0)
+  guildId         String?  @map("guild_id")
+  isActive        Boolean  @default(true) @map("is_active")
+  seasonPassLevel Int      @default(0) @map("season_pass_level")
+  playTimeHours   Float    @default(0) @map("play_time_hours")
+  chapterProgress Int      @default(0) @map("chapter_progress")
+  statPoints      Int      @default(0) @map("stat_points")
+  user            User     @relation(fields: [userId], references: [id])
+  inventoryItems  InventoryItem[] @relation("CharacterInventory")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   
-  // Phase 1 인벤토리/장비 데이터는 DB 구조 단순화를 위해 JSONB로 관리 (확장성 고려)
-  inventoryData Json?
+  inventoryData   Json?
 
   @@index([userId])
-  // P7-14: 클래스+레벨 기반 조회 최적화 (maxHp 계산, 랭킹 등)
   @@index([classId, level])
+  @@index([accountId])
 }
 
 // ─── 텔레메트리: 대화 선택지 이벤트 ───────────────────────────
@@ -210,6 +225,7 @@ model Guild {
   exp         Int      @default(0)
   gold        Int      @default(0)  // P7-03: 길드 골드 (스킬 해금/업그레이드 비용)
   maxMembers  Int      @default(30) @map("max_members")
+  memberCount Int      @default(0) @map("member_count")
   notice      String?  @db.Text
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -385,6 +401,7 @@ model SeasonPass {
 model SeasonPassProgress {
   id             String   @id @default(uuid())
   userId         String   @map("user_id")
+  seasonId       String?  @map("season_id")
   seasonPassId   String   @map("season_pass_id")
   level          Int      @default(0)
   exp            Int      @default(0)
@@ -407,12 +424,14 @@ model Achievement {
   category    String   // combat, exploration, social, collection, story
   tier        String   @default("bronze")  // bronze, silver, gold, platinum
   icon        String?
+  iconUrl     String?  @map("icon_url")
   points      Int      @default(10)
   isHidden    Boolean  @default(false) @map("is_hidden")
   condition   Json     // 달성 조건 정의 {type, target, count}
   createdAt   DateTime @default(now()) @map("created_at")
 
-  unlocks     AchievementUnlock[]
+  unlocks           AchievementUnlock[]
+  userAchievements  UserAchievement[]
   @@map("achievements")
   @@index([category])
 }
@@ -431,10 +450,13 @@ model AchievementUnlock {
 
 model Title {
   id            String   @id @default(uuid())
-  name          String   @unique
+  name          String?  @unique
   description   String?
   rarity        String   @default("common")
-  achievementId String?  @map("achievement_id")  // 연동 업적
+  achievementId String?  @map("achievement_id")
+  userId        String?  @map("user_id")
+  titleId       String?  @map("title_id")
+  earnedAt      DateTime? @map("earned_at")
   createdAt     DateTime @default(now()) @map("created_at")
 
   userTitles    UserTitle[]
@@ -546,22 +568,28 @@ model CraftLog {
 
 // ─── 펫 시스템 ──────────────────────────────────────────────────
 model Pet {
-  id          String   @id @default(uuid())
-  ownerId     String   @map("owner_id")
-  name        String
-  species     String   // wolf, phoenix, golem, fairy, dragon 등
-  grade       String   @default("common")  // common, rare, epic, legendary
-  level       Int      @default(1)
-  exp         Int      @default(0)
-  maxExp      Int      @default(100) @map("max_exp")
-  hp          Int      @default(100)
-  attack      Int      @default(10)
-  defense     Int      @default(5)
-  skills      Json     @default("[]")  // [{skillId, name, damage, cooldown, level}]
-  bond        Int      @default(0)     // 유대감 (0~100)
-  isActive    Boolean  @default(false) @map("is_active")  // 현재 소환 중
-  obtainedAt  DateTime @default(now()) @map("obtained_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id              String    @id @default(uuid())
+  ownerId         String    @map("owner_id")
+  name            String
+  species         String
+  family          String?
+  grade           String    @default("common")
+  level           Int       @default(1)
+  exp             Int       @default(0)
+  maxExp          Int       @default(100) @map("max_exp")
+  hp              Int       @default(100)
+  attack          Int       @default(10)
+  defense         Int       @default(5)
+  affinity        Int       @default(0)
+  evolutionStage  String    @default("baby") @map("evolution_stage")
+  appearanceKey   String?   @map("appearance_key")
+  skills          Json      @default("[]")
+  bond            Int       @default(0)
+  isActive        Boolean   @default(false) @map("is_active")
+  obtainedAt      DateTime  @default(now()) @map("obtained_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  petSkills       PetSkill[]
 
   @@map("pets")
   @@index([ownerId])
@@ -569,17 +597,23 @@ model Pet {
 }
 
 model PetSkill {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String   @db.Text
-  damage      Int      @default(0)
-  cooldown    Int      @default(10)  // 초
-  effectType  String   @map("effect_type")  // damage, heal, buff, debuff
-  targetType  String   @default("single") @map("target_type")  // single, aoe
-  unlockLevel Int      @default(1) @map("unlock_level")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id          String    @id @default(uuid())
+  petId       String    @map("pet_id")
+  skillId     String    @map("skill_id")
+  name        String?
+  description String?   @db.Text
+  damage      Int       @default(0)
+  cooldown    Int       @default(10)
+  effectType  String?   @map("effect_type")
+  targetType  String    @default("single") @map("target_type")
+  unlockLevel Int       @default(1) @map("unlock_level")
+  unlockedAt  DateTime? @map("unlocked_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
+  pet         Pet       @relation(fields: [petId], references: [id])
+  @@unique([petId, skillId])
   @@map("pet_skills")
+  @@index([petId])
 }
 
 // ─── NPC 시스템 ─────────────────────────────────────────────────
@@ -616,8 +650,12 @@ model Quest {
   rewards       Json     // [{type, itemId?, amount, description}]
   npcId         String?  @map("npc_id")  // 수주 NPC
   timeLimit     Int?     @map("time_limit")  // 초 (일일/주간)
-  isRepeatable  Boolean  @default(false) @map("is_repeatable")
-  createdAt     DateTime @default(now()) @map("created_at")
+  isRepeatable        Boolean  @default(false) @map("is_repeatable")
+  isActive            Boolean  @default(true) @map("is_active")
+  tags                Json?
+  difficulty          Int?
+  dailyCompletionCount Int     @default(0) @map("daily_completion_count")
+  createdAt           DateTime @default(now()) @map("created_at")
 
   @@map("quests")
   @@index([type])
@@ -626,6 +664,7 @@ model Quest {
 model QuestProgress {
   id          String    @id @default(uuid())
   userId      String    @map("user_id")
+  characterId String?   @map("character_id")
   questId     String    @map("quest_id")
   status      String    @default("in_progress")  // in_progress, completed, failed, abandoned
   progress    Json      // [{objectiveIndex, current, target, completed}]
@@ -669,13 +708,14 @@ model Friendship {
 
 // ─── 소셜 시스템: 파티 ──────────────────────────────────────────
 model Party {
-  id        String   @id @default(uuid())
-  leaderId  String   @map("leader_id")
+  id        String        @id @default(uuid())
+  leaderId  String        @map("leader_id")
   name      String?
-  maxSize   Int      @default(4) @map("max_size")
-  members   Json     // [{userId, role, joinedAt}]
-  status    String   @default("open")  // open, full, in_dungeon
-  createdAt DateTime @default(now()) @map("created_at")
+  maxSize   Int           @default(4) @map("max_size")
+  status    String        @default("open")  // open, full, in_dungeon
+  createdAt DateTime      @default(now()) @map("created_at")
+  members   PartyMember[]
+  invites   PartyInvite[]
 
   @@map("parties")
   @@index([leaderId])
@@ -696,9 +736,14 @@ model Item {
   sellPrice   Int      @default(0) @map("sell_price")
   stackable   Boolean  @default(false)
   maxStack    Int      @default(1) @map("max_stack")
-  tradeable   Boolean  @default(true)
-  icon        String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  tradeable        Boolean  @default(true)
+  icon             String?
+  isActive         Boolean  @default(true) @map("is_active")
+  tags             Json?
+  requiredLevel    Int?     @map("required_level")
+  classRestriction String?  @map("class_restriction")
+  dailyUsageCount  Int      @default(0) @map("daily_usage_count")
+  createdAt        DateTime @default(now()) @map("created_at")
 
   @@map("items")
   @@index([type])
@@ -763,6 +808,7 @@ model Monster {
   location    String?  // 출현 지역
   respawnTime Int      @default(30) @map("respawn_time")  // 초
   lore        String?  @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("monsters")
@@ -809,8 +855,10 @@ model Skill {
   requiredLevel Int      @default(1) @map("required_level")
   icon          String?
   animation     String?
+  isActive      Boolean  @default(true) @map("is_active")
   createdAt     DateTime @default(now()) @map("created_at")
 
+  playerSkills  PlayerSkill[]
   @@map("skills")
   @@index([class])
   @@index([tier])
@@ -819,15 +867,18 @@ model Skill {
 model PlayerSkill {
   id          String   @id @default(uuid())
   userId      String   @map("user_id")
+  characterId String?  @map("character_id")
   skillId     String   @map("skill_id")
   level       Int      @default(1)
   isEquipped  Boolean  @default(false) @map("is_equipped")
   slotIndex   Int?     @map("slot_index")
   unlockedAt  DateTime @default(now()) @map("unlocked_at")
 
+  skill       Skill    @relation(fields: [skillId], references: [id])
   @@unique([userId, skillId])
   @@map("player_skills")
   @@index([userId])
+  @@index([characterId])
 }
 
 // ─── 던전 시스템 (P5-03) ────────────────────────────────────────
@@ -843,8 +894,12 @@ model Dungeon {
   waves         Json     // [{wave, monsters: [{monsterId, count}], isBoss}]
   rewards       Json     // 클리어 보상
   timeLimit     Int      @default(600) @map("time_limit")
-  entryCount    Int      @default(3) @map("entry_count")  // 일일 입장 횟수
-  createdAt     DateTime @default(now()) @map("created_at")
+  entryCount        Int      @default(3) @map("entry_count")
+  isActive          Boolean  @default(true) @map("is_active")
+  tags              Json?
+  recommendedLevel  Int?     @map("recommended_level")
+  dailyRunCount     Int      @default(0) @map("daily_run_count")
+  createdAt         DateTime @default(now()) @map("created_at")
 
   @@map("dungeons")
   @@index([zoneId])
@@ -861,6 +916,9 @@ model DungeonRun {
   startedAt   DateTime  @default(now()) @map("started_at")
   endedAt     DateTime? @map("ended_at")
   lootResult  Json?     @map("loot_result")
+  result      String?
+  durationMin Float?    @map("duration_min")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   @@map("dungeon_runs")
   @@index([dungeonId])
@@ -904,13 +962,17 @@ model PlayerLocation {
 
 // ─── 도감/컬렉션 시스템 (P5-08) ─────────────────────────────────
 model CodexEntry {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
-  category    String   // monster, item, npc, zone, skill
-  targetCode  String   @map("target_code")
-  discovered  Boolean  @default(true)
-  percentage  Float    @default(0)
-  unlockedAt  DateTime @default(now()) @map("unlocked_at")
+  id              String   @id @default(uuid())
+  code            String?  @unique
+  title           String?
+  userId          String   @default("") @map("user_id")
+  category        String   @default("")
+  targetCode      String   @default("") @map("target_code")
+  discovered      Boolean  @default(true)
+  percentage      Float    @default(0)
+  content         String?  @db.Text
+  unlockCondition String?  @map("unlock_condition")
+  unlockedAt      DateTime @default(now()) @map("unlocked_at")
 
   @@unique([userId, category, targetCode])
   @@map("codex_entries")
@@ -1144,11 +1206,17 @@ model Sanction {
   id         String    @id @default(uuid())
   userId     String    @map("user_id")
   type       String    // warn, mute, ban
+  level      String?   // minor, moderate, severe, critical
   reason     String
+  evidence   String?   @db.Text
   duration   Int?      // 분 (null=영구)
   issuedBy   String    @map("issued_by")
   isActive   Boolean   @default(true) @map("is_active")
   expiresAt  DateTime? @map("expires_at")
+  appliedBy    String?   @map("applied_by")
+  revokedAt    DateTime? @map("revoked_at")
+  revokedBy    String?   @map("revoked_by")
+  revokeReason String?   @map("revoke_reason")
   createdAt  DateTime  @default(now()) @map("created_at")
 
   @@map("sanctions")
@@ -1413,4 +1481,469 @@ model CommunityEvent {
   @@index([status])
   @@index([startAt])
   @@index([endAt])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// P31: 누락 모델 추가 (25개) — tsc 에러 제로화
+// ═══════════════════════════════════════════════════════════════
+
+// ─── 거래 시스템 ────────────────────────────────────────────────
+model Trade {
+  id                 String    @id @default(uuid())
+  requesterId        String    @map("requester_id")
+  targetId           String    @map("target_id")
+  status             String    @default("pending")
+  expiresAt          DateTime? @map("expires_at")
+  requesterOffer     Json?     @map("requester_offer")
+  targetOffer        Json?     @map("target_offer")
+  requesterConfirmed Boolean   @default(false) @map("requester_confirmed")
+  targetConfirmed    Boolean   @default(false) @map("target_confirmed")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  @@map("trades")
+  @@index([requesterId])
+  @@index([targetId])
+  @@index([status])
+}
+
+// ─── 고객 지원 ──────────────────────────────────────────────────
+model SupportTicket {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  category    String
+  subject     String
+  status      String    @default("open")  // open, in_progress, waiting_user, waiting_admin, resolved, closed
+  priority    String    @default("normal")  // low, normal, high, urgent
+  assignedTo  String?   @map("assigned_to")
+  resolution  String?   @db.Text
+  closedAt    DateTime? @map("closed_at")
+  closedBy    String?   @map("closed_by")
+  resolvedAt  DateTime? @map("resolved_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  messages    TicketMessage[]
+
+  @@map("support_tickets")
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([assignedTo])
+}
+
+model TicketMessage {
+  id          String   @id @default(uuid())
+  ticketId    String   @map("ticket_id")
+  senderId    String   @map("sender_id")
+  senderType  String   @map("sender_type")  // USER, ADMIN, SYSTEM
+  content     String   @db.Text
+  attachments Json     @default("[]")
+  isInternal  Boolean  @default(false) @map("is_internal")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id])
+  @@map("ticket_messages")
+  @@index([ticketId])
+}
+
+// ─── 활동 피드 ──────────────────────────────────────────────────
+model ActivityFeedEntry {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  displayName String   @map("display_name")
+  eventType   String   @map("event_type")
+  visibility  String   @default("FRIENDS")
+  payload     Json     @default("{}")
+  summary     String   @db.Text
+  likeCount   Int      @default(0) @map("like_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  likes       FeedLike[]
+  @@map("activity_feed_entries")
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+model FeedLike {
+  id        String   @id @default(uuid())
+  entryId   String   @map("entry_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  entry     ActivityFeedEntry @relation(fields: [entryId], references: [id])
+  @@unique([entryId, userId])
+  @@map("feed_likes")
+  @@index([entryId])
+  @@index([userId])
+}
+
+// ─── 밸런스 자동 튜닝 ───────────────────────────────────────────
+model TuningProposal {
+  id            String    @id @default(uuid())
+  targetId      String    @map("target_id")
+  targetType    String    @map("target_type")  // skill, monster, dungeon
+  targetName    String    @map("target_name")
+  parameter     String
+  currentValue  Float     @map("current_value")
+  proposedValue Float     @map("proposed_value")
+  changePercent Float     @map("change_percent")
+  reason        String    @db.Text
+  metrics       Json      @default("{}")
+  confidence    Float     @default(0)
+  priority      String    @default("normal")
+  status        String    @default("pending")  // pending, approved, rejected, applied, reverted
+  reviewedAt    DateTime? @map("reviewed_at")
+  reviewedBy    String?   @map("reviewed_by")
+  rejectReason  String?   @map("reject_reason")
+  appliedAt     DateTime? @map("applied_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("tuning_proposals")
+  @@index([status])
+  @@index([targetType])
+}
+
+// ─── A/B 테스트 ─────────────────────────────────────────────────
+model ABExperiment {
+  id                String    @id @default(uuid())
+  name              String
+  description       String    @db.Text
+  featureKey        String    @map("feature_key")
+  status            String    @default("draft")  // draft, running, paused, completed, archived
+  trafficPercent    Float     @default(1.0) @map("traffic_percent")
+  assignmentMethod  String    @default("user_id_hash") @map("assignment_method")
+  startDate         DateTime? @map("start_date")
+  endDate           DateTime? @map("end_date")
+  minSampleSize     Int       @default(500) @map("min_sample_size")
+  significanceLevel Float     @default(0.05) @map("significance_level")
+  createdBy         String    @map("created_by")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  variants          ABVariant[]
+  assignments       ABAssignment[]
+
+  @@map("ab_experiments")
+  @@index([featureKey])
+  @@index([status])
+}
+
+model ABVariant {
+  id           String @id @default(uuid())
+  experimentId String @map("experiment_id")
+  name         String
+  description  String @default("")
+  weight       Float  @default(0.5)
+  config       Json   @default("{}")
+
+  experiment   ABExperiment @relation(fields: [experimentId], references: [id])
+  @@map("ab_variants")
+  @@index([experimentId])
+}
+
+model ABAssignment {
+  id           String    @id @default(uuid())
+  experimentId String    @map("experiment_id")
+  variantId    String    @map("variant_id")
+  userId       String    @map("user_id")
+  assignedAt   DateTime  @default(now()) @map("assigned_at")
+  converted    Boolean   @default(false)
+  convertedAt  DateTime? @map("converted_at")
+  metricValue  Float?    @map("metric_value")
+
+  experiment   ABExperiment @relation(fields: [experimentId], references: [id])
+  @@unique([experimentId, userId])
+  @@map("ab_assignments")
+  @@index([experimentId])
+  @@index([userId])
+}
+
+// ─── 파티 멤버 / 초대 ───────────────────────────────────────────
+model PartyMember {
+  id          String   @id @default(uuid())
+  partyId     String   @map("party_id")
+  userId      String   @map("user_id")
+  role        String   @default("member")  // leader, member
+  combatReady Boolean  @default(false) @map("combat_ready")
+  joinedAt    DateTime @default(now()) @map("joined_at")
+
+  party       Party    @relation(fields: [partyId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  @@unique([partyId, userId])
+  @@map("party_members")
+  @@index([partyId])
+  @@index([userId])
+}
+
+model PartyInvite {
+  id           String    @id @default(uuid())
+  partyId      String    @map("party_id")
+  inviterId    String    @map("inviter_id")
+  targetUserId String    @map("target_user_id")
+  status       String    @default("pending")  // pending, accepted, rejected, expired
+  expiresAt    DateTime? @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  party        Party     @relation(fields: [partyId], references: [id])
+  @@map("party_invites")
+  @@index([partyId])
+  @@index([targetUserId])
+}
+
+// ─── 전투 로그 ──────────────────────────────────────────────────
+model CombatLog {
+  id          String   @id @default(uuid())
+  dungeonId   String?  @map("dungeon_id")
+  skillId     String?  @map("skill_id")
+  playerId    String?  @map("player_id")
+  targetId    String?  @map("target_id")
+  targetType  String?  @map("target_type")
+  result      String?
+  damage      Float    @default(0)
+  durationMin Float?   @map("duration_min")
+  isClear     Boolean  @default(false) @map("is_clear")
+  duration    Float?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("combat_logs")
+  @@index([skillId])
+  @@index([dungeonId])
+  @@index([targetId])
+  @@index([createdAt])
+}
+
+// ─── 스킬 사용 통계 ─────────────────────────────────────────────
+model SkillUsageStat {
+  id          String   @id @default(uuid())
+  skillId     String   @map("skill_id")
+  userId      String?  @map("user_id")
+  useCount    Int      @default(1) @map("use_count")
+  totalDamage Float    @default(0) @map("total_damage")
+  winRate     Float?   @map("win_rate")
+  playTimeMin Float?   @map("play_time_min")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("skill_usage_stats")
+  @@index([skillId])
+  @@index([createdAt])
+}
+
+// ─── 던전 클리어 기록 ───────────────────────────────────────────
+model DungeonClear {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  dungeonId String   @map("dungeon_id")
+  clearTime Float?   @map("clear_time")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("dungeon_clears")
+  @@index([userId])
+  @@index([dungeonId])
+}
+
+// ─── 무한 던전 진행 ─────────────────────────────────────────────
+model EndlessDungeonProgress {
+  id            String   @id @default(uuid())
+  playerId      String   @map("player_id")
+  weekId        String   @map("week_id")
+  highestFloor  Int      @default(0) @map("highest_floor")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([playerId, weekId])
+  @@map("endless_dungeon_progress")
+  @@index([playerId])
+}
+
+// ─── 장비 (초월 시스템) ─────────────────────────────────────────
+model Equipment {
+  id                  String   @id @default(uuid())
+  ownerId             String   @map("owner_id")
+  itemId              String?  @map("item_id")
+  name                String?
+  transcendenceLevel  Int      @default(0) @map("transcendence_level")
+  isDestroyed         Boolean  @default(false) @map("is_destroyed")
+  stats               Json?
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  owner               User     @relation(fields: [ownerId], references: [id])
+  @@map("equipment")
+  @@index([ownerId])
+}
+
+// ─── 초월 로그 ──────────────────────────────────────────────────
+model TranscendenceLog {
+  id            String   @id @default(uuid())
+  playerId      String   @map("player_id")
+  equipmentId   String   @map("equipment_id")
+  previousLevel Int      @map("previous_level")
+  targetLevel   Int      @map("target_level")
+  resultLevel   Int      @map("result_level")
+  success       Boolean
+  destroyed     Boolean  @default(false)
+  protected     Boolean  @default(false)
+  timestamp     DateTime @default(now())
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("transcendence_logs")
+  @@index([playerId])
+  @@index([equipmentId])
+}
+
+// ─── 게임 세이브 ────────────────────────────────────────────────
+model GameSave {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  state     Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("game_saves")
+  @@index([userId])
+}
+
+// ─── 인벤토리 아이템 (코드 호환용) ──────────────────────────────
+model InventoryItem {
+  id          String     @id @default(uuid())
+  userId      String     @map("user_id")
+  characterId String?    @map("character_id")
+  itemId      String     @map("item_id")
+  itemCode    String?    @map("item_code")
+  quantity    Int        @default(1)
+  amount      Int        @default(1)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  character   Character? @relation("CharacterInventory", fields: [characterId], references: [id])
+
+  @@map("inventory_items")
+  @@index([userId])
+  @@index([itemId])
+  @@index([characterId])
+  @@index([userId, itemId])
+}
+
+// ─── 퀘스트 완료 기록 ───────────────────────────────────────────
+model QuestCompletion {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  questId   String   @map("quest_id")
+  petId     String?  @map("pet_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("quest_completions")
+  @@index([userId])
+  @@index([questId])
+}
+
+// ─── 스토리 진행 ────────────────────────────────────────────────
+model StoryProgress {
+  id             String   @id @default(uuid())
+  playerId       String   @unique @map("player_id")
+  currentChapter Int      @default(1) @map("current_chapter")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("story_progress")
+}
+
+// ─── PvP 랭킹 ──────────────────────────────────────────────────
+model PvpRanking {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  rating Int    @default(1000)
+  wins   Int    @default(0)
+  losses Int    @default(0)
+
+  @@map("pvp_rankings")
+  @@index([userId])
+  @@index([rating])
+}
+
+// ─── PvP 시즌 보상 ──────────────────────────────────────────────
+model PvpSeasonReward {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  season    Int
+  tier      String
+  rating    Int
+  rewards   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("pvp_season_rewards")
+  @@index([userId])
+  @@index([season])
+}
+
+// ─── 유저 업적 (코드 호환용) ────────────────────────────────────
+model UserAchievement {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  achievementId String    @map("achievement_id")
+  unlockedAt    DateTime? @map("unlocked_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  @@map("user_achievements")
+  @@index([userId])
+  @@index([achievementId])
+}
+
+// ─── 유저 행동 기록 (추천 엔진) ─────────────────────────────────
+model UserAction {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  targetType String   @map("target_type")
+  targetId   String   @map("target_id")
+  actionType String   @map("action_type")
+  rating     Float?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("user_actions")
+  @@index([userId])
+  @@index([targetType])
+  @@index([createdAt])
+}
+
+// ─── 펫 진화 히스토리 ───────────────────────────────────────────
+model PetEvolutionHistory {
+  id                String   @id @default(uuid())
+  petId             String   @map("pet_id")
+  userId            String   @map("user_id")
+  petFamily         String   @map("pet_family")
+  fromStage         String   @map("from_stage")
+  toStage           String   @map("to_stage")
+  materialsConsumed Json     @default("[]") @map("materials_consumed")
+  statsBefore       Json     @default("{}") @map("stats_before")
+  statsAfter        Json     @default("{}") @map("stats_after")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@map("pet_evolution_history")
+  @@index([petId])
+  @@index([userId])
+}
+
+// ─── 플레이어 (월드보스 참가자 조회용) ──────────────────────────
+model Player {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  nickname  String?
+  level     Int      @default(1)
+  classId   String?  @map("class_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("players")
+  @@index([userId])
+}
+
+model CharacterSkill {
+  id          String   @id @default(uuid())
+  characterId String   @map("character_id")
+  skillId     String   @map("skill_id")
+  skillCode   String?  @map("skill_code")
+  level       Int      @default(1)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([characterId, skillId])
+  @@map("character_skills")
+  @@index([characterId])
 }

@@ -467,7 +467,7 @@ class NetworkManager {
   }
 
   /** @deprecated — 직접 소켓 접근. 필요 시 on()/emit() 사용 권장 */
-  getSocket(): unknown {
+  getSocket(): Socket | null {
     return this.socket;
   }
 

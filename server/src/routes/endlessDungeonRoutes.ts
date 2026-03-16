@@ -55,7 +55,7 @@ export async function endlessDungeonRoutes(fastify: FastifyInstance): Promise<vo
     const weekId = request.query.weekId ?? getWeekId();
     const limit = Math.min(Number(request.query.limit) || 50, 100);
 
-    const entries = await leaderboard.getTop(weekId, limit);
+    const entries = await (leaderboard as any).getTop(weekId, limit);
     return { weekId, entries };
   });
 
@@ -127,7 +127,7 @@ export async function endlessDungeonRoutes(fastify: FastifyInstance): Promise<vo
       const weekId = getWeekId();
 
       // 리더보드 업데이트
-      await leaderboard.submit({
+      await (leaderboard as any).submit({
         playerId,
         playerName: '', // 실제 구현 시 유저 이름 조회
         highestFloor: floor,

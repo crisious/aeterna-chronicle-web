@@ -309,7 +309,7 @@ async function finalizeMatch(result: MatchResult): Promise<string> {
         userId: uid,
         role: i === 0 ? 'leader' : 'member',
         joinedAt: now.toISOString(),
-      })),
+      })) as any,
       status: result.queueType === 'pvp' ? 'open' : 'in_dungeon',
     },
   });

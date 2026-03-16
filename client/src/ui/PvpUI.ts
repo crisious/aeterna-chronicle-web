@@ -152,7 +152,7 @@ export class PvpUI {
 
   public async loadMyRating(): Promise<void> {
     try {
-      const resp = await this.net.httpGet(`/api/pvp/ratings/${this.net.getUserId()}`);
+      const resp = await this.net.httpGet<{ data?: any }>(`/api/pvp/ratings/${this.net.getUserId()}`);
       this.myRating = resp.data ?? resp;
       this.showIdle();
     } catch (err) {

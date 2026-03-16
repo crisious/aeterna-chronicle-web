@@ -182,7 +182,7 @@ export class GuildUI {
   private async loadGuildInfo(): Promise<void> {
     try {
       // 내 길드 정보 가져오기
-      const resp = await this.net.httpGet(`/api/guild/my?userId=${this.net.getUserId()}`);
+      const resp = await this.net.httpGet<{ guild?: any }>(`/api/guild/my?userId=${this.net.getUserId()}`);
       if (resp.guild) {
         this.guildInfo = resp.guild;
         this.isInGuild = true;
@@ -245,7 +245,7 @@ export class GuildUI {
   private async loadMembers(): Promise<void> {
     if (!this.guildInfo) return;
     try {
-      const resp = await this.net.httpGet(`/api/guild/${this.guildInfo.id}/members`);
+      const resp = await this.net.httpGet<{ members?: any[] }>(`/api/guild/${this.guildInfo.id}/members`);
       this.members = resp.members ?? [];
       this.showMembers();
     } catch (err) {
@@ -285,7 +285,7 @@ export class GuildUI {
   private async loadSkills(): Promise<void> {
     if (!this.guildInfo) return;
     try {
-      const resp = await this.net.httpGet(`/api/guild/${this.guildInfo.id}/skills`);
+      const resp = await this.net.httpGet<{ skills?: any[] }>(`/api/guild/${this.guildInfo.id}/skills`);
       this.skills = resp.skills ?? [];
       this.showSkills();
     } catch (err) {
@@ -318,7 +318,7 @@ export class GuildUI {
 
   private async loadSearch(): Promise<void> {
     try {
-      const resp = await this.net.httpGet('/api/guild?page=1&limit=15');
+      const resp = await this.net.httpGet<{ guilds?: any[] }>('/api/guild?page=1&limit=15');
       this.searchResults = resp.guilds ?? [];
       this.showSearch();
     } catch (err) {

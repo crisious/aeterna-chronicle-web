@@ -241,7 +241,7 @@ export class PetEvolutionEngine {
     nextPath: EvolutionPath | null;
   }> {
     const pet = await prisma.pet.findUnique({ where: { id: petId } });
-    if (!pet || pet.userId !== userId) throw new Error('펫을 찾을 수 없습니다.');
+    if (!pet || pet.ownerId !== userId) throw new Error('펫을 찾을 수 없습니다.');
 
     const currentStage = (pet.evolutionStage as EvolutionStage) ?? 'baby';
     const path = EVOLUTION_PATHS.find(
@@ -365,7 +365,7 @@ export class PetEvolutionEngine {
         data: {
           petId,
           userId,
-          petFamily: pet.family,
+          petFamily: pet.family ?? "",
           fromStage: path.fromStage,
           toStage: path.toStage,
           materialsConsumed: path.materials as any,
@@ -378,7 +378,7 @@ export class PetEvolutionEngine {
     return {
       success: true,
       petId,
-      petFamily: pet.family,
+      petFamily: pet.family ?? "",
       previousStage: path.fromStage,
       newStage: path.toStage,
       newStats: statsAfter,
