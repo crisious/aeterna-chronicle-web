@@ -51,6 +51,15 @@ const BAR_H = 5;
 
 // ── DungeonScene ────────────────────────────────────────────
 
+// 몬스터 이미지 매핑 (존별 대표 몬스터)
+const DUNGEON_MONSTER_IMAGES: Record<string, string[]> = {
+  default: [
+    'mon_erebos_ruin_skeleton_normal', 'mon_erebos_fog_wolf_normal', 'mon_erebos_memory_ghost_normal',
+    'mon_erebos_broken_golem_normal', 'mon_erebos_ruin_spider_normal',
+  ],
+};
+const DUNGEON_BOSS_IMAGE = 'mon_erebos_memory_absorber_normal';
+
 export class DungeonScene extends Phaser.Scene {
   private config: DungeonConfig = DEFAULT_CONFIG;
   private phase: DungeonPhase = 'ready';
@@ -72,6 +81,25 @@ export class DungeonScene extends Phaser.Scene {
   }
 
   // ── 라이프사이클 ─────────────────────────────────────────
+
+  preload(): void {
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[Dungeon] 에셋 로드 실패: ${file.key}`);
+    });
+
+    // 플레이어 캐릭터
+    const classId = (this as any)._initData?.characterClass ?? 'ether_knight';
+    this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${classId}_side.png`);
+
+    // 배경
+    this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/ERB-BG-FAR-NIGHT.png');
+
+    // 몬스터
+    for (const key of DUNGEON_MONSTER_IMAGES.default) {
+      this.load.image(key, `assets/generated/monsters/normal/${key}.png`);
+    }
+    this.load.image(DUNGEON_BOSS_IMAGE, `assets/generated/monsters/normal/${DUNGEON_BOSS_IMAGE}.png`);
+  }
 
   create(): void {
     const { width, height } = this.cameras.main;
@@ -112,7 +140,19 @@ export class DungeonScene extends Phaser.Scene {
     }).setOrigin(0.5).setAlpha(0);
 
     // 플레이어 표시 (간략)
-    this.add.rectangle(180, height / 2, 40, 40, 0x4488ff);
+    // 배경
+    if (this.textures.exists('dungeon_bg')) {
+      this.add.image(width / 2, height / 2, 'dungeon_bg')
+        .setDisplaySize(width, height).setAlpha(0.4).setDepth(-1);
+    }
+
+    // 플레이어 캐릭터
+    if (this.textures.exists('dungeon_player')) {
+      this.add.image(180, height / 2, 'dungeon_player')
+        .setDisplaySize(64, 80);
+    } else {
+      this.add.rectangle(180, height / 2, 40, 40, 0x4488ff);
+    }
     this.add.text(180, height / 2 + 32, '플레이어', {
       fontSize: '11px',
       color: '#88ccff',
@@ -193,8 +233,18 @@ export class DungeonScene extends Phaser.Scene {
       const size = isBoss ? 56 : 36;
       const color = isBoss ? 0xff2244 : 0xff6644;
 
-      const sprite = this.add.rectangle(x, y, size, size, color)
-        .setInteractive({ useHandCursor: true });
+      // 몬스터 이미지 사용 (fallback: 사각형)
+      const monsterKeys = isBoss ? [DUNGEON_BOSS_IMAGE] : DUNGEON_MONSTER_IMAGES.default;
+      const monKey = monsterKeys[i % monsterKeys.length];
+      let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+      if (this.textures.exists(monKey)) {
+        sprite = this.add.image(x, y, monKey)
+          .setDisplaySize(size * 1.5, size * 1.5)
+          .setInteractive({ useHandCursor: true });
+      } else {
+        sprite = this.add.rectangle(x, y, size, size, color)
+          .setInteractive({ useHandCursor: true });
+      }
 
       const hpBarBg = this.add.rectangle(x, y - size / 2 - 8, BAR_W, BAR_H, 0x333333);
       const hpBar = this.add.rectangle(x, y - size / 2 - 8, BAR_W, BAR_H, 0x44ff44);
