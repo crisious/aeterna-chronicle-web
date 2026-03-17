@@ -1,16 +1,15 @@
 /**
- * BattleScene.ts — 실시간 반자동 전투 씬 (P5-05 → P25-05 전투 API 연동)
+ * BattleScene.ts — FF6 스타일 사이드뷰 ATB 전투 씬 (P37)
  *
- * - 좌측 아군 / 우측 적군 배치
- * - 공격 속도 기반 자동 기본 공격
- * - 스킬 슬롯 UI (하단 6칸, 클릭/단축키 1~6)
- * - 타겟팅 시스템 (클릭 선택 + TAB 순환)
- * - HP/MP 바 표시
- * - 데미지 텍스트 팝업 (EffectManager 연동)
- * - 전투 종료 판정 (승리/패배)
- * - 전리품 표시 팝업
- * - P25-05: NetworkManager 전투 API 연동
- *   (POST /api/combat/start, /action, 소켓 combat:tick, combat:result)
+ * - FF6 레이아웃: 왼쪽 아군(side), 오른쪽 몬스터(front)
+ * - ATB(Active Time Battle) 게이지: 실시간 충전, 차면 커맨드 메뉴
+ * - 커맨드 메뉴: 공격/마법/아이템/방어/도주
+ * - HP/MP 상태 패널 (하단 우측, FF6 스타일)
+ * - 데미지 숫자 팝업 (크리티컬=금색, 회복=초록)
+ * - 히트 이펙트 + 흔들림
+ * - 전투 플로우: intro → fighting → victory/defeat
+ * - SFX/Voice 연동 (SFXHelper)
+ * - 서버 전투 API 연동 (NetworkManager)
  */
 
 import * as Phaser from 'phaser';
@@ -30,17 +29,11 @@ export type BattlePhase = 'intro' | 'fighting' | 'victory' | 'defeat';
 
 /** 전투 씬 시작 시 전달받는 데이터 */
 export interface BattleSceneData {
-  /** 아군 유닛 목록 */
   allies: CombatUnit[];
-  /** 적군 유닛 목록 */
   enemies: CombatUnit[];
-  /** 장착된 스킬 슬롯 (최대 6) */
   skillSlots: SkillSlot[];
-  /** 배경 타일맵 키 (선택) */
   bgKey?: string;
-  /** 서버 전투 ID */
   battleId?: string;
-  /** P25-05: 전투 시작을 위한 추가 데이터 */
   zoneId?: string;
   monsterId?: string;
   monsterName?: string;
@@ -49,28 +42,71 @@ export interface BattleSceneData {
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
-const ALLY_START_X = 200;
-const ENEMY_START_X = 1080;
-const UNIT_Y_START = 200;
-const UNIT_Y_GAP = 120;
-const BAR_WIDTH = 60;
-const BAR_HEIGHT = 6;
-const BAR_OFFSET_Y = -40;
-const AUTO_ATTACK_BASE_DELAY = 1500; // ms (공격 속도 1.0 기준)
+/** FF6 레이아웃 상수 (1280×720 기준) */
+const SCREEN_W = 1280;
+const SCREEN_H = 720;
+
+// 아군 배치 (왼쪽, 사이드뷰)
+const ALLY_POSITIONS = [
+  { x: 160, y: 220 },
+  { x: 230, y: 300 },
+  { x: 160, y: 380 },
+  { x: 230, y: 460 },
+];
+
+// 몬스터 배치 (오른쪽, 정면)
+const ENEMY_POSITIONS = [
+  { x: 750, y: 200 },
+  { x: 900, y: 260 },
+  { x: 1050, y: 200 },
+  { x: 830, y: 380 },
+  { x: 980, y: 380 },
+];
+
+// 하단 UI 영역
+const UI_PANEL_Y = 540;
+const CMD_MENU_X = 60;
+const CMD_MENU_Y = UI_PANEL_Y + 20;
+const STATUS_PANEL_X = 400;
+const STATUS_PANEL_Y = UI_PANEL_Y + 10;
+
+// ATB
+const ATB_MAX = 100;
+const ATB_SPEED_BASE = 25; // units/sec at speed 1.0
+const ATB_BAR_W = 50;
+const ATB_BAR_H = 4;
+
+// HP/MP bar in status panel
+const STAT_BAR_W = 120;
+const STAT_BAR_H = 8;
 
 // ─── 유닛 스프라이트 래퍼 ─────────────────────────────────────
 
 interface UnitSprite {
   unit: CombatUnit;
-  sprite: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
-  hpBar: Phaser.GameObjects.Rectangle;
-  hpBarBg: Phaser.GameObjects.Rectangle;
-  mpBar: Phaser.GameObjects.Rectangle;
-  mpBarBg: Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   nameText: Phaser.GameObjects.Text;
-  autoAttackTimer: number; // 남은 ms
+  atb: number;           // 0 ~ ATB_MAX
+  atbBar?: Phaser.GameObjects.Graphics;
   isAlly: boolean;
+  isDead: boolean;
 }
+
+// 커맨드 메뉴 항목
+type CommandType = 'attack' | 'magic' | 'item' | 'defend' | 'flee';
+
+interface CommandOption {
+  type: CommandType;
+  label: string;
+}
+
+const COMMANDS: CommandOption[] = [
+  { type: 'attack', label: '⚔ 공격' },
+  { type: 'magic',  label: '✨ 마법' },
+  { type: 'item',   label: '🎒 아이템' },
+  { type: 'defend', label: '🛡 방어' },
+  { type: 'flee',   label: '🏃 도주' },
+];
 
 // ─── BattleScene ────────────────────────────────────────────────
 
@@ -85,24 +121,48 @@ export class BattleScene extends Phaser.Scene {
   private enemySprites: UnitSprite[] = [];
   private allSprites: UnitSprite[] = [];
 
+  // ATB 커맨드 큐
+  private commandQueue: UnitSprite[] = [];  // ATB가 찬 순서
+  private activeCommander: UnitSprite | null = null;
   private selectedTarget: UnitSprite | null = null;
-  private targetIndicator!: Phaser.GameObjects.Graphics;
+
+  // 커맨드 메뉴 UI
+  private cmdMenuContainer: Phaser.GameObjects.Container | null = null;
+  private cmdMenuTexts: Phaser.GameObjects.Text[] = [];
+  private cmdMenuIndex = 0;
+  private cmdSubMenu: Phaser.GameObjects.Container | null = null;
+
+  // 상태 패널
+  private statusPanelContainer: Phaser.GameObjects.Container | null = null;
+  private statusPanelGraphics: Phaser.GameObjects.Graphics | null = null;
+  private statusTexts: Map<string, { name: Phaser.GameObjects.Text; hp: Phaser.GameObjects.Text; mp: Phaser.GameObjects.Text; atb: Phaser.GameObjects.Graphics }> = new Map();
+
+  // 타겟 선택 모드
+  private targetSelectMode = false;
+  private targetSelectCallback: ((target: UnitSprite) => void) | null = null;
+  private targetCursor: Phaser.GameObjects.Graphics | null = null;
+  private targetCandidates: UnitSprite[] = [];
+  private targetIndex = 0;
 
   private skillSlots: SkillSlot[] = [];
-  private skillKeys: Phaser.Input.Keyboard.Key[] = [];
-  private tabKey!: Phaser.Input.Keyboard.Key;
-
   private battleId?: string;
-  /** 현재 표시 중인 전리품 팝업 (파괴 시 참조) */
   public lootPopup: Phaser.GameObjects.Container | null = null;
 
+  // 키 입력
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private escKey?: Phaser.Input.Keyboard.Key;
+
   // P6-04/05: 상태이상 렌더러 + 콤보 UI
-  private statusEffectRenderer!: StatusEffectRenderer;
-  private comboUI!: ComboUI;
+  private statusEffectRenderer?: StatusEffectRenderer;
+  private comboUI?: ComboUI;
 
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
   private serverCombatId: string | null = null;
+
+  private _initData!: BattleSceneData;
+  private _loadedMonsterKeys: string[] = [];
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -110,19 +170,41 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 라이프사이클 ─────────────────────────────────────────────
 
+  init(data: BattleSceneData): void {
+    this.phase = 'intro';
+    this.allySprites = [];
+    this.enemySprites = [];
+    this.allSprites = [];
+    this.commandQueue = [];
+    this.activeCommander = null;
+    this.selectedTarget = null;
+    this.targetSelectMode = false;
+    this.lootPopup = null;
+    this.cmdMenuContainer = null;
+    this.cmdSubMenu = null;
+    this.statusPanelContainer = null;
+    this.statusPanelGraphics = null;
+    this.statusTexts = new Map();
+    this.cmdMenuTexts = [];
+    this.cmdMenuIndex = 0;
+    this.targetCursor = null;
+
+    this.skillSlots = data.skillSlots ?? [];
+    this.battleId = data.battleId;
+    this._initData = data;
+  }
+
   preload(): void {
-    // P33-A: 전투 배경 (zoneId 기반 동적 선택)
+    // 전투 배경 (zoneId 기반)
     const zoneId = this._initData?.zoneId ?? 'ERB';
     const zoneCode = zoneId.substring(0, 3).toUpperCase();
     this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
 
-    // P36: 몬스터 이미지 — monsterManifest 기반 동적 프리로드
-    // _initData.enemies에서 필요한 몬스터만 로드
+    // 몬스터 이미지 — monsterManifest 기반 동적 프리로드
     const manifest = monsterManifest as Record<string, string>;
     const manifestKeys = Object.keys(manifest);
     const loadedKeys = new Set<string>();
 
-    // 1) _initData.enemies 기반 동적 매칭
     const enemies = this._initData?.enemies ?? [];
     for (const enemy of enemies) {
       const matched = this._findMonsterKey(enemy.id, enemy.name, manifestKeys);
@@ -132,7 +214,6 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // 2) monsterId 단일 매칭 (폴백)
     if (this._initData?.monsterId) {
       const mid = this._initData.monsterId;
       const matched = this._findMonsterKey(mid, this._initData.monsterName ?? '', manifestKeys);
@@ -142,7 +223,6 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // 3) 아무것도 매칭 안 되면 기본 3종 로드 (최소 폴백)
     if (loadedKeys.size === 0) {
       const fallbacks = ['mon_abyss_void_beetle', 'mon_abyss_null_slime', 'mon_boss_erb_shadow'];
       for (const fb of fallbacks) {
@@ -153,13 +233,13 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // P33-A: 캐릭터 일러스트 (전투 아군용)
+    // 캐릭터 side 일러스트
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
       this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
     }
 
-    // P34-A: 전투 VFX 이미지 (공통 히트 이펙트)
+    // VFX
     for (let i = 1; i <= 10; i++) {
       const padded = String(i).padStart(3, '0');
       this.load.image(`vfx_common_${padded}`, `assets/generated/vfx/common/VFX-CMN-${padded}.png`);
@@ -169,219 +249,1097 @@ export class BattleScene extends Phaser.Scene {
       console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
     });
 
-    // 로드된 몬스터 키 저장 (create에서 참조)
     this._loadedMonsterKeys = Array.from(loadedKeys);
   }
 
-  /** P36: 몬스터 ID/이름으로 매니페스트 키 찾기 */
-  private _findMonsterKey(id: string, name: string, manifestKeys: string[]): string | null {
-    const idLower = (id ?? '').toLowerCase().replace(/[-\s]/g, '_');
-    const nameLower = (name ?? '').toLowerCase().replace(/[-\s]/g, '_');
-
-    // 정확한 키 매칭
-    if (manifestKeys.includes(`mon_${idLower}`)) return `mon_${idLower}`;
-
-    // ID 부분 매칭 (region prefix 포함된 키에서 검색)
-    for (const mk of manifestKeys) {
-      const mkBody = mk.replace('mon_', '');
-      if (idLower && mkBody.includes(idLower)) return mk;
-      if (nameLower && mkBody.includes(nameLower)) return mk;
-    }
-
-    // 보스 매칭
-    if (id?.toUpperCase().startsWith('BOSS')) {
-      for (const mk of manifestKeys) {
-        if (mk.startsWith('mon_boss_') && mk.includes(idLower.replace('boss-', '').replace('boss_', ''))) return mk;
-      }
-    }
-
-    return null;
-  }
-
-  private _loadedMonsterKeys: string[] = [];
-
-  init(data: BattleSceneData): void {
-    this.phase = 'intro';
-    this.allySprites = [];
-    this.enemySprites = [];
-    this.allSprites = [];
-    this.selectedTarget = null;
-    this.lootPopup = null;
-
-    this.skillSlots = data.skillSlots ?? [];
-    this.battleId = data.battleId;
-
-    // 유닛 배치 데이터 저장
-    this._initData = data;
-  }
-
-  private _initData!: BattleSceneData;
-
   create(): void {
-    // 배경
-    this.cameras.main.setBackgroundColor('#1a1a2e');
-
-    // P33-A: 전투 배경 이미지
     const { width: scW, height: scH } = this.cameras.main;
-    if (this.textures.exists('battle_bg')) {
-      this.add.image(scW / 2, scH / 2, 'battle_bg')
-        .setDisplaySize(scW, scH)
-        .setAlpha(0.6);
-      // 어두운 오버레이 (전투 분위기)
-      this.add.rectangle(scW / 2, scH / 2, scW, scH, 0x0a0a1e, 0.5);
-    }
 
-    // 이펙트 & 사운드 매니저
-    this.effectManager = new EffectManager(this);
-    this.soundManager = new SoundManager(this);
+    // ── 배경 ───────────────────────────────────────────────
+    this.cameras.main.setBackgroundColor('#0a0a1e');
 
-    // 전투 매니저 (서버 동기화)
-    this.combatManager = new CombatManager(this.battleId);
+    try {
+      if (this.textures.exists('battle_bg')) {
+        this.add.image(scW / 2, scH / 2, 'battle_bg')
+          .setDisplaySize(scW, scH)
+          .setAlpha(0.7);
+      }
+    } catch (e) { console.warn('[Battle] bg error:', e); }
 
-    // P35: allies/enemies가 없으면 기본 유닛 생성
+    // ── 매니저 초기화 (개별 try-catch) ────────────────────────
+    try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
+    try { this.soundManager = new SoundManager(this); } catch (e) { console.warn('[Battle] SoundManager init error:', e); }
+    try { this.combatManager = new CombatManager(this.battleId); } catch (e) { console.warn('[Battle] CombatManager init error:', e); }
+
+    // ── 유닛 생성 ──────────────────────────────────────────
     const allies = this._initData.allies ?? this._createDefaultAllies();
     const enemies = this._initData.enemies ?? this._createDefaultEnemies();
 
-    // 유닛 스프라이트 생성
-    this._spawnUnits(allies, true, ALLY_START_X);
-    this._spawnUnits(enemies, false, ENEMY_START_X);
+    this._spawnAllies(allies);
+    this._spawnEnemies(enemies);
     this.allSprites = [...this.allySprites, ...this.enemySprites];
 
-    // 타겟 인디케이터
-    this.targetIndicator = this.add.graphics();
+    // ── 하단 UI 패널 배경 (반투명 검은 바) ─────────────────────
+    this.add.rectangle(scW / 2, UI_PANEL_Y + 90, scW, 180, 0x0a0a2e, 0.85)
+      .setDepth(100);
 
-    // 기본 타겟 설정 (첫 번째 적)
-    if (this.enemySprites.length > 0) {
-      this._selectTarget(this.enemySprites[0]);
-    }
+    // 구분선
+    this.add.rectangle(scW / 2, UI_PANEL_Y, scW, 2, 0x334488, 0.8)
+      .setDepth(101);
 
-    // 키 바인딩 (1~6 스킬, TAB 타겟 순환)
-    // Phaser 3.60+: keyboard가 null이면 createCursorKeys()로 활성화 시도
-    if (!this.input.keyboard) {
-      (this.input as any).keyboard = (this.input as any).keyboard ?? this.input.keyboard;
-      console.warn('[Battle] this.input.keyboard is null — keyboard disabled in config?');
-    }
+    // ── FF6 상태 패널 (하단 우측) ─────────────────────────────
+    this._createStatusPanel();
+
+    // ── 타겟 커서 ──────────────────────────────────────────
+    this.targetCursor = this.add.graphics().setDepth(200);
+
+    // ── 키 바인딩 ──────────────────────────────────────────
     if (this.input.keyboard) {
-      for (let i = 0; i < 6; i++) {
-        this.skillKeys.push(
-          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE + i)
-        );
+      this.cursors = this.input.keyboard.createCursorKeys();
+      this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+      this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    }
+
+    // ── 전투 UI (스킬바, 로그) ────────────────────────────────
+    try { this.battleUI = new BattleUI(this, this.skillSlots); } catch (e) { console.warn('[Battle] BattleUI init error:', e); }
+
+    // ── 상태이상 렌더러 + 콤보 UI ───────────────────────────
+    try {
+      this.statusEffectRenderer = new StatusEffectRenderer(this);
+      for (const us of this.allSprites) {
+        this.statusEffectRenderer.registerUnit(us.unit.id);
       }
-      this.tabKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
-    }
+    } catch (e) { console.warn('[Battle] StatusEffectRenderer init error:', e); }
 
-    // 마우스/터치 전투 액션 버튼 (키보드 대체)
-    this._createActionButtons();
+    try { this.comboUI = new ComboUI(this); } catch (e) { console.warn('[Battle] ComboUI init error:', e); }
 
-    // 전투 UI (하단 스킬바, 로그, 상태창)
-    this.battleUI = new BattleUI(this, this.skillSlots);
-
-    // P6-04: 상태이상 렌더러 초기화
-    this.statusEffectRenderer = new StatusEffectRenderer(this);
-    for (const us of this.allSprites) {
-      this.statusEffectRenderer.registerUnit(us.unit.id);
-    }
-
-    // P6-05: 콤보 UI 초기화
-    this.comboUI = new ComboUI(this);
-
-    // P25-05: 서버 전투 시작 + 소켓 이벤트 바인딩
+    // ── 서버 연동 ──────────────────────────────────────────
     this._startServerCombat();
     this._setupCombatSocket();
 
-    // 인트로 연출 (0.5초 후 전투 시작)
-    this.time.delayedCall(500, () => {
-      this.phase = 'fighting';
-      this.battleUI.addLog('⚔️ 전투 시작!');
-      this.soundManager.playSfx('battle_start');
-    });
-  }
-
-  // ─── P25-05: 서버 전투 시작 ───────────────────────────────────
-
-  private async _startServerCombat(): Promise<void> {
-    try {
-      const result = await networkManager.combatStart({
-        characterId: this._initData.characterId ?? networkManager.userId ?? '',
-        zoneId: this._initData.zoneId,
-        monsterId: this._initData.monsterId,
-      });
-      this.serverCombatId = result.combatId;
-      this.battleUI.addLog(`[서버] 전투 ID: ${result.combatId}`);
-    } catch (err) {
-      console.warn('[BattleScene] 서버 전투 시작 실패 (로컬 모드):', err);
-    }
-  }
-
-  private _setupCombatSocket(): void {
-    const unsub1 = networkManager.on('combat:tick', (data) => {
-      const d = data as { combatId: string; turn: number; actions: unknown[] };
-      if (d.combatId === this.serverCombatId) {
-        this.battleUI.addLog(`[서버] 턴 ${d.turn}`);
-      }
-    });
-
-    const unsub2 = networkManager.on('combat:result', (data) => {
-      const result = data as CombatResult;
-      if (result.combatId === this.serverCombatId) {
-        if (result.victory) {
-          this.phase = 'victory';
-          this.battleUI.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
-          if (result.levelUp) {
-            this.battleUI.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`);
-          }
-        }
-      }
-    });
-
-    const unsub3 = networkManager.on('combat:effectApplied', (data) => {
-      const d = data as { combatId: string; targetId: string; effectId: string; value: number };
-      if (d.combatId === this.serverCombatId) {
-        (this.statusEffectRenderer as any).applyEffect?.(d.targetId, d.effectId, d.value);
-      }
-    });
-
-    this.socketCleanups = [unsub1, unsub2, unsub3];
+    // ── 인트로 연출 ─────────────────────────────────────────
+    this._playIntro();
   }
 
   update(_time: number, delta: number): void {
-    if (!this.phase || this.phase !== 'fighting') return;
+    if (this.phase === 'intro') return;
+    if (this.phase !== 'fighting') {
+      this.effectManager?.update(delta);
+      return;
+    }
 
-    // 자동 기본 공격 처리
-    this._processAutoAttacks(delta);
+    // ATB 게이지 업데이트
+    this._updateATB(delta);
 
-    // 스킬 쿨다운 업데이트
-    this._updateSkillCooldowns(delta);
+    // 키보드 입력 처리
+    this._handleKeyboardInput();
 
-    // 키 입력 처리
-    this._handleInput();
+    // 적 AI (ATB가 찬 적은 자동 행동)
+    this._processEnemyAI();
 
-    // HP/MP 바 갱신
-    this._updateBars();
+    // 상태 패널 갱신
+    this._updateStatusPanel();
 
     // 전투 종료 판정
     this._checkBattleEnd();
 
     // 이펙트 업데이트
     this.effectManager?.update(delta);
-
-    // P6-04: 상태이상 렌더러 업데이트
     this.statusEffectRenderer?.update(delta);
-
-    // P6-05: 콤보 UI 업데이트
     this.comboUI?.update(delta);
-
-    // UI 업데이트
     this.battleUI?.update(delta);
   }
 
-  // ─── P35: 기본 유닛 생성 (데이터 미전달 시 폴백) ────────────────
+  // ─── 인트로 연출 ─────────────────────────────────────────────
+
+  private _playIntro(): void {
+    const { width: scW, height: scH } = this.cameras.main;
+
+    // 화면 페이드인
+    this.cameras.main.fadeIn(600, 0, 0, 0);
+
+    // "전투 시작!" 텍스트
+    const introText = this.add.text(scW / 2, scH / 2 - 40, '⚔ 전투 시작!', {
+      fontSize: '36px',
+      fontFamily: 'monospace',
+      color: '#ffcc00',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setAlpha(0).setDepth(500);
+
+    this.tweens.add({
+      targets: introText,
+      alpha: 1,
+      y: scH / 2 - 60,
+      duration: 400,
+      ease: 'Back.easeOut',
+      hold: 600,
+      yoyo: true,
+      onComplete: () => {
+        introText.destroy();
+        this.phase = 'fighting';
+        this.battleUI?.addLog('⚔️ 전투 시작!');
+        // 첫 번째 커맨드 메뉴 표시는 ATB가 차면 자동
+      },
+    });
+  }
+
+  // ─── ATB 시스템 ──────────────────────────────────────────────
+
+  private _updateATB(delta: number): void {
+    const dt = delta / 1000;
+
+    for (const us of this.allSprites) {
+      if (us.isDead) continue;
+      if (us.atb >= ATB_MAX) continue;
+
+      // 행동 중인 캐릭터는 ATB 정지
+      if (us === this.activeCommander) continue;
+
+      const speed = (us.unit.attackSpeed ?? 1.0) * ATB_SPEED_BASE;
+      us.atb = Math.min(ATB_MAX, us.atb + speed * dt);
+
+      // ATB가 찬 아군 → 커맨드 큐에 추가
+      if (us.atb >= ATB_MAX && us.isAlly) {
+        if (!this.commandQueue.includes(us)) {
+          this.commandQueue.push(us);
+        }
+      }
+    }
+
+    // 아군 ATB 시각: 밝기 조절
+    for (const us of this.allySprites) {
+      if (us.isDead) {
+        us.sprite.setAlpha(0.3);
+        continue;
+      }
+      if (us.atb >= ATB_MAX) {
+        // 행동 가능: 밝게
+        if (us.sprite instanceof Phaser.GameObjects.Image) {
+          (us.sprite as Phaser.GameObjects.Image).clearTint();
+        }
+        us.sprite.setAlpha(1.0);
+      } else {
+        // 충전 중: 어둡게
+        if (us.sprite instanceof Phaser.GameObjects.Image) {
+          (us.sprite as Phaser.GameObjects.Image).setTint(0x666666);
+        }
+        us.sprite.setAlpha(0.7);
+      }
+    }
+
+    // 커맨드 큐에서 다음 캐릭터의 메뉴 표시
+    if (!this.activeCommander && !this.targetSelectMode && this.commandQueue.length > 0) {
+      const next = this.commandQueue.shift()!;
+      this._openCommandMenu(next);
+    }
+  }
+
+  // ─── 커맨드 메뉴 ─────────────────────────────────────────────
+
+  private _openCommandMenu(us: UnitSprite): void {
+    this.activeCommander = us;
+    this.cmdMenuIndex = 0;
+
+    // 기존 메뉴 제거
+    this._closeCommandMenu();
+
+    const container = this.add.container(CMD_MENU_X, CMD_MENU_Y).setDepth(200);
+
+    // 메뉴 배경
+    const bg = this.add.rectangle(80, 60, 180, 140, 0x0a0a3e, 0.9)
+      .setStrokeStyle(2, 0x4466aa);
+    container.add(bg);
+
+    // 캐릭터 이름 표시
+    const nameLabel = this.add.text(80, 2, `${us.unit.name}`, {
+      fontSize: '13px',
+      fontFamily: 'monospace',
+      color: '#ffcc44',
+    }).setOrigin(0.5, 0);
+    container.add(nameLabel);
+
+    // 커맨드 항목
+    this.cmdMenuTexts = [];
+    COMMANDS.forEach((cmd, i) => {
+      const text = this.add.text(30, 22 + i * 22, cmd.label, {
+        fontSize: '14px',
+        fontFamily: 'monospace',
+        color: '#ffffff',
+      }).setInteractive({ useHandCursor: true });
+
+      text.on('pointerdown', () => {
+        this.cmdMenuIndex = i;
+        this._executeCommand(COMMANDS[i].type);
+      });
+
+      text.on('pointerover', () => {
+        this.cmdMenuIndex = i;
+        this._highlightCommand();
+      });
+
+      container.add(text);
+      this.cmdMenuTexts.push(text);
+    });
+
+    this.cmdMenuContainer = container;
+    this._highlightCommand();
+  }
+
+  private _highlightCommand(): void {
+    this.cmdMenuTexts.forEach((t, i) => {
+      t.setColor(i === this.cmdMenuIndex ? '#ffff00' : '#ffffff');
+      t.setText(i === this.cmdMenuIndex ? `▶ ${COMMANDS[i].label}` : `  ${COMMANDS[i].label}`);
+    });
+  }
+
+  private _closeCommandMenu(): void {
+    this.cmdMenuContainer?.destroy();
+    this.cmdMenuContainer = null;
+    this.cmdMenuTexts = [];
+  }
+
+  private _closeSubMenu(): void {
+    this.cmdSubMenu?.destroy();
+    this.cmdSubMenu = null;
+  }
+
+  // ─── 커맨드 실행 ──────────────────────────────────────────────
+
+  private _executeCommand(type: CommandType): void {
+    switch (type) {
+      case 'attack':
+        this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
+          this._performAttack(this.activeCommander!, target);
+          this._endTurn();
+        });
+        break;
+
+      case 'magic':
+        this._showMagicSubMenu();
+        break;
+
+      case 'item':
+        this._showItemSubMenu();
+        break;
+
+      case 'defend':
+        this._performDefend(this.activeCommander!);
+        this._endTurn();
+        break;
+
+      case 'flee':
+        this._attemptFlee();
+        break;
+    }
+  }
+
+  // ─── 타겟 선택 모드 ──────────────────────────────────────────
+
+  private _enterTargetSelect(candidates: UnitSprite[], callback: (target: UnitSprite) => void): void {
+    this._closeCommandMenu();
+    this.targetSelectMode = true;
+    this.targetCandidates = candidates;
+    this.targetIndex = 0;
+    this.targetSelectCallback = callback;
+
+    // 마우스 클릭 타겟팅
+    for (const c of candidates) {
+      c.sprite.removeAllListeners('pointerdown');
+      c.sprite.on('pointerdown', () => {
+        this._confirmTarget(c);
+      });
+    }
+
+    this._drawTargetCursor();
+  }
+
+  private _drawTargetCursor(): void {
+    this.targetCursor?.clear();
+    if (!this.targetSelectMode || this.targetCandidates.length === 0) return;
+
+    const target = this.targetCandidates[this.targetIndex];
+    if (!target) return;
+
+    this.targetCursor?.lineStyle(2, 0xffff00, 1);
+    this.targetCursor?.strokeTriangle(
+      target.sprite.x, target.sprite.y - 50,
+      target.sprite.x - 8, target.sprite.y - 60,
+      target.sprite.x + 8, target.sprite.y - 60,
+    );
+  }
+
+  private _confirmTarget(target: UnitSprite): void {
+    this.targetSelectMode = false;
+    this.targetCursor?.clear();
+    this.targetSelectCallback?.(target);
+    this.targetSelectCallback = null;
+
+    // 클릭 리스너 복원
+    for (const c of this.targetCandidates) {
+      c.sprite.removeAllListeners('pointerdown');
+    }
+    this.targetCandidates = [];
+  }
+
+  private _cancelTargetSelect(): void {
+    this.targetSelectMode = false;
+    this.targetCursor?.clear();
+    this.targetSelectCallback = null;
+    for (const c of this.targetCandidates) {
+      c.sprite.removeAllListeners('pointerdown');
+    }
+    this.targetCandidates = [];
+    // 커맨드 메뉴 재오픈
+    if (this.activeCommander) {
+      this._openCommandMenu(this.activeCommander);
+    }
+  }
+
+  // ─── 턴 종료 ─────────────────────────────────────────────────
+
+  private _endTurn(): void {
+    if (this.activeCommander) {
+      this.activeCommander.atb = 0;
+    }
+    this.activeCommander = null;
+    this._closeCommandMenu();
+    this._closeSubMenu();
+  }
+
+  // ─── 전투 행동 ───────────────────────────────────────────────
+
+  private _performAttack(attacker: UnitSprite, target: UnitSprite): void {
+    const rawDmg = Math.max(1, attacker.unit.attack - (target.unit.defense ?? 0));
+    const isCritical = Math.random() < 0.15;
+    const variance = 0.85 + Math.random() * 0.3;
+    const dmg = Math.round(rawDmg * variance * (isCritical ? 1.8 : 1));
+
+    // 서버 동기화
+    this.combatManager?.requestAttack(attacker.unit.id, target.unit.id, dmg);
+
+    // 로컬 적용
+    target.unit.hp = Math.max(0, target.unit.hp - dmg);
+
+    // 데미지 팝업 (FF6 스타일)
+    this._spawnDamageNumber(target.sprite.x, target.sprite.y, dmg, isCritical ? 'critical' : 'normal');
+
+    // 히트 이펙트 + 화면 흔들림
+    this._showHitVFX(target.sprite.x, target.sprite.y);
+    this.cameras.main.shake(100, 0.005);
+
+    // SFX + Voice
+    if (attacker.isAlly) {
+      playSfx(this, 'sfx_combat_slash', 0.6);
+      if (isCritical) {
+        playSfx(this, COMBAT_VOICE.CRITICAL, 0.7);
+      } else {
+        playRandomVoice(this, [...COMBAT_VOICE.ATTACK], 0.5);
+      }
+    }
+
+    // 로그
+    const critLabel = isCritical ? ' 💥크리티컬!' : '';
+    this.battleUI?.addLog(`${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`);
+
+    // 대상 피격 연출 (번쩍임 + 흔들림)
+    this._flashSprite(target);
+
+    // 사망 처리
+    if (target.unit.hp <= 0) {
+      this._killUnit(target);
+    }
+  }
+
+  private _performDefend(us: UnitSprite): void {
+    // 방어: 다음 피격 데미지 50% 감소 (간이 구현)
+    us.unit.defense = (us.unit.defense ?? 0) + Math.round(us.unit.defense ?? 10);
+    this.battleUI?.addLog(`🛡 ${us.unit.name} 방어 태세!`);
+    playSfx(this, 'sfx_combat_guard_block', 0.5);
+
+    // 1턴 후 방어력 복귀
+    this.time.delayedCall(3000, () => {
+      us.unit.defense = Math.max(0, (us.unit.defense ?? 0) - Math.round((us.unit.defense ?? 10) / 2));
+    });
+  }
+
+  private _attemptFlee(): void {
+    const chance = 0.3 + (this.allySprites.filter(a => !a.isDead).length * 0.1);
+    if (Math.random() < chance) {
+      this.battleUI?.addLog('🏃 도주 성공!');
+      this._closeCommandMenu();
+      this.activeCommander = null;
+      this.time.delayedCall(500, () => this._exitBattle());
+    } else {
+      this.battleUI?.addLog('❌ 도주 실패!');
+      this._endTurn();
+    }
+  }
+
+  // ─── 마법/아이템 서브메뉴 ────────────────────────────────────
+
+  private _showMagicSubMenu(): void {
+    this._closeSubMenu();
+    const skills = this.skillSlots.filter(s => s.currentCooldown <= 0);
+
+    const container = this.add.container(CMD_MENU_X + 190, CMD_MENU_Y).setDepth(210);
+    const bg = this.add.rectangle(80, 60, 200, Math.max(80, skills.length * 24 + 30), 0x0a0a3e, 0.95)
+      .setStrokeStyle(2, 0x4466aa);
+    container.add(bg);
+
+    if (skills.length === 0) {
+      const t = this.add.text(80, 50, '사용 가능한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: 'monospace' }).setOrigin(0.5);
+      container.add(t);
+    } else {
+      skills.forEach((skill, i) => {
+        const label = `${skill.name} (MP:${skill.mpCost})`;
+        const t = this.add.text(10, 15 + i * 24, label, {
+          fontSize: '13px', fontFamily: 'monospace',
+          color: (this.activeCommander?.unit.mp ?? 0) >= skill.mpCost ? '#88ccff' : '#555555',
+        }).setInteractive({ useHandCursor: true });
+
+        t.on('pointerdown', () => {
+          if ((this.activeCommander?.unit.mp ?? 0) < skill.mpCost) return;
+          this._closeSubMenu();
+          this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
+            this._performSkill(this.activeCommander!, target, skill);
+            this._endTurn();
+          });
+        });
+
+        container.add(t);
+      });
+    }
+
+    // ESC로 닫기
+    this.cmdSubMenu = container;
+  }
+
+  private _showItemSubMenu(): void {
+    this._closeSubMenu();
+
+    const container = this.add.container(CMD_MENU_X + 190, CMD_MENU_Y).setDepth(210);
+    const bg = this.add.rectangle(80, 50, 200, 80, 0x0a0a3e, 0.95)
+      .setStrokeStyle(2, 0x4466aa);
+    container.add(bg);
+
+    // 간이: 포션만 표시
+    const t = this.add.text(80, 40, '🧪 포션 (HP +100)', { fontSize: '13px', fontFamily: 'monospace', color: '#88ff88' })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+    t.on('pointerdown', () => {
+      this._closeSubMenu();
+      if (!this.activeCommander) return;
+      // 아군 대상 선택
+      this._enterTargetSelect(this.allySprites.filter(a => !a.isDead), (target) => {
+        target.unit.hp = Math.min(target.unit.maxHp, target.unit.hp + 100);
+        this._spawnDamageNumber(target.sprite.x, target.sprite.y, 100, 'heal');
+        this.battleUI?.addLog(`🧪 ${target.unit.name} HP +100 회복!`);
+        playSfx(this, 'sfx_combat_magic_heal', 0.5);
+        this._endTurn();
+      });
+    });
+    container.add(t);
+
+    this.cmdSubMenu = container;
+  }
+
+  private _performSkill(attacker: UnitSprite, target: UnitSprite, skill: SkillSlot): void {
+    // MP 차감
+    attacker.unit.mp -= skill.mpCost;
+    skill.currentCooldown = skill.cooldown;
+
+    const baseDmg = skill.damage + (attacker.unit.attack * (skill.damageScale ?? 1));
+    const variance = 0.9 + Math.random() * 0.2;
+    const dmg = Math.round(baseDmg * variance);
+
+    // 서버 동기화
+    this.combatManager?.requestSkill(attacker.unit.id, target.unit.id, skill.skillId, dmg);
+
+    // 로컬 적용
+    target.unit.hp = Math.max(0, target.unit.hp - dmg);
+
+    // 이펙트
+    this._spawnDamageNumber(target.sprite.x, target.sprite.y, dmg, 'normal');
+    this._showHitVFX(target.sprite.x, target.sprite.y);
+    this.cameras.main.shake(80, 0.003);
+
+    playSfx(this, skill.sfxKey ?? 'sfx_combat_magic_cast', 0.6);
+    playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.6);
+
+    this.battleUI?.addLog(`⚡ ${skill.name} → ${target.unit.name} : ${dmg}`);
+    this.battleUI?.onSkillUsed(this.skillSlots.indexOf(skill), skill.cooldown);
+
+    this._flashSprite(target);
+
+    if (target.unit.hp <= 0) {
+      this._killUnit(target);
+    }
+  }
+
+  // ─── 적 AI ───────────────────────────────────────────────────
+
+  private _processEnemyAI(): void {
+    for (const es of this.enemySprites) {
+      if (es.isDead || es.atb < ATB_MAX) continue;
+
+      const livingAllies = this.allySprites.filter(a => !a.isDead);
+      if (livingAllies.length === 0) continue;
+
+      const target = livingAllies[Math.floor(Math.random() * livingAllies.length)];
+      this._performAttack(es, target);
+      es.atb = 0;
+    }
+  }
+
+  // ─── 키보드 입력 ──────────────────────────────────────────────
+
+  private _handleKeyboardInput(): void {
+    if (!this.cursors) return;
+
+    // 타겟 선택 모드
+    if (this.targetSelectMode) {
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+        this.targetIndex = (this.targetIndex - 1 + this.targetCandidates.length) % this.targetCandidates.length;
+        this._drawTargetCursor();
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.right) || Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
+        this.targetIndex = (this.targetIndex + 1) % this.targetCandidates.length;
+        this._drawTargetCursor();
+      }
+      if (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) {
+        this._confirmTarget(this.targetCandidates[this.targetIndex]);
+      }
+      if (this.escKey && Phaser.Input.Keyboard.JustDown(this.escKey)) {
+        this._cancelTargetSelect();
+      }
+      return;
+    }
+
+    // 서브메뉴가 열려있으면 ESC로 닫기
+    if (this.cmdSubMenu) {
+      if (this.escKey && Phaser.Input.Keyboard.JustDown(this.escKey)) {
+        this._closeSubMenu();
+        if (this.activeCommander) this._openCommandMenu(this.activeCommander);
+      }
+      return;
+    }
+
+    // 커맨드 메뉴 조작
+    if (this.activeCommander && this.cmdMenuContainer) {
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+        this.cmdMenuIndex = (this.cmdMenuIndex - 1 + COMMANDS.length) % COMMANDS.length;
+        this._highlightCommand();
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
+        this.cmdMenuIndex = (this.cmdMenuIndex + 1) % COMMANDS.length;
+        this._highlightCommand();
+      }
+      if (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) {
+        this._executeCommand(COMMANDS[this.cmdMenuIndex].type);
+      }
+    }
+  }
+
+  // ─── FF6 스타일 데미지 숫자 팝업 ──────────────────────────────
+
+  private _spawnDamageNumber(x: number, y: number, value: number, type: 'normal' | 'critical' | 'heal'): void {
+    let color = '#ffffff';
+    let fontSize = '22px';
+    let prefix = '';
+
+    switch (type) {
+      case 'critical':
+        color = '#ffd700';
+        fontSize = '30px';
+        prefix = '💥';
+        break;
+      case 'heal':
+        color = '#44ff44';
+        fontSize = '22px';
+        prefix = '+';
+        break;
+      default:
+        color = '#ffffff';
+        fontSize = '22px';
+        break;
+    }
+
+    const text = this.add.text(x, y, `${prefix}${value}`, {
+      fontSize,
+      fontFamily: 'monospace',
+      color,
+      stroke: '#000000',
+      strokeThickness: 3,
+      fontStyle: type === 'critical' ? 'bold' : 'normal',
+    }).setOrigin(0.5).setDepth(9000).setAlpha(0);
+
+    // FF6 스타일: 아래에서 위로 떠오름
+    this.tweens.add({
+      targets: text,
+      y: y - 50,
+      alpha: { from: 0, to: 1 },
+      duration: 200,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: text,
+          y: y - 80,
+          alpha: 0,
+          duration: 400,
+          delay: 200,
+          ease: 'Sine.easeIn',
+          onComplete: () => text.destroy(),
+        });
+      },
+    });
+
+    // EffectManager 연동 (풀링)
+    this.effectManager?.spawnDamageText(x, y, value, type === 'critical');
+  }
+
+  // ─── 히트 VFX ────────────────────────────────────────────────
+
+  private _showHitVFX(x: number, y: number): void {
+    const idx = Phaser.Math.Between(1, 10);
+    const padded = String(idx).padStart(3, '0');
+    const key = `vfx_common_${padded}`;
+    if (!this.textures.exists(key)) return;
+
+    const vfx = this.add.image(x, y, key)
+      .setDisplaySize(56, 56)
+      .setAlpha(0.9)
+      .setDepth(8000);
+
+    this.tweens.add({
+      targets: vfx,
+      scaleX: 1.6, scaleY: 1.6,
+      alpha: 0,
+      duration: 350,
+      ease: 'Sine.easeOut',
+      onComplete: () => vfx.destroy(),
+    });
+  }
+
+  // ─── 스프라이트 연출 ──────────────────────────────────────────
+
+  private _flashSprite(us: UnitSprite): void {
+    // 번쩍임 (흰색 → 원래)
+    if (us.sprite instanceof Phaser.GameObjects.Image) {
+      (us.sprite as Phaser.GameObjects.Image).setTint(0xffffff);
+      this.time.delayedCall(80, () => {
+        if (us.sprite instanceof Phaser.GameObjects.Image) {
+          (us.sprite as Phaser.GameObjects.Image).clearTint();
+        }
+      });
+    }
+
+    // 흔들림
+    const origX = us.sprite.x;
+    this.tweens.add({
+      targets: us.sprite,
+      x: origX + 6,
+      duration: 40,
+      yoyo: true,
+      repeat: 3,
+      onComplete: () => {
+        us.sprite.x = origX;
+      },
+    });
+  }
+
+  private _killUnit(us: UnitSprite): void {
+    us.isDead = true;
+    us.sprite.setAlpha(0.2);
+    this.battleUI?.addLog(`💀 ${us.unit.name} 쓰러짐!`);
+
+    if (us.isAlly) {
+      playSfx(this, COMBAT_VOICE.DEATH, 0.7);
+    } else {
+      playSfx(this, 'sfx_combat_enemy_death', 0.5);
+    }
+  }
+
+  // ─── 유닛 스폰 ───────────────────────────────────────────────
+
+  private _spawnAllies(units: CombatUnit[]): void {
+    units.forEach((unit, idx) => {
+      const pos = ALLY_POSITIONS[idx % ALLY_POSITIONS.length];
+      const classId = unit.classId ?? '';
+      const texKey = `char_battle_${classId}`;
+
+      let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+      if (classId && this.textures.exists(texKey)) {
+        sprite = this.add.image(pos.x, pos.y, texKey)
+          .setDisplaySize(72, 96)
+          .setInteractive({ useHandCursor: true })
+          .setDepth(50);
+      } else {
+        sprite = this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)
+          .setInteractive({ useHandCursor: true })
+          .setDepth(50);
+      }
+
+      // 대기 애니메이션: 살짝 위아래 흔들림
+      this.tweens.add({
+        targets: sprite,
+        y: pos.y - 3,
+        duration: 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
+      const nameText = this.add.text(pos.x, pos.y + 52, unit.name, {
+        fontSize: '11px',
+        fontFamily: 'monospace',
+        color: '#88ccff',
+      }).setOrigin(0.5).setDepth(51);
+
+      const us: UnitSprite = {
+        unit, sprite, nameText,
+        atb: Phaser.Math.Between(0, 30), // 약간 랜덤 시작
+        isAlly: true, isDead: false,
+      };
+      this.allySprites.push(us);
+    });
+  }
+
+  private _spawnEnemies(units: CombatUnit[]): void {
+    const monsterTexKeys = this._loadedMonsterKeys;
+    const allManifestKeys = Object.keys(monsterManifest as Record<string, string>);
+
+    units.forEach((unit, idx) => {
+      const pos = ENEMY_POSITIONS[idx % ENEMY_POSITIONS.length];
+
+      // 몬스터 이미지 매칭
+      let monTexKey = '';
+      const matched = this._findMonsterKey(unit.id, unit.name ?? '', allManifestKeys);
+      if (matched && this.textures.exists(matched)) {
+        monTexKey = matched;
+      }
+
+      if (!monTexKey) {
+        const availableKeys = monsterTexKeys.filter(k => this.textures.exists(k));
+        monTexKey = availableKeys.length > 0 ? availableKeys[idx % availableKeys.length] : '';
+      }
+
+      // 몬스터 크기: 레벨에 비례
+      const baseSize = 80;
+      const scale = Math.min(2.0, 0.8 + (unit.level ?? 1) * 0.05);
+      const displaySize = baseSize * scale;
+
+      let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+      if (this.textures.exists(monTexKey)) {
+        sprite = this.add.image(pos.x, pos.y, monTexKey)
+          .setDisplaySize(displaySize, displaySize)
+          .setInteractive({ useHandCursor: true })
+          .setDepth(50);
+      } else {
+        sprite = this.add.rectangle(pos.x, pos.y, 56, 56, 0xff4444)
+          .setInteractive({ useHandCursor: true })
+          .setDepth(50);
+      }
+
+      const nameText = this.add.text(pos.x, pos.y - displaySize / 2 - 14, unit.name, {
+        fontSize: '11px',
+        fontFamily: 'monospace',
+        color: '#ff8888',
+      }).setOrigin(0.5).setDepth(51);
+
+      const us: UnitSprite = {
+        unit, sprite, nameText,
+        atb: Phaser.Math.Between(0, 20),
+        isAlly: false, isDead: false,
+      };
+      this.enemySprites.push(us);
+    });
+  }
+
+  // ─── FF6 상태 패널 (하단 우측) ────────────────────────────────
+
+  private _createStatusPanel(): void {
+    const container = this.add.container(STATUS_PANEL_X, STATUS_PANEL_Y).setDepth(150);
+    this.statusPanelContainer = container;
+
+    const gfx = this.add.graphics().setDepth(149);
+
+    this.allySprites.forEach((us, i) => {
+      const y = i * 40;
+
+      // 이름 + 레벨
+      const nameText = this.add.text(0, y, `${us.unit.name}  Lv.${us.unit.level}`, {
+        fontSize: '12px', fontFamily: 'monospace', color: '#ffffff',
+      });
+      container.add(nameText);
+
+      // HP 라벨
+      const hpLabel = this.add.text(0, y + 14, 'HP', {
+        fontSize: '10px', fontFamily: 'monospace', color: '#ffcc44',
+      });
+      container.add(hpLabel);
+
+      // HP 값
+      const hpText = this.add.text(STAT_BAR_W + 30, y + 14, `${us.unit.hp}/${us.unit.maxHp}`, {
+        fontSize: '10px', fontFamily: 'monospace', color: '#ffcc44',
+      });
+      container.add(hpText);
+
+      // MP 라벨
+      const mpLabel = this.add.text(STAT_BAR_W + 100, y + 14, 'MP', {
+        fontSize: '10px', fontFamily: 'monospace', color: '#44ff88',
+      });
+      container.add(mpLabel);
+
+      // MP 값
+      const mpText = this.add.text(STAT_BAR_W + 180, y + 14, `${us.unit.mp}/${us.unit.maxMp}`, {
+        fontSize: '10px', fontFamily: 'monospace', color: '#44ff88',
+      });
+      container.add(mpText);
+
+      // ATB 그래픽 (바)
+      const atbGfx = this.add.graphics().setDepth(151);
+      container.add(atbGfx);
+
+      this.statusTexts.set(us.unit.id, {
+        name: nameText,
+        hp: hpText,
+        mp: mpText,
+        atb: atbGfx,
+      });
+    });
+
+    this.statusPanelGraphics = gfx;
+  }
+
+  private _updateStatusPanel(): void {
+    if (!this.statusPanelGraphics) return;
+
+    this.statusPanelGraphics.clear();
+
+    this.allySprites.forEach((us, i) => {
+      const entry = this.statusTexts.get(us.unit.id);
+      if (!entry) return;
+
+      const baseX = STATUS_PANEL_X;
+      const baseY = STATUS_PANEL_Y + i * 40;
+
+      // HP/MP 텍스트 업데이트
+      entry.hp.setText(`${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
+      entry.mp.setText(`${Math.max(0, us.unit.mp)}/${us.unit.maxMp}`);
+
+      // HP 색상 (낮으면 빨간색)
+      const hpRatio = us.unit.hp / us.unit.maxHp;
+      entry.hp.setColor(hpRatio < 0.25 ? '#ff4444' : '#ffcc44');
+
+      // HP 바
+      const hpBarX = baseX + 22;
+      const hpBarY = baseY + 16;
+      this.statusPanelGraphics!.fillStyle(0x222244, 1);
+      this.statusPanelGraphics!.fillRect(hpBarX, hpBarY, STAT_BAR_W, STAT_BAR_H);
+      this.statusPanelGraphics!.fillStyle(hpRatio < 0.25 ? 0xff4444 : 0xffcc44, 1);
+      this.statusPanelGraphics!.fillRect(hpBarX, hpBarY, STAT_BAR_W * Math.max(0, hpRatio), STAT_BAR_H);
+
+      // MP 바
+      const mpRatio = us.unit.maxMp > 0 ? us.unit.mp / us.unit.maxMp : 0;
+      const mpBarX = baseX + STAT_BAR_W + 122;
+      this.statusPanelGraphics!.fillStyle(0x222244, 1);
+      this.statusPanelGraphics!.fillRect(mpBarX, hpBarY, 60, STAT_BAR_H);
+      this.statusPanelGraphics!.fillStyle(0x44ff88, 1);
+      this.statusPanelGraphics!.fillRect(mpBarX, hpBarY, 60 * Math.max(0, mpRatio), STAT_BAR_H);
+
+      // ATB 바
+      const atbBarX = baseX + STAT_BAR_W + 200;
+      const atbRatio = us.atb / ATB_MAX;
+      entry.atb.clear();
+      entry.atb.fillStyle(0x222244, 1);
+      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 40, ATB_BAR_W, ATB_BAR_H);
+      entry.atb.fillStyle(atbRatio >= 1 ? 0xffff44 : 0x4488ff, 1);
+      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 40, ATB_BAR_W * atbRatio, ATB_BAR_H);
+    });
+  }
+
+  // ─── 전투 종료 판정 ──────────────────────────────────────────
+
+  private _checkBattleEnd(): void {
+    const allEnemiesDead = this.enemySprites.every(e => e.isDead);
+    const allAlliesDead = this.allySprites.every(a => a.isDead);
+
+    if (allEnemiesDead) {
+      this.phase = 'victory';
+      this._closeCommandMenu();
+      this._closeSubMenu();
+      this.targetSelectMode = false;
+      this.activeCommander = null;
+      this._showVictory();
+    } else if (allAlliesDead) {
+      this.phase = 'defeat';
+      this._closeCommandMenu();
+      this._closeSubMenu();
+      this.targetSelectMode = false;
+      this.activeCommander = null;
+      this._showDefeat();
+    }
+  }
+
+  // ─── 승리 연출 ───────────────────────────────────────────────
+
+  private _showVictory(): void {
+    const { width: scW, height: scH } = this.cameras.main;
+
+    this.battleUI?.addLog('🎉 승리!');
+    playSfx(this, COMBAT_VOICE.VICTORY, 0.8);
+    playSfx(this, 'sfx_ui_quest_complete', 0.6);
+
+    // 승리 팡파르 텍스트
+    const victoryText = this.add.text(scW / 2, scH / 3, '🎉 Victory!', {
+      fontSize: '42px',
+      fontFamily: 'monospace',
+      color: '#ffd700',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setAlpha(0).setDepth(500);
+
+    this.tweens.add({
+      targets: victoryText,
+      alpha: 1,
+      scaleX: 1.1, scaleY: 1.1,
+      duration: 500,
+      ease: 'Back.easeOut',
+    });
+
+    // 결과 화면 (1초 후)
+    this.time.delayedCall(1200, () => {
+      this._showResultPopup();
+    });
+  }
+
+  private _showResultPopup(): void {
+    const cx = this.cameras.main.centerX;
+    const cy = this.cameras.main.centerY;
+
+    const container = this.add.container(cx, cy).setDepth(600);
+
+    // 배경
+    const bg = this.add.rectangle(0, 0, 400, 320, 0x0a0a2e, 0.95)
+      .setStrokeStyle(2, 0xffcc00);
+    container.add(bg);
+
+    const title = this.add.text(0, -130, '🏆 전투 결과', {
+      fontSize: '22px', fontFamily: 'monospace', color: '#ffcc00',
+    }).setOrigin(0.5);
+    container.add(title);
+
+    // EXP / 골드 (간이 계산)
+    const totalEnemyLevel = this.enemySprites.reduce((sum, e) => sum + (e.unit.level ?? 1), 0);
+    const exp = totalEnemyLevel * 25 + Phaser.Math.Between(10, 50);
+    const gold = totalEnemyLevel * 10 + Phaser.Math.Between(5, 30);
+
+    const expText = this.add.text(-150, -80, `✨ 경험치: +${exp}`, {
+      fontSize: '16px', fontFamily: 'monospace', color: '#88ccff',
+    });
+    container.add(expText);
+
+    const goldText = this.add.text(-150, -50, `💰 골드: +${gold}`, {
+      fontSize: '16px', fontFamily: 'monospace', color: '#ffcc44',
+    });
+    container.add(goldText);
+
+    // 전리품
+    const loot = this.combatManager?.getLoot() ?? [];
+    const lootTitle = this.add.text(-150, -15, '📦 전리품:', {
+      fontSize: '14px', fontFamily: 'monospace', color: '#ffffff',
+    });
+    container.add(lootTitle);
+
+    loot.forEach((item: LootItem, i: number) => {
+      const txt = this.add.text(-130, 10 + i * 22, `• ${item.name} x${item.quantity}`, {
+        fontSize: '13px', fontFamily: 'monospace', color: '#aaaaaa',
+      });
+      container.add(txt);
+    });
+
+    if (loot.length === 0) {
+      const noLoot = this.add.text(-130, 10, '(없음)', {
+        fontSize: '13px', fontFamily: 'monospace', color: '#666666',
+      });
+      container.add(noLoot);
+    }
+
+    // 확인 버튼
+    const closeBtn = this.add.text(0, 120, '[ 확인 ]', {
+      fontSize: '18px', fontFamily: 'monospace', color: '#88ff88',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    closeBtn.on('pointerdown', () => this._exitBattle());
+    closeBtn.on('pointerover', () => closeBtn.setColor('#ccffcc'));
+    closeBtn.on('pointerout', () => closeBtn.setColor('#88ff88'));
+    container.add(closeBtn);
+
+    this.lootPopup = container;
+  }
+
+  // ─── 패배 연출 ───────────────────────────────────────────────
+
+  private _showDefeat(): void {
+    const { width: scW, height: scH } = this.cameras.main;
+
+    this.battleUI?.addLog('💔 패배...');
+
+    // 화면 붉은 플래시
+    const flash = this.add.rectangle(scW / 2, scH / 2, scW, scH, 0xff0000, 0).setDepth(400);
+    this.tweens.add({
+      targets: flash,
+      alpha: 0.3,
+      duration: 300,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => flash.destroy(),
+    });
+
+    const defeatText = this.add.text(scW / 2, scH / 3, '💔 패배...', {
+      fontSize: '36px',
+      fontFamily: 'monospace',
+      color: '#ff4444',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setAlpha(0).setDepth(500);
+
+    this.tweens.add({
+      targets: defeatText,
+      alpha: 1,
+      duration: 600,
+    });
+
+    // 패배 팝업
+    this.time.delayedCall(2000, () => {
+      const cx = this.cameras.main.centerX;
+      const cy = this.cameras.main.centerY;
+
+      const container = this.add.container(cx, cy).setDepth(600);
+      const bg = this.add.rectangle(0, 0, 280, 140, 0x000000, 0.9)
+        .setStrokeStyle(2, 0xff4444);
+      container.add(bg);
+
+      const title = this.add.text(0, -30, '💔 전투 실패', {
+        fontSize: '20px', fontFamily: 'monospace', color: '#ff4444',
+      }).setOrigin(0.5);
+      container.add(title);
+
+      const closeBtn = this.add.text(0, 30, '[ 돌아가기 ]', {
+        fontSize: '16px', fontFamily: 'monospace', color: '#aaaaaa',
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      closeBtn.on('pointerdown', () => this._exitBattle());
+      container.add(closeBtn);
+    });
+  }
+
+  // ─── 기본 유닛 생성 (폴백) ────────────────────────────────────
 
   private _createDefaultAllies(): CombatUnit[] {
-    // 로컬 스토리지 또는 _initData에서 캐릭터 정보 추출
-    const classId = (this._initData as any)?.characterClass ?? 'ether_knight';
-    const charName = (this._initData as any)?.characterName ?? '모험자';
-    const level = (this._initData as any)?.level ?? 1;
+    const classId = (this._initData as unknown as Record<string, unknown>)?.characterClass as string ?? 'ether_knight';
+    const charName = (this._initData as unknown as Record<string, unknown>)?.characterName as string ?? '모험자';
+    const level = (this._initData as unknown as Record<string, unknown>)?.level as number ?? 1;
     return [{
       id: this._initData.characterId ?? 'player_1',
       name: charName,
@@ -411,497 +1369,87 @@ export class BattleScene extends Phaser.Scene {
     }];
   }
 
-  // ─── 유닛 스폰 ───────────────────────────────────────────────
+  // ─── 몬스터 매니페스트 키 매칭 ────────────────────────────────
 
-  private _spawnUnits(units: CombatUnit[], isAlly: boolean, baseX: number): void {
-    const list = isAlly ? this.allySprites : this.enemySprites;
+  private _findMonsterKey(id: string, name: string, manifestKeys: string[]): string | null {
+    const idLower = (id ?? '').toLowerCase().replace(/[-\s]/g, '_');
+    const nameLower = (name ?? '').toLowerCase().replace(/[-\s]/g, '_');
 
-    // P36: 동적 로드된 몬스터 키 사용 (매니페스트 기반)
-    const monsterTexKeys = this._loadedMonsterKeys.length > 0
-      ? this._loadedMonsterKeys
-      : Object.keys(monsterManifest as Record<string, string>).slice(0, 12);
+    if (manifestKeys.includes(`mon_${idLower}`)) return `mon_${idLower}`;
 
-    units.forEach((unit, idx) => {
-      const x = baseX;
-      const y = UNIT_Y_START + idx * UNIT_Y_GAP;
-      const color = isAlly ? 0x4488ff : 0xff4444;
+    for (const mk of manifestKeys) {
+      const mkBody = mk.replace('mon_', '');
+      if (idLower && mkBody.includes(idLower)) return mk;
+      if (nameLower && mkBody.includes(nameLower)) return mk;
+    }
 
-      // P33-A: 실제 이미지 사용 (fallback: 사각형)
-      let sprite: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
-      let usedImage = false;
+    if (id?.toUpperCase().startsWith('BOSS')) {
+      for (const mk of manifestKeys) {
+        if (mk.startsWith('mon_boss_') && mk.includes(idLower.replace('boss-', '').replace('boss_', ''))) return mk;
+      }
+    }
 
-      if (isAlly) {
-        // 아군: classId 기반 side 일러스트
-        const classId = unit.classId ?? '';
-        const allyTexKey = `char_battle_${classId}`;
-        if (classId && this.textures.exists(allyTexKey)) {
-          sprite = this.add.image(x, y, allyTexKey)
-            .setDisplaySize(56, 72)
-            .setInteractive({ useHandCursor: true });
-          usedImage = true;
-        } else {
-          sprite = this.add.rectangle(x, y, 48, 48, color)
-            .setInteractive({ useHandCursor: true });
-        }
-      } else {
-        // 적: 몬스터 이미지 (이름 기반 매칭 또는 순환 할당)
-        let monTexKey = '';
+    return null;
+  }
 
-        // P36: 매니페스트 기반 매칭 (ID → 이름 → 인덱스 폴백)
-        const allManifestKeys = Object.keys(monsterManifest as Record<string, string>);
-        const matched = this._findMonsterKey(unit.id, unit.name ?? '', allManifestKeys);
-        if (matched && this.textures.exists(matched)) {
-          monTexKey = matched;
-        }
+  // ─── P25-05: 서버 전투 연동 ───────────────────────────────────
 
-        // 로드된 키 중 이름 유사도 매칭
-        if (!monTexKey) {
-          const unitNameLower = (unit.name ?? '').toLowerCase().replace(/[\s-]/g, '_');
-          for (const mk of monsterTexKeys) {
-            const mkNorm = mk.replace('mon_', '').replace(/_/g, '_');
-            if (this.textures.exists(mk) && (mkNorm.includes(unitNameLower) || unitNameLower.includes(mkNorm.split('_').slice(1).join('_')))) {
-              monTexKey = mk;
-              break;
-            }
+  private async _startServerCombat(): Promise<void> {
+    try {
+      const result = await networkManager.combatStart({
+        characterId: this._initData.characterId ?? networkManager.userId ?? '',
+        zoneId: this._initData.zoneId,
+        monsterId: this._initData.monsterId,
+      });
+      this.serverCombatId = result.combatId;
+      this.battleUI?.addLog(`[서버] 전투 ID: ${result.combatId}`);
+    } catch (err) {
+      console.warn('[BattleScene] 서버 전투 시작 실패 (로컬 모드):', err);
+    }
+  }
+
+  private _setupCombatSocket(): void {
+    const unsub1 = networkManager.on('combat:tick', (data) => {
+      const d = data as { combatId: string; turn: number; actions: unknown[] };
+      if (d.combatId === this.serverCombatId) {
+        this.battleUI?.addLog(`[서버] 턴 ${d.turn}`);
+      }
+    });
+
+    const unsub2 = networkManager.on('combat:result', (data) => {
+      const result = data as CombatResult;
+      if (result.combatId === this.serverCombatId) {
+        if (result.victory) {
+          this.phase = 'victory';
+          this.battleUI?.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
+          if (result.levelUp) {
+            this.battleUI?.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`);
+            playSfx(this, 'sfx_ui_level_up', 0.8);
           }
         }
-
-        // 매칭 안 되면 로드된 키 중 인덱스 기반 할당
-        if (!monTexKey) {
-          const availableKeys = monsterTexKeys.filter(k => this.textures.exists(k));
-          monTexKey = availableKeys.length > 0 ? availableKeys[idx % availableKeys.length] : '';
-        }
-
-        if (this.textures.exists(monTexKey)) {
-          sprite = this.add.image(x, y, monTexKey)
-            .setDisplaySize(64, 64)
-            .setInteractive({ useHandCursor: true });
-          usedImage = true;
-        } else {
-          sprite = this.add.rectangle(x, y, 48, 48, color)
-            .setInteractive({ useHandCursor: true });
-        }
       }
-
-      // 클릭 타겟팅
-      sprite.on('pointerdown', () => {
-        const us = list.find(s => s.sprite === sprite);
-        if (us && us.unit.hp > 0) {
-          this._selectTarget(us);
-        }
-      });
-
-      // HP 바
-      const hpBarBg = this.add.rectangle(x, y + BAR_OFFSET_Y, BAR_WIDTH, BAR_HEIGHT, 0x333333);
-      const hpBar = this.add.rectangle(x, y + BAR_OFFSET_Y, BAR_WIDTH, BAR_HEIGHT, 0x44ff44);
-
-      // MP 바
-      const mpBarBg = this.add.rectangle(x, y + BAR_OFFSET_Y + 8, BAR_WIDTH, BAR_HEIGHT, 0x333333);
-      const mpBar = this.add.rectangle(x, y + BAR_OFFSET_Y + 8, BAR_WIDTH, BAR_HEIGHT, 0x4488ff);
-
-      // 이름
-      const nameText = this.add.text(x, y + BAR_OFFSET_Y - 14, unit.name, {
-        fontSize: '11px',
-        color: isAlly ? '#88ccff' : '#ff8888',
-      }).setOrigin(0.5);
-
-      const unitSprite: UnitSprite = {
-        unit,
-        sprite,
-        hpBar, hpBarBg,
-        mpBar, mpBarBg,
-        nameText,
-        autoAttackTimer: AUTO_ATTACK_BASE_DELAY / (unit.attackSpeed ?? 1),
-        isAlly,
-      };
-
-      list.push(unitSprite);
-    });
-  }
-
-  // ─── 타겟팅 ──────────────────────────────────────────────────
-
-  private _selectTarget(us: UnitSprite): void {
-    this.selectedTarget = us;
-    this._drawTargetIndicator(us);
-    this.battleUI.addLog(`🎯 타겟: ${us.unit.name}`);
-  }
-
-  private _drawTargetIndicator(us: UnitSprite): void {
-    this.targetIndicator.clear();
-    this.targetIndicator.lineStyle(2, 0xffff00, 1);
-    this.targetIndicator.strokeCircle(us.sprite.x, us.sprite.y, 32);
-  }
-
-  private _cycleTarget(): void {
-    const livingEnemies = this.enemySprites.filter(e => e.unit.hp > 0);
-    if (livingEnemies.length === 0) return;
-
-    const currentIdx = this.selectedTarget
-      ? livingEnemies.indexOf(this.selectedTarget)
-      : -1;
-    const nextIdx = (currentIdx + 1) % livingEnemies.length;
-    this._selectTarget(livingEnemies[nextIdx]);
-  }
-
-  // ─── 자동 기본 공격 ──────────────────────────────────────────
-
-  private _processAutoAttacks(delta: number): void {
-    for (const us of this.allySprites) {
-      if (us.unit.hp <= 0) continue;
-      us.autoAttackTimer -= delta;
-
-      if (us.autoAttackTimer <= 0) {
-        // 타겟이 죽었으면 자동 전환
-        if (!this.selectedTarget || this.selectedTarget.unit.hp <= 0) {
-          const living = this.enemySprites.filter(e => e.unit.hp > 0);
-          if (living.length > 0) this._selectTarget(living[0]);
-          else continue;
-        }
-
-        this._executeAutoAttack(us, this.selectedTarget!);
-        us.autoAttackTimer = AUTO_ATTACK_BASE_DELAY / (us.unit.attackSpeed ?? 1);
-      }
-    }
-
-    // 적 자동 공격 (랜덤 아군 대상)
-    for (const es of this.enemySprites) {
-      if (es.unit.hp <= 0) continue;
-      es.autoAttackTimer -= delta;
-
-      if (es.autoAttackTimer <= 0) {
-        const livingAllies = this.allySprites.filter(a => a.unit.hp > 0);
-        if (livingAllies.length === 0) continue;
-        const target = livingAllies[Math.floor(Math.random() * livingAllies.length)];
-        this._executeAutoAttack(es, target);
-        es.autoAttackTimer = AUTO_ATTACK_BASE_DELAY / (es.unit.attackSpeed ?? 1);
-      }
-    }
-  }
-
-  private _executeAutoAttack(attacker: UnitSprite, target: UnitSprite): void {
-    const rawDmg = Math.max(1, attacker.unit.attack - (target.unit.defense ?? 0));
-    const isCritical = Math.random() < 0.15;
-    const variance = 0.85 + Math.random() * 0.3;
-    const dmg = Math.round(rawDmg * variance * (isCritical ? 1.8 : 1));
-
-    // 서버 동기화 요청
-    this.combatManager.requestAttack(attacker.unit.id, target.unit.id, dmg);
-
-    // 로컬 즉시 적용 (낙관적 업데이트)
-    target.unit.hp = Math.max(0, target.unit.hp - dmg);
-
-    // 이펙트
-    this.effectManager.spawnDamageText(target.sprite.x, target.sprite.y, dmg, isCritical);
-    this.soundManager.playHitSound('flesh');
-
-    // P34-A: VFX 히트 이펙트 (랜덤 common VFX)
-    this._showHitVFX(target.sprite.x, target.sprite.y);
-
-    // P34-A: Voice 연결
-    if (attacker.isAlly) {
-      if (isCritical) {
-        playSfx(this, COMBAT_VOICE.CRITICAL, 0.7);
-      } else {
-        playRandomVoice(this, [...COMBAT_VOICE.ATTACK], 0.5);
-      }
-    }
-    if (!target.isAlly) {
-      // 적 피격 — 무음 (적 보이스 없음)
-    } else {
-      // 아군 피격
-      playRandomVoice(this, [...COMBAT_VOICE.HIT], 0.4);
-    }
-
-    // 로그
-    const critLabel = isCritical ? ' 💥크리티컬!' : '';
-    this.battleUI.addLog(`${attacker.unit.name} → ${target.unit.name} : ${dmg} 데미지${critLabel}`);
-
-    // 사망 처리
-    if (target.unit.hp <= 0) {
-      target.sprite.setAlpha(0.3);
-      this.battleUI.addLog(`💀 ${target.unit.name} 쓰러짐!`);
-      if (target.isAlly) {
-        playSfx(this, COMBAT_VOICE.DEATH, 0.7);
-      }
-    }
-  }
-
-  /** P34-A: 히트 지점에 VFX 이미지 표시 (페이드 + 스케일) */
-  private _showHitVFX(x: number, y: number): void {
-    const idx = Phaser.Math.Between(1, 10);
-    const padded = String(idx).padStart(3, '0');
-    const key = `vfx_common_${padded}`;
-    if (!this.textures.exists(key)) return;
-
-    const vfx = this.add.image(x, y, key)
-      .setDisplaySize(48, 48)
-      .setAlpha(0.9)
-      .setDepth(8000);
-
-    this.tweens.add({
-      targets: vfx,
-      scaleX: 1.5, scaleY: 1.5,
-      alpha: 0,
-      duration: 350,
-      ease: 'Sine.easeOut',
-      onComplete: () => vfx.destroy(),
-    });
-  }
-
-  // ─── 마우스/터치 전투 액션 버튼 ────────────────────────────────
-
-  private _createActionButtons(): void {
-    const btnY = 620;
-    const btnStyle = {
-      fontSize: '13px',
-      color: '#ffffff',
-      backgroundColor: '#333355',
-      padding: { x: 12, y: 6 },
-    };
-
-    const actions = [
-      { label: '⚔️ 공격', x: 540, action: () => this._forceAutoAttack() },
-      { label: '🎯 타겟', x: 640, action: () => this._cycleTarget() },
-      { label: '⏸ 일시정지', x: 740, action: () => this.scene.isPaused() ? this.scene.resume() : this.scene.pause() },
-    ];
-
-    for (const btn of actions) {
-      const text = this.add.text(btn.x, btnY, btn.label, btnStyle)
-        .setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .setDepth(9000);
-      text.on('pointerdown', btn.action);
-    }
-  }
-
-  /** 수동 즉시 공격 (버튼 클릭용) */
-  private _forceAutoAttack(): void {
-    if (this.phase !== 'fighting') return;
-    const player = this.allySprites[0];
-    if (!player || player.unit.hp <= 0) return;
-    if (!this.selectedTarget || this.selectedTarget.unit.hp <= 0) {
-      const living = this.enemySprites.filter(e => e.unit.hp > 0);
-      if (living.length > 0) this._selectTarget(living[0]);
-      else return;
-    }
-    this._executeAutoAttack(player, this.selectedTarget!);
-    player.autoAttackTimer = AUTO_ATTACK_BASE_DELAY / (player.unit.attackSpeed ?? 1);
-  }
-
-  // ─── 스킬 사용 ────────────────────────────────────────────────
-
-  private _handleInput(): void {
-    // 키보드가 없으면 스킵 (마우스 버튼으로 대체)
-    if (!this.input.keyboard) return;
-
-    // TAB 타겟 순환
-    if (this.tabKey && Phaser.Input.Keyboard.JustDown(this.tabKey)) {
-      this._cycleTarget();
-    }
-
-    // 스킬 단축키 (1~6)
-    for (let i = 0; i < this.skillKeys.length; i++) {
-      if (this.skillKeys[i] && Phaser.Input.Keyboard.JustDown(this.skillKeys[i])) {
-        this._useSkill(i);
-      }
-    }
-  }
-
-  private _useSkill(slotIndex: number): void {
-    const slot = this.skillSlots[slotIndex];
-    if (!slot || slot.currentCooldown > 0) return;
-
-    // MP 체크
-    const player = this.allySprites[0];
-    if (!player || player.unit.hp <= 0) return;
-    if (player.unit.mp < slot.mpCost) {
-      this.battleUI.addLog('❌ MP 부족!');
-      return;
-    }
-
-    // 타겟 확인
-    if (!this.selectedTarget || this.selectedTarget.unit.hp <= 0) {
-      this.battleUI.addLog('❌ 유효한 타겟 없음');
-      return;
-    }
-
-    // MP 차감 + 쿨다운 시작
-    player.unit.mp -= slot.mpCost;
-    slot.currentCooldown = slot.cooldown;
-
-    // 스킬 데미지 계산
-    const baseDmg = slot.damage + (player.unit.attack * (slot.damageScale ?? 1));
-    const variance = 0.9 + Math.random() * 0.2;
-    const dmg = Math.round(baseDmg * variance);
-
-    // 서버 동기화
-    this.combatManager.requestSkill(
-      player.unit.id,
-      this.selectedTarget.unit.id,
-      slot.skillId,
-      dmg,
-    );
-
-    // 로컬 즉시 적용
-    this.selectedTarget.unit.hp = Math.max(0, this.selectedTarget.unit.hp - dmg);
-
-    // 이펙트
-    this.effectManager.spawnDamageText(
-      this.selectedTarget.sprite.x, this.selectedTarget.sprite.y,
-      dmg, false,
-    );
-    this.soundManager.playSfx(slot.sfxKey ?? 'sfx_skill_activate');
-
-    // P34-A: 스킬 VFX + Voice
-    this._showHitVFX(this.selectedTarget.sprite.x, this.selectedTarget.sprite.y);
-    if (slotIndex === 4) {
-      // 궁극기 (5번 슬롯)
-      playSfx(this, COMBAT_VOICE.ULTIMATE, 0.8);
-    } else {
-      playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.6);
-    }
-
-    // 로그
-    this.battleUI.addLog(`⚡ ${slot.name} → ${this.selectedTarget.unit.name} : ${dmg}`);
-
-    // UI 쿨다운 표시 갱신
-    this.battleUI.onSkillUsed(slotIndex, slot.cooldown);
-
-    // 사망 처리
-    if (this.selectedTarget.unit.hp <= 0) {
-      this.selectedTarget.sprite.setAlpha(0.3);
-      this.battleUI.addLog(`💀 ${this.selectedTarget.unit.name} 쓰러짐!`);
-    }
-  }
-
-  // ─── 쿨다운 갱신 ─────────────────────────────────────────────
-
-  private _updateSkillCooldowns(delta: number): void {
-    const dt = delta / 1000;
-    for (const slot of this.skillSlots) {
-      if (slot.currentCooldown > 0) {
-        slot.currentCooldown = Math.max(0, slot.currentCooldown - dt);
-      }
-    }
-  }
-
-  // ─── HP/MP 바 갱신 ────────────────────────────────────────────
-
-  private _updateBars(): void {
-    for (const us of this.allSprites) {
-      const hpRatio = Math.max(0, us.unit.hp / us.unit.maxHp);
-      us.hpBar.setScale(hpRatio, 1);
-      us.hpBar.setPosition(
-        us.hpBarBg.x - (BAR_WIDTH * (1 - hpRatio)) / 2,
-        us.hpBarBg.y,
-      );
-
-      const mpRatio = us.unit.maxMp > 0
-        ? Math.max(0, us.unit.mp / us.unit.maxMp)
-        : 0;
-      us.mpBar.setScale(mpRatio, 1);
-      us.mpBar.setPosition(
-        us.mpBarBg.x - (BAR_WIDTH * (1 - mpRatio)) / 2,
-        us.mpBarBg.y,
-      );
-    }
-  }
-
-  // ─── 전투 종료 판정 ──────────────────────────────────────────
-
-  private _checkBattleEnd(): void {
-    const allEnemiesDead = this.enemySprites.every(e => e.unit.hp <= 0);
-    const allAlliesDead = this.allySprites.every(a => a.unit.hp <= 0);
-
-    if (allEnemiesDead) {
-      this.phase = 'victory';
-      this.battleUI.addLog('🎉 승리!');
-      this.soundManager.playSfx('sfx_enemy_death');
-      playSfx(this, COMBAT_VOICE.VICTORY, 0.8);
-      this._showLootPopup();
-    } else if (allAlliesDead) {
-      this.phase = 'defeat';
-      this.battleUI.addLog('💔 패배...');
-      this.soundManager.playSfx('sfx_player_death');
-      this._showDefeatPopup();
-    }
-  }
-
-  // ─── 전리품 팝업 ─────────────────────────────────────────────
-
-  private _showLootPopup(): void {
-    const loot = this.combatManager.getLoot();
-    const cx = this.cameras.main.centerX;
-    const cy = this.cameras.main.centerY;
-
-    const container = this.add.container(cx, cy);
-
-    // 반투명 배경
-    const bg = this.add.rectangle(0, 0, 320, 240, 0x000000, 0.85)
-      .setStrokeStyle(2, 0xffcc00);
-    container.add(bg);
-
-    const title = this.add.text(0, -90, '🏆 전리품', {
-      fontSize: '20px', color: '#ffcc00',
-    }).setOrigin(0.5);
-    container.add(title);
-
-    loot.forEach((item: LootItem, i: number) => {
-      const txt = this.add.text(-120, -50 + i * 24, `• ${item.name} x${item.quantity}`, {
-        fontSize: '14px', color: '#ffffff',
-      });
-      container.add(txt);
     });
 
-    // 닫기 버튼
-    const closeBtn = this.add.text(0, 90, '[ 확인 ]', {
-      fontSize: '16px', color: '#88ff88',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => {
-      this._exitBattle();
+    const unsub3 = networkManager.on('combat:effectApplied', (data) => {
+      const d = data as { combatId: string; targetId: string; effectId: string; value: number };
+      if (d.combatId === this.serverCombatId) {
+        (this.statusEffectRenderer as any)?.applyEffect?.(d.targetId, d.effectId, d.value);
+      }
     });
-    container.add(closeBtn);
 
-    this.lootPopup = container;
-  }
-
-  private _showDefeatPopup(): void {
-    const cx = this.cameras.main.centerX;
-    const cy = this.cameras.main.centerY;
-
-    const container = this.add.container(cx, cy);
-    const bg = this.add.rectangle(0, 0, 280, 140, 0x000000, 0.85)
-      .setStrokeStyle(2, 0xff4444);
-    container.add(bg);
-
-    const title = this.add.text(0, -30, '💔 패배', {
-      fontSize: '20px', color: '#ff4444',
-    }).setOrigin(0.5);
-    container.add(title);
-
-    const closeBtn = this.add.text(0, 30, '[ 돌아가기 ]', {
-      fontSize: '16px', color: '#aaaaaa',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => {
-      this._exitBattle();
-    });
-    container.add(closeBtn);
+    this.socketCleanups = [unsub1, unsub2, unsub3];
   }
 
   private async _exitBattle(): Promise<void> {
-    // P25-05: 서버 전투 종료
     if (this.serverCombatId) {
       try {
         await networkManager.combatEnd(this.serverCombatId);
       } catch { /* 이미 종료되었을 수 있음 */ }
     }
 
-    // 소켓 이벤트 클린업
     this.socketCleanups.forEach((fn) => fn());
     this.socketCleanups = [];
 
-    // GameScene으로 복귀
     this.scene.start('GameScene');
   }
 }

@@ -22,7 +22,7 @@ interface DungeonConfig {
 }
 
 interface EnemySprite {
-  sprite: Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
   hp: number;
   maxHp: number;
   hpBar: Phaser.GameObjects.Rectangle;
