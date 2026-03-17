@@ -34,6 +34,8 @@ ZONE_DESC = {
     "SYL": ("Silvanhime", "enchanted forest, giant trees, moss, glowing mushrooms, nature magic"),
     "SOL": ("Solaris", "desert wasteland, sand dunes, ancient pyramids, golden sun, heat haze"),
     "TMP": ("Temporal Rift", "time distortion, clock fragments, dimensional tears, chrono energy"),
+    "TEM": ("Temporal Rift", "time distortion, clock fragments, dimensional tears, chrono energy, purple energy"),
+    "OBL": ("Oblivion", "void realm, absolute darkness, shattered reality, cosmic debris, entropy"),
 }
 
 LAYER_DESC = {

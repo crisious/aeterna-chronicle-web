@@ -22,6 +22,7 @@ import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
 import { playSfx, playRandomVoice, COMBAT_VOICE, UI_SFX } from '../utils/SFXHelper';
+import monsterManifest from '../data/monsterManifest.json';
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
 
@@ -110,35 +111,45 @@ export class BattleScene extends Phaser.Scene {
   // ─── 라이프사이클 ─────────────────────────────────────────────
 
   preload(): void {
-    // P33-A: 전투 배경
-    this.load.image('battle_bg', 'assets/generated/environment/backgrounds/ERB-BG-FAR-DAY.png');
+    // P33-A: 전투 배경 (zoneId 기반 동적 선택)
+    const zoneId = this._initData?.zoneId ?? 'ERB';
+    const zoneCode = zoneId.substring(0, 3).toUpperCase();
+    this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
 
-    // P35: 몬스터 이미지 — 범용 프리로드 + _initData 기반 동적 로드
-    const preloadMonsters = [
-      { key: 'mon_void_beetle', path: 'assets/generated/monsters/normal/mon_abyss_void_beetle_normal.png' },
-      { key: 'mon_echo_phantom', path: 'assets/generated/monsters/normal/mon_abyss_echo_phantom_normal.png' },
-      { key: 'mon_memory_golem', path: 'assets/generated/monsters/normal/mon_abyss_memory_golem_normal.png' },
-      { key: 'mon_null_slime', path: 'assets/generated/monsters/normal/mon_abyss_null_slime_normal.png' },
-      { key: 'mon_glitch_spider', path: 'assets/generated/monsters/normal/mon_abyss_glitch_spider_normal.png' },
-      { key: 'mon_data_worm', path: 'assets/generated/monsters/normal/mon_abyss_data_worm_normal.png' },
-      { key: 'mon_ether_wisp', path: 'assets/generated/monsters/normal/mon_abyss_ether_wisp_normal.png' },
-      { key: 'mon_void_moth', path: 'assets/generated/monsters/normal/mon_abyss_void_moth_normal.png' },
-      { key: 'mon_paradox_bat', path: 'assets/generated/monsters/normal/mon_abyss_paradox_bat_normal.png' },
-      { key: 'mon_forgotten_warrior', path: 'assets/generated/monsters/normal/mon_abyss_forgotten_warrior_normal.png' },
-      { key: 'mon_boss_shadow', path: 'assets/generated/monsters/elite_boss/BOSS-ERB-SHADOW.png' },
-      { key: 'mon_boss_void', path: 'assets/generated/monsters/elite_boss/BOSS-ABY-VOID.png' },
-    ];
-    for (const m of preloadMonsters) {
-      this.load.image(m.key, m.path);
+    // P36: 몬스터 이미지 — monsterManifest 기반 동적 프리로드
+    // _initData.enemies에서 필요한 몬스터만 로드
+    const manifest = monsterManifest as Record<string, string>;
+    const manifestKeys = Object.keys(manifest);
+    const loadedKeys = new Set<string>();
+
+    // 1) _initData.enemies 기반 동적 매칭
+    const enemies = this._initData?.enemies ?? [];
+    for (const enemy of enemies) {
+      const matched = this._findMonsterKey(enemy.id, enemy.name, manifestKeys);
+      if (matched && !loadedKeys.has(matched)) {
+        this.load.image(matched, manifest[matched]);
+        loadedKeys.add(matched);
+      }
     }
 
-    // P35: monsterId 기반 동적 로드 (서버에서 전달받는 ID → 파일 매핑 시도)
+    // 2) monsterId 단일 매칭 (폴백)
     if (this._initData?.monsterId) {
       const mid = this._initData.monsterId;
-      const dynamicKey = `mon_dynamic_${mid}`;
-      // 지역 접두사별 시도
-      for (const region of ['abyss', 'argentium', 'erebus', 'solaris', 'sylvanheim', 'fog', 'nordheim', 'temporal']) {
-        this.load.image(dynamicKey, `assets/generated/monsters/normal/mon_${region}_${mid}_normal.png`);
+      const matched = this._findMonsterKey(mid, this._initData.monsterName ?? '', manifestKeys);
+      if (matched && !loadedKeys.has(matched)) {
+        this.load.image(matched, manifest[matched]);
+        loadedKeys.add(matched);
+      }
+    }
+
+    // 3) 아무것도 매칭 안 되면 기본 3종 로드 (최소 폴백)
+    if (loadedKeys.size === 0) {
+      const fallbacks = ['mon_abyss_void_beetle', 'mon_abyss_null_slime', 'mon_boss_erb_shadow'];
+      for (const fb of fallbacks) {
+        if (manifest[fb]) {
+          this.load.image(fb, manifest[fb]);
+          loadedKeys.add(fb);
+        }
       }
     }
 
@@ -157,7 +168,37 @@ export class BattleScene extends Phaser.Scene {
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
     });
+
+    // 로드된 몬스터 키 저장 (create에서 참조)
+    this._loadedMonsterKeys = Array.from(loadedKeys);
   }
+
+  /** P36: 몬스터 ID/이름으로 매니페스트 키 찾기 */
+  private _findMonsterKey(id: string, name: string, manifestKeys: string[]): string | null {
+    const idLower = (id ?? '').toLowerCase().replace(/[-\s]/g, '_');
+    const nameLower = (name ?? '').toLowerCase().replace(/[-\s]/g, '_');
+
+    // 정확한 키 매칭
+    if (manifestKeys.includes(`mon_${idLower}`)) return `mon_${idLower}`;
+
+    // ID 부분 매칭 (region prefix 포함된 키에서 검색)
+    for (const mk of manifestKeys) {
+      const mkBody = mk.replace('mon_', '');
+      if (idLower && mkBody.includes(idLower)) return mk;
+      if (nameLower && mkBody.includes(nameLower)) return mk;
+    }
+
+    // 보스 매칭
+    if (id?.toUpperCase().startsWith('BOSS')) {
+      for (const mk of manifestKeys) {
+        if (mk.startsWith('mon_boss_') && mk.includes(idLower.replace('boss-', '').replace('boss_', ''))) return mk;
+      }
+    }
+
+    return null;
+  }
+
+  private _loadedMonsterKeys: string[] = [];
 
   init(data: BattleSceneData): void {
     this.phase = 'intro';
@@ -375,13 +416,10 @@ export class BattleScene extends Phaser.Scene {
   private _spawnUnits(units: CombatUnit[], isAlly: boolean, baseX: number): void {
     const list = isAlly ? this.allySprites : this.enemySprites;
 
-    // P35: 적 몬스터 텍스처 키 풀 (확장)
-    const monsterTexKeys = [
-      'mon_void_beetle', 'mon_echo_phantom', 'mon_memory_golem',
-      'mon_null_slime', 'mon_glitch_spider', 'mon_data_worm',
-      'mon_ether_wisp', 'mon_void_moth', 'mon_paradox_bat',
-      'mon_forgotten_warrior', 'mon_boss_shadow', 'mon_boss_void',
-    ];
+    // P36: 동적 로드된 몬스터 키 사용 (매니페스트 기반)
+    const monsterTexKeys = this._loadedMonsterKeys.length > 0
+      ? this._loadedMonsterKeys
+      : Object.keys(monsterManifest as Record<string, string>).slice(0, 12);
 
     units.forEach((unit, idx) => {
       const x = baseX;
@@ -409,26 +447,29 @@ export class BattleScene extends Phaser.Scene {
         // 적: 몬스터 이미지 (이름 기반 매칭 또는 순환 할당)
         let monTexKey = '';
 
-        // P35: 동적 로드 키 우선 체크
-        const dynamicKey = `mon_dynamic_${unit.id}`;
-        if (this.textures.exists(dynamicKey)) {
-          monTexKey = dynamicKey;
+        // P36: 매니페스트 기반 매칭 (ID → 이름 → 인덱스 폴백)
+        const allManifestKeys = Object.keys(monsterManifest as Record<string, string>);
+        const matched = this._findMonsterKey(unit.id, unit.name ?? '', allManifestKeys);
+        if (matched && this.textures.exists(matched)) {
+          monTexKey = matched;
         }
 
-        // 이름 기반 매칭 시도
+        // 로드된 키 중 이름 유사도 매칭
         if (!monTexKey) {
-          const unitNameLower = unit.name?.toLowerCase() ?? '';
+          const unitNameLower = (unit.name ?? '').toLowerCase().replace(/[\s-]/g, '_');
           for (const mk of monsterTexKeys) {
-            const mkNorm = mk.replace('mon_', '').replace(/_/g, ' ');
-            if (unitNameLower.includes(mkNorm) || mkNorm.includes(unitNameLower.replace(/ /g, '_'))) {
+            const mkNorm = mk.replace('mon_', '').replace(/_/g, '_');
+            if (this.textures.exists(mk) && (mkNorm.includes(unitNameLower) || unitNameLower.includes(mkNorm.split('_').slice(1).join('_')))) {
               monTexKey = mk;
               break;
             }
           }
         }
-        // 매칭 안 되면 인덱스 기반 할당
+
+        // 매칭 안 되면 로드된 키 중 인덱스 기반 할당
         if (!monTexKey) {
-          monTexKey = monsterTexKeys[idx % monsterTexKeys.length];
+          const availableKeys = monsterTexKeys.filter(k => this.textures.exists(k));
+          monTexKey = availableKeys.length > 0 ? availableKeys[idx % availableKeys.length] : '';
         }
 
         if (this.textures.exists(monTexKey)) {
