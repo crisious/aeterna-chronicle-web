@@ -39,6 +39,7 @@ export class GameScene extends Phaser.Scene {
   private telemetryEmitter!: TelemetryEmitter;
   private combatEffectManager!: CombatEffectManager;
   private soundManager!: SoundManager;
+  private _sceneFailed = false;
 
   private readonly sessionId = `sess_${Date.now().toString(36)}`;
 
@@ -100,6 +101,7 @@ export class GameScene extends Phaser.Scene {
       this._createSafe();
     } catch (err) {
       console.error('[GameScene] create 에러:', err);
+      this._sceneFailed = true;
       this._showErrorScreen(err as Error);
     }
   }
@@ -325,35 +327,41 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    if (!this.player || !this.wasdKeys || !this.cursors) return;
-    const moveSpeed = 300;
-    this.player.setVelocity(0);
+    if (this._sceneFailed) return;
+    try {
+      if (!this.player || !this.wasdKeys || !this.cursors) return;
+      const moveSpeed = 300;
+      this.player.setVelocity(0);
 
-    const isLeft = this.cursors.left?.isDown || this.wasdKeys.left?.isDown;
-    const isRight = this.cursors.right?.isDown || this.wasdKeys.right?.isDown;
-    const isUp = this.cursors.up?.isDown || this.wasdKeys.up?.isDown;
-    const isDown = this.cursors.down?.isDown || this.wasdKeys.down?.isDown;
+      const isLeft = this.cursors.left?.isDown || this.wasdKeys.left?.isDown;
+      const isRight = this.cursors.right?.isDown || this.wasdKeys.right?.isDown;
+      const isUp = this.cursors.up?.isDown || this.wasdKeys.up?.isDown;
+      const isDown = this.cursors.down?.isDown || this.wasdKeys.down?.isDown;
 
-    if (isLeft) this.player.setVelocityX(-moveSpeed);
-    else if (isRight) this.player.setVelocityX(moveSpeed);
-    if (isUp) this.player.setVelocityY(-moveSpeed);
-    else if (isDown) this.player.setVelocityY(moveSpeed);
+      if (isLeft) this.player.setVelocityX(-moveSpeed);
+      else if (isRight) this.player.setVelocityX(moveSpeed);
+      if (isUp) this.player.setVelocityY(-moveSpeed);
+      else if (isDown) this.player.setVelocityY(moveSpeed);
 
-    if (this.player.body?.velocity.x !== 0 && this.player.body?.velocity.y !== 0) {
-      this.player.body?.velocity.normalize().scale(moveSpeed);
-    }
+      if (this.player.body?.velocity.x !== 0 && this.player.body?.velocity.y !== 0) {
+        this.player.body?.velocity.normalize().scale(moveSpeed);
+      }
 
-    this.hudOrchestrator?.update(delta);
-    this.combatEffectManager?.update(delta);
+      this.hudOrchestrator?.update(delta);
+      this.combatEffectManager?.update(delta);
 
-    // P25-04: NetworkManager로 이동 전송
-    if (this.player.body?.velocity.x !== 0 || this.player.body?.velocity.y !== 0) {
-      networkManager.emit('world:move', {
-        characterId: networkManager.socketId ?? '',
-        x: this.player.x,
-        y: this.player.y,
-        state: 'moving',
-      });
+      if (this.player.body?.velocity.x !== 0 || this.player.body?.velocity.y !== 0) {
+        networkManager.emit('world:move', {
+          characterId: networkManager.socketId ?? '',
+          x: this.player.x,
+          y: this.player.y,
+          state: 'moving',
+        });
+      }
+    } catch (err) {
+      console.error('[GameScene] update 에러:', err);
+      this._sceneFailed = true;
+      this._showErrorScreen(err as Error);
     }
   }
 
