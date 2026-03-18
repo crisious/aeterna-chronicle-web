@@ -63,27 +63,40 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload(): void {
+    // 로드 에러 핸들러 — 404 에셋이 있어도 씬 진입을 차단하지 않음
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
-      console.warn(`[Atlas] 로드 실패 (fallback 사용): ${file.key}`);
+      console.warn(`[GameScene] 에셋 로드 실패 (무시): ${file.key}`);
     });
 
-    this.soundManager = new SoundManager(this);
-    this.soundManager.preloadAll();
-
-    // P25-09: 실제 에셋 경로
+    // P25-09: 실제 에셋 경로 (atlas만 — 존재 확인된 파일)
     this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
 
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0xf5a623, 1);
-    graphics.fillRoundedRect(0, 0, 48, 64, 8);
-    graphics.generateTexture('player_sprite', 48, 64);
-    graphics.destroy();
+    // SoundManager preload — 138개 오디오 파일 대부분 미존재(404)
+    // 실패해도 게임 진행에 영향 없음 (loaderror 핸들러가 무시)
+    try {
+      this.soundManager = new SoundManager(this);
+      this.soundManager.preloadAll();
+    } catch (e) {
+      console.warn('[GameScene] SoundManager preload 실패:', e);
+    }
+  }
+
+  /** Phaser create 직전: 프로그래매틱 텍스처 생성 (preload 로드 실패 대비) */
+  private _ensureFallbackTextures(): void {
+    if (!this.textures.exists('player_sprite')) {
+      const graphics = this.add.graphics();
+      graphics.fillStyle(0xf5a623, 1);
+      graphics.fillRoundedRect(0, 0, 48, 64, 8);
+      graphics.generateTexture('player_sprite', 48, 64);
+      graphics.destroy();
+    }
   }
 
   create(): void {
     try {
+      this._ensureFallbackTextures();
       this._createSafe();
     } catch (err) {
       console.error('[GameScene] create 에러:', err);

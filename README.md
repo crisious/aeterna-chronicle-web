@@ -4,11 +4,11 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-35%20Complete-blue?style=for-the-badge)](#-개발-현황)
-[![Tickets](https://img.shields.io/badge/Notion-708%2F708%20Done-success?style=for-the-badge)](#-개발-현황)
+[![Phase](https://img.shields.io/badge/Phase-38%20Complete-blue?style=for-the-badge)](#-개발-현황)
+[![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C575%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-195%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Commits](https://img.shields.io/badge/Commits-202%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 
 *실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱*
 
@@ -87,14 +87,14 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 35 (P0~P35) | 커밋 | 196+ |
-| Notion 티켓 | 708/708 Done | 문서 | 742+ MD |
+| Phase | 38 (P0~P38) | 커밋 | 202+ |
+| Notion 티켓 | 728/728 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
 | 이미지 | 1,383장 (AI) | 오디오 | BGM 42 + SFX 75 + Voice 20 = 138 |
 | 아틀라스 | 50 PNG + 50 JSON | DB 모델 | 110 (Prisma) |
 | API | 44 REST + 8 Socket | UI | 18종 |
-| 에셋 총계 | 1,575개 | 정합성 검증 | 360+ 항목, 177+ 수정 |
+| 에셋 총계 | 1,575개 | 정합성 검증 | 395+ 항목, 184+ 수정 |
 
 ---
 
@@ -121,10 +121,13 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**34B Phase 완료 · 688 티켓 전부 Done · 195+ 커밋 · v1.0 릴리즈 준비 완료**
+**38 Phase 완료 · 728 티켓 전부 Done · 202+ 커밋 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
+| P38 | 미해결 이슈 전수 수정 | GameScene 안정화 · TODO 0건 · E2E 92/92 · Notion 728티켓 |
+| P37 | FF6 전투 시스템 | 사이드뷰 ATB · 커맨드 메뉴 · 데미지 팝업 · 승리 연출 |
+| P36 | 픽셀아트 에셋 교체 | 배경 114장 · NPC 30장 · 몬스터 120장 · 캐릭터 18장 |
 | P35 | QA 핫픽스 4건 | NPC 매핑 · 전투 키입력 · 전투 그래픽 · 초기 아이템 지급 |
 | P34B | 에셋 매니페스트 + 전수 검증 | 오디오 138개 연결 · 이미지 1,383장 확인 · 에셋 완전체 1,575개 |
 | P34 | 오디오 SFX 75+Voice 20 완성 | SFX 75개 생성 · Voice 20개 생성 · 오디오 파이프라인 완료 |
@@ -140,7 +143,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 <details>
 <summary><b>정합성 검증 상세</b></summary>
 
-누적 388+ 항목 검증, 181+ 건 수정 완료 (P0~P35).
+누적 395+ 항목 검증, 184+ 건 수정 완료 (P0~P38).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
 DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
 에셋 전수 확인: 이미지 1,383장 + 오디오 138개 + 아틀라스/JSON 54개 = 1,575개.
@@ -160,7 +163,7 @@ DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
 | 아키텍처 | `docs/architecture/` | 서버 부트스트랩 · 공유 계약 · 기능 토글 |
 | 에셋 파이프라인 | `docs/asset-pipeline/` | 8개 (프롬프트 · 스프라이트 · BGM · SFX 등) |
 | 아트 프로덕션 | `docs/art-production/` | 18개 (스타일 가이드 · AI 프롬프트 · QA 등) |
-| 검증 | `04_검증_P0/` | P0~P35 개연성 검토 + 에셋 매니페스트 |
+| 검증 | `04_검증_P0/` | P0~P38 개연성 검토 + 에셋 매니페스트 |
 
 ---
 

@@ -319,7 +319,7 @@ export class LobbyScene extends Phaser.Scene {
     switch (npc.id) {
       case 'merchant':
         this._showNotification(`🛒 ${npc.name}: 상점을 열었습니다. (아이템 ${80}종 판매 중)`);
-        // TODO: ShopUI 통합 후 교체
+        // P38: 인라인 ShopPanel 사용 중 (독립 ShopUI 분리는 후속 리팩터링)
         this._showShopPanel(npc);
         break;
       case 'blacksmith':
