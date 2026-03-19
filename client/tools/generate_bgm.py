@@ -216,20 +216,19 @@ class Buf:
             self.data *= peak / mx
 
     def encode(self, path):
-        """Encode to OGG/Opus via ffmpeg (temp file to avoid pipe issues)."""
+        """Encode to OGG/Opus via ffmpeg."""
         os.makedirs(os.path.dirname(path), exist_ok=True)
         samples = self.data.astype(np.float32)
 
-        # Write raw PCM to temp file — avoids pipe buffer truncation
         with tempfile.NamedTemporaryFile(suffix=".raw", delete=False) as f:
             f.write(samples.tobytes())
-            tmp = f.name
+            tmp_raw = f.name
 
         try:
             cmd = [
                 "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
                 "-f", "f32le", "-ar", str(self.sr), "-ac", "1",
-                "-i", tmp,
+                "-i", tmp_raw,
                 "-c:a", "libopus", "-b:a", "64k", "-vbr", "on",
                 str(path),
             ]
@@ -237,7 +236,7 @@ class Buf:
             if r.returncode != 0:
                 raise RuntimeError(f"ffmpeg: {r.stderr.strip()}")
         finally:
-            os.unlink(tmp)
+            os.unlink(tmp_raw)
 
 
 # ─── Generation functions ─────────────────────────────────────────
@@ -555,7 +554,12 @@ def is_boss(path, volume):
 
 
 # ─── Main ─────────────────────────────────────────────────────────
+STAGING_DIR = Path("/tmp/aeterna_bgm")
+
+
 def main():
+    import shutil
+
     print("=" * 60)
     print("Aeterna Chronicle — Procedural BGM Generator")
     print("=" * 60)
@@ -565,11 +569,16 @@ def main():
     if len(entries) != 42:
         print(f"WARNING: expected 42, found {len(entries)}")
 
+    # Prepare staging dir in /tmp (local FS, no cloud-sync issues)
+    if STAGING_DIR.exists():
+        shutil.rmtree(STAGING_DIR)
+    STAGING_DIR.mkdir(parents=True)
+
     ok = fail = 0
     for i, e in enumerate(entries, 1):
         key, path, vol, cat = e["key"], e["path"], e["volume"], e["category"]
         sub = get_subfolder(path)
-        out = PUBLIC_DIR / path
+        out = STAGING_DIR / path
 
         rng = random.Random(seed_from_key(key))
         tag = ""
@@ -599,26 +608,58 @@ def main():
 
             buf.encode(str(out))
 
-            if out.exists():
-                sz = os.path.getsize(str(out))
-                kb = sz / 1024
-                if sz < 2000:
-                    print(f"        WARN  {buf.dur:.1f}s  {kb:.1f} KB — file too small!{tag}")
-                    fail += 1
-                else:
-                    print(f"        OK  {buf.dur:.1f}s  {kb:.1f} KB{tag}")
-                    ok += 1
-            else:
-                print(f"        FAIL — file not created")
+            sz = os.path.getsize(str(out))
+            kb = sz / 1024
+            if sz < 2000:
+                print(f"        WARN  {buf.dur:.1f}s  {kb:.1f} KB — too small!{tag}")
                 fail += 1
+            else:
+                print(f"        OK  {buf.dur:.1f}s  {kb:.1f} KB{tag}")
+                ok += 1
 
         except Exception as ex:
             print(f"        ERROR: {ex}")
             fail += 1
 
     print(f"\n{'=' * 60}")
-    print(f"Done: {ok} success, {fail} failed / {len(entries)} total")
-    print("=" * 60)
+    print(f"Generated: {ok} success, {fail} failed / {len(entries)} total")
+
+    if ok > 0:
+        # Copy from staging to final destination
+        # Must use shell-level commands — Synology Drive FUSE intercepts
+        # Python file ops within long-running processes.
+        dest = str(PUBLIC_DIR)
+        print(f"\nCopying {ok} files to {dest}/ ...")
+
+        # Delete old BGM files first
+        for e in entries:
+            final = PUBLIC_DIR / e["path"]
+            subprocess.run(["rm", "-f", str(final)], check=False)
+
+        # rsync from staging to public
+        r = subprocess.run(
+            ["rsync", "-a", str(STAGING_DIR) + "/", str(PUBLIC_DIR) + "/"],
+            capture_output=True, text=True,
+        )
+        if r.returncode == 0:
+            print("rsync complete.")
+        else:
+            print(f"rsync failed: {r.stderr}")
+            # Fallback: individual cp
+            for e in entries:
+                src = STAGING_DIR / e["path"]
+                dst = PUBLIC_DIR / e["path"]
+                if src.exists():
+                    os.makedirs(os.path.dirname(str(dst)), exist_ok=True)
+                    subprocess.run(["cp", "-f", str(src), str(dst)])
+
+    # Keep staging for manual fallback
+    print(f"\nStaging dir: {STAGING_DIR}")
+    print("If files don't appear, run manually:")
+    print(f"  rm -rf {PUBLIC_DIR}/audio/bgm/")
+    print(f"  cp -R {STAGING_DIR}/audio/bgm/ {PUBLIC_DIR}/audio/bgm/")
+
+    print(f"\n{'=' * 60}")
     return 0 if fail == 0 else 1
 
 
