@@ -65,6 +65,9 @@ export class SoundManager {
 
   // 로드 완료 추적
   private loadedKeys: Set<string> = new Set();
+  // 온디맨드 로드 중인 키 추적 (중복 로드 방지)
+  private pendingLoads: Map<string, Promise<void>> = new Map();
+  private loadErrorHandlerSet = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -72,25 +75,113 @@ export class SoundManager {
   }
 
   // ─── 초기화: 에셋 프리로드 ────────────────────────────────────
+
+  /** 로드 에러 핸들러 등록 (중복 방지) */
+  private setupLoadErrorHandler(): void {
+    if (!this.loadErrorHandlerSet) {
+      this.scene.load.on('loaderror', (file: Phaser.Loader.File) => {
+        console.warn(`[SoundManager] 로드 실패 (무시): ${file.key}`);
+      });
+      this.loadErrorHandlerSet = true;
+    }
+  }
+
   /**
-   * preload() 단계에서 호출 — 매니페스트의 모든 사운드를 큐에 등록
-   * 파일이 없어도 에러 없이 건너뛴다 (개발 중 에셋 부재 대응)
+   * preload() 단계에서 호출 — 후방 호환
+   * essential만 동기 로드, deferred는 init()에서 백그라운드 큐
    */
   preloadAll(): void {
-    // 로드 에러 시 경고만 출력 (크래시 방지)
-    this.scene.load.on('loaderror', (file: Phaser.Loader.File) => {
-      console.warn(`[SoundManager] 로드 실패 (무시): ${file.key}`);
-    });
+    this.preloadEssential();
+  }
+
+  /**
+   * preload() 단계 — essential 우선순위 사운드만 로드 (~21개)
+   * UI SFX(15) + 타이틀 BGM(1) + 전투 기본 SFX(5)
+   */
+  preloadEssential(): void {
+    this.setupLoadErrorHandler();
 
     for (const entry of SOUND_MANIFEST) {
-      if (!this.scene.cache.audio.exists(entry.key)) {
+      if (
+        (entry.priority ?? 'deferred') === 'essential' &&
+        !this.scene.cache.audio.exists(entry.key)
+      ) {
         this.scene.load.audio(entry.key, entry.path);
       }
     }
   }
 
   /**
-   * create() 단계에서 호출 — 로드 성공한 키만 추적
+   * create() 이후 호출 — deferred 사운드를 백그라운드 로드
+   */
+  preloadDeferred(): void {
+    const deferred = SOUND_MANIFEST.filter(
+      (e) =>
+        (e.priority ?? 'deferred') === 'deferred' &&
+        !this.scene.cache.audio.exists(e.key),
+    );
+
+    if (deferred.length === 0) return;
+
+    this.setupLoadErrorHandler();
+
+    for (const entry of deferred) {
+      this.scene.load.audio(entry.key, entry.path);
+    }
+
+    this.scene.load.once('complete', () => {
+      for (const entry of deferred) {
+        if (this.scene.cache.audio.exists(entry.key)) {
+          this.loadedKeys.add(entry.key);
+        }
+      }
+      console.log(
+        `[SoundManager] 디퍼드 로드 완료 — ${this.loadedKeys.size}/${SOUND_MANIFEST.length} 사운드`,
+      );
+    });
+
+    this.scene.load.start();
+  }
+
+  /**
+   * 단일 사운드 온디맨드 로드 — 아직 로드되지 않은 키를 비동기 로드
+   */
+  loadOnDemand(key: string): Promise<void> {
+    if (this.loadedKeys.has(key)) return Promise.resolve();
+    if (this.pendingLoads.has(key)) return this.pendingLoads.get(key)!;
+
+    const entry = SOUND_MAP.get(key);
+    if (!entry) return Promise.resolve();
+
+    const promise = new Promise<void>((resolve) => {
+      this.scene.load.audio(key, entry.path);
+
+      this.scene.load.once(`filecomplete-audio-${key}`, () => {
+        this.loadedKeys.add(key);
+        this.pendingLoads.delete(key);
+        resolve();
+      });
+
+      // 에러 시에도 resolve (재생 차단 방지)
+      const onError = (file: Phaser.Loader.File) => {
+        if (file.key === key) {
+          this.scene.load.off('loaderror', onError);
+          this.pendingLoads.delete(key);
+          console.warn(`[SoundManager] 온디맨드 로드 실패: ${key}`);
+          resolve();
+        }
+      };
+      this.scene.load.on('loaderror', onError);
+
+      this.scene.load.start();
+    });
+
+    this.pendingLoads.set(key, promise);
+    return promise;
+  }
+
+  /**
+   * create() 단계에서 호출 — 로드 성공한 키만 추적 + 디퍼드 로드 시작
    */
   init(): void {
     for (const entry of SOUND_MANIFEST) {
@@ -98,7 +189,12 @@ export class SoundManager {
         this.loadedKeys.add(entry.key);
       }
     }
-    console.log(`[SoundManager] 초기화 완료 — ${this.loadedKeys.size}/${SOUND_MANIFEST.length} 사운드 로드됨`);
+    console.log(
+      `[SoundManager] 초기화 완료 — ${this.loadedKeys.size}/${SOUND_MANIFEST.length} 사운드 로드됨 (essential)`,
+    );
+
+    // 디퍼드 사운드 백그라운드 로드 시작
+    this.preloadDeferred();
   }
 
   // ════════════════════════════════════════════════════════════════
@@ -114,8 +210,18 @@ export class SoundManager {
     if (this.currentBgmKey === key) return; // 동일 BGM → 무시
 
     const entry = SOUND_MAP.get(key);
-    if (!entry || !this.loadedKeys.has(key)) {
+    if (!entry) {
       console.warn(`[SoundManager] BGM 없음: ${key}`);
+      return;
+    }
+
+    // 미로드 시 온디맨드 로드 후 재생
+    if (!this.loadedKeys.has(key)) {
+      this.loadOnDemand(key).then(() => {
+        if (this.loadedKeys.has(key)) {
+          this.playBgm(key, fadeMs);
+        }
+      });
       return;
     }
 
@@ -201,7 +307,11 @@ export class SoundManager {
     overrides?: { volume?: number; detune?: number; rate?: number }
   ): Phaser.Sound.BaseSound | null {
     const entry = SOUND_MAP.get(key);
-    if (!entry || !this.loadedKeys.has(key)) {
+    if (!entry) return null;
+
+    // 미로드 시 온디맨드 로드 (SFX는 다음 호출 시 재생)
+    if (!this.loadedKeys.has(key)) {
+      this.loadOnDemand(key);
       return null;
     }
 
@@ -310,7 +420,17 @@ export class SoundManager {
     if (this.activeAmbients.has(key)) return;
 
     const entry = SOUND_MAP.get(key);
-    if (!entry || !this.loadedKeys.has(key)) return;
+    if (!entry) return;
+
+    // 미로드 시 온디맨드 로드 후 추가
+    if (!this.loadedKeys.has(key)) {
+      this.loadOnDemand(key).then(() => {
+        if (this.loadedKeys.has(key)) {
+          this.addAmbient(key, fadeMs);
+        }
+      });
+      return;
+    }
 
     const targetVolume = this.calcVolume(entry, 'ambient');
     const ambient = this.scene.sound.add(key, {
@@ -402,7 +522,13 @@ export class SoundManager {
     const pan = Phaser.Math.Clamp(dx / (AUDIO_DISTANCE_MAX * 0.5), -1, 1);
 
     const entry = SOUND_MAP.get(key);
-    if (!entry || !this.loadedKeys.has(key)) return null;
+    if (!entry) return null;
+
+    // 미로드 시 온디맨드 로드 (3D SFX도 다음 호출 시 재생)
+    if (!this.loadedKeys.has(key)) {
+      this.loadOnDemand(key);
+      return null;
+    }
 
     const baseVol = this.calcVolume(entry, 'sfx');
     const sfx = this.playSfx(key, { volume: baseVol * attenuation });

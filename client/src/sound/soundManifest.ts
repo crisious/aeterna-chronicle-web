@@ -19,6 +19,8 @@ export type SoundCategory =
   | 'voice_npc'
   | 'voice_combat';
 
+export type SoundPriority = 'essential' | 'deferred';
+
 export interface SoundEntry {
   /** 고유 키 (SoundManager에서 참조용) */
   key: string;
@@ -32,6 +34,8 @@ export interface SoundEntry {
   loop: boolean;
   /** 카테고리 (볼륨 그룹, 필터링) */
   category: SoundCategory;
+  /** 로드 우선순위: 'essential'=초기 로드, 'deferred'=온디맨드 (기본값: 'deferred') */
+  priority?: SoundPriority;
 }
 
 // ─── BGM 탐색 (12곡) ───────────────────────────────────────────
@@ -68,7 +72,7 @@ const BGM_COMBAT: SoundEntry[] = [
 // ─── BGM 시스템/UI (5곡) ────────────────────────────────────────
 const BGM_SYSTEM: SoundEntry[] = [
   { key: 'bgm_sys_01', path: 'audio/bgm/system/main_theme.ogg', type: 'bgm', volume: 0.7, loop: true, category: 'bgm_ui' },
-  { key: 'bgm_sys_02', path: 'audio/bgm/system/title_screen.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_ui' },
+  { key: 'bgm_sys_02', path: 'audio/bgm/system/title_screen.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_ui', priority: 'essential' },
   { key: 'bgm_sys_03', path: 'audio/bgm/system/guild_hall.ogg', type: 'bgm', volume: 0.55, loop: true, category: 'bgm_ui' },
   { key: 'bgm_sys_04', path: 'audio/bgm/system/bgm_sys_04_guild_bond.ogg', type: 'bgm', volume: 0.5, loop: true, category: 'bgm_ui' },
   { key: 'bgm_sys_05', path: 'audio/bgm/system/bgm_sys_05_victory_record.ogg', type: 'bgm', volume: 0.7, loop: false, category: 'bgm_ui' },
@@ -102,7 +106,7 @@ const BGM_EVENT: SoundEntry[] = [
 
 // ─── SFX 전투 (25) ──────────────────────────────────────────────
 const SFX_COMBAT_ENTRIES: SoundEntry[] = [
-  { key: 'sfx_sword_slash_1', path: 'audio/sfx/combat/sword_slash_1.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
+  { key: 'sfx_sword_slash_1', path: 'audio/sfx/combat/sword_slash_1.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat', priority: 'essential' },
   { key: 'sfx_sword_slash_2', path: 'audio/sfx/combat/sword_slash_2.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
   { key: 'sfx_sword_slash_3', path: 'audio/sfx/combat/sword_slash_3.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
   { key: 'sfx_heavy_strike', path: 'audio/sfx/combat/heavy_strike.ogg', type: 'sfx', volume: 0.7, loop: false, category: 'sfx_combat' },
@@ -113,39 +117,39 @@ const SFX_COMBAT_ENTRIES: SoundEntry[] = [
   { key: 'sfx_magic_dark', path: 'audio/sfx/combat/magic_dark.ogg', type: 'sfx', volume: 0.65, loop: false, category: 'sfx_combat' },
   { key: 'sfx_arrow_shoot', path: 'audio/sfx/combat/arrow_shoot.ogg', type: 'sfx', volume: 0.55, loop: false, category: 'sfx_combat' },
   { key: 'sfx_arrow_hit', path: 'audio/sfx/combat/arrow_hit.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_combat' },
-  { key: 'sfx_critical_hit', path: 'audio/sfx/combat/critical_hit.ogg', type: 'sfx', volume: 0.8, loop: false, category: 'sfx_combat' },
+  { key: 'sfx_critical_hit', path: 'audio/sfx/combat/critical_hit.ogg', type: 'sfx', volume: 0.8, loop: false, category: 'sfx_combat', priority: 'essential' },
   { key: 'sfx_guard_block', path: 'audio/sfx/combat/guard_block.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
   { key: 'sfx_guard_break', path: 'audio/sfx/combat/guard_break.ogg', type: 'sfx', volume: 0.75, loop: false, category: 'sfx_combat' },
   { key: 'sfx_dodge_roll', path: 'audio/sfx/combat/dodge_roll.ogg', type: 'sfx', volume: 0.45, loop: false, category: 'sfx_combat' },
-  { key: 'sfx_hit_flesh', path: 'audio/sfx/combat/hit_flesh.ogg', type: 'sfx', volume: 0.55, loop: false, category: 'sfx_combat' },
+  { key: 'sfx_hit_flesh', path: 'audio/sfx/combat/hit_flesh.ogg', type: 'sfx', volume: 0.55, loop: false, category: 'sfx_combat', priority: 'essential' },
   { key: 'sfx_hit_metal', path: 'audio/sfx/combat/hit_metal.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
   { key: 'sfx_hit_magic', path: 'audio/sfx/combat/hit_magic.ogg', type: 'sfx', volume: 0.55, loop: false, category: 'sfx_combat' },
-  { key: 'sfx_skill_activate', path: 'audio/sfx/combat/skill_activate.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
+  { key: 'sfx_skill_activate', path: 'audio/sfx/combat/skill_activate.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat', priority: 'essential' },
   { key: 'sfx_skill_ultimate', path: 'audio/sfx/combat/skill_ultimate.ogg', type: 'sfx', volume: 0.85, loop: false, category: 'sfx_combat' },
   { key: 'sfx_buff_apply', path: 'audio/sfx/combat/buff_apply.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_combat' },
   { key: 'sfx_debuff_apply', path: 'audio/sfx/combat/debuff_apply.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_combat' },
-  { key: 'sfx_enemy_death', path: 'audio/sfx/combat/enemy_death.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat' },
+  { key: 'sfx_enemy_death', path: 'audio/sfx/combat/enemy_death.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_combat', priority: 'essential' },
   { key: 'sfx_player_death', path: 'audio/sfx/combat/player_death.ogg', type: 'sfx', volume: 0.7, loop: false, category: 'sfx_combat' },
   { key: 'sfx_revive', path: 'audio/sfx/combat/revive.ogg', type: 'sfx', volume: 0.65, loop: false, category: 'sfx_combat' },
 ];
 
 // ─── SFX UI (15) ────────────────────────────────────────────────
 const SFX_UI_ENTRIES: SoundEntry[] = [
-  { key: 'sfx_ui_click', path: 'audio/sfx/ui/click.ogg', type: 'sfx', volume: 0.4, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_hover', path: 'audio/sfx/ui/hover.ogg', type: 'sfx', volume: 0.2, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_open', path: 'audio/sfx/ui/open.ogg', type: 'sfx', volume: 0.45, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_close', path: 'audio/sfx/ui/close.ogg', type: 'sfx', volume: 0.4, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_confirm', path: 'audio/sfx/ui/confirm.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_cancel', path: 'audio/sfx/ui/cancel.ogg', type: 'sfx', volume: 0.4, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_error', path: 'audio/sfx/ui/error.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_level_up', path: 'audio/sfx/ui/level_up.ogg', type: 'sfx', volume: 0.8, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_achievement', path: 'audio/sfx/ui/achievement.ogg', type: 'sfx', volume: 0.75, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_quest_accept', path: 'audio/sfx/ui/quest_accept.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_quest_complete', path: 'audio/sfx/ui/quest_complete.ogg', type: 'sfx', volume: 0.7, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_item_pickup', path: 'audio/sfx/ui/item_pickup.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_item_equip', path: 'audio/sfx/ui/item_equip.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_gold_gain', path: 'audio/sfx/ui/gold_gain.ogg', type: 'sfx', volume: 0.45, loop: false, category: 'sfx_ui' },
-  { key: 'sfx_ui_notification', path: 'audio/sfx/ui/notification.ogg', type: 'sfx', volume: 0.55, loop: false, category: 'sfx_ui' },
+  { key: 'sfx_ui_click', path: 'audio/sfx/ui/click.ogg', type: 'sfx', volume: 0.4, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_hover', path: 'audio/sfx/ui/hover.ogg', type: 'sfx', volume: 0.2, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_open', path: 'audio/sfx/ui/open.ogg', type: 'sfx', volume: 0.45, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_close', path: 'audio/sfx/ui/close.ogg', type: 'sfx', volume: 0.4, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_confirm', path: 'audio/sfx/ui/confirm.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_cancel', path: 'audio/sfx/ui/cancel.ogg', type: 'sfx', volume: 0.4, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_error', path: 'audio/sfx/ui/error.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_level_up', path: 'audio/sfx/ui/level_up.ogg', type: 'sfx', volume: 0.8, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_achievement', path: 'audio/sfx/ui/achievement.ogg', type: 'sfx', volume: 0.75, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_quest_accept', path: 'audio/sfx/ui/quest_accept.ogg', type: 'sfx', volume: 0.6, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_quest_complete', path: 'audio/sfx/ui/quest_complete.ogg', type: 'sfx', volume: 0.7, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_item_pickup', path: 'audio/sfx/ui/item_pickup.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_item_equip', path: 'audio/sfx/ui/item_equip.ogg', type: 'sfx', volume: 0.5, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_gold_gain', path: 'audio/sfx/ui/gold_gain.ogg', type: 'sfx', volume: 0.45, loop: false, category: 'sfx_ui', priority: 'essential' },
+  { key: 'sfx_ui_notification', path: 'audio/sfx/ui/notification.ogg', type: 'sfx', volume: 0.55, loop: false, category: 'sfx_ui', priority: 'essential' },
 ];
 
 // ─── SFX 시스템 (10) ────────────────────────────────────────────

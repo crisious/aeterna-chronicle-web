@@ -135,6 +135,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 | P40 | SFX AI 교체 + Voice TTS | SFX 75개 MusicGen AI 교체 · Voice 20개 macOS TTS 생성 · 137/137 유효 |
 | P42 | E2E 테스트 확장 | 10개 신규 E2E (combat/character/ending/shop/party/trade/save/world/raid/story) · 24→34 파일 |
 | P43 | ACE-Step 보스곡 리마스터 | 핵심 5곡 ACE-Step v1 3.5B 생성 (보스3+메인테마+엔딩) · 평균 4배 고품질 |
+| P45 | 로딩 최적화 | 오디오 lazy load (21 essential→116 deferred) · WebP 변환 스크립트 (61% 절감) · Vite gzip/brotli · 로딩 화면 |
 | P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
 | P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
 | P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
