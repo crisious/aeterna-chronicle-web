@@ -42,11 +42,14 @@
     "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
-    "vitest": "^3.0.0",
     "@vitest/coverage-v8": "^3.0.0",
     "eslint": "^8.57.1",
-    "eslint-plugin-react": "^7.37.4"
+    "eslint-plugin-react": "^7.37.4",
+    "fastify": "^5.8.2",
+    "jsonwebtoken": "^9.0.3",
+    "vitest": "^3.0.0"
   }
 }

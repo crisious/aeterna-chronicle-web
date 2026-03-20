@@ -6,9 +6,9 @@ import path from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      // server/node_modules 의존성을 테스트에서 사용 가능하도록 리졸빙
-      fastify: path.resolve(__dirname, 'server/node_modules/fastify'),
-      jsonwebtoken: path.resolve(__dirname, 'server/node_modules/jsonwebtoken'),
+      // node_modules 의존성을 테스트에서 사용 가능하도록 리졸빙
+      fastify: path.resolve(__dirname, '../node_modules/fastify'),
+      jsonwebtoken: path.resolve(__dirname, '../node_modules/jsonwebtoken'),
     },
   },
   test: {
