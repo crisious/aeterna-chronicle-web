@@ -21,19 +21,51 @@ FROM nginx:1.25-alpine AS runtime
 # 커스텀 nginx 설정
 COPY --from=builder /app/client/dist /usr/share/nginx/html
 
-# SPA fallback 설정
+# SPA fallback + API reverse proxy 설정
 RUN echo 'server { \
     listen 80; \
     server_name _; \
     root /usr/share/nginx/html; \
     index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
+    \
+    # API / Auth / Combat → 서버 프록시 \
+    location /api/ { \
+        proxy_pass http://server:3000; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
     } \
+    location /auth/ { \
+        proxy_pass http://server:3000; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
+    location /combat/ { \
+        proxy_pass http://server:3000; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
+    \
+    # Socket.IO WebSocket 프록시 \
+    location /socket.io/ { \
+        proxy_pass http://server:3000; \
+        proxy_http_version 1.1; \
+        proxy_set_header Upgrade $http_upgrade; \
+        proxy_set_header Connection "upgrade"; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
+    \
+    # 정적 에셋 — 장기 캐시 \
     location /assets { \
         expires 1y; \
         add_header Cache-Control "public, immutable"; \
     } \
+    \
+    # SPA fallback \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    \
     gzip on; \
     gzip_types text/plain text/css application/json application/javascript text/xml; \
 }' > /etc/nginx/conf.d/default.conf

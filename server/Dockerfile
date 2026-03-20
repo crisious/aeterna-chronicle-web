@@ -12,7 +12,8 @@ RUN cd server && npm install --ignore-scripts
 COPY server/tsconfig.json ./server/
 COPY server/src/ ./server/src/
 COPY server/prisma/ ./server/prisma/
-RUN cd server && npx prisma generate && npx tsc
+RUN cd server && npx prisma generate && npx tsc \
+    && cp -r /app/shared/proto /app/server/dist/shared/proto
 
 # Stage 2: 런타임
 FROM node:20-alpine AS runtime
