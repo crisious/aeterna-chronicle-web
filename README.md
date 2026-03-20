@@ -4,7 +4,7 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-39%20Complete-blue?style=for-the-badge)](#-개발-현황)
+[![Phase](https://img.shields.io/badge/Phase-40%20Complete-blue?style=for-the-badge)](#-개발-현황)
 [![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C575%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
@@ -87,11 +87,11 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 39 (P0~P39) | 커밋 | 203+ |
+| Phase | 40 (P0~P40) | 커밋 | 205+ |
 | Notion 티켓 | 728/728 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
-| 이미지 | 1,383장 (AI) | 오디오 | BGM 42 (MusicGen AI) + SFX 75 + Voice 20 = 137 ✅ |
+| 이미지 | 1,383장 (AI) | 오디오 | BGM 42 (MusicGen) + SFX 75 (MusicGen) + Voice 20 (TTS) = 137 ✅ |
 | 아틀라스 | 50 PNG + 50 JSON | DB 모델 | 110 (Prisma) |
 | API | 44 REST + 8 Socket | UI | 18종 |
 | 에셋 총계 | 1,575개 | 정합성 검증 | 395+ 항목, 184+ 수정 |
@@ -121,7 +121,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**39 Phase 완료 · 728 티켓 전부 Done · 203+ 커밋 · v1.0 릴리즈 준비 완료**
+**40 Phase 완료 · 728 티켓 전부 Done · 205+ 커밋 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
@@ -132,6 +132,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 | P34B | 에셋 매니페스트 + 전수 검증 | 오디오 138개 연결 · 이미지 1,383장 확인 · 에셋 완전체 1,575개 |
 | P34 | 오디오 SFX 75+Voice 20 완성 | SFX 75개 생성 · Voice 20개 생성 · 오디오 파이프라인 완료 |
 | P39 | 오디오 에셋 AI 생성 | BGM 42곡 MusicGen AI 생성 + SFX 75 프로시저럴 + Voice 20 포먼트 합성 · 137/137 완료 |
+| P40 | SFX AI 교체 + Voice TTS | SFX 75개 MusicGen AI 교체 · Voice 20개 macOS TTS 생성 · 137/137 유효 |
 | P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
 | P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
 | P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
