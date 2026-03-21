@@ -7,8 +7,8 @@
 [![Phase](https://img.shields.io/badge/Phase-49%20Complete-blue?style=for-the-badge)](#-개발-현황)
 [![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Assets](https://img.shields.io/badge/Assets-1%2C575%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-202%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Assets](https://img.shields.io/badge/Assets-1%2C596%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
+[![Commits](https://img.shields.io/badge/Commits-212%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 
 *실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱*
 
@@ -91,7 +91,7 @@
 | Notion 티켓 | 728/728 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
-| 이미지 | 1,383장 (AI) | 오디오 | BGM 42 (MusicGen) + SFX 75 (MusicGen) + Voice 20 (TTS) = 137 ✅ |
+| 이미지 | 1,453장 (AI) | 오디오 | BGM 42 (ACE-Step 9 + MusicGen 33) + SFX 75 + Voice 20 (TTS) = 137 ✅ |
 | 아틀라스 | 50 PNG + 50 JSON | DB 모델 | 110 (Prisma) |
 | API | 44 REST + 8 Socket | UI | 18종 |
 | 에셋 총계 | 1,596개 | 정합성 검증 | 395+ 항목, 184+ 수정 |
@@ -155,7 +155,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 누적 395+ 항목 검증, 184+ 건 수정 완료 (P0~P38).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
 DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
-에셋 전수 확인: 이미지 1,383장 + 오디오 138개 + 아틀라스/JSON 54개 = 1,575개.
+에셋 전수 확인: 이미지 1,453장 + 오디오 137개 + 아틀라스/JSON 100개 = 1,596개. ACE-Step 9곡 고품질 리마스터 포함.
 
 </details>
 
