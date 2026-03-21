@@ -155,6 +155,9 @@ export class LoadingScene extends Phaser.Scene {
     // P34-A: 비주얼 에셋 전수 로딩 (VFX 210, 아이콘 335, 코스메틱 150, 전직 18)
     this.assetManager.preloadAllVisuals();
 
+    // 🔧 FIX: 에셋 큐 등록 후 반드시 load.start() 호출 — 없으면 0%에서 멈춤
+    this.load.start();
+
     // 팁 순환 (6초마다)
     this.time.addEvent({
       delay: 6000, loop: true,
