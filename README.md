@@ -4,7 +4,7 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-43%20Complete-blue?style=for-the-badge)](#-개발-현황)
+[![Phase](https://img.shields.io/badge/Phase-49%20Complete-blue?style=for-the-badge)](#-개발-현황)
 [![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C575%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
@@ -87,14 +87,14 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 43 (P0~P43) | 커밋 | 208+ |
+| Phase | 49 (P0~P49) | 커밋 | 212+ |
 | Notion 티켓 | 728/728 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
 | 이미지 | 1,383장 (AI) | 오디오 | BGM 42 (MusicGen) + SFX 75 (MusicGen) + Voice 20 (TTS) = 137 ✅ |
 | 아틀라스 | 50 PNG + 50 JSON | DB 모델 | 110 (Prisma) |
 | API | 44 REST + 8 Socket | UI | 18종 |
-| 에셋 총계 | 1,575개 | 정합성 검증 | 395+ 항목, 184+ 수정 |
+| 에셋 총계 | 1,596개 | 정합성 검증 | 395+ 항목, 184+ 수정 |
 
 ---
 
@@ -121,7 +121,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**43 Phase 완료 · 728 티켓 전부 Done · 208+ 커밋 · v1.0 릴리즈 준비 완료**
+**49 Phase 완료 · 728 티켓 전부 Done · 212+ 커밋 · 에셋 1,596개 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
@@ -136,6 +136,10 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 | P42 | E2E 테스트 확장 | 10개 신규 E2E (combat/character/ending/shop/party/trade/save/world/raid/story) · 24→34 파일 |
 | P43 | ACE-Step 보스곡 리마스터 | 핵심 5곡 ACE-Step v1 3.5B 생성 (보스3+메인테마+엔딩) · 평균 4배 고품질 |
 | P45 | 로딩 최적화 | 오디오 lazy load (21 essential→116 deferred) · WebP 변환 스크립트 (61% 절감) · Vite gzip/brotli · 로딩 화면 |
+| P46 | 엔딩 회귀 테스트 | 212 테스트 케이스 (24 regression + 188 matrix) · 엔딩 우선순위/경계값/조합 전수 검증 |
+| P49 | Docker 배포 검증 | Dockerfile 수정 · docker-compose.yml · 헬스체크 스크립트 · nginx 리버스 프록시 |
+| R-01 | 에셋 연결 | generated/ → client/ 1,453개 이미지 투입 (characters/monsters/environment/ui/vfx/cosmetics/atlas) |
+| R-03 | ACE-Step 보스곡 리마스터 | 나머지 4곡 완료 (말라투스/라와르/케인/각성) · 총 ACE-Step 9곡 |
 | P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
 | P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
 | P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |

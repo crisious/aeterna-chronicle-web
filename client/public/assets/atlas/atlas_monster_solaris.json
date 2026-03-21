@@ -1,0 +1,143 @@
+{
+  "atlas": "atlas_monster_solaris",
+  "size": {
+    "w": 4096,
+    "h": 2048
+  },
+  "sprites": [
+    {
+      "file": "BOSS-SOL-PHOENIX.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_automaton_soldier_normal.png",
+      "x": 514,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_argentium_tin_soldier_normal.png",
+      "x": 1028,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_afterimage_soldier_normal.png",
+      "x": 1542,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_cactus_golem_normal.png",
+      "x": 2056,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_desert_skeleton_normal.png",
+      "x": 2570,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_desert_vulture_normal.png",
+      "x": 3084,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_dune_worm_small_normal.png",
+      "x": 0,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_fire_lizard_normal.png",
+      "x": 514,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_glass_scorpion_normal.png",
+      "x": 1028,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_glass_snake_normal.png",
+      "x": 1542,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_heat_mirage_normal.png",
+      "x": 2056,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_molten_crab_normal.png",
+      "x": 2570,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_oasis_slime_normal.png",
+      "x": 3084,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_sand_elemental_normal.png",
+      "x": 0,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_sand_phantom_normal.png",
+      "x": 514,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_sand_scarab_normal.png",
+      "x": 1028,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_sandstorm_hawk_normal.png",
+      "x": 1542,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_solaris_sun_wisp_normal.png",
+      "x": 2056,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 19
+}

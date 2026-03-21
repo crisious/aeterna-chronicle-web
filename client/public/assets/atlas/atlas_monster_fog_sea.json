@@ -1,0 +1,136 @@
+{
+  "atlas": "atlas_monster_fog_sea",
+  "size": {
+    "w": 4096,
+    "h": 2048
+  },
+  "sprites": [
+    {
+      "file": "BOSS-FOG-LEVIATHAN.png",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_fog_rat_normal.png",
+      "x": 514,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_erebos_fog_wolf_normal.png",
+      "x": 1028,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_abyssal_polyp_normal.png",
+      "x": 1542,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_barnacle_horror_normal.png",
+      "x": 2056,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_deep_angler_normal.png",
+      "x": 2570,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_drowned_knight_normal.png",
+      "x": 3084,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_fog_jellyfish_normal.png",
+      "x": 0,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_fog_mimic_normal.png",
+      "x": 514,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_fog_serpent_normal.png",
+      "x": 1028,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_fog_wisp_normal.png",
+      "x": 1542,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_ghost_crab_normal.png",
+      "x": 2056,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_ghost_sailor_normal.png",
+      "x": 2570,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_lost_soul_cluster_normal.png",
+      "x": 3084,
+      "y": 514,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_memory_sponge_normal.png",
+      "x": 0,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_phantom_fish_normal.png",
+      "x": 514,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_spectral_eel_normal.png",
+      "x": 1028,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    },
+    {
+      "file": "mon_fog_sea_wraith_gull_normal.png",
+      "x": 1542,
+      "y": 1028,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "count": 18
+}
