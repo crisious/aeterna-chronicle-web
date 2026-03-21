@@ -20,6 +20,21 @@ interface GameSceneData {
   characterId?: string;
 }
 
+// ── 존 → 챕터 타이틀 카드 매핑 ───────────────────────────────
+interface ChapterTitleInfo {
+  imageKey: string;
+  imagePath: string;
+  label: string;
+}
+
+const ZONE_CHAPTER_MAP: Record<string, ChapterTitleInfo> = {
+  aether_plains:     { imageKey: 'ch_title_1', imagePath: 'assets/cg/chapters/ch1_erebos.png',      label: 'Chapter 1 — 에레보스' },
+  memory_forest:     { imageKey: 'ch_title_2', imagePath: 'assets/cg/chapters/ch2_sylvanheim.png',  label: 'Chapter 2 — 실반헤임' },
+  shadow_gorge:      { imageKey: 'ch_title_3', imagePath: 'assets/cg/chapters/ch3_solaris.png',     label: 'Chapter 3 — 솔라리스' },
+  forgotten_citadel: { imageKey: 'ch_title_4', imagePath: 'assets/cg/chapters/ch4_argentium.png',   label: 'Chapter 4 — 아르겐티움' },
+  chrono_spire:      { imageKey: 'ch_title_5', imagePath: 'assets/cg/chapters/ch5_plateau.png',     label: 'Chapter 5 — 망각의 고원' },
+};
+
 /** 다른 플레이어 / 몬스터 표시 */
 interface RemoteEntity {
   id: string;
@@ -73,6 +88,12 @@ export class GameScene extends Phaser.Scene {
     this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
+
+    // 챕터 타이틀 카드 이미지 로드
+    const chapterInfo = ZONE_CHAPTER_MAP[this.currentZoneId];
+    if (chapterInfo) {
+      this.load.image(chapterInfo.imageKey, chapterInfo.imagePath);
+    }
 
     // SoundManager preload — 138개 오디오 파일 대부분 미존재(404)
     // 실패해도 게임 진행에 영향 없음 (loaderror 핸들러가 무시)
@@ -189,6 +210,9 @@ export class GameScene extends Phaser.Scene {
       this.hudOrchestrator.hideDialogue();
     });
 
+    // 챕터 타이틀 카드 표시 (존 진입 시)
+    this._showChapterTitleCard();
+
     // P25-04: 존 정보 + 소켓 연결
     this._setupZone();
     this._setupSocketEvents();
@@ -211,6 +235,64 @@ export class GameScene extends Phaser.Scene {
     if ((import.meta as unknown as Record<string, Record<string, unknown>>).env?.DEV) {
       runPoolBenchmark(1000);
     }
+  }
+
+  // ── 챕터 타이틀 카드 표시 ────────────────────────────────
+
+  private _showChapterTitleCard(): void {
+    const chapterInfo = ZONE_CHAPTER_MAP[this.currentZoneId];
+    if (!chapterInfo || !this.textures.exists(chapterInfo.imageKey)) return;
+
+    const { width, height } = this.cameras.main;
+
+    // 반투명 오버레이
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7)
+      .setScrollFactor(0).setDepth(20000);
+
+    // 챕터 타이틀 이미지
+    const titleImage = this.add.image(width / 2, height / 2 - 30, chapterInfo.imageKey)
+      .setScrollFactor(0).setDepth(20001).setAlpha(0);
+
+    // 이미지를 화면 중앙에 적절한 크기로 표시 (최대 60% 너비)
+    const maxW = width * 0.6;
+    const maxH = height * 0.5;
+    const texW = titleImage.width;
+    const texH = titleImage.height;
+    const scale = Math.min(maxW / texW, maxH / texH, 1);
+    titleImage.setScale(scale);
+
+    // 챕터 레이블 텍스트
+    const labelText = this.add.text(width / 2, height / 2 + titleImage.displayHeight / 2 + 30, chapterInfo.label, {
+      fontSize: '24px',
+      fontFamily: 'Noto Sans KR, sans-serif',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(20001).setAlpha(0);
+
+    // 페이드인 (0.8s) → 홀드 (2s) → 페이드아웃 (0.5s)
+    this.tweens.add({
+      targets: [titleImage, labelText],
+      alpha: 1,
+      duration: 800,
+      ease: 'Power2',
+      onComplete: () => {
+        this.time.delayedCall(2000, () => {
+          this.tweens.add({
+            targets: [overlay, titleImage, labelText],
+            alpha: 0,
+            duration: 500,
+            ease: 'Power2',
+            onComplete: () => {
+              overlay.destroy();
+              titleImage.destroy();
+              labelText.destroy();
+            },
+          });
+        });
+      },
+    });
   }
 
   // ── P25-04: 존 정보 조회 ────────────────────────────────

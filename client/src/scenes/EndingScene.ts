@@ -4,8 +4,8 @@
  * 서버에서 엔딩 판정 결과를 수신한 뒤
  * GameScene → EndingScene 으로 전환하여 해당 엔딩을 연출한다.
  *
- * 텍스트 기반 연출 (이미지 없음):
- *   - 배경색 그라데이션
+ * 연출:
+ *   - 엔딩 CG 풀스크린 배경
  *   - 엔딩 타이틀 + 본문 페이드인
  *   - 에필로그 텍스트 순차 표시
  */
@@ -34,13 +34,18 @@ interface EndingPresentation {
   titleColor: string;
   bodyColor: string;
   epilogueLines: string[];
+  cgPath: string;
 }
+
+// ── 엔딩 타입 → CG 이미지 키 ────────────────────────────────
+const ENDING_CG_KEY = 'ending_cg';
 
 const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
   DIVINE_RETURN: {
     bgColor: 0x1a0a3e,
     titleColor: '#FFD700',
     bodyColor: '#E0D0FF',
+    cgPath: 'assets/cg/ending_d_return.png',
     epilogueLines: [
       '열두 신의 이름이 하늘에 새겨진다.',
       '레테가 처음으로 미소짓는다.',
@@ -54,6 +59,7 @@ const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
     bgColor: 0x2a0a0a,
     titleColor: '#FF4444',
     bodyColor: '#FFCCCC',
+    cgPath: 'assets/cg/ending_c_oblivion.png',
     epilogueLines: [
       '50년 후. 에테르나에 전쟁이 없다.',
       '분쟁도 없다.',
@@ -67,6 +73,7 @@ const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
     bgColor: 0x0a2a1a,
     titleColor: '#44FF88',
     bodyColor: '#D0FFE0',
+    cgPath: 'assets/cg/ending_a_guardian.png',
     epilogueLines: [
       '에레보스에 새 식물이 자라기 시작한다.',
       '세라핀이 실반헤임에서 처음으로 웃는다.',
@@ -80,6 +87,7 @@ const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
     bgColor: 0x0a1a2a,
     titleColor: '#4488FF',
     bodyColor: '#D0E0FF',
+    cgPath: 'assets/cg/ending_b_witness.png',
     epilogueLines: [
       '에리언은 기억을 잃었다.',
       '하지만 세계는 구원되었다.',
@@ -94,6 +102,7 @@ const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
     bgColor: 0x0a0a0a,
     titleColor: '#888888',
     bodyColor: '#AAAAAA',
+    cgPath: 'assets/cg/defeat_oblivion.png',
     epilogueLines: [
       '기억의 파도가 밀려왔다.',
       '에리언은 레테를 저지하지 못했다.',
@@ -115,12 +124,34 @@ export class EndingScene extends Phaser.Scene {
     this.endingData = data;
   }
 
+  preload(): void {
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[EndingScene] CG 로드 실패 (무시): ${file.key}`);
+    });
+
+    const presentation = ENDING_PRESENTATIONS[this.endingData.endingType] ?? ENDING_PRESENTATIONS.DEFEAT;
+    this.load.image(ENDING_CG_KEY, presentation.cgPath);
+  }
+
   create(): void {
     const { width, height } = this.cameras.main;
     const presentation = ENDING_PRESENTATIONS[this.endingData.endingType] ?? ENDING_PRESENTATIONS.DEFEAT;
 
     // ── 배경 ────────────────────────────────────────────────
     this.cameras.main.setBackgroundColor(presentation.bgColor);
+
+    // ── 엔딩 CG (풀스크린 배경) ─────────────────────────────
+    if (this.textures.exists(ENDING_CG_KEY)) {
+      const cgImage = this.add.image(width / 2, height / 2, ENDING_CG_KEY);
+      cgImage.setDisplaySize(width, height);
+      cgImage.setAlpha(0);
+      this.tweens.add({
+        targets: cgImage,
+        alpha: 1,
+        duration: 1500,
+        ease: 'Power2',
+      });
+    }
 
     // ── 엔딩 타이틀 (페이드인) ──────────────────────────────
     const titleText = this.add.text(width / 2, height * 0.15, this.endingData.endingName, {
