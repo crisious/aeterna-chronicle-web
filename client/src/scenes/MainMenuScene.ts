@@ -10,6 +10,7 @@
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
+import { loadingProgress } from '../ui/LoadingProgress';
 
 // ── 상수 ────────────────────────────────────────────────────
 
@@ -44,6 +45,9 @@ export class MainMenuScene extends Phaser.Scene {
   // ── 라이프사이클 ─────────────────────────────────────────
 
   preload(): void {
+    // HTML 로딩 화면 연동 — Phaser 로더 진행률을 HTML #loading-progress에 반영
+    loadingProgress.bindToLoader(this.load);
+
     // P33-A: 타이틀 배경 이미지 로드
     this.load.image('title_bg', 'assets/generated/environment/backgrounds/ERB-BG-SKY-DUSK.png');
     this.load.image('title_bg_mid', 'assets/generated/environment/backgrounds/ERB-BG-MID-DUSK.png');
