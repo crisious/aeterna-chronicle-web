@@ -40,10 +40,38 @@ export class LoadingScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // 배경 이미지 먼저 로드 (에레보스 배경)
+    // ── UI를 먼저 구성 (로딩 바 표시용) ──
+    this._buildUI();
+
+    // ── 프로그레스 바 콜백 등록 ──
+    this.load.on('progress', (value: number) => this._onProgress(value));
+    this.load.on('complete', () => this._onComplete());
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn(`[LoadingScene] 에셋 로드 실패 (무시): ${file.key}`);
+    });
+
+    // ── 배경 이미지 ──
     this.load.image('loading_bg', 'assets/generated/environment/backgrounds/ABY-BG-FAR-NIGHT.png');
-    this.load.once('complete', () => this._buildUI());
-    this.load.start();
+
+    // ── 모든 게임 에셋 큐 등록 ──
+    this.assetManager = new AssetManager(this);
+    this.assetManager.preloadAtlases();
+    this.assetManager.preloadAudio(this.sceneData.zoneId);
+    this.assetManager.preloadCharacters();
+    this.assetManager.createPlaceholders();
+
+    // SoundManager 오디오 (soundManifest 기반)
+    const soundMgr = new SoundManager(this);
+    soundMgr.preloadAll();
+
+    // 비주얼 에셋 (VFX, 아이콘, 코스메틱, 전직)
+    this.assetManager.preloadAllVisuals();
+
+    // Phaser가 preload() 종료 후 자동으로 load.start() 호출
+  }
+
+  create(): void {
+    // preload 완료 후 도달 — 아무것도 안 해도 됨 (_onComplete에서 씬 전환)
   }
 
   private _buildUI(): void {
@@ -135,28 +163,6 @@ export class LoadingScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this._showRandomTip();
-
-    // ── 에셋 로딩 실행 ───────────────────────────────
-    this.assetManager = new AssetManager(this);
-    this.assetManager.setupLoadingProgress(
-      (value) => this._onProgress(value),
-      () => this._onComplete(),
-    );
-
-    this.assetManager.preloadAtlases();
-    this.assetManager.preloadAudio(this.sceneData.zoneId);
-    this.assetManager.preloadCharacters();
-    this.assetManager.createPlaceholders();
-
-    // P34-A: SoundManager 전수 오디오 로딩 (soundManifest 기반 138개)
-    const soundMgr = new SoundManager(this);
-    soundMgr.preloadAll();
-
-    // P34-A: 비주얼 에셋 전수 로딩 (VFX 210, 아이콘 335, 코스메틱 150, 전직 18)
-    this.assetManager.preloadAllVisuals();
-
-    // 🔧 FIX: 에셋 큐 등록 후 반드시 load.start() 호출 — 없으면 0%에서 멈춤
-    this.load.start();
 
     // 팁 순환 (6초마다)
     this.time.addEvent({
