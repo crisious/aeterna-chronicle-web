@@ -115,7 +115,7 @@
 | A: 기억의 수호자 (최선) | `fragment_count == 4` + `party_alive == 63`(전원) + `ending_a_score ≥ 60` + `lethe_understood == true` | 희생 없이 레테를 안식으로 이끌고 세계 치유 |
 | B: 마지막 증인의 선택 (정통) | `fragment_count >= 3`, 위 조건 미충족 (기본 엔딩) | 에리언이 기억을 희생해 레테 봉인, 세계 구원 |
 | C: 망각의 선택 (비극) | `betrayal_score >= 70` | 레테와 손잡고 선택적 망각 시스템 구축 |
-| D: 신들의 귀환 (히든) | `sacred_artifacts == 12` + `sealed_ruins_visited == 7` | 열두 신 전체 해방, 속편 암시 |
+| D: 신들의 귀환 (히든) | `sacred_artifacts == 12` + `sealed_ruins_visited == 6` | 열두 신 전체 해방, 속편 암시 |
 
 > **구현 명세 참조** → [`멀티엔딩_플래그_설계.md`](멀티엔딩_플래그_설계.md)
 >
@@ -127,7 +127,7 @@
 > | `story.party_alive` | int (비트마스크) | 0~63 | 동료 6명의 생존 여부 (비트별 매핑) |
 > | `story.betrayal_score` | int | 0~100 | 베르나르도·레테 공감 누적 점수 |
 > | `story.artifact_count` | int | 0~12 | 신성 유물 수집 수 (메인 파편 4개 + 히든 8개) |
-> | `story.seal_visited` | int (비트마스크) | 0~127 | 봉인 유적 방문 여부 (챕터별 1개, 총 7개) |
+> | `story.seal_visited` | int (비트마스크) | 0~63 | 봉인 유적 방문 여부 (챕터별 1개, 총 6개) |
 > | `story.ending_a_score` | int | 0~100 | 엔딩 A 진행도 (선택지별 포인트 누적, 임계값 60) |
 > | `story.emperor_saved` | bool | — | 황제 레나르도 5세 구원 여부 |
 > | `story.lethe_understood` | bool | — | 레테의 진심을 이해했는지 여부 |

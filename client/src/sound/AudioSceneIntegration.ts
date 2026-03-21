@@ -48,9 +48,9 @@ export const SCENE_BGM_MAP: SceneBgmMapping[] = [
   { sceneKey: 'BattleScene',  bgmKey: 'bgm_arg_03', subZone: 'boss_kain' },
 
   // ── 던전 BGM ────────────────────────────────────
-  { sceneKey: 'DungeonScene', bgmKey: 'bgm_dungeon_01' },
-  { sceneKey: 'DungeonScene', bgmKey: 'bgm_dungeon_02', subZone: 'deep' },
-  { sceneKey: 'DungeonScene', bgmKey: 'bgm_dungeon_03', subZone: 'boss_room' },
+  { sceneKey: 'DungeonScene', bgmKey: 'bgm_aby_01' },
+  { sceneKey: 'DungeonScene', bgmKey: 'bgm_aby_02', subZone: 'deep' },
+  { sceneKey: 'DungeonScene', bgmKey: 'bgm_aby_03', subZone: 'boss_room' },
 
   // ── 시스템 씬 BGM (soundManifest 키 매핑) ────────
   { sceneKey: 'MainMenuScene',       bgmKey: 'bgm_sys_02' },  // title_screen.ogg
@@ -81,42 +81,42 @@ export type SfxEvent =
   | 'ether_crystal_resonate' | 'memory_fragment_absorb';
 
 export const SFX_EVENT_MAP: Record<SfxEvent, string> = {
-  // 전투
-  attack_hit:          'sfx_attack_hit',
-  attack_miss:         'sfx_attack_miss',
-  attack_critical:     'sfx_attack_crit',
-  skill_cast:          'sfx_skill_cast',
-  skill_fire:          'sfx_skill_fire',
-  skill_ice:           'sfx_skill_ice',
-  skill_lightning:     'sfx_skill_lightning',
-  skill_shadow:        'sfx_skill_shadow',
-  skill_heal:          'sfx_skill_heal',
-  player_damage:       'sfx_player_hurt',
+  // 전투 — soundManifest SFX_COMBAT_ENTRIES 키 매핑
+  attack_hit:          'sfx_sword_slash_1',
+  attack_miss:         'sfx_dodge_roll',
+  attack_critical:     'sfx_critical_hit',
+  skill_cast:          'sfx_skill_activate',
+  skill_fire:          'sfx_magic_fire',
+  skill_ice:           'sfx_magic_ice',
+  skill_lightning:     'sfx_magic_lightning',
+  skill_shadow:        'sfx_magic_dark',
+  skill_heal:          'sfx_magic_heal',
+  player_damage:       'sfx_hit_flesh',
   player_death:        'sfx_player_death',
-  player_levelup:      'sfx_levelup',
+  player_levelup:      'sfx_ui_level_up',
   player_revive:       'sfx_revive',
-  monster_death:       'sfx_monster_death',
-  monster_aggro:       'sfx_monster_aggro',
+  monster_death:       'sfx_enemy_death',
+  monster_aggro:       'sfx_debuff_apply',
 
-  // 아이템
-  item_pickup:         'sfx_item_pickup',
-  item_equip:          'sfx_item_equip',
-  item_unequip:        'sfx_item_unequip',
-  item_use:            'sfx_item_use',
-  gold_gain:           'sfx_gold_gain',
-  gold_spend:          'sfx_gold_spend',
+  // 아이템 — soundManifest SFX_UI_ENTRIES 키 매핑
+  item_pickup:         'sfx_ui_item_pickup',
+  item_equip:          'sfx_ui_item_equip',
+  item_unequip:        'sfx_ui_item_equip',
+  item_use:            'sfx_ui_item_pickup',
+  gold_gain:           'sfx_ui_gold_gain',
+  gold_spend:          'sfx_ui_gold_gain',
 
   // 강화
-  enhance_success:     'sfx_enhance_success',
-  enhance_fail:        'sfx_enhance_fail',
-  enhance_destroy:     'sfx_enhance_destroy',
+  enhance_success:     'sfx_ui_achievement',
+  enhance_fail:        'sfx_ui_error',
+  enhance_destroy:     'sfx_guard_break',
 
-  // 퀘스트
-  quest_accept:        'sfx_quest_accept',
-  quest_complete:      'sfx_quest_complete',
-  quest_update:        'sfx_quest_update',
+  // 퀘스트 — soundManifest SFX_UI_ENTRIES 키 매핑
+  quest_accept:        'sfx_ui_quest_accept',
+  quest_complete:      'sfx_ui_quest_complete',
+  quest_update:        'sfx_ui_notification',
 
-  // UI
+  // UI — soundManifest SFX_UI_ENTRIES 키 매핑 (이미 일치)
   ui_click:            'sfx_ui_click',
   ui_hover:            'sfx_ui_hover',
   ui_open:             'sfx_ui_open',
@@ -124,27 +124,27 @@ export const SFX_EVENT_MAP: Record<SfxEvent, string> = {
   ui_error:            'sfx_ui_error',
   ui_confirm:          'sfx_ui_confirm',
 
-  // 알림
-  notification_popup:    'sfx_notification',
-  notification_important:'sfx_notification_urgent',
+  // 알림 — soundManifest SFX_UI/SFX_SYSTEM 키 매핑
+  notification_popup:    'sfx_ui_notification',
+  notification_important:'sfx_sys_server_message',
 
-  // 소셜
-  chat_message:        'sfx_chat_msg',
-  party_invite:        'sfx_party_invite',
-  trade_request:       'sfx_trade_req',
+  // 소셜 — soundManifest SFX_SYSTEM_ENTRIES 키 매핑
+  chat_message:        'sfx_sys_chat_whisper',
+  party_invite:        'sfx_sys_party_invite',
+  trade_request:       'sfx_sys_trade_request',
 
-  // 환경
-  env_footstep:        'sfx_footstep',
-  env_portal:          'sfx_portal',
-  env_door:            'sfx_door',
-  env_chest_open:      'sfx_chest_open',
-  env_rain:            'sfx_rain',
-  env_wind:            'sfx_wind',
-  env_thunder:         'sfx_thunder',
+  // 환경 — soundManifest AMBIENT_ENTRIES / SFX_MEMORY 키 매핑
+  env_footstep:        'amb_forest_day',
+  env_portal:          'sfx_mem_resonance_trigger',
+  env_door:            'sfx_ui_open',
+  env_chest_open:      'sfx_ui_quest_complete',
+  env_rain:            'amb_rain_light',
+  env_wind:            'amb_snow_wind',
+  env_thunder:         'amb_volcano_rumble',
 
-  // 에테르 특수
-  ether_crystal_resonate: 'sfx_ether_resonate',
-  memory_fragment_absorb: 'sfx_memory_absorb',
+  // 에테르 특수 — soundManifest SFX_MEMORY_ENTRIES 키 매핑
+  ether_crystal_resonate: 'sfx_mem_resonance_burst',
+  memory_fragment_absorb: 'sfx_mem_fragment_collect',
 };
 
 // ─── AudioSceneController ─────────────────────────────────────
