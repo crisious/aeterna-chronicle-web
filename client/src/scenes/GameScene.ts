@@ -300,25 +300,28 @@ export class GameScene extends Phaser.Scene {
   private async _setupZone(): Promise<void> {
     try {
       this.zoneInfo = await networkManager.getZoneInfo(this.currentZoneId);
-      if (this.zoneInfo) {
-        this.zoneLabel.setText(`📍 ${this.zoneInfo.name}`);
-
-        // NPC 표시
-        this.zoneInfo.npcs?.forEach((npc, i) => {
-          const x = 300 + i * 200;
-          const y = 400;
-          this._spawnNpc(npc.id, npc.name, x, y);
-        });
-
-        // 몬스터 스폰 표시
-        this.zoneInfo.monsters?.forEach((mon, i) => {
-          const x = 600 + (i % 5) * 150;
-          const y = 600 + Math.floor(i / 5) * 150;
-          this._spawnMonster(mon.id, `${mon.name} Lv.${mon.level}`, x, y);
-        });
-      }
     } catch (err) {
-      console.warn('[GameScene] 존 정보 로드 실패:', err);
+      console.warn('[GameScene] 존 정보 API 실패 — 오프라인 모드:', err);
+      this.zoneInfo = null;
+    }
+
+    if (this.zoneInfo) {
+      this.zoneLabel?.setText(`📍 ${this.zoneInfo.name}`);
+
+      this.zoneInfo.npcs?.forEach((npc, i) => {
+        this._spawnNpc(npc.id, npc.name, 300 + i * 200, 400);
+      });
+
+      this.zoneInfo.monsters?.forEach((mon, i) => {
+        this._spawnMonster(mon.id, `${mon.name} Lv.${mon.level}`, 600 + (i % 5) * 150, 600 + Math.floor(i / 5) * 150);
+      });
+    } else {
+      // 오프라인 폴백: 기본 NPC + 몬스터 배치
+      this._spawnNpc('npc_guide', '수호자단 안내원', 300, 400);
+      this._spawnNpc('npc_merchant', '상인', 500, 400);
+      this._spawnMonster('mon_001', '기억 침식쥐 Lv.5', 700, 500);
+      this._spawnMonster('mon_002', '공허 박쥐 Lv.7', 850, 550);
+      this._spawnMonster('mon_003', '망각 슬라임 Lv.8', 1000, 500);
     }
   }
 
