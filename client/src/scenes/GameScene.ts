@@ -213,11 +213,7 @@ export class GameScene extends Phaser.Scene {
     // 챕터 타이틀 카드 표시 (존 진입 시)
     this._showChapterTitleCard();
 
-    // P25-04: 존 정보 + 소켓 연결
-    this._setupZone();
-    this._setupSocketEvents();
-
-    // 존 라벨
+    // 존 라벨 — 반드시 소켓 이벤트 등록 전에 생성해야 함
     const { width } = this.cameras.main;
     this.zoneLabel = this.add.text(width / 2, 20, `📍 ${this.currentZoneName}`, {
       fontSize: '16px', color: '#88cc88', fontFamily: 'monospace',
@@ -226,6 +222,10 @@ export class GameScene extends Phaser.Scene {
     this.connectionLabel = this.add.text(width - 10, 20, '', {
       fontSize: '10px', color: '#44cc44', fontFamily: 'monospace',
     }).setScrollFactor(0).setDepth(10000).setOrigin(1, 0);
+
+    // P25-04: 존 정보 + 소켓 연결 — UI 생성 이후에 호출
+    this._setupZone();
+    this._setupSocketEvents();
 
     // HUD 안내 텍스트
     this.add.text(20, 20, '[WASD] 이동  [1~6] 스킬  [T] 대화  [M] 몬스터', {
@@ -406,9 +406,9 @@ export class GameScene extends Phaser.Scene {
     networkManager.onConnectionChange((state) => {
       const label = state === 'connected' ? '● 온라인' : `○ ${state}`;
       const color = state === 'connected' ? '#44cc44' : '#cccc44';
-      this.connectionLabel.setText(label).setColor(color);
+      this.connectionLabel?.setText(label).setColor(color);
     });
-    this.connectionLabel.setText(networkManager.isConnected ? '● 온라인' : '○ 오프라인');
+    this.connectionLabel?.setText(networkManager.isConnected ? '● 온라인' : '○ 오프라인');
   }
 
   update(_time: number, delta: number): void {
