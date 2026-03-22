@@ -84,6 +84,13 @@ export class GameScene extends Phaser.Scene {
       console.warn(`[GameScene] 에셋 로드 실패 (무시): ${file.key}`);
     });
 
+    // 주인공 캐릭터 이미지 (기본: 에테르 기사 front)
+    this.load.image('player_sprite', 'assets/generated/characters/class_main/char_illust_ether_knight_front.png');
+
+    // NPC 스프라이트
+    this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_sprites/04_mateus_sprite.png');
+    this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_sprites/01_cryo_sprite.png');
+
     // P25-09: 실제 에셋 경로 (atlas만 — 존재 확인된 파일)
     this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
@@ -325,9 +332,26 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  // NPC 이미지 키 매핑
+  private static readonly NPC_SPRITE_MAP: Record<string, string> = {
+    npc_guide: 'npc_guide_sprite',
+    npc_merchant: 'npc_merchant_sprite',
+  };
+
   private _spawnNpc(id: string, name: string, x: number, y: number): void {
-    const sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88).setInteractive({ useHandCursor: true });
-    const tag = this.add.text(x, y - 35, name, {
+    const texKey = GameScene.NPC_SPRITE_MAP[id];
+    let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+
+    if (texKey && this.textures.exists(texKey)) {
+      sprite = this.add.image(x, y, texKey)
+        .setDisplaySize(48, 64)
+        .setInteractive({ useHandCursor: true });
+    } else {
+      sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88)
+        .setInteractive({ useHandCursor: true });
+    }
+
+    const tag = this.add.text(x, y - 42, name, {
       fontSize: '11px', color: '#88ff88', fontFamily: 'monospace',
     }).setOrigin(0.5);
     sprite.on('pointerdown', () => {
@@ -337,8 +361,47 @@ export class GameScene extends Phaser.Scene {
   }
 
   private _spawnMonster(id: string, name: string, x: number, y: number): void {
-    const sprite = this.add.rectangle(x, y, 36, 36, 0xff4444).setInteractive({ useHandCursor: true });
-    const tag = this.add.text(x, y - 28, name, {
+    // 몬스터 매니페스트에서 이미지 매칭 시도
+    let monTexKey = '';
+    try {
+      const manifest = require('../data/monsterManifest.json') as Record<string, string>;
+      const manifestKeys = Object.keys(manifest);
+      const idLower = id.toLowerCase().replace(/[-\s]/g, '_');
+      if (manifestKeys.includes(idLower)) {
+        monTexKey = idLower;
+        if (!this.textures.exists(monTexKey)) {
+          this.load.image(monTexKey, manifest[monTexKey]);
+          this.load.once('complete', () => {
+            const existing = this.remoteEntities.get(id);
+            if (existing && existing.sprite && this.textures.exists(monTexKey)) {
+              existing.sprite.destroy();
+              const newSprite = this.add.image(x, y, monTexKey)
+                .setDisplaySize(48, 48)
+                .setInteractive({ useHandCursor: true });
+              newSprite.on('pointerdown', () => {
+                this.scene.start('BattleScene', {
+                  zoneId: this.currentZoneId, monsterId: id, monsterName: name,
+                });
+              });
+              existing.sprite = newSprite;
+            }
+          });
+          this.load.start();
+        }
+      }
+    } catch { /* 무시 */ }
+
+    let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+    if (monTexKey && this.textures.exists(monTexKey)) {
+      sprite = this.add.image(x, y, monTexKey)
+        .setDisplaySize(48, 48)
+        .setInteractive({ useHandCursor: true });
+    } else {
+      sprite = this.add.rectangle(x, y, 36, 36, 0xff4444)
+        .setInteractive({ useHandCursor: true });
+    }
+
+    const tag = this.add.text(x, y - 34, name, {
       fontSize: '10px', color: '#ff8888', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
@@ -471,6 +534,7 @@ export class GameScene extends Phaser.Scene {
 
   private createPlayer(): void {
     this.player = this.physics.add.sprite(640, 360, 'player_sprite');
+    this.player.setDisplaySize(48, 64);
     this.player.setCollideWorldBounds(true);
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
