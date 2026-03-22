@@ -316,12 +316,12 @@ export class GameScene extends Phaser.Scene {
         this._spawnMonster(mon.id, `${mon.name} Lv.${mon.level}`, 600 + (i % 5) * 150, 600 + Math.floor(i / 5) * 150);
       });
     } else {
-      // 오프라인 폴백: 기본 NPC + 몬스터 배치
+      // 오프라인 폴백: 기본 NPC + 몬스터 배치 (매니페스트 실제 키 사용)
       this._spawnNpc('npc_guide', '수호자단 안내원', 300, 400);
       this._spawnNpc('npc_merchant', '상인', 500, 400);
-      this._spawnMonster('mon_001', '기억 침식쥐 Lv.5', 700, 500);
-      this._spawnMonster('mon_002', '공허 박쥐 Lv.7', 850, 550);
-      this._spawnMonster('mon_003', '망각 슬라임 Lv.8', 1000, 500);
+      this._spawnMonster('mon_erebos_fog_rat', '기억 침식쥐 Lv.5', 700, 500);
+      this._spawnMonster('mon_erebos_memory_beetle', '공허 박쥐 Lv.7', 850, 550);
+      this._spawnMonster('mon_erebos_memory_dust', '망각 슬라임 Lv.8', 1000, 500);
     }
   }
 
