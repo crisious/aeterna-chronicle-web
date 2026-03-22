@@ -42,11 +42,11 @@ export async function initApm(
 ): Promise<void> {
     console.log('[APM] 초기화 시작...');
 
-    // 1) Fastify HTTP 훅 등록 (onRequest/onResponse)
-    registerApmHooks(fastify);
+    // 1) Fastify HTTP 훅은 registerMiddleware()에서 listen 전에 등록됨 (P52 fix)
+    //    여기서는 스킵 — 중복 등록 방지
 
-    // 2) 대시보드 엔드포인트 등록
-    registerApmRoutes(fastify);
+    // 2) 대시보드 엔드포인트는 listen 후이므로 라우트 등록 스킵
+    //    (필요 시 decorate 방식으로 전환)
 
     // 3) 메트릭 수집 시작 (메모리 5초 간격 샘플링)
     startMetricsCollection(5000);

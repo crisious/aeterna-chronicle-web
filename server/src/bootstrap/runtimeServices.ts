@@ -7,6 +7,7 @@ import type { Server as SocketServer } from 'socket.io';
 
 import { redisClient } from '../redis';
 import { initApm } from '../apm';
+import { registerApmHooks } from '../apm/middleware';
 import { tickManager } from '../tick/tickManager';
 import { spawnManager } from '../monster/spawnManager';
 import { statusEffectManager } from '../combat/statusEffectManager';
@@ -38,6 +39,13 @@ export async function registerMiddleware(fastify: FastifyInstance): Promise<void
     opsAlertManager.recordRequest(latency, isError);
     done();
   });
+
+  // APM HTTP 훅 등록 (listen 전에 호출해야 함 — P52 fix)
+  try {
+    registerApmHooks(fastify);
+  } catch (err) {
+    fastify.log.warn({ err }, 'APM hooks registration skipped (non-critical)');
+  }
 }
 
 /**
