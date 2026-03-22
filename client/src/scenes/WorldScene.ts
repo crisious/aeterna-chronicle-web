@@ -108,7 +108,7 @@ export class WorldScene extends Phaser.Scene {
     }
 
     // 플레이어 위치 마커
-    const startZone = WORLD_ZONES.find(z => z.id === this.currentZoneId)!;
+    const startZone = WORLD_ZONES.find(z => z.id === this.currentZoneId) ?? WORLD_ZONES[0];
     this.playerMarker = this.add.circle(
       startZone.posRatioX * width,
       startZone.posRatioY * height,

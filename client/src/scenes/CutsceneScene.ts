@@ -149,7 +149,7 @@ export class CutsceneScene extends Phaser.Scene {
     });
 
     // ── BGM 재생 ──
-    if (this.sound.get(this.config.bgm)) {
+    if (this.config?.bgm && this.sound.get(this.config.bgm)) {
       this.sound.play(this.config.bgm, { loop: true, volume: 0.4 });
     }
 
@@ -283,7 +283,7 @@ export class CutsceneScene extends Phaser.Scene {
   /** 컷씬 종료 → 원래 씬 복귀 */
   private endCutscene(): void {
     // BGM 정지
-    if (this.sound.get(this.config.bgm)) {
+    if (this.config?.bgm && this.sound.get(this.config.bgm)) {
       this.sound.stopByKey(this.config.bgm);
     }
 

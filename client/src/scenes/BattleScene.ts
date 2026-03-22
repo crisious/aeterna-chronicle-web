@@ -510,7 +510,7 @@ export class BattleScene extends Phaser.Scene {
     switch (type) {
       case 'attack':
         this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
-          this._performAttack(this.activeCommander!, target);
+          if (this.activeCommander) this._performAttack(this.activeCommander, target);
           this._endTurn();
         });
         break;
@@ -524,7 +524,7 @@ export class BattleScene extends Phaser.Scene {
         break;
 
       case 'defend':
-        this._performDefend(this.activeCommander!);
+        if (this.activeCommander) this._performDefend(this.activeCommander);
         this._endTurn();
         break;
 
@@ -702,7 +702,7 @@ export class BattleScene extends Phaser.Scene {
           if ((this.activeCommander?.unit.mp ?? 0) < skill.mpCost) return;
           this._closeSubMenu();
           this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
-            this._performSkill(this.activeCommander!, target, skill);
+            if (this.activeCommander) this._performSkill(this.activeCommander, target, skill);
             this._endTurn();
           });
         });

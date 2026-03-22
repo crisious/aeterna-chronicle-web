@@ -345,7 +345,7 @@ export class DungeonScene extends Phaser.Scene {
         this.isDefending = true;
         this._updateCommandHighlight();
         playSfx(this, UI_SFX.CONFIRM, 0.3);
-        this._showDamagePopup(this.playerSprite!, '방어 태세!', '#88aaff');
+        if (this.playerSprite) this._showDamagePopup(this.playerSprite, '방어 태세!', '#88aaff');
       });
 
     // 포션 버튼
@@ -374,7 +374,7 @@ export class DungeonScene extends Phaser.Scene {
   private _usePotion(): void {
     if (this.phase !== 'fighting' && this.phase !== 'boss') return;
     if (this.potionCount <= 0) {
-      this._showDamagePopup(this.playerSprite!, '포션 없음!', '#ff4444');
+      if (this.playerSprite) this._showDamagePopup(this.playerSprite, '포션 없음!', '#ff4444');
       playSfx(this, UI_SFX.ERROR, 0.3);
       return;
     }
@@ -384,7 +384,7 @@ export class DungeonScene extends Phaser.Scene {
     this.playerHp = Math.min(PLAYER_MAX_HP, this.playerHp + POTION_HEAL);
 
     this.cmdPotionBtn?.setText(`💊 포션(${this.potionCount})`);
-    this._showDamagePopup(this.playerSprite!, `+${heal}`, '#44ff44');
+    if (this.playerSprite) this._showDamagePopup(this.playerSprite, `+${heal}`, '#44ff44');
     playSfx(this, UI_SFX.ITEM_PICKUP, 0.4);
     this._updatePlayerBars();
   }
@@ -475,8 +475,8 @@ export class DungeonScene extends Phaser.Scene {
       const bossSprite = this.enemies[0].sprite;
       this.tweens.add({
         targets: bossSprite,
-        scaleX: (bossSprite as any).scaleX * 1.05,
-        scaleY: (bossSprite as any).scaleY * 1.05,
+        scaleX: bossSprite.scaleX * 1.05,
+        scaleY: bossSprite.scaleY * 1.05,
         duration: 800,
         yoyo: true,
         repeat: -1,
@@ -596,14 +596,16 @@ export class DungeonScene extends Phaser.Scene {
     this._updatePlayerBars();
 
     // 데미지 팝업 (플레이어)
-    this._showDamagePopup(
-      this.playerSprite!,
-      this.isDefending ? `${dmg} (방어!)` : `${dmg}`,
-      '#ff6644',
-    );
+    if (this.playerSprite) {
+      this._showDamagePopup(
+        this.playerSprite,
+        this.isDefending ? `${dmg} (방어!)` : `${dmg}`,
+        '#ff6644',
+      );
 
-    // 히트 이펙트 (플레이어)
-    this._showHitEffect(this.playerSprite!);
+      // 히트 이펙트 (플레이어)
+      this._showHitEffect(this.playerSprite);
+    }
     playRandomVoice(this, [...COMBAT_VOICE.HIT], 0.3);
 
     // 공격 모션 (적 → 플레이어 방향 돌진)

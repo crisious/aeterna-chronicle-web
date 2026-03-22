@@ -189,7 +189,7 @@ export class GameScene extends Phaser.Scene {
 
     // 대화 선택 이벤트 → 텔레메트리 발행
     this.events.on('ui.event.dialogue.choice_confirm', ({ choiceId }: { choiceId: string }) => {
-      this.telemetryEmitter.emitDialogueChoice({
+      this.telemetryEmitter?.emitDialogueChoice({
         sessionId: this.sessionId,
         playerId: networkManager.userId ?? 'debug-player-001',
         chapterId: 'CH2',
@@ -199,7 +199,7 @@ export class GameScene extends Phaser.Scene {
         choiceId,
         choiceTextKey: `dialogue.c2.n2.choice.${choiceId.toLowerCase()}`,
         inputMode: 'keyboard',
-        latencyMs: this.hudOrchestrator.dialogueOpenAtMs > 0
+        latencyMs: this.hudOrchestrator?.dialogueOpenAtMs > 0
           ? Date.now() - this.hudOrchestrator.dialogueOpenAtMs : undefined,
         partyComp: ['ERIEN', 'SERAPHINE'],
         difficultyTier: 'normal',
@@ -207,7 +207,7 @@ export class GameScene extends Phaser.Scene {
         platform: 'web',
         region: 'KR',
       });
-      this.hudOrchestrator.hideDialogue();
+      this.hudOrchestrator?.hideDialogue();
     });
 
     // 챕터 타이틀 카드 표시 (존 진입 시)
@@ -331,7 +331,7 @@ export class GameScene extends Phaser.Scene {
       fontSize: '11px', color: '#88ff88', fontFamily: 'monospace',
     }).setOrigin(0.5);
     sprite.on('pointerdown', () => {
-      this.hudOrchestrator.toggleSampleDialogue();
+      this.hudOrchestrator?.toggleSampleDialogue();
     });
     this.remoteEntities.set(id, { id, name, sprite, nameTag: tag, isMonster: false });
   }
@@ -485,24 +485,26 @@ export class GameScene extends Phaser.Scene {
       right: Phaser.Input.Keyboard.KeyCodes.D,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
-    this.numberKeys = [
-      Phaser.Input.Keyboard.KeyCodes.ONE, Phaser.Input.Keyboard.KeyCodes.TWO,
-      Phaser.Input.Keyboard.KeyCodes.THREE, Phaser.Input.Keyboard.KeyCodes.FOUR,
-      Phaser.Input.Keyboard.KeyCodes.FIVE, Phaser.Input.Keyboard.KeyCodes.SIX,
-      Phaser.Input.Keyboard.KeyCodes.SEVEN, Phaser.Input.Keyboard.KeyCodes.EIGHT,
-      Phaser.Input.Keyboard.KeyCodes.NINE, Phaser.Input.Keyboard.KeyCodes.ZERO,
-      Phaser.Input.Keyboard.KeyCodes.MINUS, Phaser.Input.Keyboard.KeyCodes.PLUS,
-    ].map((code) => this.input.keyboard!.addKey(code));
+    if (this.input.keyboard) {
+      this.numberKeys = [
+        Phaser.Input.Keyboard.KeyCodes.ONE, Phaser.Input.Keyboard.KeyCodes.TWO,
+        Phaser.Input.Keyboard.KeyCodes.THREE, Phaser.Input.Keyboard.KeyCodes.FOUR,
+        Phaser.Input.Keyboard.KeyCodes.FIVE, Phaser.Input.Keyboard.KeyCodes.SIX,
+        Phaser.Input.Keyboard.KeyCodes.SEVEN, Phaser.Input.Keyboard.KeyCodes.EIGHT,
+        Phaser.Input.Keyboard.KeyCodes.NINE, Phaser.Input.Keyboard.KeyCodes.ZERO,
+        Phaser.Input.Keyboard.KeyCodes.MINUS, Phaser.Input.Keyboard.KeyCodes.PLUS,
+      ].map((code) => this.input.keyboard!.addKey(code));
 
-    this.numberKeys.forEach((key, index) => {
-      key.on('down', () => {
-        const hotkeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='];
-        this.hudOrchestrator.triggerSlotByHotkey(hotkeys[index]);
+      this.numberKeys.forEach((key, index) => {
+        key.on('down', () => {
+          const hotkeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='];
+          this.hudOrchestrator?.triggerSlotByHotkey(hotkeys[index]);
+        });
       });
-    });
 
-    this.input.keyboard!.on('keydown-T', () => {
-      this.hudOrchestrator.toggleSampleDialogue();
-    });
+      this.input.keyboard.on('keydown-T', () => {
+        this.hudOrchestrator?.toggleSampleDialogue();
+      });
+    }
   }
 }
