@@ -13,6 +13,7 @@ import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
 import monsterManifest from '../data/monsterManifest.json';
+import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
 
 /** GameScene 전환 시 전달 데이터 */
 interface GameSceneData {
@@ -117,11 +118,16 @@ export class GameScene extends Phaser.Scene {
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
 
-    // 환경 오브젝트 에셋 (에테르 평원)
-    this.load.image('env_tree', 'assets/generated/environment/objects/aether_tree_01.png');
-    this.load.image('env_rock', 'assets/generated/environment/objects/aether_rock_01.png');
-    this.load.image('env_crystal', 'assets/generated/environment/objects/aether_crystal_01.png');
-    this.load.image('env_ground', 'assets/generated/environment/tiles/aether_ground_tile.png');
+    // 환경 오브젝트 에셋 — 존 설정에서 동적 로드
+    const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
+    if (envConfig) {
+      if (envConfig.groundTile) {
+        this.load.image('env_ground', envConfig.groundTile);
+      }
+      for (const obj of envConfig.objects) {
+        this.load.image(obj.key, obj.path);
+      }
+    }
 
     // 챕터 타이틀 카드 이미지 로드
     const chapterInfo = ZONE_CHAPTER_MAP[this.currentZoneId];
@@ -577,7 +583,7 @@ export class GameScene extends Phaser.Scene {
     this._placeEnvironmentObjects(worldW, worldH);
   }
 
-  /** 환경 오브젝트 (나무, 바위, 크리스탈, 지면 타일) 배치 */
+  /** 환경 오브젝트 배치 — 존 설정 기반 동적 생성 */
   private _placeEnvironmentObjects(worldW: number, worldH: number): void {
     // 지면 타일
     if (this.textures.exists('env_ground')) {
@@ -585,8 +591,11 @@ export class GameScene extends Phaser.Scene {
       ground.setDepth(-0.5);
     }
 
-    // 시드 기반 난수 — 매번 같은 배치
-    const rng = new Phaser.Math.RandomDataGenerator(['aether_plains_env_42']);
+    const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
+    if (!envConfig) return;
+
+    // 시드 기반 난수 — 존마다 같은 배치 보장
+    const rng = new Phaser.Math.RandomDataGenerator([`${this.currentZoneId}_env_42`]);
 
     // 플레이어 스폰 중심(640,360) 주변 400x400 영역 회피
     const isSpawnZone = (x: number, y: number): boolean =>
@@ -601,51 +610,31 @@ export class GameScene extends Phaser.Scene {
       return { x: rng.between(100, worldW - 100), y: rng.between(100, worldH - 100) };
     };
 
-    // 나무 ~15개
-    if (this.textures.exists('env_tree')) {
-      for (let i = 0; i < 15; i++) {
-        const { x, y } = pickPos();
-        const tree = this.add.image(x, y, 'env_tree');
-        const scale = rng.realInRange(0.6, 1.0);
-        tree.setScale(scale);
-        tree.setOrigin(0.5, 1); // 발 기준 배치
-        tree.setDepth(y);
-      }
-    }
+    for (const obj of envConfig.objects) {
+      if (!this.textures.exists(obj.key)) continue;
 
-    // 바위 ~20개
-    if (this.textures.exists('env_rock')) {
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < obj.count; i++) {
         const { x, y } = pickPos();
-        const rock = this.add.image(x, y, 'env_rock');
-        const scale = rng.realInRange(0.4, 0.9);
-        rock.setScale(scale);
-        rock.setOrigin(0.5, 1);
-        rock.setDepth(y);
-      }
-    }
+        const img = this.add.image(x, y, obj.key);
+        const scale = rng.realInRange(obj.scaleMin, obj.scaleMax);
+        img.setScale(scale);
+        img.setOrigin(0.5, 1); // 발 기준 배치
+        img.setDepth(y);       // Y-depth 정렬
 
-    // 에테르 크리스탈 ~10개 (발광 트윈)
-    if (this.textures.exists('env_crystal')) {
-      for (let i = 0; i < 10; i++) {
-        const { x, y } = pickPos();
-        const crystal = this.add.image(x, y, 'env_crystal');
-        const scale = rng.realInRange(0.5, 0.8);
-        crystal.setScale(scale);
-        crystal.setOrigin(0.5, 1);
-        crystal.setDepth(y);
-        crystal.setAlpha(0.85);
+        if (obj.glow) {
+          const [alphaMin, alphaMax] = obj.glowAlpha ?? [0.7, 1.0];
+          img.setAlpha(alphaMax);
 
-        // 발광 펄스: alpha 0.7 ~ 1.0, 2초 주기
-        this.tweens.add({
-          targets: crystal,
-          alpha: { from: 0.7, to: 1.0 },
-          duration: 2000,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-          delay: rng.between(0, 1000), // 각 크리스탈마다 약간씩 오프셋
-        });
+          this.tweens.add({
+            targets: img,
+            alpha: { from: alphaMin, to: alphaMax },
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: rng.between(0, 1000),
+          });
+        }
       }
     }
   }
