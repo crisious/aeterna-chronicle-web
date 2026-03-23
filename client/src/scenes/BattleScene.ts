@@ -40,6 +40,27 @@ export interface BattleSceneData {
   characterId?: string;
 }
 
+// ─── 존 → 배경 접두어 매핑 ──────────────────────────────────────
+
+const ZONE_BG_PREFIX: Record<string, string> = {
+  aether_plains:     'ERB',
+  memory_forest:     'SYL',
+  shadow_gorge:      'ABY',
+  crystal_cave:      'NOR',
+  forgotten_citadel: 'ARG',
+  chrono_spire:      'TEM',
+  erebos:            'ERB',
+  sylvanheim:        'SYL',
+  solaris:           'SOL',
+  boreal:            'NOR',
+  argentium:         'ARG',
+  britalia:          'BRI',
+  plateau_oblivion:  'OBL',
+  fog_sea:           'FOG',
+};
+
+const DEFAULT_BG_PREFIX = 'ERB';
+
 // ─── 상수 ──────────────────────────────────────────────────────
 
 /** FF6 레이아웃 상수 (1280×720 기준) */
@@ -196,8 +217,8 @@ export class BattleScene extends Phaser.Scene {
 
   preload(): void {
     // 전투 배경 (zoneId 기반)
-    const zoneId = this._initData?.zoneId ?? 'ERB';
-    const zoneCode = zoneId.substring(0, 3).toUpperCase();
+    const zoneId = this._initData?.zoneId ?? '';
+    const zoneCode = ZONE_BG_PREFIX[zoneId] ?? DEFAULT_BG_PREFIX;
     this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
 
     // 몬스터 이미지 — monsterManifest 기반 동적 프리로드
