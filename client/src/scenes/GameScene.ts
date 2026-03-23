@@ -40,7 +40,7 @@ const ZONE_CHAPTER_MAP: Record<string, ChapterTitleInfo> = {
 interface RemoteEntity {
   id: string;
   name: string;
-  sprite: Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   nameTag: Phaser.GameObjects.Text;
   isMonster: boolean;
 }
@@ -91,6 +91,17 @@ export class GameScene extends Phaser.Scene {
     // NPC 스프라이트
     this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_sprites/04_mateus_sprite.png');
     this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_sprites/01_cryo_sprite.png');
+
+    // 존 배경 이미지 preload
+    const ZONE_BG: Record<string, string> = {
+      aether_plains: 'ERB', memory_forest: 'SYL', shadow_gorge: 'ABY',
+      crystal_cave: 'NOR', forgotten_citadel: 'ARG', chrono_spire: 'TEM',
+      erebos: 'ERB', sylvanheim: 'SYL', solaris: 'SOL', boreal: 'NOR',
+      argentium: 'ARG', britalia: 'BRI', plateau_oblivion: 'OBL', fog_sea: 'FOG',
+    };
+    const bgPrefix = ZONE_BG[this.currentZoneId] ?? 'ERB';
+    this.load.image('zone_bg_far', `assets/generated/environment/backgrounds/${bgPrefix}-BG-FAR-DAY.png`);
+    this.load.image('zone_bg_sky', `assets/generated/environment/backgrounds/${bgPrefix}-BG-SKY-DAY.png`);
 
     // 오프라인 폴백 몬스터 이미지 preload
     const manifest = monsterManifest as Record<string, string>;
@@ -533,13 +544,28 @@ export class GameScene extends Phaser.Scene {
   // ── 월드/플레이어/입력 생성 ──
 
   private createWorld(): void {
+    const worldW = 2000, worldH = 2000;
+
+    // 배경 이미지 (스크롤팩터로 패럴랙스 효과)
+    if (this.textures.exists('zone_bg_sky')) {
+      const sky = this.add.image(worldW / 2, worldH / 2, 'zone_bg_sky')
+        .setDisplaySize(worldW, worldH).setDepth(-2).setScrollFactor(0.2);
+    }
+    if (this.textures.exists('zone_bg_far')) {
+      const far = this.add.image(worldW / 2, worldH / 2, 'zone_bg_far')
+        .setDisplaySize(worldW, worldH).setDepth(-1).setScrollFactor(0.5);
+    }
+
+    // 그리드 오버레이 (디버그/가이드용, 투명하게)
     const gridSize = 64;
     const gridGraphics = this.add.graphics();
-    gridGraphics.lineStyle(2, 0xffffff, 0.05);
-    for (let i = 0; i < 2000; i += gridSize) { gridGraphics.moveTo(i, 0); gridGraphics.lineTo(i, 2000); }
-    for (let j = 0; j < 2000; j += gridSize) { gridGraphics.moveTo(0, j); gridGraphics.lineTo(2000, j); }
+    gridGraphics.lineStyle(1, 0xffffff, 0.03);
+    for (let i = 0; i < worldW; i += gridSize) { gridGraphics.moveTo(i, 0); gridGraphics.lineTo(i, worldH); }
+    for (let j = 0; j < worldH; j += gridSize) { gridGraphics.moveTo(0, j); gridGraphics.lineTo(worldW, j); }
     gridGraphics.strokePath();
-    this.physics.world.setBounds(0, 0, 2000, 2000);
+    gridGraphics.setDepth(0);
+
+    this.physics.world.setBounds(0, 0, worldW, worldH);
   }
 
   private createPlayer(): void {
