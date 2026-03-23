@@ -117,6 +117,12 @@ export class GameScene extends Phaser.Scene {
     this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
 
+    // 환경 오브젝트 에셋 (에테르 평원)
+    this.load.image('env_tree', 'assets/generated/environment/objects/aether_tree_01.png');
+    this.load.image('env_rock', 'assets/generated/environment/objects/aether_rock_01.png');
+    this.load.image('env_crystal', 'assets/generated/environment/objects/aether_crystal_01.png');
+    this.load.image('env_ground', 'assets/generated/environment/tiles/aether_ground_tile.png');
+
     // 챕터 타이틀 카드 이미지 로드
     const chapterInfo = ZONE_CHAPTER_MAP[this.currentZoneId];
     if (chapterInfo) {
@@ -566,6 +572,82 @@ export class GameScene extends Phaser.Scene {
     gridGraphics.setDepth(0);
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
+
+    // ── 환경 오브젝트 배치 ──
+    this._placeEnvironmentObjects(worldW, worldH);
+  }
+
+  /** 환경 오브젝트 (나무, 바위, 크리스탈, 지면 타일) 배치 */
+  private _placeEnvironmentObjects(worldW: number, worldH: number): void {
+    // 지면 타일
+    if (this.textures.exists('env_ground')) {
+      const ground = this.add.tileSprite(worldW / 2, worldH / 2, worldW, worldH, 'env_ground');
+      ground.setDepth(-0.5);
+    }
+
+    // 시드 기반 난수 — 매번 같은 배치
+    const rng = new Phaser.Math.RandomDataGenerator(['aether_plains_env_42']);
+
+    // 플레이어 스폰 중심(640,360) 주변 400x400 영역 회피
+    const isSpawnZone = (x: number, y: number): boolean =>
+      x > 440 && x < 840 && y > 160 && y < 560;
+
+    const pickPos = (): { x: number; y: number } => {
+      for (let attempt = 0; attempt < 30; attempt++) {
+        const x = rng.between(100, worldW - 100);
+        const y = rng.between(100, worldH - 100);
+        if (!isSpawnZone(x, y)) return { x, y };
+      }
+      return { x: rng.between(100, worldW - 100), y: rng.between(100, worldH - 100) };
+    };
+
+    // 나무 ~15개
+    if (this.textures.exists('env_tree')) {
+      for (let i = 0; i < 15; i++) {
+        const { x, y } = pickPos();
+        const tree = this.add.image(x, y, 'env_tree');
+        const scale = rng.realInRange(0.6, 1.0);
+        tree.setScale(scale);
+        tree.setOrigin(0.5, 1); // 발 기준 배치
+        tree.setDepth(y);
+      }
+    }
+
+    // 바위 ~20개
+    if (this.textures.exists('env_rock')) {
+      for (let i = 0; i < 20; i++) {
+        const { x, y } = pickPos();
+        const rock = this.add.image(x, y, 'env_rock');
+        const scale = rng.realInRange(0.4, 0.9);
+        rock.setScale(scale);
+        rock.setOrigin(0.5, 1);
+        rock.setDepth(y);
+      }
+    }
+
+    // 에테르 크리스탈 ~10개 (발광 트윈)
+    if (this.textures.exists('env_crystal')) {
+      for (let i = 0; i < 10; i++) {
+        const { x, y } = pickPos();
+        const crystal = this.add.image(x, y, 'env_crystal');
+        const scale = rng.realInRange(0.5, 0.8);
+        crystal.setScale(scale);
+        crystal.setOrigin(0.5, 1);
+        crystal.setDepth(y);
+        crystal.setAlpha(0.85);
+
+        // 발광 펄스: alpha 0.7 ~ 1.0, 2초 주기
+        this.tweens.add({
+          targets: crystal,
+          alpha: { from: 0.7, to: 1.0 },
+          duration: 2000,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+          delay: rng.between(0, 1000), // 각 크리스탈마다 약간씩 오프셋
+        });
+      }
+    }
   }
 
   private createPlayer(): void {
