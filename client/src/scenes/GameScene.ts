@@ -557,25 +557,24 @@ export class GameScene extends Phaser.Scene {
 
   private createWorld(): void {
     const worldW = 2000, worldH = 2000;
+    const camW = 1280, camH = 720;
 
-    // 배경 이미지 (스크롤팩터로 패럴랙스 효과)
+    // 배경 이미지 — 카메라 뷰포트 크기로 고정, scrollFactor로 패럴랙스
     if (this.textures.exists('zone_bg_sky')) {
-      const sky = this.add.image(worldW / 2, worldH / 2, 'zone_bg_sky')
-        .setDisplaySize(worldW, worldH).setDepth(-2).setScrollFactor(0.2);
+      this.add.image(camW / 2, camH / 2, 'zone_bg_sky')
+        .setDisplaySize(camW, camH)
+        .setScrollFactor(0)  // 카메라에 고정 (하늘은 안 움직임)
+        .setDepth(-2);
     }
     if (this.textures.exists('zone_bg_far')) {
-      const far = this.add.image(worldW / 2, worldH / 2, 'zone_bg_far')
-        .setDisplaySize(worldW, worldH).setDepth(-1).setScrollFactor(0.5);
+      this.add.image(camW / 2, camH / 2, 'zone_bg_far')
+        .setDisplaySize(camW, camH)
+        .setScrollFactor(0)  // 카메라에 고정
+        .setDepth(-1);
     }
 
-    // 그리드 오버레이 (디버그/가이드용, 투명하게)
-    const gridSize = 64;
-    const gridGraphics = this.add.graphics();
-    gridGraphics.lineStyle(1, 0xffffff, 0.03);
-    for (let i = 0; i < worldW; i += gridSize) { gridGraphics.moveTo(i, 0); gridGraphics.lineTo(i, worldH); }
-    for (let j = 0; j < worldH; j += gridSize) { gridGraphics.moveTo(0, j); gridGraphics.lineTo(worldW, j); }
-    gridGraphics.strokePath();
-    gridGraphics.setDepth(0);
+    // 배경색 설정
+    this.cameras.main.setBackgroundColor('#0a0a1e');
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
@@ -585,9 +584,10 @@ export class GameScene extends Phaser.Scene {
 
   /** 환경 오브젝트 배치 — 존 설정 기반 동적 생성 */
   private _placeEnvironmentObjects(worldW: number, worldH: number): void {
-    // 지면 타일
+    // 지면 타일 — tileScale로 픽셀아트 크기 조정 (4x 확대)
     if (this.textures.exists('env_ground')) {
       const ground = this.add.tileSprite(worldW / 2, worldH / 2, worldW, worldH, 'env_ground');
+      ground.setTileScale(4, 4);  // 256px 타일을 4x → 1024px 단위 반복
       ground.setDepth(-0.5);
     }
 
