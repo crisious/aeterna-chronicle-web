@@ -12,6 +12,7 @@ import { TelemetryEmitter } from '../services/TelemetryEmitter';
 import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
+import monsterManifest from '../data/monsterManifest.json';
 
 /** GameScene 전환 시 전달 데이터 */
 interface GameSceneData {
@@ -90,6 +91,15 @@ export class GameScene extends Phaser.Scene {
     // NPC 스프라이트
     this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_sprites/04_mateus_sprite.png');
     this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_sprites/01_cryo_sprite.png');
+
+    // 오프라인 폴백 몬스터 이미지 preload
+    const manifest = monsterManifest as Record<string, string>;
+    const fallbackMonsters = ['mon_erebos_fog_rat', 'mon_erebos_memory_beetle', 'mon_erebos_memory_dust'];
+    for (const key of fallbackMonsters) {
+      if (manifest[key]) {
+        this.load.image(key, manifest[key]);
+      }
+    }
 
     // P25-09: 실제 에셋 경로 (atlas만 — 존재 확인된 파일)
     this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
@@ -364,7 +374,7 @@ export class GameScene extends Phaser.Scene {
     // 몬스터 매니페스트에서 이미지 매칭 시도
     let monTexKey = '';
     try {
-      const manifest = require('../data/monsterManifest.json') as Record<string, string>;
+      const manifest = monsterManifest as Record<string, string>;
       const manifestKeys = Object.keys(manifest);
       const idLower = id.toLowerCase().replace(/[-\s]/g, '_');
       if (manifestKeys.includes(idLower)) {
