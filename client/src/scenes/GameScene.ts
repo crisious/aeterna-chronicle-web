@@ -377,7 +377,7 @@ export class GameScene extends Phaser.Scene {
 
     if (texKey && this.textures.exists(texKey)) {
       sprite = this.add.image(x, y, texKey)
-        .setDisplaySize(48, 64)
+        
         .setInteractive({ useHandCursor: true });
     } else {
       sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88)
@@ -409,7 +409,7 @@ export class GameScene extends Phaser.Scene {
             if (existing && existing.sprite && this.textures.exists(monTexKey)) {
               existing.sprite.destroy();
               const newSprite = this.add.image(x, y, monTexKey)
-                .setDisplaySize(48, 48)
+                
                 .setInteractive({ useHandCursor: true });
               newSprite.on('pointerdown', () => {
                 this.scene.start('BattleScene', {
@@ -427,7 +427,7 @@ export class GameScene extends Phaser.Scene {
     let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
     if (monTexKey && this.textures.exists(monTexKey)) {
       sprite = this.add.image(x, y, monTexKey)
-        .setDisplaySize(48, 48)
+        
         .setInteractive({ useHandCursor: true });
     } else {
       sprite = this.add.rectangle(x, y, 36, 36, 0xff4444)
@@ -641,7 +641,7 @@ export class GameScene extends Phaser.Scene {
 
   private createPlayer(): void {
     this.player = this.physics.add.sprite(640, 360, 'player_sprite');
-    this.player.setDisplaySize(48, 64);
+    // 48x64 원본 그대로 표시 (setDisplaySize 제거 — 원본이 이미 48x64)
     this.player.setCollideWorldBounds(true);
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
