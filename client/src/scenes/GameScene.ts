@@ -577,9 +577,7 @@ export class GameScene extends Phaser.Scene {
 
   /** 환경 오브젝트 배치 — 존 설정 기반 동적 생성 */
   private _placeEnvironmentObjects(worldW: number, worldH: number): void {
-    // 지면: 단색 바닥 (타일 텍스처 대신 안정적인 단색)
-    const ground = this.add.rectangle(worldW / 2, worldH / 2, worldW, worldH, 0x1a2a1a);
-    ground.setDepth(-1);
+    // 지면: 제거 — 배경 이미지가 전체 커버
 
     const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
     if (!envConfig) return;
