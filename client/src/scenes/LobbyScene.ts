@@ -224,7 +224,7 @@ export class LobbyScene extends Phaser.Scene {
       let body: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
       if (this.textures.exists(npcTexKey)) {
         body = this.add.image(0, 0, npcTexKey)
-          .setDisplaySize(48, 64)
+          
           .setInteractive({ useHandCursor: true });
       } else {
         body = this.add.circle(0, 0, 20, npc.color)
