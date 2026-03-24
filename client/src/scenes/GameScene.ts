@@ -561,13 +561,12 @@ export class GameScene extends Phaser.Scene {
     // 배경색
     this.cameras.main.setBackgroundColor('#1a2a1a');
 
-    // 배경 이미지 — scrollFactor(0)으로 카메라에 고정
+    // 배경 이미지 — 1280x720 원본, scrollFactor(0) 카메라 고정
     if (this.textures.exists('zone_bg_far')) {
-      const bg = this.add.image(640, 360, 'zone_bg_far')
+      this.add.image(640, 360, 'zone_bg_far')
+        .setOrigin(0.5, 0.5)
         .setScrollFactor(0)
         .setDepth(-2);
-      // 640x360 원본 → 1280x720 표시 (정확히 2배)
-      bg.setScale(2);
     }
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
