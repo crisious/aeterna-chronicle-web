@@ -557,39 +557,30 @@ export class GameScene extends Phaser.Scene {
 
   private createWorld(): void {
     const worldW = 2000, worldH = 2000;
-    const camW = 1280, camH = 720;
 
-    // 배경 이미지 — 카메라 뷰포트 크기로 고정, scrollFactor로 패럴랙스
-    if (this.textures.exists('zone_bg_sky')) {
-      this.add.image(camW / 2, camH / 2, 'zone_bg_sky')
-        .setDisplaySize(camW, camH)
-        .setScrollFactor(0)  // 카메라에 고정 (하늘은 안 움직임)
-        .setDepth(-2);
-    }
+    // 배경색
+    this.cameras.main.setBackgroundColor('#1a2a1a');
+
+    // 배경 이미지 — scrollFactor(0)으로 카메라에 고정
     if (this.textures.exists('zone_bg_far')) {
-      this.add.image(camW / 2, camH / 2, 'zone_bg_far')
-        .setDisplaySize(camW, camH)
-        .setScrollFactor(0)  // 카메라에 고정
-        .setDepth(-1);
+      const bg = this.add.image(640, 360, 'zone_bg_far')
+        .setScrollFactor(0)
+        .setDepth(-2);
+      // 640x360 원본 → 1280x720 표시 (정확히 2배)
+      bg.setScale(2);
     }
-
-    // 배경색 설정
-    this.cameras.main.setBackgroundColor('#0a0a1e');
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
-    // ── 환경 오브젝트 배치 ──
+    // 환경 오브젝트 배치 (타일/나무/바위/크리스탈)
     this._placeEnvironmentObjects(worldW, worldH);
   }
 
   /** 환경 오브젝트 배치 — 존 설정 기반 동적 생성 */
   private _placeEnvironmentObjects(worldW: number, worldH: number): void {
-    // 지면 타일 — tileScale로 픽셀아트 크기 조정 (4x 확대)
-    if (this.textures.exists('env_ground')) {
-      const ground = this.add.tileSprite(worldW / 2, worldH / 2, worldW, worldH, 'env_ground');
-      ground.setTileScale(4, 4);  // 256px 타일을 4x → 1024px 단위 반복
-      ground.setDepth(-0.5);
-    }
+    // 지면: 단색 바닥 (타일 텍스처 대신 안정적인 단색)
+    const ground = this.add.rectangle(worldW / 2, worldH / 2, worldW, worldH, 0x1a2a1a);
+    ground.setDepth(-1);
 
     const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
     if (!envConfig) return;
