@@ -63,16 +63,7 @@ export class WorldScene extends Phaser.Scene {
   // ── 라이프사이클 ─────────────────────────────────────────
 
   preload(): void {
-    // P33-A: 월드맵 배경 + 존별 미니 배경
-    this.load.image('worldmap_bg', 'assets/generated/environment/backgrounds/ABY-BG-SKY-NIGHT.png');
-
-    for (const [zoneId, bgFile] of Object.entries(WorldScene.ZONE_BG_MAP)) {
-      this.load.image(
-        `zone_bg_${zoneId}`,
-        `assets/generated/environment/backgrounds/${bgFile}.png`,
-      );
-    }
-
+    // 존 배경 썸네일 로딩 제거 — 깨짐 방지. 단순 색상 노드 사용.
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[World] 이미지 로드 실패: ${file.key}`);
     });
@@ -82,13 +73,8 @@ export class WorldScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#0a0a1e');
 
-    // P33-A: 월드맵 배경 이미지
-    if (this.textures.exists('worldmap_bg')) {
-      this.add.image(width / 2, height / 2, 'worldmap_bg')
-        .setDisplaySize(width, height)
-        .setAlpha(0.5);
-      this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a1e, 0.55);
-    }
+    // 월드맵 배경 — 단순 그라디언트
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a1e);
 
     // 타이틀
     this.add.text(width / 2, 28, '🗺️ 에테르나 월드맵', {
@@ -152,26 +138,11 @@ export class WorldScene extends Phaser.Scene {
 
     const container = this.add.container(x, y);
 
-    // 존 아이콘: 배경 이미지 썸네일 사용 (fallback: 원형 도형)
+    // 존 아이콘: 색상 원 (썸네일 깨짐 방지)
     const alpha = zone.unlocked ? 1 : 0.4;
-    const zoneTexKey = `zone_bg_${zone.id}`;
-    let nodeVisual: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
-
-    if (this.textures.exists(zoneTexKey)) {
-      // 원형 마스크된 썸네일
-      nodeVisual = this.add.image(0, 0, zoneTexKey)
-        .setDisplaySize(NODE_RADIUS * 2, NODE_RADIUS * 2)
-        .setAlpha(alpha);
-
-      // 원형 테두리
-      const border = this.add.circle(0, 0, NODE_RADIUS)
-        .setStrokeStyle(3, zone.unlocked ? 0xffffff : 0x444444)
-        .setFillStyle(0x000000, 0);
-      container.add(border);
-    } else {
-      nodeVisual = this.add.circle(0, 0, NODE_RADIUS, zone.color, alpha)
-        .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444);
-    }
+    let nodeVisual: Phaser.GameObjects.Arc;
+    nodeVisual = this.add.circle(0, 0, NODE_RADIUS, zone.color, alpha)
+      .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444);
 
     if (zone.unlocked) {
       nodeVisual.setInteractive({ useHandCursor: true });
@@ -216,14 +187,9 @@ export class WorldScene extends Phaser.Scene {
       .setStrokeStyle(1, 0x446688);
     panel.add(bg);
 
-    // P33-A: 존 배경 미리보기 (있으면)
-    const zoneBgKey = `zone_bg_${zone.id}`;
-    if (this.textures.exists(zoneBgKey)) {
-      const preview = this.add.image(-200, 0, zoneBgKey)
-        .setDisplaySize(80, 60)
-        .setAlpha(0.8);
-      panel.add(preview);
-    }
+    // 존 색상 아이콘
+    const dot = this.add.circle(-200, 0, 15, zone.color);
+    panel.add(dot);
 
     const info = this.add.text(-140, -20, `${zone.name} — ${zone.description}`, {
       fontSize: '13px',
