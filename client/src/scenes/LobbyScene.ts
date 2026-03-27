@@ -271,7 +271,7 @@ export class LobbyScene extends Phaser.Scene {
     // P33-A: NPC 대화 초상화
     const npcPortraitKey = `npc_${npc.id}`;
     if (this.textures.exists(npcPortraitKey)) {
-      panel.add(this.add.image(-160, 0, npcPortraitKey).setDisplaySize(56, 72));
+      panel.add(this.add.image(-160, 0, npcPortraitKey).setScale(1));
     }
 
     panel.add(this.add.text(0, -70, `💬 ${npc.name}`, {
@@ -444,7 +444,7 @@ export class LobbyScene extends Phaser.Scene {
 
     // P33-A: NPC 초상화 (마테우스)
     if (this.textures.exists('npc_portrait_mateus')) {
-      panel.add(this.add.image(-200, -30, 'npc_portrait_mateus').setDisplaySize(80, 100));
+      panel.add(this.add.image(-200, -30, 'npc_portrait_mateus').setScale(2));
     }
 
     panel.add(this.add.text(0, -120, `📖 ${npc.name} — 메인 스토리`, {
