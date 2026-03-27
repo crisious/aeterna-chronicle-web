@@ -62,8 +62,21 @@ export class WorldScene extends Phaser.Scene {
 
   // ── 라이프사이클 ─────────────────────────────────────────
 
+  // 존 아이콘 매핑
+  private static readonly ZONE_ICON_MAP: Record<string, string> = {
+    aether_plains: 'zone_aether_plains',
+    memory_forest: 'zone_memory_forest',
+    shadow_gorge: 'zone_shadow_gorge',
+    crystal_cave: 'zone_crystal_cave',
+    forgotten_citadel: 'zone_forgotten_citadel',
+    chrono_spire: 'zone_chrono_spire',
+  };
+
   preload(): void {
-    // 존 배경 썸네일 로딩 제거 — 깨짐 방지. 단순 색상 노드 사용.
+    // 존 아이콘 로드 (64x64 픽셀아트)
+    for (const iconKey of Object.values(WorldScene.ZONE_ICON_MAP)) {
+      this.load.image(iconKey, `assets/generated/ui/worldmap/${iconKey}.png`);
+    }
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[World] 이미지 로드 실패: ${file.key}`);
     });
@@ -138,11 +151,21 @@ export class WorldScene extends Phaser.Scene {
 
     const container = this.add.container(x, y);
 
-    // 존 아이콘: 색상 원 (썸네일 깨짐 방지)
+    // 존 아이콘: 이미지 또는 색상 원 폴백
     const alpha = zone.unlocked ? 1 : 0.4;
-    let nodeVisual: Phaser.GameObjects.Arc;
-    nodeVisual = this.add.circle(0, 0, NODE_RADIUS, zone.color, alpha)
-      .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444);
+    const iconKey = WorldScene.ZONE_ICON_MAP[zone.id];
+    let nodeVisual: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
+    if (iconKey && this.textures.exists(iconKey)) {
+      nodeVisual = this.add.image(0, 0, iconKey)
+        .setAlpha(alpha);
+      // 원형 테두리
+      this.add.circle(0, 0, 33)
+        .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444)
+        .setFillStyle(0x000000, 0);
+    } else {
+      nodeVisual = this.add.circle(0, 0, NODE_RADIUS, zone.color, alpha)
+        .setStrokeStyle(2, zone.unlocked ? 0xffffff : 0x444444);
+    }
 
     if (zone.unlocked) {
       nodeVisual.setInteractive({ useHandCursor: true });
