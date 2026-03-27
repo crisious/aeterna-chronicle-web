@@ -4,11 +4,11 @@
 
 **기억은 사라져도, 이야기는 남는다.**
 
-[![Phase](https://img.shields.io/badge/Phase-49%20Complete-blue?style=for-the-badge)](#-개발-현황)
+[![Phase](https://img.shields.io/badge/Phase-52%20Complete-blue?style=for-the-badge)](#-개발-현황)
 [![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C596%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-212%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Commits](https://img.shields.io/badge/Commits-253%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 
 *실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱*
 
@@ -87,7 +87,7 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 49 (P0~P49) | 커밋 | 212+ |
+| Phase | 52 (P0~P52) | 커밋 | 253+ |
 | Notion 티켓 | 728/728 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
@@ -121,7 +121,7 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**49 Phase 완료 · 728 티켓 전부 Done · 212+ 커밋 · 에셋 1,596개 · v1.0 릴리즈 준비 완료**
+**52 Phase 완료 · 728 티켓 전부 Done · 253+ 커밋 · 에셋 1,596개 · 16-bit 픽셀아트 통일 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
@@ -140,6 +140,13 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 | P49 | Docker 배포 검증 | Dockerfile 수정 · docker-compose.yml · 헬스체크 스크립트 · nginx 리버스 프록시 |
 | R-01 | 에셋 연결 | generated/ → client/ 1,453개 이미지 투입 (characters/monsters/environment/ui/vfx/cosmetics/atlas) |
 | R-03 | ACE-Step 보스곡 리마스터 | 나머지 4곡 완료 (말라투스/라와르/케인/각성) · 총 ACE-Step 9곡 |
+| QA-01 | 풀 플로우 E2E | 49 테스트 (타이틀→엔딩 전체 플로우) |
+| QA-02 | 런타임 에러 전수 수정 | 5개 씬 15건 optional chaining 적용 |
+| P48 | CI/CD GitHub Actions | server-check + client-check + test (Node 20, PostgreSQL 16) |
+| P52 | 성능 프로파일링 | 빌드 A(405KB gz) · 서버 A+(88ms) · 에셋 C(WebP 대기) |
+| C-1 | 엔딩CG + 개연성 + 정합성 | CG 10장 · 개연성 13건 완료 · 정합성 37테스트 |
+| ART | 16-bit 픽셀아트 통일 | 483개 에셋 전수 재생성 · 아트 스타일 가이드 v2.0 |
+| RT | 리소스 연결 테스트 | 에셋 무결성 · 중복 305MB 제거 · 월드맵 아이콘 |
 | P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
 | P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
 | P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
@@ -155,7 +162,10 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 누적 395+ 항목 검증, 184+ 건 수정 완료 (P0~P38).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
 DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
-에셋 전수 확인: 이미지 1,453장 + 오디오 137개 + 아틀라스/JSON 100개 = 1,596개. ACE-Step 9곡 고품질 리마스터 포함.
+에셋 전수 확인: 이미지 1,453장 + 오디오 137개 + 아틀라스/JSON 100개 = 1,596개.
+ACE-Step 9곡 고품질 리마스터 포함.
+16-bit 픽셀아트 통일 완료 (483개 재생성, 아트 스타일 가이드 v2.0 적용).
+개연성 검토 13/13 완료, 정합성 37테스트 통과, E2E 60파일.
 
 </details>
 
