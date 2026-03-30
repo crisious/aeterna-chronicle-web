@@ -105,6 +105,9 @@ const ATB_BAR_H = 4;
 const STAT_BAR_W = 120;
 const STAT_BAR_H = 8;
 
+// 한글 호환 폰트 스택
+const FONT_FAMILY = '"Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", monospace';
+
 // ─── 유닛 스프라이트 래퍼 ─────────────────────────────────────
 
 interface UnitSprite {
@@ -310,7 +313,7 @@ export class BattleScene extends Phaser.Scene {
     this.allSprites = [...this.allySprites, ...this.enemySprites];
 
     // ── 하단 UI 패널 배경 (반투명 검은 바) ─────────────────────
-    this.add.rectangle(scW / 2, UI_PANEL_Y + 90, scW, 180, 0x0a0a2e, 0.85)
+    this.add.rectangle(scW / 2, UI_PANEL_Y + 60, scW, 120, 0x0a0a2e, 0.85)
       .setDepth(100);
 
     // 구분선
@@ -391,7 +394,7 @@ export class BattleScene extends Phaser.Scene {
     // "전투 시작!" 텍스트
     const introText = this.add.text(scW / 2, scH / 2 - 40, '⚔ 전투 시작!', {
       fontSize: '36px',
-      fontFamily: 'monospace',
+      fontFamily: FONT_FAMILY,
       color: '#ffcc00',
       stroke: '#000000',
       strokeThickness: 4,
@@ -477,14 +480,14 @@ export class BattleScene extends Phaser.Scene {
     const container = this.add.container(CMD_MENU_X, CMD_MENU_Y).setDepth(200);
 
     // 메뉴 배경
-    const bg = this.add.rectangle(80, 60, 180, 140, 0x0a0a3e, 0.9)
+    const bg = this.add.rectangle(80, 48, 180, 108, 0x0a0a3e, 0.9)
       .setStrokeStyle(2, 0x4466aa);
     container.add(bg);
 
     // 캐릭터 이름 표시
-    const nameLabel = this.add.text(80, 2, `${us.unit.name}`, {
-      fontSize: '13px',
-      fontFamily: 'monospace',
+    const nameLabel = this.add.text(80, 0, `${us.unit.name}`, {
+      fontSize: '12px',
+      fontFamily: FONT_FAMILY,
       color: '#ffcc44',
     }).setOrigin(0.5, 0);
     container.add(nameLabel);
@@ -492,9 +495,9 @@ export class BattleScene extends Phaser.Scene {
     // 커맨드 항목
     this.cmdMenuTexts = [];
     COMMANDS.forEach((cmd, i) => {
-      const text = this.add.text(30, 22 + i * 22, cmd.label, {
+      const text = this.add.text(30, 16 + i * 18, cmd.label, {
         fontSize: '14px',
-        fontFamily: 'monospace',
+        fontFamily: FONT_FAMILY,
         color: '#ffffff',
       }).setInteractive({ useHandCursor: true });
 
@@ -718,13 +721,13 @@ export class BattleScene extends Phaser.Scene {
     container.add(bg);
 
     if (skills.length === 0) {
-      const t = this.add.text(80, 50, '사용 가능한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: 'monospace' }).setOrigin(0.5);
+      const t = this.add.text(80, 50, '사용 가능한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: FONT_FAMILY }).setOrigin(0.5);
       container.add(t);
     } else {
       skills.forEach((skill, i) => {
         const label = `${skill.name} (MP:${skill.mpCost})`;
         const t = this.add.text(10, 15 + i * 24, label, {
-          fontSize: '13px', fontFamily: 'monospace',
+          fontSize: '13px', fontFamily: FONT_FAMILY,
           color: (this.activeCommander?.unit.mp ?? 0) >= skill.mpCost ? '#88ccff' : '#555555',
         }).setInteractive({ useHandCursor: true });
 
@@ -754,7 +757,7 @@ export class BattleScene extends Phaser.Scene {
     container.add(bg);
 
     // 간이: 포션만 표시
-    const t = this.add.text(80, 40, '🧪 포션 (HP +100)', { fontSize: '13px', fontFamily: 'monospace', color: '#88ff88' })
+    const t = this.add.text(80, 40, '🧪 포션 (HP +100)', { fontSize: '13px', fontFamily: FONT_FAMILY, color: '#88ff88' })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
     t.on('pointerdown', () => {
@@ -897,7 +900,7 @@ export class BattleScene extends Phaser.Scene {
 
     const text = this.add.text(x, y, `${prefix}${value}`, {
       fontSize,
-      fontFamily: 'monospace',
+      fontFamily: FONT_FAMILY,
       color,
       stroke: '#000000',
       strokeThickness: 3,
@@ -937,7 +940,7 @@ export class BattleScene extends Phaser.Scene {
     if (!this.textures.exists(key)) return;
 
     const vfx = this.add.image(x, y, key)
-      .setScale(0.15)
+      .setScale(0.2)
       .setAlpha(0.9)
       .setDepth(8000);
 
@@ -1022,7 +1025,7 @@ export class BattleScene extends Phaser.Scene {
 
       const nameText = this.add.text(pos.x, pos.y + sprite.displayHeight / 2 + 4, unit.name, {
         fontSize: '11px',
-        fontFamily: 'monospace',
+        fontFamily: FONT_FAMILY,
         color: '#88ccff',
       }).setOrigin(0.5).setDepth(51);
 
@@ -1059,7 +1062,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setScale(isBoss ? 0.4 : 0.25)
+          .setScale(isBoss ? 0.5 : 0.3)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
       } else {
@@ -1070,7 +1073,7 @@ export class BattleScene extends Phaser.Scene {
 
       const nameText = this.add.text(pos.x, pos.y - sprite.displayHeight / 2 - 14, unit.name, {
         fontSize: '11px',
-        fontFamily: 'monospace',
+        fontFamily: FONT_FAMILY,
         color: '#ff8888',
       }).setOrigin(0.5).setDepth(51);
 
@@ -1092,35 +1095,35 @@ export class BattleScene extends Phaser.Scene {
     const gfx = this.add.graphics().setDepth(149);
 
     this.allySprites.forEach((us, i) => {
-      const y = i * 40;
+      const y = i * 26;
 
       // 이름 + 레벨
       const nameText = this.add.text(0, y, `${us.unit.name}  Lv.${us.unit.level}`, {
-        fontSize: '12px', fontFamily: 'monospace', color: '#ffffff',
+        fontSize: '11px', fontFamily: FONT_FAMILY, color: '#ffffff',
       });
       container.add(nameText);
 
       // HP 라벨
-      const hpLabel = this.add.text(0, y + 14, 'HP', {
-        fontSize: '10px', fontFamily: 'monospace', color: '#ffcc44',
+      const hpLabel = this.add.text(0, y + 12, 'HP', {
+        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#ffcc44',
       });
       container.add(hpLabel);
 
       // HP 값
-      const hpText = this.add.text(STAT_BAR_W + 30, y + 14, `${us.unit.hp}/${us.unit.maxHp}`, {
-        fontSize: '10px', fontFamily: 'monospace', color: '#ffcc44',
+      const hpText = this.add.text(STAT_BAR_W + 30, y + 12, `${us.unit.hp}/${us.unit.maxHp}`, {
+        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#ffcc44',
       });
       container.add(hpText);
 
       // MP 라벨
-      const mpLabel = this.add.text(STAT_BAR_W + 100, y + 14, 'MP', {
-        fontSize: '10px', fontFamily: 'monospace', color: '#44ff88',
+      const mpLabel = this.add.text(STAT_BAR_W + 100, y + 12, 'MP', {
+        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#44ff88',
       });
       container.add(mpLabel);
 
       // MP 값
-      const mpText = this.add.text(STAT_BAR_W + 180, y + 14, `${us.unit.mp}/${us.unit.maxMp}`, {
-        fontSize: '10px', fontFamily: 'monospace', color: '#44ff88',
+      const mpText = this.add.text(STAT_BAR_W + 180, y + 12, `${us.unit.mp}/${us.unit.maxMp}`, {
+        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#44ff88',
       });
       container.add(mpText);
 
@@ -1149,7 +1152,7 @@ export class BattleScene extends Phaser.Scene {
       if (!entry) return;
 
       const baseX = STATUS_PANEL_X;
-      const baseY = STATUS_PANEL_Y + i * 40;
+      const baseY = STATUS_PANEL_Y + i * 26;
 
       // HP/MP 텍스트 업데이트
       entry.hp.setText(`${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
@@ -1161,7 +1164,7 @@ export class BattleScene extends Phaser.Scene {
 
       // HP 바
       const hpBarX = baseX + 22;
-      const hpBarY = baseY + 16;
+      const hpBarY = baseY + 14;
       this.statusPanelGraphics!.fillStyle(0x222244, 1);
       this.statusPanelGraphics!.fillRect(hpBarX, hpBarY, STAT_BAR_W, STAT_BAR_H);
       this.statusPanelGraphics!.fillStyle(hpRatio < 0.25 ? 0xff4444 : 0xffcc44, 1);
@@ -1180,9 +1183,9 @@ export class BattleScene extends Phaser.Scene {
       const atbRatio = us.atb / ATB_MAX;
       entry.atb.clear();
       entry.atb.fillStyle(0x222244, 1);
-      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 40, ATB_BAR_W, ATB_BAR_H);
+      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 26, ATB_BAR_W, ATB_BAR_H);
       entry.atb.fillStyle(atbRatio >= 1 ? 0xffff44 : 0x4488ff, 1);
-      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 40, ATB_BAR_W * atbRatio, ATB_BAR_H);
+      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 26, ATB_BAR_W * atbRatio, ATB_BAR_H);
     });
   }
 
@@ -1221,7 +1224,7 @@ export class BattleScene extends Phaser.Scene {
     // 승리 팡파르 텍스트
     const victoryText = this.add.text(scW / 2, scH / 3, '🎉 Victory!', {
       fontSize: '42px',
-      fontFamily: 'monospace',
+      fontFamily: FONT_FAMILY,
       color: '#ffd700',
       stroke: '#000000',
       strokeThickness: 4,
@@ -1253,7 +1256,7 @@ export class BattleScene extends Phaser.Scene {
     container.add(bg);
 
     const title = this.add.text(0, -130, '🏆 전투 결과', {
-      fontSize: '22px', fontFamily: 'monospace', color: '#ffcc00',
+      fontSize: '22px', fontFamily: FONT_FAMILY, color: '#ffcc00',
     }).setOrigin(0.5);
     container.add(title);
 
@@ -1263,39 +1266,39 @@ export class BattleScene extends Phaser.Scene {
     const gold = totalEnemyLevel * 10 + Phaser.Math.Between(5, 30);
 
     const expText = this.add.text(-150, -80, `✨ 경험치: +${exp}`, {
-      fontSize: '16px', fontFamily: 'monospace', color: '#88ccff',
+      fontSize: '16px', fontFamily: FONT_FAMILY, color: '#88ccff',
     });
     container.add(expText);
 
     const goldText = this.add.text(-150, -50, `💰 골드: +${gold}`, {
-      fontSize: '16px', fontFamily: 'monospace', color: '#ffcc44',
+      fontSize: '16px', fontFamily: FONT_FAMILY, color: '#ffcc44',
     });
     container.add(goldText);
 
     // 전리품
     const loot = this.combatManager?.getLoot() ?? [];
     const lootTitle = this.add.text(-150, -15, '📦 전리품:', {
-      fontSize: '14px', fontFamily: 'monospace', color: '#ffffff',
+      fontSize: '14px', fontFamily: FONT_FAMILY, color: '#ffffff',
     });
     container.add(lootTitle);
 
     loot.forEach((item: LootItem, i: number) => {
       const txt = this.add.text(-130, 10 + i * 22, `• ${item.name} x${item.quantity}`, {
-        fontSize: '13px', fontFamily: 'monospace', color: '#aaaaaa',
+        fontSize: '13px', fontFamily: FONT_FAMILY, color: '#aaaaaa',
       });
       container.add(txt);
     });
 
     if (loot.length === 0) {
       const noLoot = this.add.text(-130, 10, '(없음)', {
-        fontSize: '13px', fontFamily: 'monospace', color: '#666666',
+        fontSize: '13px', fontFamily: FONT_FAMILY, color: '#666666',
       });
       container.add(noLoot);
     }
 
     // 확인 버튼
     const closeBtn = this.add.text(0, 120, '[ 확인 ]', {
-      fontSize: '18px', fontFamily: 'monospace', color: '#88ff88',
+      fontSize: '18px', fontFamily: FONT_FAMILY, color: '#88ff88',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     closeBtn.on('pointerdown', () => this._exitBattle());
@@ -1326,7 +1329,7 @@ export class BattleScene extends Phaser.Scene {
 
     const defeatText = this.add.text(scW / 2, scH / 3, '💔 패배...', {
       fontSize: '36px',
-      fontFamily: 'monospace',
+      fontFamily: FONT_FAMILY,
       color: '#ff4444',
       stroke: '#000000',
       strokeThickness: 4,
@@ -1349,12 +1352,12 @@ export class BattleScene extends Phaser.Scene {
       container.add(bg);
 
       const title = this.add.text(0, -30, '💔 전투 실패', {
-        fontSize: '20px', fontFamily: 'monospace', color: '#ff4444',
+        fontSize: '20px', fontFamily: FONT_FAMILY, color: '#ff4444',
       }).setOrigin(0.5);
       container.add(title);
 
       const closeBtn = this.add.text(0, 30, '[ 돌아가기 ]', {
-        fontSize: '16px', fontFamily: 'monospace', color: '#aaaaaa',
+        fontSize: '16px', fontFamily: FONT_FAMILY, color: '#aaaaaa',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.on('pointerdown', () => this._exitBattle());
       container.add(closeBtn);
