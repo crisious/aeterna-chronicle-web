@@ -1,14 +1,13 @@
 /**
- * DungeonScene.ts — FF6 스타일 사이드뷰 던전 전투 씬
+ * DungeonScene.ts — 던전 웨이브 관리 씬 (ATB 전투 연동)
  *
- * - FF6 레이아웃: 왼쪽 플레이어(side), 오른쪽 몬스터(front)
+ * - FF6 레이아웃: 왼쪽 플레이어(side), 오른쪽 몬스터 프리뷰
  * - 웨이브 카운터 (Wave 1/5 등)
+ * - 적 스폰 시 BattleScene(ATB)으로 전환
+ * - 전투 승리 → 다음 웨이브 진행
  * - 보스 경고 연출 + 보스 글로우
  * - 전투 타이머
- * - 데미지 팝업 (크리티컬=금색)
- * - 커맨드 버튼: 공격/방어/포션
- * - 플레이어 HP/MP 바 + 적 반격
- * - 히트 이펙트 (흔들림 + 번쩍임)
+ * - 플레이어 HP/MP 바
  * - 승리/클리어 연출 + EXP/골드 팝업
  * - SFX 연동 (SFXHelper)
  * - P25-06: NetworkManager 던전 API 연동
@@ -18,6 +17,8 @@ import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
 import { playSfx, UI_SFX, COMBAT_VOICE, playRandomVoice } from '../utils/SFXHelper';
+import type { CombatUnit } from '../combat/CombatManager';
+import type { BattleSceneData } from './BattleScene';
 
 // ── 타입 ────────────────────────────────────────────────────
 
@@ -28,18 +29,19 @@ interface DungeonConfig {
   timeLimitSec: number;
 }
 
-interface EnemySprite {
-  sprite: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
-  hp: number;
-  maxHp: number;
-  hpBar: Phaser.GameObjects.Rectangle;
-  hpBarBg: Phaser.GameObjects.Rectangle;
-  nameLabel?: Phaser.GameObjects.Text;
+/** BattleScene에서 복귀 시 전달받는 데이터 */
+interface DungeonResumeData {
+  resumeWave?: number;
+  earnedExp?: number;
+  earnedGold?: number;
+  elapsedSec?: number;
+  serverSessionId?: string | null;
+  characterClass?: string;
+  victory?: boolean;
+  allyState?: Array<{ hp: number; mp: number }>;
 }
 
 type DungeonPhase = 'ready' | 'fighting' | 'boss_warning' | 'boss' | 'clear' | 'timeout' | 'defeat';
-
-type CommandMode = 'attack' | 'defend' | 'potion';
 
 // ── 상수 ────────────────────────────────────────────────────
 
@@ -53,8 +55,6 @@ const DEFAULT_CONFIG: DungeonConfig = {
 const ENEMIES_PER_WAVE = 4;
 const ENEMY_BASE_HP = 80;
 const BOSS_HP_MULT = 5;
-const BAR_W = 50;
-const BAR_H = 5;
 
 // FF6 레이아웃 상수
 const PLAYER_X = 160;
@@ -69,10 +69,6 @@ const BOSS_POS = { x: 780, y: 300 };
 // 플레이어 스탯
 const PLAYER_MAX_HP = 500;
 const PLAYER_MAX_MP = 200;
-const POTION_HEAL = 120;
-const POTION_COUNT = 5;
-const DEFEND_REDUCTION = 0.5;
-const ENEMY_ATTACK_INTERVAL_MS = 2500; // 적 반격 주기
 
 // 보상
 const EXP_PER_WAVE = 30;
@@ -105,19 +101,18 @@ export class DungeonScene extends Phaser.Scene {
   private phase: DungeonPhase = 'ready';
   private currentWave = 0;
   private elapsedSec = 0;
-  private enemies: EnemySprite[] = [];
 
   // 플레이어 상태
   private playerHp = PLAYER_MAX_HP;
   private playerMp = PLAYER_MAX_MP;
-  private potionCount = POTION_COUNT;
-  private isDefending = false;
-  private commandMode: CommandMode = 'attack';
   private earnedExp = 0;
   private earnedGold = 0;
 
   // P25-06: 서버 던전 세션
   private serverSessionId: string | null = null;
+
+  // 씬 데이터
+  private _sceneData: DungeonResumeData & Record<string, unknown> = {};
 
   // UI 요소
   private waveText?: Phaser.GameObjects.Text;
@@ -130,11 +125,9 @@ export class DungeonScene extends Phaser.Scene {
   private playerMpBar?: Phaser.GameObjects.Rectangle;
   private playerMpBarBg?: Phaser.GameObjects.Rectangle;
   private playerMpText?: Phaser.GameObjects.Text;
-  private cmdAttackBtn?: Phaser.GameObjects.Text;
-  private cmdDefendBtn?: Phaser.GameObjects.Text;
-  private cmdPotionBtn?: Phaser.GameObjects.Text;
-  private enemyAttackTimer?: Phaser.Time.TimerEvent;
   private playerIdleTween?: Phaser.Tweens.Tween;
+  private battleBtn?: Phaser.GameObjects.Text;
+  private enemyPreviews: Phaser.GameObjects.GameObject[] = [];
 
   constructor() {
     super({ key: 'DungeonScene' });
@@ -142,13 +135,17 @@ export class DungeonScene extends Phaser.Scene {
 
   // ── 라이프사이클 ─────────────────────────────────────────
 
+  init(data: DungeonResumeData & Record<string, unknown>): void {
+    this._sceneData = data ?? {};
+  }
+
   preload(): void {
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Dungeon] 에셋 로드 실패: ${file.key}`);
     });
 
     // 플레이어 캐릭터
-    const classId = (this as any)._initData?.characterClass ?? 'ether_knight';
+    const classId = this._sceneData.characterClass ?? 'ether_knight';
     this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${classId}_side.png`);
 
     // 배경
@@ -165,17 +162,31 @@ export class DungeonScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#0d0d1a');
 
+    // 초기화
     this.phase = 'ready';
     this.currentWave = 0;
     this.elapsedSec = 0;
-    this.enemies = [];
     this.playerHp = PLAYER_MAX_HP;
     this.playerMp = PLAYER_MAX_MP;
-    this.potionCount = POTION_COUNT;
-    this.isDefending = false;
-    this.commandMode = 'attack';
     this.earnedExp = 0;
     this.earnedGold = 0;
+    this.enemyPreviews = [];
+
+    // 복귀 데이터 적용
+    const isResume = this._sceneData.resumeWave != null;
+    if (isResume) {
+      this.currentWave = this._sceneData.resumeWave!;
+      this.earnedExp = this._sceneData.earnedExp ?? 0;
+      this.earnedGold = this._sceneData.earnedGold ?? 0;
+      this.elapsedSec = this._sceneData.elapsedSec ?? 0;
+      this.serverSessionId = this._sceneData.serverSessionId ?? null;
+
+      // BattleScene에서 돌아온 아군 상태 적용
+      if (this._sceneData.allyState?.[0]) {
+        this.playerHp = this._sceneData.allyState[0].hp;
+        this.playerMp = this._sceneData.allyState[0].mp;
+      }
+    }
 
     // ── 배경 ──
     if (this.textures.exists('dungeon_bg')) {
@@ -218,9 +229,6 @@ export class DungeonScene extends Phaser.Scene {
     // ── 플레이어 HP/MP 바 (하단 좌측) ──
     this._createPlayerStatusBars(width, height);
 
-    // ── 커맨드 버튼 (하단 중앙) ──
-    this._createCommandButtons(width, height);
-
     // ── 뒤로가기 ──
     this.add.text(20, height - 30, '← 퇴장', {
       fontSize: '13px',
@@ -230,12 +238,19 @@ export class DungeonScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.scene.start('LobbyScene'));
 
-    // ── 시작 연출 ──
-    this._showPhaseText('준비!', () => {
-      this.phase = 'fighting';
-      this._startNextWave();
-      this._startEnemyAttackTimer();
-    });
+    // ── 시작 또는 복귀 분기 ──
+    if (isResume) {
+      if (this._sceneData.victory) {
+        this._onBattleVictory();
+      } else {
+        this._onDefeat();
+      }
+    } else {
+      this._showPhaseText('준비!', () => {
+        this.phase = 'fighting';
+        this._startNextWave();
+      });
+    }
 
     // 1초 타이머
     this.time.addEvent({
@@ -309,84 +324,40 @@ export class DungeonScene extends Phaser.Scene {
     this.playerMpText = this.add.text(baseX + 25 + barW + 8, mpY - 2, `${this.playerMp}/${PLAYER_MAX_MP}`, {
       fontSize: '11px', color: '#ffffff', fontFamily: 'monospace',
     });
+
+    this._updatePlayerBars();
   }
 
-  // ── 커맨드 버튼 ──────────────────────────────────────────
+  private _updatePlayerBars(): void {
+    const hpRatio = this.playerHp / PLAYER_MAX_HP;
+    const mpRatio = this.playerMp / PLAYER_MAX_MP;
+    const barW = 160;
 
-  private _createCommandButtons(width: number, height: number): void {
-    const btnY = height - 55;
-    const btnStyle = {
-      fontSize: '15px',
-      fontFamily: 'monospace',
-      color: '#ffffff',
-      backgroundColor: '#333355',
-      padding: { x: 14, y: 8 },
-    };
-    const selectedStyle = '#5566aa';
-    const normalBg = '#333355';
-
-    // 공격 버튼
-    this.cmdAttackBtn = this.add.text(width / 2 - 130, btnY, '⚔ 공격', btnStyle)
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        this.commandMode = 'attack';
-        this.isDefending = false;
-        this._updateCommandHighlight();
-        playSfx(this, UI_SFX.CLICK, 0.3);
-      });
-
-    // 방어 버튼
-    this.cmdDefendBtn = this.add.text(width / 2, btnY, '🛡 방어', btnStyle)
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        this.commandMode = 'defend';
-        this.isDefending = true;
-        this._updateCommandHighlight();
-        playSfx(this, UI_SFX.CONFIRM, 0.3);
-        if (this.playerSprite) this._showDamagePopup(this.playerSprite, '방어 태세!', '#88aaff');
-      });
-
-    // 포션 버튼
-    this.cmdPotionBtn = this.add.text(width / 2 + 130, btnY, `💊 포션(${this.potionCount})`, btnStyle)
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        this._usePotion();
-      });
-
-    this._updateCommandHighlight();
-  }
-
-  private _updateCommandHighlight(): void {
-    const selColor = '#aaccff';
-    const normColor = '#ffffff';
-    this.cmdAttackBtn?.setColor(this.commandMode === 'attack' ? selColor : normColor);
-    this.cmdDefendBtn?.setColor(this.commandMode === 'defend' ? selColor : normColor);
-    this.cmdPotionBtn?.setColor(normColor);
-
-    // 배경 시각적 강조 (underline 효과)
-    this.cmdAttackBtn?.setStyle({ backgroundColor: this.commandMode === 'attack' ? '#5566aa' : '#333355' });
-    this.cmdDefendBtn?.setStyle({ backgroundColor: this.commandMode === 'defend' ? '#5566aa' : '#333355' });
-  }
-
-  private _usePotion(): void {
-    if (this.phase !== 'fighting' && this.phase !== 'boss') return;
-    if (this.potionCount <= 0) {
-      if (this.playerSprite) this._showDamagePopup(this.playerSprite, '포션 없음!', '#ff4444');
-      playSfx(this, UI_SFX.ERROR, 0.3);
-      return;
+    this.playerHpBar?.setScale(hpRatio, 1);
+    if (this.playerHpBar && this.playerHpBarBg) {
+      this.playerHpBar.setPosition(
+        this.playerHpBarBg.x - (barW * (1 - hpRatio)) / 2,
+        this.playerHpBarBg.y,
+      );
+    }
+    if (hpRatio < 0.25) {
+      this.playerHpBar?.setFillStyle(0xff2222);
+    } else if (hpRatio < 0.5) {
+      this.playerHpBar?.setFillStyle(0xffaa44);
+    } else {
+      this.playerHpBar?.setFillStyle(0x44ff44);
     }
 
-    this.potionCount--;
-    const heal = Math.min(POTION_HEAL, PLAYER_MAX_HP - this.playerHp);
-    this.playerHp = Math.min(PLAYER_MAX_HP, this.playerHp + POTION_HEAL);
+    this.playerMpBar?.setScale(mpRatio, 1);
+    if (this.playerMpBar && this.playerMpBarBg) {
+      this.playerMpBar.setPosition(
+        this.playerMpBarBg.x - (barW * (1 - mpRatio)) / 2,
+        this.playerMpBarBg.y,
+      );
+    }
 
-    this.cmdPotionBtn?.setText(`💊 포션(${this.potionCount})`);
-    if (this.playerSprite) this._showDamagePopup(this.playerSprite, `+${heal}`, '#44ff44');
-    playSfx(this, UI_SFX.ITEM_PICKUP, 0.4);
-    this._updatePlayerBars();
+    this.playerHpText?.setText(`${this.playerHp}/${PLAYER_MAX_HP}`);
+    this.playerMpText?.setText(`${this.playerMp}/${PLAYER_MAX_MP}`);
   }
 
   // ── 웨이브 관리 ──────────────────────────────────────────
@@ -398,23 +369,25 @@ export class DungeonScene extends Phaser.Scene {
     if (this.currentWave === this.config.bossWave) {
       this._showBossWarning(() => {
         this.phase = 'boss';
-        this._spawnEnemies(true);
+        this._spawnEnemyPreview(true);
       });
       return;
     }
 
-    this._spawnEnemies(false);
+    this._spawnEnemyPreview(false);
   }
 
-  private _spawnEnemies(isBoss: boolean): void {
-    // 기존 적 정리
-    for (const e of this.enemies) {
-      e.sprite?.destroy();
-      e.hpBar?.destroy();
-      e.hpBarBg?.destroy();
-      e.nameLabel?.destroy();
+  private _clearEnemyPreviews(): void {
+    for (const obj of this.enemyPreviews) {
+      obj.destroy();
     }
-    this.enemies = [];
+    this.enemyPreviews = [];
+    this.battleBtn?.destroy();
+    this.battleBtn = undefined;
+  }
+
+  private _spawnEnemyPreview(isBoss: boolean): void {
+    this._clearEnemyPreviews();
 
     const count = isBoss ? 1 : ENEMIES_PER_WAVE;
 
@@ -422,11 +395,7 @@ export class DungeonScene extends Phaser.Scene {
       const pos = isBoss ? BOSS_POS : ENEMY_POSITIONS[i % ENEMY_POSITIONS.length];
       const x = pos.x + Phaser.Math.Between(-20, 20);
       const y = pos.y;
-      const hp = isBoss
-        ? ENEMY_BASE_HP * this.currentWave * BOSS_HP_MULT
-        : ENEMY_BASE_HP * this.currentWave;
       const size = isBoss ? 64 : 40;
-      const color = isBoss ? 0xff2244 : 0xff6644;
 
       // 몬스터 이미지 사용 (fallback: 사각형)
       const monsterKeys = isBoss ? [DUNGEON_BOSS_IMAGE] : DUNGEON_MONSTER_IMAGES.default;
@@ -435,16 +404,11 @@ export class DungeonScene extends Phaser.Scene {
 
       if (this.textures.exists(monKey)) {
         sprite = this.add.image(x, y, monKey)
-          .setDisplaySize(isBoss ? size * 2.5 : size * 2, isBoss ? size * 2.5 : size * 2)
-          .setInteractive({ useHandCursor: true });
+          .setDisplaySize(isBoss ? size * 2.5 : size * 2, isBoss ? size * 2.5 : size * 2);
       } else {
-        sprite = this.add.rectangle(x, y, size, size, color)
-          .setInteractive({ useHandCursor: true });
+        const color = isBoss ? 0xff2244 : 0xff6644;
+        sprite = this.add.rectangle(x, y, size, size, color);
       }
-
-      // HP 바
-      const hpBarBg = this.add.rectangle(x, y - (isBoss ? 80 : 44), BAR_W, BAR_H, 0x333333);
-      const hpBar = this.add.rectangle(x, y - (isBoss ? 80 : 44), BAR_W, BAR_H, isBoss ? 0xff4444 : 0x44ff44);
 
       // 이름 라벨
       const monName = MONSTER_NAMES[monKey] ?? monKey;
@@ -453,9 +417,6 @@ export class DungeonScene extends Phaser.Scene {
         fontFamily: 'monospace',
         color: isBoss ? '#ff4444' : '#cccccc',
       }).setOrigin(0.5);
-
-      const enemy: EnemySprite = { sprite, hp, maxHp: hp, hpBar, hpBarBg, nameLabel };
-      this.enemies.push(enemy);
 
       // 스폰 애니메이션
       sprite.setAlpha(0);
@@ -466,225 +427,142 @@ export class DungeonScene extends Phaser.Scene {
         delay: i * 100,
       });
 
-      // 클릭 → 현재 커맨드에 따라 행동
-      sprite.on('pointerdown', () => this._onEnemyClick(enemy));
+      this.enemyPreviews.push(sprite, nameLabel);
+
+      // 보스 글로우 이펙트
+      if (isBoss) {
+        this.tweens.add({
+          targets: sprite,
+          scaleX: sprite.scaleX * 1.05,
+          scaleY: sprite.scaleY * 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+        playSfx(this, UI_SFX.NOTIFICATION, 0.6);
+      }
     }
 
-    // 보스 글로우 이펙트
-    if (isBoss && this.enemies.length > 0) {
-      const bossSprite = this.enemies[0].sprite;
-      this.tweens.add({
-        targets: bossSprite,
-        scaleX: bossSprite.scaleX * 1.05,
-        scaleY: bossSprite.scaleY * 1.05,
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
-      // 보스 등장 SFX
-      playSfx(this, UI_SFX.NOTIFICATION, 0.6);
-    }
-  }
+    // ── Battle! 버튼 ──
+    const { width, height } = this.cameras.main;
+    this.battleBtn = this.add.text(width / 2, height - 55, '⚔ Battle!', {
+      fontSize: '22px',
+      fontFamily: 'monospace',
+      color: '#ffffff',
+      backgroundColor: '#882222',
+      padding: { x: 24, y: 12 },
+    })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => {
+        playSfx(this, UI_SFX.CLICK, 0.3);
+        this._launchBattle(isBoss);
+      })
+      .on('pointerover', () => this.battleBtn?.setStyle({ backgroundColor: '#aa3333' }))
+      .on('pointerout', () => this.battleBtn?.setStyle({ backgroundColor: '#882222' }));
 
-  // ── 적 클릭 핸들러 ───────────────────────────────────────
-
-  private _onEnemyClick(enemy: EnemySprite): void {
-    if (this.phase !== 'fighting' && this.phase !== 'boss') return;
-    if (enemy.hp <= 0) return;
-
-    if (this.commandMode === 'attack') {
-      this._attackEnemy(enemy);
-    }
-    // defend/potion은 버튼에서 처리, 적 클릭 시에도 공격으로 폴백
-  }
-
-  private _attackEnemy(enemy: EnemySprite): void {
-    if (this.phase !== 'fighting' && this.phase !== 'boss') return;
-    if (enemy.hp <= 0) return;
-
-    // 방어 해제 (공격하면 방어 상태 종료)
-    this.isDefending = false;
-    this.commandMode = 'attack';
-    this._updateCommandHighlight();
-
-    // 데미지 계산
-    const baseDmg = Phaser.Math.Between(15, 35) * (1 + this.currentWave * 0.1);
-    const isCritical = Math.random() < 0.15;
-    const dmg = Math.round(isCritical ? baseDmg * 2 : baseDmg);
-    enemy.hp = Math.max(0, enemy.hp - dmg);
-
-    // HP 바 업데이트
-    this._updateEnemyHpBar(enemy);
-
-    // 데미지 팝업
-    this._showDamagePopup(
-      enemy.sprite,
-      isCritical ? `${dmg} CRIT!` : `${dmg}`,
-      isCritical ? '#ffcc00' : '#ffffff',
-    );
-
-    // 히트 이펙트: 흔들림 + 번쩍임
-    this._showHitEffect(enemy.sprite);
-
-    // SFX
-    playSfx(this, 'sfx_combat_slash', 0.4);
-    if (isCritical) {
-      playRandomVoice(this, [COMBAT_VOICE.CRITICAL], 0.5);
-    } else {
-      playRandomVoice(this, [...COMBAT_VOICE.ATTACK], 0.3);
-    }
-
-    // 사망 판정
-    if (enemy.hp <= 0) {
-      this._killEnemy(enemy);
-    }
-  }
-
-  private _killEnemy(enemy: EnemySprite): void {
-    // 사망 연출: 페이드 아웃
+    // 버튼 펄스 애니메이션
     this.tweens.add({
-      targets: [enemy.sprite, enemy.hpBar, enemy.hpBarBg, enemy.nameLabel].filter(Boolean),
-      alpha: 0,
-      duration: 500,
-      onComplete: () => {
-        this._checkWaveClear();
-      },
-    });
-    playRandomVoice(this, [COMBAT_VOICE.DEATH], 0.3);
-  }
-
-  private _updateEnemyHpBar(enemy: EnemySprite): void {
-    const ratio = enemy.hp / enemy.maxHp;
-    enemy.hpBar?.setScale(ratio, 1);
-    if (enemy.hpBar && enemy.hpBarBg) {
-      enemy.hpBar.setPosition(
-        enemy.hpBarBg.x - (BAR_W * (1 - ratio)) / 2,
-        enemy.hpBarBg.y,
-      );
-    }
-    // 색상 변화 (HP 낮으면 빨갛게)
-    if (ratio < 0.3) {
-      enemy.hpBar?.setFillStyle(0xff4444);
-    } else if (ratio < 0.6) {
-      enemy.hpBar?.setFillStyle(0xffaa44);
-    }
-  }
-
-  // ── 적 반격 시스템 ───────────────────────────────────────
-
-  private _startEnemyAttackTimer(): void {
-    this.enemyAttackTimer = this.time.addEvent({
-      delay: ENEMY_ATTACK_INTERVAL_MS,
-      loop: true,
-      callback: () => this._enemyAttack(),
+      targets: this.battleBtn,
+      scaleX: 1.05,
+      scaleY: 1.05,
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
     });
   }
 
-  private _enemyAttack(): void {
-    if (this.phase !== 'fighting' && this.phase !== 'boss') return;
+  // ── BattleScene 전환 ─────────────────────────────────────
 
-    const aliveEnemies = this.enemies.filter(e => e.hp > 0);
-    if (aliveEnemies.length === 0) return;
+  private _launchBattle(isBoss: boolean): void {
+    const count = isBoss ? 1 : ENEMIES_PER_WAVE;
+    const enemies: CombatUnit[] = [];
 
-    // 랜덤 적 하나가 공격
-    const attacker = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
-    const baseDmg = Phaser.Math.Between(8, 20) * (1 + this.currentWave * 0.15);
-    const dmg = Math.round(this.isDefending ? baseDmg * DEFEND_REDUCTION : baseDmg);
+    for (let i = 0; i < count; i++) {
+      const monsterKeys = isBoss ? [DUNGEON_BOSS_IMAGE] : DUNGEON_MONSTER_IMAGES.default;
+      const monKey = monsterKeys[i % monsterKeys.length];
+      const monName = MONSTER_NAMES[monKey] ?? monKey;
+      const hp = isBoss
+        ? ENEMY_BASE_HP * this.currentWave * BOSS_HP_MULT
+        : ENEMY_BASE_HP * this.currentWave;
 
-    this.playerHp = Math.max(0, this.playerHp - dmg);
-    this._updatePlayerBars();
-
-    // 데미지 팝업 (플레이어)
-    if (this.playerSprite) {
-      this._showDamagePopup(
-        this.playerSprite,
-        this.isDefending ? `${dmg} (방어!)` : `${dmg}`,
-        '#ff6644',
-      );
-
-      // 히트 이펙트 (플레이어)
-      this._showHitEffect(this.playerSprite);
-    }
-    playRandomVoice(this, [...COMBAT_VOICE.HIT], 0.3);
-
-    // 공격 모션 (적 → 플레이어 방향 돌진)
-    const origX = attacker.sprite?.x ?? 0;
-    if (attacker.sprite) {
-      this.tweens.add({
-        targets: attacker.sprite,
-        x: origX - 40,
-        duration: 150,
-        yoyo: true,
+      enemies.push({
+        id: `${monKey}_${i}`,
+        name: monName,
+        hp, maxHp: hp,
+        mp: 0, maxMp: 0,
+        attack: Math.round(10 + this.currentWave * 3),
+        defense: Math.round(3 + this.currentWave),
+        attackSpeed: isBoss ? 0.7 : 0.8 + Math.random() * 0.3,
+        level: this.currentWave,
+        isAlly: false,
       });
     }
 
-    // 패배 체크
-    if (this.playerHp <= 0) {
-      this._onDefeat();
-    }
+    const classId = this._sceneData.characterClass ?? 'ether_knight';
+
+    const allies: CombatUnit[] = [{
+      id: 'player_1',
+      name: '플레이어',
+      hp: this.playerHp, maxHp: PLAYER_MAX_HP,
+      mp: this.playerMp, maxMp: PLAYER_MAX_MP,
+      attack: 30,
+      defense: 10,
+      attackSpeed: 1.0,
+      level: 1,
+      isAlly: true,
+      classId,
+    }];
+
+    const battleData: BattleSceneData = {
+      allies,
+      enemies,
+      skillSlots: [],
+      zoneId: 'erebos',
+      monsterId: enemies[0].id,
+      monsterName: enemies[0].name,
+      returnScene: 'DungeonScene',
+      returnData: {
+        resumeWave: this.currentWave,
+        earnedExp: this.earnedExp,
+        earnedGold: this.earnedGold,
+        elapsedSec: this.elapsedSec,
+        serverSessionId: this.serverSessionId,
+        characterClass: classId,
+      },
+    };
+
+    this.scene.start('BattleScene', battleData);
   }
 
-  private _updatePlayerBars(): void {
-    const hpRatio = this.playerHp / PLAYER_MAX_HP;
-    const mpRatio = this.playerMp / PLAYER_MAX_MP;
+  // ── 전투 결과 처리 ───────────────────────────────────────
 
-    this.playerHpBar?.setScale(hpRatio, 1);
-    if (this.playerHpBar && this.playerHpBarBg) {
-      const barW = 160;
-      this.playerHpBar.setPosition(
-        this.playerHpBarBg.x - (barW * (1 - hpRatio)) / 2,
-        this.playerHpBarBg.y,
-      );
-    }
-    // HP색 변화
-    if (hpRatio < 0.25) {
-      this.playerHpBar?.setFillStyle(0xff2222);
-    } else if (hpRatio < 0.5) {
-      this.playerHpBar?.setFillStyle(0xffaa44);
-    } else {
-      this.playerHpBar?.setFillStyle(0x44ff44);
-    }
-
-    this.playerMpBar?.setScale(mpRatio, 1);
-    if (this.playerMpBar && this.playerMpBarBg) {
-      const barW = 160;
-      this.playerMpBar.setPosition(
-        this.playerMpBarBg.x - (barW * (1 - mpRatio)) / 2,
-        this.playerMpBarBg.y,
-      );
-    }
-
-    this.playerHpText?.setText(`${this.playerHp}/${PLAYER_MAX_HP}`);
-    this.playerMpText?.setText(`${this.playerMp}/${PLAYER_MAX_MP}`);
-  }
-
-  // ── 웨이브 클리어 ────────────────────────────────────────
-
-  private _checkWaveClear(): void {
-    const allDead = this.enemies.every(e => e.hp <= 0);
-    if (!allDead) return;
-
+  private _onBattleVictory(): void {
     // 보상 누적
-    const isBossWave = this.phase === 'boss' || this.currentWave >= this.config.totalWaves;
-    const waveExp = isBossWave ? EXP_PER_WAVE * this.currentWave + BOSS_EXP_BONUS : EXP_PER_WAVE * this.currentWave;
-    const waveGold = isBossWave ? GOLD_PER_WAVE * this.currentWave + BOSS_GOLD_BONUS : GOLD_PER_WAVE * this.currentWave;
+    const isBossWave = this.currentWave >= this.config.bossWave;
+    const waveExp = isBossWave
+      ? EXP_PER_WAVE * this.currentWave + BOSS_EXP_BONUS
+      : EXP_PER_WAVE * this.currentWave;
+    const waveGold = isBossWave
+      ? GOLD_PER_WAVE * this.currentWave + BOSS_GOLD_BONUS
+      : GOLD_PER_WAVE * this.currentWave;
     this.earnedExp += waveExp;
     this.earnedGold += waveGold;
 
     if (isBossWave) {
-      // 던전 클리어
       this.phase = 'clear';
-      this.enemyAttackTimer?.remove();
       this._showVictory();
     } else {
-      // 웨이브 클리어 → 다음 웨이브
+      this.phase = 'fighting';
       this._showWaveClearPopup(waveExp, waveGold, () => {
-        this.phase = 'fighting';
         this._startNextWave();
       });
     }
   }
+
+  // ── 웨이브 클리어 팝업 ──────────────────────────────────
 
   private _showWaveClearPopup(exp: number, gold: number, onDone: () => void): void {
     const { width, height } = this.cameras.main;
@@ -780,10 +658,7 @@ export class DungeonScene extends Phaser.Scene {
 
   private _onDefeat(): void {
     this.phase = 'defeat';
-    this.enemyAttackTimer?.remove();
     playRandomVoice(this, [COMBAT_VOICE.DEATH], 0.4);
-
-    const { width, height } = this.cameras.main;
 
     // 플레이어 사망 모션
     if (this.playerIdleTween) this.playerIdleTween.stop();
@@ -855,58 +730,6 @@ export class DungeonScene extends Phaser.Scene {
     });
   }
 
-  // ── 히트 이펙트 ──────────────────────────────────────────
-
-  private _showHitEffect(target: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image | Phaser.GameObjects.GameObject): void {
-    // 흔들림
-    this.tweens.add({
-      targets: target,
-      x: (target as any).x + 6,
-      duration: 40,
-      yoyo: true,
-      repeat: 3,
-    });
-
-    // 번쩍임 (setTint 흰색 → 원복)
-    if ('setTint' in target && typeof (target as any).setTint === 'function') {
-      (target as any).setTint(0xffffff);
-      this.time.delayedCall(80, () => {
-        if ('clearTint' in target && typeof (target as any).clearTint === 'function') {
-          (target as any).clearTint();
-        }
-      });
-    }
-  }
-
-  // ── 데미지 팝업 ──────────────────────────────────────────
-
-  private _showDamagePopup(
-    target: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image | Phaser.GameObjects.GameObject,
-    text: string,
-    color: string,
-  ): void {
-    const tx = (target as any).x ?? 0;
-    const ty = (target as any).y ?? 0;
-
-    const dmgText = this.add.text(tx + Phaser.Math.Between(-10, 10), ty - 25, text, {
-      fontSize: '18px',
-      color,
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3,
-    }).setOrigin(0.5);
-
-    this.tweens.add({
-      targets: dmgText,
-      y: dmgText.y - 45,
-      alpha: 0,
-      duration: 900,
-      ease: 'Cubic.easeOut',
-      onComplete: () => dmgText.destroy(),
-    });
-  }
-
   // ── 타이머 ───────────────────────────────────────────────
 
   private _tick(): void {
@@ -916,7 +739,7 @@ export class DungeonScene extends Phaser.Scene {
 
     if (this.elapsedSec >= this.config.timeLimitSec) {
       this.phase = 'timeout';
-      this.enemyAttackTimer?.remove();
+      this._clearEnemyPreviews();
       this._showPhaseText('⏰ 시간 초과!', () => {
         this.scene.start('LobbyScene');
       }, 2000);

@@ -38,6 +38,10 @@ export interface BattleSceneData {
   monsterId?: string;
   monsterName?: string;
   characterId?: string;
+  /** 전투 종료 후 복귀할 씬 (없으면 GameScene) */
+  returnScene?: string;
+  /** 복귀 시 전달할 데이터 (victory/allyState 자동 추가) */
+  returnData?: Record<string, unknown>;
 }
 
 // ─── 존 → 배경 접두어 매핑 ──────────────────────────────────────
@@ -1471,6 +1475,15 @@ export class BattleScene extends Phaser.Scene {
     this.socketCleanups.forEach((fn) => fn());
     this.socketCleanups = [];
 
-    this.scene.start('GameScene');
+    if (this._initData.returnScene) {
+      const allyState = this.allySprites.map(a => ({ hp: a.unit.hp, mp: a.unit.mp }));
+      this.scene.start(this._initData.returnScene, {
+        ...(this._initData.returnData ?? {}),
+        victory: this.phase === 'victory',
+        allyState,
+      });
+    } else {
+      this.scene.start('GameScene');
+    }
   }
 }
