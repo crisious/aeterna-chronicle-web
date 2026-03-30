@@ -64,6 +64,7 @@ export class LobbyScene extends Phaser.Scene {
   private dialoguePanel: Phaser.GameObjects.Container | null = null;
   private minimapContainer!: Phaser.GameObjects.Container;
   private connectionIndicator!: Phaser.GameObjects.Text;
+  private goldText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'LobbyScene' });
@@ -208,9 +209,26 @@ export class LobbyScene extends Phaser.Scene {
       backgroundColor: '#00000088', padding: { x: 8, y: 4 },
     });
 
-    this.add.text(w - 12, 12, '💰 1,000 Gold', {
+    this.goldText = this.add.text(w - 12, 12, '💰 --- Gold', {
       fontSize: '13px', fontFamily: 'monospace', color: '#ffcc44',
     }).setOrigin(1, 0);
+
+    // 서버에서 실제 골드 조회
+    this._fetchGold();
+  }
+
+  private async _fetchGold(): Promise<void> {
+    try {
+      const res = await networkManager.get('/api/characters');
+      const chars = (res as any)?.characters ?? res;
+      const char = Array.isArray(chars)
+        ? chars.find((c: any) => c.id === this.characterData?.characterId) ?? chars[0]
+        : null;
+      const gold = char?.gold ?? char?.currency ?? 0;
+      if (this.goldText) this.goldText.setText(`💰 ${gold.toLocaleString()} Gold`);
+    } catch {
+      if (this.goldText) this.goldText.setText('💰 --- Gold');
+    }
   }
 
   // ── NPC ──────────────────────────────────────────────────
@@ -224,7 +242,7 @@ export class LobbyScene extends Phaser.Scene {
       let body: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
       if (this.textures.exists(npcTexKey)) {
         body = this.add.image(0, 0, npcTexKey)
-          
+          .setScale(0.15)
           .setInteractive({ useHandCursor: true });
       } else {
         body = this.add.circle(0, 0, 20, npc.color)
@@ -271,7 +289,7 @@ export class LobbyScene extends Phaser.Scene {
     // P33-A: NPC 대화 초상화
     const npcPortraitKey = `npc_${npc.id}`;
     if (this.textures.exists(npcPortraitKey)) {
-      panel.add(this.add.image(-160, 0, npcPortraitKey).setScale(1));
+      panel.add(this.add.image(-160, 0, npcPortraitKey).setScale(0.25));
     }
 
     panel.add(this.add.text(0, -70, `💬 ${npc.name}`, {
@@ -444,7 +462,7 @@ export class LobbyScene extends Phaser.Scene {
 
     // P33-A: NPC 초상화 (마테우스)
     if (this.textures.exists('npc_portrait_mateus')) {
-      panel.add(this.add.image(-200, -30, 'npc_portrait_mateus').setScale(2));
+      panel.add(this.add.image(-200, -30, 'npc_portrait_mateus').setScale(0.25));
     }
 
     panel.add(this.add.text(0, -120, `📖 ${npc.name} — 메인 스토리`, {
