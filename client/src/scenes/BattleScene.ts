@@ -220,10 +220,14 @@ export class BattleScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // 전투 배경 (zoneId 기반)
-    const zoneId = this._initData?.zoneId ?? '';
-    const zoneCode = ZONE_BG_PREFIX[zoneId] ?? DEFAULT_BG_PREFIX;
-    this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
+    // 전투 배경: 던전에서 왔으면 던전 배경, 아니면 zoneId 기반
+    if (this._initData?.returnScene === 'DungeonScene') {
+      this.load.image('battle_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
+    } else {
+      const zoneId = this._initData?.zoneId ?? '';
+      const zoneCode = ZONE_BG_PREFIX[zoneId] ?? DEFAULT_BG_PREFIX;
+      this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
+    }
 
     // 몬스터 이미지 — monsterManifest 기반 동적 프리로드
     const manifest = monsterManifest as Record<string, string>;
@@ -285,9 +289,10 @@ export class BattleScene extends Phaser.Scene {
 
     try {
       if (this.textures.exists('battle_bg')) {
-        this.add.image(scW / 2, scH / 2, 'battle_bg')
-          .setDisplaySize(scW, scH)
-          .setAlpha(0.7);
+        const bgImg = this.add.image(scW / 2, scH / 2, 'battle_bg');
+        const sw = scW / bgImg.width;
+        const sh = scH / bgImg.height;
+        bgImg.setScale(Math.max(sw, sh));
       }
     } catch (e) { console.warn('[Battle] bg error:', e); }
 
@@ -932,7 +937,7 @@ export class BattleScene extends Phaser.Scene {
     if (!this.textures.exists(key)) return;
 
     const vfx = this.add.image(x, y, key)
-      .setDisplaySize(56, 56)
+      .setScale(0.15)
       .setAlpha(0.9)
       .setDepth(8000);
 
@@ -996,7 +1001,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
-          .setDisplaySize(72, 96)
+          .setScale(0.25)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
       } else {
@@ -1015,7 +1020,7 @@ export class BattleScene extends Phaser.Scene {
         ease: 'Sine.easeInOut',
       });
 
-      const nameText = this.add.text(pos.x, pos.y + 52, unit.name, {
+      const nameText = this.add.text(pos.x, pos.y + sprite.displayHeight / 2 + 4, unit.name, {
         fontSize: '11px',
         fontFamily: 'monospace',
         color: '#88ccff',
@@ -1049,15 +1054,12 @@ export class BattleScene extends Phaser.Scene {
         monTexKey = availableKeys.length > 0 ? availableKeys[idx % availableKeys.length] : '';
       }
 
-      // 몬스터 크기: 레벨에 비례
-      const baseSize = 80;
-      const scale = Math.min(2.0, 0.8 + (unit.level ?? 1) * 0.05);
-      const displaySize = baseSize * scale;
+      const isBoss = (unit.id ?? '').toUpperCase().startsWith('BOSS') || (monTexKey ?? '').includes('boss');
 
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setDisplaySize(displaySize, displaySize)
+          .setScale(isBoss ? 0.4 : 0.25)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
       } else {
@@ -1066,7 +1068,7 @@ export class BattleScene extends Phaser.Scene {
           .setDepth(50);
       }
 
-      const nameText = this.add.text(pos.x, pos.y - displaySize / 2 - 14, unit.name, {
+      const nameText = this.add.text(pos.x, pos.y - sprite.displayHeight / 2 - 14, unit.name, {
         fontSize: '11px',
         fontFamily: 'monospace',
         color: '#ff8888',
