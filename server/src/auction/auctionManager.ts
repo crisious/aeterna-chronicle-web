@@ -154,22 +154,22 @@ class AuctionManager {
   async placeBid(params: BidParams): Promise<AuctionResult> {
     const { listingId, bidderId, amount } = params;
 
-    const listing = await prisma.auctionListing.findUnique({ where: { id: listingId } });
-    if (!listing) return { ok: false, error: '매물을 찾을 수 없습니다' };
-    if (listing.status !== 'active') return { ok: false, error: '활성 상태가 아닙니다' };
-    if (listing.sellerId === bidderId) return { ok: false, error: '본인 매물에 입찰할 수 없습니다' };
-    if (new Date() > listing.expiresAt) return { ok: false, error: '만료된 매물입니다' };
+    const result = await prisma.$transaction(async (tx) => {
+      const listing = await tx.auctionListing.findUnique({ where: { id: listingId } });
+      if (!listing) return { ok: false as const, error: '매물을 찾을 수 없습니다' };
+      if (listing.status !== 'active') return { ok: false as const, error: '활성 상태가 아닙니다' };
+      if (listing.sellerId === bidderId) return { ok: false as const, error: '본인 매물에 입찰할 수 없습니다' };
+      if (new Date() > listing.expiresAt) return { ok: false as const, error: '만료된 매물입니다' };
 
-    // 최소 입찰가 체크
-    const currentBid = listing.currentBid ?? listing.bidPrice ?? 0;
-    const minBid = Math.ceil(currentBid * (1 + MIN_BID_INCREMENT_RATE));
-    if (amount < minBid) return { ok: false, error: `최소 입찰가는 ${minBid}입니다` };
+      // 최소 입찰가 체크
+      const currentBid = listing.currentBid ?? listing.bidPrice ?? 0;
+      const minBid = Math.ceil(currentBid * (1 + MIN_BID_INCREMENT_RATE));
+      if (amount < minBid) return { ok: false as const, error: `최소 입찰가는 ${minBid}입니다` };
 
-    // 입찰자 골드 확인
-    const bidder = await prisma.user.findUnique({ where: { id: bidderId } });
-    if (!bidder || bidder.gold < amount) return { ok: false, error: '골드가 부족합니다' };
+      // 입찰자 골드 확인
+      const bidder = await tx.user.findUnique({ where: { id: bidderId } });
+      if (!bidder || bidder.gold < amount) return { ok: false as const, error: '골드가 부족합니다' };
 
-    await prisma.$transaction(async (tx) => {
       // 이전 입찰자에게 환불
       if (listing.bidderId && listing.currentBid) {
         await tx.user.update({
@@ -192,11 +192,17 @@ class AuctionManager {
           bidderId,
         },
       });
+
+      return { ok: true as const, data: { listingId, currentBid: amount, bidderId } };
+    }, {
+      isolationLevel: 'Serializable',
     });
+
+    if (!result.ok) return result;
 
     this._onBid?.(listingId, bidderId, amount);
 
-    return { ok: true, data: { listingId, currentBid: amount, bidderId } };
+    return result;
   }
 
   // ── 즉시구매 ─────────────────────────────────────────────────

@@ -151,23 +151,24 @@ export class InventoryManager {
     splitQty: number,
     capacity: number = DEFAULT_INVENTORY_CAPACITY,
   ): Promise<{ success: boolean; newSlotId?: string; message: string }> {
-    const slot = await prisma.inventorySlot.findUnique({ where: { id: slotId } });
-    if (!slot) return { success: false, message: '슬롯을 찾을 수 없음' };
-    if (splitQty <= 0 || splitQty >= slot.quantity) {
-      return { success: false, message: '분할 수량이 유효하지 않음' };
-    }
+    const result = await prisma.$transaction(async (tx) => {
+      const slot = await tx.inventorySlot.findUnique({ where: { id: slotId } });
+      if (!slot) return { success: false as const, message: '슬롯을 찾을 수 없음' };
+      if (splitQty <= 0 || splitQty >= slot.quantity) {
+        return { success: false as const, message: '분할 수량이 유효하지 않음' };
+      }
 
-    const currentSlots = await prisma.inventorySlot.count({ where: { userId: slot.userId } });
-    if (currentSlots >= capacity) {
-      return { success: false, message: '인벤토리 용량 초과' };
-    }
+      const currentSlots = await tx.inventorySlot.count({ where: { userId: slot.userId } });
+      if (currentSlots >= capacity) {
+        return { success: false as const, message: '인벤토리 용량 초과' };
+      }
 
-    const [, newSlot] = await prisma.$transaction([
-      prisma.inventorySlot.update({
+      await tx.inventorySlot.update({
         where: { id: slotId },
-        data: { quantity: slot.quantity - splitQty },
-      }),
-      prisma.inventorySlot.create({
+        data: { quantity: { decrement: splitQty } },
+      });
+
+      const newSlot = await tx.inventorySlot.create({
         data: {
           userId: slot.userId,
           itemId: slot.itemId,
@@ -175,10 +176,14 @@ export class InventoryManager {
           enhancement: slot.enhancement,
           options: slot.options as object | undefined,
         },
-      }),
-    ]);
+      });
 
-    return { success: true, newSlotId: newSlot.id, message: `${splitQty}개 분할 완료` };
+      return { success: true as const, newSlotId: newSlot.id, message: `${splitQty}개 분할 완료` };
+    }, {
+      isolationLevel: 'Serializable',
+    });
+
+    return result;
   }
 
   // ── 수량 합치기 ────────────────────────────────────────────

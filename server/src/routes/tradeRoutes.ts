@@ -214,20 +214,38 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
         const requesterOffer = trade.requesterOffer ? JSON.parse(trade.requesterOffer as string) : { items: [], gold: 0 };
         const targetOffer = trade.targetOffer ? JSON.parse(trade.targetOffer as string) : { items: [], gold: 0 };
 
-        // 골드 교환
+        // 골드 + 아이템 교환
         const goldDiff = requesterOffer.gold - targetOffer.gold;
-        if (goldDiff !== 0) {
-          await prisma.$transaction([
-            prisma.character.updateMany({
+
+        await prisma.$transaction(async (tx) => {
+          // 골드 교환: requester gives requesterOffer.gold, receives targetOffer.gold (net = target - requester)
+          if (goldDiff !== 0) {
+            await tx.character.updateMany({
               where: { userId: trade.requesterId, isActive: true },
-              data: { gold: { increment: -requesterOffer.gold + targetOffer.gold } },
-            }),
-            prisma.character.updateMany({
+              data: { gold: { increment: targetOffer.gold - requesterOffer.gold } },
+            });
+            await tx.character.updateMany({
               where: { userId: trade.targetId, isActive: true },
-              data: { gold: { increment: -targetOffer.gold + requesterOffer.gold } },
-            }),
-          ]);
-        }
+              data: { gold: { increment: requesterOffer.gold - targetOffer.gold } },
+            });
+          }
+
+          // 아이템 교환: requester의 아이템 → target에게
+          for (const item of requesterOffer.items ?? []) {
+            await tx.inventorySlot.update({
+              where: { id: item.slotId },
+              data: { userId: trade.targetId },
+            });
+          }
+
+          // 아이템 교환: target의 아이템 → requester에게
+          for (const item of targetOffer.items ?? []) {
+            await tx.inventorySlot.update({
+              where: { id: item.slotId },
+              data: { userId: trade.requesterId },
+            });
+          }
+        });
       }
 
       const updated = await prisma.trade.update({

@@ -131,8 +131,9 @@ export class SkillCooldownManager {
   tick(): void {
     for (const [_charId, skills] of this.cooldowns) {
       for (const [skillId, remaining] of skills) {
-        if (remaining <= 1) skills.delete(skillId);
-        else skills.set(skillId, remaining - 1);
+        const next = remaining - 1;
+        if (next <= 0) skills.delete(skillId);
+        else skills.set(skillId, next);
       }
     }
   }
