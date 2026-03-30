@@ -81,12 +81,13 @@ export class MainMenuScene extends Phaser.Scene {
     this._spawnAetherParticles(width, height);
 
     this.titleText = this.add.text(width / 2, height * 0.25, TITLE_TEXT, {
-      fontSize: '48px',
+      fontSize: '64px',
       fontFamily: 'monospace',
       color: '#c8a2ff',
       align: 'center',
       stroke: '#4a0080',
-      strokeThickness: 4,
+      strokeThickness: 6,
+      letterSpacing: 2,
     }).setOrigin(0.5).setAlpha(0);
 
     this.subtitleText = this.add.text(width / 2, height * 0.42, SUBTITLE_TEXT, {
@@ -199,6 +200,8 @@ export class MainMenuScene extends Phaser.Scene {
     const cx = width / 2;
     const cy = height / 2;
 
+    // 메뉴 버튼 숨기기
+    this.menuItems.forEach(btn => btn.setVisible(false));
     this.loginContainer = this.add.container(cx, cy);
 
     const bg = this.add.rectangle(0, 0, 360, 280, 0x000000, 0.92)
@@ -214,8 +217,12 @@ export class MainMenuScene extends Phaser.Scene {
     const canvas = this.game.canvas;
     const rect = canvas.getBoundingClientRect();
 
-    this.usernameInput = this._createInput('아이디', rect.left + cx - 120, rect.top + cy - 60);
-    this.passwordInput = this._createInput('비밀번호', rect.left + cx - 120, rect.top + cy - 20);
+    // Scale.FIT 보정: 캔버스 스케일 비율 계산
+    const scaleX = rect.width / width;
+    const scaleY = rect.height / height;
+    const inputW = 240 * scaleX;
+    this.usernameInput = this._createInput('아이디', rect.left + cx * scaleX - inputW / 2, rect.top + (cy - 60) * scaleY, inputW);
+    this.passwordInput = this._createInput('비밀번호', rect.left + cx * scaleX - inputW / 2, rect.top + (cy - 20) * scaleY, inputW);
     this.passwordInput.type = 'password';
 
     // 로그인 버튼
@@ -247,7 +254,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.loginContainer.add(closeBtn);
   }
 
-  private _createInput(placeholder: string, left: number, top: number): HTMLInputElement {
+  private _createInput(placeholder: string, left: number, top: number, w = 240): HTMLInputElement {
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = placeholder;
@@ -255,7 +262,7 @@ export class MainMenuScene extends Phaser.Scene {
       position: absolute;
       left: ${left}px;
       top: ${top}px;
-      width: 240px;
+      width: ${w}px;
       padding: 8px 12px;
       font-size: 14px;
       font-family: monospace;
@@ -343,6 +350,8 @@ export class MainMenuScene extends Phaser.Scene {
     this._cleanupDom();
     this.loginContainer?.destroy();
     this.loginContainer = null;
+    // 메뉴 버튼 다시 표시
+    this.menuItems.forEach(btn => btn.setVisible(true));
   }
 
   private _cleanupDom(): void {
