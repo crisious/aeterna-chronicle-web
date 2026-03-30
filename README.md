@@ -7,10 +7,11 @@
 [![Phase](https://img.shields.io/badge/Phase-52%20Complete-blue?style=for-the-badge)](#-개발-현황)
 [![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
-[![Assets](https://img.shields.io/badge/Assets-1%2C596%20Total-ff69b4?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-253%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Assets](https://img.shields.io/badge/Assets-1%2C454%20Images-ff69b4?style=for-the-badge)](#-프로젝트-통계)
+[![Commits](https://img.shields.io/badge/Commits-279%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)](#-코드-품질)
 
-*실시간 반자동 전투 RPG — PC 웹 브라우저 + UE5 데스크톱*
+*FF6 스타일 ATB 전투 RPG — PC 웹 브라우저 (Phaser.js)*
 
 </div>
 
@@ -147,6 +148,11 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 | C-1 | 엔딩CG + 개연성 + 정합성 | CG 10장 · 개연성 13건 완료 · 정합성 37테스트 |
 | ART | 16-bit 픽셀아트 통일 | 483개 에셋 전수 재생성 · 아트 스타일 가이드 v2.0 |
 | RT | 리소스 연결 테스트 | 에셋 무결성 · 중복 305MB 제거 · 월드맵 아이콘 |
+| SEC | 보안 강화 스프린트 | SHA256→bcrypt · JWT 분리 3종 · 2FA AES-256 · 결제 인증 lockdown |
+| P1-FIX | P1 버그 전수 수정 | 거래/인벤토리/경매 레이스 컨디션 · 소켓 누수 11파일 · 틱 클록 |
+| FHD | 1920×1080 FHD 전환 | Scale.FIT · 전씬 UI 좌표 보정 · DOM 입력 스케일 보정 |
+| SDXL | 아트 파이프라인 업그레이드 | SDXL Base + Pixel Art XL LoRA · 크로노트리거 스타일 · rembg 투명배경 |
+| ATB | FF6 ATB 자동전투 | 던전↔BattleScene 통합 · Auto모드 · 속도조절 1x/2x/3x |
 | P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
 | P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
 | P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
@@ -162,9 +168,12 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 누적 395+ 항목 검증, 184+ 건 수정 완료 (P0~P38).
 세계관·캐릭터·월드맵·코드 전역 SSOT 통일 — mnemonist 0건, 카엘 0건, 금지어 0건.
 DB 시딩 1118건 (18단계, 22테이블) 정합성 확인 완료.
-에셋 전수 확인: 이미지 1,453장 + 오디오 137개 + 아틀라스/JSON 100개 = 1,596개.
+에셋 전수 확인: 이미지 1,454장 + 오디오 137개 + 아틀라스/JSON 100개 = 1,596개.
 ACE-Step 9곡 고품질 리마스터 포함.
-16-bit 픽셀아트 통일 완료 (483개 재생성, 아트 스타일 가이드 v2.0 적용).
+SDXL + Pixel Art XL LoRA 크로노트리거 스타일 재생성 (캐릭터 6 + NPC 7 + 존 6 + 몬스터 9 = 28장).
+rembg 투명 배경 처리 19장 완료.
+보안 스프린트: GStack /review → 28건 발견, P0+P1 20건 수정.
+TypeScript 에러: 811 → 0 (서버+클라이언트).
 개연성 검토 13/13 완료, 정합성 37테스트 통과, E2E 60파일.
 
 </details>
@@ -199,6 +208,19 @@ ACE-Step 9곡 고품질 리마스터 포함.
 ---
 
 <div align="center">
+
+### 🛠️ 기술 스택
+
+| Layer | Stack |
+|-------|-------|
+| **Client** | Phaser 3 (pixelArt) · TypeScript · Vite · 1920×1080 FHD |
+| **Server** | Fastify · Socket.io · Prisma (110 models) · PostgreSQL · Redis |
+| **Combat** | FF6-style ATB · Auto-battle · 1x/2x/3x speed |
+| **Art** | SDXL + Pixel Art XL LoRA · rembg · Chrono Trigger style |
+| **Audio** | MusicGen · ACE-Step · macOS TTS · 137 assets |
+| **Infra** | Docker · K8s · GitHub Actions CI · PM2 · Cloudflare Tunnel |
+| **Security** | bcrypt · JWT (3-key) · 2FA AES-256-GCM · P2W Guard |
+| **AI Tools** | GStack (31 skills) · Claude Code · Codex CLI · Gemini CLI |
 
 ### 🤝 기여
 
