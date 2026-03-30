@@ -18,12 +18,18 @@ import {
   TokenPayload,
 } from '../security/jwtManager';
 
-// ─── 간이 비밀번호 해싱 (프로덕션에서는 bcrypt 사용) ────────────
+// ─── bcrypt 비밀번호 해싱 ───────────────────────────────────────
 
-import { createHash } from 'crypto';
+import bcrypt from 'bcryptjs';
 
-function hashPassword(pw: string): string {
-  return createHash('sha256').update(pw).digest('hex');
+const BCRYPT_ROUNDS = 12;
+
+async function hashPassword(pw: string): Promise<string> {
+  return bcrypt.hash(pw, BCRYPT_ROUNDS);
+}
+
+async function verifyPassword(pw: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(pw, hash);
 }
 
 // ─── 요청 타입 ──────────────────────────────────────────────────
@@ -71,7 +77,7 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashPassword(password),
+        password: await hashPassword(password),
         role: 'user',
       },
     });
@@ -95,7 +101,7 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || user.password !== hashPassword(password)) {
+    if (!user || !(await verifyPassword(password, user.password))) {
       return reply.status(401).send({ error: '이메일 또는 비밀번호가 올바르지 않습니다.' });
     }
 

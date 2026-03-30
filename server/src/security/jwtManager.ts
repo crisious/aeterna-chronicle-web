@@ -12,8 +12,15 @@ import { redisClient, redisConnected } from '../redis';
 
 // ─── 설정 ───────────────────────────────────────────────────────
 
-const JWT_SECRET = process.env.JWT_SECRET || 'aeterna-chronicle-dev-secret';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'aeterna-refresh-dev-secret';
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is not set. Server cannot start without it.');
+}
+if (!process.env.JWT_REFRESH_SECRET) {
+  throw new Error('FATAL: JWT_REFRESH_SECRET environment variable is not set. Server cannot start without it.');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const ACCESS_EXPIRES = '15m';
 const REFRESH_EXPIRES = '7d';
 

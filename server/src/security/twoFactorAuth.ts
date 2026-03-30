@@ -6,7 +6,7 @@
  * - 세션 관리: 디바이스 목록 + 원격 로그아웃
  * - LoginSession Prisma 모델 활용
  */
-import { createHmac, randomBytes } from 'crypto';
+import { createHmac, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 import { prisma } from '../db';
 import { blacklistToken } from './jwtManager';
 
@@ -22,6 +22,38 @@ const TOTP_WINDOW = 1;
 const APP_NAME = 'AeternaChronicle';
 /** Secret 길이 (bytes) */
 const SECRET_LENGTH = 20;
+
+// ─── 2FA Secret 암호화 (AES-256-GCM) ──────────────────────────
+
+if (!process.env.TWO_FACTOR_ENCRYPTION_KEY) {
+  throw new Error('FATAL: TWO_FACTOR_ENCRYPTION_KEY environment variable is not set. Must be a 64-char hex string (32 bytes).');
+}
+
+const TFA_ENCRYPTION_KEY = Buffer.from(process.env.TWO_FACTOR_ENCRYPTION_KEY, 'hex');
+if (TFA_ENCRYPTION_KEY.length !== 32) {
+  throw new Error('FATAL: TWO_FACTOR_ENCRYPTION_KEY must be exactly 32 bytes (64 hex characters).');
+}
+
+/** AES-256-GCM으로 2FA secret 암호화 */
+function encrypt2FASecret(plaintext: string): string {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', TFA_ENCRYPTION_KEY, iv);
+  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+  // Format: iv:authTag:ciphertext (all hex)
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`;
+}
+
+/** AES-256-GCM으로 2FA secret 복호화 */
+function decrypt2FASecret(encrypted: string): string {
+  const [ivHex, authTagHex, ciphertextHex] = encrypted.split(':');
+  const iv = Buffer.from(ivHex, 'hex');
+  const authTag = Buffer.from(authTagHex, 'hex');
+  const ciphertext = Buffer.from(ciphertextHex, 'hex');
+  const decipher = createDecipheriv('aes-256-gcm', TFA_ENCRYPTION_KEY, iv);
+  decipher.setAuthTag(authTag);
+  return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
+}
 
 // ─── 비밀번호 정책 ──────────────────────────────────────────────
 
@@ -180,16 +212,15 @@ export async function activate2FA(userId: string, token: string): Promise<boolea
     throw new Error('잘못된 인증 코드입니다.');
   }
 
-  // 검증 성공 → DB에 영구 저장
-  // User 모델에 twoFactorSecret, twoFactorEnabled 필드가 있다고 가정
-  // 현재 스키마에 없으므로 LoginSession 메타데이터로 대체
+  // 검증 성공 → 암호화 후 DB에 영구 저장
+  const encryptedSecret = encrypt2FASecret(entry.secret);
   await prisma.loginSession.create({
     data: {
       userId,
       deviceName: '2FA_SECRET',
       deviceType: 'system',
       ipAddress: '0.0.0.0',
-      userAgent: entry.secret, // 실제로는 암호화 필요
+      userAgent: encryptedSecret,
       isActive: true,
     },
   });
@@ -212,7 +243,8 @@ export async function verify2FAToken(userId: string, token: string): Promise<boo
     return true;
   }
 
-  const secretBuffer = base32Decode(secretRecord.userAgent);
+  const decryptedSecret = decrypt2FASecret(secretRecord.userAgent);
+  const secretBuffer = base32Decode(decryptedSecret);
   return verifyTOTP(secretBuffer, token);
 }
 
