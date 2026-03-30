@@ -106,7 +106,7 @@ export class GameScene extends Phaser.Scene {
 
     // 오프라인 폴백 몬스터 이미지 preload
     const manifest = monsterManifest as Record<string, string>;
-    const fallbackMonsters = ['mon_erebos_fog_rat', 'mon_erebos_memory_beetle', 'mon_erebos_memory_dust'];
+    const fallbackMonsters = ['mon_erebos_echo_wisp', 'mon_erebos_broken_golem', 'mon_erebos_crumbling_shade'];
     for (const key of fallbackMonsters) {
       if (manifest[key]) {
         this.load.image(key, manifest[key]);
@@ -559,20 +559,29 @@ export class GameScene extends Phaser.Scene {
   private createWorld(): void {
     const worldW = 2000, worldH = 2000;
 
-    // 배경색 (맵 밖 영역)
-    this.cameras.main.setBackgroundColor('#0a0a0a');
+    // 배경색 (맵 밖 영역) — 순수 검정
+    this.cameras.main.setBackgroundColor('#000000');
 
-    // 배경 이미지 — FHD 뷰포트 맞춤, scrollFactor(0) 카메라 고정
+    // 배경 이미지 — 월드 전체를 덮도록 스케일
     const { width: vw, height: vh } = this.cameras.main;
     if (this.textures.exists('zone_bg_far')) {
-      const bg = this.add.image(vw / 2, vh / 2, 'zone_bg_far')
+      const bg = this.add.image(worldW / 2, worldH / 2, 'zone_bg_far')
+        .setOrigin(0.5, 0.5)
+        .setDepth(-10);
+      // 월드 전체를 덮도록 스케일
+      const scaleX = worldW / bg.width;
+      const scaleY = worldH / bg.height;
+      bg.setScale(Math.max(scaleX, scaleY));
+    }
+    // 하늘 배경 (카메라 고정)
+    if (this.textures.exists('zone_bg_sky')) {
+      const sky = this.add.image(vw / 2, vh / 2, 'zone_bg_sky')
         .setOrigin(0.5, 0.5)
         .setScrollFactor(0)
-        .setDepth(-2);
-      // 뷰포트에 맞게 스케일
-      const scaleX = vw / bg.width;
-      const scaleY = vh / bg.height;
-      bg.setScale(Math.max(scaleX, scaleY));
+        .setDepth(-20);
+      const sx = vw / sky.width;
+      const sy = vh / sky.height;
+      sky.setScale(Math.max(sx, sy));
     }
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
