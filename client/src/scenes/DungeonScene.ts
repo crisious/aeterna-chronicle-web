@@ -149,7 +149,7 @@ export class DungeonScene extends Phaser.Scene {
     this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${classId}_side.png`);
 
     // 배경
-    this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/ERB-BG-FAR-NIGHT.png');
+    this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
 
     // 몬스터
     for (const key of DUNGEON_MONSTER_IMAGES.default) {
@@ -190,8 +190,10 @@ export class DungeonScene extends Phaser.Scene {
 
     // ── 배경 ──
     if (this.textures.exists('dungeon_bg')) {
-      this.add.image(width / 2, height / 2, 'dungeon_bg')
-        .setDisplaySize(width, height).setAlpha(0.35).setDepth(-1);
+      const bg = this.add.image(width / 2, height / 2, 'dungeon_bg').setDepth(-1);
+      const sx = width / bg.width;
+      const sy = height / bg.height;
+      bg.setScale(Math.max(sx, sy));
     }
 
     // ── 던전 이름 ──
@@ -273,7 +275,7 @@ export class DungeonScene extends Phaser.Scene {
 
     if (this.textures.exists('dungeon_player')) {
       this.playerSprite = this.add.image(PLAYER_X, py, 'dungeon_player')
-        .setDisplaySize(72, 90);
+        .setScale(0.25);
     } else {
       this.playerSprite = this.add.rectangle(PLAYER_X, py, 40, 50, 0x4488ff);
     }
@@ -404,7 +406,7 @@ export class DungeonScene extends Phaser.Scene {
 
       if (this.textures.exists(monKey)) {
         sprite = this.add.image(x, y, monKey)
-          .setDisplaySize(isBoss ? size * 2.5 : size * 2, isBoss ? size * 2.5 : size * 2);
+          .setScale(isBoss ? 0.35 : 0.2);
       } else {
         const color = isBoss ? 0xff2244 : 0xff6644;
         sprite = this.add.rectangle(x, y, size, size, color);
