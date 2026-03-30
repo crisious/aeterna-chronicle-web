@@ -13,6 +13,7 @@
  */
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { verifyAccessToken } from '../security/jwtManager';
 import {
   CRYSTAL_PRODUCTS,
   createPayment,
@@ -20,6 +21,22 @@ import {
   refundPayment,
   getPaymentHistory,
 } from '../payment/paymentManager';
+
+/** Authorization 헤더에서 JWT를 검증하고 userId를 반환 */
+async function extractAuthUserId(request: FastifyRequest, reply: FastifyReply): Promise<string | null> {
+  const authHeader = request.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    reply.status(401).send({ error: '인증 토큰이 필요합니다.' });
+    return null;
+  }
+  try {
+    const payload = await verifyAccessToken(authHeader.slice(7));
+    return payload.userId;
+  } catch {
+    reply.status(401).send({ error: '유효하지 않은 토큰입니다.' });
+    return null;
+  }
+}
 import {
   createCheckoutSession,
   constructWebhookEvent,
@@ -38,7 +55,6 @@ import {
 // ─── 타입 ───────────────────────────────────────────────────────
 
 interface PurchaseBody {
-  userId: string;
   productId: string;
   platform: string;       // web, ios, android
   receiptData?: string;
@@ -53,7 +69,6 @@ interface RefundBody {
 }
 
 interface StripeCheckoutBody {
-  userId: string;
   productId: string;
   successUrl: string;
   cancelUrl: string;
@@ -61,7 +76,6 @@ interface StripeCheckoutBody {
 }
 
 interface StripeSubscribeBody {
-  userId: string;
   successUrl: string;
   cancelUrl: string;
   customerEmail?: string;
@@ -95,10 +109,13 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: PurchaseBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, productId, platform, receiptData } = request.body;
+    const userId = await extractAuthUserId(request, reply);
+    if (!userId) return;
 
-    if (!userId || !productId || !platform) {
-      return reply.status(400).send({ error: 'userId, productId, platform은 필수입니다.' });
+    const { productId, platform, receiptData } = request.body;
+
+    if (!productId || !platform) {
+      return reply.status(400).send({ error: 'productId, platform은 필수입니다.' });
     }
 
     try {
@@ -115,6 +132,9 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: VerifyBody }>,
     reply: FastifyReply,
   ) => {
+    const userId = await extractAuthUserId(request, reply);
+    if (!userId) return;
+
     const { receiptId } = request.body;
 
     if (!receiptId) {
@@ -122,7 +142,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     try {
-      const result = await verifyAndGrant(receiptId);
+      const result = await verifyAndGrant(receiptId, userId);
       return reply.send(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : '영수증 검증 실패';
@@ -155,7 +175,16 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams; Querystring: PaginationQuery }>,
     reply: FastifyReply,
   ) => {
+    const authUserId = await extractAuthUserId(request, reply);
+    if (!authUserId) return;
+
     const { userId } = request.params;
+
+    // 자신의 결제 이력만 조회 가능
+    if (authUserId !== userId) {
+      return reply.status(403).send({ error: '본인의 결제 이력만 조회할 수 있습니다.' });
+    }
+
     const page = parseInt(request.query.page ?? '1', 10);
     const limit = parseInt(request.query.limit ?? '20', 10);
 
@@ -176,11 +205,14 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: StripeCheckoutBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, productId, successUrl, cancelUrl, customerEmail } = request.body;
+    const userId = await extractAuthUserId(request, reply);
+    if (!userId) return;
 
-    if (!userId || !productId || !successUrl || !cancelUrl) {
+    const { productId, successUrl, cancelUrl, customerEmail } = request.body;
+
+    if (!productId || !successUrl || !cancelUrl) {
       return reply.status(400).send({
-        error: 'userId, productId, successUrl, cancelUrl은 필수입니다.',
+        error: 'productId, successUrl, cancelUrl은 필수입니다.',
       });
     }
 
@@ -263,11 +295,14 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: StripeSubscribeBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, successUrl, cancelUrl, customerEmail } = request.body;
+    const userId = await extractAuthUserId(request, reply);
+    if (!userId) return;
 
-    if (!userId || !successUrl || !cancelUrl) {
+    const { successUrl, cancelUrl, customerEmail } = request.body;
+
+    if (!successUrl || !cancelUrl) {
       return reply.status(400).send({
-        error: 'userId, successUrl, cancelUrl은 필수입니다.',
+        error: 'successUrl, cancelUrl은 필수입니다.',
       });
     }
 

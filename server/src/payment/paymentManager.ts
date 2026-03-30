@@ -1,13 +1,56 @@
 /**
  * P6-02 프리미엄 화폐 + IAP 관리자
  * - 상품 카탈로그 (크리스탈 패키지: 100/500/1100/2400/5500/12000)
- * - 결제 생성 → 영수증 검증 (웹 결제 시뮬레이션)
+ * - 결제 생성 → 영수증 검증
  * - 크리스탈 지급 (User.crystal 필드)
  * - 첫 구매 2배 보너스
  * - 환불 처리
  */
 
+import crypto from 'crypto';
 import { prisma } from '../db';
+
+// ─── 결제 제공자 설정 ──────────────────────────────────────────
+const PAYMENT_RECEIPT_SECRET = process.env.PAYMENT_RECEIPT_SECRET;
+const APPLE_SHARED_SECRET = process.env.APPLE_SHARED_SECRET;
+const GOOGLE_SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+
+/**
+ * 영수증 서명 검증. 결제 제공자가 설정되지 않은 플랫폼은 거부.
+ * - web: PAYMENT_RECEIPT_SECRET으로 HMAC 서명 검증
+ * - ios: Apple 공유 비밀키 필요
+ * - android: Google 서비스 계정 키 필요
+ */
+async function validateReceiptSignature(platform: string, receiptData: string | null): Promise<boolean> {
+  if (!receiptData) return false;
+
+  switch (platform) {
+    case 'web': {
+      if (!PAYMENT_RECEIPT_SECRET) return false;
+      // receiptData = "payload.signature" 형태
+      const dotIdx = receiptData.lastIndexOf('.');
+      if (dotIdx === -1) return false;
+      const payload = receiptData.slice(0, dotIdx);
+      const signature = receiptData.slice(dotIdx + 1);
+      const expected = crypto.createHmac('sha256', PAYMENT_RECEIPT_SECRET).update(payload).digest('hex');
+      return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+    }
+    case 'ios': {
+      if (!APPLE_SHARED_SECRET) return false;
+      // TODO: Apple App Store Server API v2 연동
+      // 현재는 공유 비밀키 설정 여부로 게이트
+      return false;
+    }
+    case 'android': {
+      if (!GOOGLE_SERVICE_ACCOUNT_KEY) return false;
+      // TODO: Google Play Developer API 연동
+      // 현재는 서비스 계정 키 설정 여부로 게이트
+      return false;
+    }
+    default:
+      return false;
+  }
+}
 
 // ─── 상품 카탈로그 ──────────────────────────────────────────────
 
@@ -107,7 +150,7 @@ export async function createPayment(
 }
 
 /** 영수증 검증 + 크리스탈 지급 */
-export async function verifyAndGrant(receiptId: string): Promise<{
+export async function verifyAndGrant(receiptId: string, requestingUserId: string): Promise<{
   crystalGranted: number;
   isFirstPurchase: boolean;
   totalCrystal: number;
@@ -116,14 +159,24 @@ export async function verifyAndGrant(receiptId: string): Promise<{
   if (!receipt) throw new Error('영수증을 찾을 수 없습니다.');
   if (receipt.status !== 'pending') throw new Error(`이미 처리된 영수증입니다. (상태: ${receipt.status})`);
 
+  // 요청자가 영수증 소유자인지 확인
+  if (receipt.userId !== requestingUserId) {
+    throw new Error('본인의 영수증만 검증할 수 있습니다.');
+  }
+
   // 상품 조회
   const product = CRYSTAL_PRODUCTS.find((p) => p.id === receipt.productId);
   if (!product) throw new Error('상품 정보를 찾을 수 없습니다.');
 
-  // 웹 결제 시뮬레이션: 영수증 데이터 검증 (실제 환경에서는 스토어 API 호출)
-  // iOS: Apple App Store 영수증 검증 API
-  // Android: Google Play 영수증 검증 API
-  // 여기서는 시뮬레이션으로 항상 성공 처리
+  // 영수증 서명 검증 — 결제 제공자 미설정 시 거부
+  const receiptValid = await validateReceiptSignature(receipt.platform, receipt.receiptData);
+  if (!receiptValid) {
+    await prisma.paymentReceipt.update({
+      where: { id: receiptId },
+      data: { status: 'failed' },
+    });
+    throw new Error('영수증 검증에 실패했습니다. 유효하지 않은 결제입니다.');
+  }
 
   // 첫 구매 여부 확인
   const previousPurchase = await prisma.paymentReceipt.findFirst({
