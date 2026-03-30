@@ -377,7 +377,7 @@ export class GameScene extends Phaser.Scene {
 
     if (texKey && this.textures.exists(texKey)) {
       sprite = this.add.image(x, y, texKey)
-        
+        .setScale(0.2)
         .setInteractive({ useHandCursor: true });
     } else {
       sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88)
@@ -427,7 +427,7 @@ export class GameScene extends Phaser.Scene {
     let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
     if (monTexKey && this.textures.exists(monTexKey)) {
       sprite = this.add.image(x, y, monTexKey)
-        
+        .setScale(0.15)
         .setInteractive({ useHandCursor: true });
     } else {
       sprite = this.add.rectangle(x, y, 36, 36, 0xff4444)
@@ -559,15 +559,20 @@ export class GameScene extends Phaser.Scene {
   private createWorld(): void {
     const worldW = 2000, worldH = 2000;
 
-    // 배경색
-    this.cameras.main.setBackgroundColor('#1a2a1a');
+    // 배경색 (맵 밖 영역)
+    this.cameras.main.setBackgroundColor('#0a0a0a');
 
-    // 배경 이미지 — 1280x720 원본, scrollFactor(0) 카메라 고정
+    // 배경 이미지 — FHD 뷰포트 맞춤, scrollFactor(0) 카메라 고정
+    const { width: vw, height: vh } = this.cameras.main;
     if (this.textures.exists('zone_bg_far')) {
-      this.add.image(640, 360, 'zone_bg_far')
+      const bg = this.add.image(vw / 2, vh / 2, 'zone_bg_far')
         .setOrigin(0.5, 0.5)
         .setScrollFactor(0)
         .setDepth(-2);
+      // 뷰포트에 맞게 스케일
+      const scaleX = vw / bg.width;
+      const scaleY = vh / bg.height;
+      bg.setScale(Math.max(scaleX, scaleY));
     }
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
