@@ -12,8 +12,24 @@ export function redisConnected(): boolean {
 
 redisClient.on('connect', () => {
     _redisConnected = true;
+    console.log('[Redis] connected');
 });
 
-redisClient.on('error', () => {
+redisClient.on('disconnect', () => {
     _redisConnected = false;
+    console.warn('[Redis] disconnected — will attempt reconnect');
+});
+
+redisClient.on('error', (err) => {
+    _redisConnected = false;
+    console.error('[Redis] error:', err?.message ?? err);
+});
+
+redisClient.on('reconnecting', () => {
+    console.log('[Redis] reconnecting...');
+});
+
+redisClient.on('ready', () => {
+    _redisConnected = true;
+    console.log('[Redis] ready');
 });

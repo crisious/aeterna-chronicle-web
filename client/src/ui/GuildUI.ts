@@ -85,6 +85,7 @@ export class GuildUI {
   private skills: GuildSkill[] = [];
   private searchResults: GuildSearchResult[] = [];
   private isInGuild = false;
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
 
   private contentContainer!: Phaser.GameObjects.Container;
 
@@ -155,14 +156,19 @@ export class GuildUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('guild:update', (data: GuildInfo) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('guild:update', (data: GuildInfo) => {
       this.guildInfo = data;
       if (this.activeTab === 'info') this.showInfo();
     });
 
-    socket.on('guild:memberJoin', () => this.loadMembers());
-    socket.on('guild:memberLeave', () => this.loadMembers());
-    socket.on('guild:chat', () => { /* ChatUI가 처리 */ });
+    on('guild:memberJoin', () => this.loadMembers());
+    on('guild:memberLeave', () => this.loadMembers());
+    on('guild:chat', () => { /* ChatUI가 처리 */ });
   }
 
   // ═══ 탭 전환 ═══
@@ -400,5 +406,12 @@ export class GuildUI {
   public hide(): void { this.container.setVisible(false); }
   public toggle(): void { this.container.visible ? this.hide() : this.show(); }
   public isVisible(): boolean { return this.container.visible; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.container.destroy();
+  }
 }

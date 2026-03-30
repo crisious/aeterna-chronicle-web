@@ -61,6 +61,7 @@ export class ChatUI {
   private inputText!: Phaser.GameObjects.Text;
   private inputBuffer = '';
   private isInputFocused = false;
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
 
   private readonly PANEL_W = 380;
   private readonly PANEL_H = 260;
@@ -150,11 +151,16 @@ export class ChatUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('chat:message', (data: ChatMessage) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('chat:message', (data: ChatMessage) => {
       this.addMessage(data);
     });
 
-    socket.on('chat:system', (data: { channel: ChatChannel; content: string }) => {
+    on('chat:system', (data: { channel: ChatChannel; content: string }) => {
       this.addMessage({
         id: `sys-${Date.now()}`,
         channel: data.channel,
@@ -325,5 +331,12 @@ export class ChatUI {
   public toggle(): void { this.container.setVisible(!this.container.visible); }
   public isVisible(): boolean { return this.container.visible; }
   public isFocused(): boolean { return this.isInputFocused; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.container.destroy();
+  }
 }

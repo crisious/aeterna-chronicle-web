@@ -99,6 +99,6 @@ export function registerShutdownHandlers(
     process.exit(0);
   };
 
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => { shutdown('SIGTERM').catch(console.error); });
+  process.on('SIGINT', () => { shutdown('SIGINT').catch(console.error); });
 }

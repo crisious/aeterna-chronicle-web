@@ -63,6 +63,8 @@ export class PvpUI {
   private statusText!: Phaser.GameObjects.Text;
   private timerText!: Phaser.GameObjects.Text;
 
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
+
   private readonly PANEL_W = 400;
   private readonly PANEL_H = 350;
 
@@ -128,19 +130,24 @@ export class PvpUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('pvp:matched', (data: { matchId: string; opponentName: string }) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('pvp:matched', (data: { matchId: string; opponentName: string }) => {
       this.viewState = 'matched';
       this.statusText.setText(`대전 상대: ${data.opponentName}`).setColor('#ffcc44');
       this.stopQueueTimer();
     });
 
-    socket.on('pvp:result', (data: PvpMatchResult) => {
+    on('pvp:result', (data: PvpMatchResult) => {
       this.lastResult = data;
       this.viewState = 'result';
       this.showResult();
     });
 
-    socket.on('matchmaking:timeout', () => {
+    on('matchmaking:timeout', () => {
       this.viewState = 'idle';
       this.stopQueueTimer();
       this.statusText.setText('매칭 타임아웃 — 다시 시도하세요').setColor('#ff4444');
@@ -297,5 +304,13 @@ export class PvpUI {
   public hide(): void { this.container.setVisible(false); this.stopQueueTimer(); }
   public toggle(): void { this.container.visible ? this.hide() : this.show(); }
   public isVisible(): boolean { return this.container.visible; }
-  public destroy(): void { this.stopQueueTimer(); this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.stopQueueTimer();
+    this.container.destroy();
+  }
 }

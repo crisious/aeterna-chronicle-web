@@ -35,6 +35,37 @@ export interface TickMetrics {
   overrunCount: number;
 }
 
+/** 고정 크기 원형 버퍼 — O(1) push, O(n) shift 제거 */
+class CircularBuffer {
+  private buf: number[];
+  private head = 0;
+  private count = 0;
+  constructor(private capacity: number) {
+    this.buf = new Array(capacity).fill(0);
+  }
+  push(value: number): void {
+    this.buf[(this.head + this.count) % this.capacity] = value;
+    if (this.count < this.capacity) {
+      this.count++;
+    } else {
+      this.head = (this.head + 1) % this.capacity;
+    }
+  }
+  get length(): number { return this.count; }
+  /** 전체 요소를 순서대로 반환 (메트릭 계산용) */
+  toArray(): number[] {
+    const arr: number[] = [];
+    for (let i = 0; i < this.count; i++) {
+      arr.push(this.buf[(this.head + i) % this.capacity]);
+    }
+    return arr;
+  }
+  last(): number | undefined {
+    if (this.count === 0) return undefined;
+    return this.buf[(this.head + this.count - 1) % this.capacity];
+  }
+}
+
 /** 내부 레이어 상태 */
 interface TickLayerState {
   layer: TickLayer;
@@ -43,7 +74,7 @@ interface TickLayerState {
   timer: ReturnType<typeof setInterval> | null;
   lastTickTime: number;
   // 메트릭 수집용
-  executionTimes: number[];
+  executionTimes: CircularBuffer;
   totalTicks: number;
   overrunCount: number;
 }
@@ -75,7 +106,7 @@ export class TickManager {
         callbacks: [],
         timer: null,
         lastTickTime: 0,
-        executionTimes: [],
+        executionTimes: new CircularBuffer(METRICS_WINDOW),
         totalTicks: 0,
         overrunCount: 0,
       });
@@ -112,7 +143,7 @@ export class TickManager {
     }
 
     this.running = true;
-    const now = Date.now();
+    const now = performance.now();
 
     for (const state of this.layers.values()) {
       state.lastTickTime = now;
@@ -157,16 +188,14 @@ export class TickManager {
     const result: TickMetrics[] = [];
 
     for (const state of this.layers.values()) {
-      const times = state.executionTimes;
+      const times = state.executionTimes.toArray();
       const avg = times.length > 0
         ? times.reduce((a, b) => a + b, 0) / times.length
         : 0;
       const max = times.length > 0
         ? Math.max(...times)
         : 0;
-      const last = times.length > 0
-        ? times[times.length - 1]
-        : 0;
+      const last = state.executionTimes.last() ?? 0;
 
       result.push({
         layer: state.layer,
@@ -192,11 +221,12 @@ export class TickManager {
   // ── 내부 ────────────────────────────────────────────────────
 
   private executeTick(state: TickLayerState): void {
-    const now = Date.now();
+    // 단일 모노토닉 클럭(performance.now)으로 delta 계산 — Date.now 혼용 제거
+    const now = performance.now();
     const deltaMs = now - state.lastTickTime;
     state.lastTickTime = now;
 
-    const startTime = performance.now();
+    const startTime = now;
 
     // 등록된 모든 콜백 실행
     for (const cb of state.callbacks) {
@@ -209,12 +239,9 @@ export class TickManager {
 
     const executionMs = performance.now() - startTime;
 
-    // 메트릭 수집
+    // 메트릭 수집 — 원형 버퍼 O(1) push
     state.totalTicks++;
     state.executionTimes.push(executionMs);
-    if (state.executionTimes.length > METRICS_WINDOW) {
-      state.executionTimes.shift();
-    }
 
     // 오버런 감지
     if (executionMs > state.intervalMs) {

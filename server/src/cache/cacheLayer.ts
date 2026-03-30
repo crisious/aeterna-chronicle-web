@@ -120,19 +120,10 @@ export async function cacheInvalidate(namespace: string, key?: string): Promise<
       return deleted;
     }
 
-    // 네임스페이스 전체 무효화 (SCAN 패턴)
+    // 네임스페이스 전체 무효화 (atomic Lua script)
     const pattern = `${KEY_PREFIX}${namespace}:*`;
-    let cursor = 0;
-    let totalDeleted = 0;
-
-    do {
-      const result = await redisClient.scan(cursor, { MATCH: pattern, COUNT: 100 });
-      cursor = result.cursor;
-      if (result.keys.length > 0) {
-        const deleted = await redisClient.del(result.keys);
-        totalDeleted += deleted;
-      }
-    } while (cursor !== 0);
+    const luaScript = `local keys = redis.call("keys", ARGV[1]) for _,k in pairs(keys) do redis.call("del", k) end return #keys`;
+    const totalDeleted = await redisClient.eval(luaScript, { arguments: [pattern] }) as number;
 
     metrics.invalidations += totalDeleted;
     return totalDeleted;

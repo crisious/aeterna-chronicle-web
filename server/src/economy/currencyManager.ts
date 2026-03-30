@@ -82,29 +82,31 @@ export async function changeCurrency(params: CurrencyChangeParams): Promise<{
   const field = currencyField(currency);
 
   return prisma.$transaction(async (tx) => {
-    // 1. 현재 잔액 조회 (FOR UPDATE 효과: 트랜잭션 내 직렬화)
-    const user = await tx.user.findUnique({
-      where: { id: userId },
-      select: { [field]: true },
-    });
+    // 1. 원자적 잔액 업데이트 — 조건부 UPDATE로 race condition 방지
+    const column = field === 'eventCoin' ? '"eventCoin"' : `"${field}"`;
+    const updated: { new_balance: number }[] = await tx.$queryRawUnsafe(
+      `UPDATE "User"
+       SET ${column} = ${column} + $1
+       WHERE "id" = $2 AND ${column} + $1 >= 0
+       RETURNING ${column} AS new_balance`,
+      amount,
+      userId,
+    );
 
-    if (!user) throw new Error('유저를 찾을 수 없습니다.');
-
-    const currentBalance = (user as Record<string, unknown>)[field] as number;
-    const newBalance = currentBalance + amount;
-
-    // 잔액 부족 체크
-    if (newBalance < 0) {
+    if (updated.length === 0) {
+      // 유저가 없거나 잔액 부족
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { [field]: true },
+      });
+      if (!user) throw new Error('유저를 찾을 수 없습니다.');
+      const currentBalance = (user as Record<string, unknown>)[field] as number;
       throw new Error(`${currency} 잔액이 부족합니다. (보유: ${currentBalance}, 필요: ${Math.abs(amount)})`);
     }
 
-    // 2. 잔액 업데이트
-    await tx.user.update({
-      where: { id: userId },
-      data: { [field]: newBalance },
-    });
+    const newBalance = Number(updated[0].new_balance);
 
-    // 3. 거래 로그 기록
+    // 2. 거래 로그 기록
     const log = await tx.transactionLog.create({
       data: {
         userId,
@@ -221,13 +223,20 @@ export async function transferGold(
   if (senderId === receiverId) throw new Error('자기 자신에게 송금할 수 없습니다.');
   if (amount <= 0) throw new Error('송금 금액은 양수여야 합니다.');
 
-  // 일일 송금 한도 체크
+  // 일일 송금 한도 체크 — USER 레벨로 집계 (캐릭터 분산 우회 방지)
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
+  // 같은 유저의 모든 캐릭터 ID 조회
+  const senderCharacters = await prisma.character.findMany({
+    where: { userId: senderId },
+    select: { id: true },
+  });
+  const relatedIds = [senderId, ...senderCharacters.map((c: { id: string }) => c.id)];
+
   const todayTransfers = await prisma.transactionLog.aggregate({
     where: {
-      userId: senderId,
+      userId: { in: relatedIds },
       currency: 'gold',
       reason: 'transfer_send',
       createdAt: { gte: todayStart },

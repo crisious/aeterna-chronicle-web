@@ -68,6 +68,7 @@ export class AuctionUI {
   private pageText!: Phaser.GameObjects.Text;
   private statusText!: Phaser.GameObjects.Text;
 
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
   private readonly PANEL_W = 620;
   private readonly PANEL_H = 480;
 
@@ -152,16 +153,21 @@ export class AuctionUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('auction:newListing', () => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('auction:newListing', () => {
       if (this.container.visible && this.activeTab === 'search') this.loadListings();
     });
 
-    socket.on('auction:sold', (data: { listingId: string }) => {
+    on('auction:sold', (data: { listingId: string }) => {
       this.listings = this.listings.filter(l => l.listingId !== data.listingId);
       this.refreshContent();
     });
 
-    socket.on('auction:outbid', (data: { listingId: string; newBid: number }) => {
+    on('auction:outbid', (data: { listingId: string; newBid: number }) => {
       const listing = this.listings.find(l => l.listingId === data.listingId);
       if (listing) {
         listing.currentBid = data.newBid;
@@ -342,5 +348,12 @@ export class AuctionUI {
   public hide(): void { this.container.setVisible(false); }
   public toggle(): void { this.container.visible ? this.hide() : this.show(); }
   public isVisible(): boolean { return this.container.visible; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.container.destroy();
+  }
 }

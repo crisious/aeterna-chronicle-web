@@ -69,6 +69,7 @@ export class GuildRaidUI {
   private participants: RaidParticipant[] = [];
   private contentContainer!: Phaser.GameObjects.Container;
   private timerText!: Phaser.GameObjects.Text;
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
 
   private readonly PANEL_W = 500;
   private readonly PANEL_H = 420;
@@ -130,24 +131,29 @@ export class GuildRaidUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('raid:update', (data: { raid: RaidInfo; participants: RaidParticipant[] }) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('raid:update', (data: { raid: RaidInfo; participants: RaidParticipant[] }) => {
       this.currentRaid = data.raid;
       this.participants = data.participants;
       if (this.viewState === 'battle') this.showBattle();
     });
 
-    socket.on('raid:phaseChange', (data: { phase: number }) => {
+    on('raid:phaseChange', (data: { phase: number }) => {
       if (this.currentRaid) this.currentRaid.phase = data.phase;
       if (this.viewState === 'battle') this.showBattle();
     });
 
-    socket.on('raid:result', (data: { rewards: RaidReward[] }) => {
+    on('raid:result', (data: { rewards: RaidReward[] }) => {
       this.viewState = 'result';
       this.showResult(data.rewards);
     });
 
-    socket.on('raid:playerJoin', () => this.loadLobby());
-    socket.on('raid:playerLeave', () => this.loadLobby());
+    on('raid:playerJoin', () => this.loadLobby());
+    on('raid:playerLeave', () => this.loadLobby());
   }
 
   // ═══ 레이드 목록 ═══
@@ -342,5 +348,12 @@ export class GuildRaidUI {
   public hide(): void { this.container.setVisible(false); }
   public toggle(): void { this.container.visible ? this.hide() : this.show(); }
   public isVisible(): boolean { return this.container.visible; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.container.destroy();
+  }
 }

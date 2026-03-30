@@ -108,9 +108,10 @@ export function calculateEffectiveDefense(
   armorPen: number,
   armorPenPercent: number,
 ): number {
-  // 고정 관통 먼저, 그 다음 % 관통
+  // 고정 관통 먼저, 그 다음 % 관통 (0~100 클램핑)
   const afterFlat = Math.max(0, baseDef - armorPen);
-  const afterPercent = afterFlat * (1 - armorPenPercent / 100);
+  const clampedPenPercent = Math.max(0, Math.min(armorPenPercent, 100));
+  const afterPercent = afterFlat * (1 - clampedPenPercent / 100);
   return Math.max(0, afterPercent);
 }
 
@@ -185,8 +186,8 @@ export function calculateDamage(input: DamageInput): DamageResult {
   // 9. 랜덤 분산
   baseDamage *= getRandomVariance();
 
-  // 10. 최소 데미지 보장
-  const finalDamage = Math.max(MIN_DAMAGE, Math.round(baseDamage));
+  // 10. 최소 데미지 보장 (음수/힐링 방지)
+  const finalDamage = Math.max(MIN_DAMAGE, Math.round(Math.max(0, baseDamage)));
 
   return {
     damage: finalDamage,

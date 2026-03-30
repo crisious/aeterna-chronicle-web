@@ -61,6 +61,7 @@ export class TradeUI {
   private myConfirmBtn!: Phaser.GameObjects.Text;
   private statusText!: Phaser.GameObjects.Text;
 
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
   private readonly PANEL_W = 560;
   private readonly PANEL_H = 380;
 
@@ -170,22 +171,27 @@ export class TradeUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('trade:request', (data: { tradeId: string; requesterName: string }) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('trade:request', (data: { tradeId: string; requesterName: string }) => {
       this.showTradeRequest(data.tradeId, data.requesterName);
     });
 
-    socket.on('trade:update', (data: TradeState) => {
+    on('trade:update', (data: TradeState) => {
       this.tradeState = data;
       this.refreshDisplay();
     });
 
-    socket.on('trade:completed', (data: TradeState) => {
+    on('trade:completed', (data: TradeState) => {
       this.tradeState = data;
       this.statusText.setText('✨ 거래 완료!').setColor('#44ff44');
       this.scene.time.delayedCall(2000, () => this.hide());
     });
 
-    socket.on('trade:cancelled', () => {
+    on('trade:cancelled', () => {
       this.statusText.setText('거래가 취소되었습니다').setColor('#ff4444');
       this.scene.time.delayedCall(1500, () => this.hide());
     });
@@ -362,5 +368,12 @@ export class TradeUI {
   public hide(): void { this.container.setVisible(false); this.tradeState = null; }
   public toggle(): void { this.container.setVisible(!this.container.visible); }
   public isVisible(): boolean { return this.container.visible; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.container.destroy();
+  }
 }

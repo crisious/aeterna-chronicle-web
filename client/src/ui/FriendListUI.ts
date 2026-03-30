@@ -63,6 +63,7 @@ export class FriendListUI {
   private pendingRequests: FriendRequest[] = [];
   private friendRows: FriendRow[] = [];
   private contextMenu: Phaser.GameObjects.Container | null = null;
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
 
   private contentContainer!: Phaser.GameObjects.Container;
   private requestContainer!: Phaser.GameObjects.Container;
@@ -135,22 +136,27 @@ export class FriendListUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('social:online', (data: { userId: string }) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('social:online', (data: { userId: string }) => {
       const friend = this.friends.find(f => f.userId === data.userId);
       if (friend) { friend.isOnline = true; this.refreshList(); }
     });
 
-    socket.on('social:offline', (data: { userId: string }) => {
+    on('social:offline', (data: { userId: string }) => {
       const friend = this.friends.find(f => f.userId === data.userId);
       if (friend) { friend.isOnline = false; this.refreshList(); }
     });
 
-    socket.on('social:friendRequest', (data: FriendRequest) => {
+    on('social:friendRequest', (data: FriendRequest) => {
       this.pendingRequests.push(data);
       this.refreshRequests();
     });
 
-    socket.on('social:statusChange', (data: { userId: string; status: string }) => {
+    on('social:statusChange', (data: { userId: string; status: string }) => {
       const friend = this.friends.find(f => f.userId === data.userId);
       if (friend) { friend.status = data.status; this.refreshList(); }
     });
@@ -335,5 +341,13 @@ export class FriendListUI {
   public toggle(): void { this.container.visible ? this.hide() : this.show(); }
   public isVisible(): boolean { return this.container.visible; }
   public getOnlineCount(): number { return this.friends.filter(f => f.isOnline).length; }
-  public destroy(): void { this.hideContextMenu(); this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.hideContextMenu();
+    this.container.destroy();
+  }
 }

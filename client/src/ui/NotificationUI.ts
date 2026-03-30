@@ -72,6 +72,8 @@ export class NotificationUI {
   private unreadCount = 0;
   private badgeText!: Phaser.GameObjects.Text;
 
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
+
   private readonly PANEL_W = 300;
   private readonly PANEL_H = 400;
 
@@ -141,11 +143,16 @@ export class NotificationUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('notification:push', (data: NotificationData) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('notification:push', (data: NotificationData) => {
       this.pushNotification(data);
     });
 
-    socket.on('notification:batch', (data: { notifications: NotificationData[] }) => {
+    on('notification:batch', (data: { notifications: NotificationData[] }) => {
       data.notifications.forEach(n => this.pushNotification(n, false));
     });
   }
@@ -335,6 +342,12 @@ export class NotificationUI {
   public getUnreadCount(): number { return this.unreadCount; }
 
   public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+
     this.activeToasts.forEach(t => { t.timer.destroy(); t.container.destroy(); });
     this.toastContainer.destroy();
     this.panelContainer.destroy();

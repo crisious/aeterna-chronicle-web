@@ -90,6 +90,9 @@ export class PartyUI {
   private searchPanel: Phaser.GameObjects.Container | null = null;
   private searchResults: PartySearchResult[] = [];
 
+  // 소켓 핸들러 추적 (메모리 누수 방지)
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
+
   // 레이아웃
   private readonly PANEL_X = 10;
   private readonly PANEL_Y = 100;
@@ -182,30 +185,35 @@ export class PartyUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('party:update', (data: { partyId: string; members: PartyMember[] }) => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('party:update', (data: { partyId: string; members: PartyMember[] }) => {
       this.partyId = data.partyId;
       this.members = data.members;
       this.refreshSlots();
     });
 
-    socket.on('party:invite', (data: PartyInvite) => {
+    on('party:invite', (data: PartyInvite) => {
       this.pendingInvites.push(data);
       this.showInvitePopup(data);
     });
 
-    socket.on('party:disbanded', () => {
+    on('party:disbanded', () => {
       this.partyId = null;
       this.members = [];
       this.isLeader = false;
       this.refreshSlots();
     });
 
-    socket.on('party:combat:sync', (data: { members: PartyMember[] }) => {
+    on('party:combat:sync', (data: { members: PartyMember[] }) => {
       this.members = data.members;
       this.refreshSlots();
     });
 
-    socket.on('party:kicked', () => {
+    on('party:kicked', () => {
       this.partyId = null;
       this.members = [];
       this.isLeader = false;
@@ -429,6 +437,12 @@ export class PartyUI {
   public isInParty(): boolean { return this.partyId !== null; }
 
   public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+
     this.hideInvitePopup();
     if (this.searchPanel) this.searchPanel.destroy();
     this.container.destroy();

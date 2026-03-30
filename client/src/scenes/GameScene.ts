@@ -499,11 +499,12 @@ export class GameScene extends Phaser.Scene {
     this.socketCleanups = [unsub1, unsub2, unsub3, unsub4];
 
     // 연결 상태 표시
-    networkManager.onConnectionChange((state) => {
+    const unsub5 = networkManager.onConnectionChange((state) => {
       const label = state === 'connected' ? '● 온라인' : `○ ${state}`;
       const color = state === 'connected' ? '#44cc44' : '#cccc44';
       this.connectionLabel?.setText(label).setColor(color);
     });
+    this.socketCleanups.push(unsub5);
     this.connectionLabel?.setText(networkManager.isConnected ? '● 온라인' : '○ 오프라인');
   }
 

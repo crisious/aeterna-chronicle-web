@@ -53,6 +53,8 @@ export class MailUI {
   private pageText!: Phaser.GameObjects.Text;
   private unreadBadge!: Phaser.GameObjects.Text;
 
+  private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
+
   private readonly PANEL_W = 520;
   private readonly PANEL_H = 420;
 
@@ -132,7 +134,12 @@ export class MailUI {
     const socket = this.net.getSocket();
     if (!socket) return;
 
-    socket.on('mail:new', () => {
+    const on = (event: string, handler: (...args: any[]) => void) => {
+      socket.on(event, handler);
+      this.socketHandlers.push([event, handler]);
+    };
+
+    on('mail:new', () => {
       if (this.container.visible) this.loadMails();
     });
   }
@@ -311,5 +318,12 @@ export class MailUI {
   public toggle(): void { this.container.visible ? this.hide() : this.show(); }
   public isVisible(): boolean { return this.container.visible; }
   public getUnreadCount(): number { return this.mails.filter(m => !m.isRead).length; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    const socket = this.net.getSocket();
+    if (socket) {
+      this.socketHandlers.forEach(([event, handler]) => socket.off(event, handler));
+    }
+    this.socketHandlers = [];
+    this.container.destroy();
+  }
 }
