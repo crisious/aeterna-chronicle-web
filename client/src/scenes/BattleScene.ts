@@ -189,6 +189,14 @@ export class BattleScene extends Phaser.Scene {
   private socketCleanups: Array<() => void> = [];
   private serverCombatId: string | null = null;
 
+  // Auto-battle & speed control
+  private autoMode = false;
+  private speedMultiplier = 1;
+  private autoButton: Phaser.GameObjects.Text | null = null;
+  private speedButton: Phaser.GameObjects.Text | null = null;
+  private phaseText: Phaser.GameObjects.Text | null = null;
+  private introFallbackTimer: Phaser.Time.TimerEvent | null = null;
+
   private _initData!: BattleSceneData;
   private _loadedMonsterKeys: string[] = [];
 
@@ -216,6 +224,12 @@ export class BattleScene extends Phaser.Scene {
     this.cmdMenuTexts = [];
     this.cmdMenuIndex = 0;
     this.targetCursor = null;
+    this.autoMode = false;
+    this.speedMultiplier = 1;
+    this.autoButton = null;
+    this.speedButton = null;
+    this.phaseText = null;
+    this.introFallbackTimer = null;
 
     this.skillSlots = data.skillSlots ?? [];
     this.battleId = data.battleId;
@@ -326,6 +340,13 @@ export class BattleScene extends Phaser.Scene {
     // ── 타겟 커서 ──────────────────────────────────────────
     this.targetCursor = this.add.graphics().setDepth(200);
 
+    // ── 페이즈 디버그 표시 ──────────────────────────────────
+    this.phaseText = this.add.text(10, 10, `phase: ${this.phase}`, {
+      fontSize: '10px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffffff',
+    }).setAlpha(0.5).setDepth(999);
+
     // ── 키 바인딩 ──────────────────────────────────────────
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
@@ -350,11 +371,50 @@ export class BattleScene extends Phaser.Scene {
     this._startServerCombat();
     this._setupCombatSocket();
 
+    // ── Auto / Speed 버튼 ──────────────────────────────────
+    this.autoButton = this.add.text(scW - 200, UI_PANEL_Y + 15, 'AUTO: OFF', {
+      fontSize: '14px',
+      fontFamily: FONT_FAMILY,
+      color: '#888888',
+      backgroundColor: '#222244',
+      padding: { x: 8, y: 4 },
+    }).setDepth(200).setInteractive({ useHandCursor: true });
+
+    this.autoButton.on('pointerdown', () => {
+      this.autoMode = !this.autoMode;
+      this.autoButton!.setText(this.autoMode ? 'AUTO: ON' : 'AUTO: OFF');
+      this.autoButton!.setColor(this.autoMode ? '#44ff44' : '#888888');
+      if (this.autoMode) {
+        this._closeCommandMenu();
+        this._closeSubMenu();
+        if (this.activeCommander) {
+          this.commandQueue.unshift(this.activeCommander);
+          this.activeCommander = null;
+        }
+      }
+    });
+
+    this.speedButton = this.add.text(scW - 100, UI_PANEL_Y + 15, '1x', {
+      fontSize: '14px',
+      fontFamily: FONT_FAMILY,
+      color: '#88ccff',
+      backgroundColor: '#222244',
+      padding: { x: 8, y: 4 },
+    }).setDepth(200).setInteractive({ useHandCursor: true });
+
+    this.speedButton.on('pointerdown', () => {
+      if (this.speedMultiplier === 1) this.speedMultiplier = 2;
+      else if (this.speedMultiplier === 2) this.speedMultiplier = 3;
+      else this.speedMultiplier = 1;
+      this.speedButton!.setText(`${this.speedMultiplier}x`);
+    });
+
     // ── 인트로 연출 ─────────────────────────────────────────
     this._playIntro();
   }
 
   update(_time: number, delta: number): void {
+    this.phaseText?.setText(`phase: ${this.phase}`);
     if (this.phase === 'intro') return;
     if (this.phase !== 'fighting') {
       this.effectManager?.update(delta);
@@ -410,17 +470,36 @@ export class BattleScene extends Phaser.Scene {
       yoyo: true,
       onComplete: () => {
         introText.destroy();
-        this.phase = 'fighting';
-        this.battleUI?.addLog('⚔️ 전투 시작!');
-        // 첫 번째 커맨드 메뉴 표시는 ATB가 차면 자동
+        this.introFallbackTimer?.remove();
+        this._startFighting();
       },
     });
+
+    // Fallback: 3초 안에 tween이 완료되지 않으면 강제 전환
+    this.introFallbackTimer = this.time.delayedCall(3000, () => {
+      if (this.phase === 'intro') {
+        introText.destroy();
+        this._startFighting();
+      }
+    });
+  }
+
+  private _startFighting(): void {
+    this.phase = 'fighting';
+    this.battleUI?.addLog('⚔️ 전투 시작!');
+    // 첫 프레임 ATB 킥: 각 유닛에 5~20 랜덤 시작값
+    for (const us of this.allSprites) {
+      if (!us.isDead) {
+        us.atb = Phaser.Math.Between(5, 20);
+      }
+    }
   }
 
   // ─── ATB 시스템 ──────────────────────────────────────────────
 
   private _updateATB(delta: number): void {
-    const dt = delta / 1000;
+    const dt = (delta / 1000) * this.speedMultiplier;
+    const autoSpeedBonus = this.autoMode ? 1.5 : 1;
 
     for (const us of this.allSprites) {
       if (us.isDead) continue;
@@ -429,7 +508,7 @@ export class BattleScene extends Phaser.Scene {
       // 행동 중인 캐릭터는 ATB 정지
       if (us === this.activeCommander) continue;
 
-      const speed = (us.unit.attackSpeed ?? 1.0) * ATB_SPEED_BASE;
+      const speed = (us.unit.attackSpeed ?? 1.0) * ATB_SPEED_BASE * autoSpeedBonus;
       us.atb = Math.min(ATB_MAX, us.atb + speed * dt);
 
       // ATB가 찬 아군 → 커맨드 큐에 추가
@@ -461,10 +540,20 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // 커맨드 큐에서 다음 캐릭터의 메뉴 표시
+    // 커맨드 큐에서 다음 캐릭터의 메뉴 표시 (또는 자동 전투)
     if (!this.activeCommander && !this.targetSelectMode && this.commandQueue.length > 0) {
-      const next = this.commandQueue.shift()!;
-      this._openCommandMenu(next);
+      if (this.autoMode) {
+        const next = this.commandQueue.shift()!;
+        const livingEnemies = this.enemySprites.filter(e => !e.isDead);
+        if (livingEnemies.length > 0) {
+          const target = livingEnemies.reduce((a, b) => a.unit.hp < b.unit.hp ? a : b);
+          this._performAttack(next, target);
+          next.atb = 0;
+        }
+      } else {
+        const next = this.commandQueue.shift()!;
+        this._openCommandMenu(next);
+      }
     }
   }
 
@@ -1184,7 +1273,7 @@ export class BattleScene extends Phaser.Scene {
       entry.atb.clear();
       entry.atb.fillStyle(0x222244, 1);
       entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 26, ATB_BAR_W, ATB_BAR_H);
-      entry.atb.fillStyle(atbRatio >= 1 ? 0xffff44 : 0x4488ff, 1);
+      entry.atb.fillStyle(atbRatio >= 1 ? 0x44ff44 : 0x4488ff, 1);
       entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 26, ATB_BAR_W * atbRatio, ATB_BAR_H);
     });
   }
