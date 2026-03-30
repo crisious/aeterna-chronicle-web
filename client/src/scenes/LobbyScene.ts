@@ -389,9 +389,30 @@ export class LobbyScene extends Phaser.Scene {
       const buyBtn = this.add.text(180, y, '[구매]', {
         fontSize: '12px', color: '#88ff88', fontFamily: 'monospace',
       }).setInteractive({ useHandCursor: true });
-      buyBtn.on('pointerdown', () => {
-        playSfx(this, UI_SFX.GOLD_GAIN);
-        this._showNotification(`${item.name}을(를) 구매했습니다!`);
+      buyBtn.on('pointerdown', async () => {
+        try {
+          // 서버 상점 API로 구매 요청
+          const shopItems_res = await networkManager.get('/api/shop/items') as any;
+          const serverItem = (shopItems_res?.items ?? shopItems_res ?? [])
+            .find((si: any) => si.name === item.name);
+          if (serverItem) {
+            await networkManager.post('/api/shop/purchase', {
+              userId: this.characterData?.characterId,
+              itemId: serverItem.id,
+            });
+          }
+          playSfx(this, UI_SFX.GOLD_GAIN);
+          this._showNotification(`${item.name}을(를) 구매했습니다!`);
+          this._fetchGold(); // 골드 갱신
+        } catch (err: any) {
+          const msg = err?.message ?? '구매 실패';
+          if (msg.includes('잔액')) {
+            this._showNotification('골드가 부족합니다!');
+          } else {
+            this._showNotification(`구매 실패: ${msg}`);
+          }
+          playSfx(this, UI_SFX.CLICK);
+        }
       });
       panel.add(buyBtn);
     });
