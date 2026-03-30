@@ -205,7 +205,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       const charTexKey = `char_${char.classId}`;
       let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
       if (this.textures.exists(charTexKey)) {
-        icon = this.add.image(-210, 0, charTexKey).setScale(1);
+        icon = this.add.image(-210, 0, charTexKey).setScale(0.15);
       } else {
         icon = this.add.circle(-210, 0, 18, classColor);
       }
@@ -287,7 +287,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     if (this.textures.exists(texKey)) {
       const img = this.add.image(0, -70, texKey);
       // 카드 내 영역에 맞게 리사이즈
-      img.setScale(2);
+      img.setScale(0.55);
       icon = img;
     } else {
       icon = this.add.circle(0, -80, 24, cls.color);
@@ -332,7 +332,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const previewTexKey = `char_${cls.id}`;
     if (this.textures.exists(previewTexKey)) {
       const previewImg = this.add.image(-100, 0, previewTexKey)
-        .setScale(3);
+        .setScale(0.8);
       this.previewContainer.add(previewImg);
     }
 
