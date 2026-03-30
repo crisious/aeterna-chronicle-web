@@ -287,7 +287,10 @@ export class CharacterSelectScene extends Phaser.Scene {
     if (this.textures.exists(texKey)) {
       const img = this.add.image(0, -70, texKey);
       // 카드 내 영역에 맞게 리사이즈
-      img.setScale(0.55);
+      // 카드 내부에 맞춤 (카드 180x280, 이미지 영역 상단 ~160x200)
+      const scaleX = 140 / img.width;
+      const scaleY = 160 / img.height;
+      img.setScale(Math.min(scaleX, scaleY));
       icon = img;
     } else {
       icon = this.add.circle(0, -80, 24, cls.color);
