@@ -88,12 +88,12 @@ const ENEMY_POSITIONS = [
   { x: 980, y: 380 },
 ];
 
-// 하단 UI 영역
-const UI_PANEL_Y = 540;
+// 하단 UI 영역 (85% of 720 — 상단 75%는 배틀 전용)
+const UI_PANEL_Y = 612;
 const CMD_MENU_X = 60;
-const CMD_MENU_Y = UI_PANEL_Y + 20;
-const STATUS_PANEL_X = 400;
-const STATUS_PANEL_Y = UI_PANEL_Y + 10;
+const CMD_MENU_Y = UI_PANEL_Y + 6;
+const STATUS_PANEL_X = 340;
+const STATUS_PANEL_Y = UI_PANEL_Y + 4;
 
 // ATB
 const ATB_MAX = 100;
@@ -327,7 +327,7 @@ export class BattleScene extends Phaser.Scene {
     this.allSprites = [...this.allySprites, ...this.enemySprites];
 
     // ── 하단 UI 패널 배경 (반투명 검은 바) ─────────────────────
-    this.add.rectangle(scW / 2, UI_PANEL_Y + 60, scW, 120, 0x0a0a2e, 0.85)
+    this.add.rectangle(scW / 2, (UI_PANEL_Y + SCREEN_H) / 2, scW, SCREEN_H - UI_PANEL_Y, 0x0a0a2e, 0.85)
       .setDepth(100);
 
     // 구분선
@@ -804,8 +804,9 @@ export class BattleScene extends Phaser.Scene {
     this._closeSubMenu();
     const skills = this.skillSlots.filter(s => s.currentCooldown <= 0);
 
-    const container = this.add.container(CMD_MENU_X + 190, CMD_MENU_Y).setDepth(210);
-    const bg = this.add.rectangle(80, 60, 200, Math.max(80, skills.length * 24 + 30), 0x0a0a3e, 0.95)
+    const menuH = Math.max(80, skills.length * 24 + 30);
+    const container = this.add.container(CMD_MENU_X + 190, UI_PANEL_Y - menuH - 10).setDepth(210);
+    const bg = this.add.rectangle(80, menuH / 2, 200, menuH, 0x0a0a3e, 0.95)
       .setStrokeStyle(2, 0x4466aa);
     container.add(bg);
 
@@ -840,8 +841,8 @@ export class BattleScene extends Phaser.Scene {
   private _showItemSubMenu(): void {
     this._closeSubMenu();
 
-    const container = this.add.container(CMD_MENU_X + 190, CMD_MENU_Y).setDepth(210);
-    const bg = this.add.rectangle(80, 50, 200, 80, 0x0a0a3e, 0.95)
+    const container = this.add.container(CMD_MENU_X + 190, UI_PANEL_Y - 90).setDepth(210);
+    const bg = this.add.rectangle(80, 40, 200, 80, 0x0a0a3e, 0.95)
       .setStrokeStyle(2, 0x4466aa);
     container.add(bg);
 
@@ -1151,7 +1152,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setScale(isBoss ? 0.5 : 0.3)
+          .setScale(isBoss ? 2 : 1)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
       } else {
@@ -1184,7 +1185,7 @@ export class BattleScene extends Phaser.Scene {
     const gfx = this.add.graphics().setDepth(149);
 
     this.allySprites.forEach((us, i) => {
-      const y = i * 26;
+      const y = i * 22;
 
       // 이름 + 레벨
       const nameText = this.add.text(0, y, `${us.unit.name}  Lv.${us.unit.level}`, {
@@ -1193,25 +1194,25 @@ export class BattleScene extends Phaser.Scene {
       container.add(nameText);
 
       // HP 라벨
-      const hpLabel = this.add.text(0, y + 12, 'HP', {
+      const hpLabel = this.add.text(0, y + 11, 'HP', {
         fontSize: '9px', fontFamily: FONT_FAMILY, color: '#ffcc44',
       });
       container.add(hpLabel);
 
       // HP 값
-      const hpText = this.add.text(STAT_BAR_W + 30, y + 12, `${us.unit.hp}/${us.unit.maxHp}`, {
+      const hpText = this.add.text(STAT_BAR_W + 30, y + 11, `${us.unit.hp}/${us.unit.maxHp}`, {
         fontSize: '9px', fontFamily: FONT_FAMILY, color: '#ffcc44',
       });
       container.add(hpText);
 
       // MP 라벨
-      const mpLabel = this.add.text(STAT_BAR_W + 100, y + 12, 'MP', {
+      const mpLabel = this.add.text(STAT_BAR_W + 100, y + 11, 'MP', {
         fontSize: '9px', fontFamily: FONT_FAMILY, color: '#44ff88',
       });
       container.add(mpLabel);
 
       // MP 값
-      const mpText = this.add.text(STAT_BAR_W + 180, y + 12, `${us.unit.mp}/${us.unit.maxMp}`, {
+      const mpText = this.add.text(STAT_BAR_W + 180, y + 11, `${us.unit.mp}/${us.unit.maxMp}`, {
         fontSize: '9px', fontFamily: FONT_FAMILY, color: '#44ff88',
       });
       container.add(mpText);
@@ -1241,7 +1242,7 @@ export class BattleScene extends Phaser.Scene {
       if (!entry) return;
 
       const baseX = STATUS_PANEL_X;
-      const baseY = STATUS_PANEL_Y + i * 26;
+      const baseY = STATUS_PANEL_Y + i * 22;
 
       // HP/MP 텍스트 업데이트
       entry.hp.setText(`${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);

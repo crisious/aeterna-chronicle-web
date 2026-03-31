@@ -12,13 +12,13 @@ import { SkillSlot } from '../combat/CombatManager';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
-const SKILL_BAR_Y = 660;
-const SKILL_SLOT_SIZE = 52;
-const SKILL_GAP = 8;
+const SKILL_BAR_Y = 690;
+const SKILL_SLOT_SIZE = 40;
+const SKILL_GAP = 6;
 const SKILL_COUNT = 6;
 const LOG_MAX_LINES = 5;
-const LOG_X = 20;
-const LOG_Y = 520;
+const LOG_X = 940;
+const LOG_Y = 10;
 
 // ─── BattleUI ──────────────────────────────────────────────────
 
@@ -104,15 +104,16 @@ export class BattleUI {
   // ─── 전투 로그 ────────────────────────────────────────────────
 
   private _createLogPanel(): void {
-    // 배경
-    this.scene.add.rectangle(LOG_X + 150, LOG_Y + 40, 320, 100, 0x000000, 0.5);
+    // 배경 (top-right corner)
+    this.scene.add.rectangle(LOG_X + 140, LOG_Y + 40, 300, 100, 0x000000, 0.4)
+      .setDepth(110);
 
     this.logText = this.scene.add.text(LOG_X, LOG_Y, '', {
-      fontSize: '12px',
-      color: '#cccccc',
-      lineSpacing: 4,
-      wordWrap: { width: 300 },
-    });
+      fontSize: '11px',
+      color: '#aaaaaa',
+      lineSpacing: 3,
+      wordWrap: { width: 280 },
+    }).setDepth(111);
   }
 
   /** 전투 로그에 한 줄 추가 */
@@ -127,25 +128,11 @@ export class BattleUI {
   // ─── 미니 상태창 ─────────────────────────────────────────────
 
   private _createStatusPanel(): void {
-    this.statusContainer = this.scene.add.container(20, 20);
-
-    const bg = this.scene.add.rectangle(100, 30, 220, 70, 0x000000, 0.6)
-      .setStrokeStyle(1, 0x555555);
-    this.statusContainer.add(bg);
-
-    this.hpText = this.scene.add.text(14, 10, 'HP: --/--', {
-      fontSize: '14px', color: '#44ff44',
-    });
-    this.statusContainer.add(this.hpText);
-
-    this.mpText = this.scene.add.text(14, 30, 'MP: --/--', {
-      fontSize: '14px', color: '#4488ff',
-    });
-    this.statusContainer.add(this.mpText);
-
-    // 버프 아이콘 컨테이너
-    this.buffContainer = this.scene.add.container(14, 52);
-    this.statusContainer.add(this.buffContainer);
+    // 미니 상태창 숨김 — BattleScene 하단 패널의 상태 패널이 메인
+    this.statusContainer = this.scene.add.container(-999, -999);
+    this.hpText = this.scene.add.text(-999, -999, '');
+    this.mpText = this.scene.add.text(-999, -999, '');
+    this.buffContainer = this.scene.add.container(-999, -999);
   }
 
   /** HP/MP 값 갱신 (외부 호출용) */
@@ -168,11 +155,11 @@ export class BattleUI {
   // ─── 버튼 ────────────────────────────────────────────────────
 
   private _createButtons(): void {
-    // 일시정지
-    this.pauseBtn = this.scene.add.text(1200, 20, '⏸ 일시정지', {
-      fontSize: '13px', color: '#aaaaaa',
-      backgroundColor: '#333333', padding: { x: 8, y: 4 },
-    }).setInteractive({ useHandCursor: true });
+    // 일시정지 (battle log 아래)
+    this.pauseBtn = this.scene.add.text(LOG_X, LOG_Y + 96, '⏸ 일시정지', {
+      fontSize: '11px', color: '#aaaaaa',
+      backgroundColor: '#333333', padding: { x: 6, y: 3 },
+    }).setDepth(112).setInteractive({ useHandCursor: true });
     this.pauseBtn.on('pointerdown', () => {
       // 토글 pause (간단 구현)
       if (this.scene.scene.isPaused('BattleScene')) {
@@ -185,10 +172,10 @@ export class BattleUI {
     });
 
     // 도주
-    this.fleeBtn = this.scene.add.text(1200, 50, '🏃 도주', {
-      fontSize: '13px', color: '#ff8888',
-      backgroundColor: '#333333', padding: { x: 8, y: 4 },
-    }).setInteractive({ useHandCursor: true });
+    this.fleeBtn = this.scene.add.text(LOG_X + 100, LOG_Y + 96, '🏃 도주', {
+      fontSize: '11px', color: '#ff8888',
+      backgroundColor: '#333333', padding: { x: 6, y: 3 },
+    }).setDepth(112).setInteractive({ useHandCursor: true });
     this.fleeBtn.on('pointerdown', () => {
       this.addLog('🏃 도주 시도...');
       // 50% 확률 도주
