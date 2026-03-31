@@ -209,6 +209,10 @@ export class BattleScene extends Phaser.Scene {
 
   init(data: BattleSceneData): void {
     this.phase = 'intro';
+    // 이전 씬 아틀라스 텍스처 제거 (스프라이트 시트 충돌 방지)
+    ['characters', 'effects', 'ui'].forEach(k => {
+      if (this.textures.exists(k)) this.textures.remove(k);
+    });
     this.allySprites = [];
     this.enemySprites = [];
     this.allSprites = [];
