@@ -1,7 +1,7 @@
-# P17-04: 프레스 릴리즈 (한국어)
+# 프레스 릴리즈 (한국어)
 
-> 작성일: 2026-03-13 | 버전: v1.0  
-> Phase: P17 (출시 준비 + 접근성) | 순서: 312
+> 작성일: 2026-03-31 | 버전: v1.0.0-rc.1
+> Phase: P52+ (290+ 커밋, 52+ 개발 페이즈 완료)
 
 ---
 
@@ -11,22 +11,24 @@
 **인디 RPG '에테르나 크로니클', 2026년 Steam 출시 확정 — 1인 개발, 기억과 망각의 서사 RPG**
 
 ### 부제
-308개 개발 티켓, 750+ 기획 문서, 1,248개 에셋 — 1인 인디 개발자가 완성한 대규모 웹 기반 RPG
+728+ 개발 티켓, 1,596+ 에셋, 52+ 개발 페이즈 — 1인 인디 개발자가 완성한 대규모 웹 브라우저 RPG
 
 ---
 
 ### 본문
 
-**[서울, 2026년 X월 X일]** — 인디 게임 개발자 Crisious가 기억과 망각을 테마로 한 실시간 반자동 전투 RPG '에테르나 크로니클(Aeterna Chronicle)'의 Steam 출시를 확정했다.
+**[서울, 2026년 3월]** — 인디 게임 개발자 Crisious가 기억과 망각을 테마로 한 FF6 스타일 ATB 전투 RPG '에테르나 크로니클(Aeterna Chronicle)'의 Steam 출시를 확정했다.
 
-에테르나 크로니클은 대망각이 세계를 덮친 지 212년 후, 마지막 기억술사 에리언이 4개의 신성 기억 파편을 찾아 10개 지역을 횡단하는 여정을 그린다. 6종의 클래스, 65종의 던전, 193종의 몬스터, 8종의 레이드 보스, 그리고 플레이어의 선택에 따른 4+1종의 엔딩이 준비되어 있다.
+에테르나 크로니클은 대망각이 세계를 덮친 지 212년 후, 마지막 기억술사 에리언이 4개의 신성 기억 파편을 찾아 10개 지역을 횡단하는 여정을 그린다. 6종의 클래스, 69종의 던전, 197종의 몬스터, 8종의 레이드 보스, 그리고 플레이어의 선택에 따른 4+1종의 엔딩이 준비되어 있다.
 
-"기억은 사라져도, 이야기는 남는다." Crisious는 이 한 문장에서 출발해 기획, 코딩, 아트까지 전 과정을 1인으로 수행했다. P0부터 P16까지 16개 개발 페이즈, 308개 티켓을 완주하며 완성한 이 프로젝트는 웹 브라우저에서 설치 없이 즉시 플레이할 수 있는 Unity WebGL 기반 RPG다.
+"기억은 사라져도, 이야기는 남는다." Crisious는 이 한 문장에서 출발해 기획, 코딩, 아트까지 전 과정을 1인으로 수행했다. P0부터 P52까지 52개 이상의 개발 페이즈, 728개 이상의 티켓을 완주하며 완성한 이 프로젝트는 Phaser.js 기반으로 웹 브라우저에서 설치 없이 즉시 플레이할 수 있는 FHD(1920x1080) RPG다.
 
 **주요 특징:**
 - **깊은 스토리**: 8개 챕터, 4시즌 라이브 업데이트, 4+1 멀티 엔딩
-- **전략적 전투**: 6종 클래스 × 30+ 스킬, 실시간 반자동 전투
-- **방대한 콘텐츠**: 10개 지역, 65종 던전, 193종 몬스터, 8종 레이드 보스
+- **FF6 ATB 전투**: 6종 클래스 × 30+ 스킬, Auto 모드 + 1x/2x/3x 속도 조절
+- **방대한 콘텐츠**: 10개 지역, 69종 던전, 197종 몬스터, 8종 레이드 보스
+- **AI 에셋**: SDXL + Pixel Art XL LoRA 픽셀아트 1,582장, MusicGen BGM 42곡
+- **보안 강화**: bcrypt, JWT 3중 키, 2FA AES-256-GCM, P2W Guard
 - **소셜**: 최대 8인 레이드, PvP 시즌 랭킹, 길드 시스템
 - **접근성**: 웹 브라우저 즉시 플레이, 3개 언어(한/영/일) 지원
 
@@ -76,7 +78,7 @@
 
 ---
 
-# P17-04: Press Release (English)
+# Press Release (English)
 
 ---
 
@@ -86,22 +88,24 @@
 **Indie RPG 'Aeterna Chronicle' Confirmed for Steam 2026 Release — Solo Developer Crafts Memory-and-Oblivion Saga**
 
 ### Subtitle
-308 development tickets, 750+ design documents, 1,248 assets — a massive web-based RPG completed by a single indie developer
+728+ development tickets, 1,596+ assets, 52+ phases — a massive web browser RPG completed by a single indie developer
 
 ---
 
 ### Body
 
-**[Seoul, South Korea — Month XX, 2026]** — Solo indie developer Crisious has confirmed the Steam release of 'Aeterna Chronicle,' a real-time semi-auto combat RPG themed around memory and oblivion.
+**[Seoul, South Korea — March 2026]** — Solo indie developer Crisious has confirmed the Steam release of 'Aeterna Chronicle,' an FF6-style ATB combat RPG themed around memory and oblivion.
 
-Aeterna Chronicle follows Aerian, the last memory weaver, on a journey across ten regions to recover four divine memory fragments, 212 years after the Great Oblivion consumed the world. The game features six classes, 65 dungeons, 193 monster types, eight raid bosses, and 4+1 endings determined by player choices.
+Aeterna Chronicle follows Aerian, the last memory weaver, on a journey across ten regions to recover four divine memory fragments, 212 years after the Great Oblivion consumed the world. The game features six classes, 69 dungeons, 197 monster types, eight raid bosses, and 4+1 endings determined by player choices.
 
-"Even if memories fade, the story remains." Starting from this single line, Crisious handled all planning, coding, and art production solo. Completing 16 development phases and 308 tickets from P0 to P16, the project is a Unity WebGL-based RPG playable instantly in web browsers without installation.
+"Even if memories fade, the story remains." Starting from this single line, Crisious handled all planning, coding, and art production solo. Completing 52+ development phases and 728+ tickets from P0 to P52, the project is a Phaser.js-based FHD (1920x1080) RPG playable instantly in web browsers without installation.
 
 **Key Features:**
 - **Deep narrative**: 8 chapters, 4 seasonal live updates, 4+1 multiple endings
-- **Strategic combat**: 6 classes × 30+ skills, real-time semi-auto battles
-- **Vast content**: 10 regions, 65 dungeons, 193 monsters, 8 raid bosses
+- **FF6 ATB combat**: 6 classes × 30+ skills, Auto mode + 1x/2x/3x speed control
+- **Vast content**: 10 regions, 69 dungeons, 197 monsters, 8 raid bosses
+- **AI assets**: SDXL + Pixel Art XL LoRA pixel art (1,582 images), MusicGen BGM (42 tracks)
+- **Security**: bcrypt, JWT triple-key, 2FA AES-256-GCM, P2W Guard
 - **Social**: Up to 8-player raids, PvP seasonal rankings, guild systems
 - **Accessible**: Instant browser play, 3 languages (Korean/English/Japanese)
 
