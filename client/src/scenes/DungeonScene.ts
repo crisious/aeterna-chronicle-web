@@ -490,8 +490,10 @@ export class DungeonScene extends Phaser.Scene {
         ? ENEMY_BASE_HP * this.currentWave * BOSS_HP_MULT
         : ENEMY_BASE_HP * this.currentWave;
 
+      // monKey에서 _normal 접미사 제거 + 인덱스로 고유 id
+      const cleanId = monKey.replace(/_normal$/, '');
       enemies.push({
-        id: `${monKey}_${i}`,
+        id: `${cleanId}_${i}`,
         name: monName,
         hp, maxHp: hp,
         mp: 0, maxMp: 0,

@@ -1496,7 +1496,7 @@ export class BattleScene extends Phaser.Scene {
   // ─── 몬스터 매니페스트 키 매칭 ────────────────────────────────
 
   private _findMonsterKey(id: string, name: string, manifestKeys: string[]): string | null {
-    const idLower = (id ?? '').toLowerCase().replace(/[-\s]/g, '_');
+    const idLower = (id ?? '').toLowerCase().replace(/[-\s]/g, '_').replace(/_\d+$/, '');
     const nameLower = (name ?? '').toLowerCase().replace(/[-\s]/g, '_');
 
     if (manifestKeys.includes(`mon_${idLower}`)) return `mon_${idLower}`;
