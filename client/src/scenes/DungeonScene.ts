@@ -146,7 +146,7 @@ export class DungeonScene extends Phaser.Scene {
 
     // 플레이어 캐릭터
     const classId = this._sceneData.characterClass ?? 'ether_knight';
-    this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${classId}_side.png`);
+    this.load.image('dungeon_player', `assets/generated/characters/class_main/battle/char_battle_${classId}.png`);
 
     // 배경
     this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
@@ -275,7 +275,7 @@ export class DungeonScene extends Phaser.Scene {
 
     if (this.textures.exists('dungeon_player')) {
       this.playerSprite = this.add.image(PLAYER_X, py, 'dungeon_player')
-        .setScale(0.25);
+        .setScale(1);
     } else {
       this.playerSprite = this.add.rectangle(PLAYER_X, py, 40, 50, 0x4488ff);
     }

@@ -282,7 +282,7 @@ export class BattleScene extends Phaser.Scene {
     // 캐릭터 side 일러스트
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
-      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
+      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/battle/char_battle_${cid}.png`);
     }
 
     // VFX
@@ -1093,7 +1093,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
-          .setScale(0.25)
+          .setScale(1)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
       } else {
