@@ -153,9 +153,9 @@ export class DungeonScene extends Phaser.Scene {
 
     // 몬스터
     for (const key of DUNGEON_MONSTER_IMAGES.default) {
-      this.load.image(key, `assets/generated/monsters/normal/${key}.png`);
+      this.load.image(key, `assets/generated/monsters/battle/${key}.png`);
     }
-    this.load.image(DUNGEON_BOSS_IMAGE, `assets/generated/monsters/normal/${DUNGEON_BOSS_IMAGE}.png`);
+    this.load.image(DUNGEON_BOSS_IMAGE, `assets/generated/monsters/battle/${DUNGEON_BOSS_IMAGE}.png`);
   }
 
   create(): void {

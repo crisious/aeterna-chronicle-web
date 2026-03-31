@@ -67,33 +67,33 @@ const DEFAULT_BG_PREFIX = 'ERB';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
-/** FF6 레이아웃 상수 (1280×720 기준) */
-const SCREEN_W = 1280;
-const SCREEN_H = 720;
+/** FF6 레이아웃 상수 (1920×1080 기준) */
+const SCREEN_W = 1920;
+const SCREEN_H = 1080;
 
-// 아군 배치 (왼쪽, 사이드뷰)
+// 아군 배치 (왼쪽, 사이드뷰) — 배틀 영역 y 0~920
 const ALLY_POSITIONS = [
-  { x: 160, y: 220 },
-  { x: 230, y: 300 },
-  { x: 160, y: 380 },
-  { x: 230, y: 460 },
+  { x: 240, y: 300 },
+  { x: 340, y: 420 },
+  { x: 240, y: 540 },
+  { x: 340, y: 660 },
 ];
 
-// 몬스터 배치 (오른쪽, 정면)
+// 몬스터 배치 (오른쪽, 정면) — 배틀 영역 y 0~920
 const ENEMY_POSITIONS = [
-  { x: 750, y: 200 },
-  { x: 900, y: 260 },
-  { x: 1050, y: 200 },
-  { x: 830, y: 380 },
-  { x: 980, y: 380 },
+  { x: 1120, y: 280 },
+  { x: 1350, y: 360 },
+  { x: 1580, y: 280 },
+  { x: 1240, y: 540 },
+  { x: 1470, y: 540 },
 ];
 
-// 하단 UI 영역 (85% of 720 — 상단 75%는 배틀 전용)
-const UI_PANEL_Y = 612;
-const CMD_MENU_X = 60;
-const CMD_MENU_Y = UI_PANEL_Y + 6;
-const STATUS_PANEL_X = 340;
-const STATUS_PANEL_Y = UI_PANEL_Y + 4;
+// 하단 UI 패널 (상단 85% = 배틀, 하단 15% = UI)
+const UI_PANEL_Y = 920;
+const CMD_MENU_X = 580;
+const CMD_MENU_Y = UI_PANEL_Y + 8;
+const STATUS_PANEL_X = 40;
+const STATUS_PANEL_Y = UI_PANEL_Y + 8;
 
 // ATB
 const ATB_MAX = 100;
@@ -346,10 +346,10 @@ export class BattleScene extends Phaser.Scene {
 
     // ── 페이즈 디버그 표시 ──────────────────────────────────
     this.phaseText = this.add.text(10, 10, `phase: ${this.phase}`, {
-      fontSize: '10px',
+      fontSize: '8px',
       fontFamily: FONT_FAMILY,
       color: '#ffffff',
-    }).setAlpha(0.5).setDepth(999);
+    }).setAlpha(0.3).setDepth(999);
 
     // ── 키 바인딩 ──────────────────────────────────────────
     if (this.input.keyboard) {
@@ -376,12 +376,12 @@ export class BattleScene extends Phaser.Scene {
     this._setupCombatSocket();
 
     // ── Auto / Speed 버튼 ──────────────────────────────────
-    this.autoButton = this.add.text(scW - 200, UI_PANEL_Y + 15, 'AUTO: OFF', {
-      fontSize: '14px',
+    this.autoButton = this.add.text(scW - 220, UI_PANEL_Y + 20, 'AUTO: OFF', {
+      fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#888888',
       backgroundColor: '#222244',
-      padding: { x: 8, y: 4 },
+      padding: { x: 6, y: 3 },
     }).setDepth(200).setInteractive({ useHandCursor: true });
 
     this.autoButton.on('pointerdown', () => {
@@ -398,12 +398,12 @@ export class BattleScene extends Phaser.Scene {
       }
     });
 
-    this.speedButton = this.add.text(scW - 100, UI_PANEL_Y + 15, '1x', {
-      fontSize: '14px',
+    this.speedButton = this.add.text(scW - 100, UI_PANEL_Y + 20, '1x', {
+      fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#88ccff',
       backgroundColor: '#222244',
-      padding: { x: 8, y: 4 },
+      padding: { x: 6, y: 3 },
     }).setDepth(200).setInteractive({ useHandCursor: true });
 
     this.speedButton.on('pointerdown', () => {
@@ -572,23 +572,25 @@ export class BattleScene extends Phaser.Scene {
 
     const container = this.add.container(CMD_MENU_X, CMD_MENU_Y).setDepth(200);
 
-    // 메뉴 배경
-    const bg = this.add.rectangle(80, 48, 180, 108, 0x0a0a3e, 0.9)
+    // 메뉴 배경 — 5 commands in a row, compact
+    const menuW = COMMANDS.length * 120 + 20;
+    const menuH = 50;
+    const bg = this.add.rectangle(menuW / 2, menuH / 2, menuW, menuH, 0x0a0a3e, 0.92)
       .setStrokeStyle(2, 0x4466aa);
     container.add(bg);
 
-    // 캐릭터 이름 표시
-    const nameLabel = this.add.text(80, 0, `${us.unit.name}`, {
-      fontSize: '12px',
+    // 캐릭터 이름 표시 (위)
+    const nameLabel = this.add.text(menuW / 2, -2, `${us.unit.name}`, {
+      fontSize: '11px',
       fontFamily: FONT_FAMILY,
       color: '#ffcc44',
-    }).setOrigin(0.5, 0);
+    }).setOrigin(0.5, 1);
     container.add(nameLabel);
 
-    // 커맨드 항목
+    // 커맨드 항목 — horizontal row
     this.cmdMenuTexts = [];
     COMMANDS.forEach((cmd, i) => {
-      const text = this.add.text(30, 16 + i * 18, cmd.label, {
+      const text = this.add.text(16 + i * 120, 16, cmd.label, {
         fontSize: '14px',
         fontFamily: FONT_FAMILY,
         color: '#ffffff',
@@ -809,8 +811,8 @@ export class BattleScene extends Phaser.Scene {
     const skills = this.skillSlots.filter(s => s.currentCooldown <= 0);
 
     const menuH = Math.max(80, skills.length * 24 + 30);
-    const container = this.add.container(CMD_MENU_X + 190, UI_PANEL_Y - menuH - 10).setDepth(210);
-    const bg = this.add.rectangle(80, menuH / 2, 200, menuH, 0x0a0a3e, 0.95)
+    const container = this.add.container(CMD_MENU_X, UI_PANEL_Y - menuH - 4).setDepth(210);
+    const bg = this.add.rectangle(100, menuH / 2, 220, menuH, 0x0a0a3e, 0.95)
       .setStrokeStyle(2, 0x4466aa);
     container.add(bg);
 
@@ -845,8 +847,8 @@ export class BattleScene extends Phaser.Scene {
   private _showItemSubMenu(): void {
     this._closeSubMenu();
 
-    const container = this.add.container(CMD_MENU_X + 190, UI_PANEL_Y - 90).setDepth(210);
-    const bg = this.add.rectangle(80, 40, 200, 80, 0x0a0a3e, 0.95)
+    const container = this.add.container(CMD_MENU_X, UI_PANEL_Y - 90).setDepth(210);
+    const bg = this.add.rectangle(100, 40, 220, 80, 0x0a0a3e, 0.95)
       .setStrokeStyle(2, 0x4466aa);
     container.add(bg);
 
@@ -1189,35 +1191,21 @@ export class BattleScene extends Phaser.Scene {
     const gfx = this.add.graphics().setDepth(149);
 
     this.allySprites.forEach((us, i) => {
-      const y = i * 22;
+      const y = i * 20;
 
-      // 이름 + 레벨
-      const nameText = this.add.text(0, y, `${us.unit.name}  Lv.${us.unit.level}`, {
+      // 이름 + HP/MP 한 줄로 compact (20px row)
+      const nameText = this.add.text(0, y + 2, `${us.unit.name} Lv${us.unit.level}`, {
         fontSize: '11px', fontFamily: FONT_FAMILY, color: '#ffffff',
       });
       container.add(nameText);
 
-      // HP 라벨
-      const hpLabel = this.add.text(0, y + 11, 'HP', {
-        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#ffcc44',
-      });
-      container.add(hpLabel);
-
-      // HP 값
-      const hpText = this.add.text(STAT_BAR_W + 30, y + 11, `${us.unit.hp}/${us.unit.maxHp}`, {
-        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#ffcc44',
+      const hpText = this.add.text(160, y + 2, `HP ${us.unit.hp}/${us.unit.maxHp}`, {
+        fontSize: '10px', fontFamily: FONT_FAMILY, color: '#ffcc44',
       });
       container.add(hpText);
 
-      // MP 라벨
-      const mpLabel = this.add.text(STAT_BAR_W + 100, y + 11, 'MP', {
-        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#44ff88',
-      });
-      container.add(mpLabel);
-
-      // MP 값
-      const mpText = this.add.text(STAT_BAR_W + 180, y + 11, `${us.unit.mp}/${us.unit.maxMp}`, {
-        fontSize: '9px', fontFamily: FONT_FAMILY, color: '#44ff88',
+      const mpText = this.add.text(310, y + 2, `MP ${us.unit.mp}/${us.unit.maxMp}`, {
+        fontSize: '10px', fontFamily: FONT_FAMILY, color: '#44ff88',
       });
       container.add(mpText);
 
@@ -1246,40 +1234,38 @@ export class BattleScene extends Phaser.Scene {
       if (!entry) return;
 
       const baseX = STATUS_PANEL_X;
-      const baseY = STATUS_PANEL_Y + i * 22;
+      const baseY = STATUS_PANEL_Y + i * 20;
 
       // HP/MP 텍스트 업데이트
-      entry.hp.setText(`${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
-      entry.mp.setText(`${Math.max(0, us.unit.mp)}/${us.unit.maxMp}`);
-
-      // HP 색상 (낮으면 빨간색)
       const hpRatio = us.unit.hp / us.unit.maxHp;
+      entry.hp.setText(`HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
+      entry.mp.setText(`MP ${Math.max(0, us.unit.mp)}/${us.unit.maxMp}`);
       entry.hp.setColor(hpRatio < 0.25 ? '#ff4444' : '#ffcc44');
 
-      // HP 바
-      const hpBarX = baseX + 22;
-      const hpBarY = baseY + 14;
+      // HP 바 (compact, under text row)
+      const barY = baseY + 14;
+      const hpBarX = baseX + 160;
       this.statusPanelGraphics!.fillStyle(0x222244, 1);
-      this.statusPanelGraphics!.fillRect(hpBarX, hpBarY, STAT_BAR_W, STAT_BAR_H);
+      this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W, 4);
       this.statusPanelGraphics!.fillStyle(hpRatio < 0.25 ? 0xff4444 : 0xffcc44, 1);
-      this.statusPanelGraphics!.fillRect(hpBarX, hpBarY, STAT_BAR_W * Math.max(0, hpRatio), STAT_BAR_H);
+      this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W * Math.max(0, hpRatio), 4);
 
       // MP 바
       const mpRatio = us.unit.maxMp > 0 ? us.unit.mp / us.unit.maxMp : 0;
-      const mpBarX = baseX + STAT_BAR_W + 122;
+      const mpBarX = baseX + 310;
       this.statusPanelGraphics!.fillStyle(0x222244, 1);
-      this.statusPanelGraphics!.fillRect(mpBarX, hpBarY, 60, STAT_BAR_H);
+      this.statusPanelGraphics!.fillRect(mpBarX, barY, 60, 4);
       this.statusPanelGraphics!.fillStyle(0x44ff88, 1);
-      this.statusPanelGraphics!.fillRect(mpBarX, hpBarY, 60 * Math.max(0, mpRatio), STAT_BAR_H);
+      this.statusPanelGraphics!.fillRect(mpBarX, barY, 60 * Math.max(0, mpRatio), 4);
 
       // ATB 바
-      const atbBarX = baseX + STAT_BAR_W + 200;
+      const atbBarX = baseX + 400;
       const atbRatio = us.atb / ATB_MAX;
       entry.atb.clear();
       entry.atb.fillStyle(0x222244, 1);
-      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 26, ATB_BAR_W, ATB_BAR_H);
+      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, barY - STATUS_PANEL_Y, ATB_BAR_W, ATB_BAR_H);
       entry.atb.fillStyle(atbRatio >= 1 ? 0x44ff44 : 0x4488ff, 1);
-      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, hpBarY - STATUS_PANEL_Y - i * 26, ATB_BAR_W * atbRatio, ATB_BAR_H);
+      entry.atb.fillRect(atbBarX - STATUS_PANEL_X, barY - STATUS_PANEL_Y, ATB_BAR_W * atbRatio, ATB_BAR_H);
     });
   }
 

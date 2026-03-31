@@ -12,12 +12,12 @@ import { SkillSlot } from '../combat/CombatManager';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
-const SKILL_BAR_Y = 690;
-const SKILL_SLOT_SIZE = 40;
-const SKILL_GAP = 6;
+const SKILL_BAR_Y = 960;          // Below status panel, inside UI panel (y 920~1080)
+const SKILL_SLOT_SIZE = 36;
+const SKILL_GAP = 4;
 const SKILL_COUNT = 6;
-const LOG_MAX_LINES = 5;
-const LOG_X = 940;
+const LOG_MAX_LINES = 4;          // Compact: 4 lines max
+const LOG_X = 1560;               // Top-right corner
 const LOG_Y = 10;
 
 // ─── BattleUI ──────────────────────────────────────────────────
@@ -60,7 +60,7 @@ export class BattleUI {
 
   private _createSkillBar(): void {
     const totalWidth = SKILL_COUNT * SKILL_SLOT_SIZE + (SKILL_COUNT - 1) * SKILL_GAP;
-    const startX = (1280 - totalWidth) / 2;
+    const startX = 40; // Bottom-left, below status panel
 
     for (let i = 0; i < SKILL_COUNT; i++) {
       const x = startX + i * (SKILL_SLOT_SIZE + SKILL_GAP) + SKILL_SLOT_SIZE / 2;
@@ -104,15 +104,15 @@ export class BattleUI {
   // ─── 전투 로그 ────────────────────────────────────────────────
 
   private _createLogPanel(): void {
-    // 배경 (top-right corner)
-    this.scene.add.rectangle(LOG_X + 140, LOG_Y + 40, 300, 100, 0x000000, 0.4)
+    // 배경 — top-right corner, semi-transparent, compact (4 lines)
+    this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 340, 86, 0x000000, 0.35)
       .setDepth(110);
 
-    this.logText = this.scene.add.text(LOG_X, LOG_Y, '', {
+    this.logText = this.scene.add.text(LOG_X, LOG_Y + 4, '', {
       fontSize: '11px',
       color: '#aaaaaa',
-      lineSpacing: 3,
-      wordWrap: { width: 280 },
+      lineSpacing: 2,
+      wordWrap: { width: 320 },
     }).setDepth(111);
   }
 
@@ -156,12 +156,11 @@ export class BattleUI {
 
   private _createButtons(): void {
     // 일시정지 (battle log 아래)
-    this.pauseBtn = this.scene.add.text(LOG_X, LOG_Y + 96, '⏸ 일시정지', {
-      fontSize: '11px', color: '#aaaaaa',
-      backgroundColor: '#333333', padding: { x: 6, y: 3 },
+    this.pauseBtn = this.scene.add.text(LOG_X, LOG_Y + 84, '⏸ 일시정지', {
+      fontSize: '10px', color: '#aaaaaa',
+      backgroundColor: '#222222', padding: { x: 4, y: 2 },
     }).setDepth(112).setInteractive({ useHandCursor: true });
     this.pauseBtn.on('pointerdown', () => {
-      // 토글 pause (간단 구현)
       if (this.scene.scene.isPaused('BattleScene')) {
         this.scene.scene.resume('BattleScene');
         this.pauseBtn.setText('⏸ 일시정지');
@@ -172,9 +171,9 @@ export class BattleUI {
     });
 
     // 도주
-    this.fleeBtn = this.scene.add.text(LOG_X + 100, LOG_Y + 96, '🏃 도주', {
-      fontSize: '11px', color: '#ff8888',
-      backgroundColor: '#333333', padding: { x: 6, y: 3 },
+    this.fleeBtn = this.scene.add.text(LOG_X + 100, LOG_Y + 84, '🏃 도주', {
+      fontSize: '10px', color: '#ff8888',
+      backgroundColor: '#222222', padding: { x: 4, y: 2 },
     }).setDepth(112).setInteractive({ useHandCursor: true });
     this.fleeBtn.on('pointerdown', () => {
       this.addLog('🏃 도주 시도...');
