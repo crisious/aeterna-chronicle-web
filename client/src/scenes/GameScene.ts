@@ -110,16 +110,8 @@ export class GameScene extends Phaser.Scene {
     // this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     // this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
 
-    // 환경 오브젝트 에셋 — 존 설정에서 동적 로드
-    const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
-    if (envConfig) {
-      if (envConfig.groundTile) {
-        this.load.image('env_ground', envConfig.groundTile);
-      }
-      for (const obj of envConfig.objects) {
-        this.load.image(obj.key, obj.path);
-      }
-    }
+    // 환경 오브젝트 비활성화 — SD1.5 이미지가 pixelArt 스케일링에서 깨짐
+    // TODO: SDXL로 환경 오브젝트 재생성 후 복원
 
     // 챕터 타이틀 카드 이미지 로드
     const chapterInfo = ZONE_CHAPTER_MAP[this.currentZoneId];
@@ -553,8 +545,8 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
-    // 환경 오브젝트 배치 (타일/나무/바위/크리스탈)
-    this._placeEnvironmentObjects(worldW, worldH);
+    // 환경 오브젝트 비활성화 — pixelArt 스케일링 깨짐 방지
+    // this._placeEnvironmentObjects(worldW, worldH);
   }
 
   /** 환경 오브젝트 배치 — 존 설정 기반 동적 생성 */
