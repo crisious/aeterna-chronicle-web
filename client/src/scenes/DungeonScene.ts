@@ -144,18 +144,18 @@ export class DungeonScene extends Phaser.Scene {
       console.warn(`[Dungeon] 에셋 로드 실패: ${file.key}`);
     });
 
-    // 플레이어 캐릭터
+    // 플레이어 캐릭터 (원본 256x384 side 일러스트)
     const classId = this._sceneData.characterClass ?? 'ether_knight';
-    this.load.image('dungeon_player', `assets/generated/characters/class_main/battle/char_battle_${classId}.png`);
+    this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${classId}_side.png`);
 
     // 배경
     this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
 
-    // 몬스터
+    // 몬스터 (원본 256x256)
     for (const key of DUNGEON_MONSTER_IMAGES.default) {
-      this.load.image(key, `assets/generated/monsters/battle/${key}.png`);
+      this.load.image(key, `assets/generated/monsters/normal/${key}.png`);
     }
-    this.load.image(DUNGEON_BOSS_IMAGE, `assets/generated/monsters/battle/${DUNGEON_BOSS_IMAGE}.png`);
+    this.load.image(DUNGEON_BOSS_IMAGE, `assets/generated/monsters/normal/${DUNGEON_BOSS_IMAGE}.png`);
   }
 
   create(): void {
@@ -275,7 +275,9 @@ export class DungeonScene extends Phaser.Scene {
 
     if (this.textures.exists('dungeon_player')) {
       this.playerSprite = this.add.image(PLAYER_X, py, 'dungeon_player')
-        .setScale(1);
+        .setScale(0.2);
+      // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
+      (this.playerSprite as Phaser.GameObjects.Image).texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
     } else {
       this.playerSprite = this.add.rectangle(PLAYER_X, py, 40, 50, 0x4488ff);
     }
@@ -406,7 +408,9 @@ export class DungeonScene extends Phaser.Scene {
 
       if (this.textures.exists(monKey)) {
         sprite = this.add.image(x, y, monKey)
-          .setScale(isBoss ? 0.35 : 0.2);
+          .setScale(isBoss ? 0.4 : 0.25);
+        // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       } else {
         const color = isBoss ? 0xff2244 : 0xff6644;
         sprite = this.add.rectangle(x, y, size, size, color);

@@ -246,12 +246,8 @@ export class BattleScene extends Phaser.Scene {
       this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
     }
 
-    // 몬스터 이미지 — monsterManifest 기반 동적 프리로드 (battle/ 64x64 사용)
-    const rawManifest = monsterManifest as Record<string, string>;
-    const manifest: Record<string, string> = {};
-    for (const [k, v] of Object.entries(rawManifest)) {
-      manifest[k] = v.replace('monsters/normal/', 'monsters/battle/');
-    }
+    // 몬스터 이미지 — monsterManifest 기반 동적 프리로드 (원본 256x256 사용)
+    const manifest = monsterManifest as Record<string, string>;
     const manifestKeys = Object.keys(manifest);
     const loadedKeys = new Set<string>();
 
@@ -283,10 +279,10 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // 캐릭터 side 일러스트
+    // 캐릭터 side 일러스트 (원본 256x384 사용)
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
-      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/battle/char_battle_${cid}.png`);
+      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
     }
 
     // VFX
@@ -1100,9 +1096,11 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
-          .setScale(1)
+          .setScale(0.2)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
+        // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       } else {
         sprite = this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)
           .setInteractive({ useHandCursor: true })
@@ -1158,9 +1156,11 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setScale(isBoss ? 2 : 1)
+          .setScale(isBoss ? 0.4 : 0.25)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
+        // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       } else {
         sprite = this.add.rectangle(pos.x, pos.y, 56, 56, 0xff4444)
           .setInteractive({ useHandCursor: true })
