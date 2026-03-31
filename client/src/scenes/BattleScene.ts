@@ -246,8 +246,12 @@ export class BattleScene extends Phaser.Scene {
       this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
     }
 
-    // 몬스터 이미지 — monsterManifest 기반 동적 프리로드
-    const manifest = monsterManifest as Record<string, string>;
+    // 몬스터 이미지 — monsterManifest 기반 동적 프리로드 (battle/ 64x64 사용)
+    const rawManifest = monsterManifest as Record<string, string>;
+    const manifest: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawManifest)) {
+      manifest[k] = v.replace('monsters/normal/', 'monsters/battle/');
+    }
     const manifestKeys = Object.keys(manifest);
     const loadedKeys = new Set<string>();
 
