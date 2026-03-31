@@ -286,11 +286,7 @@ export class BattleScene extends Phaser.Scene {
       this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
     }
 
-    // VFX
-    for (let i = 1; i <= 10; i++) {
-      const padded = String(i).padStart(3, '0');
-      this.load.image(`vfx_common_${padded}`, `assets/generated/vfx/common/VFX-CMN-${padded}.png`);
-    }
+    // VFX — 프로그래매틱 이펙트 사용 (스프라이트 시트 로드 제거)
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
@@ -1027,23 +1023,20 @@ export class BattleScene extends Phaser.Scene {
   // ─── 히트 VFX ────────────────────────────────────────────────
 
   private _showHitVFX(x: number, y: number): void {
-    const idx = Phaser.Math.Between(1, 10);
-    const padded = String(idx).padStart(3, '0');
-    const key = `vfx_common_${padded}`;
-    if (!this.textures.exists(key)) return;
-
-    const vfx = this.add.image(x, y, key)
-      .setScale(0.2)
-      .setAlpha(0.9)
+    // 간단한 원형 이펙트로 대체 (VFX 스프라이트 시트 문제 회피)
+    const colors = [0xff4444, 0xffaa00, 0xffffff, 0x44aaff];
+    const color = colors[Phaser.Math.Between(0, colors.length - 1)];
+    
+    const circle = this.add.circle(x, y, 8, color, 0.8)
       .setDepth(8000);
 
     this.tweens.add({
-      targets: vfx,
-      scaleX: 1.6, scaleY: 1.6,
+      targets: circle,
+      scaleX: 3, scaleY: 3,
       alpha: 0,
-      duration: 350,
+      duration: 300,
       ease: 'Sine.easeOut',
-      onComplete: () => vfx.destroy(),
+      onComplete: () => circle.destroy(),
     });
   }
 
