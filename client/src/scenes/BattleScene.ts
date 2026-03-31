@@ -21,7 +21,7 @@ import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
 import { playSfx, playRandomVoice, COMBAT_VOICE, UI_SFX } from '../utils/SFXHelper';
-import monsterManifest from '../data/monsterManifest.json';
+
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
 
@@ -199,7 +199,7 @@ export class BattleScene extends Phaser.Scene {
   private introFallbackTimer: Phaser.Time.TimerEvent | null = null;
 
   private _initData!: BattleSceneData;
-  private _loadedMonsterKeys: string[] = [];
+
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -247,38 +247,7 @@ export class BattleScene extends Phaser.Scene {
       this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
     }
 
-    // 몬스터 이미지 — monsterManifest 기반 동적 프리로드 (원본 256x256 사용)
-    const manifest = monsterManifest as Record<string, string>;
-    const manifestKeys = Object.keys(manifest);
-    const loadedKeys = new Set<string>();
-
-    const enemies = this._initData?.enemies ?? [];
-    for (const enemy of enemies) {
-      const matched = this._findMonsterKey(enemy.id, enemy.name, manifestKeys);
-      if (matched && !loadedKeys.has(matched)) {
-        this.load.image(matched, manifest[matched]);
-        loadedKeys.add(matched);
-      }
-    }
-
-    if (this._initData?.monsterId) {
-      const mid = this._initData.monsterId;
-      const matched = this._findMonsterKey(mid, this._initData.monsterName ?? '', manifestKeys);
-      if (matched && !loadedKeys.has(matched)) {
-        this.load.image(matched, manifest[matched]);
-        loadedKeys.add(matched);
-      }
-    }
-
-    if (loadedKeys.size === 0) {
-      const fallbacks = ['mon_abyss_void_beetle', 'mon_abyss_null_slime', 'mon_boss_erb_shadow'];
-      for (const fb of fallbacks) {
-        if (manifest[fb]) {
-          this.load.image(fb, manifest[fb]);
-          loadedKeys.add(fb);
-        }
-      }
-    }
+    // 몬스터 이미지 로드 제거 — 프로그래매틱 아이콘 스프라이트 사용
 
     // 캐릭터 side 일러스트 (원본 256x384 사용)
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
@@ -292,7 +261,6 @@ export class BattleScene extends Phaser.Scene {
       console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
     });
 
-    this._loadedMonsterKeys = Array.from(loadedKeys);
   }
 
   create(): void {
@@ -1127,41 +1095,34 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _spawnEnemies(units: CombatUnit[]): void {
-    const monsterTexKeys = this._loadedMonsterKeys;
-    const allManifestKeys = Object.keys(monsterManifest as Record<string, string>);
-
     units.forEach((unit, idx) => {
       const pos = ENEMY_POSITIONS[idx % ENEMY_POSITIONS.length];
+      const isBoss = (unit.id ?? '').toUpperCase().startsWith('BOSS');
+      const size = isBoss ? 90 : 60;
+      const color = this._monsterColor(unit.name ?? unit.id ?? 'monster');
+      const icon = this._monsterIcon(unit.id ?? '', unit.name ?? '');
 
-      // 몬스터 이미지 매칭
-      let monTexKey = '';
-      const matched = this._findMonsterKey(unit.id, unit.name ?? '', allManifestKeys);
-      if (matched && this.textures.exists(matched)) {
-        monTexKey = matched;
-      }
+      // 프로그래매틱 몬스터 스프라이트: 라운드 사각형 + 아이콘
+      const texKey = `_mon_prog_${idx}_${this.sys.game.loop.frame}`;
+      const gfx = this.add.graphics().setVisible(false);
+      gfx.fillStyle(color, 1);
+      gfx.fillRoundedRect(0, 0, size, size, 10);
+      gfx.lineStyle(2, 0xffffff, 0.3);
+      gfx.strokeRoundedRect(0, 0, size, size, 10);
+      gfx.generateTexture(texKey, size, size);
+      gfx.destroy();
 
-      if (!monTexKey) {
-        const availableKeys = monsterTexKeys.filter(k => this.textures.exists(k));
-        monTexKey = availableKeys.length > 0 ? availableKeys[idx % availableKeys.length] : '';
-      }
+      const sprite = this.add.image(pos.x, pos.y, texKey)
+        .setInteractive({ useHandCursor: true })
+        .setDepth(50);
 
-      const isBoss = (unit.id ?? '').toUpperCase().startsWith('BOSS') || (monTexKey ?? '').includes('boss');
+      // 아이콘 이모지
+      this.add.text(pos.x, pos.y - 4, icon, {
+        fontSize: isBoss ? '36px' : '24px',
+        fontFamily: FONT_FAMILY,
+      }).setOrigin(0.5).setDepth(52);
 
-      let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
-      if (this.textures.exists(monTexKey)) {
-        sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setScale(isBoss ? 2 : 1)
-          .setInteractive({ useHandCursor: true })
-          .setDepth(50);
-        // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
-        sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
-      } else {
-        sprite = this.add.rectangle(pos.x, pos.y, 56, 56, 0xff4444)
-          .setInteractive({ useHandCursor: true })
-          .setDepth(50);
-      }
-
-      const nameText = this.add.text(pos.x, pos.y - sprite.displayHeight / 2 - 14, unit.name, {
+      const nameText = this.add.text(pos.x, pos.y - size / 2 - 14, unit.name, {
         fontSize: '11px',
         fontFamily: FONT_FAMILY,
         color: '#ff8888',
@@ -1475,25 +1436,32 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 몬스터 매니페스트 키 매칭 ────────────────────────────────
 
-  private _findMonsterKey(id: string, name: string, manifestKeys: string[]): string | null {
-    const idLower = (id ?? '').toLowerCase().replace(/[-\s]/g, '_').replace(/_\d+$/, '');
-    const nameLower = (name ?? '').toLowerCase().replace(/[-\s]/g, '_');
-
-    if (manifestKeys.includes(`mon_${idLower}`)) return `mon_${idLower}`;
-
-    for (const mk of manifestKeys) {
-      const mkBody = mk.replace('mon_', '');
-      if (idLower && mkBody.includes(idLower)) return mk;
-      if (nameLower && mkBody.includes(nameLower)) return mk;
+  /** 몬스터 이름 해시 → 고유 색상 */
+  private _monsterColor(name: string): number {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
+    const r = Math.min(220, Math.abs((hash >> 0) & 0xFF) * 0.55 + 60);
+    const g = Math.min(200, Math.abs((hash >> 8) & 0xFF) * 0.45 + 40);
+    const b = Math.min(220, Math.abs((hash >> 16) & 0xFF) * 0.55 + 60);
+    return (Math.floor(r) << 16) | (Math.floor(g) << 8) | Math.floor(b);
+  }
 
-    if (id?.toUpperCase().startsWith('BOSS')) {
-      for (const mk of manifestKeys) {
-        if (mk.startsWith('mon_boss_') && mk.includes(idLower.replace('boss-', '').replace('boss_', ''))) return mk;
-      }
-    }
-
-    return null;
+  /** 몬스터 id/name → 아이콘 이모지 */
+  private _monsterIcon(id: string, name: string): string {
+    const lower = `${id} ${name}`.toLowerCase();
+    if (/skeleton|bone/.test(lower)) return '\u{1F480}';
+    if (/wolf|hound/.test(lower)) return '\u{1F43A}';
+    if (/ghost|spirit|shade|phantom/.test(lower)) return '\u{1F47B}';
+    if (/spider/.test(lower)) return '\u{1F577}';
+    if (/golem|stone|rock/.test(lower)) return '\u{1FAA8}';
+    if (/rat|beetle|bug/.test(lower)) return '\u{1F41B}';
+    if (/bird|bat|hawk/.test(lower)) return '\u{1F987}';
+    if (/serpent|snake|worm/.test(lower)) return '\u{1F40D}';
+    if (/slime|blob/.test(lower)) return '\u{1FAE7}';
+    if (/boss|absorber/.test(lower)) return '\u{1F441}';
+    return '\u2694\uFE0F';
   }
 
   // ─── P25-05: 서버 전투 연동 ───────────────────────────────────
