@@ -1147,7 +1147,8 @@ export class BattleScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(52);
       }
 
-      const nameText = this.add.text(pos.x, pos.y - size / 2 - 14, unit.name, {
+      const spriteH = sprite.displayHeight ?? 60;
+      const nameText = this.add.text(pos.x, pos.y - spriteH / 2 - 14, unit.name, {
         fontSize: '11px',
         fontFamily: FONT_FAMILY,
         color: '#ff8888',
