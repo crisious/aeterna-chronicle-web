@@ -113,10 +113,10 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // P25-09: 실제 에셋 경로 (atlas만 — 존재 확인된 파일)
-    this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
-    this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
-    this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
+    // P25-09: 아틀라스 로드 비활성화 — 개별 이미지 사용 (BattleScene 텍스처 캐시 충돌 방지)
+    // this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
+    // this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
+    // this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
 
     // 환경 오브젝트 에셋 — 존 설정에서 동적 로드
     const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
