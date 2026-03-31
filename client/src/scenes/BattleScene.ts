@@ -1097,7 +1097,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
-          .setScale(0.4)
+          .setScale(1)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
         // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
@@ -1157,7 +1157,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setScale(isBoss ? 0.7 : 0.45)
+          .setScale(isBoss ? 2 : 1)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
         // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
