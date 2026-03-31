@@ -259,7 +259,18 @@ export class BattleScene extends Phaser.Scene {
       this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
     }
 
-    // VFX — 프로그래매틱 이펙트 사용 (스프라이트 시트 로드 제거)
+    // 몬스터 스프라이트 이미지 로드 (128x128, 투명 배경)
+    const enemies = this._initData?.enemies ?? [];
+    for (const enemy of enemies) {
+      const cleanId = (enemy.id ?? '').replace(/_\d+$/, '');
+      const texKey = `mon_battle_${cleanId}`;
+      const path = `assets/generated/monsters/normal/${cleanId}_normal.png`;
+      if (!this.textures.exists(texKey)) {
+        this.load.image(texKey, path);
+      }
+    }
+
+    // VFX — 프로그래매틱 이펙트 사용
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
@@ -1102,29 +1113,39 @@ export class BattleScene extends Phaser.Scene {
     units.forEach((unit, idx) => {
       const pos = ENEMY_POSITIONS[idx % ENEMY_POSITIONS.length];
       const isBoss = (unit.id ?? '').toUpperCase().startsWith('BOSS');
-      const size = isBoss ? 90 : 60;
-      const color = this._monsterColor(unit.name ?? unit.id ?? 'monster');
-      const icon = this._monsterIcon(unit.id ?? '', unit.name ?? '');
 
-      // 프로그래매틱 몬스터 스프라이트: 라운드 사각형 + 아이콘
-      const texKey = `_mon_prog_${idx}_${this.sys.game.loop.frame}`;
-      const gfx = this.add.graphics().setVisible(false);
-      gfx.fillStyle(color, 1);
-      gfx.fillRoundedRect(0, 0, size, size, 10);
-      gfx.lineStyle(2, 0xffffff, 0.3);
-      gfx.strokeRoundedRect(0, 0, size, size, 10);
-      gfx.generateTexture(texKey, size, size);
-      gfx.destroy();
+      // 몬스터 이미지 키 찾기 (preload에서 로드됨)
+      const cleanId = (unit.id ?? '').replace(/_\d+$/, '');
+      const monTexKey = `mon_battle_${cleanId}`;
+      let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
 
-      const sprite = this.add.image(pos.x, pos.y, texKey)
-        .setInteractive({ useHandCursor: true })
-        .setDepth(50);
-
-      // 아이콘 이모지
-      this.add.text(pos.x, pos.y - 4, icon, {
-        fontSize: isBoss ? '36px' : '24px',
-        fontFamily: FONT_FAMILY,
-      }).setOrigin(0.5).setDepth(52);
+      if (this.textures.exists(monTexKey)) {
+        sprite = this.add.image(pos.x, pos.y, monTexKey)
+          .setScale(isBoss ? 2 : 1)
+          .setInteractive({ useHandCursor: true })
+          .setDepth(50);
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+      } else {
+        // 폴백: 프로그래매틱 아이콘
+        const size = isBoss ? 90 : 60;
+        const color = this._monsterColor(unit.name ?? unit.id ?? 'monster');
+        const icon = this._monsterIcon(unit.id ?? '', unit.name ?? '');
+        const fallbackKey = `_mon_prog_${idx}_${this.sys.game.loop.frame}`;
+        const gfx = this.add.graphics().setVisible(false);
+        gfx.fillStyle(color, 1);
+        gfx.fillRoundedRect(0, 0, size, size, 10);
+        gfx.lineStyle(2, 0xffffff, 0.3);
+        gfx.strokeRoundedRect(0, 0, size, size, 10);
+        gfx.generateTexture(fallbackKey, size, size);
+        gfx.destroy();
+        sprite = this.add.image(pos.x, pos.y, fallbackKey)
+          .setInteractive({ useHandCursor: true })
+          .setDepth(50);
+        this.add.text(pos.x, pos.y - 4, icon, {
+          fontSize: isBoss ? '36px' : '24px',
+          fontFamily: FONT_FAMILY,
+        }).setOrigin(0.5).setDepth(52);
+      }
 
       const nameText = this.add.text(pos.x, pos.y - size / 2 - 14, unit.name, {
         fontSize: '11px',
