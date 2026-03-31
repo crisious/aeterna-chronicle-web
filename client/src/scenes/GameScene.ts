@@ -12,7 +12,6 @@ import { TelemetryEmitter } from '../services/TelemetryEmitter';
 import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
-import monsterManifest from '../data/monsterManifest.json';
 import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
 
 /** GameScene 전환 시 전달 데이터 */
@@ -90,8 +89,8 @@ export class GameScene extends Phaser.Scene {
     this.load.image('player_sprite', 'assets/generated/characters/class_main/char_illust_ether_knight_front.png');
 
     // NPC 스프라이트
-    this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_sprites/04_mateus_sprite.png');
-    this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_sprites/01_cryo_sprite.png');
+    this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_battle/04_mateus_sprite.png');
+    this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_battle/01_cryo_sprite.png');
 
     // 존 배경 이미지 preload
     const ZONE_BG: Record<string, string> = {
@@ -104,14 +103,7 @@ export class GameScene extends Phaser.Scene {
     this.load.image('zone_bg_far', `assets/generated/environment/backgrounds/${bgPrefix}-BG-FAR-DAY.png`);
     this.load.image('zone_bg_sky', `assets/generated/environment/backgrounds/${bgPrefix}-BG-SKY-DAY.png`);
 
-    // 오프라인 폴백 몬스터 이미지 preload
-    const manifest = monsterManifest as Record<string, string>;
-    const fallbackMonsters = ['mon_erebos_echo_wisp', 'mon_erebos_broken_golem', 'mon_erebos_crumbling_shade'];
-    for (const key of fallbackMonsters) {
-      if (manifest[key]) {
-        this.load.image(key, manifest[key]);
-      }
-    }
+    // 몬스터 이미지 preload 제거 — 프로그래매틱 아이콘 사용
 
     // P25-09: 아틀라스 로드 비활성화 — 개별 이미지 사용 (BattleScene 텍스처 캐시 충돌 방지)
     // this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
@@ -377,7 +369,7 @@ export class GameScene extends Phaser.Scene {
 
     if (texKey && this.textures.exists(texKey)) {
       sprite = this.add.image(x, y, texKey)
-        .setScale(0.2)
+        .setScale(1)
         .setInteractive({ useHandCursor: true });
     } else {
       sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88)
@@ -393,53 +385,28 @@ export class GameScene extends Phaser.Scene {
     this.remoteEntities.set(id, { id, name, sprite, nameTag: tag, isMonster: false });
   }
 
-  private _spawnMonster(id: string, name: string, x: number, y: number): void {
-    // 몬스터 매니페스트에서 이미지 매칭 시도
-    let monTexKey = '';
-    try {
-      const manifest = monsterManifest as Record<string, string>;
-      const manifestKeys = Object.keys(manifest);
-      const idLower = id.toLowerCase().replace(/[-\s]/g, '_');
-      if (manifestKeys.includes(idLower)) {
-        monTexKey = idLower;
-        if (!this.textures.exists(monTexKey)) {
-          this.load.image(monTexKey, manifest[monTexKey]);
-          this.load.once('complete', () => {
-            const existing = this.remoteEntities.get(id);
-            if (existing && existing.sprite && this.textures.exists(monTexKey)) {
-              existing.sprite.destroy();
-              const newSprite = this.add.image(x, y, monTexKey)
-                
-                .setInteractive({ useHandCursor: true });
-              newSprite.on('pointerdown', () => {
-                this.scene.start('BattleScene', {
-                  zoneId: this.currentZoneId, monsterId: id, monsterName: name,
-                });
-              });
-              existing.sprite = newSprite;
-            }
-          });
-          this.load.start();
-        }
-      }
-    } catch { /* 무시 */ }
+  // 프로그래매틱 몬스터 아이콘 팔레트
+  private static readonly MONSTER_COLORS = [0xcc3333, 0xcc6633, 0x9933cc, 0x3366cc, 0x33cc66, 0xcc3399, 0x6633cc, 0x33cccc];
+  private static readonly MONSTER_EMOJIS = ['💀', '🐺', '👻', '🕷', '🪨', '🐛', '🦇', '🔥'];
 
-    let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
-    if (monTexKey && this.textures.exists(monTexKey)) {
-      sprite = this.add.image(x, y, monTexKey)
-        .setScale(0.15)
-        .setInteractive({ useHandCursor: true });
-    } else {
-      sprite = this.add.rectangle(x, y, 36, 36, 0xff4444)
-        .setInteractive({ useHandCursor: true });
-    }
+  private _spawnMonster(id: string, name: string, x: number, y: number): void {
+    // 이름 해시 기반 결정적 색상 + 이모지
+    const hash = name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
+    const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
+
+    const sprite = this.add.rectangle(x, y, 40, 40, color, 0.85)
+      .setInteractive({ useHandCursor: true });
+
+    // 이모지 오버레이
+    const emojiText = this.add.text(x, y, emoji, { fontSize: '22px' }).setOrigin(0.5);
+    sprite.once('destroy', () => emojiText.destroy());
 
     const tag = this.add.text(x, y - 34, name, {
       fontSize: '10px', color: '#ff8888', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
     sprite.on('pointerdown', () => {
-      // 전투 시작 → BattleScene
       this.scene.start('BattleScene', {
         zoneId: this.currentZoneId,
         monsterId: id,

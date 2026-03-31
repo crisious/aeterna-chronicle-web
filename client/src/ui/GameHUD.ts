@@ -255,17 +255,10 @@ export class GameHUD {
       const bg = this.scene.add.rectangle(slotSize / 2, slotSize / 2, slotSize, slotSize, 0x12122a, 0.85)
         .setStrokeStyle(1, 0x4a4a7e);
 
-      // P34-A: 스킬 아이콘 이미지 (AssetManager에서 preload된 키 사용)
-      const iconKey = `icon_skill_${String(i + 1).padStart(3, '0')}`;
-      let iconObj: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
-      if (this.scene.textures.exists(iconKey)) {
-        iconObj = this.scene.add.image(slotSize / 2, slotSize / 2 - 2, iconKey)
-          .setDisplaySize(slotSize - 8, slotSize - 8).setAlpha(0.7);
-      } else {
-        iconObj = this.scene.add.text(slotSize / 2, slotSize / 2 - 4, '', {
-          fontSize: '20px',
-        }).setOrigin(0.5);
-      }
+      // 스킬 아이콘: 텍스트 기반 (스프라이트시트 이슈 방지)
+      const iconObj = this.scene.add.text(slotSize / 2, slotSize / 2 - 4, '', {
+        fontSize: '20px',
+      }).setOrigin(0.5);
 
       const hotkey = this.scene.add.text(4, 2, `${i + 1}`, {
         fontSize: '9px', color: '#7777aa', fontStyle: 'bold',
