@@ -72,20 +72,21 @@ const SCREEN_W = 1920;
 const SCREEN_H = 1080;
 
 // 아군 배치 (왼쪽, 사이드뷰) — 배틀 영역 y 0~920
+// FF6 스타일: 아군 우측 종대, 적 좌측-중앙 횡대
 const ALLY_POSITIONS = [
-  { x: 240, y: 300 },
-  { x: 340, y: 420 },
-  { x: 240, y: 540 },
-  { x: 340, y: 660 },
+  { x: 1500, y: 320 },
+  { x: 1580, y: 460 },
+  { x: 1500, y: 600 },
+  { x: 1580, y: 740 },
 ];
 
-// 몬스터 배치 (오른쪽, 정면) — 배틀 영역 y 0~920
+// 몬스터 배치 (좌측~중앙, 적당히 모여있게)
 const ENEMY_POSITIONS = [
-  { x: 1120, y: 280 },
-  { x: 1350, y: 360 },
-  { x: 1580, y: 280 },
-  { x: 1240, y: 540 },
-  { x: 1470, y: 540 },
+  { x: 500, y: 350 },
+  { x: 700, y: 450 },
+  { x: 500, y: 550 },
+  { x: 700, y: 650 },
+  { x: 600, y: 300 },
 ];
 
 // 하단 UI 패널 (상단 85% = 배틀, 하단 15% = UI)
@@ -1096,7 +1097,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
-          .setScale(0.2)
+          .setScale(0.4)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
         // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
@@ -1156,7 +1157,7 @@ export class BattleScene extends Phaser.Scene {
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
-          .setScale(isBoss ? 0.4 : 0.25)
+          .setScale(isBoss ? 0.7 : 0.45)
           .setInteractive({ useHandCursor: true })
           .setDepth(50);
         // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
