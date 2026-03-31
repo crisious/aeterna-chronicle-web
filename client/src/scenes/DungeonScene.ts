@@ -152,10 +152,7 @@ export class DungeonScene extends Phaser.Scene {
     this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
 
     // 몬스터 (원본 256x256)
-    for (const key of DUNGEON_MONSTER_IMAGES.default) {
-      this.load.image(key, `assets/generated/monsters/normal/${key}.png`);
-    }
-    this.load.image(DUNGEON_BOSS_IMAGE, `assets/generated/monsters/normal/${DUNGEON_BOSS_IMAGE}.png`);
+    // 몬스터 이미지 로드 제거 — 프로그래매틱 아이콘 사용
   }
 
   create(): void {
@@ -406,15 +403,22 @@ export class DungeonScene extends Phaser.Scene {
       const monKey = monsterKeys[i % monsterKeys.length];
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
 
-      if (this.textures.exists(monKey)) {
-        sprite = this.add.image(x, y, monKey)
-          .setScale(isBoss ? 0.4 : 0.25);
-        // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
-        sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
-      } else {
-        const color = isBoss ? 0xff2244 : 0xff6644;
-        sprite = this.add.rectangle(x, y, size, size, color);
-      }
+      // 프로그래매틱 몬스터 아이콘 (이미지 의존 제거)
+      const color = isBoss ? 0xaa2233 : this._monColor(monKey);
+      const rectSize = isBoss ? 80 : 56;
+      const gfx = this.add.graphics();
+      gfx.fillStyle(color, 0.9);
+      gfx.fillRoundedRect(0, 0, rectSize, rectSize, 8);
+      gfx.generateTexture(`dmon_${i}`, rectSize, rectSize);
+      gfx.destroy();
+      sprite = this.add.image(x, y, `dmon_${i}`);
+
+      // 이모지 아이콘
+      const icon = this._monIcon(monKey);
+      const iconText = this.add.text(x, y - 4, icon, {
+        fontSize: isBoss ? '28px' : '22px',
+      }).setOrigin(0.5);
+      this.enemyPreviews.push(iconText);
 
       // 이름 라벨
       const monName = MONSTER_NAMES[monKey] ?? monKey;
@@ -481,6 +485,27 @@ export class DungeonScene extends Phaser.Scene {
   }
 
   // ── BattleScene 전환 ─────────────────────────────────────
+
+  private _monIcon(id: string): string {
+    const l = id.toLowerCase();
+    if (l.includes('skeleton') || l.includes('bone')) return '💀';
+    if (l.includes('wolf') || l.includes('hound')) return '🐺';
+    if (l.includes('ghost') || l.includes('spirit') || l.includes('shade') || l.includes('phantom')) return '👻';
+    if (l.includes('spider')) return '🕷';
+    if (l.includes('golem') || l.includes('stone')) return '🪨';
+    if (l.includes('rat') || l.includes('beetle') || l.includes('bug')) return '🐛';
+    if (l.includes('bat') || l.includes('bird')) return '🦇';
+    if (l.includes('serpent') || l.includes('snake') || l.includes('worm')) return '🐍';
+    if (l.includes('slime')) return '🫧';
+    if (l.includes('boss') || l.includes('absorber')) return '👁';
+    return '⚔️';
+  }
+
+  private _monColor(id: string): number {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffffff;
+    return 0x333333 | (h & 0x7f7f7f);
+  }
 
   private _launchBattle(isBoss: boolean): void {
     const count = isBoss ? 1 : ENEMIES_PER_WAVE;
