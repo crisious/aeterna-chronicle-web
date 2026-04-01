@@ -222,9 +222,37 @@ TypeScript 에러: 811 → 0 (서버+클라이언트).
 | **Security** | bcrypt · JWT (3-key) · 2FA AES-256-GCM · P2W Guard |
 | **AI Tools** | GStack (31 skills) · Claude Code · Codex CLI · Gemini CLI |
 
+### 📝 릴리즈 문서
+
+| 문서 | 경로 |
+|------|------|
+| **CHANGELOG** | [`CHANGELOG.md`](./CHANGELOG.md) |
+| **v1.0 릴리즈 노트** | [`docs/release/release_notes_v1.0.md`](./docs/release/release_notes_v1.0.md) |
+| **프레스 릴리즈 (한국어)** | [`docs/release/press_release_ko.md`](./docs/release/press_release_ko.md) |
+| **프레스 릴리즈 (영문)** | [`docs/release/press_release_en.md`](./docs/release/press_release_en.md) |
+| **출시 체크리스트** | [`docs/release/launch_checklist.md`](./docs/release/launch_checklist.md) |
+| **Steam 배포 가이드** | [`docs/release/steam_deployment.md`](./docs/release/steam_deployment.md) |
+| **베타 테스트 계획** | [`docs/release/beta_test_plan.md`](./docs/release/beta_test_plan.md) |
+
+### 🗓 v1.0 출시 로드맵
+
+| 주차 | 마일스톤 | 상태 |
+|------|----------|:---:|
+| W1 | TS 에러 0 + CI 그린 | ✅ |
+| W1 | 보안 감사 (GStack /review) | ✅ |
+| W1 | FHD + ATB 자동전투 | ✅ |
+| W1 | 데모 URL 배포 | ✅ |
+| W1 | 릴리즈 노트 작성 | ✅ |
+| W2 | 5명 플레이 테스트 | ⏳ |
+| W2 | 스모크 테스트 전체 플로우 | ⏳ |
+| W3-4 | CBT 50~100명 | 🔜 |
+| W5 | OBT (Steam Playtest) | 🔜 |
+| W7-8 | 법률 검토 + GRAC | 🔜 |
+| W9 | **v1.0 Steam/itch.io 출시** | 🔜 |
+
 ### 🤝 기여
 
-이 프로젝트는 현재 공개되어 있습니다.
+이 프로젝트는 현재 공개되어 있습니다. PR 환영합니다.
 
 ---
 
