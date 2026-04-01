@@ -122,45 +122,45 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## 📈 개발 현황
 
-**52 Phase 완료 · 728 티켓 전부 Done · 253+ 커밋 · 에셋 1,596개 · 16-bit 픽셀아트 통일 · v1.0 릴리즈 준비 완료**
+**52 Phase 완료 · 728 티켓 전부 Done · 290+ 커밋 · 1,825+ 에셋 · 16-bit 픽셀아트 통일 · v1.0 릴리즈 준비 완료**
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
-| P38 | 미해결 이슈 전수 수정 | GameScene 안정화 · TODO 0건 · E2E 92/92 · Notion 728티켓 |
-| P37 | FF6 전투 시스템 | 사이드뷰 ATB · 커맨드 메뉴 · 데미지 팝업 · 승리 연출 |
-| P36 | 픽셀아트 에셋 교체 | 배경 114장 · NPC 30장 · 몬스터 120장 · 캐릭터 18장 |
-| P35 | QA 핫픽스 4건 | NPC 매핑 · 전투 키입력 · 전투 그래픽 · 초기 아이템 지급 |
-| P34B | 에셋 매니페스트 + 전수 검증 | 오디오 138개 연결 · 이미지 1,383장 확인 · 에셋 완전체 1,575개 |
+| P27 | 멀티플레이어 소셜 | 파티/거래/경매/채팅/길드/PvP UI 11종 |
+| P28 | v1.0 폴리싱 | 밸런스 · 오디오 · VFX · 접근성 WCAG 2.1 AA |
+| P29 | QA 핫픽스 | API 정합성 전수 수정 + tsc 54건 해소 |
+| P30 | 실플레이 QA | E2E 186/199 통과 · 정합 수정 |
+| P31 | tsc 전수 수정 | 서버 389→0 · 클라이언트 63→0 · 224파일 수정 |
+| P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
+| P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
+| P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
 | P34 | 오디오 SFX 75+Voice 20 완성 | SFX 75개 생성 · Voice 20개 생성 · 오디오 파이프라인 완료 |
+| P34B | 에셋 매니페스트 + 전수 검증 | 오디오 138개 연결 · 이미지 1,383장 확인 · 에셋 완전체 1,575개 |
+| P35 | QA 핫픽스 4건 | NPC 매핑 · 전투 키입력 · 전투 그래픽 · 초기 아이템 지급 |
+| P36 | 픽셀아트 에셋 교체 | 배경 114장 · NPC 30장 · 몬스터 120장 · 캐릭터 18장 |
+| P37 | FF6 전투 시스템 | 사이드뷰 ATB · 커맨드 메뉴 · 데미지 팝업 · 승리 연출 |
+| P38 | 미해결 이슈 전수 수정 | GameScene 안정화 · TODO 0건 · E2E 92/92 · Notion 728티켓 |
 | P39 | 오디오 에셋 AI 생성 | BGM 42곡 MusicGen AI 생성 + SFX 75 프로시저럴 + Voice 20 포먼트 합성 · 137/137 완료 |
 | P40 | SFX AI 교체 + Voice TTS | SFX 75개 MusicGen AI 교체 · Voice 20개 macOS TTS 생성 · 137/137 유효 |
 | P42 | E2E 테스트 확장 | 10개 신규 E2E (combat/character/ending/shop/party/trade/save/world/raid/story) · 24→34 파일 |
 | P43 | ACE-Step 보스곡 리마스터 | 핵심 5곡 ACE-Step v1 3.5B 생성 (보스3+메인테마+엔딩) · 평균 4배 고품질 |
 | P45 | 로딩 최적화 | 오디오 lazy load (21 essential→116 deferred) · WebP 변환 스크립트 (61% 절감) · Vite gzip/brotli · 로딩 화면 |
 | P46 | 엔딩 회귀 테스트 | 212 테스트 케이스 (24 regression + 188 matrix) · 엔딩 우선순위/경계값/조합 전수 검증 |
-| P49 | Docker 배포 검증 | Dockerfile 수정 · docker-compose.yml · 헬스체크 스크립트 · nginx 리버스 프록시 |
-| R-01 | 에셋 연결 | generated/ → client/ 1,453개 이미지 투입 (characters/monsters/environment/ui/vfx/cosmetics/atlas) |
-| R-03 | ACE-Step 보스곡 리마스터 | 나머지 4곡 완료 (말라투스/라와르/케인/각성) · 총 ACE-Step 9곡 |
-| QA-01 | 풀 플로우 E2E | 49 테스트 (타이틀→엔딩 전체 플로우) |
-| QA-02 | 런타임 에러 전수 수정 | 5개 씬 15건 optional chaining 적용 |
 | P48 | CI/CD GitHub Actions | server-check + client-check + test (Node 20, PostgreSQL 16) |
+| P49 | Docker 배포 검증 | Dockerfile 수정 · docker-compose.yml · 헬스체크 스크립트 · nginx 리버스 프록시 |
 | P52 | 성능 프로파일링 | 빌드 A(405KB gz) · 서버 A+(88ms) · 에셋 C(WebP 대기) |
 | C-1 | 엔딩CG + 개연성 + 정합성 | CG 10장 · 개연성 13건 완료 · 정합성 37테스트 |
 | ART | 16-bit 픽셀아트 통일 | 483개 에셋 전수 재생성 · 아트 스타일 가이드 v2.0 |
 | RT | 리소스 연결 테스트 | 에셋 무결성 · 중복 305MB 제거 · 월드맵 아이콘 |
+| R-01 | 에셋 연결 | generated/ → client/ 1,453개 이미지 투입 (characters/monsters/environment/ui/vfx/cosmetics/atlas) |
+| R-03 | ACE-Step 보스곡 리마스터 | 나머지 4곡 완료 (말라투스/라와르/케인/각성) · 총 ACE-Step 9곡 |
+| QA-01 | 풀 플로우 E2E | 49 테스트 (타이틀→엔딩 전체 플로우) |
+| QA-02 | 런타임 에러 전수 수정 | 5개 씬 15건 optional chaining 적용 |
 | SEC | 보안 강화 스프린트 | SHA256→bcrypt · JWT 분리 3종 · 2FA AES-256 · 결제 인증 lockdown |
 | P1-FIX | P1 버그 전수 수정 | 거래/인벤토리/경매 레이스 컨디션 · 소켓 누수 11파일 · 틱 클록 |
 | FHD | 1920×1080 FHD 전환 | Scale.FIT · 전씬 UI 좌표 보정 · DOM 입력 스케일 보정 |
 | SDXL | 아트 파이프라인 업그레이드 | SDXL Base + Pixel Art XL LoRA · 크로노트리거 스타일 · rembg 투명배경 |
 | ATB | FF6 ATB 자동전투 | 던전↔BattleScene 통합 · Auto모드 · 속도조절 1x/2x/3x |
-| P33B | UI 비주얼 + BGM 연결 | 로딩 화면 강화 · HUD 아이콘 · BGM 씬 매핑 · 42 BGM 정적 서빙 |
-| P33 | 시딩 완전 복구 + E2E 테스트 | seed 1118건 18단계 전체 통과 · E2E 22파일 0실패 |
-| P32 | 시딩 복구 + Docker + 빌드 | seed 933건 · Dockerfile 검증 · tsc 0에러 |
-| P31 | tsc 전수 수정 | 서버 389→0 · 클라이언트 63→0 · 224파일 수정 |
-| P30 | 실플레이 QA | E2E 186/199 통과 · 정합 수정 |
-| P29 | QA 핫픽스 | API 정합성 전수 수정 + tsc 54건 해소 |
-| P28 | v1.0 폴리싱 | 밸런스 · 오디오 · VFX · 접근성 WCAG 2.1 AA |
-| P27 | 멀티플레이어 소셜 | 파티/거래/경매/채팅/길드/PvP UI 11종 |
 
 <details>
 <summary><b>정합성 검증 상세</b></summary>
