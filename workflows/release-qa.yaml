@@ -1,0 +1,122 @@
+# release-qa.yaml — 에테르나 릴리즈 QA 파이프라인
+# 빌드검증 → 보안스캔 → 성능체크 → 릴리즈노트 → 인간승인
+#
+# 사용: conductor run workflows/release-qa.yaml --input version="v1.0.0"
+
+workflow:
+  name: aeterna-release-qa
+  description: "에테르나 릴리즈 QA — 빌드 → 보안 → 성능 → 문서 → 승인"
+  entry_point: build_checker
+
+agents:
+  - name: build_checker
+    model: claude-sonnet-4-20250514
+    prompt: |
+      에테르나 크로니클 {{ workflow.input.version }} 빌드 검증.
+      디렉토리: ~/aeterna
+
+      확인:
+      1. cd server && npx tsc --noEmit — 에러 수
+      2. cd client && npx tsc --noEmit — 에러 수
+      3. Prisma 스키마 검증
+      4. npm audit 취약점
+      5. git status 클린 여부
+    output:
+      ts_errors:
+        type: number
+      build_status:
+        type: string
+        description: "PASS / FAIL"
+      details:
+        type: string
+    routes:
+      - condition: "build_status == 'FAIL'"
+        to: $end
+      - condition: "build_status == 'PASS'"
+        to: security_scanner
+
+  - name: security_scanner
+    model: claude-sonnet-4-20250514
+    prompt: |
+      에테르나 크로니클 보안 스캔.
+
+      확인:
+      1. 하드코딩된 시크릿/API 키 (grep -r "password\|secret\|api_key" server/src/)
+      2. .env.example에 실제 값 포함 여부
+      3. JWT 설정 (만료시간, 알고리즘)
+      4. CORS 설정
+      5. rate limiting 설정
+      6. SQL injection 방어 (Prisma parameterized)
+      7. P2W 가드 활성화 여부
+    output:
+      vulnerabilities:
+        type: number
+      risk_level:
+        type: string
+      findings:
+        type: string
+    routes:
+      - to: perf_checker
+
+  - name: perf_checker
+    model: claude-sonnet-4-20250514
+    prompt: |
+      에테르나 크로니클 성능 체크.
+
+      확인:
+      1. 클라이언트 번들 크기 (npm run build → dist/ 크기)
+      2. 에셋 총 크기
+      3. 씬 로딩 시 에셋 수
+      4. 소켓 핸들러 수
+      5. Prisma 쿼리 N+1 패턴
+      6. 메모리 누수 가능성 (socket.on without off)
+    output:
+      bundle_size:
+        type: string
+      performance_grade:
+        type: string
+        description: "A / B / C / D / F"
+      recommendations:
+        type: string
+    routes:
+      - to: release_noter
+
+  - name: release_noter
+    model: claude-sonnet-4-20250514
+    prompt: |
+      에테르나 크로니클 {{ workflow.input.version }} 릴리즈 노트 생성.
+
+      빌드: {{ build_checker.output.build_status }} (TS 에러: {{ build_checker.output.ts_errors }})
+      보안: {{ security_scanner.output.risk_level }} (취약점: {{ security_scanner.output.vulnerabilities }})
+      성능: {{ perf_checker.output.performance_grade }}
+
+      git log --oneline -20 결과를 기반으로 한국어 릴리즈 노트 작성.
+      섹션: 새 기능 / 버그 수정 / 보안 / 성능 / 알려진 이슈
+    output:
+      release_notes:
+        type: string
+    routes:
+      - to: final_gate
+
+  - name: final_gate
+    type: human_gate
+    prompt: |
+      📋 릴리즈 QA 결과 — {{ workflow.input.version }}
+
+      빌드: {{ build_checker.output.build_status }}
+      보안: {{ security_scanner.output.risk_level }}
+      성능: {{ perf_checker.output.performance_grade }}
+    options:
+      - label: 릴리즈 승인
+        value: approved
+        route: $end
+      - label: 릴리즈 거부
+        value: rejected
+        route: $end
+
+output:
+  version: "{{ workflow.input.version }}"
+  build: "{{ build_checker.output.build_status }}"
+  security: "{{ security_scanner.output.risk_level }}"
+  performance: "{{ perf_checker.output.performance_grade }}"
+  release_notes: "{{ release_noter.output.release_notes }}"
