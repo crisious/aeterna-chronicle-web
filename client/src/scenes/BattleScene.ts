@@ -527,14 +527,52 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
+    // 스킬 쿨다운 감소
+    for (const skill of this.skillSlots) {
+      if (skill.currentCooldown > 0) {
+        skill.currentCooldown = Math.max(0, skill.currentCooldown - dt);
+      }
+    }
+
     // 커맨드 큐에서 다음 캐릭터의 메뉴 표시 (또는 자동 전투)
     if (!this.activeCommander && !this.targetSelectMode && this.commandQueue.length > 0) {
       if (this.autoMode) {
         const next = this.commandQueue.shift()!;
         const livingEnemies = this.enemySprites.filter(e => !e.isDead);
+        const livingAllies = this.allySprites.filter(a => !a.isDead);
         if (livingEnemies.length > 0) {
-          const target = livingEnemies.reduce((a, b) => a.unit.hp < b.unit.hp ? a : b);
-          this._performAttack(next, target);
+          // 사용 가능한 스킬 찾기 (쿨다운 0 + MP 충분 + 데미지 > 0)
+          const availableSkill = this.skillSlots.find(s =>
+            s.currentCooldown <= 0 &&
+            s.mpCost > 0 &&
+            s.damage > 0 &&
+            next.unit.mp >= s.mpCost
+          );
+
+          // 힐 스킬 확인 (아군 HP가 40% 이하일 때)
+          const healSkill = this.skillSlots.find(s =>
+            s.currentCooldown <= 0 &&
+            s.mpCost > 0 &&
+            s.damage < 0 && // 음수 데미지 = 힐
+            next.unit.mp >= s.mpCost
+          );
+          const needHeal = livingAllies.some(a => a.unit.hp < a.unit.maxHp * 0.4);
+
+          if (needHeal && healSkill) {
+            // 힐이 필요하면 HP 가장 낮은 아군에게 힐
+            const healTarget = livingAllies.reduce((a, b) =>
+              (a.unit.hp / a.unit.maxHp) < (b.unit.hp / b.unit.maxHp) ? a : b
+            );
+            this._performSkill(next, healTarget, healSkill);
+          } else if (availableSkill && Math.random() < 0.6) {
+            // 60% 확률로 스킬 사용 (HP 가장 낮은 적 타겟)
+            const target = livingEnemies.reduce((a, b) => a.unit.hp < b.unit.hp ? a : b);
+            this._performSkill(next, target, availableSkill);
+          } else {
+            // 기본 공격 (HP 가장 낮은 적)
+            const target = livingEnemies.reduce((a, b) => a.unit.hp < b.unit.hp ? a : b);
+            this._performAttack(next, target);
+          }
           next.atb = 0;
         }
       } else {
