@@ -1,7 +1,7 @@
 {
   "name": "aeterna-chronicle",
   "version": "0.5.14",
-  "description": "에테르나 크로니클 — MMORPG 프로젝트",
+  "description": "에테르나 크로니클 — FF6 스타일 ATB 전투 RPG (Phaser.js)",
   "private": true,
   "workspaces": [
     "server",
