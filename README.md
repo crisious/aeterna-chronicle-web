@@ -79,7 +79,7 @@
 
 | 클라이언트 | 서버 | 데이터 | 인프라 |
 |-----------|------|--------|--------|
-| Phaser.js (웹) · Unity · UE5 | Fastify + Socket.io | PostgreSQL + Redis | Docker · k8s · CI/CD |
+| Phaser.js (웹) · Unity · UE5 | Fastify + Socket.io | PostgreSQL + Redis | Docker · k8s · Conductor · CI/CD |
 | TypeScript | Prisma ORM (110 모델) | Protobuf 바이너리 통신 | 9 워크플로우 |
 
 ---
@@ -218,7 +218,7 @@ TypeScript 에러: 811 → 0 (서버+클라이언트).
 | **Combat** | FF6-style ATB · Auto-battle · 1x/2x/3x speed |
 | **Art** | SDXL + Pixel Art XL LoRA · rembg · Chrono Trigger style |
 | **Audio** | MusicGen · ACE-Step · macOS TTS · 137 assets |
-| **Infra** | Docker · K8s · GitHub Actions CI · PM2 · Cloudflare Tunnel |
+| **Infra** | Docker · K8s · Conductor · GitHub Actions CI · PM2 · Cloudflare Tunnel |
 | **Security** | bcrypt · JWT (3-key) · 2FA AES-256-GCM · P2W Guard |
 | **AI Tools** | GStack (31 skills) · Claude Code · Codex CLI · Gemini CLI |
 
