@@ -13,9 +13,20 @@ import { SkillSlot } from '../combat/CombatManager';
 // ─── 상수 ──────────────────────────────────────────────────────
 
 const SKILL_BAR_Y = 960;          // Below status panel, inside UI panel (y 920~1080)
-const SKILL_SLOT_SIZE = 36;
-const SKILL_GAP = 4;
+const SKILL_SLOT_SIZE = 56;
+const SKILL_GAP = 6;
 const SKILL_COUNT = 6;
+
+/** 속성별 슬롯 테두리 색상 */
+const ELEMENT_COLORS: Record<string, number> = {
+  aether: 0x66aaff,
+  light: 0xffee66,
+  dark: 0xaa66ff,
+  neutral: 0x6666aa,
+  time: 0x66ffcc,
+  lightning: 0xffff44,
+  earth: 0x88aa44,
+};
 const LOG_MAX_LINES = 4;          // Compact: 4 lines max
 const LOG_X = 1560;               // Top-right corner
 const LOG_Y = 10;
@@ -46,6 +57,9 @@ export class BattleUI {
   private pauseBtn!: Phaser.GameObjects.Text;
   private fleeBtn!: Phaser.GameObjects.Text;
 
+  // 스킬 툴팁
+  private tooltipContainer: Phaser.GameObjects.Container | null = null;
+
   constructor(scene: Phaser.Scene, skillSlots: SkillSlot[]) {
     this.scene = scene;
     this.skillSlots = skillSlots;
@@ -66,9 +80,12 @@ export class BattleUI {
       const x = startX + i * (SKILL_SLOT_SIZE + SKILL_GAP) + SKILL_SLOT_SIZE / 2;
       const y = SKILL_BAR_Y;
 
+      const slot = this.skillSlots[i];
+      const elemColor = slot ? (ELEMENT_COLORS[slot.element ?? 'neutral'] ?? 0x6666aa) : 0x6666aa;
+
       // 슬롯 배경
       const bg = this.scene.add.rectangle(x, y, SKILL_SLOT_SIZE, SKILL_SLOT_SIZE, 0x222244)
-        .setStrokeStyle(1, 0x6666aa)
+        .setStrokeStyle(2, elemColor)
         .setInteractive({ useHandCursor: true });
       bg.on('pointerdown', () => {
         // 클릭으로 스킬 사용 — BattleScene에서 처리
@@ -77,15 +94,35 @@ export class BattleUI {
           battleScene._useSkill(i);
         }
       });
+      // 호버 시 전체 이름 표시
+      if (slot) {
+        bg.on('pointerover', () => {
+          this._showTooltip(x, y - SKILL_SLOT_SIZE, slot);
+        });
+        bg.on('pointerout', () => {
+          this._hideTooltip();
+        });
+      }
       this.slotBgs.push(bg);
 
-      // 스킬 이름
-      const slot = this.skillSlots[i];
-      const label = slot ? slot.name.slice(0, 4) : '—';
-      const txt = this.scene.add.text(x, y, label, {
-        fontSize: '12px', color: '#ffffff',
+      // 스킬 이름 (슬롯 크기에 맞춰 최대 5자)
+      const label = slot ? slot.name.slice(0, 5) : '—';
+      const txt = this.scene.add.text(x, y - 6, label, {
+        fontSize: '11px', color: '#ffffff',
+        fontStyle: slot?.mpCost === 0 ? 'italic' : 'bold',
       }).setOrigin(0.5);
       this.slotTexts.push(txt);
+
+      // MP 비용 표시
+      if (slot && slot.mpCost > 0) {
+        this.scene.add.text(x, y + 12, `${slot.mpCost}`, {
+          fontSize: '9px', color: '#6699ff',
+        }).setOrigin(0.5).setDepth(110);
+      } else if (slot && slot.mpCost === 0) {
+        this.scene.add.text(x, y + 12, 'P', {
+          fontSize: '9px', color: '#88cc88',
+        }).setOrigin(0.5).setDepth(110);
+      }
 
       // 쿨다운 오버레이 (반투명 검정)
       const overlay = this.scene.add.rectangle(x, y, SKILL_SLOT_SIZE, SKILL_SLOT_SIZE, 0x000000, 0)
@@ -217,6 +254,31 @@ export class BattleUI {
       } else {
         overlay.setAlpha(0);
       }
+    }
+  }
+
+  // ─── 스킬 툴팁 ──────────────────────────────────────────────
+
+  private _showTooltip(x: number, y: number, slot: SkillSlot): void {
+    this._hideTooltip();
+    const lines: string[] = [slot.name];
+    if (slot.damage > 0) lines.push(`DMG ${slot.damage} (×${slot.damageScale ?? 1})`);
+    if (slot.mpCost > 0) lines.push(`MP ${slot.mpCost}  CD ${slot.cooldown}s`);
+    else lines.push('패시브');
+
+    const bg = this.scene.add.rectangle(0, 0, 120, lines.length * 16 + 8, 0x111133, 0.9)
+      .setStrokeStyle(1, 0x6666aa).setOrigin(0.5);
+    const txt = this.scene.add.text(0, 0, lines.join('\n'), {
+      fontSize: '10px', color: '#ffffff', align: 'center', lineSpacing: 2,
+    }).setOrigin(0.5);
+
+    this.tooltipContainer = this.scene.add.container(x, y - 10, [bg, txt]).setDepth(200);
+  }
+
+  private _hideTooltip(): void {
+    if (this.tooltipContainer) {
+      this.tooltipContainer.destroy();
+      this.tooltipContainer = null;
     }
   }
 }

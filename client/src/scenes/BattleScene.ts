@@ -21,6 +21,7 @@ import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
 import { playSfx, playRandomVoice, COMBAT_VOICE, UI_SFX } from '../utils/SFXHelper';
+import { classSkills } from '../data/classSkills';
 
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
@@ -301,6 +302,12 @@ export class BattleScene extends Phaser.Scene {
     // ── 유닛 생성 ──────────────────────────────────────────
     const allies = this._initData.allies ?? this._createDefaultAllies();
     const enemies = this._initData.enemies ?? this._createDefaultEnemies();
+
+    // 스킬 슬롯 폴백: 비어있으면 클래스 기본 스킬 적용
+    if (this.skillSlots.length === 0) {
+      const cid = allies[0]?.classId ?? 'ether_knight';
+      this.skillSlots = (classSkills[cid] ?? classSkills['ether_knight']).map(s => ({ ...s, currentCooldown: 0 }));
+    }
 
     this._spawnAllies(allies);
     this._spawnEnemies(enemies);
