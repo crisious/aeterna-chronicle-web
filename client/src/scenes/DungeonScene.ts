@@ -19,6 +19,7 @@ import { networkManager } from '../network/NetworkManager';
 import { playSfx, UI_SFX, COMBAT_VOICE, playRandomVoice } from '../utils/SFXHelper';
 import type { CombatUnit } from '../combat/CombatManager';
 import type { BattleSceneData } from './BattleScene';
+import { classSkills } from '../data/classSkills';
 
 // ── 타입 ────────────────────────────────────────────────────
 
@@ -552,7 +553,7 @@ export class DungeonScene extends Phaser.Scene {
     const battleData: BattleSceneData = {
       allies,
       enemies,
-      skillSlots: [],
+      skillSlots: (classSkills[classId] ?? classSkills['ether_knight']).map(s => ({ ...s, currentCooldown: 0 })),
       zoneId: 'erebos',
       monsterId: enemies[0].id,
       monsterName: enemies[0].name,
