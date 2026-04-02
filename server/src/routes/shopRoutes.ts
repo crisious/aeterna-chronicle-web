@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { validateP2w } from '../shop/p2wGuard';
+import { extractUserIdFromRequest } from '../security/jwtManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────
 
@@ -16,12 +17,7 @@ interface ItemIdParams {
 }
 
 interface PurchaseBody {
-  userId: string;
   itemId: string;
-}
-
-interface UserIdParams {
-  userId: string;
 }
 
 // ─── 상점 라우트 ────────────────────────────────────────────
@@ -78,10 +74,13 @@ export async function shopRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: PurchaseBody }>,
     reply: FastifyReply
   ) => {
-    const { userId, itemId } = request.body;
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-    if (!userId || !itemId) {
-      return reply.status(400).send({ error: 'userId와 itemId는 필수입니다.' });
+    const { itemId } = request.body;
+
+    if (!itemId) {
+      return reply.status(400).send({ error: 'itemId는 필수입니다.' });
     }
 
     // 아이템 조회
@@ -162,12 +161,13 @@ export async function shopRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.status(201).send(purchase);
   });
 
-  // ── GET /api/shop/purchases/:userId — 유저 구매 내역 ───────
-  fastify.get('/api/shop/purchases/:userId', async (
-    request: FastifyRequest<{ Params: UserIdParams; Querystring: ShopListQuery }>,
+  // ── GET /api/shop/purchases — 내 구매 내역 (JWT 인증) ───────
+  fastify.get('/api/shop/purchases', async (
+    request: FastifyRequest<{ Querystring: ShopListQuery }>,
     reply: FastifyReply
   ) => {
-    const { userId } = request.params;
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { page = '1', limit = '20' } = request.query;
     const take = Math.min(parseInt(limit, 10) || 20, 100);
     const skip = (Math.max(parseInt(page, 10) || 1, 1) - 1) * take;

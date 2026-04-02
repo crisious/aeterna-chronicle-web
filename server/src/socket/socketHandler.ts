@@ -33,43 +33,48 @@ export async function setupSocketHandlers(io: Server) {
          * 바이너리(Protobuf) 수신 시 decode, JSON fallback 지원
          */
         socket.on('joinRoom', async (data: unknown) => {
-            const _apmStart = performance.now();
-            let roomId: string;
-            let characterId: string;
+            try {
+                const _apmStart = performance.now();
+                let roomId: string;
+                let characterId: string;
 
-            if (isBinary(data)) {
-                const decoded = decodeJoinRoom(new Uint8Array(data));
-                roomId = decoded.roomId;
-                characterId = decoded.characterId;
+                if (isBinary(data)) {
+                    const decoded = decodeJoinRoom(new Uint8Array(data));
+                    roomId = decoded.roomId;
+                    characterId = decoded.characterId;
 
-                if (IS_DEV) {
-                    const jsonSize = Buffer.byteLength(JSON.stringify({ roomId, characterId }));
-                    console.log(`[Protobuf] joinRoom: ${(data as Uint8Array).byteLength}B (proto) vs ${jsonSize}B (json)`);
+                    if (IS_DEV) {
+                        const jsonSize = Buffer.byteLength(JSON.stringify({ roomId, characterId }));
+                        console.log(`[Protobuf] joinRoom: ${(data as Uint8Array).byteLength}B (proto) vs ${jsonSize}B (json)`);
+                    }
+                } else {
+                    const jsonData = data as { roomId: string; characterId: string };
+                    roomId = jsonData.roomId;
+                    characterId = jsonData.characterId;
                 }
-            } else {
-                const jsonData = data as { roomId: string; characterId: string };
-                roomId = jsonData.roomId;
-                characterId = jsonData.characterId;
+
+                socket.join(roomId);
+                console.log(`[Socket] Character ${characterId} joined Room ${roomId}`);
+
+                // Redis에 현재 사용자의 위치 및 상태 저장
+                if (redisConnected()) {
+                    (socket as any)._characterId = characterId;
+                    await redisClient.hSet(`userState:${characterId}`, {
+                        socketId: socket.id,
+                        roomId: roomId,
+                        online: 'true'
+                    });
+                }
+
+                // 방 안의 다른 유저에게 새로운 플레이어 접속 알림 (Protobuf 바이너리)
+                const joinedBuf = encodePlayerJoined({ characterId });
+                socket.to(roomId).emit('playerJoined', joinedBuf);
+
+                // APM: joinRoom 처리 시간 기록
+                recordSocketLatency(performance.now() - _apmStart);
+            } catch (err) {
+                console.error(`[Socket] joinRoom error for ${socket.id}:`, err);
             }
-
-            socket.join(roomId);
-            console.log(`[Socket] Character ${characterId} joined Room ${roomId}`);
-
-            // Redis에 현재 사용자의 위치 및 상태 저장
-            if (redisConnected()) {
-                await redisClient.hSet(`userState:${characterId}`, {
-                    socketId: socket.id,
-                    roomId: roomId,
-                    online: 'true'
-                });
-            }
-
-            // 방 안의 다른 유저에게 새로운 플레이어 접속 알림 (Protobuf 바이너리)
-            const joinedBuf = encodePlayerJoined({ characterId });
-            socket.to(roomId).emit('playerJoined', joinedBuf);
-
-            // APM: joinRoom 처리 시간 기록
-            recordSocketLatency(performance.now() - _apmStart);
         });
 
         /**
@@ -144,26 +149,30 @@ export async function setupSocketHandlers(io: Server) {
          * NPC 선택지 텔레메트리 이벤트 수신 — JSON 유지 (저빈도, 복잡한 구조)
          */
         socket.on('telemetry:dialogue_choice', async (payload: DialogueChoiceTelemetryEvent) => {
-            await handleDialogueTelemetry(socket, payload);
+            try {
+                await handleDialogueTelemetry(socket, payload);
+            } catch (err) {
+                console.error(`[Socket] telemetry:dialogue_choice error for ${socket.id}:`, err);
+            }
         });
 
         /**
          * 연결 끊김 처리 (Disconnect)
          */
         socket.on('disconnect', async () => {
-            console.log(`[Socket] User disconnected: ${socket.id}`);
+            try {
+                console.log(`[Socket] User disconnected: ${socket.id}`);
 
-            // rate limit 맵 정리
-            lastMoveTimestamps.delete(socket.id);
+                // rate limit 맵 정리
+                lastMoveTimestamps.delete(socket.id);
 
-            // Redis 내 유저 상태 정리
-            if (redisConnected()) {
-                try {
-                    await redisClient.del(`userState:${socket.id}`);
+                // Redis 내 유저 상태 정리
+                if (redisConnected()) {
+                    await redisClient.del(`userState:${(socket as any)._characterId ?? socket.id}`);
                     console.log(`[Socket] Redis userState cleaned for ${socket.id}`);
-                } catch (err) {
-                    console.warn(`[Socket] Redis cleanup failed for ${socket.id}:`, err);
                 }
+            } catch (err) {
+                console.error(`[Socket] disconnect cleanup error for ${socket.id}:`, err);
             }
         });
     });
