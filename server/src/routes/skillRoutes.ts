@@ -65,7 +65,7 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply,
   ) => {
     const className = request.params.class;
-    const validClasses = ['ether_knight', 'memory_weaver', 'shadow_weaver'];
+    const validClasses = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     if (!validClasses.includes(className)) {
       return reply.status(400).send({ error: '유효하지 않은 클래스', validClasses });
     }
