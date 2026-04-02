@@ -141,3 +141,17 @@ export async function logoutTokens(accessToken: string, refreshToken?: string): 
     await blacklistToken(refreshToken, REFRESH_TTL_SEC);
   }
 }
+
+// ─── 요청에서 userId 추출 ───────────────────────────────────────
+
+/** Authorization 헤더에서 JWT를 검증하고 userId를 반환. 실패 시 null. */
+export async function extractUserIdFromRequest(request: { headers: { authorization?: string } }): Promise<string | null> {
+  const authHeader = request.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  try {
+    const payload = await verifyAccessToken(authHeader.slice(7));
+    return payload.userId;
+  } catch {
+    return null;
+  }
+}

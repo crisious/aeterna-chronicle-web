@@ -58,20 +58,16 @@ const DAILY_TRANSFER_LIMIT = 100000;
 /** 거래 이력 페이지 크기 */
 const HISTORY_PAGE_SIZE = 20;
 
-// ─── 화폐 필드 매핑 ─────────────────────────────────────────────
-
-/** DB 필드명 매핑 */
-function currencyField(currency: CurrencyType): 'gold' | 'diamond' | 'eventCoin' {
-  switch (currency) {
-    case 'gold': return 'gold';
-    case 'diamond': return 'diamond';
-    case 'event_coin': return 'eventCoin';
-  }
-}
-
 // ═══════════════════════════════════════════════════════════════
 //  화폐 변경 (트랜잭션 안전)
 // ═══════════════════════════════════════════════════════════════
+
+/** 화폐 DB 필드 매핑 (SQL injection 방지를 위한 정적 매핑) */
+const CURRENCY_DB_FIELD: Record<CurrencyType, 'gold' | 'diamond' | 'eventCoin'> = {
+  gold: 'gold',
+  diamond: 'diamond',
+  event_coin: 'eventCoin',
+};
 
 /** 화폐 추가/차감 (원자적 트랜잭션) */
 export async function changeCurrency(params: CurrencyChangeParams): Promise<{
@@ -79,34 +75,31 @@ export async function changeCurrency(params: CurrencyChangeParams): Promise<{
   transactionId: string;
 }> {
   const { userId, currency, amount, reason, referenceId } = params;
-  const field = currencyField(currency);
+  const field = CURRENCY_DB_FIELD[currency];
+  if (!field) throw new Error(`지원하지 않는 화폐: ${currency}`);
 
   return prisma.$transaction(async (tx) => {
-    // 1. 원자적 잔액 업데이트 — 조건부 UPDATE로 race condition 방지
-    const column = field === 'eventCoin' ? '"eventCoin"' : `"${field}"`;
-    const updated: { new_balance: number }[] = await tx.$queryRawUnsafe(
-      `UPDATE "User"
-       SET ${column} = ${column} + $1
-       WHERE "id" = $2 AND ${column} + $1 >= 0
-       RETURNING ${column} AS new_balance`,
-      amount,
-      userId,
-    );
+    // 1. 현재 잔액 조회
+    const user = await tx.user.findUnique({
+      where: { id: userId },
+      select: { [field]: true },
+    });
+    if (!user) throw new Error('유저를 찾을 수 없습니다.');
 
-    if (updated.length === 0) {
-      // 유저가 없거나 잔액 부족
-      const user = await tx.user.findUnique({
-        where: { id: userId },
-        select: { [field]: true },
-      });
-      if (!user) throw new Error('유저를 찾을 수 없습니다.');
-      const currentBalance = (user as Record<string, unknown>)[field] as number;
+    const currentBalance = (user as Record<string, unknown>)[field] as number;
+    const newBalance = currentBalance + amount;
+
+    if (newBalance < 0) {
       throw new Error(`${currency} 잔액이 부족합니다. (보유: ${currentBalance}, 필요: ${Math.abs(amount)})`);
     }
 
-    const newBalance = Number(updated[0].new_balance);
+    // 2. Prisma typed update (SQL injection 불가)
+    await tx.user.update({
+      where: { id: userId },
+      data: { [field]: { increment: amount } },
+    });
 
-    // 2. 거래 로그 기록
+    // 3. 거래 로그 기록
     const log = await tx.transactionLog.create({
       data: {
         userId,

@@ -20,6 +20,34 @@ import {
 } from '../combat/combatEngine';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';
+import { prisma } from '../db';
+import { extractUserIdFromRequest } from '../security/jwtManager';
+
+// ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
+const CLASS_BASE_COMBAT_STATS: Record<string, {
+  atk: number; def: number; matk: number; mdef: number;
+  spd: number; critRate: number; critDamage: number;
+}> = {
+  ether_knight:    { atk: 15, def: 12, matk: 5,  mdef: 8,  spd: 10, critRate: 0.05, critDamage: 1.5 },
+  memory_weaver:   { atk: 5,  def: 6,  matk: 18, mdef: 14, spd: 10, critRate: 0.08, critDamage: 1.5 },
+  shadow_weaver:   { atk: 12, def: 8,  matk: 10, mdef: 8,  spd: 14, critRate: 0.12, critDamage: 1.8 },
+  memory_breaker:  { atk: 18, def: 10, matk: 8,  mdef: 8,  spd: 12, critRate: 0.10, critDamage: 1.6 },
+  time_guardian:   { atk: 8,  def: 15, matk: 10, mdef: 15, spd: 8,  critRate: 0.03, critDamage: 1.4 },
+  void_wanderer:   { atk: 10, def: 8,  matk: 14, mdef: 10, spd: 12, critRate: 0.08, critDamage: 1.5 },
+};
+
+// 클래스별 레벨당 성장률
+const CLASS_GROWTH: Record<string, {
+  atk: number; def: number; matk: number; mdef: number;
+  spd: number; crit: number;
+}> = {
+  ether_knight:    { atk: 4, def: 4, matk: 1, mdef: 2, spd: 2, crit: 0.002 },
+  memory_weaver:   { atk: 1, def: 2, matk: 5, mdef: 4, spd: 2, crit: 0.003 },
+  shadow_weaver:   { atk: 3, def: 2, matk: 3, mdef: 2, spd: 4, crit: 0.005 },
+  memory_breaker:  { atk: 5, def: 3, matk: 2, mdef: 2, spd: 3, crit: 0.004 },
+  time_guardian:   { atk: 2, def: 5, matk: 3, mdef: 5, spd: 1, crit: 0.001 },
+  void_wanderer:   { atk: 3, def: 2, matk: 4, mdef: 3, spd: 3, crit: 0.003 },
+};
 
 // ─── 요청/응답 타입 ────────────────────────────────────────────
 
@@ -192,81 +220,111 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
 
   // ── POST /combat/start ────────────────────────────────────
   // 전투 인스턴스 생성 + 시작
+  // Security: 클라이언트 스탯을 무시하고 DB에서 조회
   interface CombatStartBody {
-    party: ParticipantInput[];
-    monsters: ParticipantInput[];
+    partyCharacterIds: string[];
+    monsterIds: string[];
     autoMode?: boolean;
-  }
-
-  interface ParticipantInput {
-    id: string;
-    name: string;
-    classId: string;
-    level: number;
-    hp: number;
-    maxHp: number;
-    mp: number;
-    maxMp: number;
-    atk: number;
-    def: number;
-    matk: number;
-    mdef: number;
-    spd: number;
-    critRate: number;
-    critDamage: number;
-    armorPenetration?: number;
-    armorPenetrationPercent?: number;
-    element?: ElementType;
-    isBoss?: boolean;
-    baseExp?: number;
-    baseGold?: number;
-    dropTable?: DropEntry[];
   }
 
   fastify.post('/combat/start', async (
     request: FastifyRequest<{ Body: CombatStartBody }>,
     reply: FastifyReply,
   ) => {
-    const { party, monsters, autoMode } = request.body;
+    // JWT 인증
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
 
-    if (!party?.length || !monsters?.length) {
-      return reply.status(400).send({ error: '파티와 몬스터 모두 필요합니다.' });
+    const { partyCharacterIds, monsterIds, autoMode } = request.body;
+
+    if (!partyCharacterIds?.length || !monsterIds?.length) {
+      return reply.status(400).send({ error: '파티 캐릭터 ID와 몬스터 ID 모두 필요합니다.' });
     }
 
     try {
+      // DB에서 파티 캐릭터 조회 (JWT userId 소유 검증)
+      const characters = await prisma.character.findMany({
+        where: { id: { in: partyCharacterIds }, userId },
+      });
+      if (characters.length !== partyCharacterIds.length) {
+        return reply.status(403).send({ error: '소유하지 않은 캐릭터가 포함되어 있습니다.' });
+      }
+
+      // DB에서 몬스터 조회
+      const dbMonsters = await prisma.monster.findMany({
+        where: { id: { in: monsterIds }, isActive: true },
+      });
+      if (dbMonsters.length !== monsterIds.length) {
+        return reply.status(400).send({ error: '존재하지 않거나 비활성 몬스터가 포함되어 있습니다.' });
+      }
+
       const engine = combatInstanceManager.create({ autoMode: autoMode ?? false });
 
-      for (const p of party) {
+      for (const c of characters) {
+        const base = CLASS_BASE_COMBAT_STATS[c.classId] ?? CLASS_BASE_COMBAT_STATS['ether_knight'];
+        const growth = CLASS_GROWTH[c.classId] ?? CLASS_GROWTH['ether_knight'];
+        const lvl = c.level - 1;
+
         engine.addParticipant({
-          ...p,
+          id: c.id,
+          name: c.name,
+          classId: c.classId,
+          level: c.level,
+          hp: c.hp,
+          maxHp: c.maxHp,
+          mp: c.mp,
+          maxMp: c.maxMp,
+          atk: base.atk + growth.atk * lvl,
+          def: base.def + growth.def * lvl,
+          matk: base.matk + growth.matk * lvl,
+          mdef: base.mdef + growth.mdef * lvl,
+          spd: base.spd + growth.spd * lvl,
+          critRate: base.critRate + growth.crit * lvl,
+          critDamage: base.critDamage,
           isMonster: false,
           atbGauge: 0,
           alive: true,
           team: 'party',
           isBoss: false,
-          element: p.element ?? 'neutral',
-          armorPenetration: p.armorPenetration ?? 0,
-          armorPenetrationPercent: p.armorPenetrationPercent ?? 0,
+          element: 'neutral' as ElementType,
+          armorPenetration: 0,
+          armorPenetrationPercent: 0,
           baseExp: 0,
           baseGold: 0,
           dropTable: [],
         });
       }
 
-      for (const m of monsters) {
+      for (const m of dbMonsters) {
         engine.addParticipant({
-          ...m,
+          id: m.id,
+          name: m.name,
+          classId: m.type,
+          level: m.level,
+          hp: m.hp,
+          maxHp: m.hp,
+          mp: 0,
+          maxMp: 0,
+          atk: m.attack,
+          def: m.defense,
+          matk: m.attack,
+          mdef: m.defense,
+          spd: m.speed,
+          critRate: 0.05,
+          critDamage: 1.5,
           isMonster: true,
           atbGauge: 0,
           alive: true,
           team: 'monsters',
-          isBoss: m.isBoss ?? false,
-          element: m.element ?? 'neutral',
-          armorPenetration: m.armorPenetration ?? 0,
-          armorPenetrationPercent: m.armorPenetrationPercent ?? 0,
-          baseExp: m.baseExp ?? 0,
-          baseGold: m.baseGold ?? 0,
-          dropTable: m.dropTable ?? [],
+          isBoss: m.type === 'boss' || m.type === 'raid_boss' || m.type === 'field_boss',
+          element: (m.element ?? 'neutral') as ElementType,
+          armorPenetration: 0,
+          armorPenetrationPercent: 0,
+          baseExp: m.expReward,
+          baseGold: m.goldReward,
+          dropTable: (m.dropTable as unknown as DropEntry[]) ?? [],
         });
       }
 

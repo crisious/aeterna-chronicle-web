@@ -13,9 +13,10 @@
  * POST   /api/inventory/seed         — 아이템 시드 실행 (관리자용)
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { inventoryManager } from '../inventory/inventoryManager';
 import { seedItems, getItemSeedCount } from '../inventory/itemSeeds';
+import { extractUserIdFromRequest } from '../security/jwtManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -23,7 +24,6 @@ interface UserIdParams { userId: string }
 interface SlotIdParams { slotId: string }
 
 interface AddBody {
-  userId: string;
   itemCode: string;
   quantity?: number;
 }
@@ -60,11 +60,14 @@ interface MergeBody {
 
 export async function inventoryRoutes(fastify: FastifyInstance): Promise<void> {
 
-  /** GET /api/inventory/:userId — 인벤토리 조회 */
-  fastify.get('/api/inventory/:userId', async (
-    request: FastifyRequest<{ Params: UserIdParams }>,
+  /** GET /api/inventory — 내 인벤토리 조회 (JWT 인증) */
+  fastify.get('/api/inventory', async (
+    request: FastifyRequest,
+    reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const inventory = await inventoryManager.getInventory(userId);
     return {
       success: true,
@@ -79,10 +82,14 @@ export async function inventoryRoutes(fastify: FastifyInstance): Promise<void> {
   /** POST /api/inventory/add — 아이템 추가 */
   fastify.post('/api/inventory/add', async (
     request: FastifyRequest<{ Body: AddBody }>,
+    reply: FastifyReply,
   ) => {
-    const { userId, itemCode, quantity } = request.body;
-    if (!userId || !itemCode) {
-      return { success: false, message: 'userId, itemCode 필수' };
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { itemCode, quantity } = request.body;
+    if (!itemCode) {
+      return { success: false, message: 'itemCode 필수' };
     }
     const result = await inventoryManager.addItem(userId, itemCode, quantity ?? 1);
     return { success: result.success, data: result };
