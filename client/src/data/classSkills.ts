@@ -106,7 +106,7 @@ export const classSkills: Record<string, SkillSlot[]> = {
     // passive — 독 바르기 (자가 버프)
     {
       skillId: 'sw_poison_coat', name: '독 바르기',
-      damage: 0, damageScale: 0, mpCost: 20, cooldown: 15, currentCooldown: 0,
+      damage: 0, damageScale: 0, mpCost: 0, cooldown: 0, currentCooldown: 0,
       element: 'neutral', sfxKey: 'sfx_combat_hit', icon: 'skill_sw_passive',
     },
     // ultimate — 공허의 군주
