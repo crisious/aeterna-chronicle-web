@@ -1,0 +1,112 @@
+# feature-build.yaml — 에테르나 기능 구현 파이프라인
+# 설계 → 구현 → 테스트 → 리뷰 → 인간 승인
+#
+# 사용: conductor run workflows/feature-build.yaml --input feature="상점 할인 시스템"
+
+workflow:
+  name: aeterna-feature-build
+  description: "에테르나 기능 구현 — 설계 → 구현 → 테스트 → 리뷰 루프"
+  entry_point: architect
+
+agents:
+  - name: architect
+    model: claude-sonnet-4-20250514
+    prompt: |
+      너는 에테르나 크로니클의 시스템 아키텍트야.
+      기술 스택: Fastify + Socket.io + Prisma (110 모델) + Phaser.js (13 씬)
+
+      요청된 기능: {{ workflow.input.feature }}
+
+      설계 산출물:
+      1. 영향 받는 파일 목록 (server/client)
+      2. DB 스키마 변경 필요 여부
+      3. API 엔드포인트 설계
+      4. 클라이언트 UI 변경
+      5. 예상 작업 시간
+      6. 구현 순서 (의존성 기반)
+    output:
+      design:
+        type: string
+      files:
+        type: string
+        description: "수정할 파일 목록"
+      estimated_hours:
+        type: number
+    routes:
+      - to: implementer
+
+  - name: implementer
+    model: claude-sonnet-4-20250514
+    prompt: |
+      너는 에테르나 크로니클의 풀스택 개발자야.
+      작업 디렉토리: ~/aeterna
+
+      아키텍트 설계:
+      {{ architect.output.design }}
+
+      수정 파일: {{ architect.output.files }}
+
+      설계에 따라 코드를 구현해. TypeScript 타입 안전성 유지.
+      pixelArt:true 환경이므로 소수점 setScale 절대 금지.
+
+      구현 완료 후 변경 파일 목록과 핵심 변경 내용을 보고해.
+    output:
+      implementation:
+        type: string
+      changed_files:
+        type: string
+    routes:
+      - to: tester
+
+  - name: tester
+    model: claude-sonnet-4-20250514
+    prompt: |
+      너는 QA 엔지니어야.
+
+      구현된 내용: {{ implementer.output.implementation }}
+      변경 파일: {{ implementer.output.changed_files }}
+
+      검증:
+      1. TypeScript 컴파일 에러 확인 (tsc --noEmit)
+      2. 기존 테스트 깨짐 여부
+      3. 엣지 케이스 확인
+      4. 보안 취약점 (P2W 가드 우회 등)
+
+      테스트 통과 여부와 발견 이슈를 보고해.
+    output:
+      test_result:
+        type: string
+        description: "PASS / FAIL"
+      issues:
+        type: string
+    max_iterations: 3
+    routes:
+      - condition: "test_result == 'PASS'"
+        to: human_review
+      - condition: "test_result == 'FAIL'"
+        to: implementer
+
+  - name: human_review
+    type: human_gate
+    prompt: |
+      ✅ 기능 구현 + 테스트 통과
+
+      기능: {{ workflow.input.feature }}
+      설계: {{ architect.output.design }}
+      구현: {{ implementer.output.implementation }}
+      테스트: {{ tester.output.test_result }}
+    options:
+      - label: PR 생성 + 머지
+        value: approved
+        route: $end
+      - label: 재작업
+        value: rework
+        route: implementer
+      - label: 취소
+        value: cancelled
+        route: $end
+
+output:
+  design: "{{ architect.output.design }}"
+  implementation: "{{ implementer.output.implementation }}"
+  test_result: "{{ tester.output.test_result }}"

@@ -1,0 +1,124 @@
+# code-review.yaml — 에테르나 크로니클 코드 리뷰 파이프라인
+# 리뷰어 → 보안 감사 → 판정 → 인간 승인
+#
+# 사용: conductor run workflows/code-review.yaml --input diff="$(git diff main)"
+
+workflow:
+  name: aeterna-code-review
+  description: "에테르나 크로니클 코드 리뷰 — 리뷰 → 보안 → 판정 → 인간 승인"
+  entry_point: reviewer
+
+agents:
+  - name: reviewer
+    model: claude-sonnet-4-20250514
+    prompt: |
+      너는 에테르나 크로니클 프로젝트의 시니어 코드 리뷰어야.
+      기술 스택: Fastify + Socket.io + Prisma + Phaser.js + TypeScript
+
+      다음 diff를 리뷰해:
+      ```
+      {{ workflow.input.diff }}
+      ```
+
+      검토 항목:
+      1. 버그 또는 로직 오류
+      2. 성능 문제 (N+1 쿼리, 메모리 누수, 불필요한 렌더링)
+      3. TypeScript 타입 안전성
+      4. Phaser pixelArt:true 호환성 (소수점 setScale 금지!)
+      5. 코드 가독성
+
+      심각도별로 분류해서 보고해.
+    output:
+      bugs:
+        type: string
+        description: "발견된 버그 목록"
+      severity:
+        type: string
+        description: "최고 심각도 (critical/high/medium/low/none)"
+      summary:
+        type: string
+        description: "1줄 요약"
+    routes:
+      - to: security_auditor
+
+  - name: security_auditor
+    model: claude-sonnet-4-20250514
+    prompt: |
+      너는 보안 감사 전문가야. 에테르나 크로니클은 결제 시스템(Stripe), JWT 인증, 2FA가 있는 웹 RPG야.
+
+      코드 리뷰어가 발견한 사항:
+      {{ reviewer.output.bugs }}
+
+      추가로 이 diff에서 보안 이슈를 찾아:
+      ```
+      {{ workflow.input.diff }}
+      ```
+
+      확인 항목:
+      - SQL injection / NoSQL injection
+      - XSS / CSRF
+      - 인증/인가 우회
+      - 민감 데이터 노출
+      - 레이스 컨디션 (거래/인벤토리)
+      - P2W 가드 우회 가능성
+    output:
+      security_issues:
+        type: string
+      risk_level:
+        type: string
+        description: "risk level: critical/high/medium/low/none"
+    routes:
+      - to: judge
+
+  - name: judge
+    model: claude-sonnet-4-20250514
+    prompt: |
+      너는 최종 판정자야. 코드 리뷰와 보안 감사 결과를 종합해 판정해.
+
+      코드 리뷰:
+      {{ reviewer.output.summary }}
+      심각도: {{ reviewer.output.severity }}
+      버그: {{ reviewer.output.bugs }}
+
+      보안 감사:
+      위험도: {{ security_auditor.output.risk_level }}
+      이슈: {{ security_auditor.output.security_issues }}
+
+      최종 판정:
+      - APPROVE: 심각한 이슈 없음
+      - REQUEST_CHANGES: critical/high 이슈 있음
+      - COMMENT: medium 이하 이슈만 있음
+
+      판정과 이유를 한국어로 작성해.
+    output:
+      verdict:
+        type: string
+        description: "APPROVE / REQUEST_CHANGES / COMMENT"
+      reason:
+        type: string
+    routes:
+      - condition: "verdict == 'APPROVE'"
+        to: $end
+      - condition: "verdict != 'APPROVE'"
+        to: human_approval
+
+  - name: human_approval
+    type: human_gate
+    prompt: |
+      ⚠️ 코드 리뷰 결과 이슈가 발견되었습니다.
+
+      판정: {{ judge.output.verdict }}
+      이유: {{ judge.output.reason }}
+    options:
+      - label: 승인
+        value: approved
+        route: $end
+      - label: 거부
+        value: rejected
+        route: $end
+
+output:
+  verdict: "{{ judge.output.verdict }}"
+  reason: "{{ judge.output.reason }}"
+  bugs: "{{ reviewer.output.bugs }}"
+  security: "{{ security_auditor.output.security_issues }}"
