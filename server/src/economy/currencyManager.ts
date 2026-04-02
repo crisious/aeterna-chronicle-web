@@ -79,27 +79,27 @@ export async function changeCurrency(params: CurrencyChangeParams): Promise<{
   if (!field) throw new Error(`지원하지 않는 화폐: ${currency}`);
 
   return prisma.$transaction(async (tx) => {
-    // 1. 현재 잔액 조회
-    const user = await tx.user.findUnique({
-      where: { id: userId },
-      select: { [field]: true },
-    });
-    if (!user) throw new Error('유저를 찾을 수 없습니다.');
+    // 원자적 UPDATE ... WHERE balance + amount >= 0 (Prisma $queryRaw tagged template — SQL injection 안전)
+    const dbField = CURRENCY_DB_FIELD[currency];
+    const result = await tx.$queryRaw<Array<Record<string, unknown>>>`
+      UPDATE "users"
+      SET "${Prisma.raw(dbField)}" = "${Prisma.raw(dbField)}" + ${amount}
+      WHERE "id" = ${userId}
+        AND "${Prisma.raw(dbField)}" + ${amount} >= 0
+      RETURNING "${Prisma.raw(dbField)}" AS "newBalance"
+    `;
 
-    const currentBalance = (user as Record<string, unknown>)[field] as number;
-    const newBalance = currentBalance + amount;
-
-    if (newBalance < 0) {
+    if (!result || result.length === 0) {
+      // 잔액 부족 또는 유저 없음
+      const user = await tx.user.findUnique({ where: { id: userId }, select: { [dbField]: true } });
+      if (!user) throw new Error('유저를 찾을 수 없습니다.');
+      const currentBalance = (user as Record<string, unknown>)[dbField] as number;
       throw new Error(`${currency} 잔액이 부족합니다. (보유: ${currentBalance}, 필요: ${Math.abs(amount)})`);
     }
 
-    // 2. Prisma typed update (SQL injection 불가)
-    await tx.user.update({
-      where: { id: userId },
-      data: { [field]: { increment: amount } },
-    });
+    const newBalance = Number(result[0].newBalance);
 
-    // 3. 거래 로그 기록
+    // 거래 로그 (RETURNING 값 = 실제 DB 반영 값)
     const log = await tx.transactionLog.create({
       data: {
         userId,
