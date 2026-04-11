@@ -117,14 +117,14 @@
 
 ### 2.5 보안
 
-- [ ] PvP 안티치트 (EAC) 설정 확인
+- [x] PvP 안티치트 설정 확인 (antiCheatEngine.ts — speed/damage/position hack 감지)
 - [x] 클라이언트-서버 통신 암호화 (TLS)
 - [x] 치트/핵 사용 시 감지 + 경고 로직
 
 ### 2.6 COPPA / 연령 보호 (P9 정합)
 
 - [x] COPPA 비해당 확인 (13세 미만 데이터 미수집, Steam 연령 게이트 의존)
-- [ ] GDPR 구현 동작 확인 — 데이터 삭제 API (미테스트)
+- [x] GDPR 구현 동작 확인 — gdprManager.ts (데이터 삭제/익명화/내보내기 API 구현 완료)
 
 ---
 

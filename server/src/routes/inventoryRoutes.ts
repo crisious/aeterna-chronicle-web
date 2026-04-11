@@ -13,14 +13,14 @@
  * POST   /api/inventory/seed         — 아이템 시드 실행 (관리자용)
  */
 
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { inventoryManager } from '../inventory/inventoryManager';
 import { seedItems, getItemSeedCount } from '../inventory/itemSeeds';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
-interface UserIdParams { userId: string }
+interface _UserIdParams { userId: string }
 interface SlotIdParams { slotId: string }
 
 interface AddBody {

@@ -1,4 +1,5 @@
 import { prisma } from '../db';
+import { Prisma } from '@prisma/client';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 

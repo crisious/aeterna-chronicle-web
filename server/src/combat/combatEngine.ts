@@ -15,6 +15,7 @@ import type { BossConfig, PhaseTransitionEvent, EnrageEvent } from './bossPhaseM
 import { BossPhaseManager } from './bossPhaseManager';
 import type { CombatStatistics, CombatReplay } from './combatLogger';
 import { CombatLogger } from './combatLogger';
+import type { EffectId } from './statusEffectManager';
 import { statusEffectManager } from './statusEffectManager';
 import { comboManager } from './comboManager';
 
@@ -541,6 +542,13 @@ export class CombatEngine {
       };
     }
 
+    // 콤보 (데미지 계산 전에 기록하여 배율 반영)
+    let comboMultiplier = 1.0;
+    if (!actor.isMonster) {
+      const comboResult = comboManager.recordSkillUse(actor.id, skillId, actor.classId, 1);
+      comboMultiplier = comboResult.totalMultiplier;
+    }
+
     // 데미지 스킬
     const dmgType: DamageType = skill.damageType;
     const result = calculateDamage({
@@ -554,7 +562,7 @@ export class CombatEngine {
       critDamage: actor.critDamage,
       armorPenetration: actor.armorPenetration,
       armorPenetrationPercent: actor.armorPenetrationPercent,
-      bonusMultiplier: 1.0,
+      bonusMultiplier: comboMultiplier,
       levelDifference: actor.level - target.level,
     });
 
@@ -568,18 +576,23 @@ export class CombatEngine {
     let appliedEffect: string | undefined;
     if (skill.statusEffect && skill.statusEffectChance) {
       if (Math.random() * 100 < skill.statusEffectChance) {
-        appliedEffect = skill.statusEffect;
+        const effectResult = statusEffectManager.applyEffect(
+          skill.statusEffect as EffectId,
+          actor.id,
+          target.id,
+          skill.statusEffectChance,
+          { baseResist: 0, wis: 0, equipResist: 0 },
+          0,
+        );
+        if (effectResult.applied) {
+          appliedEffect = skill.statusEffect;
+        }
       }
     }
 
     // 어그로
     if (target.isMonster) {
       this.monsterAIs.get(target.id)?.getAggroTable().addDamageAggro(actor.id, result.damage);
-    }
-
-    // 콤보
-    if (!actor.isMonster) {
-      comboManager.recordSkillUse(actor.id, skillId, actor.classId, 1);
     }
 
     this.logger.logDamage(actor.id, target.id, result.damage, result.isCritical, skillId, skill.element);

@@ -4,6 +4,23 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [1.0.0-rc.2] — 2026-04-12
+
+### Fixed
+- **전투 콤보 시스템 통합**: comboManager.recordSkillUse()를 calculateDamage() 전에 호출하여 콤보 배율이 실제 데미지에 반영되도록 수정 (기존: bonusMultiplier=1.0 하드코딩)
+- **상태이상 효과 적용**: executeSkill()에서 statusEffectManager.applyEffect() 실제 호출 추가 (기존: 변수 설정만 하고 적용 안 됨)
+- TypeScript 166에러 → 0 (Prisma generate + CORS 타입 캐스트 + inventoryRoutes + currencyManager)
+- ESLint 49에러 → 0 (unused vars 제거, useless-escape 수정)
+- vitest --include 플래그 제거 + config 경로 수정 → 테스트 스크립트 정상화
+
+### Added
+- 전투 시스템 유닛 테스트: comboManager, damageCalculator, combatEngine
+- Phase 53 런치 체크리스트 코드 검증 항목 업데이트
+
+### Changed
+- 루트 버전 0.5.14 → 1.0.0-rc.2
+- 런치 체크리스트: 안티치트, GDPR 항목 완료 표시
+
 ## [1.0.0-rc.1] — 2026-03-31
 
 ### Added
