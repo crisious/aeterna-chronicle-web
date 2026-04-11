@@ -11,9 +11,9 @@
  * - 런타임 서비스 목록 일괄 조회
  */
 
-import { PrismaClient } from '@prisma/client';
-import { Server as SocketIOServer } from 'socket.io';
-import { RedisClientType } from 'redis';
+import type { PrismaClient } from '@prisma/client';
+import type { Server as SocketIOServer } from 'socket.io';
+import type { RedisClientType } from 'redis';
 
 // ── 타입 정의 ─────────────────────────────────────────────────
 

@@ -5,7 +5,7 @@
  * - 메모리 큐 + Redis 백업 (Redis 미연결 시 메모리 단독 동작)
  * - 매치 성사 시 양쪽 소켓에 pvp:matched 이벤트 발송
  */
-import { Server } from 'socket.io';
+import type { Server } from 'socket.io';
 import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
 

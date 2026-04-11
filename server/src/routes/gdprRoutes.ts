@@ -6,7 +6,7 @@
  * - POST /api/gdpr/export/:userId  — 개인정보 내보내기 (JSON)
  * - POST /api/gdpr/delete/:userId  — 데이터 삭제 요청
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   recordConsent,
   getUserConsents,

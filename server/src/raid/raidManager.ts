@@ -231,7 +231,7 @@ export class RaidManager {
 
     // 보스 처치 판정
     if (session.currentHp <= 0) {
-      const loot = await this.clearSession(sessionId);
+      await this.clearSession(sessionId);
       return { currentHp: 0, mechanic: triggeredMechanic, cleared: true };
     }
 

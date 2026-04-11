@@ -1,14 +1,20 @@
 /**
  * shareRoutes.ts — SNS 공유 + 스트리머 + 레퍼럴 + UGC + 소셜프로필 라우트 (P12-01~07)
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { createShare, getShare, getSocialShareUrls, getUserShares, SharePayload } from '../social/shareManager';
-import { broadcastEvent, registerWebhook, unregisterWebhook, getWebhooks, getQueueStatus, sendCustomMessage, DiscordWebhookConfig, DiscordEventType } from '../social/discordBot';
-import { startStreaming, stopStreaming, updateSettings, getLiveStreamers, getOverlayData, joinSpectate, leaveSpectate, getSpectators, getSession, StreamerSettings } from '../social/streamerMode';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { SharePayload } from '../social/shareManager';
+import { createShare, getShare, getSocialShareUrls, getUserShares } from '../social/shareManager';
+import type { DiscordWebhookConfig, DiscordEventType } from '../social/discordBot';
+import { broadcastEvent, registerWebhook, unregisterWebhook, getWebhooks, getQueueStatus } from '../social/discordBot';
+import type { StreamerSettings } from '../social/streamerMode';
+import { startStreaming, stopStreaming, updateSettings, getLiveStreamers, getOverlayData, joinSpectate, leaveSpectate, getSpectators, getSession } from '../social/streamerMode';
 import { createReferralCode, getReferralCode, redeemReferralCode, claimReward, getUserRewards, getReferralStats } from '../social/referralManager';
-import { createPost, getPost, deletePost, getFeed, toggleLike, reportPost, setPostVisibility, CreatePostInput, UgcFeedOptions, ReportReason } from '../social/ugcGallery';
-import { createCommunityEvent, getEvent, getActiveEvents, cancelEvent, joinEvent, updateScore, getLeaderboard as getEventLeaderboard, getActiveMultipliers, syncEventStatuses, CommunityEventConfig } from '../event/communityEventEngine';
-import { getPublicProfile, setProfileVisibility, getLeaderboard, getFriendLeaderboard, getGuildRanking, LeaderboardType, ProfileVisibility } from '../social/socialProfile';
+import type { CreatePostInput, UgcFeedOptions, ReportReason } from '../social/ugcGallery';
+import { createPost, getPost, deletePost, getFeed, toggleLike, reportPost, setPostVisibility } from '../social/ugcGallery';
+import type { CommunityEventConfig } from '../event/communityEventEngine';
+import { createCommunityEvent, getEvent, getActiveEvents, cancelEvent, joinEvent, updateScore, getLeaderboard as getEventLeaderboard, getActiveMultipliers, syncEventStatuses } from '../event/communityEventEngine';
+import type { LeaderboardType, ProfileVisibility } from '../social/socialProfile';
+import { getPublicProfile, setProfileVisibility, getLeaderboard, getFriendLeaderboard, getGuildRanking } from '../social/socialProfile';
 
 export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
 
@@ -52,7 +58,7 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.type('text/html').send(html);
   });
 
-  fastify.get('/api/share/user/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.get('/api/share/user/:userId', async (request: FastifyRequest, _reply: FastifyReply) => {
     const { userId } = request.params as { userId: string };
     const query = request.query as { limit?: string; offset?: string };
     const shares = await getUserShares(userId, parseInt(query.limit || '20'), parseInt(query.offset || '0'));

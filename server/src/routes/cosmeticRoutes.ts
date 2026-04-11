@@ -7,7 +7,7 @@
  * - PATCH /api/cosmetics/equip        — 장착/해제
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   getCosmeticCatalog,
   getFeaturedCosmetics,

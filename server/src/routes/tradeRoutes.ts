@@ -11,7 +11,7 @@
  * GET    /api/trade/history       — 거래 이력
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 
 // ── 타입 ──────────────────────────────────────────────────────

@@ -5,7 +5,7 @@
  * - pvp:action   — 전투 액션 (상대에게 릴레이)
  * - pvp:result   — 매치 결과 제출
  */
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import {
   isBinary,
   decodePvpAction,

@@ -7,7 +7,8 @@
  * 메시지 이력: 최근 100건 Redis 캐시
  */
 import { redisClient, redisConnected } from '../redis';
-import { filterProfanity, FilterResult } from './profanityFilter';
+import type { FilterResult } from './profanityFilter';
+import { filterProfanity } from './profanityFilter';
 
 // ─── 타입 ───────────────────────────────────────────────────────
 

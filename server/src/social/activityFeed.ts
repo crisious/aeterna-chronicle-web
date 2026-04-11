@@ -4,7 +4,7 @@
  * 친구/길드 활동 피드: 레벨업, 업적 달성, 던전 클리어, PvP 승리, 아이템 획득.
  * Prisma ActivityFeedEntry 모델 + 조회 API(페이지네이션/필터) + 실시간 소켓 푸시.
  */
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
 

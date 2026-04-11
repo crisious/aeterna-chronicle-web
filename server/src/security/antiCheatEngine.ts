@@ -7,7 +7,7 @@
  * - 의심 점수 누적 → 임계치 초과 시 자동 킥/제재
  * - Redis 기반 의심 점수 저장 (fallback: in-memory)
  */
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { redisClient, redisConnected } from '../redis';
 import { prisma } from '../db';
 

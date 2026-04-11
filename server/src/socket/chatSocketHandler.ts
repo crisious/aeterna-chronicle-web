@@ -9,15 +9,15 @@
  * - chat:whisper — 1:1 귓속말
  * - chat:system  — 서버 공지 브로드캐스트 (서버 전용)
  */
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
+import type {
+  ChannelType} from '../chat/chatManager';
 import {
-  ChannelType,
   joinChannel,
   leaveChannel,
   leaveAllChannels,
   sendMessage,
   getHistory,
-  getChannelMembers,
 } from '../chat/chatManager';
 
 // ─── 페이로드 타입 ──────────────────────────────────────────────

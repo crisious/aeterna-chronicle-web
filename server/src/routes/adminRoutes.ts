@@ -2,8 +2,8 @@
  * 어드민 대시보드 REST API 라우트
  * P4-07: 유저 관리 / 공지 / 감사 로그 / 통계 / 서버 상태 / 이벤트 관리
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { Prisma } from '@prisma/client';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 import { requireAdmin, getAdminUser } from '../admin/authMiddleware';
 import { writeAuditLog, queryAuditLogs } from '../admin/auditLogger';

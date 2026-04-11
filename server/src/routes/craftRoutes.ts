@@ -2,7 +2,7 @@
  * 제작 시스템 REST API 라우트 (P4-02)
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { craftEngine } from '../craft/craftEngine';
 import { seedRecipes } from '../craft/recipeSeeds';
 

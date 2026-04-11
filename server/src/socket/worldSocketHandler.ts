@@ -7,7 +7,7 @@
  *
  * Zone Room 기반 브로드캐스트로 같은 존 플레이어에게 진입/퇴장 알림
  */
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import { worldManager } from '../world/worldManager';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────

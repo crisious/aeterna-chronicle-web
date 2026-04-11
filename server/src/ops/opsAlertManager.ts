@@ -14,7 +14,8 @@
  * 중복 알림 방지: 같은 조건 5분 내 재발송 안 함
  */
 
-import { sendOpsAlert, WebhookPayload } from './webhookSender';
+import type { WebhookPayload } from './webhookSender';
+import { sendOpsAlert } from './webhookSender';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 

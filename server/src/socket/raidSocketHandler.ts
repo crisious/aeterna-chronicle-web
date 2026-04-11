@@ -10,8 +10,9 @@
  *
  * Room 기반 브로드캐스트 사용
  */
-import { Server, Socket } from 'socket.io';
-import { raidManager, LootResult } from '../raid/raidManager';
+import type { Server, Socket } from 'socket.io';
+import type { LootResult } from '../raid/raidManager';
+import { raidManager } from '../raid/raidManager';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 

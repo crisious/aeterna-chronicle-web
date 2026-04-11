@@ -8,7 +8,7 @@
  * GET /api/economy/grade-prices  — 등급별 가격 범위
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { economySimulator } from '../economy/economySimulator';
 import {
   generateLevelEconomyCurves,

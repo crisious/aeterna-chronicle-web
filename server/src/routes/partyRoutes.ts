@@ -13,7 +13,7 @@
  *   POST   /api/party/:id/reward       — 파티 보상 분배
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 
 // ── 타입 정의 ──────────────────────────────────────────────────

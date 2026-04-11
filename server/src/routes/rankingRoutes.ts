@@ -7,7 +7,7 @@
  * GET  /api/ranking/history/:userId    — 시즌 이력
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { rankingManager } from '../ranking/rankingManager';
 
 // ─── 타입 ──────────────────────────────────────────────────────

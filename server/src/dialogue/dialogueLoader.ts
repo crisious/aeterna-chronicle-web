@@ -8,7 +8,8 @@
  */
 
 import { prisma } from '../db';
-import { dialogueRunner, DialogueTree, DialogueNode, DialogueOption } from './dialogueRunner';
+import type { DialogueTree, DialogueNode, DialogueOption } from './dialogueRunner';
+import { dialogueRunner } from './dialogueRunner';
 
 // ── 타입 정의: NPC dialogue JSON 스키마 ─────────────────────────
 

@@ -8,7 +8,6 @@
  *       P14-08 recommendationEngine, P14-09 balanceAutoTuner
  */
 
-import { prisma } from '../db';
 
 // ─── ClickHouse 클라이언트 래퍼 ─────────────────────────────────
 

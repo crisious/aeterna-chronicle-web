@@ -11,7 +11,6 @@
  * 의존: P14-01 dataWarehouse, P14-02 eventCollector, P9-08 antiCheatEngine
  */
 
-import { prisma } from '../db';
 
 // ─── Isolation Forest 구현 ──────────────────────────────────────
 

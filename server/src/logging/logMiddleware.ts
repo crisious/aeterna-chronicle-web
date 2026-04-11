@@ -8,7 +8,7 @@
  *   - 요청별 traceId 자동 부여
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   logger,
   generateTraceId,

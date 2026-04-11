@@ -4,7 +4,7 @@
 // POST /api/class/advance           — 전직 실행
 // GET  /api/class/skills/:advancedClass — 전직 스킬 목록
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { advancementEngine } from '../class/advancementEngine';
 import { enforceClassGate } from '../class/memoryDestroyerGate';
 
@@ -23,12 +23,6 @@ interface AdvanceBody {
   baseClass: string;
   targetTier: number;
   completedQuests?: string[];
-}
-
-interface CreateCharacterBody {
-  accountId: string;
-  name: string;
-  baseClass: string;
 }
 
 // ─── 라우트 등록 ────────────────────────────────────────────

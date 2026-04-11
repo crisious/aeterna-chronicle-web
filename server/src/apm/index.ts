@@ -3,8 +3,8 @@
  * 메트릭 수집, 알림 체크, HTTP 훅, 대시보드를 일괄 관리
  */
 
-import { FastifyInstance } from 'fastify';
-import { Server as SocketIOServer } from 'socket.io';
+import type { FastifyInstance } from 'fastify';
+import type { Server as SocketIOServer } from 'socket.io';
 import {
     startMetricsCollection,
     stopMetricsCollection,
@@ -12,9 +12,7 @@ import {
     decrementConnections,
 } from './metrics';
 import { startAlertChecker, stopAlertChecker } from './alerts';
-import { registerApmHooks } from './middleware';
-import { registerApmRoutes } from './dashboard';
-import { initSentryDatadog, shutdownSentryDatadog, captureError, getErrorBufferStatus } from './sentryInit';
+import { initSentryDatadog, shutdownSentryDatadog } from './sentryInit';
 
 // 외부에서 사용할 메트릭 함수 re-export
 export {

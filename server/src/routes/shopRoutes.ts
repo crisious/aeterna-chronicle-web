@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { validateP2w } from '../shop/p2wGuard';
 import { extractUserIdFromRequest } from '../security/jwtManager';

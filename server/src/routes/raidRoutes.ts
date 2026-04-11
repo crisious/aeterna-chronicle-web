@@ -7,7 +7,7 @@
  * GET  /api/raids/sessions/:id    — 세션 상태 조회
  * GET  /api/raids/history/:userId — 유저별 클리어 이력
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { raidManager } from '../raid/raidManager';
 

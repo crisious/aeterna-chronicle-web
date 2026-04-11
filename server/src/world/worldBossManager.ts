@@ -10,7 +10,7 @@
 
 import { prisma } from '../db';
 import { redisClient } from '../redis';
-import { Server as SocketServer } from 'socket.io';
+import type { Server as SocketServer } from 'socket.io';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -69,8 +69,8 @@ export interface ParticipantRecord {
 const REDIS_BOSS_HP_KEY = 'world_boss:current_hp';
 const REDIS_BOSS_PARTICIPANTS = 'world_boss:participants';
 const REDIS_BOSS_STATUS = 'world_boss:status';
-const BOSS_CHANNEL = 'world_boss:events';
-const MIN_LEVEL = 40;
+const _BOSS_CHANNEL = 'world_boss:events';
+const _MIN_LEVEL = 40;
 
 // ─── 보스 정의 (3종 로테이션) ───────────────────────────────────
 

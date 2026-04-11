@@ -1,13 +1,14 @@
 // ─── 실시간 전투 소켓 핸들러 (P24-18) ─────────────────────────
 // combat:start, combat:action, combat:tick, combat:end
 
-import { Server, Socket } from 'socket.io';
-import {
-  combatInstanceManager,
+import type { Server, Socket } from 'socket.io';
+import type {
   CombatEngine,
   PlayerAction,
   TickResult,
-  CombatParticipant,
+  CombatParticipant} from '../combat/combatEngine';
+import {
+  combatInstanceManager
 } from '../combat/combatEngine';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';

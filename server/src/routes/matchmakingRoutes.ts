@@ -8,13 +8,14 @@
  *   GET    /api/matchmaking/estimate/:queueType — 예상 대기 시간
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type {
+  QueueRequest} from '../matchmaking/matchmakingQueue';
 import {
   enqueue,
   cancelQueue,
   getQueueStatus,
-  estimateWait,
-  QueueRequest,
+  estimateWait
 } from '../matchmaking/matchmakingQueue';
 
 // ── 요청 타입 ───────────────────────────────────────────────────

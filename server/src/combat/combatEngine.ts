@@ -2,13 +2,19 @@
 // ATB 기반 전투 루프, 상태 머신, 다수 대 다수 전투
 
 import { v4 as uuidv4 } from 'uuid';
-import { calculateDamage, DamageType, ElementType } from './damageCalculator';
-import { MonsterAIEngine, MonsterAIConfig, AggroTable } from './monsterAI';
-import { calculateRewards, RewardInput, RewardResult, DropEntry } from './rewardEngine';
-import { checkLevelUp, LevelUpResult } from './levelUpSystem';
-import { SkillCooldownManager, ManaManager, getSkillById, SkillDefinition } from './skillSystem';
-import { BossPhaseManager, BossConfig, PhaseTransitionEvent, EnrageEvent } from './bossPhaseManager';
-import { CombatLogger, CombatStatistics, CombatReplay } from './combatLogger';
+import type { DamageType, ElementType } from './damageCalculator';
+import { calculateDamage } from './damageCalculator';
+import type { MonsterAIConfig} from './monsterAI';
+import { MonsterAIEngine } from './monsterAI';
+import type { RewardResult, DropEntry } from './rewardEngine';
+import { calculateRewards } from './rewardEngine';
+import type { LevelUpResult } from './levelUpSystem';
+import { checkLevelUp } from './levelUpSystem';
+import { SkillCooldownManager, ManaManager, getSkillById } from './skillSystem';
+import type { BossConfig, PhaseTransitionEvent, EnrageEvent } from './bossPhaseManager';
+import { BossPhaseManager } from './bossPhaseManager';
+import type { CombatStatistics, CombatReplay } from './combatLogger';
+import { CombatLogger } from './combatLogger';
 import { statusEffectManager } from './statusEffectManager';
 import { comboManager } from './comboManager';
 

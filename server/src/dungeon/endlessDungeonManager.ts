@@ -62,8 +62,8 @@ const MAX_FLOOR = 100;
 const BASE_HP_SCALE = 1.03;       // 층당 HP 3% 복리 증가
 const BASE_ATK_SCALE = 1.03;      // 층당 ATK 3% 복리 증가
 const CHECKPOINT_INTERVAL = 10;
-const WEEKLY_RESET_DAY = 1;       // 월요일
-const REDIS_LEADERBOARD_KEY = 'endless_dungeon:leaderboard';
+const _WEEKLY_RESET_DAY = 1;       // 월요일
+const _REDIS_LEADERBOARD_KEY = 'endless_dungeon:leaderboard';
 const REDIS_WEEKLY_KEY_PREFIX = 'endless_dungeon:week:';
 
 // ─── 층 설정 생성기 ─────────────────────────────────────────────

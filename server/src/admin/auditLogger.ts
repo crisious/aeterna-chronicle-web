@@ -2,7 +2,7 @@
  * 어드민 감사 로그 — 모든 관리자 액션을 자동 기록
  * P4-07: 어드민 대시보드
  */
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 
 /** 감사 로그 생성 파라미터 */

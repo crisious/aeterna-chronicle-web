@@ -8,7 +8,6 @@
 import {
   type GoldSinkType,
   type GoldSourceType,
-  type ItemGrade,
   generateLevelEconomyCurves,
   ENHANCEMENT_TABLE,
   GRADE_PRICE_RANGES,

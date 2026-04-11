@@ -7,7 +7,7 @@
  * - structuredLogger 연동 에러 로깅
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply, FastifyError } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyError } from 'fastify';
 import crypto from 'crypto';
 
 // ── 에러 코드 정의 ──────────────────────────────────────────

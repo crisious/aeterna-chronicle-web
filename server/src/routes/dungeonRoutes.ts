@@ -8,7 +8,7 @@
  * POST   /api/dungeons/runs/:id/clear   — 클리어 처리
  * GET    /api/dungeons/history/:userId  — 유저별 클리어 이력
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { dungeonManager } from '../dungeon/dungeonManager';
 

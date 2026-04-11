@@ -11,7 +11,7 @@ import crypto from 'crypto';
 
 // ─── 상수 ───────────────────────────────────────────────────────
 const BETA_MAX_USERS = Number(process.env.BETA_MAX_USERS ?? '5000');
-const CODE_LENGTH = 8;
+const _CODE_LENGTH = 8;
 const DEFAULT_BATCH_SIZE = 100;
 const CODE_EXPIRY_DAYS = 30;
 

@@ -7,7 +7,7 @@
  * - POST /api/tutorial/:userId/skip      — 스킵
  * - POST /api/tutorial/:userId/reset     — 재시청
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 
 // ─── 튜토리얼 단계 정의 ─────────────────────────────────────────

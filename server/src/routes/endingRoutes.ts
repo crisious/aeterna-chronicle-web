@@ -7,8 +7,9 @@
  * GET    /api/ending/history/:userId  — 과거 엔딩 기록
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { judgeEnding, sanitizeFlags, ENDING_META, EndingFlags } from '../ending/endingJudge';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { EndingFlags } from '../ending/endingJudge';
+import { judgeEnding, sanitizeFlags, ENDING_META } from '../ending/endingJudge';
 import { getFlags, updateFlags, snapshotFlags } from '../ending/flagTracker';
 import { prisma } from '../db';
 

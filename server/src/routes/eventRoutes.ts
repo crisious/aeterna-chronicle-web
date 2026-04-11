@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { checkAttendance, getAttendanceStatus } from '../event/attendanceSystem';
 import {
   getActiveEvents,

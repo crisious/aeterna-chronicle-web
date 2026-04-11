@@ -9,7 +9,7 @@
  * 기존 /api/season-pass/* 엔드포인트도 하위 호환 유지
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import {
   getCurrentSeason,

@@ -6,8 +6,7 @@
  * POST /api/endless-dungeon/enter         — 입장
  * POST /api/endless-dungeon/complete-floor — 층 클리어
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { prisma } from '../db';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   canEnterEndlessDungeon,
   getPlayerProgress,

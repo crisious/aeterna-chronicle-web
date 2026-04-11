@@ -3,7 +3,7 @@
  * onRequest/onResponse 훅으로 비침투적 계측
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { recordHttpResponse } from './metrics';
 
 /** 요청별 시작 시각 저장 (WeakMap은 사용 불가하므로 request 데코레이터 활용) */

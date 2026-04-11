@@ -10,20 +10,22 @@
  *   GET  /api/story/flags/:userId        — 스토리 플래그 조회
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type {
+  UnlockContext} from '../story/chapterManager';
 import {
   getChapterProgress,
   unlockChapter,
   updateChapterStatus,
   setStoryFlag,
-  getStoryFlags,
-  UnlockContext,
+  getStoryFlags
 } from '../story/chapterManager';
+import type {
+  CutsceneTrigger} from '../story/cutsceneRunner';
 import {
   triggerCutscene,
   getSeenCutscenes,
-  getChapterCutscenes,
-  CutsceneTrigger,
+  getChapterCutscenes
 } from '../story/cutsceneRunner';
 
 // ── 요청 타입 ───────────────────────────────────────────────────

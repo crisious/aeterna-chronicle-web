@@ -9,8 +9,9 @@
  *   DELETE /api/notifications/:id               — 알림 삭제
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { notificationManager, NotificationType } from '../notification/notificationManager';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { NotificationType } from '../notification/notificationManager';
+import { notificationManager } from '../notification/notificationManager';
 
 // ── 요청 타입 정의 ──────────────────────────────────────────────
 

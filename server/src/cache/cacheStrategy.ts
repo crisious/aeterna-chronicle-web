@@ -12,7 +12,7 @@
  *   길드 정보  — 15분 (중간)
  */
 
-import { cacheGet, cacheSet, cacheInvalidate, cacheGetOrLoad, CACHE_TTL } from './cacheLayer';
+import { cacheInvalidate, cacheGetOrLoad } from './cacheLayer';
 
 // ── 도메인별 TTL 상수 (초) ───────────────────────────────────
 

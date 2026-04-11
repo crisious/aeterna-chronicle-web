@@ -7,7 +7,7 @@
  * - 제작 숙련도 (제작 시마다 경험치, 레벨업 시 성공률 보너스)
  */
 
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 
 // ─── 타입 정의 ──────────────────────────────────────────────

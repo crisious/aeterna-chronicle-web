@@ -5,7 +5,7 @@
  * - 프리미엄: 코스메틱/칭호/펫 스킨/크리스탈 (50단계)
  */
 
-import { SeasonRewardEntry } from './seasonPassEngine';
+import type { SeasonRewardEntry } from './seasonPassEngine';
 
 // ─── 시즌 1 무료 트랙 보상 (30단계) ────────────────────────────
 

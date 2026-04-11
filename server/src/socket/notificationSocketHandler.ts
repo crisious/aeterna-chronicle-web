@@ -7,7 +7,7 @@
  *   notification:subscribe — 유저 알림 룸 구독 (클라이언트 → 서버)
  */
 
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import { notificationManager } from '../notification/notificationManager';
 
 export function setupNotificationSocketHandlers(io: Server): void {

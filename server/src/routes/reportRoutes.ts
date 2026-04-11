@@ -6,17 +6,18 @@
  * GET  /admin/sanctions/:userId — 유저 제재 이력
  * POST /admin/sanctions/lift — 제재 수동 해제
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type {
+  ReportType,
+  ReportStatus,
+  SanctionAction} from '../report/reportManager';
 import {
   createReport,
   getReportQueue,
   reviewReport,
   getUserSanctions,
   liftSanction,
-  expireOverdueSanctions,
-  ReportType,
-  ReportStatus,
-  SanctionAction,
+  expireOverdueSanctions
 } from '../report/reportManager';
 import { requireAdmin, getAdminUser } from '../admin/authMiddleware';
 

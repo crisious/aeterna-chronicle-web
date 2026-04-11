@@ -8,8 +8,9 @@
  *   POST /api/codex/discover             — 발견 등록 (서버 내부용)
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { codexManager, CodexCategory } from '../codex/codexManager';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { CodexCategory } from '../codex/codexManager';
+import { codexManager } from '../codex/codexManager';
 
 // ── 요청 타입 정의 ──────────────────────────────────────────────
 

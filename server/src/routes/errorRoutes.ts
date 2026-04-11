@@ -4,7 +4,7 @@
  * POST /api/errors — 클라이언트에서 발생한 에러를 서버로 전송해 로깅한다.
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 // ── 요청 스키마 ─────────────────────────────────────────────
 

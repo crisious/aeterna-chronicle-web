@@ -7,7 +7,7 @@
  *   GET  /api/dialogue/history/:userId — 대화 이력 조회
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { dialogueRunner } from '../dialogue/dialogueRunner';
 
 // ── 요청 타입 정의 ──────────────────────────────────────────────

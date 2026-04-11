@@ -5,8 +5,9 @@
  * PATCH /ops/alerts/config  — 알림 설정 업데이트
  * GET   /ops/alerts/config  — 알림 설정 조회
  */
-import { FastifyInstance } from 'fastify';
-import { opsAlertManager, AlertConfig } from '../ops/opsAlertManager';
+import type { FastifyInstance } from 'fastify';
+import type { AlertConfig } from '../ops/opsAlertManager';
+import { opsAlertManager } from '../ops/opsAlertManager';
 import { requireAdmin } from '../admin/authMiddleware';
 
 // ─── 쿼리/바디 타입 ─────────────────────────────────────────────

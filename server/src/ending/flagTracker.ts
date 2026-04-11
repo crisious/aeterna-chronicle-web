@@ -7,7 +7,8 @@
  */
 
 import { redisClient, redisConnected } from '../redis';
-import { EndingFlags, sanitizeFlags } from './endingJudge';
+import type { EndingFlags} from './endingJudge';
+import { sanitizeFlags } from './endingJudge';
 
 // ── Redis 키 헬퍼 ───────────────────────────────────────────
 const REDIS_KEY_PREFIX = 'ending:flags:';

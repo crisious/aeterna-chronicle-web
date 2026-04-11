@@ -7,7 +7,7 @@
 // PATCH  /api/skills/equip           — 슬롯 장착/해제
 // POST   /api/skills/reset           — 스킬 리셋
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   getSkillTree,
   getUserSkills,

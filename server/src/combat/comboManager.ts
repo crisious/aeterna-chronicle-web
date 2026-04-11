@@ -2,7 +2,7 @@
 // 15개 콤보 체인 (클래스별 5개), 콤보 윈도우, 체인 배율,
 // 히트 카운터 보너스
 
-import { StatusEffectId } from './statusEffectManager';
+import type { StatusEffectId } from './statusEffectManager';
 
 // ─── 콤보 정의 타입 ────────────────────────────────────────────
 

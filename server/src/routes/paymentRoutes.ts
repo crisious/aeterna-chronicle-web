@@ -12,7 +12,7 @@
  * - POST /api/stripe/refund              — Stripe 환불 (P9-11)
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { verifyAccessToken } from '../security/jwtManager';
 import {
   CRYSTAL_PRODUCTS,

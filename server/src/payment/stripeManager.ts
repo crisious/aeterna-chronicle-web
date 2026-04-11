@@ -9,7 +9,7 @@
  */
 import Stripe from 'stripe';
 import { prisma } from '../db';
-import { CRYSTAL_PRODUCTS, CrystalProduct } from './paymentManager';
+import { CRYSTAL_PRODUCTS } from './paymentManager';
 
 // ─── Stripe 초기화 ──────────────────────────────────────────────
 

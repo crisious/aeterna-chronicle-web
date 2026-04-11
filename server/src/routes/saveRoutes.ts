@@ -9,14 +9,15 @@
  *   POST   /api/save/auto             — 자동 세이브 (서버 내부 트리거)
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type {
+  SaveData} from '../save/saveManager';
 import {
   getAllSaves,
   manualSave,
   loadSave,
   deleteSave,
-  autoSave,
-  SaveData,
+  autoSave
 } from '../save/saveManager';
 
 // ── 요청 타입 ───────────────────────────────────────────────────

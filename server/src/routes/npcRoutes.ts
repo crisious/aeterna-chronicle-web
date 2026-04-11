@@ -9,7 +9,7 @@
  * POST /api/npcs/:id/trade            — 거래
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { getAffinity, onDialogue, onGift } from '../npc/affinitySystem';
 import type { GiftPreference } from '../npc/affinitySystem';

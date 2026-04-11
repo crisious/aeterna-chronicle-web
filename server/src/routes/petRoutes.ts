@@ -1,9 +1,9 @@
 /**
  * 펫 시스템 REST API 라우트
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
-import { summonPet, dismissPet, feedPet, evolvePet, grantExp } from '../pet/petEngine';
+import { summonPet, dismissPet, feedPet, evolvePet } from '../pet/petEngine';
 import { PET_SKILLS, PET_SPECIES } from '../pet/petSeeds';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────

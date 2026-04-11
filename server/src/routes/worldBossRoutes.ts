@@ -6,14 +6,12 @@
  * POST /api/world-boss/join     — 참여
  * POST /api/world-boss/damage   — 데미지 기여
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { prisma } from '../db';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   getCurrentBoss,
   WorldBossHPPool,
   calculateContributions,
   calculateLoot,
-  WORLD_BOSSES,
 } from '../world/worldBossManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────

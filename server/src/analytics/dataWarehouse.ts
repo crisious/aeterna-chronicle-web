@@ -333,7 +333,7 @@ export function createWarehouseClient(config: {
   password: string;
 }): WarehouseClient {
   // ClickHouse HTTP 인터페이스 기반 구현
-  const baseUrl = `http://${config.host}:${config.port}`;
+  const _baseUrl = `http://${config.host}:${config.port}`;
 
   return {
     async insertEvents(events) {

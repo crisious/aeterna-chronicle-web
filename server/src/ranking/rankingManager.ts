@@ -9,7 +9,7 @@
 
 import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
-import { RankingEntry as PrismaRankingEntry } from '@prisma/client';
+import type { RankingEntry as PrismaRankingEntry } from '@prisma/client';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 

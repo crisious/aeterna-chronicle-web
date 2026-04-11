@@ -1,4 +1,4 @@
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 
 // ─── 길드 소켓 이벤트 타입 ──────────────────────────────────────
 

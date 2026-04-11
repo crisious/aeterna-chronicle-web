@@ -2,15 +2,16 @@
  * 퀘스트 REST API 라우트
  * P4-06: 퀘스트 시스템
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
+import type {
+  ObjectiveType} from '../quest/questEngine';
 import {
   acceptQuest,
   updateQuestProgress,
   completeQuest,
   abandonQuest,
-  QuestError,
-  ObjectiveType,
+  QuestError
 } from '../quest/questEngine';
 
 // ─── 요청 타입 정의 ─────────────────────────────────────────────

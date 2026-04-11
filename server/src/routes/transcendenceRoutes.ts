@@ -5,13 +5,12 @@
  * POST /api/transcendence/attempt      — 초월 시도
  * GET  /api/transcendence/history      — 초월 이력
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import {
   getTranscendenceInfo,
   attemptTranscendence,
   getTranscendenceStatBonus,
-  TRANSCENDENCE_TABLE,
 } from '../craft/transcendenceManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────

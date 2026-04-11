@@ -7,11 +7,12 @@
  * - GET    /api/pvp/rankings       시즌 랭킹 (페이지네이션)
  * - GET    /api/pvp/ratings/:userId 개인 레이팅
  */
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { prisma } from '../db';
 import { enqueue, dequeue, isInQueue, getCurrentSeason } from '../pvp/matchmaker';
 import { getSeasonInfo, previewSeasonReward, claimSeasonReward, SEASON_TIER_REWARDS } from '../pvp/pvpSeasonReward';
-import { normalizeForPvp, RawStats } from '../pvp/pvpNormalizer';
+import type { RawStats } from '../pvp/pvpNormalizer';
+import { normalizeForPvp } from '../pvp/pvpNormalizer';
 
 /** 큐 등록 요청 바디 */
 interface QueueBody {

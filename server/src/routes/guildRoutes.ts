@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
-import { addGuildXp, getGuildLevelInfo, XpSource } from '../guild/guildLevelManager';
+import type { XpSource } from '../guild/guildLevelManager';
+import { addGuildXp, getGuildLevelInfo } from '../guild/guildLevelManager';
 import { upgradeGuildSkill, getGuildSkillsInfo, unlockAvailableSkills } from '../guild/guildSkills';
 import {
   declareWar as declareGuildWar,

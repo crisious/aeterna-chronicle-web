@@ -9,8 +9,9 @@
  *   matchmaking:timeout — (서버→클라) 타임아웃 알림
  */
 
-import { Server, Socket } from 'socket.io';
-import { enqueue, cancelQueue, QueueRequest } from '../matchmaking/matchmakingQueue';
+import type { Server, Socket } from 'socket.io';
+import type { QueueRequest } from '../matchmaking/matchmakingQueue';
+import { enqueue, cancelQueue } from '../matchmaking/matchmakingQueue';
 import { dungeonManager } from '../dungeon/dungeonManager';
 import { prisma } from '../db';
 

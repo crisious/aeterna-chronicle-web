@@ -8,7 +8,7 @@
  *   guildwar:result   — 전쟁 종료 요청
  *   guildwar:status   — 전쟁 상태 조회
  */
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import {
   declareWar,
   matchWar,

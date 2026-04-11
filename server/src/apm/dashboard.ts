@@ -2,7 +2,7 @@
  * APM 대시보드 엔드포인트 — 메트릭 JSON 및 상세 헬스 반환
  */
 
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { getMetricsSummary } from './metrics';
 
 /** APM 대시보드 라우트 등록 */

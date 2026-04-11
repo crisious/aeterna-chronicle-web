@@ -6,7 +6,7 @@
  * GET  /api/monsters/zone/:zoneId   — 존별 활성 몬스터 목록
  * POST /api/monsters/:id/battle-result — 전투 결과 (드롭/경험치 처리)
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { spawnManager } from '../monster/spawnManager';
 

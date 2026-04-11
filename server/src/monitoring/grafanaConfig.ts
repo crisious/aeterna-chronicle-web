@@ -7,7 +7,7 @@
  *   - Loki 로그 소스 설정 참조
  */
 
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { cacheMetricsPrometheus, getCacheMetrics } from '../cache/cacheLayer';
 import { queryMetricsPrometheus, getQueryPatternStats, getOptimizationAdvice } from '../cache/queryOptimizer';
 

@@ -4,7 +4,6 @@
  * 관전 API + 오버레이 데이터 엔드포인트.
  * 실시간 전투/PvP 통계 스트림. OBS/Streamlabs 오버레이 호환.
  */
-import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────

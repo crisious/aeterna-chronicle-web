@@ -172,7 +172,7 @@ export async function evolvePet(ownerId: string, petId: string) {
   const nextGrade = GRADES[currentIdx + 1];
 
   // 진화 시 유대감 초기화, 스탯 보너스
-  const mult = GRADE_MULTIPLIER[nextGrade];
+  const _mult = GRADE_MULTIPLIER[nextGrade];
   return prisma.pet.update({
     where: { id: petId },
     data: {

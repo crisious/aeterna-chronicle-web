@@ -6,9 +6,9 @@
  * - GET  /api/characters/:id    — 캐릭터 상세 조회
  * - DELETE /api/characters/:id  — 캐릭터 삭제
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest} from 'fastify';
 import { prisma } from '../db';
-import { verifyAccessToken, TokenPayload } from '../security/jwtManager';
+import { verifyAccessToken } from '../security/jwtManager';
 import { inventoryManager } from '../inventory/inventoryManager';
 
 // ── 클래스 초기 스탯 ─────────────────────────────────────────

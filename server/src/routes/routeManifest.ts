@@ -13,8 +13,9 @@
  * 기능 토글(P10-11)과 연동하여 비활성 기능의 라우트를 자동 스킵한다.
  */
 
-import { FastifyInstance } from 'fastify';
-import { FeatureKey, featureFlags } from '../core/featureFlags';
+import type { FastifyInstance } from 'fastify';
+import type { FeatureKey} from '../core/featureFlags';
+import { featureFlags } from '../core/featureFlags';
 
 // ── 타입 정의 ─────────────────────────────────────────────────
 
@@ -37,7 +38,7 @@ export interface RouteRegistrationResult {
 // ── 라우트 매니페스트 ─────────────────────────────────────────
 
 /** 라우트 임포트 — lazy import로 순환 참조 방지 */
-const lazyImport = <T>(importFn: () => Promise<T>, key: keyof T) =>
+const _lazyImport = <T>(importFn: () => Promise<T>, key: keyof T) =>
   async (fastify: FastifyInstance) => {
     const mod = await importFn();
     const plugin = mod[key];

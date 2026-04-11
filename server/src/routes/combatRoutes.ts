@@ -1,22 +1,22 @@
 // ─── 전투 시스템 REST API 라우트 (P6-04/05 + P24-19/20) ────────
 // 상태이상 적용/조회 + 콤보 정보 + 전투 시작/진행/종료/로그 API
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   statusEffectManager,
-  EffectId,
   STATUS_EFFECT_DEFS,
 } from '../combat/statusEffectManager';
-import type { ResistStats } from '../combat/statusEffectManager';
+import type { ResistStats ,
+  EffectId} from '../combat/statusEffectManager';
 import {
   comboManager,
   COMBO_DEFINITIONS,
   CHAIN_BONUSES,
 } from '../combat/comboManager';
+import type {
+  PlayerAction} from '../combat/combatEngine';
 import {
   combatInstanceManager,
-  CombatEngine,
-  PlayerAction,
 } from '../combat/combatEngine';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';

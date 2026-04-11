@@ -53,7 +53,7 @@ interface LokiPushPayload {
 
 // ── 배치 버퍼 ────────────────────────────────────────────────
 
-let buffer: LogEntry[] = [];
+const buffer: LogEntry[] = [];
 let flushTimer: ReturnType<typeof setInterval> | null = null;
 let config: LokiConfig | null = null;
 

@@ -8,7 +8,7 @@
  * PATCH /admin/beta/feedback/:id   — 피드백 상태 변경 (관리자)
  * GET   /admin/beta/stats          — 베타 통계 (관리자)
  */
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { betaManager } from '../beta/betaManager';
 import { requireAdmin } from '../admin/authMiddleware';
 

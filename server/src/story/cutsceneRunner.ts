@@ -9,7 +9,7 @@
  */
 
 import { prisma } from '../db';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 // ── 타입 정의 ──────────────────────────────────────────────────
 

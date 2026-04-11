@@ -9,8 +9,9 @@
  *
  * Room 기반 브로드캐스트
  */
-import { Server, Socket } from 'socket.io';
-import { dungeonManager, DungeonClearResult, DungeonWave } from '../dungeon/dungeonManager';
+import type { Server, Socket } from 'socket.io';
+import type { DungeonClearResult, DungeonWave } from '../dungeon/dungeonManager';
+import { dungeonManager } from '../dungeon/dungeonManager';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 

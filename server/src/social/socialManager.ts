@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
 
@@ -12,12 +12,12 @@ interface PartyMember {
 }
 
 /** Json → PartyMember[] 안전 캐스팅 */
-function toMembers(json: Prisma.JsonValue): PartyMember[] {
+function _toMembers(json: Prisma.JsonValue): PartyMember[] {
   return json as unknown as PartyMember[];
 }
 
 /** PartyMember[] → Prisma InputJsonValue */
-function toJson(members: PartyMember[]): Prisma.InputJsonValue {
+function _toJson(members: PartyMember[]): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(members)) as Prisma.InputJsonValue;
 }
 

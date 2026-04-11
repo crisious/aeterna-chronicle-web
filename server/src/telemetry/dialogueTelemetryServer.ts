@@ -1,6 +1,6 @@
-import { Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 import { persistDialogueTelemetry } from './dialogueTelemetryPersistence';
-import { DialogueChoiceTelemetryEvent } from '../../../shared/types/telemetry';
+import type { DialogueChoiceTelemetryEvent } from '../../../shared/types/telemetry';
 
 export type { DialogueChoiceTelemetryEvent };
 

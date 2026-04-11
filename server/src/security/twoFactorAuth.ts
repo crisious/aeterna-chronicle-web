@@ -85,7 +85,7 @@ export function validatePasswordPolicy(password: string): PasswordValidationResu
   if (!/\d/.test(password)) {
     errors.push('숫자를 포함해야 합니다.');
   }
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     errors.push('특수문자를 포함해야 합니다.');
   }
 

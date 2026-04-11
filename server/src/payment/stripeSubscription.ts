@@ -31,7 +31,7 @@ function getStripe(): Stripe {
 const SEASON_PASS_PRICE_ID = process.env.STRIPE_PRICE_SEASON_PASS || 'price_season_pass_premium';
 
 /** 프리미엄 패스 크리스탈 가격 (기존 인게임 결제용, 비교 참조) */
-const PREMIUM_PASS_CRYSTAL_PRICE = 980;
+const _PREMIUM_PASS_CRYSTAL_PRICE = 980;
 
 // ─── 구독 생성 ──────────────────────────────────────────────────
 

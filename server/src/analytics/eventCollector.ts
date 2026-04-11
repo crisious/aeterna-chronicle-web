@@ -16,7 +16,7 @@ function uuidv4(): string {
     return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
   });
 }
-import {
+import type {
   GameEvent, EventCategory, BaseEvent,
   SessionEvent, CombatEvent, EconomyEvent, SocialEvent, ProgressionEvent,
 } from './dataWarehouse';

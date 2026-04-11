@@ -8,8 +8,8 @@
  * (현재 server.ts 수정 금지이므로, 향후 통합 시 사용할 준비 모듈)
  */
 
-import { FastifyInstance } from 'fastify';
-import { Server as SocketIOServer } from 'socket.io';
+import type { FastifyInstance } from 'fastify';
+import type { Server as SocketIOServer } from 'socket.io';
 import { initApm, shutdownApm } from '../apm';
 import { opsAlertManager } from './opsAlertManager';
 import { syncEventStatus } from '../event/eventEngine';

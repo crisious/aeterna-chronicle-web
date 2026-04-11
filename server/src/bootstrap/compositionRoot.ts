@@ -24,7 +24,8 @@ export async function bootstrap(): Promise<void> {
 
   try {
     // 1. CORS
-    await fastify.register(cors, { origin: ALLOWED_ORIGINS });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- @fastify/cors@9 types expect Fastify v5, server runs v4
+    await fastify.register(cors as any, { origin: ALLOWED_ORIGINS });
 
     // 2. 글로벌 미들웨어 (에러 핸들러, 보안, APM 메트릭 훅)
     await registerMiddleware(fastify);

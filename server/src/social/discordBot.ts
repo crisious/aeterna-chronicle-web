@@ -54,7 +54,7 @@ interface QueueItem {
 const BOT_USERNAME = '에테르나 크로니클';
 const BOT_AVATAR = process.env.DISCORD_BOT_AVATAR || 'https://aeterna.game/assets/bot-avatar.png';
 const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 5000;
+const _RETRY_DELAY_MS = 5000;
 const QUEUE_INTERVAL_MS = 1000; // 1초 간격 발송 (rate limit 준수)
 
 // ─── 색상 매핑 ──────────────────────────────────────────────────

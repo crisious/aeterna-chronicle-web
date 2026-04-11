@@ -79,7 +79,7 @@ const PARTY_GOLD_BONUS_PER_MEMBER = 5;
 /** 보스 보상 배율 */
 const BOSS_REWARD_MULTIPLIER = 3.0;
 /** 등급별 기본 드롭 확률 배율 */
-const RARITY_DROP_MULTIPLIER: Record<ItemRarity, number> = {
+const _RARITY_DROP_MULTIPLIER: Record<ItemRarity, number> = {
   common: 1.0,
   uncommon: 0.8,
   rare: 0.5,

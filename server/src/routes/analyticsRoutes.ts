@@ -6,7 +6,9 @@
  * GET /analytics/revenue — 매출 시계열
  * POST /analytics/snapshot — 수동 스냅샷 트리거
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type {
+  KpiMetric} from '../analytics/analyticsEngine';
 import {
   getKpiSnapshots,
   getEconomyMetrics,
@@ -14,8 +16,7 @@ import {
   calculateRetention,
   runDailyKpiSnapshot,
   calculateAvgSessionTime,
-  calculateStageClearRate,
-  KpiMetric,
+  calculateStageClearRate
 } from '../analytics/analyticsEngine';
 import { requireAdmin } from '../admin/authMiddleware';
 

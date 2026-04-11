@@ -10,8 +10,9 @@
  * GET    /api/auction/history/:userId — 유저 거래 내역
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
-import { auctionManager, ListingCreateParams, BidParams, ListingSearchParams } from '../auction/auctionManager';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { ListingCreateParams, BidParams, ListingSearchParams } from '../auction/auctionManager';
+import { auctionManager } from '../auction/auctionManager';
 
 // ─── 타입 ──────────────────────────────────────────────────────
 

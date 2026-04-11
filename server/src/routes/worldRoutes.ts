@@ -7,7 +7,7 @@
  * GET  /api/world/location/:userId   — 현재 위치
  * POST /api/world/teleport           — 텔레포트 (허브 전용)
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { worldManager } from '../world/worldManager';
 

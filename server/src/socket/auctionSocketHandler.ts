@@ -7,7 +7,7 @@
  *
  * 글로벌 브로드캐스트 방식 (거래소 구독 채널)
  */
-import { Server } from 'socket.io';
+import type { Server } from 'socket.io';
 import { auctionManager } from '../auction/auctionManager';
 
 // ─── 소켓 채널 ─────────────────────────────────────────────────

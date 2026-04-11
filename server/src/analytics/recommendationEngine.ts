@@ -94,7 +94,7 @@ const CONTENT_BASED_WEIGHT = 0.4;
 const SIMILARITY_TOP_K = 20;             // 유사 유저 상위 K명
 const DECAY_HALF_LIFE_DAYS = 14;         // 액션 점수 반감기
 const MIN_SCORE_THRESHOLD = 0.05;        // 이 점수 이하 추천 제외
-const POPULARITY_FALLBACK_DAYS = 7;      // 인기도 계산 기간
+const _POPULARITY_FALLBACK_DAYS = 7;      // 인기도 계산 기간
 
 // ─── 추천 엔진 클래스 ──────────────────────────────────────────
 
@@ -357,7 +357,7 @@ export class RecommendationEngine {
 
     const merged: RecommendationItem[] = [];
 
-    for (const [id, scores] of scoreMap) {
+    for (const [_id, scores] of scoreMap) {
       const combinedScore =
         scores.collabScore * COLLABORATIVE_WEIGHT +
         scores.contentScore * CONTENT_BASED_WEIGHT;

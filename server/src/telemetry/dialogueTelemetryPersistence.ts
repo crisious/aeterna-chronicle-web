@@ -1,6 +1,6 @@
 import { prisma } from '../db';
 import { redisClient, redisConnected } from '../redis';
-import { DialogueChoiceTelemetryEvent } from './dialogueTelemetryServer';
+import type { DialogueChoiceTelemetryEvent } from './dialogueTelemetryServer';
 
 const REDIS_TTL_SECONDS = 60 * 24 * 60 * 60; // 60일
 

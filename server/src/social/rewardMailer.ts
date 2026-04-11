@@ -35,7 +35,7 @@ export async function sendRewardMail(
   title: string,
   body: string,
   rewards: RewardItem[],
-  expiresInDays = 30,
+  _expiresInDays = 30,
 ): Promise<void> {
   await sendSystemMail(receiverId, `[${reasonLabel(reason)}] ${title}`, body, rewards);
   // 발송 로그는 prisma 트랜잭션 로그와 별도로 콘솔 기록

@@ -8,7 +8,7 @@
  * - 화이트리스트 IP (내부 서비스, 헬스체크)
  * - 위반 시 429 응답 + 감사 로그 + Retry-After 헤더
  */
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { redisClient, redisConnected } from '../redis';
 
 // ─── Rate Limit 프로필 ──────────────────────────────────────────

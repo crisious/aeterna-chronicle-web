@@ -1,4 +1,4 @@
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import { achievementEngine } from '../achievement/achievementEngine';
 
 // ─── 업적 소켓 이벤트 핸들러 ──────────────────────────────────
@@ -49,7 +49,7 @@ export function setupAchievementSocketHandlers(io: Server): void {
             achievements: results,
           });
         }
-      } catch (err) {
+      } catch (_err) {
         socket.emit('achievement:error', {
           message: '업적 체크 중 오류가 발생했습니다.',
         });

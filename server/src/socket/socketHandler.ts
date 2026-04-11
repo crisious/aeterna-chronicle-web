@@ -1,6 +1,7 @@
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import { redisClient, redisConnected } from '../redis';
-import { DialogueChoiceTelemetryEvent, handleDialogueTelemetry } from '../telemetry/dialogueTelemetryServer';
+import type { DialogueChoiceTelemetryEvent} from '../telemetry/dialogueTelemetryServer';
+import { handleDialogueTelemetry } from '../telemetry/dialogueTelemetryServer';
 import {
     loadProto,
     isBinary,

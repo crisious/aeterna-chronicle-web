@@ -15,7 +15,7 @@
  *   DD_ENV               — Datadog 환경 (기본 NODE_ENV)
  */
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { logger } from '../logging/structuredLogger';
 
 // ── Sentry 설정 ──────────────────────────────────────────────

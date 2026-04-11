@@ -7,7 +7,7 @@
  * - XSS 문자열 이스케이프
  * - 요청 크기 제한 (1MB)
  */
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 
 // ─── 요청 크기 제한 ─────────────────────────────────────────────
 

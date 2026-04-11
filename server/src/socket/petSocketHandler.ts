@@ -2,7 +2,7 @@
  * 펫 시스템 소켓 이벤트 핸들러
  * - pet:summon, pet:dismiss, pet:attack, pet:levelup
  */
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 import { summonPet, dismissPet, calculatePetAttack, grantExp } from '../pet/petEngine';
 import { prisma } from '../db';
 

@@ -8,14 +8,15 @@
  * - POST /api/auth/logout   — 로그아웃
  * - GET  /api/auth/me        — 내 정보
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
+import type {
+  TokenPayload} from '../security/jwtManager';
 import {
   generateTokens,
   verifyAccessToken,
   refreshTokens,
-  logoutTokens,
-  TokenPayload,
+  logoutTokens
 } from '../security/jwtManager';
 
 // ─── bcrypt 비밀번호 해싱 ───────────────────────────────────────

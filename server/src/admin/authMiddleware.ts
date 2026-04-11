@@ -2,7 +2,7 @@
  * 어드민 권한 미들웨어 — Role 기반 접근 제어 + 감사 로그 자동 기록
  * P4-07: 어드민 대시보드
  */
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 import { writeAuditLog } from './auditLogger';
 import { prisma } from '../db';

@@ -194,8 +194,8 @@ export async function hasLiked(postId: string, userId: string): Promise<boolean>
 export async function reportPost(
   postId: string,
   reporterId: string,
-  reason: ReportReason,
-  detail?: string,
+  _reason: ReportReason,
+  _detail?: string,
 ): Promise<{ reported: boolean; message: string }> {
   const post = await prisma.ugcPost.findUnique({ where: { id: postId } });
   if (!post) return { reported: false, message: '존재하지 않는 게시글입니다.' };
