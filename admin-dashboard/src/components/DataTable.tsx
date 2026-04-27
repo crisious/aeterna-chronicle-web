@@ -29,7 +29,7 @@ export interface DataTableProps<T> {
   loading?: boolean;
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   onRowClick,

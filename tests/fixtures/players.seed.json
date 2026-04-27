@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "description": "플레이어 테스트 시드 — 본궁이 살피건대, 성장 곡선 검증과 전투 밸런스 회귀 테스트의 기준이 되는 대표 샘플입니다",
+    "author": "심요연 (Data Analyst)",
+    "version": "1.0.0",
+    "generatedAt": "2026-04-21",
+    "coverage": "Lv1 튜토리얼 / Lv15 챕터2 / Lv30 1차전직 / Lv50 2차전직 / Lv80 최종전직"
+  },
+  "players": [
+    {
+      "id": "seed-player-tutorial",
+      "name": "TestErien_Tutorial",
+      "class": "aether_knight",
+      "level": 1,
+      "stats": { "hp": 120, "mp": 30, "atk": 15, "def": 10, "spd": 8, "crit": 5 },
+      "gold": 0,
+      "inventory": [{ "itemId": "WP-001-ironSword", "count": 1 }],
+      "progress": { "chapterId": "CH1", "sceneId": "C1-T1", "questStates": {} },
+      "flags": { "tutorialCompleted": false }
+    },
+    {
+      "id": "seed-player-ch2-early",
+      "name": "TestErien_Ch2",
+      "class": "memorist",
+      "level": 15,
+      "stats": { "hp": 480, "mp": 280, "atk": 42, "def": 28, "spd": 22, "crit": 12 },
+      "gold": 3500,
+      "inventory": [
+        { "itemId": "WP-012-emberStaff", "count": 1 },
+        { "itemId": "CS-003-hpPotionM", "count": 8 },
+        { "itemId": "CS-007-etherCrystalS", "count": 3 }
+      ],
+      "progress": { "chapterId": "CH2", "sceneId": "C2-N5", "questStates": { "quest.c2.silvanheim_entry": "COMPLETE" } },
+      "flags": { "tutorialCompleted": true, "firstBossDefeated": true }
+    },
+    {
+      "id": "seed-player-ch3-firstjob",
+      "name": "TestErien_Lv30",
+      "class": "shadow_weaver",
+      "level": 30,
+      "stats": { "hp": 1120, "mp": 520, "atk": 98, "def": 62, "spd": 58, "crit": 25 },
+      "gold": 18400,
+      "inventory": [
+        { "itemId": "WP-024-shadowDaggers", "count": 1 },
+        { "itemId": "AM-015-voidCloak", "count": 1 }
+      ],
+      "progress": { "chapterId": "CH3", "sceneId": "C3-N8", "questStates": { "quest.c3.desert_flame": "IN_PROGRESS" } },
+      "trust": { "igna": 12, "rowen": -4, "seraphine": 8 },
+      "endingProgress": { "A": 45, "B": 20, "C": 15, "D": 0 }
+    },
+    {
+      "id": "seed-player-ch4-secondjob",
+      "name": "TestErien_Lv50",
+      "class": "memory_breaker",
+      "level": 50,
+      "stats": { "hp": 2450, "mp": 880, "atk": 182, "def": 118, "spd": 74, "crit": 34 },
+      "gold": 64200,
+      "inventory": [
+        { "itemId": "WP-048-ruinHammer", "count": 1 },
+        { "itemId": "AM-028-empireArmor", "count": 1 },
+        { "itemId": "CS-009-etherCrystalL", "count": 12 }
+      ],
+      "progress": { "chapterId": "CH4", "sceneId": "C4-N3", "questStates": { "quest.c4.argentium_siege": "IN_PROGRESS" } },
+      "trust": { "igna": 28, "rowen": 2, "seraphine": 35, "ciela": -12 },
+      "endingProgress": { "A": 68, "B": 42, "C": 55, "D": 20 }
+    },
+    {
+      "id": "seed-player-ch5-max",
+      "name": "TestErien_Lv80_Max",
+      "class": "time_guardian",
+      "level": 80,
+      "stats": { "hp": 5200, "mp": 1620, "atk": 340, "def": 225, "spd": 108, "crit": 48 },
+      "gold": 182000,
+      "inventory": [
+        { "itemId": "WP-080-chronoBlade", "count": 1 },
+        { "itemId": "SET-myth-01-aeternal", "count": 4 }
+      ],
+      "progress": { "chapterId": "CH5", "sceneId": "C5-FINAL", "questStates": { "quest.c5.final_memory": "IN_PROGRESS" } },
+      "trust": { "igna": 85, "rowen": 60, "seraphine": 92, "ciela": 45 },
+      "endingProgress": { "A": 98, "B": 72, "C": 80, "D": 65 }
+    }
+  ]
+}

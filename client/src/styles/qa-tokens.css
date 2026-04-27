@@ -1,0 +1,229 @@
+/**
+ * QA 테스트 비주얼 토큰 v1.0
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-26
+ * 참조: docs/art-production/qa-test-assets-v1.md
+ *
+ * 사용처:
+ *   - tests/reports/index.html (대시보드)
+ *   - Storybook (예정)
+ *   - Discord 알림 카드 (예정)
+ *
+ * import 순서: design-system.css → qa-tokens.css (오버라이드 X, 추가만)
+ */
+
+:root {
+  /* ─────────────────────────────────────────────
+   * §1. TEST STATUS — primary
+   * ─────────────────────────────────────────────*/
+  --qa-pass:    #2ECC71;
+  --qa-fail:    #FF4444;
+  --qa-skip:    #A0A0A0;
+  --qa-pending: #FFD700;
+  --qa-flaky:   #FF8C42;
+
+  /* §1. TEST STATUS — backgrounds (12% alpha 합성된 hex) */
+  --qa-pass-bg:    #1F2E26;
+  --qa-fail-bg:    #2E1F26;
+  --qa-skip-bg:    #25252F;
+  --qa-pending-bg: #2E2A1F;
+  --qa-flaky-bg:   #2E2620;
+
+  /* §1. TEST STATUS — borders */
+  --qa-pass-border:    rgba(46, 204, 113, 0.35);
+  --qa-fail-border:    rgba(255, 68, 68, 0.45);
+  --qa-skip-border:    rgba(160, 160, 160, 0.25);
+  --qa-pending-border: rgba(255, 215, 0, 0.35);
+  --qa-flaky-border:   rgba(255, 140, 66, 0.45);
+
+  /* §1. Glow (FAIL 강조 / FLAKY 펄스) */
+  --qa-fail-glow:  0 0 8px rgba(255, 68, 68, 0.55);
+  --qa-flaky-glow: 0 0 6px rgba(255, 140, 66, 0.45);
+
+  /* ─────────────────────────────────────────────
+   * §2. VISUAL REGRESSION DIFF
+   * ─────────────────────────────────────────────*/
+  --diff-added:   rgba(46, 204, 113, 0.35);
+  --diff-removed: rgba(255, 68, 68, 0.35);
+  --diff-changed: rgba(255, 215, 0, 0.25);
+  --diff-stripe-size: 6px;
+
+  /* ─────────────────────────────────────────────
+   * §7. COVERAGE HEATMAP (5 stops)
+   * ─────────────────────────────────────────────*/
+  --cov-0:   #FF4444;  /*  0–49%  치명적 */
+  --cov-50:  #FF8C42;  /* 50–69%  부족   */
+  --cov-70:  #FFD700;  /* 70–79%  경계   */
+  --cov-80:  #9CCC65;  /* 80–89%  양호   */
+  --cov-90:  #2ECC71;  /* 90–100% 우수   */
+}
+
+/* ─────────────────────────────────────────────
+ * STATUS BADGE
+ * ─────────────────────────────────────────────*/
+.qa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font: 600 12px/1 'JetBrains Mono', 'Consolas', monospace;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.qa-badge--pass    { color: var(--qa-pass);    background: var(--qa-pass-bg);    border-color: var(--qa-pass-border); }
+.qa-badge--fail    { color: var(--qa-fail);    background: var(--qa-fail-bg);    border-color: var(--qa-fail-border);    box-shadow: var(--qa-fail-glow); }
+.qa-badge--skip    { color: var(--qa-skip);    background: var(--qa-skip-bg);    border-color: var(--qa-skip-border); }
+.qa-badge--pending { color: var(--qa-pending); background: var(--qa-pending-bg); border-color: var(--qa-pending-border); }
+.qa-badge--flaky   { color: var(--qa-flaky);   background: var(--qa-flaky-bg);   border-color: var(--qa-flaky-border);   animation: qa-pulse 1.6s ease-in-out infinite; }
+
+@keyframes qa-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 140, 66, 0.30); }
+  50%      { box-shadow: 0 0 10px rgba(255, 140, 66, 0.65); }
+}
+
+/* ─────────────────────────────────────────────
+ * VISUAL REGRESSION DIFF (사선 패턴 색약 대응)
+ * ─────────────────────────────────────────────*/
+.diff-added {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--diff-added) 0 var(--diff-stripe-size),
+    transparent var(--diff-stripe-size) calc(var(--diff-stripe-size) * 2)
+  );
+}
+.diff-removed {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--diff-removed) 0 var(--diff-stripe-size),
+    transparent var(--diff-stripe-size) calc(var(--diff-stripe-size) * 2)
+  );
+}
+.diff-changed {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--diff-changed) 0 var(--diff-stripe-size),
+    transparent var(--diff-stripe-size) calc(var(--diff-stripe-size) * 2)
+  );
+}
+
+/* ─────────────────────────────────────────────
+ * COVERAGE LINE INDICATOR (사이드바 3px)
+ * ─────────────────────────────────────────────*/
+.cov-line                 { border-left: 3px solid var(--cov-0); }
+.cov-line[data-cov="50"]  { border-left-color: var(--cov-50); }
+.cov-line[data-cov="70"]  { border-left-color: var(--cov-70); }
+.cov-line[data-cov="80"]  { border-left-color: var(--cov-80); }
+.cov-line[data-cov="90"]  { border-left-color: var(--cov-90); }
+
+/* ─────────────────────────────────────────────
+ * SAVE SLOT STATE (회귀 테스트 시각 매핑)
+ * ─────────────────────────────────────────────*/
+.save-slot                  { border: 1px solid #3A3A4A; background: #16213E; transition: box-shadow .2s ease; }
+.save-slot[data-state="empty"]      { border-style: dashed; }
+.save-slot[data-state="loaded"]     { border-color: #FFD700; }
+.save-slot[data-state="loaded"]:hover { box-shadow: 0 0 8px rgba(255, 215, 0, 0.45); }
+.save-slot[data-state="corrupt"]    { border-color: var(--qa-fail); background: var(--qa-fail-bg); box-shadow: var(--qa-fail-glow); animation: qa-shake 0.5s; }
+.save-slot[data-state="migration"]  { border-color: var(--qa-pending); border-style: dashed; background: var(--qa-pending-bg); animation: qa-pulse 1.6s ease-in-out infinite; }
+
+@keyframes qa-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-2px); }
+  75%      { transform: translateX(2px); }
+}
+
+/* ─────────────────────────────────────────────
+ * INVENTORY SLOT STATE (회귀 테스트 fixture 매핑)
+ * 참조: qa-test-assets-v1.md §3
+ * ─────────────────────────────────────────────*/
+.inv-slot {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  background: #16213E;
+  border: 1px solid #3A3A4A;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.inv-slot[data-state="empty"]  { border-style: dashed; color: transparent; }
+.inv-slot[data-state="filled"] { border-color: #A0A0A0; }
+.inv-slot[data-state="locked"] {
+  opacity: 0.4;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.inv-slot[data-state="locked"]::after {
+  content: "🔒";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+/* 등급별 외곽선 (일반→전설) */
+.inv-slot[data-rarity="common"]    { border-color: #A0A0A0; }
+.inv-slot[data-rarity="uncommon"]  { border-color: #2ECC71; }
+.inv-slot[data-rarity="rare"]      { border-color: #89CFF0; }
+.inv-slot[data-rarity="epic"]      { border-color: #B266FF; }
+.inv-slot[data-rarity="legendary"] {
+  border-color: #FFD700;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.45);
+}
+
+/* 수량 우하단 정렬 + 99+ 표시 */
+.inv-slot__count {
+  position: absolute;
+  right: 3px;
+  bottom: 1px;
+  font: 600 10px/1 'JetBrains Mono', monospace;
+  color: #E8E8E8;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.9);
+}
+.inv-slot__count[data-overflow="true"] { color: var(--qa-fail); }
+
+/* 가득 참 토스트 */
+.inv-toast-full {
+  border: 1px solid var(--qa-pending);
+  background: var(--qa-pending-bg);
+  color: var(--qa-pending);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font: 600 12px/1.4 'JetBrains Mono', monospace;
+  animation: qa-pulse 1.6s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────
+ * BUG SEVERITY BADGE (P0~P3)
+ * 참조: qa-test-assets-v1.md §5
+ * ─────────────────────────────────────────────*/
+.bug-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font: 700 11px/1.2 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.bug-badge--p0 { background: var(--qa-fail);    color: #FFFFFF;    box-shadow: var(--qa-fail-glow); }
+.bug-badge--p1 { background: var(--qa-flaky);   color: #FFFFFF; }
+.bug-badge--p2 { background: var(--qa-pending); color: #1A1A2E; }
+.bug-badge--p3 { background: var(--qa-skip);    color: #1A1A2E; }
+
+/* ─────────────────────────────────────────────
+ * 색약 보조 — 모션 감소 환경 대응
+ * ─────────────────────────────────────────────*/
+@media (prefers-reduced-motion: reduce) {
+  .qa-badge--flaky,
+  .save-slot[data-state="migration"],
+  .inv-toast-full              { animation: none; }
+  .save-slot[data-state="corrupt"] { animation: none; }
+}

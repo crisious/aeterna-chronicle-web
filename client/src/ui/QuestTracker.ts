@@ -78,7 +78,10 @@ export class QuestTracker {
 
   show(): void { this.visible = true; this.container.setVisible(true); }
   hide(): void { this.visible = false; this.container.setVisible(false); }
-  toggle(): void { this.visible ? this.hide() : this.show(); }
+  toggle(): void {
+    if (this.visible) this.hide();
+    else this.show();
+  }
 
   // 외부에서 퀘스트 진행 업데이트 수신
   updateProgress(questId: string, objectiveIndex: number, current: number): void {

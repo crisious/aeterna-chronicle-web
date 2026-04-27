@@ -4,74 +4,152 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>에테르나 크로니클 (Aeterna Chronicle)</title>
+    <!-- 디자인 시스템 (SSOT): design-tokens.ts 와 1:1 매칭 -->
+    <link rel="stylesheet" href="/src/styles/design-system.css" />
+    <!-- FF6 ATB 전투 HUD 디자인 시스템 (battle-tokens.ts 와 1:1 매칭) -->
+    <link rel="stylesheet" href="/src/styles/design-system-battle.css" />
+    <!-- 크로스브라우저 호환 폴백 시트 (Firefox·Safari·Canvas2D) -->
+    <link rel="stylesheet" href="/src/styles/design-system-compat.css" />
+    <!-- WCAG 2.1 AAA 접근성: 색맹·고대비·포커스·모션감소 (launch_checklist §2.17) -->
+    <link rel="stylesheet" href="/src/styles/accessibility.css" />
+    <!-- 접근성 옵션 패널 컴포넌트 (옵션 → 접근성 메뉴) -->
+    <link rel="stylesheet" href="/src/styles/a11y-options-panel.css" />
+    <!-- 색맹 시뮬레이터 SVG 필터 (QA/개발자 도구 — data-cb-sim 토글) -->
+    <link rel="stylesheet" href="/src/styles/cb-simulator-filters.css" />
+    <!-- 사운드 시스템 UI: 4채널 설정 패널 + 오디오 큐 시각 피드백 (DESIGN.md §11) -->
+    <link rel="stylesheet" href="/src/styles/audio-controls.css" />
     <style>
+      /* ═══ index.html 전용 로컬 스타일 ═══
+       * 전역 재사용 스타일은 design-system.css 참조.
+       * 여기엔 "게임 컨테이너 + 로딩 화면" 고유 레이아웃만 둡니다.
+       */
       body {
-        margin: 0;
-        padding: 0;
-        background-color: #1A1A2E; /* 딥 네이비 블랙 (GDD 참조) */
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
         overflow: hidden;
       }
+
       #game-container {
-        box-shadow: 0 0 20px rgba(0,0,0,0.5); /* 게임 씬 강조 */
+        box-shadow: 0 0 30px rgba(137, 207, 240, 0.08), 0 0 60px rgba(0, 0, 0, 0.5);
+        border-radius: 2px;
       }
-      /* ── 로딩 화면 ─────────────────────────── */
+
+      /* ── 로딩 화면 ── */
       #loading-screen {
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: #1A1A2E;
+        background: var(--bg-primary);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease-out;
+        z-index: var(--z-loading);
+        transition: opacity var(--transition-slow);
       }
+
       #loading-screen.fade-out {
         opacity: 0;
         pointer-events: none;
       }
+
       .spinner {
         width: 48px; height: 48px;
-        border: 4px solid rgba(100, 200, 255, 0.2);
-        border-top-color: #64C8FF;
+        border: 3px solid rgba(137, 207, 240, 0.15);
+        border-top-color: var(--accent-ether);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
+        box-shadow: 0 0 16px rgba(137, 207, 240, 0.2);
       }
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
+
+      @keyframes spin { to { transform: rotate(360deg); } }
+
       .loading-title {
-        margin-top: 24px;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 18px;
-        color: #64C8FF;
-        letter-spacing: 2px;
-        animation: pulse 1.5s ease-in-out infinite;
+        margin-top: var(--space-6);
+        font-family: var(--font-body);
+        font-size: var(--font-lg);
+        color: var(--accent-ether);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        animation: pulse 2s ease-in-out infinite;
       }
+
       .loading-progress {
-        margin-top: 12px;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 13px;
-        color: rgba(100, 200, 255, 0.6);
+        margin-top: var(--space-3);
+        font-family: var(--font-mono);
+        font-size: var(--font-sm);
+        color: var(--text-secondary);
+        letter-spacing: 1px;
       }
+
+      .loading-bar-track {
+        margin-top: var(--space-5);
+        width: 280px;
+        height: 4px;
+        background: var(--bg-frame);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .loading-bar-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-ether), #B0E0FF);
+        border-radius: 2px;
+        transition: width 200ms ease-out;
+        box-shadow: 0 0 8px rgba(137, 207, 240, 0.4);
+      }
+
       @keyframes pulse {
-        0%, 100% { opacity: 0.6; }
+        0%, 100% { opacity: 0.5; }
         50% { opacity: 1; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .spinner { animation-duration: 3s; }
+        .loading-title { animation: none; opacity: 1; }
+        .loading-bar-fill { transition: none; }
       }
     </style>
   </head>
   <body>
-    <div id="loading-screen">
-      <div class="spinner"></div>
-      <div class="loading-title">Loading Aeterna Chronicle...</div>
-      <div class="loading-progress" id="loading-progress">0%</div>
+    <!-- 색맹 시뮬레이션 SVG 필터 정의 (cb-simulator-filters.css 가 url(#...)로 참조) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="cb-sim-protanopia">
+          <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/>
+        </filter>
+        <filter id="cb-sim-deuteranopia">
+          <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/>
+        </filter>
+        <filter id="cb-sim-tritanopia">
+          <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/>
+        </filter>
+        <filter id="cb-sim-achromatopsia">
+          <feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0"/>
+        </filter>
+      </defs>
+    </svg>
+    <!-- WCAG 2.4.1: 키보드 사용자가 메인 콘텐츠로 바로 점프 -->
+    <a href="#game-container" class="skip-link">메인 콘텐츠로 건너뛰기</a>
+    <!-- WCAG 4.1.3: 비시각 사용자 알림용 라이브 리전 (전역) -->
+    <div id="aria-live-polite" class="aria-live-region" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="aria-live-assertive" class="aria-live-region" role="alert" aria-live="assertive" aria-atomic="true"></div>
+    <div id="loading-screen" role="status" aria-live="polite" aria-label="게임 로딩 중">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="loading-title">Aeterna Chronicle</div>
+      <div class="loading-bar-track" aria-hidden="true">
+        <div class="loading-bar-fill" id="loading-bar"></div>
+      </div>
+      <div class="loading-progress" id="loading-progress">Loading... 0%</div>
     </div>
     <div id="game-container"></div>
+    <!-- 호환 모드 토스트: RendererDetector가 data-compat-mode로 활성화 -->
+    <div class="compat-toast" role="status" aria-live="polite">
+      호환 모드 — 일부 그래픽 효과가 단순화됩니다
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

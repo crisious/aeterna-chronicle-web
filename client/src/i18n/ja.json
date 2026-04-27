@@ -286,7 +286,14 @@
       "bannedWord": "使用できない言葉が含まれています",
       "crashRecovery": "予期しないエラーから復旧しました",
       "saveFailure": "セーブに失敗しました。再試行してください",
-      "loadFailure": "データの読み込みに失敗しました"
+      "loadFailure": "データの読み込みに失敗しました",
+      "browserUnsupported": "このブラウザはサポートされていません。最新のChrome・Firefox・Safariをご利用ください",
+      "webglContextLost": "グラフィックコンテキストが一時停止しました。復旧中...",
+      "webglContextRestored": "グラフィックが復旧しました。少々お待ちください",
+      "indexedDBBlocked": "プライベートモードでは一部のセーブ機能が制限されます。一時セーブで続行しますか？",
+      "storageQuotaExceeded": "ブラウザのストレージ容量が不足しています。古いセーブを整理してください",
+      "audioContextSuspended": "サウンドを再生するには画面を一度クリックしてください",
+      "safariITPWarning": "Safariのポリシーにより7日間未接続でセーブが削除される可能性があります。クラウド同期を推奨します"
     },
     "notification": {
       "friendRequest": "{name}さんからフレンド申請が届きました",
@@ -314,6 +321,11 @@
     }
   },
   "combat": {
+    "atb": {
+      "ready": "行動可能",
+      "waiting_reconnect": "再接続待機中",
+      "session_replaced": "別のセッションに引き継がれました"
+    },
     "skills": {
       "slash": "斬撃",
       "slash_desc": "基本的な近接攻撃で敵を斬る",

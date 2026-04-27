@@ -346,7 +346,10 @@ export class GuildRaidUI {
 
   public show(): void { this.container.setVisible(true); this.loadRaidList(); }
   public hide(): void { this.container.setVisible(false); }
-  public toggle(): void { this.container.visible ? this.hide() : this.show(); }
+  public toggle(): void {
+    if (this.container.visible) this.hide();
+    else this.show();
+  }
   public isVisible(): boolean { return this.container.visible; }
   public destroy(): void {
     const socket = this.net.getSocket();

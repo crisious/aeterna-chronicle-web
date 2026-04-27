@@ -122,7 +122,7 @@ function createMockGraphics() {
 
 function createMockScene() {
   const sceneStartCalls: Array<{ key: string; data?: unknown }> = [];
-  const eventHandlers: Record<string, Function[]> = {};
+  const eventHandlers: Record<string, Array<(...args: unknown[]) => void>> = {};
 
   const scene = {
     _startCalls: sceneStartCalls,
@@ -134,7 +134,7 @@ function createMockScene() {
         setBackgroundColor: vi.fn(),
         fadeIn: vi.fn(),
         fadeOut: vi.fn(),
-        once: vi.fn((event: string, cb: Function) => cb()),
+        once: vi.fn((_event: string, cb: () => void) => cb()),
         setBounds: vi.fn(),
         startFollow: vi.fn(),
         shake: vi.fn(),
@@ -206,14 +206,14 @@ function createMockScene() {
       add: vi.fn((config: Record<string, unknown>) => {
         // Immediately call onComplete if present for synchronous testing
         if (typeof config.onComplete === 'function') {
-          (config.onComplete as Function)();
+          (config.onComplete as () => void)();
         }
         return { stop: vi.fn(), destroy: vi.fn() };
       }),
     },
     time: {
       addEvent: vi.fn(() => ({ destroy: vi.fn(), remove: vi.fn() })),
-      delayedCall: vi.fn((_delay: number, cb: Function) => {
+      delayedCall: vi.fn((_delay: number, cb: () => void) => {
         cb();
         return { destroy: vi.fn() };
       }),
@@ -235,7 +235,7 @@ function createMockScene() {
       },
     },
     events: {
-      on: vi.fn((event: string, handler: Function) => {
+      on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
         if (!eventHandlers[event]) eventHandlers[event] = [];
         eventHandlers[event].push(handler);
       }),
@@ -256,7 +256,7 @@ function createMockScene() {
 // ─── NetworkManager Mock ────────────────────────────────────────────
 
 function createMockNetworkManager() {
-  const listeners: Record<string, Function[]> = {};
+  const listeners: Record<string, Array<(...args: unknown[]) => void>> = {};
   return {
     isAuthenticated: false,
     isConnected: false,
@@ -286,7 +286,7 @@ function createMockNetworkManager() {
     clearDungeon: vi.fn(),
     getUserId: vi.fn(() => 'user-001'),
     emit: vi.fn(),
-    on: vi.fn((event: string, handler: Function) => {
+    on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
       if (!listeners[event]) listeners[event] = [];
       listeners[event].push(handler);
       return () => {
@@ -310,7 +310,7 @@ function simulateClick(mockObj: Record<string, unknown>) {
   if (!onFn?.mock) return;
   for (const call of onFn.mock.calls) {
     if (call[0] === 'pointerdown') {
-      (call[1] as Function)();
+      (call[1] as () => void)();
       return;
     }
   }

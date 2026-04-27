@@ -286,7 +286,14 @@
       "bannedWord": "사용할 수 없는 단어가 포함되어 있습니다",
       "crashRecovery": "예기치 않은 오류로부터 복구되었습니다",
       "saveFailure": "저장에 실패했습니다. 다시 시도해 주세요",
-      "loadFailure": "데이터를 불러오는데 실패했습니다"
+      "loadFailure": "데이터를 불러오는데 실패했습니다",
+      "browserUnsupported": "현재 브라우저는 지원되지 않습니다. Chrome · Firefox · Safari 최신 버전을 사용해 주세요",
+      "webglContextLost": "그래픽 컨텍스트가 일시 중단되어 복구 중입니다...",
+      "webglContextRestored": "그래픽이 복구되었습니다. 잠시만 기다려 주세요",
+      "indexedDBBlocked": "사생활 보호 모드에서는 일부 저장 기능이 제한됩니다. 임시 저장으로 계속 진행하시겠습니까?",
+      "storageQuotaExceeded": "브라우저 저장 공간이 부족합니다. 오래된 세이브를 정리해 주세요",
+      "audioContextSuspended": "사운드를 재생하려면 화면을 한 번 클릭해 주세요",
+      "safariITPWarning": "Safari 정책으로 7일 이상 미접속 시 세이브가 삭제될 수 있습니다. 클라우드 동기화를 권장드립니다"
     },
     "notification": {
       "friendRequest": "{name}님이 친구 요청을 보냈습니다",
@@ -314,6 +321,11 @@
     }
   },
   "combat": {
+    "atb": {
+      "ready": "행동 가능",
+      "waiting_reconnect": "재접속 대기 중",
+      "session_replaced": "다른 세션에서 권한 가져감"
+    },
     "skills": {
       "slash": "베기",
       "slash_desc": "기본 근접 공격으로 적을 벤다",

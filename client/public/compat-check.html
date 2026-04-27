@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>크로스브라우저 호환성 검증 — 에테르나 크로니클</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css" />
+  <link rel="stylesheet" href="/src/styles/design-system-battle.css" />
+  <link rel="stylesheet" href="/src/styles/design-system-compat.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: var(--font-body, system-ui, sans-serif);
+      background: var(--ac-bg-primary, #1A1A2E);
+      color: var(--ac-text-primary, #E8E8E8);
+      min-height: 100dvh;
+      min-height: 100vh; /* 폴백 */
+    }
+    h1 { color: var(--ac-accent-gold, #FFD700); margin-top: 0; }
+    h2 { border-bottom: 1px solid var(--ac-frame, #3a3a4a); padding-bottom: 6px; margin-top: 32px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .swatch {
+      padding: 16px; border-radius: 4px;
+      background: var(--ac-bg-panel, #16213E);
+      border: 1px solid var(--ac-frame, #3a3a4a);
+    }
+    .check { color: #2ECC71; }
+    .warn  { color: #FFC107; }
+    .fail  { color: #FF4444; }
+    code {
+      font-family: var(--font-mono, ui-monospace, monospace);
+      background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;
+      font-size: 12px;
+    }
+    .npc-dialog-box {
+      padding: 16px; border-radius: 4px;
+      background: rgba(13,13,26,0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--ac-frame, #3a3a4a);
+    }
+    .item-mythic {
+      display: inline-block; padding: 8px 12px;
+      border: 1px solid #FFD700; color: #FFD700;
+      animation: mythic-pulse 2s ease-in-out infinite;
+    }
+    @keyframes mythic-pulse {
+      0%, 100% { box-shadow: 0 0 4px #FFD700; }
+      50%      { box-shadow: 0 0 16px #FFD700, 0 0 24px rgba(255,215,0,0.4); }
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--ac-frame, #3a3a4a); }
+    th { color: var(--ac-text-secondary, #A0A0A0); font-weight: 500; font-size: 12px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <h1>⚔️ 크로스브라우저 호환성 검증</h1>
+  <p>이 페이지를 Firefox 124+ / Safari 17+ / iOS Safari 17+에서 열어 각 항목을 확인하세요.</p>
+
+  <h2>1. 환경 진단</h2>
+  <table id="env-table">
+    <tr><th>항목</th><th>값</th><th>상태</th></tr>
+  </table>
+
+  <h2>2. backdrop-filter 폴백 (NPC 대화박스)</h2>
+  <div class="npc-dialog-box">
+    "기억은 사라져도, 이야기는 남는다." <br />
+    <small>— Firefox &lt;103, 일부 Safari에서 솔리드 배경으로 폴백</small>
+  </div>
+
+  <h2>3. 아이템 등급 글로우 (myth/ether)</h2>
+  <div class="grid">
+    <div class="swatch"><span class="item-mythic">신화 등급 무기</span></div>
+    <div class="swatch" data-renderer-test="canvas">
+      <span class="item-mythic">Canvas 폴백 미리보기</span>
+      <p><small>body[data-renderer="canvas"] 시 정적 outline으로 단순화</small></p>
+    </div>
+  </div>
+
+  <h2>4. 폼 입력 (Firefox 패딩)</h2>
+  <div class="swatch">
+    <input type="text" placeholder="이름을 입력하세요" />
+    <p><small>Firefox 기본 padding 0 → <code>6px 10px</code> 강제 적용</small></p>
+  </div>
+
+  <h2>5. 호환 토스트 데모</h2>
+  <button onclick="document.body.setAttribute('data-compat-mode','canvas')">canvas 모드 토글</button>
+  <button onclick="document.body.setAttribute('data-compat-mode','normal')">normal 복원</button>
+  <div class="compat-toast" role="status" aria-live="polite">
+    호환 모드 — 일부 그래픽 효과가 단순화됩니다
+  </div>
+
+  <h2>6. launch_checklist §2.1 게이트</h2>
+  <ul>
+    <li>☐ Firefox 124+ (Win/Mac) — 60장 베이스라인 Δ &lt; 5%</li>
+    <li>☐ Safari 17+ (macOS) — 60장 베이스라인 Δ &lt; 5%</li>
+    <li>☐ iOS Safari 17+ — Canvas2D 폴백 정상 동작</li>
+  </ul>
+
+  <script type="module">
+    import { detectAndApply, logCapabilities } from '/src/utils/RendererDetector.ts';
+    const caps = detectAndApply();
+    logCapabilities(caps);
+
+    const rows = [
+      ['Renderer',       caps.renderer,             caps.renderer === 'webgl' ? 'check' : 'warn'],
+      ['Browser engine', caps.engine,               'check'],
+      ['iOS Safari',     String(caps.isIOSSafari),  'check'],
+      ['WebGL version',  String(caps.webglVersion), caps.webglVersion >= 1 ? 'check' : 'fail'],
+      ['backdrop-filter',String(caps.supportsBackdropFilter), caps.supportsBackdropFilter ? 'check' : 'warn'],
+      ['color-mix',      String(caps.supportsColorMix),       caps.supportsColorMix ? 'check' : 'warn'],
+      ['100dvh',         String(caps.supportsDVH),            caps.supportsDVH ? 'check' : 'warn'],
+      ['Compat mode',    caps.compatMode,           caps.compatMode === 'normal' ? 'check' : 'warn'],
+    ];
+    const tbody = document.getElementById('env-table');
+    rows.forEach(([k, v, cls]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${k}</td><td><code>${v}</code></td><td class="${cls}">●</td>`;
+      tbody.appendChild(tr);
+    });
+  </script>
+</body>
+</html>

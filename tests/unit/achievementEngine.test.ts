@@ -21,7 +21,7 @@ interface AchievementDef {
 }
 
 interface ProgressState { [target: string]: number }
-interface FlagState extends Set<string> {}
+type FlagState = Set<string>;
 
 function checkCountCondition(condition: AchievementCondition, progress: ProgressState): boolean {
   return (progress[condition.target] ?? 0) >= (condition.count ?? 0);

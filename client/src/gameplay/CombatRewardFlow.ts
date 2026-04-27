@@ -10,7 +10,7 @@
  */
 
 import * as Phaser from 'phaser';
-import { NetworkManager, CombatResult, CharacterData } from '../network/NetworkManager';
+import { NetworkManager, CombatResult } from '../network/NetworkManager';
 import { GameHUD } from '../ui/GameHUD';
 import { QuestFlowManager } from './QuestFlowManager';
 

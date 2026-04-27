@@ -1,0 +1,186 @@
+/* ============================================================
+ * 에테르나 크로니클 — 크로스브라우저 호환 폴백 시트 v1.0
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-26
+ * 스프린트: 크로스브라우저 호환성 검증 (Firefox·Safari)
+ * 로드 순서: design-system.css → design-system-battle.css → THIS
+ * 원칙: @supports 가드 + 벤더 prefix만 사용. 기본 시트는 절대 수정 X
+ * ============================================================ */
+
+/* ------------------------------------------------------------
+ * 1. backdrop-filter 폴백 (NPC 대화박스, 모달, HUD 패널)
+ * 대상: Firefox <103, Safari 일부 구버전
+ * 전략: 미지원 시 알파 ↑ 솔리드 배경
+ * ------------------------------------------------------------ */
+.npc-dialog-box,
+.modal-panel,
+.hud-overlay {
+  -webkit-backdrop-filter: blur(4px); /* Safari 9-17 prefix */
+  backdrop-filter: blur(4px);
+}
+
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  .npc-dialog-box   { background: rgba(13, 13, 26, 0.95) !important; }
+  .modal-panel      { background: rgba(26, 26, 46, 0.97) !important; }
+  .hud-overlay      { background: rgba(13, 13, 26, 0.88) !important; }
+}
+
+/* ------------------------------------------------------------
+ * 2. iOS Safari 전용 패치 (-webkit-touch-callout 으로 감지)
+ * - 글로우 애니메이션 단순화 (배터리/GPU 보호)
+ * - 픽셀 폰트 안티앨리어싱 OFF
+ * - 100dvh 안전 영역 보장
+ * ------------------------------------------------------------ */
+@supports (-webkit-touch-callout: none) {
+  /* 등급 글로우 단일화 */
+  .item-mythic,
+  .item-ether {
+    box-shadow: 0 0 8px var(--ac-mythic-glow, #ffd700);
+    animation: none;
+    border: 1px solid var(--ac-mythic-glow, #ffd700);
+  }
+
+  /* 픽셀 폰트 정합성 */
+  .font-pixel,
+  .font-title,
+  [class*="bitmap-text"] {
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    image-rendering: pixelated;
+  }
+
+  /* iOS 주소창 이슈 보정 */
+  .full-screen,
+  .battle-stage {
+    height: 100dvh; /* dynamic viewport */
+    min-height: -webkit-fill-available;
+  }
+
+  /* 강조 텍스트 그림자 1겹으로 */
+  .text-emphasis-gold {
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* ------------------------------------------------------------
+ * 3. Firefox 전용 패치 (@-moz-document 또는 @supports)
+ * - 폼 input 기본 패딩 0 → 명시 패딩
+ * - 스크롤바 슬림화 (scrollbar-width)
+ * - WebGL 컨텍스트 손실 폴백 클래스
+ * ------------------------------------------------------------ */
+@supports (-moz-appearance: none) {
+  input[type="text"],
+  input[type="number"],
+  input[type="search"],
+  textarea {
+    padding: 6px 10px; /* Firefox 기본 0 → 강제 */
+    line-height: 1.4;
+  }
+
+  /* Firefox는 ::-webkit-scrollbar 미지원 → scrollbar-* 사용 */
+  .scrollable,
+  .panel-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ac-frame, #3a3a4a) var(--ac-bg-panel, #16213e);
+  }
+}
+
+/* ------------------------------------------------------------
+ * 4. WebGL 미지원/컨텍스트 손실 폴백 (Phaser → Canvas2D 모드)
+ * body[data-renderer="canvas"] 가 RendererDetector.ts 에서 부여됨
+ * postFX(글로우/블러) 대체 → 정적 오버레이
+ * ------------------------------------------------------------ */
+body[data-renderer="canvas"] .item-mythic,
+body[data-renderer="canvas"] .item-ether {
+  box-shadow: 0 0 6px var(--ac-mythic-glow, #ffd700);
+  outline: 1px solid var(--ac-mythic-glow, #ffd700);
+  outline-offset: -2px;
+  animation: none;
+}
+
+body[data-renderer="canvas"] .skill-icon-glow,
+body[data-renderer="canvas"] .boss-aura {
+  /* Bloom 폴백: 알파 0.6 골드 오버레이 */
+  position: relative;
+}
+body[data-renderer="canvas"] .skill-icon-glow::after,
+body[data-renderer="canvas"] .boss-aura::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ------------------------------------------------------------
+ * 5. 컬러 안전망 — color-mix / oklch 미지원 폴백
+ * CBT v1: 기본 시트는 HEX/rgba만 사용하지만, 미래 보호용 가드
+ * ------------------------------------------------------------ */
+@supports not (color: color-mix(in srgb, red, blue)) {
+  :root {
+    /* color-mix 사용 시 HEX 폴백 강제 */
+    --ac-accent-mix: var(--ac-accent-gold, #ffd700);
+  }
+}
+
+/* Safari Display P3 → sRGB 강제 (시프트 방지) */
+@media (color-gamut: p3) {
+  .ui-critical {
+    color: rgb(232, 232, 232); /* P3 자동 확장 차단 */
+  }
+}
+
+/* ------------------------------------------------------------
+ * 6. 모션 안전 (prefers-reduced-motion 강제 적용)
+ * Firefox가 키프레임 부하 클 때 자동 적용
+ * ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 7. 호환 모드 토스트 (RendererDetector → 사용자 안내)
+ * data-compat-mode="canvas|fallback" 로 활성화
+ * ------------------------------------------------------------ */
+.compat-toast {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(13, 13, 26, 0.92);
+  border: 1px solid var(--ac-frame, #3a3a4a);
+  border-radius: 4px;
+  color: var(--ac-text-primary, #e8e8e8);
+  font-size: 12px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+body[data-compat-mode="canvas"] .compat-toast,
+body[data-compat-mode="fallback"] .compat-toast {
+  display: block;
+  animation: compat-toast-slide 4s ease-out forwards;
+}
+
+@keyframes compat-toast-slide {
+  0%   { opacity: 0; transform: translate(-50%, 16px); }
+  10%  { opacity: 1; transform: translate(-50%, 0); }
+  85%  { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -8px); }
+}
+
+/* ============================================================
+ * 끝 — 호환 시트 v1.0
+ * 검증 게이트: launch_checklist §2.1 (3건)
+ *   ☐ Firefox 124+ (Win/Mac) 60장 베이스라인 Δ < 5%
+ *   ☐ Safari 17+ (macOS) 60장 베이스라인 Δ < 5%
+ *   ☐ iOS Safari 17+ Canvas2D 폴백 정상 동작
+ * ============================================================ */

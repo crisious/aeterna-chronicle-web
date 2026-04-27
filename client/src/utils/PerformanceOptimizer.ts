@@ -291,7 +291,7 @@ export interface BundleAnalysis {
 /**
  * Vite 빌드 후 번들 크기 분석 (빌드 스크립트에서 호출)
  */
-export function analyzeBundleSize(buildDir: string): BundleAnalysis {
+export function analyzeBundleSize(_buildDir: string): BundleAnalysis {
   // 이 함수는 Node.js 환경에서 실행됨 (빌드 스크립트)
   // 클라이언트 번들에 포함되지 않음
   return {

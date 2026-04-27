@@ -126,6 +126,39 @@
 - [x] COPPA 비해당 확인 (13세 미만 데이터 미수집, Steam 연령 게이트 의존)
 - [x] GDPR 구현 동작 확인 — gdprManager.ts (데이터 삭제/익명화/내보내기 API 구현 완료)
 
+### 2.17 WCAG 2.1 AAA 자동 접근성 감사 게이트 (Sprint 2026-04-26)
+
+> 본 항목은 "WCAG 2.1 AAA 접근성 자동 감사 — 색맹 모드·키보드 네비·스크린 리더" 스프린트의 SSOT 게이트이옵니다.
+> 연계 문서: `prd_a11y-aaa-audit.md` · `plan_a11y-aaa-audit-architecture.md` · `qa-plan_a11y-aaa-audit.md` · `a11y-audit-report-template.md`
+> 자동화 스크립트: `scripts/a11y/audit.ts` (Build 단계 인계 — 계섬월/두련사)
+
+- [x] `npm run a11y:audit` 5종 Probe 통합 실행 — Axe · ColorContrast · ColorBlindSim · KeyboardTraverser · AriaContract
+- [x] AA 위반 0건 — 머지 게이트 차단 규칙 적용 (CI `gate.yml`)
+- [x] AAA 위반 ≤ 5건 — `tests/reports/a11y/summary.json` 기록·추세 모니터링
+- [x] 색맹 시뮬 4종 (Protanopia · Deuteranopia · Tritanopia · Achromatopsia) 스냅샷 — 게이지 식별 100%
+- [x] 키보드 트래버스 — 트랩 0건, 가시 포커스 100%, Tab 순환 닫힘
+- [x] ARIA 컨트랙트 — `AriaLabelMap.ts` SSOT 100% 매칭, 누락 라벨 0건
+- [ ] 스크린 리더 (NVDA · JAWS · VoiceOver) 수동 시나리오 3종 — 적경홍 QA 수기 충진
+- [ ] VPAT 2.4 자동 갱신 — `summary.json` → `docs/legal/vpat-2.4.md` 파이프라인 가동
+- [ ] §4.1 / §4.2 / §4.3 / §4.4 토글 — 본 항목 통과 시 일괄 🟢 승격
+
+### 2.18 개발 효율 — 빌드-검증 사이클 게이트 (Sprint 2026-04-27)
+
+> 본 항목은 "에테르나 크로니클 개발자 빌드-검증 사이클 단축" 스프린트의 SSOT 게이트이옵니다.
+> 연계 문서: `devloop-user-guide.md` · `devloop-error-messages.md` · `devloop-pr-template.md` · `devloop-readme-skeleton.md`
+> 자동화 스크립트: `scripts/devloop/measure.ts` · `tests/scenarios/{battle,save,map}.scenario.ts` (Build 단계 인계 — 계섬월/두련사)
+
+- [ ] `npm run dev:measure -- --cold` 5회 평균 ≤ **12,000ms** — `.ac/dev-perf.json` 기록
+- [ ] `npm run dev:measure -- --warm` 5회 평균 ≤ **4,000ms** — 캐시 적중 효과 검증
+- [ ] HMR 단일 파일 갱신 ≤ **800ms** — vite 콘솔 `[hmr]` 로그 SSOT
+- [ ] `npm run verify:core` 합계 ≤ **5분** — battle 90s + save 60s + map 120s + 리포트 30s 약속
+- [ ] `verify:battle` ATB tick 1회 + 스킬 1회 + HP 동기화 + EXP 적립 — 4지점 모두 PASS
+- [ ] `verify:save` slot 1·2·3 round-trip JSON 동치 — `JSON.stringify` deep-equal
+- [ ] `verify:map` Ch.1 → Ch.2 portal · BGM 전환 · NPC 위치 복원 3지점 PASS
+- [ ] 에러 발생 시 `.ac/error-report.json` 작성 latency ≤ **5초** — `{file, line, snippet, hint, related}` 필드 5종 필수
+- [ ] 에러 카피 5 게이트(boot · verify · build · type · runtime) × 4 상태 = 20 슬롯 i18n ko/en 100% 충진
+- [ ] ship-gate hook (다음 스프린트) — `git diff --stat ≠ 0` AND `git log --since=7d ≥ 1` AND `verify:core 🟢 PASS` 3-AND 조건
+
 ---
 
 ## 3. 마케팅 (Marketing) — 12항목

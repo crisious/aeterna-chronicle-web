@@ -199,7 +199,10 @@ export class RankingUI {
 
   public show(): void { this.container.setVisible(true); this.switchCategory('power'); }
   public hide(): void { this.container.setVisible(false); }
-  public toggle(): void { this.container.visible ? this.hide() : this.show(); }
+  public toggle(): void {
+    if (this.container.visible) this.hide();
+    else this.show();
+  }
   public isVisible(): boolean { return this.container.visible; }
   public destroy(): void { this.container.destroy(); }
 }

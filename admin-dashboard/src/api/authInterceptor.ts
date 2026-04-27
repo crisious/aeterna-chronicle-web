@@ -5,7 +5,7 @@
  * 401 응답 시 토큰 제거 + 로그인 리다이렉트.
  */
 
-import { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 const TOKEN_KEY = 'admin_token';
 

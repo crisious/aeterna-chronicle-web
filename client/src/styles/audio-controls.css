@@ -1,0 +1,390 @@
+/**
+ * audio-controls.css — 에테르나 크로니클 사운드 시스템 UI
+ *
+ * Single Source of Truth (CSS 측면):
+ *   - 사운드 설정 패널 (Master/BGM/SFX/UI 4채널 분리)
+ *   - 오디오 큐 시각 피드백 (크리티컬·레벨업·아이템 획득·BGM 페이드)
+ *   - 음향 → 시각 동기화 토큰 (감각 보조 모드: 청각 보조 시 시각 강조)
+ *
+ * 사용처:
+ *   - SettingsManager 모달 → [사운드] 탭
+ *   - 전투 HUD → 크리티컬/회피 펄스
+ *   - UI 토스트 → 아이템 획득/레벨업
+ *   - BattleScene → BGM 트랜지션 페이드 마스크
+ *
+ * 디자인 약속:
+ *   - BGM 채널 = ether 청광 (--accent-ether)
+ *   - SFX 채널 = legendary 황염 (--rarity-legendary)
+ *   - UI  채널 = gold 강조 (--text-accent)
+ *   - 음소거(mute) = danger 적색 빗금 (--accent-danger)
+ *   - 모든 시각 피드백은 prefers-reduced-motion 시 즉시 정지/투명도만 변경
+ *
+ * 참조: DESIGN.md §11, design-system.css §1, soundManifest.ts
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-27
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 채널 색 토큰 — 사운드 시스템 SSOT
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --audio-ch-master: var(--text-accent);     /* #FFD700 */
+  --audio-ch-bgm:    var(--accent-ether);    /* #89CFF0 */
+  --audio-ch-sfx:    var(--rarity-legendary);/* #F39C12 */
+  --audio-ch-ui:     var(--text-accent);     /* #FFD700 */
+  --audio-mute:      var(--accent-danger);   /* #FF4444 */
+
+  --audio-pulse-fast:   220ms;
+  --audio-pulse-normal: 480ms;
+  --audio-fade-bgm:     1200ms;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 사운드 설정 패널 (.ae-audio-panel)
+   ═══════════════════════════════════════════════════════════════ */
+.ae-audio-panel {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-panel);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  max-width: 520px;
+}
+
+.ae-audio-panel__title {
+  font-family: var(--font-title);
+  font-size: var(--font-2xl);
+  color: var(--text-accent);
+  margin: 0 0 var(--space-2) 0;
+  letter-spacing: 0.04em;
+}
+
+.ae-audio-panel__hint {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-normal);
+  margin: 0;
+}
+
+/* ── 채널 행 ── */
+.ae-audio-channel {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-frame);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--ch, var(--audio-ch-master));
+  border-radius: 6px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.ae-audio-channel:hover {
+  background: var(--bg-hover);
+}
+
+.ae-audio-channel[data-channel="master"] { --ch: var(--audio-ch-master); }
+.ae-audio-channel[data-channel="bgm"]    { --ch: var(--audio-ch-bgm); }
+.ae-audio-channel[data-channel="sfx"]    { --ch: var(--audio-ch-sfx); }
+.ae-audio-channel[data-channel="ui"]     { --ch: var(--audio-ch-ui); }
+
+.ae-audio-channel[aria-disabled="true"],
+.ae-audio-channel[data-muted="true"] {
+  --ch: var(--audio-mute);
+  opacity: 0.6;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 6px,
+    rgba(255, 68, 68, 0.08) 6px,
+    rgba(255, 68, 68, 0.08) 12px
+  );
+}
+
+/* 아이콘 자리 (배경 도형으로 채널 기호) */
+.ae-audio-channel__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--ch), transparent 70%);
+  box-shadow: 0 0 10px var(--ch);
+}
+
+.ae-audio-channel__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ae-audio-channel__name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ae-audio-channel__meta {
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+/* ── 볼륨 슬라이더 ── */
+.ae-audio-channel__slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 200px;
+  height: 6px;
+  background: var(--gauge-bg);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.ae-audio-channel__slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--ch) 0%,
+    var(--ch) calc(var(--vol, 80) * 1%),
+    var(--gauge-bg) calc(var(--vol, 80) * 1%),
+    var(--gauge-bg) 100%
+  );
+}
+
+.ae-audio-channel__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ch);
+  border: 2px solid var(--bg-abyss);
+  margin-top: -5px;
+  box-shadow: 0 0 8px var(--ch);
+  transition: transform var(--transition-fast);
+}
+
+.ae-audio-channel__slider:hover::-webkit-slider-thumb,
+.ae-audio-channel__slider:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+.ae-audio-channel__slider:focus-visible {
+  outline: 2px solid var(--border-accent);
+  outline-offset: 4px;
+}
+
+/* ── 음소거 토글 ── */
+.ae-audio-channel__mute {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: var(--font-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ae-audio-channel__mute:hover {
+  border-color: var(--ch);
+  color: var(--ch);
+}
+
+.ae-audio-channel__mute[aria-pressed="true"] {
+  border-color: var(--audio-mute);
+  color: var(--audio-mute);
+  background: rgba(255, 68, 68, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. 라이선스 배지 — CC0/오픈 검증 표시
+   ═══════════════════════════════════════════════════════════════ */
+.ae-audio-license {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  letter-spacing: 0.04em;
+  border: 1px solid currentColor;
+}
+
+.ae-audio-license[data-tier="cc0"]   { color: var(--accent-success); }
+.ae-audio-license[data-tier="ccby"]  { color: var(--accent-ether); }
+.ae-audio-license[data-tier="open"]  { color: var(--rarity-uncommon); }
+.ae-audio-license[data-tier="risk"]  {
+  color: var(--audio-mute);
+  background: rgba(255, 68, 68, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. 오디오 큐 시각 피드백 (감각 동기화)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 4.1 크리티컬 히트 펄스 — SFX 황염 + 화면 가장자리 발광 */
+@keyframes ae-audio-crit-pulse {
+  0%   { box-shadow: inset 0 0 0 0 var(--rarity-legendary); opacity: 1; }
+  40%  { box-shadow: inset 0 0 60px 10px var(--rarity-legendary); opacity: 0.9; }
+  100% { box-shadow: inset 0 0 0 0 transparent; opacity: 0; }
+}
+
+.ae-audio-cue-crit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-hud);
+  animation: ae-audio-crit-pulse var(--audio-pulse-normal) ease-out forwards;
+}
+
+/* 4.2 회피(닷지) 잔상 — BGM 청광 빠른 스윕 */
+@keyframes ae-audio-dodge-sweep {
+  0%   { transform: translateX(-30%); opacity: 0; }
+  50%  { opacity: 0.8; }
+  100% { transform: translateX(30%); opacity: 0; }
+}
+
+.ae-audio-cue-dodge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 30%,
+    rgba(137, 207, 240, 0.3) 50%,
+    transparent 70%
+  );
+  animation: ae-audio-dodge-sweep var(--audio-pulse-fast) ease-out forwards;
+}
+
+/* 4.3 레벨업 — UI 금광 상승 */
+@keyframes ae-audio-levelup-rise {
+  0%   { transform: translateY(20px) scale(0.9); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.1); opacity: 0; }
+}
+
+.ae-audio-cue-levelup {
+  position: absolute;
+  font-family: var(--font-title);
+  font-size: var(--font-3xl);
+  color: var(--text-accent);
+  text-shadow: var(--glow-gold);
+  pointer-events: none;
+  animation: ae-audio-levelup-rise 1400ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+/* 4.4 아이템 획득 토스트 */
+.ae-audio-cue-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-panel);
+  border: 1px solid var(--text-accent);
+  border-radius: 6px;
+  box-shadow: var(--glow-gold);
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  animation: ae-audio-toast-in var(--audio-pulse-normal) ease-out;
+}
+
+@keyframes ae-audio-toast-in {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* 4.5 BGM 크로스페이드 마스크 — 씬 전환 시 사용 */
+.ae-audio-bgm-fade {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-ui-overlay);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(13, 13, 26, 0.4) 60%,
+    rgba(13, 13, 26, 0.7) 100%
+  );
+  opacity: 0;
+  transition: opacity var(--audio-fade-bgm) ease;
+}
+
+.ae-audio-bgm-fade[data-phase="out"] { opacity: 1; }
+
+/* 4.6 사운드 비주얼라이저 (선택적, 메뉴 화면 BGM 표시) */
+.ae-audio-visualizer {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+}
+
+.ae-audio-visualizer__bar {
+  width: 3px;
+  background: var(--audio-ch-bgm);
+  border-radius: 1px;
+  animation: ae-audio-vis-bar 900ms ease-in-out infinite;
+}
+
+.ae-audio-visualizer__bar:nth-child(1) { animation-delay: 0ms;   }
+.ae-audio-visualizer__bar:nth-child(2) { animation-delay: 120ms; }
+.ae-audio-visualizer__bar:nth-child(3) { animation-delay: 240ms; }
+.ae-audio-visualizer__bar:nth-child(4) { animation-delay: 360ms; }
+.ae-audio-visualizer__bar:nth-child(5) { animation-delay: 480ms; }
+
+@keyframes ae-audio-vis-bar {
+  0%, 100% { height: 30%; }
+  50%      { height: 100%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. 접근성 — 청각 보조 모드 (Captions for Sound)
+     사운드 매니저가 mute=true 또는 prefers-reduced-audio일 때
+     [data-audio-captions="on"] 을 body에 토글 → 시각 단서 강화
+   ═══════════════════════════════════════════════════════════════ */
+[data-audio-captions="on"] .ae-audio-cue-crit   { animation-duration: var(--audio-pulse-normal); border: 4px solid var(--rarity-legendary); }
+[data-audio-captions="on"] .ae-audio-cue-dodge  { background: linear-gradient(90deg, transparent 0%, rgba(137,207,240,0.6) 50%, transparent 100%); }
+[data-audio-captions="on"] .ae-audio-cue-levelup::after {
+  content: " LEVEL UP!";
+  font-size: var(--font-lg);
+  color: var(--accent-success);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. prefers-reduced-motion — 모션 최소화 폴백
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .ae-audio-cue-crit,
+  .ae-audio-cue-dodge,
+  .ae-audio-cue-levelup,
+  .ae-audio-cue-item,
+  .ae-audio-visualizer__bar {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .ae-audio-bgm-fade { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. 반응형 — 모바일 (모달 가로폭 축소)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .ae-audio-panel { padding: var(--space-4); }
+  .ae-audio-channel {
+    grid-template-columns: 24px 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  .ae-audio-channel__slider {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}

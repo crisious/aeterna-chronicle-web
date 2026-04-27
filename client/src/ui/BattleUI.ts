@@ -73,7 +73,7 @@ export class BattleUI {
   // ─── 스킬 바 생성 ─────────────────────────────────────────────
 
   private _createSkillBar(): void {
-    const totalWidth = SKILL_COUNT * SKILL_SLOT_SIZE + (SKILL_COUNT - 1) * SKILL_GAP;
+    const _totalWidth = SKILL_COUNT * SKILL_SLOT_SIZE + (SKILL_COUNT - 1) * SKILL_GAP;
     const startX = 40; // Bottom-left, below status panel
 
     for (let i = 0; i < SKILL_COUNT; i++) {

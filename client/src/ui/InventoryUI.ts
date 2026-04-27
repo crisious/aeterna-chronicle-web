@@ -241,7 +241,7 @@ export class InventoryUI {
     this.container.add(closeBtn);
   }
 
-  private _buildFilterBar(width: number): void {
+  private _buildFilterBar(_width: number): void {
     const types = ['전체', '무기', '방어구', '소비', '재료', '퀘스트'];
     const typeKeys = ['', 'weapon', 'armor', 'consumable', 'material', 'quest'];
     types.forEach((label, i) => {

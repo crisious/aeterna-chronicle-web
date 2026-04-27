@@ -286,7 +286,14 @@
       "bannedWord": "Contains a prohibited word",
       "crashRecovery": "Recovered from unexpected error",
       "saveFailure": "Failed to save. Please try again",
-      "loadFailure": "Failed to load data"
+      "loadFailure": "Failed to load data",
+      "browserUnsupported": "This browser is not supported. Please use the latest Chrome, Firefox, or Safari",
+      "webglContextLost": "Graphics context suspended — recovering...",
+      "webglContextRestored": "Graphics restored. Please wait a moment",
+      "indexedDBBlocked": "Some save features are restricted in private browsing mode. Continue with temporary save?",
+      "storageQuotaExceeded": "Browser storage is full. Please clear old save data",
+      "audioContextSuspended": "Click the screen once to enable audio",
+      "safariITPWarning": "Due to Safari policy, saves may be deleted after 7 days of inactivity. Cloud sync is recommended"
     },
     "notification": {
       "friendRequest": "{name} sent a friend request",
@@ -314,6 +321,11 @@
     }
   },
   "combat": {
+    "atb": {
+      "ready": "Ready",
+      "waiting_reconnect": "Waiting for reconnect",
+      "session_replaced": "Session taken by another connection"
+    },
     "skills": {
       "slash": "Slash",
       "slash_desc": "A basic melee attack that slashes the enemy",

@@ -52,6 +52,9 @@ export interface ScreenAriaMap {
   elements: AriaElementDef[];
 }
 
+/** 자동 감사에서 계약 잠금용으로 사용한다. */
+export const ARIA_CONTRACT_VERSION = '2026-04-26-a11y-audit-assets-v1';
+
 // ─── 매핑 정의 ──────────────────────────────────────────────────
 
 export const ARIA_MAPS: ScreenAriaMap[] = [

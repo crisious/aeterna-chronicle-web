@@ -1,0 +1,163 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "owner": "계섬월",
+    "lastUpdated": "2026-04-26"
+  },
+  "scenarios": [
+    {
+      "id": "fixture-manual-save-safe-zone",
+      "title": "안전지대 수동 저장",
+      "surface": "integration",
+      "tags": ["ui", "inventory", "save", "manual-save"],
+      "userId": "fixture-user-1",
+      "characterId": "fixture-char-1",
+      "zoneId": "argentium_town",
+      "storageMode": "localStorage",
+      "initialInventory": [
+        {
+          "id": "slot-weapon-010",
+          "itemId": "WP-010-bronzeSword",
+          "name": "청동검",
+          "type": "weapon",
+          "quantity": 1,
+          "rarity": "common",
+          "stats": {
+            "attack": 4
+          },
+          "equipSlot": null,
+          "stackable": false,
+          "maxStack": 1,
+          "isEquipped": false
+        }
+      ],
+      "saveData": {
+        "character": {
+          "level": 12,
+          "exp": 2100,
+          "hp": 160,
+          "mp": 70,
+          "classId": "ether_knight",
+          "stats": {
+            "attack": 21,
+            "defense": 19
+          }
+        },
+        "inventory": [
+          {
+            "slotId": "slot-weapon-010",
+            "itemId": "WP-010-bronzeSword",
+            "quantity": 1
+          }
+        ],
+        "equipment": {
+          "weapon": null,
+          "body": null
+        },
+        "questProgress": [
+          {
+            "questId": "q-main-002",
+            "status": "active",
+            "progress": [1, 3]
+          }
+        ],
+        "chapterProgress": [
+          {
+            "chapter": 2,
+            "status": "in_progress"
+          }
+        ],
+        "storyFlags": {
+          "metStorageKeeper": true
+        },
+        "location": {
+          "zoneId": "argentium_town",
+          "x": 88,
+          "y": 144
+        },
+        "currencies": {
+          "gold": 3200
+        },
+        "playtime": 3600
+      },
+      "actions": [
+        { "type": "toggle_inventory", "hotkey": "KeyI" },
+        { "type": "select_item", "itemId": "WP-010-bronzeSword" },
+        { "type": "equip_item", "itemId": "WP-010-bronzeSword" },
+        { "type": "manual_save", "slot": 1 }
+      ],
+      "expectedUi": {
+        "inventoryVisible": true,
+        "selectedItemId": "WP-010-bronzeSword",
+        "selectedSaveSlot": 1,
+        "expectedToastKey": "ui.menu.saveGame",
+        "expectedStorageMode": "localStorage"
+      },
+      "expectedSlots": [
+        { "slot": 0, "label": "자동 저장", "occupied": false, "isAuto": true },
+        { "slot": 1, "label": "챕터2 거점", "occupied": true, "isAuto": false },
+        { "slot": 2, "label": "빈 슬롯", "occupied": false, "isAuto": false },
+        { "slot": 3, "label": "빈 슬롯", "occupied": false, "isAuto": false }
+      ]
+    },
+    {
+      "id": "fixture-storage-fallback-memory",
+      "title": "저장소 차단 시 memory fallback",
+      "surface": "e2e",
+      "tags": ["ui", "save", "storage", "fallback"],
+      "userId": "fixture-user-2",
+      "characterId": "fixture-char-2",
+      "zoneId": "argentium_town",
+      "storageMode": "memory",
+      "initialInventory": [],
+      "saveData": {
+        "character": {
+          "level": 8,
+          "exp": 900,
+          "hp": 120,
+          "mp": 40,
+          "classId": "shadow_weaver",
+          "stats": {
+            "attack": 16,
+            "speed": 12
+          }
+        },
+        "inventory": [],
+        "equipment": {},
+        "questProgress": [],
+        "chapterProgress": [
+          {
+            "chapter": 1,
+            "status": "completed"
+          }
+        ],
+        "storyFlags": {},
+        "location": {
+          "zoneId": "argentium_town",
+          "x": 16,
+          "y": 32
+        },
+        "currencies": {
+          "gold": 900
+        },
+        "playtime": 1200
+      },
+      "actions": [
+        { "type": "manual_save", "slot": 1 }
+      ],
+      "expectedUi": {
+        "inventoryVisible": false,
+        "selectedItemId": null,
+        "selectedSaveSlot": 1,
+        "expectedToastKey": "system.error.indexedDBBlocked",
+        "expectedStorageMode": "memory"
+      },
+      "expectedSlots": [
+        { "slot": 0, "label": "자동 저장", "occupied": false, "isAuto": true },
+        { "slot": 1, "label": "임시 저장", "occupied": true, "isAuto": false },
+        { "slot": 2, "label": "빈 슬롯", "occupied": false, "isAuto": false },
+        { "slot": 3, "label": "빈 슬롯", "occupied": false, "isAuto": false }
+      ]
+    }
+  ]
+}

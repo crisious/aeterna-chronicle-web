@@ -1,0 +1,150 @@
+/**
+ * boss-intro.css — 보스 인트로 컷씬 (3,000ms · 6단계)
+ *
+ * 출처: docs/release/assets_monster-art-pipeline.md §6
+ * 트리거: engine.battle.startBoss() → DOM `.boss-intro-overlay` 마운트
+ * 종료: T=3000ms 자동 unmount + 입력 활성화
+ *
+ * DOM 구조:
+ *   <div class="boss-intro-overlay">
+ *     <div class="boss-intro-stage">
+ *       <img class="boss-intro-sprite" src="..."/>
+ *       <h1 class="boss-intro-name">망각의 군주</h1>
+ *     </div>
+ *   </div>
+ *
+ * 작성: 가춘운 · 2026-04-27 — Build (구현)
+ */
+
+/* ────────────────────────────────────────────────────────
+   [0] 오버레이 (배경 페이드)
+   ──────────────────────────────────────────────────────── */
+.boss-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: rgba(13, 13, 26, 0);
+  animation: boss-intro-bg 3000ms forwards;
+}
+
+@keyframes boss-intro-bg {
+  0%   { background: rgba(13, 13, 26, 0); }
+  20%  { background: rgba(22, 33, 62, 0.85); }   /* T≈600ms */
+  100% { background: rgba(22, 33, 62, 0.85); }
+}
+
+/* ────────────────────────────────────────────────────────
+   [1] 화면 진동 — T=0~200ms
+   ──────────────────────────────────────────────────────── */
+.boss-intro-stage {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  animation: boss-intro-shake 200ms ease-out 0ms;
+}
+
+@keyframes boss-intro-shake {
+  0%   { transform: translate(-50%, -50%); }
+  25%  { transform: translate(calc(-50% - 3px), calc(-50% + 1px)); }
+  50%  { transform: translate(calc(-50% + 2px), calc(-50% - 2px)); }
+  75%  { transform: translate(calc(-50% - 2px), calc(-50% + 2px)); }
+  100% { transform: translate(-50%, -50%); }
+}
+
+/* ────────────────────────────────────────────────────────
+   [3] 보스 sprite + 림 글로우 페이드인 — T=200~1000ms
+   ──────────────────────────────────────────────────────── */
+.boss-intro-sprite {
+  display: block;
+  margin: 0 auto 16px;
+  image-rendering: pixelated;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: boss-rim-fade 800ms ease-out 200ms forwards;
+}
+
+@keyframes boss-rim-fade {
+  0%   {
+    opacity: 0;
+    transform: scale(0.85);
+    filter: drop-shadow(0 0 0 #89CFF0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px #89CFF0)
+            drop-shadow(0 0 16px rgba(137, 207, 240, 0.6));
+  }
+}
+
+/* ────────────────────────────────────────────────────────
+   [4][5] 이름 타이포 페이드인 + 펄스 — T=800~2500ms
+   ──────────────────────────────────────────────────────── */
+.boss-intro-name {
+  font-family: 'BookkMyungjo', 'Galmuri11', serif;
+  font-size: 32px;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  margin: 0;
+  background: linear-gradient(135deg, #FFD700 0%, #89CFF0 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  opacity: 0;
+  transform: translateY(8px);
+  animation:
+    boss-name-fade  1200ms ease-out 800ms forwards,
+    boss-name-pulse  600ms ease-in-out 1900ms 1;
+}
+
+@keyframes boss-name-fade {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes boss-name-pulse {
+  0%, 100% { text-shadow: 0 0 8px #89CFF0; }
+  50%      { text-shadow: 0 0 24px #89CFF0, 0 0 12px #FFD700; }
+}
+
+/* ────────────────────────────────────────────────────────
+   [6] UI fade-in — T=2500~3000ms (HP바·스킬바 등)
+   ──────────────────────────────────────────────────────── */
+.boss-intro-ui {
+  opacity: 0;
+  animation: ui-fade-in 500ms ease-out 2500ms forwards;
+}
+@keyframes ui-fade-in {
+  to { opacity: 1; }
+}
+
+/* ────────────────────────────────────────────────────────
+   접근성 — prefers-reduced-motion
+   3000ms 컷씬 → 즉시 표시 (정지 화면 800ms)
+   그라디언트 이름 + 림 글로우는 보존
+   ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .boss-intro-overlay {
+    animation: none;
+    background: rgba(22, 33, 62, 0.85);
+  }
+  .boss-intro-stage {
+    animation: none;
+    transform: translate(-50%, -50%);
+  }
+  .boss-intro-sprite {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: drop-shadow(0 0 8px #89CFF0);
+  }
+  .boss-intro-name {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    text-shadow: 0 0 8px #89CFF0;
+  }
+  .boss-intro-ui { animation: none; opacity: 1; }
+}

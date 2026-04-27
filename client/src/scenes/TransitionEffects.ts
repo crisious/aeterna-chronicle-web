@@ -374,7 +374,7 @@ export class VfxPlayer {
    * 환경 파티클 이미터 생성 (비/눈/에테르 광선)
    */
   createEnvironmentParticles(type: 'rain' | 'snow' | 'ether_beam'): Phaser.GameObjects.Particles.ParticleEmitter | null {
-    const { width, height } = this.scene.cameras.main;
+    const { width, height: _height } = this.scene.cameras.main;
 
     // generateTexture fallback
     const texKey = `particle_${type}`;

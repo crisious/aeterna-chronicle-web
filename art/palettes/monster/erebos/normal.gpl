@@ -1,0 +1,24 @@
+GIMP Palette
+Name: Aeterna-Erebos-Normal-16
+Columns: 4
+# SSOT: docs/release/assets_monster-art-pipeline.md §3.1
+# Author: 가춘운 (CMO/Design) · 2026-04-27
+# Use:    Aseprite → Palette → Load Palette
+# Region: 에레보스 (Ch.1) · Tier: NORMAL (16색)
+#
+  0   0   0	black-outline
+ 13  13  26	deep-void
+ 26  26  46	base-erebos
+ 42  42  58	frame-shadow
+ 74  74  90	frame-mid
+107  91 149	mist-purple
+139 122 168	wraith-violet
+ 92  75 126	bruise-purple
+ 61  48  80	abyss-purple
+160 160 160	bone-white
+ 96  96  96	dust-grey
+232 232 232	rune-light
+ 80  60  40	rust-brown
+255  68  68	blood-mark
+255 215   0	loot-gold
+137 207 240	ether-trace

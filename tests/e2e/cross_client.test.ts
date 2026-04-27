@@ -13,11 +13,11 @@ interface MockClient {
   userId: string;
   username: string;
   connected: boolean;
-  socket: { emit: (event: string, data: unknown) => void; on: (event: string, cb: Function) => void };
+  socket: { emit: (event: string, data: unknown) => void; on: (event: string, cb: (...args: unknown[]) => void) => void };
 }
 
 function createMockClient(platform: MockClient['platform'], userId: string, username: string): MockClient {
-  const listeners = new Map<string, Function[]>();
+  const listeners = new Map<string, Array<(...args: unknown[]) => void>>();
   return {
     id: `${platform}-${userId}`,
     platform,
@@ -26,7 +26,7 @@ function createMockClient(platform: MockClient['platform'], userId: string, user
     connected: true,
     socket: {
       emit: (_event: string, _data: unknown) => { /* mock */ },
-      on: (event: string, cb: Function) => {
+      on: (event: string, cb: (...args: unknown[]) => void) => {
         if (!listeners.has(event)) listeners.set(event, []);
         listeners.get(event)!.push(cb);
       },

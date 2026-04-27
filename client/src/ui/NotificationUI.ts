@@ -337,7 +337,10 @@ export class NotificationUI {
 
   public showPanel(): void { this.panelContainer.setVisible(true); this.loadNotifications(); }
   public hidePanel(): void { this.panelContainer.setVisible(false); }
-  public togglePanel(): void { this.panelContainer.visible ? this.hidePanel() : this.showPanel(); }
+  public togglePanel(): void {
+    if (this.panelContainer.visible) this.hidePanel();
+    else this.showPanel();
+  }
   public isPanelVisible(): boolean { return this.panelContainer.visible; }
   public getUnreadCount(): number { return this.unreadCount; }
 

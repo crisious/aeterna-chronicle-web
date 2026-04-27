@@ -179,6 +179,7 @@ export class CombatEngine {
   getState(): CombatState { return this.state; }
   getCombatId(): string { return this.combatId; }
   getCurrentTick(): number { return this.currentTick; }
+  getTickIntervalMs(): number { return this.config.tickIntervalMs; }
 
   getParticipant(id: string): CombatParticipant | undefined {
     return this.participants.get(id);

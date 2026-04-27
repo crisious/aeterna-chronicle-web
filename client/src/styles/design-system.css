@@ -1,0 +1,647 @@
+/**
+ * design-system.css — 에테르나 크로니클 디자인 시스템 스타일시트
+ *
+ * Single Source of Truth (CSS 측면):
+ *   - 디자인 토큰: design-tokens.ts 와 1:1 매칭
+ *   - 유틸리티 클래스: 패널/버튼/게이지/등급/지역테마/타이포
+ *
+ * 사용처:
+ *   - index.html (로딩 화면)
+ *   - HTML 오버레이 (에러, 공지, 설정 모달, 관리자 대시보드)
+ *   - style-guide.html (비주얼 QA 페이지)
+ *
+ * 참조: DESIGN.md v1.0, design-tokens.ts
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-21
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 디자인 토큰 (CSS Custom Properties)
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* ── 배경 ── */
+  --bg-abyss:   #0D0D1A;
+  --bg-primary: #1A1A2E;
+  --bg-panel:   #16213E;
+  --bg-frame:   #2A2A3A;
+  --bg-button:  #3A3A4A;
+  --bg-hover:   #4A4A5A;
+  --bg-input:   #0D0D1A;
+
+  /* ── 텍스트 ── */
+  --text-primary:   #E8E8E8;
+  --text-secondary: #A0A0A0;
+  --text-muted:     #606060;
+  --text-accent:    #FFD700;
+  --text-warning:   #FF4444;
+
+  /* ── 액센트 ── */
+  --accent-ether:   #89CFF0;
+  --accent-success: #2ECC71;
+  --accent-danger:  #FF4444;
+
+  /* ── 테두리 ── */
+  --border-default: #5A5A6A;
+  --border-accent:  #FFD700;
+  --border-subtle:  #3A3A4A;
+
+  /* ── 게이지 ── */
+  --gauge-hp-full: #2ECC71;
+  --gauge-hp-low:  #E74C3C;
+  --gauge-mp-start: #3498DB;
+  --gauge-mp-end:   #9B59B6;
+  --gauge-exp:      #F39C12;
+  --gauge-bg:       #333333;
+
+  /* ── 아이템 등급 ── */
+  --rarity-common:    #808080;
+  --rarity-uncommon:  #2ECC71;
+  --rarity-rare:      #3498DB;
+  --rarity-epic:      #9B59B6;
+  --rarity-legendary: #F39C12;
+  --rarity-mythic:    #E74C3C;
+  --rarity-ether:     #89CFF0;
+
+  /* ── 지역 발광 ── */
+  --region-erebos:     #89CFF0;
+  --region-silvanheim: #7DF9FF;
+  --region-solaris:    #FFD700;
+  --region-argentium:  #FFA500;
+  --region-icefield:   #00BFFF;
+  --region-britalia:   #48D1CC;
+  --region-mistsea:    #DDA0DD;
+  --region-abyss:      #FF00FF;
+
+  /* ── 폰트 ── */
+  --font-body:  Pretendard, 'Noto Sans KR', Inter, system-ui, sans-serif;
+  --font-title: '여기어때 잘난체 Bold', 'Pirata One', Cinzel, serif;
+  --font-mono:  'JetBrains Mono', monospace;
+
+  /* ── 스페이싱 (4px 베이스) ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+
+  /* ── 타이포 스케일 ── */
+  --font-xs:   10px;
+  --font-sm:   12px;
+  --font-md:   14px;
+  --font-lg:   16px;
+  --font-xl:   20px;
+  --font-2xl:  24px;
+  --font-3xl:  32px;
+
+  /* ── 라인 하이트 ── */
+  --lh-tight:  1.2;
+  --lh-normal: 1.4;
+  --lh-loose:  1.6;
+
+  /* ── 트랜지션 ── */
+  --transition-fast:   150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow:   500ms ease;
+
+  /* ── 레이어 (z-index) ── */
+  --z-hud:           700;
+  --z-ui-overlay:    800;
+  --z-dialogue:      850;
+  --z-modal:         900;
+  --z-notification:  950;
+  --z-loading:      9999;
+
+  /* ── 그림자 & 발광 ── */
+  --glow-ether: 0 0 8px rgba(137, 207, 240, 0.4), 0 0 16px rgba(137, 207, 240, 0.2);
+  --glow-gold:  0 0 8px rgba(255, 215, 0, 0.4), 0 0 16px rgba(255, 215, 0, 0.2);
+  --shadow-panel: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 8px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 리셋 & 베이스
+   ═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: var(--lh-normal);
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. 타이포그래피 유틸리티
+   ═══════════════════════════════════════════════════════════════ */
+.text-xs   { font-size: var(--font-xs); }
+.text-sm   { font-size: var(--font-sm); }
+.text-md   { font-size: var(--font-md); }
+.text-lg   { font-size: var(--font-lg); }
+.text-xl   { font-size: var(--font-xl); }
+.text-2xl  { font-size: var(--font-2xl); }
+.text-3xl  { font-size: var(--font-3xl); }
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.text-accent    { color: var(--text-accent); }
+.text-warning   { color: var(--text-warning); }
+.text-ether     { color: var(--accent-ether); }
+.text-success   { color: var(--accent-success); }
+.text-danger    { color: var(--accent-danger); }
+
+.font-title { font-family: var(--font-title); letter-spacing: 1px; }
+.font-mono  { font-family: var(--font-mono); }
+
+.heading-1 {
+  font-family: var(--font-title);
+  font-size: var(--font-3xl);
+  color: var(--text-accent);
+  margin: 0 0 var(--space-4);
+  letter-spacing: 2px;
+}
+
+.heading-2 {
+  font-family: var(--font-title);
+  font-size: var(--font-2xl);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.heading-3 {
+  font-size: var(--font-xl);
+  color: var(--accent-ether);
+  margin: 0 0 var(--space-2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. 패널 (Panel)
+   ═══════════════════════════════════════════════════════════════ */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  padding: var(--space-4);
+  box-shadow: var(--shadow-panel);
+}
+
+.panel--accent {
+  border: 2px solid var(--border-accent);
+  box-shadow: var(--shadow-panel), var(--glow-gold);
+}
+
+.panel--transparent {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  box-shadow: none;
+}
+
+.panel--modal {
+  background: var(--bg-primary);
+  border: 2px solid var(--border-accent);
+  border-radius: 4px;
+  padding: var(--space-6);
+  box-shadow: var(--shadow-modal);
+}
+
+.panel--tooltip {
+  background: var(--bg-abyss);
+  border: 1px solid var(--border-subtle);
+  padding: var(--space-3);
+  font-size: var(--font-sm);
+  max-width: 320px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. 버튼 (Button)
+   ═══════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  min-height: 32px;
+  background: var(--bg-button);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  font-size: var(--font-md);
+  font-family: var(--font-body);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  user-select: none;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: #FFFFFF;
+}
+
+.btn:active:not(:disabled) {
+  background: var(--bg-frame);
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-ether);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  background: #2A2A2A;
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 버튼 변형 */
+.btn--primary {
+  background: #1A3A5A;
+  border-color: var(--accent-ether);
+  color: var(--accent-ether);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #2A4A6A;
+  color: #FFFFFF;
+  box-shadow: var(--glow-ether);
+}
+
+.btn--danger {
+  background: #4A1A1A;
+  border-color: var(--accent-danger);
+  color: #FF6666;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: #5A2A2A;
+  color: #FF8888;
+}
+
+/* 버튼 사이즈 */
+.btn--sm { min-height: 24px; padding: var(--space-1) var(--space-3); font-size: var(--font-sm); }
+.btn--lg { min-height: 40px; padding: var(--space-3) var(--space-6); font-size: var(--font-lg); }
+
+/* ═══════════════════════════════════════════════════════════════
+   6. 게이지 바 (Gauge)
+   ═══════════════════════════════════════════════════════════════ */
+.gauge {
+  width: 100%;
+  height: 12px;
+  background: var(--gauge-bg);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.gauge__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-normal);
+}
+
+.gauge--hp .gauge__fill {
+  background: linear-gradient(90deg, var(--gauge-hp-low), var(--gauge-hp-full));
+}
+
+.gauge--mp .gauge__fill {
+  background: linear-gradient(90deg, var(--gauge-mp-start), var(--gauge-mp-end));
+}
+
+.gauge--exp .gauge__fill {
+  background: var(--gauge-exp);
+  box-shadow: 0 0 4px rgba(243, 156, 18, 0.5);
+}
+
+.gauge--sm { height: 6px; }
+.gauge--lg { height: 20px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   7. 아이템 등급 (Rarity)
+   ═══════════════════════════════════════════════════════════════ */
+.rarity {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  font-size: var(--font-xs);
+  font-weight: bold;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.rarity--common    { color: var(--rarity-common);    border: 1px solid var(--rarity-common); }
+.rarity--uncommon  { color: var(--rarity-uncommon);  border: 1px solid var(--rarity-uncommon); }
+.rarity--rare      { color: var(--rarity-rare);      border: 1px solid var(--rarity-rare); }
+.rarity--epic      { color: var(--rarity-epic);      border: 1px solid var(--rarity-epic);
+                     box-shadow: 0 0 8px rgba(155, 89, 182, 0.5); }
+.rarity--legendary { color: var(--rarity-legendary); border: 1px solid var(--rarity-legendary);
+                     box-shadow: 0 0 12px rgba(243, 156, 18, 0.7); }
+.rarity--mythic    { color: var(--rarity-mythic);    border: 1px solid var(--rarity-mythic);
+                     box-shadow: 0 0 14px rgba(231, 76, 60, 0.8);
+                     animation: mythic-pulse 2s ease-in-out infinite; }
+.rarity--ether     { color: var(--rarity-ether);     border: 1px solid var(--rarity-ether);
+                     box-shadow: 0 0 16px rgba(137, 207, 240, 1.0);
+                     animation: ether-pulse 2.5s ease-in-out infinite; }
+
+@keyframes mythic-pulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(231, 76, 60, 0.8); }
+  50%      { box-shadow: 0 0 22px rgba(231, 76, 60, 1.0); }
+}
+
+@keyframes ether-pulse {
+  0%, 100% { box-shadow: 0 0 16px rgba(137, 207, 240, 1.0); }
+  50%      { box-shadow: 0 0 28px rgba(137, 207, 240, 1.0), 0 0 42px rgba(137, 207, 240, 0.4); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. 슬롯 (Slot)
+   ═══════════════════════════════════════════════════════════════ */
+.slot {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-frame);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color var(--transition-fast);
+}
+
+.slot:hover {
+  border-color: var(--accent-ether);
+}
+
+.slot--equip  { width: 40px; height: 40px; }
+.slot--skill  { width: 56px; height: 56px; }
+.slot--empty  { opacity: 0.5; }
+
+/* ═══════════════════════════════════════════════════════════════
+   9. NPC 대화 박스 (HTML 오버레이 버전)
+   ═══════════════════════════════════════════════════════════════ */
+.dialogue-box {
+  position: fixed;
+  bottom: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  min-height: 200px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  padding: var(--space-4);
+  display: flex;
+  gap: var(--space-4);
+  opacity: 0.92;
+  z-index: var(--z-dialogue);
+  backdrop-filter: blur(4px);
+}
+
+.dialogue-box__portrait {
+  width: 100px;
+  height: 100px;
+  background: var(--bg-frame);
+  border: 1px solid var(--border-accent);
+  flex-shrink: 0;
+}
+
+.dialogue-box__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.dialogue-box__name {
+  color: var(--text-accent);
+  font-size: var(--font-xl);
+  font-weight: bold;
+}
+
+.dialogue-box__text {
+  color: var(--text-primary);
+  font-size: var(--font-md);
+  line-height: var(--lh-normal);
+}
+
+.dialogue-box__choices {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. 지역 테마 (Region Glow)
+   ═══════════════════════════════════════════════════════════════ */
+.region-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font-size: var(--font-sm);
+}
+
+.region-tag::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.region--erebos     { color: var(--region-erebos); }
+.region--silvanheim { color: var(--region-silvanheim); }
+.region--solaris    { color: var(--region-solaris); }
+.region--argentium  { color: var(--region-argentium); }
+.region--icefield   { color: var(--region-icefield); }
+.region--britalia   { color: var(--region-britalia); }
+.region--mistsea    { color: var(--region-mistsea); }
+.region--abyss      { color: var(--region-abyss); }
+
+/* ═══════════════════════════════════════════════════════════════
+   11. 알림 / 토스트 (Notification)
+   ═══════════════════════════════════════════════════════════════ */
+.notification {
+  position: fixed;
+  top: var(--space-6);
+  right: var(--space-6);
+  min-width: 280px;
+  max-width: 400px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-panel);
+  border-left: 3px solid var(--accent-ether);
+  border-radius: 2px;
+  box-shadow: var(--shadow-modal);
+  z-index: var(--z-notification);
+  animation: toast-in var(--transition-normal) ease-out;
+}
+
+.notification--success { border-left-color: var(--accent-success); }
+.notification--warning { border-left-color: var(--text-accent); }
+.notification--danger  { border-left-color: var(--accent-danger); }
+
+@keyframes toast-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. 모달 / 오버레이
+   ═══════════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 13, 26, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.modal {
+  max-width: 560px;
+  width: calc(100% - var(--space-8));
+  background: var(--bg-primary);
+  border: 2px solid var(--border-accent);
+  border-radius: 4px;
+  padding: var(--space-6);
+  box-shadow: var(--shadow-modal);
+}
+
+.modal__title {
+  font-family: var(--font-title);
+  font-size: var(--font-2xl);
+  color: var(--text-accent);
+  margin: 0 0 var(--space-4);
+}
+
+.modal__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   13. 폼 요소
+   ═══════════════════════════════════════════════════════════════ */
+.input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: var(--font-md);
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent-ether);
+  box-shadow: 0 0 0 1px var(--accent-ether);
+}
+
+.input::placeholder { color: var(--text-muted); }
+
+.label {
+  display: block;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   14. 레이아웃 헬퍼
+   ═══════════════════════════════════════════════════════════════ */
+.stack   { display: flex; flex-direction: column; gap: var(--space-3); }
+.row     { display: flex; align-items: center; gap: var(--space-3); }
+.grid    { display: grid; gap: var(--space-3); }
+.center  { display: flex; align-items: center; justify-content: center; }
+.spacer  { flex: 1; }
+
+.hidden  { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   15. 접근성: 모션 감소
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .rarity--mythic, .rarity--ether { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   16. 접근성: 고대비 모드
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-contrast: more) {
+  :root {
+    --bg-primary:   #000000;
+    --bg-panel:     #0A0A1A;
+    --text-primary: #FFFFFF;
+    --accent-ether: #66CCFF;
+    --border-default: #888888;
+  }
+  .btn, .panel, .input { border-width: 2px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   17. 반응형 브레이크포인트
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 1280px) {
+  .dialogue-box { width: 700px; min-height: 180px; }
+  .dialogue-box__portrait { width: 80px; height: 80px; }
+}
+
+@media (max-width: 1024px) {
+  .dialogue-box { width: 600px; min-height: 160px; }
+  .dialogue-box__portrait { width: 64px; height: 64px; }
+  .dialogue-box__choices { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .dialogue-box {
+    width: calc(100% - var(--space-8));
+    left: var(--space-4);
+    right: var(--space-4);
+    transform: none;
+  }
+  .dialogue-box__portrait { width: 48px; height: 48px; }
+  .notification { left: var(--space-4); right: var(--space-4); min-width: auto; }
+}

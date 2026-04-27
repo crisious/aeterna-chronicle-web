@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>에테르나 크로니클 — FF6 ATB 전투 HUD 스타일 가이드</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css" />
+  <link rel="stylesheet" href="/src/styles/design-system-battle.css" />
+  <style>
+    body {
+      padding: var(--space-8, 24px);
+      background: #0D0D1A;
+      color: #E8E8E8;
+      font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+      line-height: 1.4;
+      display: block;
+      height: auto;
+      overflow: auto;
+    }
+    .sg { max-width: 1280px; margin: 0 auto; }
+    .sg-h1 {
+      font-size: 24px;
+      color: #FFD700;
+      letter-spacing: 2px;
+      margin: 0 0 8px;
+    }
+    .sg-sub {
+      font-size: 11px;
+      color: #A0A0A0;
+      margin-bottom: 40px;
+    }
+    .sg-section {
+      margin-bottom: 48px;
+      padding: 16px;
+      background: rgba(26, 26, 46, 0.4);
+      border: 1px solid #2A2A3A;
+      border-radius: 3px;
+    }
+    .sg-section__title {
+      font-size: 14px;
+      color: #89CFF0;
+      border-bottom: 1px solid #3A3A4A;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+    .sg-caption {
+      font-size: 10px;
+      color: #A0A0A0;
+      margin-top: 6px;
+    }
+    .sg-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .sg-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+    .sg-demo-field {
+      position: relative;
+      height: 160px;
+      padding: 12px;
+      background:
+        repeating-linear-gradient(45deg, #0D0D1A 0 8px, #14141F 8px 16px);
+      border: 1px solid #3A3A4A;
+      overflow: hidden;
+    }
+    .sg-label {
+      font-size: 10px;
+      color: #FFD700;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .sg-atb-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .sg-atb-row span:first-child {
+      font-size: 10px;
+      color: #A0A0A0;
+    }
+    .sg-color-chip {
+      display: inline-block;
+      width: 32px;
+      height: 20px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .sg-token-row {
+      display: grid;
+      grid-template-columns: 180px 40px 1fr;
+      gap: 8px;
+      font-size: 10px;
+      padding: 4px 0;
+      align-items: center;
+      border-bottom: 1px dashed #2A2A3A;
+    }
+  </style>
+</head>
+<body>
+  <div class="sg">
+    <h1 class="sg-h1">⚔️ 에테르나 크로니클 — FF6 ATB 전투 HUD 스타일 가이드</h1>
+    <div class="sg-sub">
+      design-system-battle.css v1.0 · 작성: 가춘운 CMO ✨ · 스프린트: FF6 ATB 개선
+    </div>
+
+    <!-- 1. ATB 게이지 -->
+    <section class="sg-section">
+      <div class="sg-section__title">1. ATB 게이지 (아군/적 · 4단계 차징)</div>
+
+      <div class="sg-atb-row">
+        <span>charging 25%</span>
+        <div class="ac-atb-bar"><div class="ac-atb-bar__fill" style="width:25%"></div></div>
+      </div>
+      <div class="sg-atb-row">
+        <span>charging 66%</span>
+        <div class="ac-atb-bar"><div class="ac-atb-bar__fill" style="width:66%"></div></div>
+      </div>
+      <div class="sg-atb-row">
+        <span>READY (100%)</span>
+        <div class="ac-atb-bar" data-state="ready"><div class="ac-atb-bar__fill" style="width:100%"></div></div>
+      </div>
+      <div class="sg-atb-row">
+        <span>FROZEN (stop)</span>
+        <div class="ac-atb-bar" data-state="frozen"><div class="ac-atb-bar__fill" style="width:40%"></div></div>
+      </div>
+      <div class="sg-atb-row">
+        <span>enemy charging</span>
+        <div class="ac-atb-bar ac-atb-bar--enemy"><div class="ac-atb-bar__fill" style="width:55%"></div></div>
+      </div>
+      <div class="sg-atb-row">
+        <span>enemy READY ⚠️</span>
+        <div class="ac-atb-bar ac-atb-bar--enemy" data-state="ready"><div class="ac-atb-bar__fill" style="width:100%"></div></div>
+      </div>
+      <p class="sg-caption">
+        fill width는 Phaser 런타임에서 percent로 제어. ready 상태에서 자동 pulse 애니메이션(0.6s).
+      </p>
+    </section>
+
+    <!-- 2. 턴 큐 -->
+    <section class="sg-section">
+      <div class="sg-section__title">2. 턴 큐 타임라인</div>
+      <div class="ac-turn-queue">
+        <div class="ac-turn-slot" data-active="true" style="background:#16213E"></div>
+        <div class="ac-turn-slot" style="background:#6A1B1B"></div>
+        <div class="ac-turn-slot" style="background:#16213E"></div>
+        <div class="ac-turn-slot" style="background:#16213E"></div>
+        <div class="ac-turn-slot" style="background:#6A1B1B"></div>
+        <div class="ac-turn-slot" data-skipped="true" style="background:#16213E"></div>
+      </div>
+      <p class="sg-caption">active 슬롯만 금색+scale(1.1), 적 슬롯은 붉은 배경, skipped는 반투명.</p>
+    </section>
+
+    <!-- 3. 대미지 팝업 -->
+    <section class="sg-section">
+      <div class="sg-section__title">3. 대미지 팝업 (7종)</div>
+      <div class="sg-demo-field">
+        <div class="ac-dmg ac-dmg--normal"   style="top:20px;  left:40px;">124</div>
+        <div class="ac-dmg ac-dmg--critical" style="top:20px;  left:160px;">1247!</div>
+        <div class="ac-dmg ac-dmg--weak"     style="top:30px;  left:360px;">WEAK! 890</div>
+        <div class="ac-dmg ac-dmg--heal"     style="top:90px;  left:40px;">+320</div>
+        <div class="ac-dmg ac-dmg--miss"     style="top:90px;  left:180px;">MISS</div>
+        <div class="ac-dmg ac-dmg--resist"   style="top:90px;  left:280px;">RESIST</div>
+        <div class="ac-dmg ac-dmg--immune"   style="top:90px;  left:400px;">IMMUNE</div>
+      </div>
+      <p class="sg-caption">각 팝업은 0.9s float 애니메이션 후 자동 소멸. Critical은 scale 1.4 + 글로우.</p>
+    </section>
+
+    <!-- 4. 스킬 카드 -->
+    <section class="sg-section">
+      <div class="sg-section__title">4. 스킬 카스트 카드 (명대사 등장)</div>
+      <div class="ac-skill-cast-card">기억 소환 : 망각의 화살</div>
+      <p class="sg-caption">skill-card-in 0.5s cubic-bezier 슬라이드 등장. 궁극기 발동 시 화면 중앙.</p>
+    </section>
+
+    <!-- 5. 스킬 타입 뱃지 -->
+    <section class="sg-section">
+      <div class="sg-section__title">5. 스킬 타입 뱃지 (6종)</div>
+      <div class="sg-row">
+        <span><span class="ac-skill-badge ac-skill-badge--physical"></span> 물리</span>
+        <span><span class="ac-skill-badge ac-skill-badge--magic"></span> 마법</span>
+        <span><span class="ac-skill-badge ac-skill-badge--heal"></span> 회복</span>
+        <span><span class="ac-skill-badge ac-skill-badge--buff"></span> 강화</span>
+        <span><span class="ac-skill-badge ac-skill-badge--debuff"></span> 약화</span>
+        <span><span class="ac-skill-badge ac-skill-badge--ultimate"></span> 궁극 (pulse)</span>
+      </div>
+    </section>
+
+    <!-- 6. 파티 HUD -->
+    <section class="sg-section">
+      <div class="sg-section__title">6. 파티 HUD 슬롯 (2×2 / 4-up)</div>
+      <div class="ac-party-grid">
+        <!-- slot 1: 활성 -->
+        <div class="ac-party-slot" data-active="true">
+          <div class="ac-party-slot__portrait"></div>
+          <div class="ac-party-slot__info">
+            <div class="ac-party-slot__name">에리언 Lv.32</div>
+            <div class="ac-party-slot__stat-row">
+              <span>HP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--hp"><div class="ac-party-slot__gauge-fill" style="width:84%"></div></div>
+              <span>420/500</span>
+            </div>
+            <div class="ac-party-slot__stat-row">
+              <span>MP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--mp"><div class="ac-party-slot__gauge-fill" style="width:60%"></div></div>
+              <span>120/200</span>
+            </div>
+            <div class="ac-party-slot__stat-row">
+              <span>ATB</span>
+              <div class="ac-atb-bar" data-state="ready"><div class="ac-atb-bar__fill" style="width:100%"></div></div>
+              <span style="color:#FFD700">READY</span>
+            </div>
+            <div class="ac-party-slot__status-tray">
+              <span class="ac-status-icon" style="background:#2ECC71" title="재생"></span>
+              <span class="ac-status-icon" style="background:#FFD700" title="가속"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- slot 2: HP critical -->
+        <div class="ac-party-slot">
+          <div class="ac-party-slot__portrait"></div>
+          <div class="ac-party-slot__info">
+            <div class="ac-party-slot__name">루시안 Lv.30</div>
+            <div class="ac-party-slot__stat-row">
+              <span>HP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--hp" data-critical="true"><div class="ac-party-slot__gauge-fill" style="width:18%"></div></div>
+              <span style="color:#FF4444">72/400</span>
+            </div>
+            <div class="ac-party-slot__stat-row">
+              <span>MP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--mp"><div class="ac-party-slot__gauge-fill" style="width:40%"></div></div>
+              <span>60/150</span>
+            </div>
+            <div class="ac-party-slot__stat-row">
+              <span>ATB</span>
+              <div class="ac-atb-bar"><div class="ac-atb-bar__fill" style="width:15%"></div></div>
+              <span>15%</span>
+            </div>
+            <div class="ac-party-slot__status-tray">
+              <span class="ac-status-icon" style="background:#8E44AD" title="독"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- slot 3: 기본 -->
+        <div class="ac-party-slot">
+          <div class="ac-party-slot__portrait"></div>
+          <div class="ac-party-slot__info">
+            <div class="ac-party-slot__name">세라 Lv.31</div>
+            <div class="ac-party-slot__stat-row">
+              <span>HP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--hp"><div class="ac-party-slot__gauge-fill" style="width:70%"></div></div>
+              <span>280/400</span>
+            </div>
+            <div class="ac-party-slot__stat-row">
+              <span>MP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--mp"><div class="ac-party-slot__gauge-fill" style="width:88%"></div></div>
+              <span>176/200</span>
+            </div>
+            <div class="ac-party-slot__stat-row">
+              <span>ATB</span>
+              <div class="ac-atb-bar"><div class="ac-atb-bar__fill" style="width:60%"></div></div>
+              <span>60%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- slot 4: down -->
+        <div class="ac-party-slot" data-down="true">
+          <div class="ac-party-slot__portrait"></div>
+          <div class="ac-party-slot__info">
+            <div class="ac-party-slot__name">카엘 — KO</div>
+            <div class="ac-party-slot__stat-row">
+              <span>HP</span>
+              <div class="ac-party-slot__gauge ac-party-slot__gauge--hp"><div class="ac-party-slot__gauge-fill" style="width:0%"></div></div>
+              <span>0/380</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="sg-caption">active=금색 테두리, HP &lt;25%는 data-critical=true로 펄스, 전투불능은 grayscale.</p>
+    </section>
+
+    <!-- 7. 커맨드 패널 + 콤보 -->
+    <section class="sg-section">
+      <div class="sg-section__title">7. 커맨드 패널 & 콤보 게이지</div>
+      <div class="sg-row">
+        <div class="ac-command-panel">
+          <div class="ac-command-panel__title">에리언의 차례</div>
+          <ul class="ac-command-list">
+            <li class="ac-command-item" data-selected="true">
+              <span class="ac-skill-badge ac-skill-badge--physical"></span>
+              <span></span><span>공격</span><span class="ac-command-item__cost">—</span>
+            </li>
+            <li class="ac-command-item">
+              <span class="ac-skill-badge ac-skill-badge--magic"></span>
+              <span></span><span>기억 마법</span><span class="ac-command-item__cost">MP 20</span>
+            </li>
+            <li class="ac-command-item">
+              <span class="ac-skill-badge ac-skill-badge--heal"></span>
+              <span></span><span>아이템</span><span class="ac-command-item__cost">—</span>
+            </li>
+            <li class="ac-command-item">
+              <span class="ac-skill-badge ac-skill-badge--buff"></span>
+              <span></span><span>방어</span><span class="ac-command-item__cost">—</span>
+            </li>
+            <li class="ac-command-item" data-enabled="false">
+              <span class="ac-skill-badge ac-skill-badge--ultimate"></span>
+              <span></span><span>궁극 (잠김)</span><span class="ac-command-item__cost">콤보 S</span>
+            </li>
+          </ul>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="ac-combo-gauge" data-rank="C">
+            <div class="ac-combo-gauge__rank">C</div>
+            <div class="ac-combo-gauge__bar"><div class="ac-combo-gauge__fill" style="width:20%"></div></div>
+            <div class="ac-combo-gauge__next">→ B</div>
+          </div>
+          <div class="ac-combo-gauge" data-rank="A">
+            <div class="ac-combo-gauge__rank">A</div>
+            <div class="ac-combo-gauge__bar"><div class="ac-combo-gauge__fill" style="width:78%"></div></div>
+            <div class="ac-combo-gauge__next">→ S</div>
+          </div>
+          <div class="ac-combo-gauge" data-rank="S">
+            <div class="ac-combo-gauge__rank">S</div>
+            <div class="ac-combo-gauge__bar"><div class="ac-combo-gauge__fill" style="width:100%"></div></div>
+            <div class="ac-combo-gauge__next">MAX</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 보스 HP -->
+    <section class="sg-section">
+      <div class="sg-section__title">8. 보스 HP 바 (페이즈 3단계)</div>
+      <div class="ac-boss-hp">
+        <div class="ac-boss-hp__name">◆ 망각의 수호자 아스모데우스 — Phase 1</div>
+        <div class="ac-boss-hp__bar">
+          <div class="ac-boss-hp__fill" style="width:72%"></div>
+          <div class="ac-boss-hp__label">14,400 / 20,000</div>
+        </div>
+      </div>
+      <div class="ac-boss-hp" style="margin-top:12px; border-color:#4A1A6A;">
+        <div class="ac-boss-hp__name" style="color:#9B59B6">◆ 망각의 수호자 — Phase 2</div>
+        <div class="ac-boss-hp__bar">
+          <div class="ac-boss-hp__fill" data-phase="2" style="width:45%"></div>
+          <div class="ac-boss-hp__label">9,000 / 20,000</div>
+        </div>
+      </div>
+      <div class="ac-boss-hp" style="margin-top:12px; border-color:#1A4A6A;">
+        <div class="ac-boss-hp__name" style="color:#89CFF0">◆ 각성 상태 — Phase 3 (Final)</div>
+        <div class="ac-boss-hp__bar">
+          <div class="ac-boss-hp__fill" data-phase="3" style="width:18%"></div>
+          <div class="ac-boss-hp__label">3,600 / 20,000</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. 디자인 토큰 요약 -->
+    <section class="sg-section">
+      <div class="sg-section__title">9. 디자인 토큰 요약 (SSOT)</div>
+      <div class="sg-grid">
+        <div>
+          <div class="sg-label">ATB 아군</div>
+          <div class="sg-token-row"><code>--ac-atb-charging-1</code><span class="sg-color-chip" style="background:#3A5A7A"></span><span>#3A5A7A</span></div>
+          <div class="sg-token-row"><code>--ac-atb-charging-2</code><span class="sg-color-chip" style="background:#5A7FA8"></span><span>#5A7FA8</span></div>
+          <div class="sg-token-row"><code>--ac-atb-charging-3</code><span class="sg-color-chip" style="background:#7AAFD0"></span><span>#7AAFD0</span></div>
+          <div class="sg-token-row"><code>--ac-atb-ready</code><span class="sg-color-chip" style="background:#89CFF0"></span><span>#89CFF0</span></div>
+        </div>
+        <div>
+          <div class="sg-label">ATB 적</div>
+          <div class="sg-token-row"><code>--ac-atb-enemy-charge</code><span class="sg-color-chip" style="background:#8A3A3A"></span><span>#8A3A3A</span></div>
+          <div class="sg-token-row"><code>--ac-atb-enemy-ready</code><span class="sg-color-chip" style="background:#FF4444"></span><span>#FF4444</span></div>
+        </div>
+        <div>
+          <div class="sg-label">턴 큐</div>
+          <div class="sg-token-row"><code>--ac-turn-active</code><span class="sg-color-chip" style="background:#FFD700"></span><span>#FFD700</span></div>
+          <div class="sg-token-row"><code>--ac-turn-queued</code><span class="sg-color-chip" style="background:#89CFF0"></span><span>#89CFF0</span></div>
+          <div class="sg-token-row"><code>--ac-turn-skipped</code><span class="sg-color-chip" style="background:#606060"></span><span>#606060</span></div>
+        </div>
+        <div>
+          <div class="sg-label">대미지</div>
+          <div class="sg-token-row"><code>--ac-dmg-critical</code><span class="sg-color-chip" style="background:#FFD700"></span><span>#FFD700</span></div>
+          <div class="sg-token-row"><code>--ac-dmg-heal</code><span class="sg-color-chip" style="background:#2ECC71"></span><span>#2ECC71</span></div>
+          <div class="sg-token-row"><code>--ac-dmg-weak</code><span class="sg-color-chip" style="background:#FF6B35"></span><span>#FF6B35</span></div>
+          <div class="sg-token-row"><code>--ac-dmg-resist</code><span class="sg-color-chip" style="background:#3498DB"></span><span>#3498DB</span></div>
+        </div>
+      </div>
+      <p class="sg-caption">
+        CSS 변수 ↔ <code>client/src/constants/battle-tokens.ts</code> Phaser 상수 1:1 동기화 유지.
+      </p>
+    </section>
+
+    <!-- 10. 접근성 -->
+    <section class="sg-section">
+      <div class="sg-section__title">10. 접근성</div>
+      <ul style="font-size:11px; line-height:1.8; color:#A0A0A0;">
+        <li>✅ <code>prefers-reduced-motion</code>: pulse/float/shake 애니메이션 정지</li>
+        <li>✅ <code>prefers-contrast: more</code>: 경계선 +1px, 대미지 이중 text-shadow</li>
+        <li>✅ 색약 모드: 대미지 타입은 컬러 + 폰트 크기/굵기/italic 중복 표기</li>
+        <li>✅ 반응형: 1920 / 1440 / 1280 / 1024 px 4단계 자동 적응</li>
+      </ul>
+    </section>
+
+  </div>
+</body>
+</html>

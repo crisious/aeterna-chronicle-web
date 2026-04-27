@@ -12,6 +12,8 @@
  *   - 설정 localStorage 저장/로드
  */
 
+import { A11Y_PROBE_GLOBAL_KEY, type A11yProbePoliteness } from './A11yProbeBridge';
+
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
 /** 색맹 모드 종류 */
@@ -588,6 +590,7 @@ export class AccessibilityManager {
       if (this.ariaContainer) {
         this.ariaContainer.textContent = message;
       }
+      this.emitProbeLiveMessage(message, 'assertive');
     });
   }
 
@@ -618,6 +621,75 @@ export class AccessibilityManager {
     if (this.currentFocusIndex < 0 || this.currentFocusIndex >= this.focusChain.length) return;
     const el = this.focusChain[this.currentFocusIndex];
     this.announce(`${el.label} — ${el.group}`);
+  }
+
+  private emitProbeLiveMessage(message: string, politeness: A11yProbePoliteness): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const bridge = window[A11Y_PROBE_GLOBAL_KEY];
+    if (!bridge) {
+      return;
+    }
+
+    bridge.emitLiveMessage({
+      sceneId: this.resolveProbeSceneId(bridge.listScenes()),
+      selector: this.resolveDomSelector(document.activeElement) ?? '#aeterna-aria-live',
+      politeness,
+      message,
+    });
+  }
+
+  private resolveProbeSceneId(sceneIds: string[]): string {
+    if (typeof window === 'undefined') {
+      return 'global';
+    }
+
+    const bridge = window[A11Y_PROBE_GLOBAL_KEY];
+    if (!bridge) {
+      return 'global';
+    }
+
+    const activeSelector = this.resolveDomSelector(document.activeElement);
+    if (!activeSelector) {
+      return 'global';
+    }
+
+    for (const sceneId of sceneIds) {
+      const scene = bridge.getScene(sceneId);
+      if (!scene) {
+        continue;
+      }
+
+      if (
+        scene.rootSelector === activeSelector
+        || scene.focusTrapSelector === activeSelector
+        || scene.registeredSelectors.includes(activeSelector)
+        || scene.liveRegions.some((region) => region.selector === activeSelector)
+      ) {
+        return sceneId;
+      }
+    }
+
+    return 'global';
+  }
+
+  private resolveDomSelector(element: Element | null): string | undefined {
+    if (!element) {
+      return undefined;
+    }
+
+    const ariaId = element.getAttribute?.('data-aria-id');
+    if (ariaId) {
+      return `[data-aria-id="${ariaId}"]`;
+    }
+
+    if ('id' in element && typeof element.id === 'string' && element.id.length > 0) {
+      return `#${element.id}`;
+    }
+
+    return element.tagName?.toLowerCase();
   }
 
   // ── 모션 감소 ──────────────────────────────────────────────

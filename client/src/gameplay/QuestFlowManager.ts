@@ -11,7 +11,7 @@
  */
 
 import * as Phaser from 'phaser';
-import { NetworkManager, QuestData } from '../network/NetworkManager';
+import { NetworkManager } from '../network/NetworkManager';
 import { QuestTracker } from '../ui/QuestTracker';
 import { DialogueAction } from '../ui/DialogueUI';
 

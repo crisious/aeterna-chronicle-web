@@ -1,0 +1,114 @@
+/**
+ * cb-simulator-filters.css — 색맹 시뮬레이션 SVG 필터 (QA/개발자 도구)
+ *
+ * 토픽: launch_checklist §2.17 자동 감사 — `tests/reports/a11y/colorblind-snapshot/*`
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-26 · Build 단계
+ *
+ * 사용처:
+ *   - QA가 "현재 화면이 색맹 사용자에게 어떻게 보이는지" 즉시 확인
+ *   - Playwright `colorblind-sim.spec.ts` 가 스냅샷 캡처 시 적용
+ *   - 인게임 [개발자 모드 → 색맹 시뮬] 토글
+ *
+ * 구분:
+ *   - data-cb-mode (accessibility.css)  → 게임 팔레트를 "교체"
+ *   - data-cb-sim  (이 파일)            → 화면 픽셀을 색맹 시뮬레이션으로 "변환"
+ *
+ *   둘은 절대 동시 사용 금지! ⛔ (사용자 모드 vs QA 시뮬)
+ *
+ * 매트릭스 출처: Brettel·Viénot·Mollon (1997) — 가장 널리 인용되는 LMS 시뮬 매트릭스
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   SVG 필터는 <defs>가 DOM에 있어야 작동.
+   client/index.html 또는 React 루트에 다음 SVG를 1회 삽입:
+
+   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+     <defs>
+       <filter id="cb-sim-protanopia">
+         <feColorMatrix type="matrix" values="
+           0.567 0.433 0.000 0 0
+           0.558 0.442 0.000 0 0
+           0.000 0.242 0.758 0 0
+           0     0     0     1 0"/>
+       </filter>
+       <filter id="cb-sim-deuteranopia">
+         <feColorMatrix type="matrix" values="
+           0.625 0.375 0.000 0 0
+           0.700 0.300 0.000 0 0
+           0.000 0.300 0.700 0 0
+           0     0     0     1 0"/>
+       </filter>
+       <filter id="cb-sim-tritanopia">
+         <feColorMatrix type="matrix" values="
+           0.950 0.050 0.000 0 0
+           0.000 0.433 0.567 0 0
+           0.000 0.475 0.525 0 0
+           0     0     0     1 0"/>
+       </filter>
+       <filter id="cb-sim-achromatopsia">
+         <feColorMatrix type="matrix" values="
+           0.299 0.587 0.114 0 0
+           0.299 0.587 0.114 0 0
+           0.299 0.587 0.114 0 0
+           0     0     0     1 0"/>
+       </filter>
+     </defs>
+   </svg>
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 사용자 토글 — html[data-cb-sim="..."] 가 게임 컨테이너 전체 필터링 */
+html[data-cb-sim="protanopia"]    #game-container { filter: url(#cb-sim-protanopia); }
+html[data-cb-sim="deuteranopia"]  #game-container { filter: url(#cb-sim-deuteranopia); }
+html[data-cb-sim="tritanopia"]    #game-container { filter: url(#cb-sim-tritanopia); }
+html[data-cb-sim="achromatopsia"] #game-container { filter: url(#cb-sim-achromatopsia); }
+
+/* HTML UI 영역까지 시뮬레이트하려면 body 또는 #app에 적용 (둘 다 지원) */
+html[data-cb-sim="protanopia"]    .a11y-cb-sim-target { filter: url(#cb-sim-protanopia); }
+html[data-cb-sim="deuteranopia"]  .a11y-cb-sim-target { filter: url(#cb-sim-deuteranopia); }
+html[data-cb-sim="tritanopia"]    .a11y-cb-sim-target { filter: url(#cb-sim-tritanopia); }
+html[data-cb-sim="achromatopsia"] .a11y-cb-sim-target { filter: url(#cb-sim-achromatopsia); }
+
+/* ═══════════════════════════════════════════════════════════════
+   QA 오버레이 — 시뮬 모드 활성 시 화면 우상단에 표시
+   ─── 실수로 켠 채 빌드되는 사고 방지
+   ═══════════════════════════════════════════════════════════════ */
+html[data-cb-sim]:not([data-cb-sim=""]):not([data-cb-sim="off"])::before {
+  content: "⚠ 색맹 시뮬레이션 ON — " attr(data-cb-sim);
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 99999;
+  padding: 6px 12px;
+  background: #FF4444;
+  color: #FFFFFF;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+  pointer-events: none;
+  /* 오버레이 자체는 시뮬 적용 X — html 가상요소라 #game-container 필터 영향 없음 */
+}
+
+/* 모션 감소 모드에서 오버레이 깜빡임 금지 */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-cb-sim]:not([data-cb-sim=""]):not([data-cb-sim="off"])::before {
+    animation: a11y-cb-sim-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes a11y-cb-sim-pulse {
+  0%, 100% { opacity: 0.92; }
+  50%      { opacity: 0.55; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   인쇄/스크린샷 — 시뮬 모드는 인쇄에서도 살아있어야 (감사 리포트용)
+   ═══════════════════════════════════════════════════════════════ */
+@media print {
+  html[data-cb-sim]:not([data-cb-sim=""])::before {
+    /* 인쇄에서는 빨간 배지 → 검정 텍스트 */
+    background: transparent;
+    color: #000;
+    border: 2px solid #000;
+  }
+}

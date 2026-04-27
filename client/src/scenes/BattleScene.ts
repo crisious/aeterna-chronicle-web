@@ -20,7 +20,7 @@ import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/Combat
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
-import { playSfx, playRandomVoice, COMBAT_VOICE, UI_SFX } from '../utils/SFXHelper';
+import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 
 
@@ -69,7 +69,7 @@ const DEFAULT_BG_PREFIX = 'ERB';
 // ─── 상수 ──────────────────────────────────────────────────────
 
 /** FF6 레이아웃 상수 (1920×1080 기준) */
-const SCREEN_W = 1920;
+const _SCREEN_W = 1920;
 const SCREEN_H = 1080;
 
 // 아군 배치 (왼쪽, 사이드뷰) — 배틀 영역 y 0~920
@@ -105,7 +105,7 @@ const ATB_BAR_H = 4;
 
 // HP/MP bar in status panel
 const STAT_BAR_W = 120;
-const STAT_BAR_H = 8;
+const _STAT_BAR_H = 8;
 
 // 한글 호환 폰트 스택
 const FONT_FAMILY = '"Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", monospace';

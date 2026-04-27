@@ -5,7 +5,8 @@
  * 인증 인터셉터 + 에러 핸들러가 자동 적용된다.
  */
 
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
 import { attachAuthInterceptor } from './authInterceptor';
 import { attachErrorHandler } from './errorHandler';
 

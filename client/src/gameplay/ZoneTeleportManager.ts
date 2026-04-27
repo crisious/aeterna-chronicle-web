@@ -9,7 +9,7 @@
  */
 
 import * as Phaser from 'phaser';
-import { NetworkManager, ZoneInfo } from '../network/NetworkManager';
+import { NetworkManager } from '../network/NetworkManager';
 
 // ── 타입 ──────────────────────────────────────────────────────
 

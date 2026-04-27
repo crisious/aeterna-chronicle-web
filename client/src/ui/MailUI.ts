@@ -315,7 +315,10 @@ export class MailUI {
 
   public show(): void { this.container.setVisible(true); this.loadMails(); }
   public hide(): void { this.container.setVisible(false); }
-  public toggle(): void { this.container.visible ? this.hide() : this.show(); }
+  public toggle(): void {
+    if (this.container.visible) this.hide();
+    else this.show();
+  }
   public isVisible(): boolean { return this.container.visible; }
   public getUnreadCount(): number { return this.mails.filter(m => !m.isRead).length; }
   public destroy(): void {

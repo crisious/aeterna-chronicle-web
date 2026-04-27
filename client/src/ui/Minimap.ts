@@ -127,7 +127,10 @@ export class Minimap {
 
   show(): void { this.visible = true; this.container.setVisible(true); }
   hide(): void { this.visible = false; this.container.setVisible(false); }
-  toggle(): void { this.visible ? this.hide() : this.show(); }
+  toggle(): void {
+    if (this.visible) this.hide();
+    else this.show();
+  }
 
   // ── 내부: UI 빌드 ────────────────────────────────────────
 

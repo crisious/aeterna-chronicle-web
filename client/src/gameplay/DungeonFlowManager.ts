@@ -9,7 +9,7 @@
  */
 
 import * as Phaser from 'phaser';
-import { NetworkManager, CombatResult } from '../network/NetworkManager';
+import { NetworkManager } from '../network/NetworkManager';
 import { CombatRewardFlow } from './CombatRewardFlow';
 
 // ── 타입 ──────────────────────────────────────────────────────

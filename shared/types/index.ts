@@ -6,3 +6,4 @@ export * from './api';
 export * from './admin';
 export * from './game';
 export * from './telemetry';
+export * from './performance';

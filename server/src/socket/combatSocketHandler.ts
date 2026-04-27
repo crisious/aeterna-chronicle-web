@@ -10,6 +10,7 @@ import type {
 import {
   combatInstanceManager
 } from '../combat/combatEngine';
+import { combatReconnectManager } from '../combat/combatReconnectManager';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';
 
@@ -56,11 +57,13 @@ interface CombatActionPayload {
 
 interface CombatQueryPayload {
   combatId: string;
+  participantId?: string;
 }
 
 // ─── 전투 틱 루프 관리 ─────────────────────────────────────────
 
-const activeTickLoops = new Map<string, NodeJS.Timer>();
+const activeTickLoops = new Map<string, NodeJS.Timeout>();
+const orphanCleanupTimers = new Map<string, NodeJS.Timeout>();
 
 function startTickLoop(combatId: string, engine: CombatEngine, io: Server): void {
   if (activeTickLoops.has(combatId)) return;
@@ -93,9 +96,55 @@ function startTickLoop(combatId: string, engine: CombatEngine, io: Server): void
       // 60초 후 인스턴스 정리
       setTimeout(() => combatInstanceManager.remove(combatId), 60_000);
     }
-  }, engine['config'].tickIntervalMs);
+  }, engine.getTickIntervalMs());
 
   activeTickLoops.set(combatId, interval);
+}
+
+function stopTickLoop(combatId: string): void {
+  const interval = activeTickLoops.get(combatId);
+  if (!interval) return;
+  clearInterval(interval);
+  activeTickLoops.delete(combatId);
+}
+
+function scheduleOrphanCleanup(combatId: string): void {
+  if (orphanCleanupTimers.has(combatId)) return;
+
+  const timer = setTimeout(() => {
+    orphanCleanupTimers.delete(combatId);
+
+    const beforePrune = combatReconnectManager.getPresence(combatId);
+    combatReconnectManager.pruneExpired();
+    const afterPrune = combatReconnectManager.getPresence(combatId);
+
+    if (
+      beforePrune.total > 0 &&
+      afterPrune.connectedCount === 0 &&
+      afterPrune.recoveringCount === 0
+    ) {
+      stopTickLoop(combatId);
+      combatInstanceManager.remove(combatId);
+      combatReconnectManager.removeCombat(combatId);
+    }
+  }, combatReconnectManager.getGraceMs() + 100);
+
+  orphanCleanupTimers.set(combatId, timer);
+}
+
+function registerParticipantSocket(
+  io: Server,
+  socket: Socket,
+  combatId: string,
+  participantId: string,
+): { reconnected: boolean } {
+  const result = combatReconnectManager.register(combatId, participantId, socket.id);
+  if (result.previousSocketId) {
+    const previousSocket = io.sockets.sockets.get(result.previousSocketId);
+    previousSocket?.emit('combat:session_replaced', { combatId, participantId });
+    previousSocket?.leave(`combat:${combatId}`);
+  }
+  return { reconnected: result.reconnected };
 }
 
 // ─── 소켓 핸들러 등록 ──────────────────────────────────────────
@@ -125,6 +174,9 @@ export function setupCombatSocketHandler(io: Server): void {
 
         // 소켓 룸 참여
         socket.join(`combat:${engine.combatId}`);
+        for (const p of payload.party) {
+          registerParticipantSocket(io, socket, engine.combatId, p.id);
+        }
 
         // 틱 루프 시작
         startTickLoop(engine.combatId, engine, io);
@@ -153,11 +205,15 @@ export function setupCombatSocketHandler(io: Server): void {
         return;
       }
       socket.join(`combat:${payload.combatId}`);
+      const recovery = payload.participantId
+        ? registerParticipantSocket(io, socket, payload.combatId, payload.participantId)
+        : { reconnected: false };
       socket.emit('combat:state', {
         combatId: payload.combatId,
         state: engine.getState(),
         tick: engine.getCurrentTick(),
         participants: engine.getSnapshot(),
+        recovery,
       });
     });
 
@@ -167,6 +223,13 @@ export function setupCombatSocketHandler(io: Server): void {
       if (!engine) {
         const err = { success: false, error: '전투를 찾을 수 없습니다.' };
         callback?.(err);
+        return;
+      }
+
+      if (!combatReconnectManager.canControl(payload.combatId, payload.action.actorId, socket.id)) {
+        const err = { success: false, error: '이 소켓은 해당 참가자의 전투 행동 권한이 없습니다.' };
+        callback?.(err);
+        socket.emit('combat:error', err);
         return;
       }
 
@@ -208,11 +271,16 @@ export function setupCombatSocketHandler(io: Server): void {
     // ── combat:leave — 전투 퇴장 ───────────────────────────
     socket.on('combat:leave', (payload: CombatQueryPayload) => {
       socket.leave(`combat:${payload.combatId}`);
+      combatReconnectManager.markCombatSocketDisconnected(payload.combatId, socket.id);
+      scheduleOrphanCleanup(payload.combatId);
     });
 
     // ── disconnect 시 전투 룸 정리 ─────────────────────────
     socket.on('disconnect', () => {
-      // Socket.IO가 자동으로 룸에서 제거
+      const sessions = combatReconnectManager.markSocketDisconnected(socket.id);
+      for (const session of sessions) {
+        scheduleOrphanCleanup(session.combatId);
+      }
     });
   });
 }

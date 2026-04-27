@@ -29,6 +29,7 @@ Thumbs.db
 
 # Test artifacts
 client/src/test_write.txt
+tests/reports/a11y/
 
 # Synology locked files (temporary)
 00_인덱스/에테르나크로니클_통합_가이드.md
@@ -51,3 +52,6 @@ node_modules
 server/.env
 client/.env
 .claude/
+
+# dev-cycle 게이트 추세/크래시 로그 (scripts/dev-cycle)
+.ac/

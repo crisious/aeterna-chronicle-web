@@ -1,0 +1,252 @@
+/**
+ * monster-card.css — 도감 카드 컴포넌트 (NORMAL / ELITE / BOSS)
+ *
+ * 출처: docs/release/assets_monster-art-pipeline.md §4 (SVG 모킹업 → CSS 구현)
+ * 사이즈: 240×320 (3 column grid · gap 16)
+ *
+ * DOM 구조:
+ *   <article class="monster-card monster-card--elite" data-tier="elite">
+ *     <header class="monster-card__header">★ ELITE · 에레보스</header>
+ *     <div    class="monster-card__sprite"><img/></div>
+ *     <h3     class="monster-card__name">망령 기사장</h3>
+ *     <span   class="monster-card__category">🧍 인간형 · 미니보스</span>
+ *     <dl     class="monster-card__stats">...</dl>
+ *     <footer class="monster-card__footer">조우 3회 · 처치 2</footer>
+ *   </article>
+ *
+ * 의존: monster-tier.css (CSS 변수)
+ * 작성: 가춘운 · 2026-04-27
+ */
+
+/* ────────────────────────────────────────────────────────
+   카드 공통 (베이스)
+   ──────────────────────────────────────────────────────── */
+.monster-card {
+  position: relative;
+  width: 240px;
+  height: 320px;
+  background: #1A1A2E;
+  border: 2px solid #2A2A3A;
+  display: grid;
+  grid-template-rows: 24px 1fr auto auto auto 24px;
+  font-family: 'Galmuri11', monospace;
+  color: #E8E8E8;
+  overflow: hidden;
+}
+
+.monster-card__header,
+.monster-card__footer {
+  background: #2A2A3A;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  color: #A0A0A0;
+}
+.monster-card__footer { font-size: 9px; color: #606060; justify-content: center; }
+
+.monster-card__sprite {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+.monster-card__sprite > img,
+.monster-card__sprite > .placeholder {
+  background: #0D0D1A;
+  outline: 2px solid #000;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.monster-card__name {
+  text-align: center;
+  font-size: 13px;
+  margin: 0 0 4px;
+  font-weight: normal;
+}
+.monster-card__category {
+  display: inline-block;
+  margin: 0 auto;
+  background: #3A3A4A;
+  border-radius: 2px;
+  padding: 2px 8px;
+  font-size: 9px;
+  color: #A0A0A0;
+}
+
+.monster-card__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  padding: 12px 20px;
+  margin: 0;
+  font-size: 10px;
+}
+.monster-card__stats dt { color: #A0A0A0; }
+.monster-card__stats dd { margin: 0; text-align: right; color: #E8E8E8; }
+
+/* ────────────────────────────────────────────────────────
+   NORMAL 변형
+   ──────────────────────────────────────────────────────── */
+.monster-card--normal .monster-card__sprite > img,
+.monster-card--normal .monster-card__sprite > .placeholder {
+  width: 80px; height: 80px;        /* 32×32 sprite × 2.5 */
+}
+
+/* ────────────────────────────────────────────────────────
+   ELITE 변형 — 골드 1px 외곽 + 골드 헤더 + 입자
+   ──────────────────────────────────────────────────────── */
+.monster-card--elite {
+  border: 1px solid var(--monster-glow-elite);
+  box-shadow: inset 0 0 0 2px #000;
+}
+.monster-card--elite .monster-card__header {
+  background: #3A2E0A;
+  color: var(--monster-glow-elite);
+}
+.monster-card--elite .monster-card__name {
+  color: var(--monster-glow-elite);
+  text-shadow: 1px 1px 0 #000;
+}
+.monster-card--elite .monster-card__category { color: var(--monster-glow-elite); }
+.monster-card--elite .monster-card__footer  {
+  background: #3A2E0A;
+  color: var(--monster-glow-elite);
+}
+.monster-card--elite .monster-card__sprite > img,
+.monster-card--elite .monster-card__sprite > .placeholder {
+  width: 96px; height: 96px;        /* 48×48 sprite × 2 */
+  filter: var(--monster-rim-elite);
+}
+
+/* 골드 입자 3개 — 카드 모서리 ambient */
+.monster-card--elite::before,
+.monster-card--elite::after {
+  content: '';
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--monster-glow-elite);
+  opacity: 0.7;
+  animation: monster-spark 1.6s ease-in-out infinite;
+}
+.monster-card--elite::before { left: 12%; top: 22%; animation-delay: 0.2s; }
+.monster-card--elite::after  { right: 14%; top: 30%; animation-delay: 0.9s; }
+
+/* ────────────────────────────────────────────────────────
+   BOSS 변형 — 그라디언트 외곽 + 풀 ambient + 큰 sprite
+   ──────────────────────────────────────────────────────── */
+.monster-card--boss {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#0D0D1A, #0D0D1A) padding-box,
+    var(--monster-outline-boss-gradient) border-box;
+  height: 340px;                    /* 보스는 살짝 키움 */
+  grid-template-rows: 28px 1fr auto auto auto 24px;
+}
+.monster-card--boss .monster-card__header {
+  background: #16213E;
+  color: var(--monster-glow-boss);
+  font-family: 'BookkMyungjo', 'Galmuri11', serif;
+  font-size: 13px;
+}
+.monster-card--boss .monster-card__name {
+  font-family: 'BookkMyungjo', 'Galmuri11', serif;
+  font-size: 20px;
+  background: var(--monster-outline-boss-gradient);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  letter-spacing: 0.08em;
+}
+.monster-card--boss .monster-card__category {
+  background: #16213E;
+  color: var(--monster-glow-boss);
+}
+.monster-card--boss .monster-card__footer {
+  background: #16213E;
+  color: var(--monster-glow-boss);
+}
+.monster-card--boss .monster-card__sprite > img,
+.monster-card--boss .monster-card__sprite > .placeholder {
+  width: 128px; height: 128px;      /* 64×64 sprite × 2 */
+  filter: var(--monster-rim-boss);
+}
+
+/* 풀 ambient 8입자 */
+.monster-card--boss .monster-card__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.monster-card--boss .monster-card__particles > .spark {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--monster-glow-boss);
+  opacity: 0;
+  animation: monster-spark 1.8s ease-in-out infinite;
+}
+.monster-card--boss .monster-card__particles > .spark:nth-child(1) { left: 10%;  top: 16%; animation-delay: 0.0s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(2) { left: 88%;  top: 18%; animation-delay: 0.4s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(3) { left: 18%;  top: 50%; animation-delay: 0.8s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(4) { left: 84%;  top: 52%; animation-delay: 1.1s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(5) { left: 50%;  top: 12%; animation-delay: 1.3s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(6) { left: 50%;  top: 56%; animation-delay: 0.6s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(7) { left: 22%;  top: 76%; animation-delay: 1.0s; }
+.monster-card--boss .monster-card__particles > .spark:nth-child(8) { left: 78%;  top: 78%; animation-delay: 1.5s; }
+
+/* ────────────────────────────────────────────────────────
+   도감 그리드 컨테이너
+   ──────────────────────────────────────────────────────── */
+.monster-bestiary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+.monster-bestiary-grid > .monster-card--boss {
+  grid-column: 1 / -1;              /* 보스는 풀폭 */
+  width: 100%;
+  max-width: none;
+}
+
+/* 카테고리 필터 바 */
+.monster-bestiary-filters {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #2A2A3A;
+  flex-wrap: wrap;
+}
+.monster-bestiary-filters > button {
+  background: #2A2A3A;
+  color: #E8E8E8;
+  border: 1px solid #3A3A4A;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 120ms;
+}
+.monster-bestiary-filters > button:hover { background: #3A3A4A; }
+.monster-bestiary-filters > button[aria-pressed="true"] {
+  background: var(--monster-glow-elite);
+  color: #0D0D1A;
+  border-color: var(--monster-glow-elite);
+}
+
+/* ────────────────────────────────────────────────────────
+   접근성
+   ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .monster-card--elite::before,
+  .monster-card--elite::after,
+  .monster-card--boss .monster-card__particles > .spark { animation: none; opacity: 0.4; }
+}
+
+.monster-card:focus-visible {
+  outline: 3px solid #89CFF0;
+  outline-offset: 2px;
+}

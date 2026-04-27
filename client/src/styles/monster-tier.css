@@ -1,0 +1,271 @@
+/**
+ * monster-tier.css — 몬스터 Tier 토큰 SSOT (Build 단계 산출)
+ *
+ * 출처:
+ *   - docs/release/assets_monster-art-pipeline.md §1 (CSS Variables SSOT)
+ *   - docs/release/design-system_monster-art-pipeline.md §2 (Tier 5축)
+ *   - client/src/design_tokens/monster_tier.ts (TS SSOT — 본 파일과 1:1)
+ *
+ * 사용처:
+ *   - 전투 화면 몬스터 sprite (Phaser DOM 오버레이 / 이펙트 레이어)
+ *   - 도감 카드 (`<MonsterCard tier="...">`) — monster-card.css 와 함께
+ *   - 보스 인트로 컷씬 — boss-intro.css 와 함께
+ *
+ * 작성: 가춘운 (CMO/Design) · 2026-04-27 — Build (구현) 단계
+ */
+
+/* ════════════════════════════════════════════════════════════════
+   1. Tier 토큰 — 발광·외곽·림·호흡·사이즈·입자·인트로
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  /* ── ① 발광 색 (Tier Glow) ─────────────────────────── */
+  --monster-glow-normal: transparent;
+  --monster-glow-elite:  #FFD700;            /* 골드 — 귀함 */
+  --monster-glow-boss:   #89CFF0;            /* 에테르블루 — 위협 */
+  --monster-glow-boss-phase2: #FF4444;       /* 진홍 — 분노 (HP ≤ 50%) */
+
+  /* ── ② 외곽선 (Outline) ────────────────────────────── */
+  --monster-outline-color:        #000000;
+  --monster-outline-width-normal: 2px;
+  --monster-outline-width-elite:  2px;
+  --monster-outline-width-boss:   2px;
+  --monster-outline-elite-highlight: 1px solid #FFD700;
+  --monster-outline-boss-gradient:   linear-gradient(135deg, #89CFF0 0%, #FFD700 100%);
+
+  /* ── ③ 림라이트 (drop-shadow 합성) ─────────────────── */
+  --monster-rim-normal: none;
+  --monster-rim-elite:  drop-shadow(0 0 2px #FFD700);
+  --monster-rim-boss:   drop-shadow(0 0 4px #89CFF0)
+                        drop-shadow(0 0 8px rgba(137, 207, 240, 0.5));
+  --monster-rim-boss-phase2: drop-shadow(0 0 4px #FF4444)
+                             drop-shadow(0 0 10px rgba(255, 68, 68, 0.55));
+
+  /* ── ④ Idle 호흡 진폭 ────────────────────────────────── */
+  --monster-breath-amp-normal: 1px;            /* ±1px / 4f / 6fps */
+  --monster-breath-amp-elite:  2px;            /* ±2px / 6f / 8fps */
+  --monster-breath-amp-boss:   3px;            /* ±3px / 8f / 10fps */
+
+  --monster-breath-dur-normal: 0.667s;         /* 4f @ 6fps */
+  --monster-breath-dur-elite:  0.750s;         /* 6f @ 8fps */
+  --monster-breath-dur-boss:   0.800s;         /* 8f @ 10fps */
+
+  /* ── ⑤ 사이즈 (Sprite Box) ──────────────────────────── */
+  --monster-size-normal: 32px;
+  --monster-size-elite:  48px;
+  --monster-size-boss:   64px;
+  --monster-size-boss-max: 96px;               /* 비대칭 허용 한계 */
+
+  /* ── ⑥ 입자 spawn (개수 힌트, 실제 spawn 로직은 EffectManager) ── */
+  --monster-particles-normal: 0;
+  --monster-particles-elite:  3;
+  --monster-particles-boss:   8;
+
+  /* ── ⑦ 인트로 컷씬 길이 ──────────────────────────────── */
+  --monster-intro-normal: 0ms;
+  --monster-intro-elite:  800ms;
+  --monster-intro-boss:   3000ms;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   2. Tier 헬퍼 클래스 — sprite 컨테이너에 부착
+   사용 예: <div class="monster monster--elite" data-monster-id="..."/>
+   ════════════════════════════════════════════════════════════════ */
+.monster {
+  display: inline-block;
+  position: relative;
+  image-rendering: pixelated;          /* AA 금지 — 픽셀 정합성 */
+  image-rendering: -moz-crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  outline: var(--monster-outline-width-normal) solid var(--monster-outline-color);
+  will-change: transform, filter;
+}
+
+.monster--normal {
+  width:  var(--monster-size-normal);
+  height: var(--monster-size-normal);
+  filter: var(--monster-rim-normal);
+  animation: monster-breath-normal var(--monster-breath-dur-normal) steps(4) infinite;
+}
+
+.monster--elite {
+  width:  var(--monster-size-elite);
+  height: var(--monster-size-elite);
+  outline-width: var(--monster-outline-width-elite);
+  filter: var(--monster-rim-elite);
+  box-shadow: inset 0 0 0 1px var(--monster-glow-elite);
+  animation: monster-breath-elite var(--monster-breath-dur-elite) steps(6) infinite;
+}
+
+.monster--boss {
+  width:  var(--monster-size-boss);
+  height: var(--monster-size-boss);
+  max-width:  var(--monster-size-boss-max);
+  max-height: var(--monster-size-boss-max);
+  outline-width: var(--monster-outline-width-boss);
+  filter: var(--monster-rim-boss);
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#0D0D1A, #0D0D1A),
+    var(--monster-outline-boss-gradient);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: monster-breath-boss var(--monster-breath-dur-boss) steps(8) infinite;
+}
+
+/* 보스 페이즈 2 자동 전환 (data-phase 속성) */
+.monster--boss[data-phase="2"] {
+  filter: var(--monster-rim-boss-phase2);
+  animation: monster-breath-boss-phase2 0.6s steps(8) infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   3. Idle 호흡 keyframes (Tier별 진폭 차등)
+   ════════════════════════════════════════════════════════════════ */
+@keyframes monster-breath-normal {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--monster-breath-amp-normal))); }
+}
+@keyframes monster-breath-elite {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--monster-breath-amp-elite))); }
+}
+@keyframes monster-breath-boss {
+  0%, 100% { transform: translateY(0)   scale(1); }
+  50%      { transform: translateY(calc(-1 * var(--monster-breath-amp-boss))) scale(1.01); }
+}
+@keyframes monster-breath-boss-phase2 {
+  /* 페이즈2는 호흡이 거칠고 빨라진다 — 분노 표현 */
+  0%, 100% { transform: translateY(0)   scale(1); }
+  35%      { transform: translateY(calc(-1 * var(--monster-breath-amp-boss))) scale(1.015); }
+  65%      { transform: translateY(1px) scale(0.99); }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   4. 입자 effect (CSS-only ambient)
+   주: 본격적 입자 spawn 은 EffectManager.ts; 본 클래스는 CSS fallback.
+   ════════════════════════════════════════════════════════════════ */
+.monster__particles {
+  position: absolute;
+  inset: -8px;
+  pointer-events: none;
+  overflow: visible;
+}
+.monster__particles > .spark {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: monster-spark 1.6s ease-in-out infinite;
+}
+.monster--elite .monster__particles > .spark { background: var(--monster-glow-elite); }
+.monster--boss  .monster__particles > .spark { background: var(--monster-glow-boss);  }
+.monster--boss[data-phase="2"] .monster__particles > .spark { background: var(--monster-glow-boss-phase2); }
+
+@keyframes monster-spark {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  20%      { opacity: 0.9; }
+  80%      { opacity: 0.4; transform: translateY(-6px); }
+}
+.monster__particles > .spark:nth-child(1) { left:  10%; top: 90%; animation-delay: 0.0s; }
+.monster__particles > .spark:nth-child(2) { left:  85%; top: 80%; animation-delay: 0.4s; }
+.monster__particles > .spark:nth-child(3) { left:  50%; top: 95%; animation-delay: 0.8s; }
+.monster__particles > .spark:nth-child(4) { left:  15%; top: 30%; animation-delay: 1.1s; }
+.monster__particles > .spark:nth-child(5) { left:  75%; top: 20%; animation-delay: 1.3s; }
+.monster__particles > .spark:nth-child(6) { left:  40%; top: 10%; animation-delay: 0.6s; }
+.monster__particles > .spark:nth-child(7) { left:  90%; top: 50%; animation-delay: 1.0s; }
+.monster__particles > .spark:nth-child(8) { left:  5%;  top: 55%; animation-delay: 1.5s; }
+
+/* ════════════════════════════════════════════════════════════════
+   5. 접근성 — prefers-reduced-motion / 색맹 4모드 호환
+   §8 디자인 시스템과 정합. 형태 단서가 메인이므로 모션만 제거.
+   ════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .monster--normal,
+  .monster--elite,
+  .monster--boss,
+  .monster--boss[data-phase="2"] {
+    animation: none;
+    transform: none;
+  }
+  .monster__particles > .spark { animation: none; opacity: 0.5; }
+}
+
+/* 색맹 모드는 전역 .a11y-cb-* 모드 토글로 작동.
+   외곽선/림라이트의 두께(form cue)는 색과 무관하므로 자동 호환. */
+:where(.a11y-cb-protanopia, .a11y-cb-deuteranopia, .a11y-cb-tritanopia) .monster--elite {
+  /* 색맹 사용자에겐 발광이 약해질 수 있어 외곽 두께를 강조 */
+  outline-width: 3px;
+}
+:where(.a11y-cb-protanopia, .a11y-cb-deuteranopia, .a11y-cb-tritanopia) .monster--boss {
+  outline-width: 3px;
+  box-shadow: 0 0 0 1px #FFFFFF inset;
+}
+:where(.a11y-cb-achromatopsia) .monster--elite,
+:where(.a11y-cb-achromatopsia) .monster--boss {
+  /* 완전 색맹은 두께 + 점선 패턴으로 등급 차별화 */
+  outline-style: double;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   6. HP바 — 3티어 공통 베이스
+   파일: components/Battle/MonsterHpBar.tsx 와 1:1
+   ════════════════════════════════════════════════════════════════ */
+.monster-hp-bar {
+  --hp-fill: #FF4444;
+  position: relative;
+  background: #0D0D1A;
+  border: 1px solid #000;
+  overflow: hidden;
+}
+.monster-hp-bar__fill {
+  height: 100%;
+  background: var(--hp-fill);
+  transition: width 220ms cubic-bezier(.2,.8,.2,1);
+}
+
+.monster-hp-bar--normal { width: 64px; height: 4px; }
+.monster-hp-bar--elite  {
+  width: 80px; height: 6px;
+  border: 2px solid var(--monster-glow-elite);
+}
+.monster-hp-bar--boss   {
+  width: 200px; height: 8px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#0D0D1A, #0D0D1A) padding-box,
+    var(--monster-outline-boss-gradient) border-box;
+  animation: boss-hp-pulse 2s ease-in-out infinite;
+}
+.monster-hp-bar--boss .monster-hp-bar__fill {
+  background: linear-gradient(90deg, #8B0000 0%, #FF4444 100%);
+}
+.monster-hp-bar--boss[data-phase="2"] {
+  animation: boss-hp-pulse-phase2 1s ease-in-out infinite;
+}
+.monster-hp-bar--boss[data-phase="2"] .monster-hp-bar__fill {
+  background: linear-gradient(90deg, #4A0000 0%, #FF4444 50%, #FF99CC 100%);
+}
+
+/* phase2 marker — HP 50% 위치에 점선 표시 (form cue) */
+.monster-hp-bar--boss::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, #89CFF0 0 1px, transparent 1px 2px);
+  z-index: 1;
+}
+
+@keyframes boss-hp-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px #89CFF0); }
+  50%      { filter: drop-shadow(0 0 6px #89CFF0); }
+}
+@keyframes boss-hp-pulse-phase2 {
+  0%, 100% { filter: drop-shadow(0 0 3px #FF4444); }
+  50%      { filter: drop-shadow(0 0 8px #FF4444); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monster-hp-bar--boss,
+  .monster-hp-bar--boss[data-phase="2"] { animation: none; }
+}

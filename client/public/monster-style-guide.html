@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>몬스터 스타일 가이드 — 에테르나 크로니클</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css">
+  <link rel="stylesheet" href="/src/styles/monster-tier.css">
+  <link rel="stylesheet" href="/src/styles/monster-card.css">
+  <link rel="stylesheet" href="/src/styles/boss-intro.css">
+  <style>
+    body {
+      font-family: 'Galmuri11', monospace;
+      background: #0D0D1A;
+      color: #E8E8E8;
+      margin: 0;
+      padding: 32px;
+      line-height: 1.6;
+    }
+    h1 { font-family: 'BookkMyungjo', serif; font-size: 32px;
+         background: linear-gradient(135deg, #FFD700, #89CFF0);
+         -webkit-background-clip: text; background-clip: text; color: transparent; }
+    h2 { color: #FFD700; border-bottom: 1px solid #2A2A3A; padding-bottom: 8px; margin-top: 48px; }
+    h3 { color: #89CFF0; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .row { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; padding: 24px;
+           background: #1A1A2E; border: 1px solid #2A2A3A; }
+    .label { font-size: 11px; color: #A0A0A0; text-align: center; margin-top: 8px; }
+    .swatch { width: 64px; height: 64px; border: 1px solid #000; }
+    .palette-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; padding: 16px; background: #1A1A2E; }
+    .pal-cell { aspect-ratio: 1; outline: 1px solid #000; position: relative; }
+    .pal-cell::after { content: attr(data-hex); position: absolute; bottom: 2px; left: 2px;
+                       font-size: 8px; color: #fff; text-shadow: 1px 1px 0 #000; font-family: monospace; }
+    .silhouette-row { display: flex; gap: 16px; padding: 16px; background: #1A1A2E; }
+    .silhouette-row > figure { text-align: center; color: #A0A0A0; margin: 0; }
+    .silhouette-row img { width: 48px; height: 48px; filter: invert(0.92); }
+    button.demo-btn {
+      background: #2A2A3A; color: #E8E8E8; border: 1px solid #FFD700;
+      padding: 8px 16px; cursor: pointer; font-family: inherit;
+    }
+    button.demo-btn:hover { background: #3A2E0A; }
+    .spec { font-size: 12px; color: #A0A0A0; margin: 4px 0; }
+    code { background: #2A2A3A; padding: 2px 6px; color: #FFD700; border-radius: 2px; }
+    .reduced-motion-notice { padding: 12px 16px; background: #16213E; border-left: 3px solid #89CFF0;
+                              margin: 16px 0; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>몬스터 스타일 가이드 v1.0</h1>
+    <p class="spec">
+      가춘운 (CMO/Design) · 2026-04-27 — Build (구현) 단계 산출물<br>
+      SSOT: <code>docs/release/assets_monster-art-pipeline.md</code> +
+            <code>docs/release/design-system_monster-art-pipeline.md</code>
+    </p>
+
+    <div class="reduced-motion-notice">
+      💡 본 페이지는 <code>prefers-reduced-motion</code> 환경 설정을 자동 감지합니다.
+      모션을 끄셨다면 호흡/펄스가 멈춘 채 정적 비주얼로 보이실 거예요~ ✨
+    </div>
+
+    <!-- 1. Tier 위계 ────────────────────────────────────── -->
+    <h2>1. Tier 위계 — sprite 컨테이너 라이브 데모</h2>
+    <p>크기 32 → 48 → 64px / 외곽 검정 → 검정+골드 → 그라디언트 / 호흡 ±1 → ±2 → ±3px</p>
+    <div class="row">
+      <figure style="text-align:center; margin:0;">
+        <div class="monster monster--normal" style="background:#4A4A5A;"></div>
+        <figcaption class="label">NORMAL · 32px<br>외곽 2px black</figcaption>
+      </figure>
+
+      <figure style="text-align:center; margin:0;">
+        <div class="monster monster--elite" style="background:#5C4B7E;">
+          <div class="monster__particles">
+            <span class="spark"></span><span class="spark"></span><span class="spark"></span>
+          </div>
+        </div>
+        <figcaption class="label">ELITE · 48px<br>골드 1px rim + 3입자</figcaption>
+      </figure>
+
+      <figure style="text-align:center; margin:0;">
+        <div class="monster monster--boss" style="background:#3D3050;">
+          <div class="monster__particles">
+            <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+            <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+          </div>
+        </div>
+        <figcaption class="label">BOSS · 64px<br>그라디언트 외곽 + 8입자</figcaption>
+      </figure>
+
+      <figure style="text-align:center; margin:0;">
+        <div class="monster monster--boss" data-phase="2" style="background:#5C4B7E;">
+          <div class="monster__particles">
+            <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+            <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+          </div>
+        </div>
+        <figcaption class="label">BOSS Phase 2<br>진홍 rim + 거친 호흡</figcaption>
+      </figure>
+    </div>
+
+    <!-- 2. HP바 3티어 ────────────────────────────────────── -->
+    <h2>2. HP바 — 3티어 위계</h2>
+    <div class="row">
+      <figure style="text-align:center; margin:0;">
+        <div class="monster-hp-bar monster-hp-bar--normal">
+          <div class="monster-hp-bar__fill" style="width:60%"></div>
+        </div>
+        <figcaption class="label">NORMAL · 64×4px</figcaption>
+      </figure>
+
+      <figure style="text-align:center; margin:0;">
+        <div class="monster-hp-bar monster-hp-bar--elite">
+          <div class="monster-hp-bar__fill" style="width:70%"></div>
+        </div>
+        <figcaption class="label">ELITE · 80×6px · 골드 외곽</figcaption>
+      </figure>
+
+      <figure style="text-align:center; margin:0;">
+        <div class="monster-hp-bar monster-hp-bar--boss">
+          <div class="monster-hp-bar__fill" style="width:80%"></div>
+        </div>
+        <figcaption class="label">BOSS · 200×8px · 페이즈 분할 점선</figcaption>
+      </figure>
+
+      <figure style="text-align:center; margin:0;">
+        <div class="monster-hp-bar monster-hp-bar--boss" data-phase="2">
+          <div class="monster-hp-bar__fill" style="width:38%"></div>
+        </div>
+        <figcaption class="label">BOSS Phase 2 · 진홍 펄스</figcaption>
+      </figure>
+    </div>
+
+    <!-- 3. 도감 카드 ────────────────────────────────────── -->
+    <h2>3. 도감 카드 — 3변형</h2>
+    <div class="monster-bestiary-grid" style="background:#0D0D1A;">
+
+      <article class="monster-card monster-card--normal" data-tier="normal" tabindex="0">
+        <header class="monster-card__header"><span>NORMAL · 에레보스</span></header>
+        <div class="monster-card__sprite">
+          <div class="placeholder" style="background:#4A4A5A;"></div>
+        </div>
+        <h3 class="monster-card__name">도굴꾼</h3>
+        <span class="monster-card__category">🧍 인간형</span>
+        <dl class="monster-card__stats">
+          <dt>HP</dt><dd>120</dd>
+          <dt>ATK</dt><dd>22</dd>
+        </dl>
+        <footer class="monster-card__footer">조우 12회 · 처치 11</footer>
+      </article>
+
+      <article class="monster-card monster-card--elite" data-tier="elite" tabindex="0">
+        <header class="monster-card__header"><span>★ ELITE · 에레보스</span></header>
+        <div class="monster-card__sprite">
+          <div class="placeholder" style="background:#5C4B7E;"></div>
+        </div>
+        <h3 class="monster-card__name">망령 기사장</h3>
+        <span class="monster-card__category">🧍 인간형 · 미니보스</span>
+        <dl class="monster-card__stats">
+          <dt>HP</dt><dd>580</dd>
+          <dt>드롭</dt><dd style="color:#FFD700;">기억의 인장 ★</dd>
+        </dl>
+        <footer class="monster-card__footer">조우 3회 · 처치 2</footer>
+      </article>
+
+      <article class="monster-card monster-card--boss" data-tier="boss" tabindex="0">
+        <header class="monster-card__header"><span>◆ BOSS · 에레보스 최종</span></header>
+        <div class="monster-card__sprite">
+          <div class="placeholder" style="background:#3D3050;"></div>
+        </div>
+        <h3 class="monster-card__name">망각의 군주</h3>
+        <span class="monster-card__category">🔥 원소형 · 챕터 보스</span>
+        <dl class="monster-card__stats">
+          <dt>HP</dt><dd>5,400</dd>
+          <dt>페이즈</dt><dd style="color:#FF4444;">2 (HP ≤ 50%)</dd>
+        </dl>
+        <footer class="monster-card__footer">처치 1회 · 진엔딩 D 해금</footer>
+        <div class="monster-card__particles">
+          <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+          <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+        </div>
+      </article>
+    </div>
+
+    <!-- 4. 카테고리 필터 ────────────────────────────────── -->
+    <h2>4. 카테고리 필터 (5종 실루엣 아이콘)</h2>
+    <div class="silhouette-row">
+      <figure><img src="/icons/silhouette/humanoid.svg" alt="인간형"><figcaption>🧍 인간형</figcaption></figure>
+      <figure><img src="/icons/silhouette/beast.svg" alt="짐승형"><figcaption>🐺 짐승형</figcaption></figure>
+      <figure><img src="/icons/silhouette/insect.svg" alt="곤충형"><figcaption>🐛 곤충형</figcaption></figure>
+      <figure><img src="/icons/silhouette/mechanical.svg" alt="기계형"><figcaption>⚙️ 기계형</figcaption></figure>
+      <figure><img src="/icons/silhouette/elemental.svg" alt="원소형"><figcaption>🔥 원소형</figcaption></figure>
+    </div>
+
+    <h3>도감 필터 바 (실사용 모형)</h3>
+    <div class="monster-bestiary-filters">
+      <button aria-pressed="true">전체</button>
+      <button>🧍 인간형</button>
+      <button>🐺 짐승형</button>
+      <button>🐛 곤충형</button>
+      <button>⚙️ 기계형</button>
+      <button>🔥 원소형</button>
+      <button>Ch.1 에레보스</button>
+      <button>Ch.2 실반헤임</button>
+    </div>
+
+    <!-- 5. 발광 색 SSOT ──────────────────────────────────── -->
+    <h2>5. Tier 발광 3색 SSOT</h2>
+    <div class="row">
+      <figure style="text-align:center;margin:0;">
+        <div class="swatch" style="background:transparent;outline:1px dashed #606060;"></div>
+        <div class="label"><code>--monster-glow-normal</code><br>transparent</div>
+      </figure>
+      <figure style="text-align:center;margin:0;">
+        <div class="swatch" style="background:#FFD700;"></div>
+        <div class="label"><code>--monster-glow-elite</code><br>#FFD700</div>
+      </figure>
+      <figure style="text-align:center;margin:0;">
+        <div class="swatch" style="background:#89CFF0;"></div>
+        <div class="label"><code>--monster-glow-boss</code><br>#89CFF0</div>
+      </figure>
+      <figure style="text-align:center;margin:0;">
+        <div class="swatch" style="background:#FF4444;"></div>
+        <div class="label"><code>--monster-glow-boss-phase2</code><br>#FF4444</div>
+      </figure>
+    </div>
+
+    <!-- 6. 에레보스 팔레트 ──────────────────────────────── -->
+    <h2>6. 에레보스 팔레트 — Tier × 지역 곱</h2>
+    <h3>Normal 16색</h3>
+    <div class="palette-row">
+      <div class="pal-cell" data-hex="000000" style="background:#000000;"></div>
+      <div class="pal-cell" data-hex="0D0D1A" style="background:#0D0D1A;"></div>
+      <div class="pal-cell" data-hex="1A1A2E" style="background:#1A1A2E;"></div>
+      <div class="pal-cell" data-hex="2A2A3A" style="background:#2A2A3A;"></div>
+      <div class="pal-cell" data-hex="4A4A5A" style="background:#4A4A5A;"></div>
+      <div class="pal-cell" data-hex="6B5B95" style="background:#6B5B95;"></div>
+      <div class="pal-cell" data-hex="8B7AA8" style="background:#8B7AA8;"></div>
+      <div class="pal-cell" data-hex="5C4B7E" style="background:#5C4B7E;"></div>
+      <div class="pal-cell" data-hex="3D3050" style="background:#3D3050;"></div>
+      <div class="pal-cell" data-hex="A0A0A0" style="background:#A0A0A0;"></div>
+      <div class="pal-cell" data-hex="606060" style="background:#606060;"></div>
+      <div class="pal-cell" data-hex="E8E8E8" style="background:#E8E8E8;"></div>
+      <div class="pal-cell" data-hex="503C28" style="background:#503C28;"></div>
+      <div class="pal-cell" data-hex="FF4444" style="background:#FF4444;"></div>
+      <div class="pal-cell" data-hex="FFD700" style="background:#FFD700;"></div>
+      <div class="pal-cell" data-hex="89CFF0" style="background:#89CFF0;"></div>
+    </div>
+
+    <h3>Elite +골드 4색 +그림자 4색 (총 24색)</h3>
+    <div class="palette-row">
+      <div class="pal-cell" data-hex="FFD700" style="background:#FFD700;"></div>
+      <div class="pal-cell" data-hex="FFEB58" style="background:#FFEB58;"></div>
+      <div class="pal-cell" data-hex="CCAC00" style="background:#CCAC00;"></div>
+      <div class="pal-cell" data-hex="998100" style="background:#998100;"></div>
+      <div class="pal-cell" data-hex="100C14" style="background:#100C14;"></div>
+      <div class="pal-cell" data-hex="18121E" style="background:#18121E;"></div>
+      <div class="pal-cell" data-hex="202028" style="background:#202028;"></div>
+      <div class="pal-cell" data-hex="30243C" style="background:#30243C;"></div>
+    </div>
+
+    <h3>Boss +에테르블루 8색 +페이즈2 진홍 8색 (총 32색)</h3>
+    <div class="palette-row">
+      <div class="pal-cell" data-hex="89CFF0" style="background:#89CFF0;"></div>
+      <div class="pal-cell" data-hex="AFE0FA" style="background:#AFE0FA;"></div>
+      <div class="pal-cell" data-hex="66B2E0" style="background:#66B2E0;"></div>
+      <div class="pal-cell" data-hex="4090C8" style="background:#4090C8;"></div>
+      <div class="pal-cell" data-hex="2070B0" style="background:#2070B0;"></div>
+      <div class="pal-cell" data-hex="DCF0FF" style="background:#DCF0FF;"></div>
+      <div class="pal-cell" data-hex="B0E0E6" style="background:#B0E0E6;"></div>
+      <div class="pal-cell" data-hex="306090" style="background:#306090;"></div>
+      <div class="pal-cell" data-hex="FF4444" style="background:#FF4444;"></div>
+      <div class="pal-cell" data-hex="FF6666" style="background:#FF6666;"></div>
+      <div class="pal-cell" data-hex="CC2C2C" style="background:#CC2C2C;"></div>
+      <div class="pal-cell" data-hex="992121" style="background:#992121;"></div>
+      <div class="pal-cell" data-hex="661616" style="background:#661616;"></div>
+      <div class="pal-cell" data-hex="FF9999" style="background:#FF9999;"></div>
+      <div class="pal-cell" data-hex="DC143C" style="background:#DC143C;"></div>
+      <div class="pal-cell" data-hex="8B0000" style="background:#8B0000;"></div>
+    </div>
+
+    <!-- 7. 보스 인트로 ──────────────────────────────────── -->
+    <h2>7. 보스 인트로 컷씬 (3,000ms · 6단계)</h2>
+    <p>버튼 클릭 → 풀스크린 컷씬 재생. <code>prefers-reduced-motion</code>일 때는 정지 화면으로 800ms.</p>
+    <button class="demo-btn" id="play-intro">▶ 보스 인트로 재생 (3초)</button>
+    <div id="intro-host" hidden></div>
+
+    <h2>8. 인계 체크리스트 (Build → QA)</h2>
+    <ul class="spec">
+      <li>✅ <code>client/src/styles/monster-tier.css</code> — Tier 토큰 + 헬퍼 클래스</li>
+      <li>✅ <code>client/src/styles/monster-card.css</code> — 도감 카드 3변형</li>
+      <li>✅ <code>client/src/styles/boss-intro.css</code> — 보스 인트로 컷씬</li>
+      <li>✅ <code>client/src/design_tokens/monster_tier.ts</code> — TS SSOT (assertTierSize 헬퍼 포함)</li>
+      <li>✅ <code>client/public/icons/silhouette/{humanoid,beast,insect,mechanical,elemental}.svg</code></li>
+      <li>✅ <code>art/palettes/monster/erebos/{normal,elite,boss}.gpl</code> — 첫 챕터 SSOT</li>
+      <li>✅ <code>client/public/monster-style-guide.html</code> — 본 페이지 (비주얼 QA)</li>
+      <li>⏭️ Phase 2 팔레트 6지역 × 3티어 = 18파일 (다음 스프린트)</li>
+      <li>⏭️ Phaser <code>BossIntroSequence</code> 신 — 계섬월 인계</li>
+    </ul>
+  </div>
+
+  <script>
+    document.getElementById('play-intro').addEventListener('click', () => {
+      const host = document.getElementById('intro-host');
+      host.hidden = false;
+      host.innerHTML = `
+        <div class="boss-intro-overlay">
+          <div class="boss-intro-stage">
+            <div class="boss-intro-sprite monster monster--boss" style="width:128px;height:128px;background:#3D3050;"></div>
+            <h1 class="boss-intro-name">망각의 군주</h1>
+          </div>
+        </div>
+      `;
+      setTimeout(() => { host.hidden = true; host.innerHTML = ''; }, 3200);
+    });
+  </script>
+</body>
+</html>

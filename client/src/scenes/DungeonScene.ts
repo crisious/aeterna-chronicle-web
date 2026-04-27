@@ -15,7 +15,6 @@
 
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
-import { networkManager } from '../network/NetworkManager';
 import { playSfx, UI_SFX, COMBAT_VOICE, playRandomVoice } from '../utils/SFXHelper';
 import type { CombatUnit } from '../combat/CombatManager';
 import type { BattleSceneData } from './BattleScene';
@@ -397,7 +396,7 @@ export class DungeonScene extends Phaser.Scene {
       const pos = isBoss ? BOSS_POS : ENEMY_POSITIONS[i % ENEMY_POSITIONS.length];
       const x = pos.x + Phaser.Math.Between(-20, 20);
       const y = pos.y;
-      const size = isBoss ? 64 : 40;
+      const _size = isBoss ? 64 : 40;
 
       // 몬스터 이미지 사용 (fallback: 사각형)
       const monsterKeys = isBoss ? [DUNGEON_BOSS_IMAGE] : DUNGEON_MONSTER_IMAGES.default;

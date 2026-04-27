@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "description": "전투 시나리오 테스트 케이스 — 콤보·상태이상·데미지 계산 회귀 검증용",
+    "author": "심요연 (Data Analyst)",
+    "version": "1.0.0",
+    "referenceDocs": ["03_데이터테이블/combat_balance_table.md", "CHANGELOG.md#1.0.0-rc.2 전투 콤보"],
+    "coverage": "정규 데미지 / 크리티컬 / 콤보 배율 / 상태이상 스택 / 보스 패턴"
+  },
+  "scenarios": [
+    {
+      "id": "combat-baseline-normal",
+      "description": "표준 데미지 계산 — 콤보·크리 없음",
+      "attacker": { "atk": 100, "critRate": 0, "critDmg": 1.5 },
+      "defender": { "def": 50, "hp": 1000 },
+      "skill": { "id": "SKILL-001-slash", "power": 1.0, "element": "physical" },
+      "expected": { "damageMin": 48, "damageMax": 52, "hpAfter": 950 },
+      "tags": ["baseline", "regression"]
+    },
+    {
+      "id": "combat-combo-3hit",
+      "description": "3연타 콤보 배율 적용 — rc.2 수정 검증",
+      "attacker": { "atk": 100, "critRate": 0, "critDmg": 1.5 },
+      "defender": { "def": 50, "hp": 1000 },
+      "skill": { "id": "SKILL-002-tripleStrike", "power": 1.0, "element": "physical" },
+      "comboState": { "recentHits": 3, "expectedMultiplier": 1.30 },
+      "expected": { "damageMin": 63, "damageMax": 68 },
+      "tags": ["combo", "regression-rc2"]
+    },
+    {
+      "id": "combat-status-burn-stack",
+      "description": "화상 3스택 턴당 누적 데미지",
+      "attacker": { "atk": 120, "critRate": 0 },
+      "defender": { "def": 40, "hp": 1500, "statusEffects": [{ "type": "burn", "stacks": 3, "turnsLeft": 3 }] },
+      "skill": { "id": "SKILL-015-ember", "power": 1.2, "element": "fire" },
+      "expected": { "directDmg": 96, "dotPerTurn": 45, "totalOver3Turns": 231 },
+      "tags": ["status", "dot", "regression-rc2"]
+    },
+    {
+      "id": "combat-critical-guaranteed",
+      "description": "크리율 100% 강제 크리티컬",
+      "attacker": { "atk": 200, "critRate": 1.0, "critDmg": 2.0 },
+      "defender": { "def": 80, "hp": 2000 },
+      "skill": { "id": "SKILL-030-finisher", "power": 1.5 },
+      "expected": { "damage": 360, "hpAfter": 1640 },
+      "tags": ["critical", "edge"]
+    },
+    {
+      "id": "combat-boss-trauma-pattern",
+      "description": "보스 트라우마 소환 패턴 — 페이즈 2 전환",
+      "attacker": { "id": "BOSS-ch3-flameLord", "hp": 25000, "hpPct": 0.48 },
+      "expected": { "triggerPhase2": true, "summonedAdds": 2, "playerStatusApplied": "fear" },
+      "tags": ["boss", "pattern", "phase-transition"]
+    },
+    {
+      "id": "combat-p2w-guard",
+      "description": "P2W 가드 — 유료 아이템으로 전투 능력치 +X 불가 검증",
+      "attacker": { "inventory": [{ "itemId": "COSMETIC-001-wings", "isPaid": true }] },
+      "expected": { "atkBonus": 0, "defBonus": 0, "guardAssertion": "cosmetic-only" },
+      "tags": ["security", "p2w-guard", "regression"]
+    }
+  ]
+}

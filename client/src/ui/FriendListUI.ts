@@ -338,7 +338,10 @@ export class FriendListUI {
 
   public show(): void { this.container.setVisible(true); this.loadFriends(); }
   public hide(): void { this.container.setVisible(false); this.hideContextMenu(); }
-  public toggle(): void { this.container.visible ? this.hide() : this.show(); }
+  public toggle(): void {
+    if (this.container.visible) this.hide();
+    else this.show();
+  }
   public isVisible(): boolean { return this.container.visible; }
   public getOnlineCount(): number { return this.friends.filter(f => f.isOnline).length; }
   public destroy(): void {

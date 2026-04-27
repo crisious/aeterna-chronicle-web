@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "description": "성능 벤치마크 케이스 — Phaser 렌더링, ATB 전투 루프, 저장/로드 SLO 검증",
+    "author": "심요연 (Data Analyst)",
+    "version": "1.0.0",
+    "targetPlatform": "PC 웹 (Chrome/Firefox, 1920x1080 FHD)",
+    "slo": {
+      "fpsTarget": 60,
+      "fpsMinAcceptable": 45,
+      "inputLatencyMaxMs": 120,
+      "loadChapterMaxMs": 3500,
+      "saveGameMaxMs": 800
+    }
+  },
+  "cases": [
+    {
+      "id": "bench-render-worldmap-idle",
+      "description": "월드맵 정적 화면 — 적이 없는 탐험 상태",
+      "scene": "worldmap_silvanheim",
+      "entities": { "npcs": 8, "particles": 120, "bgLayers": 4 },
+      "expected": { "fpsAvg": 60, "fpsP1": 55, "cpuMs": 6 },
+      "iterations": 300,
+      "tags": ["rendering", "idle"]
+    },
+    {
+      "id": "bench-combat-atb-4v4",
+      "description": "ATB 전투 4파티 vs 4적 — 표준 전투",
+      "scene": "combat_ch3_desert",
+      "entities": { "party": 4, "enemies": 4, "activeSkills": 2, "particles": 80 },
+      "expected": { "fpsAvg": 60, "fpsP1": 50, "tickMs": 12 },
+      "iterations": 200,
+      "tags": ["combat", "atb", "regression"]
+    },
+    {
+      "id": "bench-combat-bossfight-phase2",
+      "description": "보스전 페이즈 2 — 트라우마 소환 직후 혼돈 상태",
+      "scene": "combat_ch5_final_boss_p2",
+      "entities": { "party": 4, "enemies": 1, "summons": 4, "activeEffects": 12, "particles": 250 },
+      "expected": { "fpsAvg": 55, "fpsP1": 45, "tickMs": 18 },
+      "iterations": 120,
+      "tags": ["combat", "boss", "stress"]
+    },
+    {
+      "id": "bench-dialogue-ui-render",
+      "description": "NPC 대화 UI — 선택지 4개, 초상화 + 타이프라이터 효과",
+      "scene": "dialogue_c4_ciela_bane",
+      "entities": { "choicesCount": 4, "portraits": 2, "animatedText": true },
+      "expected": { "fpsAvg": 60, "inputLatencyMs": 80 },
+      "iterations": 100,
+      "tags": ["ui", "dialogue"]
+    },
+    {
+      "id": "bench-save-game-lv80",
+      "description": "Lv80 최종 진행 세이브 직렬화/저장",
+      "payload": { "inventoryItems": 180, "questStates": 85, "trustMap": 12, "flagsCount": 320 },
+      "expected": { "serializeMs": 180, "persistMs": 420, "totalMs": 700 },
+      "iterations": 50,
+      "tags": ["io", "save"]
+    },
+    {
+      "id": "bench-load-chapter-transition",
+      "description": "챕터 3 → 챕터 4 전환 — 에셋 프리로드 포함",
+      "payload": { "imagesCount": 142, "bgmFile": "ch4_argentium.ogg", "sfxFiles": 18 },
+      "expected": { "preloadMs": 2800, "sceneInitMs": 420, "totalMs": 3300 },
+      "iterations": 20,
+      "tags": ["io", "load", "transition"]
+    },
+    {
+      "id": "bench-network-choice-commit",
+      "description": "선택지 확정 → 서버 텔레메트리 전송",
+      "payload": { "eventSize": "~1.2KB", "network": "3G-slow (simulated)" },
+      "expected": { "roundTripMs": 600, "offlineFallback": "queue-and-retry" },
+      "iterations": 100,
+      "tags": ["network", "telemetry"]
+    }
+  ]
+}

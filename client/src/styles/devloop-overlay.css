@@ -1,0 +1,424 @@
+/* ============================================================
+ * devloop-overlay.css
+ * 개발자 빌드-검증 사이클 시각 시스템 v1.0
+ * SSOT: docs/release/design-system_devloop.md
+ * 카피: docs/release/devloop-error-messages.md (진채봉)
+ * 작성: 가춘운 CMO/Design — 2026-04-27
+ *
+ * 적용 범위: dev/HMR 빌드에서만 활성. 프로덕션 번들에서는
+ *           tree-shake로 제거되도록 import는 main.ts의
+ *           if (import.meta.env.DEV) 블록 안에서 동적으로.
+ * ============================================================ */
+
+/* ---------- 1. 토큰 (DESIGN.md §10 메아리) ---------- */
+
+:root {
+  /* 4상태 컬러 (WCAG AAA on #0D0D1A) */
+  --devloop-pass: #2ecc71;
+  --devloop-block: #ff4444;
+  --devloop-warn: #ffd700;
+  --devloop-error: #ff8c42;
+
+  /* 표면 */
+  --devloop-bg-overlay: rgba(13, 13, 26, 0.96);
+  --devloop-bg-panel: #16213e;
+  --devloop-bg-panel-alt: #1a1a2e;
+  --devloop-border: #3a3a4a;
+
+  /* 텍스트 */
+  --devloop-text: #e8e8e8;
+  --devloop-text-muted: #a0a0a0;
+  --devloop-text-emphasis: #ffd700;
+  --devloop-text-link: #89cff0;
+
+  /* 타이포 */
+  --devloop-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'D2Coding',
+    Consolas, monospace;
+  --devloop-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+
+  /* 모션 */
+  --devloop-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --devloop-dur-fast: 200ms;
+  --devloop-dur-base: 240ms;
+}
+
+/* ---------- 2. GateBadge (4상태 × 5게이트) ---------- */
+
+.devloop-gate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-family: var(--devloop-mono);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  background: var(--devloop-bg-panel);
+  color: var(--devloop-text);
+  border: 1px solid var(--devloop-border);
+  transition: transform var(--devloop-dur-fast) var(--devloop-ease);
+}
+
+.devloop-gate__emoji {
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.devloop-gate--pass {
+  border-left: 4px solid var(--devloop-pass);
+  color: var(--devloop-pass);
+}
+
+.devloop-gate--block {
+  border-left: 4px solid var(--devloop-block);
+  color: var(--devloop-block);
+  background: rgba(255, 68, 68, 0.08);
+}
+
+.devloop-gate--warn {
+  border: 1px dashed var(--devloop-warn);
+  color: var(--devloop-warn);
+}
+
+.devloop-gate--error {
+  color: var(--devloop-error);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 6px,
+    rgba(255, 140, 66, 0.12) 6px,
+    rgba(255, 140, 66, 0.12) 8px
+  );
+  border: 1px solid var(--devloop-error);
+}
+
+/* ---------- 3. ErrorOverlay (전체화면 빌드 에러) ---------- */
+
+.devloop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px 24px;
+  background: var(--devloop-bg-overlay);
+  backdrop-filter: blur(4px);
+  font-family: var(--devloop-sans);
+  color: var(--devloop-text);
+  animation: devloop-overlay-in var(--devloop-dur-base) var(--devloop-ease);
+}
+
+@keyframes devloop-overlay-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.devloop-overlay__panel {
+  width: min(960px, 100%);
+  max-height: calc(100vh - 96px);
+  background: var(--devloop-bg-panel-alt);
+  border: 1px solid var(--devloop-border);
+  border-radius: 8px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.devloop-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--devloop-border);
+  background: var(--devloop-bg-panel);
+}
+
+.devloop-overlay__title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.devloop-overlay__title--block {
+  color: var(--devloop-block);
+}
+.devloop-overlay__title--error {
+  color: var(--devloop-error);
+}
+
+.devloop-overlay__body {
+  padding: 20px;
+  overflow-y: auto;
+  font-family: var(--devloop-mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.devloop-overlay__file {
+  display: inline-block;
+  color: var(--devloop-text-emphasis);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.devloop-overlay__file:hover {
+  color: var(--devloop-text-link);
+}
+
+.devloop-overlay__snippet {
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: var(--devloop-bg-overlay);
+  border-left: 3px solid var(--devloop-block);
+  border-radius: 4px;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--devloop-text);
+}
+
+.devloop-overlay__hint {
+  margin-top: 12px;
+  padding-left: 16px;
+  color: var(--devloop-text-muted);
+  font-style: italic;
+  font-size: 12px;
+  border-left: 2px solid var(--devloop-text-muted);
+}
+
+.devloop-overlay__actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--devloop-border);
+  background: var(--devloop-bg-panel);
+}
+
+.devloop-overlay__btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 4px;
+  border: 1px solid var(--devloop-border);
+  background: var(--devloop-bg-panel-alt);
+  color: var(--devloop-text);
+  font-family: var(--devloop-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--devloop-dur-fast) var(--devloop-ease),
+    border-color var(--devloop-dur-fast) var(--devloop-ease);
+}
+
+.devloop-overlay__btn:hover {
+  background: var(--devloop-bg-panel);
+  border-color: var(--devloop-text-link);
+}
+
+.devloop-overlay__btn:focus-visible {
+  outline: 2px solid var(--devloop-text-link);
+  outline-offset: 2px;
+}
+
+.devloop-overlay__btn--primary {
+  background: var(--devloop-text-link);
+  color: #0d0d1a;
+  border-color: var(--devloop-text-link);
+  font-weight: 600;
+}
+
+/* ---------- 4. VerifyDashboard (3시나리오 카드) ---------- */
+
+.devloop-verify {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: min(720px, 100%);
+  font-family: var(--devloop-mono);
+}
+
+.devloop-verify__card {
+  padding: 14px 16px;
+  background: var(--devloop-bg-panel);
+  border-top: 4px solid var(--devloop-border);
+  border-radius: 0 0 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.devloop-verify__card--pass {
+  border-top-color: var(--devloop-pass);
+}
+.devloop-verify__card--block {
+  border-top-color: var(--devloop-block);
+}
+.devloop-verify__card--warn {
+  border-top-color: var(--devloop-warn);
+}
+.devloop-verify__card--error {
+  border-top-color: var(--devloop-error);
+}
+
+.devloop-verify__name {
+  font-size: 13px;
+  color: var(--devloop-text-muted);
+}
+
+.devloop-verify__time {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--devloop-text);
+}
+
+.devloop-verify__note {
+  font-size: 12px;
+  color: var(--devloop-text-muted);
+}
+
+/* ---------- 5. HMR 펄스 도트 (우상단 미니 인디케이터) ---------- */
+
+.devloop-hmr-dot {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 999998;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--devloop-pass);
+  box-shadow: 0 0 8px currentColor;
+  animation: devloop-pulse 1.2s var(--devloop-ease) infinite;
+}
+
+.devloop-hmr-dot--lag {
+  background: var(--devloop-warn);
+}
+
+@keyframes devloop-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+  }
+}
+
+/* ---------- 6. Runtime Toast (브라우저 throw 알림) ---------- */
+
+.devloop-toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 999997;
+  width: 360px;
+  padding: 12px 14px;
+  background: var(--devloop-bg-panel);
+  border-left: 4px solid var(--devloop-block);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  font-family: var(--devloop-mono);
+  font-size: 12px;
+  color: var(--devloop-text);
+  animation: devloop-toast-in var(--devloop-dur-base) var(--devloop-ease);
+}
+
+@keyframes devloop-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.devloop-toast__file {
+  color: var(--devloop-text-emphasis);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- 7. Progress Bar (boot/build 진행) ---------- */
+
+.devloop-progress {
+  width: 100%;
+  height: 4px;
+  background: var(--devloop-bg-panel-alt);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.devloop-progress__fill {
+  height: 100%;
+  background: var(--devloop-text-link);
+  transition: width 16ms linear;
+}
+
+.devloop-progress__fill--warm {
+  background: var(--devloop-pass);
+}
+
+.devloop-progress__fill--over {
+  background: var(--devloop-block);
+}
+
+/* ---------- 8. 접근성 (prefers-reduced-motion) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .devloop-overlay {
+    animation-duration: 50ms;
+  }
+  .devloop-toast {
+    animation: none;
+  }
+  .devloop-hmr-dot {
+    animation: none;
+  }
+  .devloop-progress__fill {
+    transition: none;
+  }
+  .devloop-gate {
+    transition: none;
+  }
+}
+
+/* ---------- 9. 강제 다크 (개발자 도구는 항상 다크) ---------- */
+
+.devloop-overlay,
+.devloop-verify,
+.devloop-toast {
+  color-scheme: dark;
+}
+
+/* ---------- 10. 스크린 리더 전용 ---------- */
+
+.devloop-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

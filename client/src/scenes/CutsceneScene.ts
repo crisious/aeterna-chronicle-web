@@ -242,7 +242,7 @@ export class CutsceneScene extends Phaser.Scene {
    * 이미지가 로드되어 있지 않으면 표시하지 않는다.
    */
   private _updatePortrait(line: CutsceneDialogue): void {
-    const { width, height } = this.cameras.main;
+    const { width: _width, height } = this.cameras.main;
     const boxHeight = height * 0.3;
     const boxY = height - boxHeight;
 

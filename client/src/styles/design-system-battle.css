@@ -1,0 +1,567 @@
+/* ==========================================================================
+   Aeterna Chronicle — Battle Design System v1.0
+   FF6-inspired ATB battle HUD tokens & components
+   작성: 가춘운 (CMO/디자인) — Assets 단계
+   선행: design-system.css (기본 토큰)
+   스펙: docs/art-production/battle-atb-assets-v1.md
+   ========================================================================== */
+
+/* ---------- 1. 전투 전용 디자인 토큰 ---------- */
+:root {
+  /* ATB 게이지 (아군) */
+  --ac-atb-empty:         #2A2A3A;
+  --ac-atb-charging-1:    #3A5A7A;
+  --ac-atb-charging-2:    #5A7FA8;
+  --ac-atb-charging-3:    #7AAFD0;
+  --ac-atb-ready:         #89CFF0;
+  --ac-atb-ready-glow:    rgba(137, 207, 240, 0.85);
+  --ac-atb-frozen:        #4A4A5A;
+
+  /* ATB 게이지 (적) */
+  --ac-atb-enemy-empty:   #3A2A2A;
+  --ac-atb-enemy-charge:  #8A3A3A;
+  --ac-atb-enemy-ready:   #FF4444;
+  --ac-atb-enemy-glow:    rgba(255, 68, 68, 0.75);
+
+  /* 턴 큐 타임라인 */
+  --ac-turn-active:       #FFD700;
+  --ac-turn-queued:       #89CFF0;
+  --ac-turn-skipped:      #606060;
+  --ac-turn-bg:           #14141F;
+
+  /* 대미지 팝업 */
+  --ac-dmg-normal:        #FFFFFF;
+  --ac-dmg-critical:      #FFD700;
+  --ac-dmg-heal:          #2ECC71;
+  --ac-dmg-miss:          #A0A0A0;
+  --ac-dmg-weak:          #FF6B35;
+  --ac-dmg-resist:        #3498DB;
+  --ac-dmg-immune:        #9B59B6;
+
+  /* 스킬 타입 */
+  --ac-skill-physical:    #C19A6B;
+  --ac-skill-magic:       #9B59B6;
+  --ac-skill-heal:        #2ECC71;
+  --ac-skill-buff:        #F1C40F;
+  --ac-skill-debuff:      #8E44AD;
+  --ac-skill-ultimate:    #FF4D8B;
+
+  /* 배틀 레이어 Z-index */
+  --ac-z-battle-bg:        0;
+  --ac-z-battle-entity:   10;
+  --ac-z-battle-vfx:      20;
+  --ac-z-battle-hud:      30;
+  --ac-z-battle-popup:    40;
+  --ac-z-battle-modal:    50;
+}
+
+/* ---------- 2. ATB 게이지 바 ---------- */
+.ac-atb-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--ac-atb-empty);
+  border: 1px solid var(--ac-atb-frozen);
+  border-radius: 2px;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.ac-atb-bar__fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--ac-atb-charging-1) 0%,
+    var(--ac-atb-charging-2) 50%,
+    var(--ac-atb-charging-3) 100%
+  );
+  transition: width 80ms linear;
+}
+
+.ac-atb-bar[data-state="ready"] .ac-atb-bar__fill {
+  background: var(--ac-atb-ready);
+  animation: ac-atb-pulse 0.6s ease-in-out infinite alternate;
+}
+
+.ac-atb-bar[data-state="frozen"] .ac-atb-bar__fill {
+  background: var(--ac-atb-frozen);
+  animation: none;
+}
+
+.ac-atb-bar--enemy {
+  border-color: var(--ac-atb-enemy-charge);
+}
+
+.ac-atb-bar--enemy .ac-atb-bar__fill {
+  background: var(--ac-atb-enemy-charge);
+}
+
+.ac-atb-bar--enemy[data-state="ready"] .ac-atb-bar__fill {
+  background: var(--ac-atb-enemy-ready);
+  animation: ac-atb-enemy-warn 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes ac-atb-pulse {
+  from { box-shadow: 0 0 4px var(--ac-atb-ready-glow); }
+  to   { box-shadow: 0 0 12px var(--ac-atb-ready-glow), inset 0 0 2px #FFFFFF; }
+}
+
+@keyframes ac-atb-enemy-warn {
+  from { box-shadow: 0 0 4px var(--ac-atb-enemy-glow); }
+  to   { box-shadow: 0 0 16px var(--ac-atb-enemy-glow); }
+}
+
+/* ---------- 3. 턴 큐 타임라인 ---------- */
+.ac-turn-queue {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--ac-turn-bg);
+  border: 1px solid var(--ac-atb-frozen);
+  border-radius: 3px;
+  z-index: var(--ac-z-battle-hud);
+}
+
+.ac-turn-slot {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--ac-turn-queued);
+  border-radius: 2px;
+  image-rendering: pixelated;
+  position: relative;
+  transition: transform 200ms ease-out, border-color 150ms linear;
+}
+
+.ac-turn-slot[data-active="true"] {
+  border-color: var(--ac-turn-active);
+  box-shadow: 0 0 8px var(--ac-turn-active);
+  transform: scale(1.1);
+}
+
+.ac-turn-slot[data-skipped="true"] {
+  border-color: var(--ac-turn-skipped);
+  opacity: 0.5;
+}
+
+/* ---------- 4. 대미지 팝업 ---------- */
+.ac-dmg {
+  position: absolute;
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  font-weight: 700;
+  text-shadow: 2px 2px 0 #000000;
+  pointer-events: none;
+  image-rendering: pixelated;
+  z-index: var(--ac-z-battle-popup);
+  animation: ac-dmg-float 0.9s ease-out forwards;
+}
+
+.ac-dmg--normal   { font-size: 16px; color: var(--ac-dmg-normal); }
+.ac-dmg--critical {
+  font-size: 32px;
+  color: var(--ac-dmg-critical);
+  animation: ac-dmg-crit 0.9s ease-out forwards;
+  text-shadow: 2px 2px 0 #000000, 0 0 12px var(--ac-dmg-critical);
+}
+.ac-dmg--heal     { font-size: 18px; color: var(--ac-dmg-heal); }
+.ac-dmg--miss     { font-size: 14px; color: var(--ac-dmg-miss); font-style: italic; }
+.ac-dmg--weak     { font-size: 22px; color: var(--ac-dmg-weak); font-weight: 900; }
+.ac-dmg--resist   { font-size: 14px; color: var(--ac-dmg-resist); }
+.ac-dmg--immune   { font-size: 14px; color: var(--ac-dmg-immune); }
+
+@keyframes ac-dmg-float {
+  0%   { transform: translateY(0)     scale(0.6); opacity: 0; }
+  15%  { transform: translateY(-8px)  scale(1.1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.0); opacity: 0; }
+}
+
+@keyframes ac-dmg-crit {
+  0%   { transform: translateY(0)     scale(0.4); opacity: 0; }
+  10%  { transform: translateY(-4px)  scale(1.4); opacity: 1; }
+  30%  { transform: translateY(-12px) scale(1.1); }
+  100% { transform: translateY(-50px) scale(1.0); opacity: 0; }
+}
+
+/* ---------- 5. 스킬 카스트 카드 ---------- */
+.ac-skill-cast-card {
+  padding: 12px 20px;
+  background: linear-gradient(180deg, #1A1A2E 0%, #0D0D1A 100%);
+  border: 2px solid var(--ac-turn-active);
+  border-radius: 4px;
+  color: var(--ac-turn-active);
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  font-size: 24px;
+  text-shadow: 0 0 8px var(--ac-turn-active);
+  image-rendering: pixelated;
+  animation: ac-skill-card-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes ac-skill-card-in {
+  0%   { transform: translateX(-40px) scaleX(0);    opacity: 0; }
+  60%  { transform: translateX(0)     scaleX(1.05); opacity: 1; }
+  100% { transform: translateX(0)     scaleX(1.0);  opacity: 1; }
+}
+
+/* ---------- 6. 스킬 타입 뱃지 ---------- */
+.ac-skill-badge {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  image-rendering: pixelated;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.ac-skill-badge--physical { background: var(--ac-skill-physical); }
+.ac-skill-badge--magic    { background: var(--ac-skill-magic); }
+.ac-skill-badge--heal     { background: var(--ac-skill-heal); }
+.ac-skill-badge--buff     { background: var(--ac-skill-buff); }
+.ac-skill-badge--debuff   { background: var(--ac-skill-debuff); }
+.ac-skill-badge--ultimate {
+  background: var(--ac-skill-ultimate);
+  animation: ac-atb-pulse 1s ease-in-out infinite alternate;
+}
+
+/* ---------- 7. 카메라 쉐이크 유틸 ---------- */
+.ac-shake {
+  animation: ac-shake-critical 150ms ease-in-out;
+}
+
+@keyframes ac-shake-critical {
+  0%, 100% { transform: translate(0, 0); }
+  20%      { transform: translate(-3px, 2px); }
+  40%      { transform: translate(3px, -2px); }
+  60%      { transform: translate(-2px, 3px); }
+  80%      { transform: translate(2px, -3px); }
+}
+
+/* ---------- 8. 접근성 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ac-atb-bar[data-state="ready"] .ac-atb-bar__fill,
+  .ac-atb-bar--enemy[data-state="ready"] .ac-atb-bar__fill,
+  .ac-skill-badge--ultimate {
+    animation: none;
+  }
+  .ac-dmg,
+  .ac-skill-cast-card,
+  .ac-shake {
+    animation-duration: 0.01ms;
+  }
+  .ac-turn-slot {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .ac-atb-bar {
+    border-width: 2px;
+  }
+  .ac-turn-slot {
+    border-width: 3px;
+  }
+  .ac-dmg {
+    text-shadow: 3px 3px 0 #000000, -1px -1px 0 #000000;
+  }
+}
+
+/* ---------- 9. 파티 HUD 슬롯 (하단 2×2 그리드) ---------- */
+.ac-party-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 280px);
+  gap: 8px;
+  padding: 8px;
+  z-index: var(--ac-z-battle-hud);
+}
+
+.ac-party-slot {
+  position: relative;
+  width: 280px;
+  height: 104px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
+  border: 2px solid #2a2a3a;
+  border-radius: 3px;
+  image-rendering: pixelated;
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  color: #e8e8e8;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+}
+
+.ac-party-slot[data-active="true"] {
+  border-color: var(--ac-turn-active);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.ac-party-slot[data-down="true"] {
+  border-color: #6a1b1b;
+  filter: grayscale(0.8) brightness(0.6);
+}
+
+.ac-party-slot__portrait {
+  width: 56px;
+  height: 56px;
+  background: #16213e;
+  border: 1px solid #3a3a4a;
+  image-rendering: pixelated;
+}
+
+.ac-party-slot__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.ac-party-slot__name {
+  font-size: 11px;
+  color: #ffd700;
+}
+
+.ac-party-slot__stat-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 60px;
+  gap: 4px;
+  align-items: center;
+  font-size: 9px;
+}
+
+.ac-party-slot__gauge {
+  height: 6px;
+  background: #0d0d1a;
+  border: 1px solid #2a2a3a;
+  overflow: hidden;
+}
+
+.ac-party-slot__gauge-fill {
+  height: 100%;
+  transition: width 240ms ease-out;
+}
+
+.ac-party-slot__gauge--hp .ac-party-slot__gauge-fill { background: #2ecc71; }
+.ac-party-slot__gauge--mp .ac-party-slot__gauge-fill { background: #3498db; }
+
+.ac-party-slot__gauge--hp[data-critical="true"] .ac-party-slot__gauge-fill {
+  background: #ff4444;
+  animation: ac-hp-crit 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes ac-hp-crit {
+  from { box-shadow: 0 0 2px rgba(255, 68, 68, 0.4); }
+  to   { box-shadow: 0 0 8px rgba(255, 68, 68, 0.9); }
+}
+
+.ac-party-slot__status-tray {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  min-height: 14px;
+}
+
+.ac-party-slot__status-tray .ac-status-icon {
+  width: 12px;
+  height: 12px;
+  image-rendering: pixelated;
+  border-radius: 1px;
+}
+
+/* ---------- 10. 커맨드 패널 (우측 메뉴) ---------- */
+.ac-command-panel {
+  width: 320px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
+  border: 2px solid #3a3a4a;
+  border-radius: 3px;
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  color: #e8e8e8;
+  image-rendering: pixelated;
+  z-index: var(--ac-z-battle-hud);
+}
+
+.ac-command-panel__title {
+  font-size: 11px;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #3a3a4a;
+  padding-bottom: 4px;
+}
+
+.ac-command-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ac-command-item {
+  display: grid;
+  grid-template-columns: 16px 20px 1fr 40px;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #a0a0a0;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background-color 120ms, color 120ms, border-color 120ms;
+}
+
+.ac-command-item[data-enabled="false"] {
+  color: #606060;
+  cursor: not-allowed;
+}
+
+.ac-command-item[data-selected="true"] {
+  background: rgba(255, 215, 0, 0.08);
+  border-left-color: var(--ac-turn-active);
+  color: #ffffff;
+}
+
+.ac-command-item[data-selected="true"]::before {
+  content: "▶";
+  color: var(--ac-turn-active);
+}
+
+.ac-command-item__cost {
+  font-size: 10px;
+  color: #3498db;
+  text-align: right;
+}
+
+/* ---------- 11. 보스 HP 바 (상단 풀 너비) ---------- */
+.ac-boss-hp {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  padding: 6px 12px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
+  border: 2px solid #6a1b1b;
+  border-radius: 3px;
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  color: #e8e8e8;
+  z-index: var(--ac-z-battle-hud);
+}
+
+.ac-boss-hp__name {
+  font-size: 12px;
+  color: #ff4444;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.ac-boss-hp__bar {
+  height: 14px;
+  background: #0d0d1a;
+  border: 1px solid #3a3a4a;
+  overflow: hidden;
+  position: relative;
+}
+
+.ac-boss-hp__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6a1b1b 0%, #ff4444 100%);
+  transition: width 400ms ease-out;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.ac-boss-hp__fill[data-phase="2"] { background: linear-gradient(90deg, #4a1a6a 0%, #9b59b6 100%); }
+.ac-boss-hp__fill[data-phase="3"] { background: linear-gradient(90deg, #1a4a6a 0%, #89cff0 100%); }
+
+.ac-boss-hp__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 #000;
+  pointer-events: none;
+}
+
+/* ---------- 12. 콤보 게이지 (HUD 우하단) ---------- */
+.ac-combo-gauge {
+  width: 320px;
+  height: 36px;
+  padding: 4px 8px;
+  background: #0d0d1a;
+  border: 1px solid #3a3a4a;
+  border-radius: 3px;
+  display: grid;
+  grid-template-columns: 24px 1fr 36px;
+  gap: 6px;
+  align-items: center;
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  color: #ffd700;
+  z-index: var(--ac-z-battle-hud);
+}
+
+.ac-combo-gauge__rank {
+  font-size: 16px;
+  text-align: center;
+  text-shadow: 0 0 4px currentColor;
+}
+
+.ac-combo-gauge[data-rank="C"] { color: #a0a0a0; }
+.ac-combo-gauge[data-rank="B"] { color: #89cff0; }
+.ac-combo-gauge[data-rank="A"] { color: #ffd700; }
+.ac-combo-gauge[data-rank="S"] {
+  color: #ff4d8b;
+  animation: ac-atb-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.ac-combo-gauge__bar {
+  height: 10px;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3a;
+  overflow: hidden;
+}
+
+.ac-combo-gauge__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a0a0a0 0%, #89cff0 33%, #ffd700 66%, #ff4d8b 100%);
+  transition: width 300ms ease-out;
+}
+
+.ac-combo-gauge__next {
+  font-size: 10px;
+  text-align: right;
+  color: #606060;
+}
+
+/* ---------- 13. 반응형 ---------- */
+@media (max-width: 1440px) {
+  .ac-party-grid {
+    grid-template-columns: repeat(4, 240px);
+  }
+  .ac-party-slot { width: 240px; }
+}
+
+@media (max-width: 1280px) {
+  .ac-party-grid {
+    grid-template-columns: repeat(2, 280px);
+  }
+  .ac-command-panel { width: 280px; }
+  .ac-combo-gauge   { width: 280px; }
+}
+
+@media (max-width: 1024px) {
+  .ac-party-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ac-party-slot {
+    width: 100%;
+    height: 88px;
+    grid-template-columns: 48px 1fr;
+  }
+  .ac-party-slot__portrait { width: 48px; height: 48px; }
+  .ac-command-panel { width: 100%; }
+  .ac-combo-gauge   { width: 100%; }
+}

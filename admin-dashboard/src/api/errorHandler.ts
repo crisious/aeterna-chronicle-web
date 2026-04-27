@@ -5,7 +5,7 @@
  * 네트워크/타임아웃/서버 에러를 일관된 형식으로 변환한다.
  */
 
-import { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
 
 // ── 에러 타입 정의 ────────────────────────────────────────────
 

@@ -8,7 +8,6 @@
  */
 
 import * as Phaser from 'phaser';
-import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
 import { loadingProgress } from '../ui/LoadingProgress';
 

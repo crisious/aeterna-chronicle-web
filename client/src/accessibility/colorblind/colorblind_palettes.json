@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "description": "에테르나 크로니클 — 색약 모드 3종 UI 팔레트 오버라이드",
+  "description": "에테르나 크로니클 — 색약/전색맹 모드 4종 UI 팔레트 오버라이드",
   "modes": {
     "none": {
       "label": "기본",
@@ -139,6 +139,41 @@
         "hp_high": "#44CC44",
         "hp_mid": "#FFAAAA",
         "hp_low": "#FF4444"
+      }
+    },
+    "achromatopsia": {
+      "label": "전색맹 (Achromatopsia)",
+      "label_en": "Achromatopsia (Monochrome)",
+      "description": "모든 원추세포 기능 저하 — 색상 구분 불가, 명도 차로만 식별",
+      "palette": {
+        "damage_physical": "#4D4D4D",
+        "damage_magic": "#C2C2C2",
+        "damage_poison": "#E0E0E0",
+        "damage_lightning": "#A8A8A8",
+        "damage_dark": "#7A7A7A",
+        "damage_light": "#FFFFFF",
+        "item_common": "#B0B0B0",
+        "item_uncommon": "#E0E0E0",
+        "item_rare": "#C2C2C2",
+        "item_epic": "#7A7A7A",
+        "item_legendary": "#8C8C8C",
+        "item_mythic": "#303030",
+        "marker_enemy": "#4D4D4D",
+        "marker_ally": "#E0E0E0",
+        "marker_npc": "#C2C2C2",
+        "marker_quest": "#A8A8A8",
+        "marker_neutral": "#969696",
+        "status_buff": "#E0E0E0",
+        "status_debuff": "#4D4D4D",
+        "status_cooldown": "#7A7A7A",
+        "status_warning": "#A8A8A8",
+        "team_ally": "#C2C2C2",
+        "team_enemy": "#4D4D4D",
+        "team_party": "#E0E0E0",
+        "team_all": "#969696",
+        "hp_high": "#E0E0E0",
+        "hp_mid": "#A8A8A8",
+        "hp_low": "#4D4D4D"
       }
     }
   },

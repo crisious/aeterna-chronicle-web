@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import { StatCard } from '../components/StatCard';
-import { LineChart, BarChart } from '../components/Chart';
+import { BarChart } from '../components/Chart';
 
 interface EconomyMetrics {
   inflation: {

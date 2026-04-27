@@ -59,10 +59,13 @@
 
 ### 전투
 
+- **FF6 레퍼런스 ATB** — 캐릭터별 게이지 8000ms(속도 1.0) 충전, 100% 도달 시 행동권 발동
 - **실시간 반자동** — 스킬 8슬롯 + 소비아이템 4슬롯
 - **Active Pause** (`Space`) — 전술적 일시정지, 동료 직접 명령
+- **상태이상 8종** — Burn · Poison · Freeze · Stun · Bleed · Silence · Shield · Haste
 - **기억 공명** — 에테르 결정 기반 특수 스킬 발동
 - **장비** — 12 카테고리 / 6등급 (일반~신화) / 에테르 소켓 커스텀 빌드
+- 📖 통합 가이드: [`docs/release/atb-battle-system-guide.md`](docs/release/atb-battle-system-guide.md)
 
 ### 멀티 엔딩 (4+1종)
 
@@ -117,6 +120,102 @@ node dist/server/src/server.js # → http://localhost:3000
 cd client && npm install
 npm run dev                    # → http://localhost:5173 (Vite proxy → :3000)
 ```
+
+---
+
+## ⚡ 개발 효율 — 빌드-검증 사이클
+
+> Phase 52 이후 콘텐츠(시나리오/스킬/맵) 추가 시 **작업 → 검증** 사이클을 5분 이내로 묶는 것이 목표입니다.
+> 본 절은 [`docs/release/devloop-user-guide.md`](docs/release/devloop-user-guide.md)의 메아리이며, 약속 수치는 SSOT 변경 없이 임의 갱신할 수 없습니다.
+
+### 🎯 한눈 지표
+
+| 지표 | 약속 | 측정 |
+|------|------|------|
+| 코드 변경 → 검증 완료 | ≤ **5분** | `npm run verify:core` |
+| dev server cold 부팅 | ≤ **12초** | `npm run dev:measure -- --cold` |
+| HMR 반영 | ≤ **800ms** | vite 콘솔 로그 |
+| 에러 → 원인 파일 노출 | ≤ **5초** | `.ac/error-report.json` |
+
+### 🚀 빠른 시작 (3 명령)
+
+```bash
+# 1. 빠른 부팅 (warm cache 우선)
+npm run dev:fast
+
+# 2. 핵심 시나리오 검증 (5분 안)
+npm run verify:core
+
+# 3. 마지막 에러 사람말로 풀이
+npm run error:explain
+```
+
+### 🔍 핵심 시나리오 3종
+
+| # | 이름 | 검증 지점 | 시간 |
+|---|------|---------|------|
+| 1 | **전투(ATB)** | tick · 스킬 1회 · HP 동기화 · EXP 적립 | ≤ 90s |
+| 2 | **세이브** | slot 1·2·3 round-trip JSON 동치 | ≤ 60s |
+| 3 | **맵 이동** | Ch.1~4 portal · BGM 전환 · NPC 위치 복원 | ≤ 120s |
+
+> 합계 ≤ **4m 30s** + 에러 리포트 30s = **5분 약속**.
+> 실패 시 `.ac/error-report.json`에 `{file, line, snippet, hint}` 즉시 작성.
+
+### 📕 자세한 가이드
+
+- [개발자 빌드-검증 사이클 가이드](docs/release/devloop-user-guide.md) — 9개 절 + FAQ 7건 (본 절의 SSOT)
+- [에러 메시지 카피 SSOT](docs/release/devloop-error-messages.md) — 5 게이트(boot · verify · build · type · runtime) × 4 상태
+- [PR / 커밋 컨벤션](docs/release/devloop-pr-template.md) — 7 스코프 / 7 섹션 + 리뷰어 행동 5항
+
+### 🛡️ ship-gate hook (다음 스프린트 예정)
+
+다음 스프린트에서 `git diff --stat ≠ 0` AND `git log --since=7d ≥ 1` AND `verify:core 🟢 PASS` 셋이 모두 만족돼야 push 가능하도록 봇 하네스에 hook을 신설합니다 — 워킹트리 누적/커밋 0건 재발 차단용.
+
+---
+
+## 🎵 사운드 시스템
+
+> *기억은 사라져도, 선율은 남는다.* — 1,454개 비주얼 어셋과 짝을 이루는 사운드 레이어.
+
+### 🎚️ 한눈 지표 (4지표)
+
+| 지표 | 약속 | 현재 | 측정 |
+|------|------|------|------|
+| 씬 BGM 매핑 커버리지 | 100% | _TBD_ | `npm run audio:coverage-bgm` |
+| 핵심 전투 SFX 커버리지 | 100% | _TBD_ | `npm run audio:coverage-sfx` |
+| 라이선스 위험 | 0건 | _TBD_ | `npm run audio:license-check` |
+| SFX 평균 응답 지연 | ≤ 50ms | _TBD_ | `npm run audio:measure` |
+
+### 🚀 빠른 시작 (3명령)
+
+```bash
+npm run audio:gate          # 4종 게이트 합본 (~60s)
+npm run audio:measure       # 응답 지연 측정 (~10s)
+npm run audio:license-check # 라이선스 안전성 확인 (~3s)
+```
+
+### 🎼 핵심 카테고리 (3종)
+
+| 카테고리 | 슬롯 수 | 라이선스 |
+|----------|---------|----------|
+| 🎼 BGM (씬 음악) | 50종 (보스/필드/마을/이벤트/시즌/심연/시스템) | CC0 우선 |
+| ⚔️ SFX (전투) | 57개 슬롯 (스킬 30 + 타격 8 + 회피 4 + 크리티컬 3 + 상태 12) | CC0 |
+| 🖱️ UI (인터랙션) | 9개 액션 (메뉴/커서/획득/레벨업/에러 등) | CC0 |
+
+### 📕 자세한 가이드
+
+- 📖 [사용자 가이드](docs/release/sound-system-user-guide.md) — 한 손 흐름도 + FAQ 7건 (1차 SSOT)
+- 📜 [에러 메시지 SSOT](docs/release/sound-system-error-messages.md) — 16 슬롯 ko/en
+- 🔧 [PR / 커밋 컨벤션](docs/release/sound-system-pr-template.md) — 7 스코프 + 5인 인계 체크
+- ⚖️ [라이선스 크레딧](docs/legal/audio-credits.md) — 자동 등재 출처 목록
+
+### 🛡️ Ship-Gate 예고 (3-AND)
+
+```
+✅ audio:gate 4종 🟢 PASS  AND  사용자 가이드 메아리 동기화  AND  5인 인계 체크 ✓
+```
+
+> 약속 수치 변경 시 [백능파(Strategy)](docs/release/sound-system-readme-skeleton.md#약속-수치-변경-절차) 승인 필수.
 
 ---
 
@@ -184,6 +283,7 @@ TypeScript 에러: 811 → 0 (서버+클라이언트).
 
 | 카테고리 | 경로 | 문서 수 |
 |----------|------|---------|
+| **디자인 시스템** | [`DESIGN.md`](./DESIGN.md) | **v1.0** — 컬러 토큰 · 타이포 · NPC UI · 접근성 |
 | 코어기획 | `01_코어기획/` | 21개 (GDD · 시스템 · 수익화 · QA 등) |
 | 시나리오 | `시나리오/` | 챕터 1~8 + NPC 대화 + 외전 |
 | 캐릭터 | `캐릭터/` | 30명 프로필 + 외전 + 마스터 |
@@ -220,6 +320,7 @@ TypeScript 에러: 811 → 0 (서버+클라이언트).
 | **Audio** | MusicGen · ACE-Step · macOS TTS · 137 assets |
 | **Infra** | Docker · K8s · Conductor · GitHub Actions CI · PM2 · Cloudflare Tunnel |
 | **Security** | bcrypt · JWT (3-key) · 2FA AES-256-GCM · P2W Guard |
+| **Design** | DESIGN.md v1.0 — Aeterna Dark 테마 · 20+ 토큰 · WCAG AAA |
 | **AI Tools** | GStack (31 skills) · Claude Code · Codex CLI · Gemini CLI |
 
 ### 📝 릴리즈 문서
@@ -227,6 +328,7 @@ TypeScript 에러: 811 → 0 (서버+클라이언트).
 | 문서 | 경로 |
 |------|------|
 | **CHANGELOG** | [`CHANGELOG.md`](./CHANGELOG.md) |
+| **디자인 시스템** | [`DESIGN.md`](./DESIGN.md) |
 | **v1.0 릴리즈 노트** | [`docs/release/release_notes_v1.0.md`](./docs/release/release_notes_v1.0.md) |
 | **프레스 릴리즈 (한국어)** | [`docs/release/press_release_ko.md`](./docs/release/press_release_ko.md) |
 | **프레스 릴리즈 (영문)** | [`docs/release/press_release_en.md`](./docs/release/press_release_en.md) |

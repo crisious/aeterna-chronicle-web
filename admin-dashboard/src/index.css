@@ -1,0 +1,228 @@
+/**
+ * 에테르나 크로니클 — 어드민 대시보드 스타일시트
+ *
+ * Tailwind CSS 기반 + Aeterna Dark 테마 커스텀 프로퍼티
+ * 디자인 토큰: DESIGN.md, design-tokens.ts와 동기화
+ * 작성: 가춘운 (CMO/디자인)
+ */
+
+/* ═══ Tailwind 레이어 ═══ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══ 커스텀 프로퍼티 (CSS 변수) ═══ */
+@layer base {
+  :root {
+    /* ── 배경 ── */
+    --bg-abyss:   #0D0D1A;
+    --bg-primary: #1A1A2E;
+    --bg-panel:   #16213E;
+    --bg-frame:   #2A2A3A;
+    --bg-button:  #3A3A4A;
+    --bg-hover:   #4A4A5A;
+
+    /* ── 텍스트 ── */
+    --text-primary:   #E8E8E8;
+    --text-secondary: #A0A0A0;
+    --text-muted:     #606060;
+    --text-accent:    #FFD700;
+    --text-warning:   #FF4444;
+
+    /* ── 액센트 ── */
+    --accent-ether:   #89CFF0;
+    --accent-success: #2ECC71;
+    --accent-danger:  #FF4444;
+
+    /* ── 테두리 ── */
+    --border-default: #5A5A6A;
+    --border-accent:  #FFD700;
+    --border-subtle:  #3A3A4A;
+  }
+
+  /* 기본 HTML 스타일 */
+  html {
+    font-family: Pretendard, 'Noto Sans KR', Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-aeterna-primary text-text-primary;
+  }
+
+  /* 스크롤바 (어드민 전용) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-abyss);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-hover);
+  }
+}
+
+/* ═══ 컴포넌트 레이어 ═══ */
+@layer components {
+  /* ── 패널 ── */
+  .panel {
+    @apply bg-aeterna-panel border border-border-default rounded-pixel p-4;
+  }
+
+  .panel-accent {
+    @apply bg-aeterna-panel border-2 border-border-accent rounded-pixel p-4;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.1);
+  }
+
+  /* ── 카드 ── */
+  .card {
+    @apply bg-aeterna-frame rounded-panel p-5 transition-all duration-normal;
+    border: 1px solid var(--border-subtle);
+  }
+  .card:hover {
+    border-color: var(--accent-ether);
+    box-shadow: 0 0 16px rgba(137, 207, 240, 0.1);
+  }
+
+  /* ── 스탯 카드 ── */
+  .stat-card {
+    @apply card flex flex-col gap-2;
+  }
+  .stat-card .stat-label {
+    @apply text-text-secondary text-game-sm uppercase tracking-wider;
+  }
+  .stat-card .stat-value {
+    @apply text-text-primary text-game-2xl font-bold;
+  }
+  .stat-card .stat-change {
+    @apply text-game-xs;
+  }
+  .stat-card .stat-change.positive {
+    @apply text-accent-success;
+  }
+  .stat-card .stat-change.negative {
+    @apply text-accent-danger;
+  }
+
+  /* ── 버튼 ── */
+  .btn {
+    @apply px-4 py-2 rounded-pixel font-medium transition-all duration-fast;
+    @apply border border-border-default bg-aeterna-button text-text-primary;
+  }
+  .btn:hover {
+    @apply bg-aeterna-hover text-white;
+  }
+  .btn:active {
+    @apply bg-aeterna-frame;
+  }
+
+  .btn-primary {
+    @apply btn;
+    background: #1A3A5A;
+    border-color: var(--accent-ether);
+    color: var(--accent-ether);
+  }
+  .btn-primary:hover {
+    background: #2A4A6A;
+    color: white;
+    box-shadow: 0 0 12px rgba(137, 207, 240, 0.2);
+  }
+
+  .btn-danger {
+    @apply btn;
+    background: #4A1A1A;
+    border-color: var(--accent-danger);
+    color: #FF6666;
+  }
+  .btn-danger:hover {
+    background: #5A2A2A;
+    color: #FF8888;
+    box-shadow: 0 0 12px rgba(255, 68, 68, 0.2);
+  }
+
+  /* ── 테이블 ── */
+  .data-table {
+    @apply w-full text-left;
+  }
+  .data-table th {
+    @apply px-4 py-3 text-text-secondary text-game-sm uppercase tracking-wider;
+    @apply border-b border-border-default bg-aeterna-abyss;
+  }
+  .data-table td {
+    @apply px-4 py-3 text-text-primary text-game-md;
+    @apply border-b border-border-subtle;
+  }
+  .data-table tr:hover td {
+    @apply bg-aeterna-frame;
+  }
+
+  /* ── 사이드바 ── */
+  .sidebar {
+    @apply bg-aeterna-abyss border-r border-border-subtle;
+    width: 240px;
+    min-width: 240px;
+  }
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 text-text-secondary transition-all duration-fast;
+    @apply hover:bg-aeterna-panel hover:text-text-primary;
+  }
+  .sidebar-item.active {
+    @apply bg-aeterna-panel text-accent-ether;
+    border-left: 3px solid var(--accent-ether);
+  }
+
+  /* ── 입력 필드 ── */
+  .input {
+    @apply bg-aeterna-abyss border border-border-default rounded-pixel;
+    @apply px-3 py-2 text-text-primary text-game-md;
+    @apply focus:outline-none focus:border-accent-ether;
+    @apply transition-all duration-fast;
+  }
+  .input:focus {
+    box-shadow: 0 0 8px rgba(137, 207, 240, 0.15);
+  }
+
+  /* ── 뱃지 (아이템 등급 스타일) ── */
+  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-pixel text-game-xs font-medium; }
+  .badge-common    { @apply badge bg-rarity-common/20 text-rarity-common border border-rarity-common/30; }
+  .badge-uncommon  { @apply badge bg-rarity-uncommon/20 text-rarity-uncommon border border-rarity-uncommon/30; }
+  .badge-rare      { @apply badge bg-rarity-rare/20 text-rarity-rare border border-rarity-rare/30; }
+  .badge-epic      { @apply badge bg-rarity-epic/20 text-rarity-epic border border-rarity-epic/30; }
+  .badge-legendary { @apply badge bg-rarity-legendary/20 text-rarity-legendary border border-rarity-legendary/30; }
+  .badge-mythic    { @apply badge bg-rarity-mythic/20 text-rarity-mythic border border-rarity-mythic/30; }
+  .badge-ether     { @apply badge bg-rarity-ether/20 text-rarity-ether border border-rarity-ether/30; }
+
+  /* ── 차트 컨테이너 ── */
+  .chart-container {
+    @apply card;
+    min-height: 300px;
+  }
+
+  /* ── 헤더 ── */
+  .admin-header {
+    @apply flex items-center justify-between px-6 py-3;
+    @apply bg-aeterna-abyss border-b border-border-subtle;
+  }
+}
+
+/* ═══ 유틸리티 레이어 ═══ */
+@layer utilities {
+  /* 에테르 글로우 텍스트 */
+  .text-glow-ether {
+    text-shadow: 0 0 8px rgba(137, 207, 240, 0.4);
+  }
+  .text-glow-gold {
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  }
+
+  /* 구분선 */
+  .divider {
+    @apply border-t border-border-subtle my-4;
+  }
+}

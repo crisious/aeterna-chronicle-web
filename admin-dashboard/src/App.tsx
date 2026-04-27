@@ -2,6 +2,7 @@
  * P6-13: 어드민 대시보드 — React SPA 루트 컴포넌트
  * React Router 기반 라우팅, Sidebar + Header 레이아웃
  */
+import './index.css';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';

@@ -69,6 +69,7 @@ import { setupWorldSocketHandlers } from '../socket/worldSocketHandler';
 import { setupNotificationSocketHandlers } from '../socket/notificationSocketHandler';
 import { setupAuctionSocketHandlers } from '../socket/auctionSocketHandler';
 import { setupMatchmakingSocketHandlers } from '../socket/matchmakingSocketHandler';
+import { setupCombatSocketHandler } from '../socket/combatSocketHandler';
 
 // ─── 기능 토글 ──────────────────────────────────────────────
 import { featureFlags } from '../core/featureFlags';
@@ -206,9 +207,10 @@ export async function registerSocketHandlers(io: SocketServer, fastify: FastifyI
   fastify.log.info('Guild + Guild War socket handlers attached');
 
   // 전투/업적/레이드
+  setupCombatSocketHandler(io);
   setupAchievementSocketHandlers(io);
   setupRaidSocketHandlers(io);
-  fastify.log.info('Achievement + Raid socket handlers attached');
+  fastify.log.info('Combat + Achievement + Raid socket handlers attached');
 
   // 펫/소셜/채팅
   setupPetSocketHandlers(io);

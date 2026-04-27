@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>에테르나 크로니클 — 디자인 시스템 스타일 가이드</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css" />
+  <style>
+    /* 스타일 가이드 전용 레이아웃 */
+    body {
+      padding: var(--space-8);
+      background: var(--bg-abyss);
+      line-height: var(--lh-normal);
+      display: block;
+      height: auto;
+      overflow: auto;
+    }
+    .sg-container { max-width: 1280px; margin: 0 auto; }
+    .sg-section   { margin-bottom: var(--space-12); }
+    .sg-section__title {
+      font-family: var(--font-title);
+      font-size: var(--font-2xl);
+      color: var(--accent-ether);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--space-2);
+      margin-bottom: var(--space-6);
+      letter-spacing: 2px;
+    }
+    .sg-swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--space-3);
+    }
+    .sg-swatch {
+      padding: var(--space-3);
+      border-radius: 2px;
+      font-size: var(--font-xs);
+      font-family: var(--font-mono);
+      border: 1px solid var(--border-subtle);
+    }
+    .sg-swatch__chip {
+      width: 100%;
+      height: 56px;
+      border-radius: 2px;
+      margin-bottom: var(--space-2);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .sg-demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+    .sg-hero {
+      text-align: center;
+      margin-bottom: var(--space-12);
+      padding: var(--space-8);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-accent);
+      border-radius: 2px;
+    }
+    .sg-hero__subtitle { color: var(--text-secondary); font-size: var(--font-md); }
+  </style>
+</head>
+<body>
+  <div class="sg-container">
+    <!-- Hero -->
+    <div class="sg-hero">
+      <h1 class="heading-1">⚔️ 에테르나 크로니클 디자인 시스템</h1>
+      <p class="sg-hero__subtitle">
+        <span class="text-ether">Aeterna Dark</span> · v1.0 ·
+        <span class="font-mono">design-tokens.ts SSOT</span>
+      </p>
+      <p class="text-muted text-sm">작성: 가춘운 (CMO/디자인) · 2026-04-21</p>
+    </div>
+
+    <!-- 1. 컬러 ───────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">1. 컬러 팔레트</h2>
+
+      <h3 class="heading-3">배경 (Backgrounds)</h3>
+      <div class="sg-swatch-grid">
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#0D0D1A"></div>ABYSS<br>#0D0D1A</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#1A1A2E"></div>PRIMARY<br>#1A1A2E</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#16213E"></div>PANEL<br>#16213E</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#2A2A3A"></div>FRAME<br>#2A2A3A</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#3A3A4A"></div>BUTTON<br>#3A3A4A</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#4A4A5A"></div>HOVER<br>#4A4A5A</div>
+      </div>
+
+      <h3 class="heading-3" style="margin-top:var(--space-6)">액센트 (Accents)</h3>
+      <div class="sg-swatch-grid">
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#89CFF0;box-shadow:var(--glow-ether)"></div>ETHER<br>#89CFF0</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#2ECC71"></div>SUCCESS<br>#2ECC71</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#FF4444"></div>DANGER<br>#FF4444</div>
+        <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#FFD700;box-shadow:var(--glow-gold)"></div>GOLD<br>#FFD700</div>
+      </div>
+    </section>
+
+    <!-- 2. 타이포그래피 ───────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">2. 타이포그래피</h2>
+      <div class="stack">
+        <div class="heading-1">기억은 사라져도, 이야기는 남는다 — 32px Title</div>
+        <div class="heading-2">대망각 212년 — 24px Heading</div>
+        <div class="heading-3">신성 기억 파편 — 20px Section</div>
+        <div class="text-lg">본문 16px — 에테르 결정이 빛을 머금는다.</div>
+        <div class="text-md">본문 14px — 에리언, 잊혀진 기억술사.</div>
+        <div class="text-sm text-secondary">보조 12px — 10개 지역, 6 클래스, 180 스킬.</div>
+        <div class="text-xs text-muted font-mono">메타 10px — font-mono · Lv.80 · HP 9999</div>
+      </div>
+    </section>
+
+    <!-- 3. 버튼 ───────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">3. 버튼</h2>
+      <div class="sg-demo-row">
+        <button class="btn">기본 버튼</button>
+        <button class="btn btn--primary">⚔️ 전투 시작</button>
+        <button class="btn btn--danger">삭제</button>
+        <button class="btn" disabled>비활성</button>
+      </div>
+      <div class="sg-demo-row">
+        <button class="btn btn--sm">SM</button>
+        <button class="btn">MD</button>
+        <button class="btn btn--lg btn--primary">LG Primary</button>
+      </div>
+    </section>
+
+    <!-- 4. 게이지 ─────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">4. 게이지 바 (HP / MP / EXP)</h2>
+      <div class="stack" style="max-width:400px">
+        <div>
+          <div class="row"><span class="text-sm">HP</span><span class="spacer"></span><span class="font-mono text-sm">8,420 / 9,999</span></div>
+          <div class="gauge gauge--hp"><div class="gauge__fill" style="width:84%"></div></div>
+        </div>
+        <div>
+          <div class="row"><span class="text-sm">MP</span><span class="spacer"></span><span class="font-mono text-sm">520 / 800</span></div>
+          <div class="gauge gauge--mp"><div class="gauge__fill" style="width:65%"></div></div>
+        </div>
+        <div>
+          <div class="row"><span class="text-sm">EXP</span><span class="spacer"></span><span class="font-mono text-sm">Lv.42 (37%)</span></div>
+          <div class="gauge gauge--exp gauge--sm"><div class="gauge__fill" style="width:37%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 아이템 등급 ────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">5. 아이템 등급</h2>
+      <div class="sg-demo-row">
+        <span class="rarity rarity--common">일반</span>
+        <span class="rarity rarity--uncommon">고급</span>
+        <span class="rarity rarity--rare">희귀</span>
+        <span class="rarity rarity--epic">영웅</span>
+        <span class="rarity rarity--legendary">전설</span>
+        <span class="rarity rarity--mythic">신화</span>
+        <span class="rarity rarity--ether">에테르</span>
+      </div>
+    </section>
+
+    <!-- 6. 지역 테마 ──────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">6. 지역별 발광 테마</h2>
+      <div class="sg-demo-row">
+        <span class="region-tag region--erebos">🌑 에레보스</span>
+        <span class="region-tag region--silvanheim">🌳 실반헤임</span>
+        <span class="region-tag region--solaris">🏜️ 솔라리스</span>
+        <span class="region-tag region--argentium">🏰 아르겐티움</span>
+        <span class="region-tag region--icefield">🏔️ 영원빙원</span>
+        <span class="region-tag region--britalia">⚓ 브리탈리아</span>
+        <span class="region-tag region--mistsea">🌊 무한안개해</span>
+        <span class="region-tag region--abyss">🌀 기억의 심연</span>
+      </div>
+    </section>
+
+    <!-- 7. 패널 ───────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">7. 패널</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+        <div class="panel">
+          <div class="heading-3">기본 패널</div>
+          <div class="text-sm text-secondary">정보/UI 컨테이너의 기본형.</div>
+        </div>
+        <div class="panel panel--accent">
+          <div class="heading-3">강조 패널</div>
+          <div class="text-sm text-secondary">중요 안내, 전설 아이템.</div>
+        </div>
+        <div class="panel panel--transparent">
+          <div class="heading-3">투명 패널</div>
+          <div class="text-sm text-secondary">HUD 오버레이.</div>
+        </div>
+        <div class="panel--tooltip panel">
+          <strong class="text-accent">에테르 결정</strong><br>
+          <span class="text-sm text-secondary">잊혀진 기억의 파편을 담는다.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 슬롯 ───────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">8. 슬롯 (인벤토리/스킬/장비)</h2>
+      <div class="sg-demo-row">
+        <div class="slot">36</div>
+        <div class="slot slot--equip">40</div>
+        <div class="slot slot--skill">56</div>
+        <div class="slot slot--empty"></div>
+      </div>
+    </section>
+
+    <!-- 9. 폼 ─────────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">9. 폼 요소</h2>
+      <div class="stack" style="max-width:360px">
+        <div>
+          <label class="label">캐릭터 이름</label>
+          <input class="input" type="text" placeholder="에리언" />
+        </div>
+        <div>
+          <label class="label">비밀번호</label>
+          <input class="input" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. 알림 ──────────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">10. 알림 (Notification) — 정적 데모</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+        <div class="notification" style="position:static">
+          <strong class="text-ether">알림</strong><br>
+          <span class="text-sm">새로운 퀘스트가 갱신되었습니다.</span>
+        </div>
+        <div class="notification notification--success" style="position:static">
+          <strong class="text-success">획득</strong><br>
+          <span class="text-sm">에테르 결정 x3 획득.</span>
+        </div>
+        <div class="notification notification--warning" style="position:static">
+          <strong class="text-accent">경고</strong><br>
+          <span class="text-sm">HP가 위험 수준입니다.</span>
+        </div>
+        <div class="notification notification--danger" style="position:static">
+          <strong class="text-danger">오류</strong><br>
+          <span class="text-sm">서버 연결에 실패했습니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. 대화박스 ──────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">11. NPC 대화 박스 (정적 데모)</h2>
+      <div class="dialogue-box" style="position:static;transform:none;margin:0 auto">
+        <div class="dialogue-box__portrait"></div>
+        <div class="dialogue-box__content">
+          <div class="dialogue-box__name">에리언</div>
+          <div class="dialogue-box__text">
+            기억이 사라진 이 세계에서, 나는 마지막 기억술사다.
+            에테르 결정에 남은 흔적을 따라가야 한다…
+          </div>
+          <div class="dialogue-box__choices">
+            <button class="btn btn--primary">⚔️ 추적한다</button>
+            <button class="btn">🔮 기다린다</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. 스페이싱 ──────────────────────────────────── -->
+    <section class="sg-section">
+      <h2 class="sg-section__title">12. 스페이싱 (4px 그리드)</h2>
+      <div class="stack">
+        <div class="row"><span class="text-sm" style="width:80px">S1 · 4px</span><div style="height:16px;width:4px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S2 · 8px</span><div style="height:16px;width:8px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S3 · 12px</span><div style="height:16px;width:12px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S4 · 16px</span><div style="height:16px;width:16px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S5 · 20px</span><div style="height:16px;width:20px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S6 · 24px</span><div style="height:16px;width:24px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S8 · 32px</span><div style="height:16px;width:32px;background:var(--accent-ether)"></div></div>
+        <div class="row"><span class="text-sm" style="width:80px">S12 · 48px</span><div style="height:16px;width:48px;background:var(--accent-ether)"></div></div>
+      </div>
+    </section>
+
+    <footer class="text-center text-muted text-xs" style="text-align:center;margin-top:var(--space-12);padding-top:var(--space-6);border-top:1px solid var(--border-subtle)">
+      ✨ DESIGN.md v1.0 · design-tokens.ts SSOT · <span class="text-ether">Aeterna Chronicle</span> ✨
+    </footer>
+  </div>
+</body>
+</html>

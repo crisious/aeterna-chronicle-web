@@ -1,0 +1,72 @@
+[
+  {
+    "id": "title",
+    "label": "타이틀 화면",
+    "route": "/?scene=title",
+    "priority": "P1",
+    "probes": ["axe", "contrast", "colorblind"]
+  },
+  {
+    "id": "main_menu",
+    "label": "메인 메뉴",
+    "route": "/?scene=main-menu",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "character_select",
+    "label": "캐릭터 생성",
+    "route": "/?scene=character-select",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "world_map",
+    "label": "월드 맵",
+    "route": "/?scene=world-map",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "battle",
+    "label": "ATB 전투",
+    "route": "/?scene=battle",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "inventory",
+    "label": "인벤토리",
+    "route": "/?scene=inventory",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "dialogue",
+    "label": "NPC 대화",
+    "route": "/?scene=dialogue",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "save_load",
+    "label": "세이브/로드",
+    "route": "/?scene=save-load",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "skill_tree",
+    "label": "스킬 트리",
+    "route": "/?scene=skill-tree",
+    "priority": "P1",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  },
+  {
+    "id": "settings",
+    "label": "옵션",
+    "route": "/?scene=settings",
+    "priority": "P0",
+    "probes": ["axe", "contrast", "colorblind", "keyboard", "screen-reader"]
+  }
+]
