@@ -1,0 +1,559 @@
+/**
+ * tutorial-onboarding.css — 첫 30분 튜토리얼·온보딩 코칭 시스템
+ *
+ * 1차 SSOT: docs/release/tutorial-onboarding-user-guide.md (한 손 흐름도 + 비트 표)
+ * 카피  SSOT: docs/release/tutorial-onboarding-error-messages.md (24슬롯 ko/en)
+ *
+ * 사용처:
+ *   - 인게임 코칭 오버레이 (5종 게이트: move·dialog·battle·skill·save)
+ *   - 비트 진행 인디케이터 (①~⑦)
+ *   - 시네마틱 자막 (16/20/24px 3단계)
+ *   - 스킵·재시청 컨트롤
+ *   - tutorial-style-guide.html (비주얼 QA)
+ *
+ * 의존: design-system.css (토큰), accessibility.css (sr-only)
+ *
+ * 위계: 본 CSS는 design-system.css의 토큰을 미러 — 자체 토큰 정의 금지
+ *       (DESIGN.md SSOT 위계 4차 — 런타임 상수 미러)
+ *
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-28
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   0. 게이트별 색상 토큰 (4상태 × 5게이트)
+   ─ design-system.css 토큰을 mix하여 의미 색을 합성
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* 4상태 — 카피 SSOT 톤 5계명 ② "권유형" 톤에 맞춰 부드럽게 */
+  --coach-pass:  var(--accent-success);   /* 🟢 #2ECC71 */
+  --coach-block: var(--accent-danger);    /* 🔴 #FF4444 */
+  --coach-warn:  #F39C12;                 /* 🟡 호박 */
+  --coach-error: #E67E22;                 /* 🟠 적호박 */
+
+  /* 5게이트 — 학습 단계별 액센트 (이동→대화→전투→스킬→세이브 점진 발광) */
+  --gate-move:   #7DF9FF;  /* 시안 — 첫 발걸음의 산뜻함 */
+  --gate-dialog: #DDA0DD;  /* 라일락 — 대화의 부드러움 */
+  --gate-battle: #FFD700;  /* 금 — 전투의 결정적 순간 */
+  --gate-skill:  #89CFF0;  /* 에테르블루 — 기억의 일격 */
+  --gate-save:   #F39C12;  /* 황금호박 — 보존의 확정 */
+
+  /* 코칭 레이어 — z-dialogue(850) < coach < z-modal(900) */
+  --z-coach-spotlight: 860;
+  --z-coach-overlay:   870;
+  --z-coach-progress:  720;  /* HUD 살짝 위, dialogue 아래 */
+  --z-cinematic:       880;
+
+  /* 코칭 전용 모션 — prefers-reduced-motion 준수 */
+  --coach-pulse-fast:   1200ms;
+  --coach-pulse-slow:   1800ms;
+  --coach-fade-in:      400ms;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 코칭 오버레이 — 메인 컨테이너
+   ─ 한 화면 1개념 강제: 화면 중앙 하단 고정, 폭 600px
+   ═══════════════════════════════════════════════════════════════ */
+.coach-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-8);
+  transform: translateX(-50%);
+  width: min(600px, calc(100vw - var(--space-8) * 2));
+  z-index: var(--z-coach-overlay);
+
+  background: linear-gradient(180deg,
+              rgba(22, 33, 62, 0.96),
+              rgba(13, 13, 26, 0.98));
+  border: 2px solid var(--border-default);
+  border-radius: 4px;
+  padding: var(--space-5) var(--space-6);
+  box-shadow: var(--shadow-modal);
+
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  line-height: var(--lh-normal);
+
+  animation: coach-slide-up var(--coach-fade-in) ease-out;
+}
+
+.coach-overlay__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  margin-right: var(--space-2);
+  font-size: var(--font-xl);
+  vertical-align: middle;
+}
+
+.coach-overlay__title {
+  font-family: var(--font-title);
+  font-size: var(--font-lg);
+  letter-spacing: 1px;
+  margin: 0 0 var(--space-2);
+}
+
+.coach-overlay__copy {
+  font-size: var(--font-md);
+  margin: 0 0 var(--space-3);
+}
+
+.coach-overlay__hint {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+  border-left: 2px solid var(--border-subtle);
+  padding-left: var(--space-3);
+  margin: 0;
+}
+
+.coach-overlay__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  justify-content: flex-end;
+}
+
+/* ─ 4 상태 변형 (PASS/BLOCK/WARN/ERROR) ─ */
+.coach-overlay--pass {
+  border-color: var(--coach-pass);
+  box-shadow: var(--shadow-modal),
+              0 0 12px rgba(46, 204, 113, 0.3);
+}
+.coach-overlay--pass .coach-overlay__title { color: var(--coach-pass); }
+
+.coach-overlay--block {
+  border-color: var(--coach-block);
+  box-shadow: var(--shadow-modal),
+              0 0 16px rgba(255, 68, 68, 0.4);
+  animation: coach-slide-up var(--coach-fade-in) ease-out,
+             coach-pulse-block var(--coach-pulse-fast) ease-in-out infinite;
+}
+.coach-overlay--block .coach-overlay__title { color: var(--coach-block); }
+
+.coach-overlay--warn {
+  border-color: var(--coach-warn);
+  box-shadow: var(--shadow-modal),
+              0 0 12px rgba(243, 156, 18, 0.35);
+}
+.coach-overlay--warn .coach-overlay__title { color: var(--coach-warn); }
+
+.coach-overlay--error {
+  border-color: var(--coach-error);
+  background: linear-gradient(180deg,
+              rgba(80, 25, 10, 0.96),
+              rgba(40, 10, 5, 0.98));
+}
+.coach-overlay--error .coach-overlay__title { color: var(--coach-error); }
+
+/* ─ 5 게이트 변형 — 좌측 4px 액센트 바 ─ */
+.coach-overlay--gate-move::before,
+.coach-overlay--gate-dialog::before,
+.coach-overlay--gate-battle::before,
+.coach-overlay--gate-skill::before,
+.coach-overlay--gate-save::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+.coach-overlay { position: fixed; }
+.coach-overlay--gate-move::before   { background: var(--gate-move);   box-shadow: 0 0 8px var(--gate-move); }
+.coach-overlay--gate-dialog::before { background: var(--gate-dialog); box-shadow: 0 0 8px var(--gate-dialog); }
+.coach-overlay--gate-battle::before { background: var(--gate-battle); box-shadow: 0 0 8px var(--gate-battle); }
+.coach-overlay--gate-skill::before  { background: var(--gate-skill);  box-shadow: 0 0 8px var(--gate-skill); }
+.coach-overlay--gate-save::before   { background: var(--gate-save);   box-shadow: 0 0 8px var(--gate-save); }
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 스포트라이트 — 학습 대상 강조
+   ─ ATB 게이지·NPC·버튼 등 "지금 봐야 할 것" 깜빡임
+   ═══════════════════════════════════════════════════════════════ */
+.coach-spotlight {
+  position: absolute;
+  pointer-events: none;
+  z-index: var(--z-coach-spotlight);
+  border-radius: 4px;
+  border: 2px dashed var(--text-accent);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55),
+              0 0 24px rgba(255, 215, 0, 0.6);
+  animation: coach-spotlight-pulse var(--coach-pulse-slow) ease-in-out infinite;
+}
+
+.coach-spotlight--gate-move   { border-color: var(--gate-move); }
+.coach-spotlight--gate-dialog { border-color: var(--gate-dialog); }
+.coach-spotlight--gate-battle { border-color: var(--gate-battle); }
+.coach-spotlight--gate-skill  { border-color: var(--gate-skill); }
+.coach-spotlight--gate-save   { border-color: var(--gate-save); }
+
+/* ═══════════════════════════════════════════════════════════════
+   3. 방향 화살표 — 8방향 깜빡임 (좌/우/상/하/대각 4)
+   ═══════════════════════════════════════════════════════════════ */
+.coach-arrow {
+  position: absolute;
+  width: 0; height: 0;
+  z-index: var(--z-coach-spotlight);
+  filter: drop-shadow(0 0 6px var(--text-accent));
+  animation: coach-arrow-bounce var(--coach-pulse-fast) ease-in-out infinite;
+}
+.coach-arrow--down  { border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 18px solid var(--text-accent); }
+.coach-arrow--up    { border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 18px solid var(--text-accent); }
+.coach-arrow--left  { border-top: 14px solid transparent; border-bottom: 14px solid transparent; border-right: 18px solid var(--text-accent); }
+.coach-arrow--right { border-top: 14px solid transparent; border-bottom: 14px solid transparent; border-left: 18px solid var(--text-accent); }
+
+/* ═══════════════════════════════════════════════════════════════
+   4. 비트 진행 인디케이터 — ①~⑦ 7비트
+   ─ 화면 상단 중앙 고정. 현재 비트는 발광, 통과는 체크.
+   ═══════════════════════════════════════════════════════════════ */
+.tutorial-progress {
+  position: fixed;
+  top: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-coach-progress);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background: rgba(13, 13, 26, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+}
+
+.tutorial-progress__beat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--bg-button);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-normal);
+}
+
+.tutorial-progress__beat--current {
+  background: var(--text-accent);
+  color: var(--bg-abyss);
+  border-color: var(--border-accent);
+  box-shadow: var(--glow-gold);
+  transform: scale(1.15);
+  animation: coach-spotlight-pulse var(--coach-pulse-slow) ease-in-out infinite;
+}
+
+.tutorial-progress__beat--passed {
+  background: var(--coach-pass);
+  color: var(--bg-abyss);
+  border-color: var(--coach-pass);
+}
+
+.tutorial-progress__beat--passed::after {
+  content: '✓';
+  font-weight: bold;
+}
+
+.tutorial-progress__divider {
+  width: 16px; height: 2px;
+  background: var(--border-subtle);
+}
+.tutorial-progress__divider--passed { background: var(--coach-pass); }
+
+/* ═══════════════════════════════════════════════════════════════
+   5. 비트 카드 — Beat Sheet 30분 표 (가이드 §6 미러)
+   ═══════════════════════════════════════════════════════════════ */
+.beat-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--text-accent);
+  border-radius: 4px;
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-3);
+  display: grid;
+  grid-template-columns: 80px 1fr 100px;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.beat-card__time {
+  font-family: var(--font-mono);
+  font-size: var(--font-md);
+  color: var(--text-accent);
+  text-align: center;
+}
+
+.beat-card__title {
+  font-family: var(--font-title);
+  font-size: var(--font-lg);
+  margin: 0 0 var(--space-1);
+}
+
+.beat-card__objective {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.beat-card__status {
+  text-align: right;
+  font-size: var(--font-xs);
+  font-family: var(--font-mono);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 2px;
+}
+
+.beat-card--passed { border-left-color: var(--coach-pass); }
+.beat-card--passed .beat-card__status {
+  color: var(--coach-pass);
+  background: rgba(46, 204, 113, 0.1);
+}
+.beat-card--current {
+  border-left-color: var(--text-accent);
+  box-shadow: var(--glow-gold);
+}
+.beat-card--current .beat-card__status {
+  color: var(--text-accent);
+  background: rgba(255, 215, 0, 0.1);
+}
+.beat-card--locked { border-left-color: var(--border-subtle); opacity: 0.6; }
+.beat-card--locked .beat-card__status { color: var(--text-muted); }
+
+/* ═══════════════════════════════════════════════════════════════
+   6. 컨트롤 — 스킵·재시청·다음
+   ═══════════════════════════════════════════════════════════════ */
+.coach-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--font-sm);
+  border-radius: 2px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-button);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+.coach-btn:hover { background: var(--bg-hover); border-color: var(--border-accent); }
+.coach-btn:focus-visible {
+  outline: 2px solid var(--text-accent);
+  outline-offset: 2px;
+}
+
+.coach-btn--primary {
+  background: var(--text-accent);
+  color: var(--bg-abyss);
+  border-color: var(--text-accent);
+  font-weight: bold;
+}
+.coach-btn--primary:hover {
+  background: #FFE56B;
+  box-shadow: var(--glow-gold);
+}
+
+.coach-btn--skip {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.coach-btn--skip[disabled],
+.coach-btn--skip[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.coach-btn--replay {
+  background: transparent;
+  color: var(--accent-ether);
+  border-color: var(--accent-ether);
+}
+.coach-btn--replay:hover { box-shadow: var(--glow-ether); }
+
+/* ═══════════════════════════════════════════════════════════════
+   7. 시네마틱 자막 — 16/20/24px 3단계 (a11y-user-guide.md 준수)
+   ═══════════════════════════════════════════════════════════════ */
+.cinematic {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-cinematic);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.cinematic__subtitle {
+  position: absolute;
+  bottom: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(80vw, 960px);
+  text-align: center;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 1);
+  padding: var(--space-3) var(--space-5);
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 2px;
+  line-height: var(--lh-loose);
+}
+
+.cinematic__subtitle--sm { font-size: 16px; }
+.cinematic__subtitle--md { font-size: 20px; }
+.cinematic__subtitle--lg { font-size: 24px; }
+
+.cinematic__skip {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 1;
+}
+
+.cinematic__photosensitive-warn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--coach-error);
+  color: #000;
+  font-weight: bold;
+  padding: var(--space-3) var(--space-5);
+  border-radius: 2px;
+  font-size: var(--font-md);
+  box-shadow: 0 0 24px rgba(230, 126, 34, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. ATB 학습 표시 — 게이지 + 채움 패턴 (색약 대응)
+   ─ 색(금→청 그라디언트) + 형태(빈/점선/사선/가득) 3중 신호
+   ═══════════════════════════════════════════════════════════════ */
+.coach-atb {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  background: var(--gauge-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.coach-atb__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--text-accent), var(--accent-ether));
+  transition: width var(--transition-normal);
+}
+
+/* 채움 패턴 — 25% 단위로 형태 변화 (색약 대응) */
+.coach-atb[data-fill="0"]    .coach-atb__fill { width: 0%; }
+.coach-atb[data-fill="25"]   .coach-atb__fill {
+  width: 25%;
+  background-image: repeating-linear-gradient(45deg,
+                    transparent 0 4px, rgba(0, 0, 0, 0.25) 4px 8px);
+}
+.coach-atb[data-fill="50"]   .coach-atb__fill {
+  width: 50%;
+  background-image: repeating-linear-gradient(90deg,
+                    transparent 0 6px, rgba(0, 0, 0, 0.25) 6px 8px);
+}
+.coach-atb[data-fill="75"]   .coach-atb__fill { width: 75%; }
+.coach-atb[data-fill="100"]  .coach-atb__fill {
+  width: 100%;
+  animation: coach-atb-ready var(--coach-pulse-fast) ease-in-out infinite;
+  box-shadow: 0 0 12px var(--text-accent);
+}
+
+.coach-atb__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-primary);
+  text-shadow: 0 0 4px #000;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. 모션 — 키프레임 (prefers-reduced-motion에서 무력화)
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes coach-slide-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes coach-pulse-block {
+  0%, 100% { box-shadow: var(--shadow-modal), 0 0 16px rgba(255, 68, 68, 0.4); }
+  50%      { box-shadow: var(--shadow-modal), 0 0 24px rgba(255, 68, 68, 0.7); }
+}
+
+@keyframes coach-spotlight-pulse {
+  0%, 100% { opacity: 1.0; }
+  50%      { opacity: 0.55; }
+}
+
+@keyframes coach-arrow-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes coach-atb-ready {
+  0%, 100% { filter: brightness(1.0); }
+  50%      { filter: brightness(1.4); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. 접근성 — WCAG AAA · 모션 감소 · 색약 보강
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .coach-overlay,
+  .coach-overlay--block,
+  .coach-spotlight,
+  .coach-arrow,
+  .coach-atb[data-fill="100"] .coach-atb__fill,
+  .tutorial-progress__beat--current {
+    animation: none !important;
+    transition: none !important;
+  }
+  .coach-overlay { transform: translateX(-50%); }
+}
+
+@media (prefers-contrast: more) {
+  .coach-overlay  { border-width: 3px; }
+  .coach-spotlight { border-width: 3px; }
+  .beat-card      { border-left-width: 6px; }
+}
+
+/* 스크린 리더 — coach-overlay에 자동 연결될 ARIA 동작 보강 */
+.coach-overlay[role="status"] { /* aria-live="polite" 가 인라인으로 들어옴 */ }
+
+/* ═══════════════════════════════════════════════════════════════
+   11. 반응형 — DESIGN.md §8 브레이크포인트 (sm 768 / md 1024 / lg 1440)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .coach-overlay {
+    bottom: var(--space-4);
+    width: calc(100vw - var(--space-4) * 2);
+    padding: var(--space-4);
+  }
+  .coach-overlay__title { font-size: var(--font-md); }
+  .coach-overlay__copy  { font-size: var(--font-sm); }
+
+  .tutorial-progress {
+    top: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-xs);
+  }
+  .tutorial-progress__beat { width: 22px; height: 22px; }
+  .tutorial-progress__divider { width: 8px; }
+
+  .beat-card { grid-template-columns: 60px 1fr; }
+  .beat-card__status { grid-column: 2; text-align: left; }
+
+  .cinematic__subtitle--lg { font-size: 20px; }
+  .cinematic__subtitle--md { font-size: 18px; }
+}

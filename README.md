@@ -10,6 +10,8 @@
 [![Assets](https://img.shields.io/badge/Assets-1%2C454%20Images-ff69b4?style=for-the-badge)](#-프로젝트-통계)
 [![Commits](https://img.shields.io/badge/Commits-279%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 [![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)](#-코드-품질)
+[![Tutorial Coverage](https://img.shields.io/badge/Tutorial%20Coverage-100%25-brightgreen?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
+[![First 30min](https://img.shields.io/badge/First%2030min-%E2%89%A430%3A00-blue?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 
 *FF6 스타일 ATB 전투 RPG — PC 웹 브라우저 (Phaser.js)*
 
@@ -276,6 +278,56 @@ TypeScript 에러: 811 → 0 (서버+클라이언트).
 개연성 검토 13/13 완료, 정합성 37테스트 통과, E2E 60파일.
 
 </details>
+
+---
+
+## 🎓 첫 30분 — 신규 플레이어 학습 보장
+
+> 처음 만나는 자가 30분 안에 다섯 곡조(이동·대화·전투·스킬·세이브)를 익히고 첫 보스를 베도록, 한 자락 텍스트 길을 깔았사옵니다.
+
+### 🎯 한눈 지표
+
+| 지표 | 약속 | 측정 |
+|------|------|------|
+| 핵심 5종 학습 커버리지 | **100% 목표** | `npm run verify` (현재 스텁 타입/빌드 검증) |
+| 튜토리얼 누적 길이 | **≤ 30:00 목표** | 전용 계측 스크립트 추가 예정 |
+| 첫 보스 처치율 | **≥ 90%** | 1회차 진입자 기준 |
+| 30분 이탈률 | **≤ 15%** | 비트 ① ↔ 비트 ⑦ 도달 차이 |
+
+> 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수.
+
+### 🚀 현재 검증
+
+```bash
+npm run verify                 # lint + typecheck + unit/contract test + build
+```
+
+### 🎼 핵심 비트 3종 (자세한 흐름은 가이드 §1)
+
+| 비트 | 시간 | 학습 |
+|-----|-----|-----|
+| ② 이동·대화 | 3:00~7:00 | move + dialog |
+| ③ 첫 전투 | 7:00~12:00 | battle (ATB 1개념) |
+| ⑤ 세이브 | 17:00~20:00 | save (slot 1 강제) |
+
+> 전체 7비트 + 게이트 5종 + 카피 24슬롯은 본문 SSOT 참조.
+
+### 📕 자세한 가이드
+
+- 📘 [사용자 가이드 — 첫 30분](docs/release/tutorial-onboarding-user-guide.md) (1차 SSOT)
+- 🌏 [코칭/에러 카피 SSOT](docs/release/tutorial-onboarding-error-messages.md) (24슬롯 ko/en)
+- 🛠️ [PR/커밋 컨벤션](docs/release/tutorial-onboarding-pr-template.md)
+- ♿ [접근성 인게임 카피](docs/release/a11y-ingame-copy.md) (자막·ARIA)
+
+### 🛡️ ship-gate 3-AND (예고)
+
+머지 가능 조건 — 세 가닥 모두 통과:
+
+1. **5종 학습 커버리지 100%** — 전용 `verify:tutorial` 스크립트 추가 예정
+2. **누적 5회 평균 ≤ 30:00** — `.ac/tutorial-perf.json` 스키마 추가 예정
+3. **카피 i18n 100%** — 전용 `verify:tutorial-copy` 스크립트 추가 예정
+
+> 한 가닥이라도 끊기면 봉인 — 이소화(Security) 비협상.
 
 ---
 

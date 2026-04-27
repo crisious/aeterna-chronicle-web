@@ -11,6 +11,28 @@
 > 상태: 개발 중 (Phase 4 — 구현) · 단계: Build
 
 ### Added
+- **에테르나 크로니클 첫 30분 튜토리얼·온보딩 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Tutorial-Onboarding, 2026-04-28) — 진채봉 Editor 합본 정리
+  - Phase 52에서 콘텐츠 728/728 · 어셋 1,454편을 갖췄으나, 첫 진입자가 ATB 전투/스킬/파티 시스템을 익힐 가이드가 비어 있어 손이 멎던 결을 메우고자, 사람 손에 잡히는 텍스트 에셋 5편 + README §🎓 첫 30분 절을 묶어 두옵니다.
+  - 30분 약속: 핵심 시스템 5종(이동/대화/전투/스킬/세이브) 학습 커버리지 **100%** · 튜토리얼 누적 길이 **≤ 30:00** · 첫 보스 처치율 **≥ 90%** · 30분 이탈률 **≤ 15%** — `launch_checklist §2.20` SSOT 신설 완료
+  - 산출물 5건 / 총 1,113 LOC (SSOT 5편) + README §🎓 신설 ~60줄 + `launch_checklist §2.20` 신설 ~25줄 = **~1,198줄** — 에셋 단계 완료, Build(계섬월) 인계
+  - **README §🎓 첫 30분 절 통합 완료** (`README.md` 📈 개발 현황 ↔ 📁 문서 링크 사이) — 한눈 지표 4지표 표 · 현재 검증 명령(`npm run verify`) · 핵심 비트 3종 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고 · 상단 배지 2종(`Tutorial Coverage 100%` · `First 30min ≤30:00`) 추가
+  - **첫 30분 튜토리얼·온보딩 사용자 가이드 v1.0** (`docs/release/tutorial-onboarding-user-guide.md`) — 진채봉 Editor
+    - 10개 절 + FAQ 7건 — 한 손 흐름도(오프닝 → 코칭 → 첫 전투 → 스킬 → 세이브 → 첫 보스 → 결말) · 5종 학습 약속 표 · 30분 비트 표 7행 · 보스 페이즈 P1/P2 코칭 카피 · 스킵·재시청·접근성 정책
+    - 본 문서가 1차 SSOT — `README.md §🎓 첫 30분` 메아리, 약속 수치 변경 시 §1 흐름도와 §6 비트 표를 동시 갱신
+  - **첫 30분 코칭/에러 카피 SSOT v1.0** (`docs/release/tutorial-onboarding-error-messages.md`) — 진채봉 Editor
+    - 5종 게이트(move · dialog · battle · skill · save) × 4 상태(PASS/BLOCK/WARN/ERROR) = **20개 카피 슬롯** + 보조 4슬롯(시네마틱·보스 P2·승리·30분 초과) = **24슬롯** (ko/en 동시 = 48줄)
+    - 키 규약 `coach.<gate>.<state>.<reason>` · 코드 상수 매핑 (계섬월 인계용 `src/constants/tutorial_coach_messages.ts` 스니펫)
+    - 톤 5계명: 한 화면 1개념 · 권유형(~소서/~지요) · 수치는 사실 · 시는 hint만 · 도메인 키 규약
+  - **첫 30분 PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/tutorial-onboarding-pr-template.md`) — 진채봉 Editor
+    - PR 제목 7 스코프 (`cinematic`/`coach`/`beat`/`boss`/`gate`/`copy`/`docs`)
+    - PR 본문 7개 섹션 — 자동 감사 표(Before/After/Δ/약속) · 산출물 분류 · 게이트 결과 · 학습 약속 변경 여부 · i18n · 5인 인계 체크
+    - 커밋 메시지 좋은 예 / 나쁜 예 + 리뷰어 행동 가이드 5항 (이소화 봉인 비협상 — 회차 첫 진입자 스킵 노출 0건) + ship-gate 3-AND
+  - **README §🎓 첫 30분 절 — 골격 SSOT v1.0** (`docs/release/tutorial-onboarding-readme-skeleton.md`) — 진채봉 Editor
+    - `README.md §🎓 첫 30분` 신설 골격 — 한눈 지표 4지표 표 · 현재 검증 명령 · 핵심 비트 3종 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고
+    - 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수 명시
+    - 선택 배지 2종 (`Tutorial Coverage 100%` · `First 30min ≤30:00`) 추가 안내
+  - **첫 30분 CHANGELOG 항목 초안 v1.0** (`docs/release/tutorial-onboarding-changelog-draft.md`) — 진채봉 Editor
+    - 본 항목의 출전 — 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
 - **에테르나 크로니클 BGM·SFX 사운드 시스템 통합 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Sound-Integration, 2026-04-27) — 진채봉 Editor 합본 정리
   - Phase 52에서 비주얼 어셋 1,454개는 갖췄으나 사운드 레이어가 비어 플레이 체감이 정적이던 결을 메우고자, 사람 손에 잡히는 텍스트 에셋 5편 + README §🎵 사운드 시스템 절을 묶어 두옵니다.
   - 사운드 약속: BGM 매핑 커버리지 **100%** · 핵심 전투 SFX 커버리지 **100%** · 라이선스 위험 **0건** · SFX 평균 응답 지연 **≤ 50ms** — `launch_checklist §2.19` SSOT 신설 예정

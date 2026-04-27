@@ -159,6 +159,26 @@
 - [ ] 에러 카피 5 게이트(boot · verify · build · type · runtime) × 4 상태 = 20 슬롯 i18n ko/en 100% 충진
 - [ ] ship-gate hook (다음 스프린트) — `git diff --stat ≠ 0` AND `git log --since=7d ≥ 1` AND `verify:core 🟢 PASS` 3-AND 조건
 
+> 참고: §2.19 자리는 사운드 시스템 통합 게이트(2026-04-27 스프린트)에 예약되어 있사옵니다. `sound-system-changelog-draft.md` 머지 시 신설 예정.
+
+### 2.20 첫 30분 튜토리얼·온보딩 게이트 (Sprint Auto-Tutorial-Onboarding 2026-04-28)
+
+> 본 항목은 "에테르나 크로니클 튜토리얼·온보딩 첫 30분 경험 설계" 스프린트의 SSOT 게이트이옵니다.
+> 연계 문서: `tutorial-onboarding-user-guide.md` · `tutorial-onboarding-error-messages.md` · `tutorial-onboarding-pr-template.md` · `tutorial-onboarding-readme-skeleton.md` · `tutorial-onboarding-changelog-draft.md`
+> 자동화 스크립트: `scripts/tutorial/measure.ts` · `tests/tutorial/{move,dialog,battle,skill,save}.spec.ts` (Build 단계 인계 — 계섬월/두련사)
+> 핵심 약속: 신규 진입자가 첫 회차에서 30분 안에 핵심 5종(이동/대화/전투/스킬/세이브)을 100% 학습 완료하고 첫 보스를 처치한다.
+
+- [ ] **5종 학습 커버리지 = 100%** — `npm run verify:tutorial` 5회 자동 검증 (move·dialog·battle·skill·save 모두 BLOCK→PASS 전이)
+- [ ] **누적 5회 평균 길이 ≤ 30:00** — `.ac/tutorial-perf.json` 기록 · 32:00 초과 시 정경패 Reviewer가 보스 HP 5% 자동 하향
+- [ ] **첫 보스 처치율 ≥ 90%** — 1회차 진입자 베타 데이터 기준 (적경홍 QA 인계)
+- [ ] **30분 이탈률 ≤ 15%** — 비트 ① 진입 ↔ 비트 ⑦ 도달 차이 (심요연 Analyst 측정)
+- [ ] **카피 24슬롯 i18n 100% 충진** — `npm run verify:tutorial-copy` 🟢 (5 게이트 × 4 상태 = 20 + 보조 4 = 24슬롯, ko + en 동시)
+- [ ] **키 규약 통일 100%** — `coach.<gate>.<state>.<reason>` 정규식 lint 0 위반
+- [ ] **재시청 진입 ≤ 3클릭** — 메인 메뉴 → [도움말] → [튜토리얼 다시 보기] / 인게임 일시정지 → [도움말] → [지난 코칭 보기]
+- [ ] **NG+ 스킵 정책** — 비트 ②~⑤ 첫 회차 스킵 노출 0건 · 회차(NG+)에서만 [메뉴 → 튜토리얼 스킵 ▶▶] 단일 클릭 허용
+- [ ] **접근성** — 자막 ko/en 16/20/24px 3단계 · 코칭 오버레이 ARIA `role="status" aria-live="polite"` · 모션 감소 모드 ON 시 화면 흔들림·플래시 0%
+- [ ] **ship-gate 3-AND** — `verify:tutorial 🟢` AND `누적 5회 평균 ≤ 30:00` AND `verify:tutorial-copy 🟢` 모두 PASS · 한 가닥이라도 끊기면 봉인(이소화 Security 비협상)
+
 ---
 
 ## 3. 마케팅 (Marketing) — 12항목
