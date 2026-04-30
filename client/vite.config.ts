@@ -112,6 +112,15 @@ export default defineConfig(({ mode }) => ({
 
     optimizeDeps: {
         // Phaser pre-bundle — 개발 서버 시작 속도 개선
-        include: ['phaser', 'socket.io-client'],
+        // 2026-04-30: Phaser ESM dist + protobufjs 명시로 cold scan 단축
+        include: [
+            'phaser',
+            'phaser > eventemitter3',
+            'socket.io-client',
+            'protobufjs',
+            'protobufjs/minimal',
+        ],
+        // entries 명시로 cold scan 진입점 고정 — main.ts만 스캔하면 모든 dep 발견
+        entries: ['src/main.ts'],
     },
 }));
