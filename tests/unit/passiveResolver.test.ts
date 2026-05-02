@@ -126,12 +126,25 @@ describe('accumulatePassive', () => {
     expect(bag.mpRegenPerTurn).toBe(13);
   });
 
-  test('Phase 2 stub type 은 noop', () => {
+  test('Phase 3 — 트리거 4종 누적', () => {
     const bag = emptyModifierBag();
     accumulatePassive(bag, 'reflect', 20);
+    accumulatePassive(bag, 'projectile_reflect', 20);
+    accumulatePassive(bag, 'battle_regen', 10);
     accumulatePassive(bag, 'cheat_death', 1);
+    expect(bag.reflectPercent).toBe(20);
+    expect(bag.projectileReflectPercent).toBe(20);
+    expect(bag.hpRegenPerTurn).toBe(10);
+    expect(bag.cheatDeathChargesMax).toBe(1);
+  });
+
+  test('Phase 4 stub type 은 여전히 noop (auto_resurrect, crit_echo, poison_amplify, drain_amplify, move_damage_aura)', () => {
+    const bag = emptyModifierBag();
     accumulatePassive(bag, 'auto_resurrect', 100);
     accumulatePassive(bag, 'crit_echo', 30);
+    accumulatePassive(bag, 'poison_amplify', 100);
+    accumulatePassive(bag, 'drain_amplify', 50);
+    accumulatePassive(bag, 'move_damage_aura', 15);
     expect(bag).toEqual(emptyModifierBag());
   });
 });
@@ -185,18 +198,30 @@ describe('resolvePassiveModifiers', () => {
     expect(result.applied).toHaveLength(3);
   });
 
-  test('stub effect type 은 pending 으로 분류 — modifier 영향 없음', async () => {
+  test('Phase 1+3 effect 는 모두 applied — pending 빈 배열', async () => {
     findManyMock.mockResolvedValue([
       makePlayerSkill({ code: 'ek_counter', type: 'passive', effectType: 'reflect', value: 20, level: 1 }),
       makePlayerSkill({ code: 'ek_indomitable', type: 'passive', effectType: 'cheat_death', value: 1, level: 1 }),
       makePlayerSkill({ code: 'ek_ether_charge', type: 'passive', effectType: 'mp_regen', value: 5, level: 1 }),
     ]);
     const result = await resolvePassiveModifiers('char1');
-    // applied: mp_regen 만
+    expect(result.applied).toHaveLength(3);
+    expect(result.pending).toHaveLength(0);
+    expect(result.modifiers.mpRegenPerTurn).toBe(5);
+    expect(result.modifiers.reflectPercent).toBe(20);
+    expect(result.modifiers.cheatDeathChargesMax).toBe(1);
+  });
+
+  test('Phase 4 stub effect 는 pending 으로 분류 (auto_resurrect 등)', async () => {
+    findManyMock.mockResolvedValue([
+      makePlayerSkill({ code: 'mw_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }),
+      makePlayerSkill({ code: 'sw_crit_echo', type: 'passive', effectType: 'crit_echo', value: 30, level: 1 }),
+      makePlayerSkill({ code: 'ek_ether_charge', type: 'passive', effectType: 'mp_regen', value: 5, level: 1 }),
+    ]);
+    const result = await resolvePassiveModifiers('char1');
     expect(result.applied).toHaveLength(1);
-    // pending: reflect + cheat_death
     expect(result.pending).toHaveLength(2);
-    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['cheat_death', 'reflect']);
+    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['auto_resurrect', 'crit_echo']);
     expect(result.modifiers.mpRegenPerTurn).toBe(5);
   });
 
@@ -251,6 +276,10 @@ describe('applyModifiersToStats', () => {
       mpRegenPerTurn: 7,
       lowHpAtkBonusPercent: 80,
       defenseUpConditionalPercent: 0,
+      reflectPercent: 0,
+      projectileReflectPercent: 0,
+      hpRegenPerTurn: 0,
+      cheatDeathChargesMax: 0,
     });
   });
 });

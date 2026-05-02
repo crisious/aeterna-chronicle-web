@@ -5,12 +5,16 @@
  */
 import { describe, expect, test } from 'vitest';
 import {
+  applyHpRegen,
   applyMpRegen,
   computeMissChance,
+  computeProjectileReflectDamage,
+  computeReflectDamage,
   getEffectiveAtk,
   getEffectiveDef,
   LOW_HP_THRESHOLD,
   rollMiss,
+  tryCheatDeath,
   type PassiveCombatant,
 } from '../../server/src/combat/passiveCombatHooks';
 
@@ -158,5 +162,127 @@ describe('applyMpRegen', () => {
     const c = makeCombatant({ mp: 50, maxMp: 50, mpRegenPerTurn: 10 });
     expect(applyMpRegen(c)).toBe(0);
     expect(c.mp).toBe(50);
+  });
+});
+
+// ─── applyHpRegen (battle_regen) ────────────────────────────────
+
+describe('applyHpRegen — battle_regen', () => {
+  test('regen 0 → 변경 없음', () => {
+    const c = makeCombatant({ hp: 50, maxHp: 100 });
+    expect(applyHpRegen(c)).toBe(0);
+    expect(c.hp).toBe(50);
+  });
+
+  test('정상 회복', () => {
+    const c = makeCombatant({ hp: 50, maxHp: 100, hpRegenPerTurn: 10 });
+    expect(applyHpRegen(c)).toBe(10);
+    expect(c.hp).toBe(60);
+  });
+
+  test('maxHp 캡', () => {
+    const c = makeCombatant({ hp: 95, maxHp: 100, hpRegenPerTurn: 10 });
+    expect(applyHpRegen(c)).toBe(5);
+    expect(c.hp).toBe(100);
+  });
+
+  test('alive=false 면 회복 안 함', () => {
+    const c = makeCombatant({ hp: 0, maxHp: 100, hpRegenPerTurn: 10, alive: false });
+    expect(applyHpRegen(c)).toBe(0);
+    expect(c.hp).toBe(0);
+  });
+});
+
+// ─── computeReflectDamage ───────────────────────────────────────
+
+describe('computeReflectDamage — reflect (physical)', () => {
+  test('reflect 0 → 0', () => {
+    expect(computeReflectDamage(makeCombatant(), 100)).toBe(0);
+  });
+
+  test('reflect 20% × 100 dmg = 20', () => {
+    const d = makeCombatant({ reflectPercent: 20 });
+    expect(computeReflectDamage(d, 100)).toBe(20);
+  });
+
+  test('reflect 50% × 33 dmg = 16 (floor)', () => {
+    const d = makeCombatant({ reflectPercent: 50 });
+    expect(computeReflectDamage(d, 33)).toBe(16);
+  });
+
+  test('damage ≤ 0 → 0', () => {
+    const d = makeCombatant({ reflectPercent: 50 });
+    expect(computeReflectDamage(d, 0)).toBe(0);
+    expect(computeReflectDamage(d, -5)).toBe(0);
+  });
+});
+
+// ─── computeProjectileReflectDamage ─────────────────────────────
+
+describe('computeProjectileReflectDamage — projectile_reflect (magical)', () => {
+  test('field 0 → 0', () => {
+    expect(computeProjectileReflectDamage(makeCombatant(), 100)).toBe(0);
+  });
+
+  test('20% × 100 dmg = 20', () => {
+    const d = makeCombatant({ projectileReflectPercent: 20 });
+    expect(computeProjectileReflectDamage(d, 100)).toBe(20);
+  });
+
+  test('reflect 와 독립적', () => {
+    const d = makeCombatant({ reflectPercent: 50, projectileReflectPercent: 30 });
+    // physical reflect 호출 시
+    expect(computeReflectDamage(d, 100)).toBe(50);
+    // magical reflect 호출 시
+    expect(computeProjectileReflectDamage(d, 100)).toBe(30);
+  });
+});
+
+// ─── tryCheatDeath ──────────────────────────────────────────────
+
+describe('tryCheatDeath — 사망 모면', () => {
+  test('charges 0 → 미발동', () => {
+    const t = makeCombatant({ hp: 50, maxHp: 100, cheatDeathChargesRemaining: 0 });
+    expect(tryCheatDeath(t, 80)).toBe(false);
+    expect(t.hp).toBe(50); // 외부 코드에서 데미지 적용해야
+    expect(t.cheatDeathChargesRemaining).toBe(0);
+  });
+
+  test('non-fatal 데미지 → 미발동 (절약)', () => {
+    const t = makeCombatant({ hp: 50, maxHp: 100, cheatDeathChargesRemaining: 1 });
+    expect(tryCheatDeath(t, 30)).toBe(false);
+    expect(t.hp).toBe(50);
+    expect(t.cheatDeathChargesRemaining).toBe(1);
+  });
+
+  test('fatal 데미지 + charge 1 → 발동: hp=1, charges=0', () => {
+    const t = makeCombatant({ hp: 50, maxHp: 100, cheatDeathChargesRemaining: 1 });
+    expect(tryCheatDeath(t, 80)).toBe(true);
+    expect(t.hp).toBe(1);
+    expect(t.cheatDeathChargesRemaining).toBe(0);
+  });
+
+  test('동일 hp 의 fatal 데미지 (=hp) → 발동', () => {
+    const t = makeCombatant({ hp: 50, maxHp: 100, cheatDeathChargesRemaining: 1 });
+    expect(tryCheatDeath(t, 50)).toBe(true);
+    expect(t.hp).toBe(1);
+  });
+
+  test('두 번째 fatal 데미지 → 미발동 (이미 소진)', () => {
+    const t = makeCombatant({ hp: 50, maxHp: 100, cheatDeathChargesRemaining: 1 });
+    tryCheatDeath(t, 80);
+    expect(t.cheatDeathChargesRemaining).toBe(0);
+    // 두 번째
+    t.hp = 1;
+    expect(tryCheatDeath(t, 5)).toBe(false);
+  });
+
+  test('charges 2 → 두 번 발동 가능', () => {
+    const t = makeCombatant({ hp: 50, maxHp: 100, cheatDeathChargesRemaining: 2 });
+    expect(tryCheatDeath(t, 80)).toBe(true);
+    expect(t.cheatDeathChargesRemaining).toBe(1);
+    t.hp = 50;
+    expect(tryCheatDeath(t, 80)).toBe(true);
+    expect(t.cheatDeathChargesRemaining).toBe(0);
   });
 });
