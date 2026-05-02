@@ -138,13 +138,19 @@ describe('accumulatePassive', () => {
     expect(bag.cheatDeathChargesMax).toBe(1);
   });
 
-  test('Phase 4 stub type 은 여전히 noop (auto_resurrect, crit_echo, poison_amplify, drain_amplify, move_damage_aura)', () => {
+  test('Phase 4 부분 — crit_echo / move_damage_aura 누적', () => {
+    const bag = emptyModifierBag();
+    accumulatePassive(bag, 'crit_echo', 30);
+    accumulatePassive(bag, 'move_damage_aura', 15);
+    expect(bag.critEchoPercent).toBe(30);
+    expect(bag.moveDamageAuraValue).toBe(15);
+  });
+
+  test('Phase 4 잔여 stub 은 noop (auto_resurrect, poison_amplify, drain_amplify)', () => {
     const bag = emptyModifierBag();
     accumulatePassive(bag, 'auto_resurrect', 100);
-    accumulatePassive(bag, 'crit_echo', 30);
     accumulatePassive(bag, 'poison_amplify', 100);
     accumulatePassive(bag, 'drain_amplify', 50);
-    accumulatePassive(bag, 'move_damage_aura', 15);
     expect(bag).toEqual(emptyModifierBag());
   });
 });
@@ -212,17 +218,21 @@ describe('resolvePassiveModifiers', () => {
     expect(result.modifiers.cheatDeathChargesMax).toBe(1);
   });
 
-  test('Phase 4 stub effect 는 pending 으로 분류 (auto_resurrect 등)', async () => {
+  test('Phase 4 잔여 stub effect (auto_resurrect/poison_amplify/drain_amplify) 는 pending', async () => {
     findManyMock.mockResolvedValue([
       makePlayerSkill({ code: 'mw_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }),
+      makePlayerSkill({ code: 'sw_poison_amp', type: 'passive', effectType: 'poison_amplify', value: 100, level: 1 }),
       makePlayerSkill({ code: 'sw_crit_echo', type: 'passive', effectType: 'crit_echo', value: 30, level: 1 }),
       makePlayerSkill({ code: 'ek_ether_charge', type: 'passive', effectType: 'mp_regen', value: 5, level: 1 }),
     ]);
     const result = await resolvePassiveModifiers('char1');
-    expect(result.applied).toHaveLength(1);
+    // applied: mp_regen + crit_echo (구현됨)
+    expect(result.applied).toHaveLength(2);
+    // pending: auto_resurrect + poison_amplify
     expect(result.pending).toHaveLength(2);
-    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['auto_resurrect', 'crit_echo']);
+    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['auto_resurrect', 'poison_amplify']);
     expect(result.modifiers.mpRegenPerTurn).toBe(5);
+    expect(result.modifiers.critEchoPercent).toBe(30);
   });
 
   test('미장착(isEquipped=false) 은 prisma 쿼리에서 필터링됨 — 결과 0', async () => {
@@ -280,6 +290,8 @@ describe('applyModifiersToStats', () => {
       projectileReflectPercent: 0,
       hpRegenPerTurn: 0,
       cheatDeathChargesMax: 0,
+      critEchoPercent: 0,
+      moveDamageAuraValue: 0,
     });
   });
 });

@@ -6,7 +6,9 @@
 import { describe, expect, test } from 'vitest';
 import {
   applyHpRegen,
+  applyMoveDamageAura,
   applyMpRegen,
+  computeCritEchoDamage,
   computeMissChance,
   computeProjectileReflectDamage,
   computeReflectDamage,
@@ -284,5 +286,85 @@ describe('tryCheatDeath — 사망 모면', () => {
     t.hp = 50;
     expect(tryCheatDeath(t, 80)).toBe(true);
     expect(t.cheatDeathChargesRemaining).toBe(0);
+  });
+});
+
+// ─── computeCritEchoDamage ─────────────────────────────────────
+
+describe('computeCritEchoDamage — crit_echo', () => {
+  test('isCritical=false → 0', () => {
+    const a = makeCombatant({ critEchoPercent: 30 });
+    expect(computeCritEchoDamage(a, false, 100)).toBe(0);
+  });
+
+  test('echoPercent 0 → 0 (크리여도)', () => {
+    const a = makeCombatant();
+    expect(computeCritEchoDamage(a, true, 100)).toBe(0);
+  });
+
+  test('30% × 100 baseDmg crit → 30', () => {
+    const a = makeCombatant({ critEchoPercent: 30 });
+    expect(computeCritEchoDamage(a, true, 100)).toBe(30);
+  });
+
+  test('50% × 33 baseDmg crit = 16 (floor)', () => {
+    const a = makeCombatant({ critEchoPercent: 50 });
+    expect(computeCritEchoDamage(a, true, 33)).toBe(16);
+  });
+
+  test('baseDamage ≤ 0 → 0', () => {
+    const a = makeCombatant({ critEchoPercent: 50 });
+    expect(computeCritEchoDamage(a, true, 0)).toBe(0);
+    expect(computeCritEchoDamage(a, true, -5)).toBe(0);
+  });
+});
+
+// ─── applyMoveDamageAura ───────────────────────────────────────
+
+describe('applyMoveDamageAura', () => {
+  type Enemy = PassiveCombatant & { id: string; alive?: boolean };
+  function enemy(id: string, hp: number, alive = true): Enemy {
+    return { id, hp, maxHp: 100, mp: 0, maxMp: 0, alive };
+  }
+
+  test('aura 0 → 변경 없음', () => {
+    const a = makeCombatant({ alive: true });
+    const enemies = [enemy('e1', 100)];
+    expect(applyMoveDamageAura(a, enemies)).toEqual([]);
+    expect(enemies[0].hp).toBe(100);
+  });
+
+  test('aura 15 × 3 enemies → 각 hp -15', () => {
+    const a = makeCombatant({ alive: true, moveDamageAuraValue: 15 });
+    const enemies = [enemy('e1', 100), enemy('e2', 50), enemy('e3', 30)];
+    const log = applyMoveDamageAura(a, enemies);
+    expect(log).toHaveLength(3);
+    expect(enemies[0].hp).toBe(85);
+    expect(enemies[1].hp).toBe(35);
+    expect(enemies[2].hp).toBe(15);
+  });
+
+  test('actor 가 죽었으면 aura 미발동', () => {
+    const a = makeCombatant({ alive: false, moveDamageAuraValue: 15 });
+    const enemies = [enemy('e1', 100)];
+    expect(applyMoveDamageAura(a, enemies)).toEqual([]);
+    expect(enemies[0].hp).toBe(100);
+  });
+
+  test('이미 죽은 enemy 는 skip', () => {
+    const a = makeCombatant({ alive: true, moveDamageAuraValue: 15 });
+    const enemies = [enemy('e1', 0, false), enemy('e2', 30)];
+    const log = applyMoveDamageAura(a, enemies);
+    expect(log).toHaveLength(1);
+    expect(log[0].enemyId).toBe('e2');
+    expect(enemies[0].hp).toBe(0);
+    expect(enemies[1].hp).toBe(15);
+  });
+
+  test('데미지 floor 0 — overflow 안 함', () => {
+    const a = makeCombatant({ alive: true, moveDamageAuraValue: 50 });
+    const enemies = [enemy('e1', 30)];
+    applyMoveDamageAura(a, enemies);
+    expect(enemies[0].hp).toBe(0);
   });
 });
