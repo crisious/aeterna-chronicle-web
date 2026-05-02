@@ -1,0 +1,418 @@
+/**
+ * client/src/styles/design-system-perf.css — 성능 최적화 시각 토큰 CSS 미러 (가춘운)
+ *
+ * SSOT 위계: 4차 (CSS 미러)
+ *   1차 SSOT: docs/release/design-system_performance-optimization.md
+ *   2차: client/src/config/perf-tokens.ts (계섬월 인계)
+ *   3차: client/src/scenes/perf/PerfHud.ts (Phaser 런타임)
+ *   4차: 본 파일 + perf-style-guide.html
+ *
+ * 용도:
+ *   - 로딩 화면 chunk progress UI (HTML 표면 — 모든 유저)
+ *   - 개발자 perf HUD HTML 오버레이 (?perf=1)
+ *   - perf-style-guide.html 시각 회귀
+ *   - PR 임베드 / 회귀 리포트 웹 렌더
+ *
+ * 어머~ FPS·메모리·로딩, 게임의 호흡을 정직하게 비추는 거울이에요 ✨
+ *
+ * 🔒 봉인 (이소화 비협상):
+ *   - 4상태 4색 (#5FCB7A/#E8A33A/#E85A5A/#4A9EFF) — data-validation 1:1 미러
+ *   - dot 4×4 px — 모바일 360w 인지 가능 최소치
+ *   - error 점멸 ≤ 1.5Hz — a11y AAA
+ */
+
+:root {
+  /* ──────────────────────────────────────────────────────────────
+     §2.1 성능 상태 4종 — data-validation 1:1 미러
+     ────────────────────────────────────────────────────────────── */
+  --perf-good: #5FCB7A;        /* FPS ≥ 55 / Δmem ≤ 50MB / load ≤ 5s  */
+  --perf-warn: #E8A33A;        /* FPS 45-54 / Δmem 50-80MB / load 5-8s */
+  --perf-error: #E85A5A;       /* FPS < 45 / Δmem > 80MB / load > 8s   */
+  --perf-info: #4A9EFF;        /* 측정 중 (warmup / baseline)          */
+
+  /* §2.2 보조 — 그래프·축 */
+  --perf-grid: #2A2A3E;        /* 차트 격자 (DESIGN.md surface.dim)    */
+  --perf-axis: #7A7A8E;        /* 축 라벨                              */
+  --perf-target: #FFD700;      /* 목표선 (gold accent)                 */
+  --perf-trace: #A8B0C4;       /* 측정 라인                            */
+
+  /* 알파 블렌드 (배경·핫스팟 강조) */
+  --perf-good-bg: rgba(95, 203, 122, 0.10);
+  --perf-warn-bg: rgba(232, 163, 58, 0.10);
+  --perf-error-bg: rgba(232, 90, 90, 0.10);
+  --perf-info-bg: rgba(74, 158, 255, 0.10);
+  --perf-hotspot-bg: rgba(232, 90, 90, 0.25);
+
+  /* HUD 박스 — 게임 위 떠 있는 표면 */
+  --perf-hud-bg: rgba(26, 26, 46, 0.70);   /* DESIGN.md surface.deep + 70% */
+  --perf-hud-border: var(--perf-grid);
+  --perf-hud-text: #E8E8E8;
+
+  /* §3 타이포 — 숫자 표시 전용 */
+  --perf-font-mono: 'JetBrains Mono', 'Cascadia Code', 'D2Coding', Consolas, monospace;
+  --perf-font-label: Pretendard, 'Noto Sans KR', system-ui, sans-serif;
+  --perf-fs-label: 10px;       /* "FPS"  "MEM"  ...                     */
+  --perf-fs-value: 14px;       /* "58"   "42.1"                         */
+  --perf-fs-unit: 9px;         /* "MB"   "ms"                           */
+  --perf-fs-delta: 11px;       /* "+3.2"                                */
+
+  /* §4 컴포넌트 — PerfDot (user 기본) */
+  --perf-dot-size: 4px;
+  --perf-dot-inset: 12px;
+  --perf-dot-alpha-good: 0.30;
+  --perf-dot-alpha-warn: 0.60;
+  --perf-dot-alpha-error: 0.90;
+  --perf-dot-alpha-info: 0.30;
+
+  /* §4.2 PerfHud (dev — ?perf=1) */
+  --perf-hud-w: 72px;
+  --perf-hud-h: 64px;
+  --perf-hud-pad: 6px;
+  --perf-hud-radius: 2px;
+
+  /* §4.4 LoadingProgress (모든 유저) */
+  --perf-bar-h: 8px;
+  --perf-bar-w-max: 480px;
+  --perf-bar-radius: 4px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §1 PerfDot — 우상단 4×4 dot (모든 유저, 게임 화면 위 fixed 위치)
+   ────────────────────────────────────────────────────────────── */
+
+.perf-dot {
+  position: fixed;
+  top: var(--perf-dot-inset);
+  right: var(--perf-dot-inset);
+  width: var(--perf-dot-size);
+  height: var(--perf-dot-size);
+  border-radius: 1px;
+  background: var(--perf-info);
+  opacity: var(--perf-dot-alpha-info);
+  z-index: 9999;
+  pointer-events: none;
+  transition: background-color 250ms ease, opacity 250ms ease;
+}
+
+.perf-dot[data-state="good"]  { background: var(--perf-good);  opacity: var(--perf-dot-alpha-good); }
+.perf-dot[data-state="warn"]  { background: var(--perf-warn);  opacity: var(--perf-dot-alpha-warn); }
+.perf-dot[data-state="error"] {
+  background: var(--perf-error);
+  opacity: var(--perf-dot-alpha-error);
+  animation: perf-dot-pulse 666ms ease-in-out infinite;  /* 1.5Hz */
+}
+.perf-dot[data-state="info"]  { background: var(--perf-info);  opacity: var(--perf-dot-alpha-info); }
+
+@keyframes perf-dot-pulse {
+  0%, 100% { transform: scale(1);   }
+  50%      { transform: scale(1.3); }
+}
+
+/* a11y — 광민감성 대응 */
+@media (prefers-reduced-motion: reduce) {
+  .perf-dot,
+  .perf-dot[data-state="error"] { animation: none !important; transition: none !important; }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §4.2 PerfHud — ?perf=1 개발자 HUD (HTML 오버레이 버전)
+   Phaser 런타임은 PerfHud.ts가 담당 — 본 클래스는 디버그/비교용
+   ────────────────────────────────────────────────────────────── */
+
+.perf-hud {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  width: var(--perf-hud-w);
+  height: var(--perf-hud-h);
+  padding: var(--perf-hud-pad);
+  background: var(--perf-hud-bg);
+  border: 1px solid var(--perf-hud-border);
+  border-radius: var(--perf-hud-radius);
+  font-family: var(--perf-font-mono);
+  font-size: var(--perf-fs-value);
+  color: var(--perf-hud-text);
+  z-index: 9998;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 2px;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.perf-hud__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  line-height: 1.2;
+}
+
+.perf-hud__label {
+  font-family: var(--perf-font-label);
+  font-size: var(--perf-fs-label);
+  color: var(--perf-axis);
+  letter-spacing: 0.04em;
+}
+
+.perf-hud__value {
+  font-family: var(--perf-font-mono);
+  font-size: var(--perf-fs-value);
+  font-variant-numeric: tabular-nums;
+}
+
+.perf-hud__value[data-state="good"]  { color: var(--perf-good); }
+.perf-hud__value[data-state="warn"]  { color: var(--perf-warn); }
+.perf-hud__value[data-state="error"] { color: var(--perf-error); }
+.perf-hud__value[data-state="info"]  { color: var(--perf-info); }
+
+.perf-hud__unit {
+  font-family: var(--perf-font-label);
+  font-size: var(--perf-fs-unit);
+  color: var(--perf-axis);
+  margin-left: 2px;
+}
+
+.perf-hud__delta {
+  font-size: var(--perf-fs-delta);
+  font-variant-numeric: tabular-nums;
+}
+
+.perf-hud__sparkline {
+  font-family: var(--perf-font-mono);
+  font-size: 10px;
+  color: var(--perf-trace);
+  letter-spacing: -1px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* dev 모드 진입 페이드인 */
+.perf-hud--enter {
+  animation: perf-hud-fade 180ms ease-out;
+}
+@keyframes perf-hud-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §4.3 PerfChart — ?perf=1&chart=1 풀 차트 (선택 표시)
+   ────────────────────────────────────────────────────────────── */
+
+.perf-chart {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  width: 320px;
+  height: 120px;
+  padding: 8px 12px;
+  background: var(--perf-hud-bg);
+  border: 1px solid var(--perf-hud-border);
+  border-radius: 4px;
+  font-family: var(--perf-font-mono);
+  font-size: 9px;
+  color: var(--perf-axis);
+  z-index: 9997;
+  pointer-events: none;
+}
+
+.perf-chart__title {
+  font-family: var(--perf-font-label);
+  font-size: 11px;
+  color: var(--perf-hud-text);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.perf-chart__svg {
+  display: block;
+  width: 100%;
+  height: calc(100% - 18px);
+}
+
+.perf-chart__grid line   { stroke: var(--perf-grid); stroke-width: 1; opacity: 0.4; }
+.perf-chart__target      { stroke: var(--perf-target); stroke-width: 1; stroke-dasharray: 4 3; }
+.perf-chart__trace       { stroke: var(--perf-trace); stroke-width: 1.5; fill: none; }
+.perf-chart__hotspot     { fill: var(--perf-hotspot-bg); }
+
+/* ──────────────────────────────────────────────────────────────
+   §4.4 LoadingProgress — chunk 분할 시각화 (모든 유저)
+   ────────────────────────────────────────────────────────────── */
+
+.perf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: var(--perf-bar-w-max);
+  margin: 0 auto;
+  padding: 24px 16px;
+  font-family: var(--perf-font-label);
+  color: var(--perf-hud-text);
+}
+
+.perf-loading__title {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.perf-loading__bar {
+  position: relative;
+  width: min(80%, var(--perf-bar-w-max));
+  height: var(--perf-bar-h);
+  background: var(--perf-grid);
+  border-radius: var(--perf-bar-radius);
+  overflow: hidden;
+}
+
+.perf-loading__bar-fill {
+  height: 100%;
+  background: var(--perf-target);
+  border-radius: var(--perf-bar-radius);
+  transition: width 200ms linear;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+}
+
+.perf-loading__percent {
+  font-family: var(--perf-font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--perf-target);
+}
+
+.perf-loading__chunks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 14px;
+  font-size: 11px;
+  color: var(--perf-axis);
+}
+
+.perf-loading__chunk {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(42, 42, 62, 0.5);
+  border: 1px solid transparent;
+}
+
+.perf-loading__chunk[data-state="done"]    { color: var(--perf-good); border-color: var(--perf-good-bg); }
+.perf-loading__chunk[data-state="active"]  { color: var(--perf-info); border-color: var(--perf-info); animation: perf-chunk-pulse 1.6s ease-in-out infinite; }
+.perf-loading__chunk[data-state="pending"] { color: var(--perf-axis); }
+.perf-loading__chunk[data-state="failed"]  { color: var(--perf-error); border-color: var(--perf-error); }
+
+@keyframes perf-chunk-pulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1.0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perf-loading__chunk[data-state="active"] { animation: none; opacity: 1; }
+  .perf-loading__bar-fill { transition: none; }
+}
+
+.perf-loading__hint {
+  font-size: 12px;
+  color: var(--perf-axis);
+  font-style: italic;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §7 핫스팟 배지 — Top 3만 (battle / map / memory)
+   ────────────────────────────────────────────────────────────── */
+
+.perf-hotspot {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 10px;
+  background: rgba(232, 90, 90, 0.15);
+  border: 1px solid var(--perf-error);
+  border-radius: 11px;
+  font-family: var(--perf-font-label);
+  font-size: 10px;
+  color: var(--perf-error);
+  z-index: 9996;
+  pointer-events: none;
+  animation: perf-hotspot-fade-in 400ms ease-out;
+}
+
+@keyframes perf-hotspot-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* 8초 자동 페이드 — JS에서 setTimeout으로 클래스 토글 */
+.perf-hotspot--leaving {
+  animation: perf-hotspot-fade-out 400ms ease-in forwards;
+}
+@keyframes perf-hotspot-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; transform: translateY(4px); }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §8 모바일 — 360w viewport (mobile-responsive 미러)
+   dev HUD 자동 비활성, dot은 inset 8px (notch 회피)
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  :root { --perf-dot-inset: 8px; }
+  .perf-hud,
+  .perf-chart { display: none !important; }   /* 저사양·notch 회피 */
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §9 print / 스크린샷 — 봇 알림용 임베드 클래스
+   ────────────────────────────────────────────────────────────── */
+
+.perf-embed {
+  display: inline-block;
+  padding: 12px 16px;
+  background: var(--perf-hud-bg);
+  border-left: 3px solid var(--perf-warn);
+  border-radius: 4px;
+  font-family: var(--perf-font-label);
+  font-size: 13px;
+  color: var(--perf-hud-text);
+  max-width: 480px;
+}
+
+.perf-embed[data-state="good"]  { border-left-color: var(--perf-good); }
+.perf-embed[data-state="warn"]  { border-left-color: var(--perf-warn); }
+.perf-embed[data-state="error"] { border-left-color: var(--perf-error); }
+
+.perf-embed__title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.perf-embed__metric {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--perf-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--perf-axis);
+  padding: 2px 0;
+}
+
+.perf-embed__metric strong { color: var(--perf-hud-text); }

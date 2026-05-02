@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>성능 최적화 스타일 가이드 — 에테르나 크로니클</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css" />
+  <link rel="stylesheet" href="/src/styles/design-system-perf.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #0D0D1A;
+      color: #E8E8E8;
+      font-family: Pretendard, 'Noto Sans KR', system-ui, sans-serif;
+    }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 40px 0 16px; color: #FFD24A; border-bottom: 1px solid #2A2A3A; padding-bottom: 8px; }
+    h3 { font-size: 15px; margin: 20px 0 10px; color: #C0C0C0; }
+    .meta { color: #A0A0A0; font-size: 13px; margin-bottom: 24px; }
+    .meta a { color: #4A9EFF; }
+    section { margin-bottom: 36px; max-width: 960px; }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .swatch-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; background: #16162A; border-radius: 6px;
+      font-size: 13px;
+    }
+    .swatch {
+      width: 24px; height: 24px; border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .swatch-row code {
+      margin-left: auto;
+      color: #A0A0A0;
+      font-size: 12px;
+    }
+    .caption {
+      font-size: 12px; color: #A0A0A0;
+      margin-top: 8px; padding-left: 4px;
+    }
+    .ssot-link {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #1A1A2E;
+      border-radius: 4px;
+      color: #FFD24A !important;
+      text-decoration: none;
+      font-size: 12px;
+    }
+    .demo-stage {
+      position: relative;
+      width: 100%;
+      max-width: 720px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #1A1A2E 0%, #0D0D1A 100%);
+      border: 1px solid #2A2A3A;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .demo-stage::before {
+      content: "[ 게임 화면 영역 ]";
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #4A4A5E; font-size: 13px;
+    }
+    /* 데모용 — perf-dot은 fixed니까 데모 스테이지에선 absolute로 재정의 */
+    .demo-stage .perf-dot,
+    .demo-stage .perf-hud,
+    .demo-stage .perf-hotspot,
+    .demo-stage .perf-chart { position: absolute; }
+    .demo-stage .perf-dot { top: 12px; right: 12px; }
+    .demo-stage .perf-hud { top: 8px; right: 8px; }
+    .demo-stage .perf-hotspot { bottom: 12px; right: 12px; }
+    .demo-stage .perf-chart { bottom: 12px; right: 12px; left: auto; }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 720px) { .row-2 { grid-template-columns: 1fr; } }
+
+    .principle {
+      padding: 12px 16px;
+      background: #14142A;
+      border-left: 3px solid #FFD24A;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #C0C0C0;
+      margin: 8px 0;
+    }
+    .principle strong { color: #FFD24A; }
+  </style>
+</head>
+<body>
+  <h1>⚡ 성능 최적화 스타일 가이드</h1>
+  <p class="meta">
+    가춘운 (CMO/디자인) · 2026-04-30 ·
+    <a class="ssot-link" href="../docs/release/design-system_performance-optimization.md">📖 1차 SSOT</a>
+    <a class="ssot-link" href="../docs/release/assets_performance-optimization.md">🎨 시각 에셋 팩</a>
+  </p>
+
+  <p style="color:#A0A0A0; font-size:14px; max-width:720px; line-height:1.6;">
+    어머~ 성능 표시는 게임 위에 얹히는 게 아니라, <strong style="color:#FFD24A;">게임의 호흡을 정직하게 비추는 거울</strong>이에요. ✨<br/>
+    화려함 ❌ · 신뢰 ✅ · 복구 ✅ · 일관성 ✅ — data-validation의 고요한 톤을 게임 안으로 가져옵니다.
+  </p>
+
+  <!-- ──────────────── §1 디자인 원칙 ──────────────── -->
+  <section>
+    <h2>§1. 디자인 원칙 5계명</h2>
+    <div class="principle"><strong>무소음 GOOD</strong> — 정상 상태는 4×4 dot 1개로 끝, 알파 30%.</div>
+    <div class="principle"><strong>계단식 경고</strong> — green → yellow → red 3단계, 5초 hysteresis. 1프레임 dip로 빨간불 ❌.</div>
+    <div class="principle"><strong>불안 최소화</strong> — "성능 저하" ❌ → "측정 중…" ✅. 원인 + 다음 액션 함께.</div>
+    <div class="principle"><strong>개발자 모드 분리</strong> — 숫자·그래프는 <code>?perf=1</code>에서만. 일반 유저는 dot 1개.</div>
+    <div class="principle"><strong>일관성</strong> — data-validation ANSI 4상태를 hex로 1:1 미러. 신규 색 ❌.</div>
+  </section>
+
+  <!-- ──────────────── §2 컬러 시스템 ──────────────── -->
+  <section>
+    <h2>§2. 컬러 시스템 — 4상태 토큰</h2>
+    <h3>2.1 성능 상태 4종 (data-validation 4상태와 1:1 미러)</h3>
+    <div class="grid-4">
+      <div class="swatch-row"><span class="swatch" style="background:#5FCB7A"></span><span>✅ <strong>perf.good</strong> 양호</span><code>#5FCB7A</code></div>
+      <div class="swatch-row"><span class="swatch" style="background:#E8A33A"></span><span>⚠️ <strong>perf.warn</strong> 주의</span><code>#E8A33A</code></div>
+      <div class="swatch-row"><span class="swatch" style="background:#E85A5A"></span><span>❌ <strong>perf.error</strong> 위험</span><code>#E85A5A</code></div>
+      <div class="swatch-row"><span class="swatch" style="background:#4A9EFF"></span><span>💡 <strong>perf.info</strong> 측정 중</span><code>#4A9EFF</code></div>
+    </div>
+    <p class="caption">의미: FPS ≥ 55 / 45–54 / &lt; 45 · 메모리 ≤ 50MB / 50–80MB / &gt; 80MB · 로딩 ≤ 5s / 5–8s / &gt; 8s</p>
+
+    <h3>2.2 보조 — 그래프·축 토큰</h3>
+    <div class="grid-4">
+      <div class="swatch-row"><span class="swatch" style="background:#2A2A3E"></span><span><strong>perf.grid</strong> 격자</span><code>#2A2A3E</code></div>
+      <div class="swatch-row"><span class="swatch" style="background:#7A7A8E"></span><span><strong>perf.axis</strong> 축 라벨</span><code>#7A7A8E</code></div>
+      <div class="swatch-row"><span class="swatch" style="background:#FFD700"></span><span><strong>perf.target</strong> 목표선</span><code>#FFD700</code></div>
+      <div class="swatch-row"><span class="swatch" style="background:#A8B0C4"></span><span><strong>perf.trace</strong> 측정 라인</span><code>#A8B0C4</code></div>
+    </div>
+  </section>
+
+  <!-- ──────────────── §3 PerfDot ──────────────── -->
+  <section>
+    <h2>§3. PerfDot — 우상단 4×4 dot (모든 유저)</h2>
+    <p style="color:#A0A0A0; font-size:13px;">색만 4상태로 변경. 알파는 상태별 차등. error만 1.5Hz pulse.</p>
+    <div class="row-2">
+      <div>
+        <h3>good (FPS ≥ 55)</h3>
+        <div class="demo-stage"><div class="perf-dot" data-state="good"></div></div>
+      </div>
+      <div>
+        <h3>warn (FPS 45-54)</h3>
+        <div class="demo-stage"><div class="perf-dot" data-state="warn"></div></div>
+      </div>
+      <div>
+        <h3>error (FPS &lt; 45) — 1.5Hz pulse</h3>
+        <div class="demo-stage"><div class="perf-dot" data-state="error"></div></div>
+      </div>
+      <div>
+        <h3>info (측정 중 / warmup)</h3>
+        <div class="demo-stage"><div class="perf-dot" data-state="info"></div></div>
+      </div>
+    </div>
+    <p class="caption">CSS: <code>.perf-dot[data-state="..."]</code> · Phaser: <code>PerfDot.ts</code> (계섬월 인계)</p>
+  </section>
+
+  <!-- ──────────────── §4 PerfHud ──────────────── -->
+  <section>
+    <h2>§4. PerfHud — <code>?perf=1</code> 개발자 모드</h2>
+    <p style="color:#A0A0A0; font-size:13px;">72×64 px 박스, 우상단 inset 8px. 숫자는 monospace + tabular-nums (좌우 흔들림 0).</p>
+    <div class="row-2">
+      <div>
+        <h3>good — 정상 상태</h3>
+        <div class="demo-stage">
+          <div class="perf-hud perf-hud--enter">
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">FPS</span>
+              <span class="perf-hud__value" data-state="good">58</span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">MEM</span>
+              <span><span class="perf-hud__value" data-state="good">42.1</span><span class="perf-hud__unit">MB</span></span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">Δ5m</span>
+              <span class="perf-hud__delta" style="color:var(--perf-good)">+3.2</span>
+            </div>
+            <div class="perf-hud__sparkline">▁▂▂▃▃▂▂▁▂▃▂▂</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>warn — 주의 상태</h3>
+        <div class="demo-stage">
+          <div class="perf-hud">
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">FPS</span>
+              <span class="perf-hud__value" data-state="warn">48</span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">MEM</span>
+              <span><span class="perf-hud__value" data-state="warn">68.4</span><span class="perf-hud__unit">MB</span></span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">Δ5m</span>
+              <span class="perf-hud__delta" style="color:var(--perf-warn)">+18.2</span>
+            </div>
+            <div class="perf-hud__sparkline">▆▇█▇▆▅▄▃▄▅▆▇</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>error — 위험 상태</h3>
+        <div class="demo-stage">
+          <div class="perf-hud">
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">FPS</span>
+              <span class="perf-hud__value" data-state="error">32</span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">MEM</span>
+              <span><span class="perf-hud__value" data-state="error">94.8</span><span class="perf-hud__unit">MB</span></span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">Δ5m</span>
+              <span class="perf-hud__delta" style="color:var(--perf-error)">+58.4</span>
+            </div>
+            <div class="perf-hud__sparkline">█▇▆▅▄▃▂▂▃▄▅▆</div>
+          </div>
+          <div class="perf-hotspot">🔥 ATB battle:127</div>
+        </div>
+      </div>
+      <div>
+        <h3>info — 측정 중 (warmup)</h3>
+        <div class="demo-stage">
+          <div class="perf-hud">
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">FPS</span>
+              <span class="perf-hud__value" data-state="info">--</span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">MEM</span>
+              <span><span class="perf-hud__value" data-state="info">--.-</span><span class="perf-hud__unit">MB</span></span>
+            </div>
+            <div class="perf-hud__row">
+              <span class="perf-hud__label">Δ5m</span>
+              <span class="perf-hud__delta" style="color:var(--perf-info)">측정 중…</span>
+            </div>
+            <div class="perf-hud__sparkline">·············</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────── §5 LoadingProgress ──────────────── -->
+  <section>
+    <h2>§5. LoadingProgress — chunk 분할 시각화 (모든 유저)</h2>
+    <p style="color:#A0A0A0; font-size:13px;">초기 로딩 ≤ 5s 약속. core / chapter1 / assets / chapter2-5 를 분할 lazy-load.</p>
+
+    <div class="perf-loading" style="background:#16162A; border-radius:6px;">
+      <h3 class="perf-loading__title">🛡️ 에테르나 크로니클 로딩 중...</h3>
+      <div class="perf-loading__bar"><div class="perf-loading__bar-fill" style="width:62%"></div></div>
+      <span class="perf-loading__percent">62%</span>
+      <div class="perf-loading__chunks">
+        <span class="perf-loading__chunk" data-state="done">✅ core (1.2 MB)</span>
+        <span class="perf-loading__chunk" data-state="done">✅ chapter1 (3.1 MB)</span>
+        <span class="perf-loading__chunk" data-state="active">⏳ assets (4.8 / 8.0 MB)</span>
+        <span class="perf-loading__chunk" data-state="pending">⏸ chapter2-5</span>
+      </div>
+      <p class="perf-loading__hint">다음: 4.8 MB 더 받으면 챕터 1 시작!</p>
+    </div>
+
+    <h3 style="margin-top:24px;">실패 케이스 (네트워크 끊김)</h3>
+    <div class="perf-loading" style="background:#16162A; border-radius:6px;">
+      <h3 class="perf-loading__title">⚠️ 일시 중단됐어요</h3>
+      <div class="perf-loading__bar"><div class="perf-loading__bar-fill" style="width:38%; background:var(--perf-error)"></div></div>
+      <span class="perf-loading__percent" style="color:var(--perf-error)">38% — 재시도</span>
+      <div class="perf-loading__chunks">
+        <span class="perf-loading__chunk" data-state="done">✅ core (1.2 MB)</span>
+        <span class="perf-loading__chunk" data-state="failed">❌ chapter1 (네트워크 끊김)</span>
+        <span class="perf-loading__chunk" data-state="pending">⏸ assets</span>
+      </div>
+      <p class="perf-loading__hint">자동으로 다시 받을게요. 잠시만 기다려주세요~ 🌬️</p>
+    </div>
+  </section>
+
+  <!-- ──────────────── §6 핫스팟 배지 ──────────────── -->
+  <section>
+    <h2>§6. 핫스팟 배지 — Top 3만</h2>
+    <p style="color:#A0A0A0; font-size:13px;">battle / map / memory 3종만. 8초 후 자동 페이드. 노이즈 최소화 ✅.</p>
+    <div class="row-2">
+      <div>
+        <h3>전투 핫스팟</h3>
+        <div class="demo-stage"><div class="perf-hotspot">🔥 ATB battle:127</div></div>
+      </div>
+      <div>
+        <h3>맵 텍스처 스파이크</h3>
+        <div class="demo-stage"><div class="perf-hotspot">🗺️ ASSET 8.2MB spike</div></div>
+      </div>
+      <div>
+        <h3>메모리 누수</h3>
+        <div class="demo-stage"><div class="perf-hotspot">⚠️ 메모리 +15MB / 씬전환</div></div>
+      </div>
+      <div>
+        <h3>(자동 사라짐 8s)</h3>
+        <div class="demo-stage"><div class="perf-hotspot perf-hotspot--leaving">✨ 사라지는 중...</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────── §7 PR 임베드 ──────────────── -->
+  <section>
+    <h2>§7. PR 임베드 / 봇 알림 카드</h2>
+    <p style="color:#A0A0A0; font-size:13px;">5분 메모리 ≥ 50MB 또는 FPS 평균 &lt; 55일 때 봇이 채널에 포스팅하는 카드.</p>
+
+    <div class="row-2">
+      <div class="perf-embed" data-state="good">
+        <div class="perf-embed__title">✅ 성능 게이트 PASS</div>
+        <div class="perf-embed__metric"><span>FPS 평균</span><strong>57.8</strong></div>
+        <div class="perf-embed__metric"><span>5분 Δ메모리</span><strong>+12.3 MB</strong></div>
+        <div class="perf-embed__metric"><span>초기 로딩</span><strong>3.4 s</strong></div>
+        <div class="perf-embed__metric"><span>핫스팟</span><strong>0건</strong></div>
+      </div>
+
+      <div class="perf-embed" data-state="warn">
+        <div class="perf-embed__title">⚠️ 성능 게이트 WARN</div>
+        <div class="perf-embed__metric"><span>FPS 평균</span><strong style="color:var(--perf-warn)">52.1</strong></div>
+        <div class="perf-embed__metric"><span>5분 Δ메모리</span><strong style="color:var(--perf-warn)">+58.4 MB</strong></div>
+        <div class="perf-embed__metric"><span>초기 로딩</span><strong>4.7 s</strong></div>
+        <div class="perf-embed__metric"><span>핫스팟</span><strong>2건 (battle, map)</strong></div>
+      </div>
+
+      <div class="perf-embed" data-state="error">
+        <div class="perf-embed__title">❌ 성능 게이트 BLOCK</div>
+        <div class="perf-embed__metric"><span>FPS 평균</span><strong style="color:var(--perf-error)">38.2</strong></div>
+        <div class="perf-embed__metric"><span>5분 Δ메모리</span><strong style="color:var(--perf-error)">+94.8 MB</strong></div>
+        <div class="perf-embed__metric"><span>초기 로딩</span><strong style="color:var(--perf-error)">8.3 s</strong></div>
+        <div class="perf-embed__metric"><span>핫스팟</span><strong style="color:var(--perf-error)">4건 (Top 3 초과)</strong></div>
+      </div>
+
+      <div class="perf-embed" data-state="warn">
+        <div class="perf-embed__title">💡 측정 베이스라인 갱신</div>
+        <div class="perf-embed__metric"><span>새 baseline</span><strong>FPS 56.4 / Mem 38.1 MB</strong></div>
+        <div class="perf-embed__metric"><span>이전 대비</span><strong style="color:var(--perf-good)">+1.2 FPS / -2.3 MB</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────── §8 Hysteresis & 봉인 ──────────────── -->
+  <section>
+    <h2>§8. Hysteresis & 봉인 (이소화 비협상 🔒)</h2>
+    <table style="width:100%; max-width:720px; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="background:#1A1A2E; color:#FFD24A; text-align:left;">
+          <th style="padding:8px 12px;">전이</th>
+          <th style="padding:8px 12px;">조건</th>
+          <th style="padding:8px 12px;">지속 시간</th>
+        </tr>
+      </thead>
+      <tbody style="color:#C0C0C0;">
+        <tr><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">good → warn</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">FPS &lt; 55</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">연속 2초</td></tr>
+        <tr><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">warn → error</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">FPS &lt; 45</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">연속 2초</td></tr>
+        <tr><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">error → warn (회복)</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">FPS ≥ 45</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">연속 5초 (천천히)</td></tr>
+        <tr><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">warn → good (회복)</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">FPS ≥ 55</td><td style="padding:6px 12px; border-top:1px solid #2A2A3A;">연속 5초</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">→ 결과: 진짜 성능 문제만 빨간불, 일시적 GC dip은 무시 ✅. 1프레임 깜빡임 ❌.</p>
+  </section>
+
+  <footer style="margin-top:48px; padding-top:24px; border-top:1px solid #2A2A3A; color:#7A7A8E; font-size:12px;">
+    <p>
+      🎀 가춘운 (CMO/디자인) · 에테르나 크로니클 v1.0.0-rc.3<br/>
+      SSOT 위계 4차 (CSS 미러) · 변경은 위에서 아래로만 — DESIGN.md → perf-tokens.ts → PerfHud.ts → 본 파일<br/>
+      봉인: 4상태 4색 · dot 4×4 · error 점멸 ≤ 1.5Hz · Hysteresis 2/2/5/5 — 본 스프린트 비협상
+    </p>
+  </footer>
+</body>
+</html>
