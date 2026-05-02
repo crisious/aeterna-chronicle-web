@@ -64,6 +64,9 @@ export interface PassiveModifierBag {
   autoResurrectHpPercent: number;
   /** auto_resurrect 사용 가능 횟수 (전투당). 여러 auto_resurrect 장착 시 합산 */
   autoResurrectChargesMax: number;
+  // ─ Phase 4 (poison_amplify) ──────────────────────────────
+  /** 시전자가 가한 poison/burn/bleed DoT 증폭 비율(%) */
+  poisonAmplifyPercent: number;
 }
 
 /** 패시브 적용 결과 — 디버깅/노출용 */
@@ -112,6 +115,8 @@ const ALWAYS_KIND: ReadonlySet<PassiveEffectType> = new Set<PassiveEffectType>([
   'move_damage_aura',
   // Phase 4 (auto_resurrect) — duration 필드 사용, 특수 처리
   'auto_resurrect',
+  // Phase 4 (poison_amplify) — DoT tick 훅
+  'poison_amplify',
 ]);
 
 // ─── 헬퍼 ──────────────────────────────────────────────────────
@@ -132,6 +137,7 @@ export function emptyModifierBag(): PassiveModifierBag {
     autoResurrectDelay: 0,
     autoResurrectHpPercent: 0,
     autoResurrectChargesMax: 0,
+    poisonAmplifyPercent: 0,
   };
 }
 
@@ -202,8 +208,11 @@ export function accumulatePassive(
     case 'move_damage_aura':
       bag.moveDamageAuraValue += scaledValue;
       return;
+    case 'poison_amplify':
+      bag.poisonAmplifyPercent += scaledValue;
+      return;
     default:
-      // 미구현 stub — 매니저 신설 동반 (poison_amplify/drain_amplify: status manager 후속 sprint, auto_resurrect: deferred event queue)
+      // 미구현 stub — drain_amplify (lifesteal 메커니즘 부재) 외 일부.
       return;
   }
 }
@@ -307,6 +316,7 @@ export interface AppliedStats extends BaseStats {
   autoResurrectDelay: number;
   autoResurrectHpPercent: number;
   autoResurrectChargesMax: number;
+  poisonAmplifyPercent: number;
 }
 
 export function applyModifiersToStats(
@@ -329,5 +339,6 @@ export function applyModifiersToStats(
     autoResurrectDelay: bag.autoResurrectDelay,
     autoResurrectHpPercent: bag.autoResurrectHpPercent,
     autoResurrectChargesMax: bag.autoResurrectChargesMax,
+    poisonAmplifyPercent: bag.poisonAmplifyPercent,
   };
 }
