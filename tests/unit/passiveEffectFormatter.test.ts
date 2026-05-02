@@ -76,15 +76,19 @@ describe('formatPassiveEffect — 12 구현 effect (S1+S2+S3+S5+S6)', () => {
     expect(r.status).toBe('implemented');
     expect(r.text).toBe('사망 시 100% HP 로 부활');
   });
+
+  test('poison_amplify (P55-S7)', () => {
+    const r = formatPassiveEffect('poison_amplify', 100, 1);
+    expect(r.status).toBe('implemented');
+    expect(r.text).toBe('시전자 DoT 데미지 +100%');
+  });
 });
 
-describe('formatPassiveEffect — 2 stub effect (Phase 4 잔여)', () => {
-  test('poison_amplify', () => {
-    expect(formatPassiveEffect('poison_amplify', 100, 1).status).toBe('pending');
-  });
-
+describe('formatPassiveEffect — 1 stub effect (drain_amplify)', () => {
   test('drain_amplify', () => {
-    expect(formatPassiveEffect('drain_amplify', 50, 1).status).toBe('pending');
+    const r = formatPassiveEffect('drain_amplify', 50, 1);
+    expect(r.status).toBe('pending');
+    expect(r.text).toContain('구현 대기');
   });
 });
 
@@ -98,12 +102,12 @@ describe('formatPassiveEffect — 미인식', () => {
 });
 
 describe('상수 검증', () => {
-  test('IMPLEMENTED_EFFECT_TYPES 12개 (S1+S2+S3+S5+S6)', () => {
-    expect(IMPLEMENTED_EFFECT_TYPES.length).toBe(12);
+  test('IMPLEMENTED_EFFECT_TYPES 13개 (S1+S2+S3+S5+S6+S7)', () => {
+    expect(IMPLEMENTED_EFFECT_TYPES.length).toBe(13);
   });
 
-  test('PENDING_EFFECT_TYPES 2개 (Phase 4 잔여)', () => {
-    expect(PENDING_EFFECT_TYPES.length).toBe(2);
+  test('PENDING_EFFECT_TYPES 1개 (drain_amplify)', () => {
+    expect(PENDING_EFFECT_TYPES.length).toBe(1);
   });
 
   test('두 배열 합 = 14 (skillSeeds 14 distinct effect type)', () => {

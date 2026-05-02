@@ -146,10 +146,15 @@ describe('accumulatePassive', () => {
     expect(bag.moveDamageAuraValue).toBe(15);
   });
 
-  test('Phase 4 잔여 stub 은 noop (auto_resurrect, poison_amplify, drain_amplify)', () => {
+  test('poison_amplify 는 누적 (P55-S7)', () => {
     const bag = emptyModifierBag();
-    accumulatePassive(bag, 'auto_resurrect', 100);
     accumulatePassive(bag, 'poison_amplify', 100);
+    accumulatePassive(bag, 'poison_amplify', 50);
+    expect(bag.poisonAmplifyPercent).toBe(150);
+  });
+
+  test('잔여 stub 은 noop (drain_amplify)', () => {
+    const bag = emptyModifierBag();
     accumulatePassive(bag, 'drain_amplify', 50);
     expect(bag).toEqual(emptyModifierBag());
   });
@@ -218,7 +223,7 @@ describe('resolvePassiveModifiers', () => {
     expect(result.modifiers.cheatDeathChargesMax).toBe(1);
   });
 
-  test('Phase 4 잔여 stub effect (poison_amplify/drain_amplify) 는 pending', async () => {
+  test('Phase 4 잔여 stub (drain_amplify 만) 은 pending — poison_amplify 는 구현됨', async () => {
     findManyMock.mockResolvedValue([
       makePlayerSkill({ code: 'sw_poison_amp', type: 'passive', effectType: 'poison_amplify', value: 100, level: 1 }),
       makePlayerSkill({ code: 'mb_drain_amp', type: 'passive', effectType: 'drain_amplify', value: 50, level: 1 }),
@@ -226,13 +231,14 @@ describe('resolvePassiveModifiers', () => {
       makePlayerSkill({ code: 'ek_ether_charge', type: 'passive', effectType: 'mp_regen', value: 5, level: 1 }),
     ]);
     const result = await resolvePassiveModifiers('char1');
-    // applied: mp_regen + crit_echo (구현됨)
-    expect(result.applied).toHaveLength(2);
-    // pending: poison_amplify + drain_amplify
-    expect(result.pending).toHaveLength(2);
-    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['drain_amplify', 'poison_amplify']);
+    // applied: mp_regen + crit_echo + poison_amplify
+    expect(result.applied).toHaveLength(3);
+    // pending: drain_amplify
+    expect(result.pending).toHaveLength(1);
+    expect(result.pending[0].effectType).toBe('drain_amplify');
     expect(result.modifiers.mpRegenPerTurn).toBe(5);
     expect(result.modifiers.critEchoPercent).toBe(30);
+    expect(result.modifiers.poisonAmplifyPercent).toBe(100);
   });
 
   test('auto_resurrect — duration + value 두 필드 추출 + charges 누적', async () => {
@@ -324,6 +330,7 @@ describe('applyModifiersToStats', () => {
       autoResurrectDelay: 0,
       autoResurrectHpPercent: 0,
       autoResurrectChargesMax: 0,
+      poisonAmplifyPercent: 0,
     });
   });
 });
