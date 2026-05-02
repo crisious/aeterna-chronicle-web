@@ -57,6 +57,13 @@ export interface PassiveModifierBag {
   critEchoPercent: number;
   /** 매 tick 적군 전체에 가하는 광역 데미지. move_damage_aura */
   moveDamageAuraValue: number;
+  // ─ Phase 4 (auto_resurrect) ──────────────────────────────
+  /** 사망 후 부활까지 대기 tick 수 (skillSeeds.effect.duration 그대로) */
+  autoResurrectDelay: number;
+  /** 부활 시 hp 비율 (skillSeeds.effect.value, 0~100) */
+  autoResurrectHpPercent: number;
+  /** auto_resurrect 사용 가능 횟수 (전투당). 여러 auto_resurrect 장착 시 합산 */
+  autoResurrectChargesMax: number;
 }
 
 /** 패시브 적용 결과 — 디버깅/노출용 */
@@ -103,6 +110,8 @@ const ALWAYS_KIND: ReadonlySet<PassiveEffectType> = new Set<PassiveEffectType>([
   // Phase 4 (부분) — 단순 hook 2종
   'crit_echo',
   'move_damage_aura',
+  // Phase 4 (auto_resurrect) — duration 필드 사용, 특수 처리
+  'auto_resurrect',
 ]);
 
 // ─── 헬퍼 ──────────────────────────────────────────────────────
@@ -120,6 +129,9 @@ export function emptyModifierBag(): PassiveModifierBag {
     cheatDeathChargesMax: 0,
     critEchoPercent: 0,
     moveDamageAuraValue: 0,
+    autoResurrectDelay: 0,
+    autoResurrectHpPercent: 0,
+    autoResurrectChargesMax: 0,
   };
 }
 
@@ -134,12 +146,13 @@ export function scalePassiveValue(rawValue: number, skillLevel: number): number 
   return Math.floor(rawValue * (1 + bonus / 100));
 }
 
-/** effect json blob → { type, value } 안전 파싱 */
-function parseEffect(raw: unknown): { type: PassiveEffectType; value: number } | null {
+/** effect json blob → { type, value, duration } 안전 파싱 */
+function parseEffect(raw: unknown): { type: PassiveEffectType; value: number; duration: number } | null {
   if (!raw || typeof raw !== 'object') return null;
-  const e = raw as { type?: unknown; value?: unknown };
+  const e = raw as { type?: unknown; value?: unknown; duration?: unknown };
   if (typeof e.type !== 'string' || typeof e.value !== 'number') return null;
-  return { type: e.type as PassiveEffectType, value: e.value };
+  const duration = typeof e.duration === 'number' ? e.duration : 0;
+  return { type: e.type as PassiveEffectType, value: e.value, duration };
 }
 
 /**
@@ -231,7 +244,19 @@ export async function resolvePassiveModifiers(
 
     const scaled = scalePassiveValue(parsed.value, ps.level);
 
-    if (ALWAYS_KIND.has(parsed.type)) {
+    if (parsed.type === 'auto_resurrect') {
+      // 특수 처리: duration + value 두 필드 모두 사용. 여러 개 장착 시 각자 max(delay)/max(hpPct) 채택, charges 합산.
+      bag.autoResurrectDelay = Math.max(bag.autoResurrectDelay, parsed.duration);
+      bag.autoResurrectHpPercent = Math.max(bag.autoResurrectHpPercent, scaled);
+      bag.autoResurrectChargesMax += 1;
+      applied.push({
+        skillCode: ps.skill.code,
+        effectType: parsed.type,
+        rawValue: parsed.value,
+        skillLevel: ps.level,
+        scaledValue: scaled,
+      });
+    } else if (ALWAYS_KIND.has(parsed.type)) {
       accumulatePassive(bag, parsed.type, scaled);
       applied.push({
         skillCode: ps.skill.code,
@@ -279,6 +304,9 @@ export interface AppliedStats extends BaseStats {
   cheatDeathChargesMax: number;
   critEchoPercent: number;
   moveDamageAuraValue: number;
+  autoResurrectDelay: number;
+  autoResurrectHpPercent: number;
+  autoResurrectChargesMax: number;
 }
 
 export function applyModifiersToStats(
@@ -298,5 +326,8 @@ export function applyModifiersToStats(
     cheatDeathChargesMax: bag.cheatDeathChargesMax,
     critEchoPercent: bag.critEchoPercent,
     moveDamageAuraValue: bag.moveDamageAuraValue,
+    autoResurrectDelay: bag.autoResurrectDelay,
+    autoResurrectHpPercent: bag.autoResurrectHpPercent,
+    autoResurrectChargesMax: bag.autoResurrectChargesMax,
   };
 }
