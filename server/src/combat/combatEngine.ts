@@ -4,6 +4,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { DamageType, ElementType } from './damageCalculator';
 import { calculateDamage } from './damageCalculator';
+import { applyMpRegen, getEffectiveAtk, getEffectiveDef, rollMiss } from './passiveCombatHooks';
 import type { MonsterAIConfig} from './monsterAI';
 import { MonsterAIEngine } from './monsterAI';
 import type { RewardResult, DropEntry } from './rewardEngine';
@@ -127,6 +128,8 @@ export interface ActionResult {
   isCritical?: boolean;
   skillId?: string;
   statusEffect?: string;
+  /** P55-S2: 회피로 빗나간 공격 (evasion_up vs hitChance) */
+  missed?: boolean;
 }
 
 export interface ParticipantSnapshot {
@@ -312,6 +315,12 @@ export class CombatEngine {
     this.cooldownManager.tick();
     this.manaManager.tickRegen();
 
+    // 2.5 P55-S2: passive mp_regen — 살아있는 참가자 중 mpRegenPerTurn>0 인 경우 회복
+    for (const p of this.participants.values()) {
+      if (!p.alive) continue;
+      applyMpRegen(p);
+    }
+
     // 3. 상태이상 틱
     const tickResults = statusEffectManager.tick(1, (targetId: string) => {
       const target = this.participants.get(targetId);
@@ -474,10 +483,25 @@ export class CombatEngine {
   private executeAttack(actor: CombatParticipant, target: CombatParticipant | null | undefined): ActionResult | null {
     if (!target || !target.alive) return null;
 
+    // P55-S2: 회피 판정 (evasion_up vs bonus_hit_chance)
+    if (rollMiss(actor, target)) {
+      this.logger.logDamage(actor.id, target.id, 0, false);
+      return {
+        actorId: actor.id,
+        actorName: actor.name,
+        actionType: 'attack',
+        targetId: target.id,
+        targetName: target.name,
+        damage: 0,
+        missed: true,
+      };
+    }
+
     const result = calculateDamage({
       type: 'physical',
-      attackStat: actor.atk,
-      defenseStat: target.def,
+      // P55-S2: low_hp_atk_up / defense_up_conditional 적용
+      attackStat: getEffectiveAtk(actor, actor.atk),
+      defenseStat: getEffectiveDef(target, target.def),
       skillMultiplier: 1.0,
       attackerElement: actor.element,
       defenderElement: target.element,
@@ -562,12 +586,32 @@ export class CombatEngine {
       comboMultiplier = comboResult.totalMultiplier;
     }
 
+    // P55-S2: 데미지 스킬에도 회피 판정 적용
+    if (rollMiss(actor, target)) {
+      this.logger.logDamage(actor.id, target.id, 0, false, skillId, skill.element);
+      return {
+        actorId: actor.id,
+        actorName: actor.name,
+        actionType: 'skill',
+        targetId: target.id,
+        targetName: target.name,
+        damage: 0,
+        missed: true,
+        skillId,
+      };
+    }
+
     // 데미지 스킬
     const dmgType: DamageType = skill.damageType;
+    // P55-S2: physical 일 때만 low_hp_atk_up 영향 (atk 계열). magical 은 matk 그대로.
+    const rawAttackStat = dmgType === 'physical' ? actor.atk : actor.matk;
+    const effAttackStat = dmgType === 'physical' ? getEffectiveAtk(actor, rawAttackStat) : rawAttackStat;
+    const rawDefenseStat = dmgType === 'physical' ? target.def : target.mdef;
+    const effDefenseStat = dmgType === 'physical' ? getEffectiveDef(target, rawDefenseStat) : rawDefenseStat;
     const result = calculateDamage({
       type: dmgType,
-      attackStat: dmgType === 'physical' ? actor.atk : actor.matk,
-      defenseStat: dmgType === 'physical' ? target.def : target.mdef,
+      attackStat: effAttackStat,
+      defenseStat: effDefenseStat,
       skillMultiplier: skill.damageMultiplier,
       attackerElement: skill.element,
       defenderElement: target.element,
