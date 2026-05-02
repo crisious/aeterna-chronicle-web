@@ -270,6 +270,108 @@ def run_monsters_sample(output_base: Path, count: int = 5):
     return success, fail
 
 
+# ─── 스킬 아이콘 batch (T1-skills) ────────────────────────────────
+
+import re
+
+SKILL_SEEDS_TS = PROJECT_ROOT / "server" / "src" / "skill" / "skillSeeds.ts"
+
+# element → 시각적 motif
+ELEMENT_STYLE = {
+    "aether": "glowing magical aether energy, white-blue luminescence",
+    "neutral": "silver gray steel, simple metallic shape",
+    "light": "bright golden holy light, radiant aura",
+    "earth": "brown stone rock, mossy texture, earthy tones",
+    "fire": "orange red flame, ember sparks",
+    "water": "deep blue water, flowing liquid",
+    "dark": "deep purple void, shadow tendrils",
+    "time": "ornate clock gear, golden hands, temporal swirl",
+    "void": "cosmic black hole, starfield distortion",
+    "ice": "pale blue crystal frost, snowflake",
+}
+
+# type → 컴포지션 hint
+SKILL_TYPE_HINT = {
+    "active": "weapon or spell symbol, kinetic motion",
+    "passive": "shield or aura emblem, calm centered icon",
+    "ultimate": "elaborate ornate emblem, intricate detail, climactic energy",
+}
+
+
+def parse_skill_seeds(limit_per_class: int = 0):
+    """skillSeeds.ts 정규식 파싱 — code/name/description/class/element/type 추출.
+    limit_per_class>0 이면 클래스별 그 수만 반환 (시범용)."""
+    if not SKILL_SEEDS_TS.exists():
+        print(f"❌ skillSeeds.ts not found: {SKILL_SEEDS_TS}")
+        return []
+    text = SKILL_SEEDS_TS.read_text(encoding="utf-8")
+
+    # 한 entry 패턴: code, name, description, class, ..., type, ..., element
+    # entry 단위: { ... } 한 객체. 정규식으로 멀티라인 매치.
+    entry_re = re.compile(
+        r"\{\s*"
+        r"code:\s*'([^']+)'\s*,\s*name:\s*'([^']+)'\s*,\s*"
+        r"description:\s*'([^']+)'\s*,\s*"
+        r"class:\s*'([^']+)'\s*,\s*tier:\s*(\d+)\s*,\s*type:\s*'([^']+)'\s*,\s*element:\s*'([^']+)'",
+        re.DOTALL,
+    )
+
+    skills = []
+    seen_per_class = {}
+    for m in entry_re.finditer(text):
+        code, name, desc, cls, tier, stype, elem = m.groups()
+        if limit_per_class > 0:
+            seen_per_class.setdefault(cls, 0)
+            if seen_per_class[cls] >= limit_per_class:
+                continue
+            seen_per_class[cls] += 1
+        skills.append({
+            "code": code, "name": name, "description": desc,
+            "class": cls, "tier": int(tier), "type": stype, "element": elem,
+        })
+    return skills
+
+
+def skill_to_prompt(skill):
+    """element/type 기반 RPG 스킬 아이콘 prompt"""
+    elem_hint = ELEMENT_STYLE.get(skill["element"], "fantasy energy")
+    type_hint = SKILL_TYPE_HINT.get(skill["type"], "RPG skill emblem")
+    return (
+        f"RPG skill icon, {skill['name']}, {elem_hint}, {type_hint}, "
+        f"single centered icon object, simple flat composition, white background, "
+        f"clean shape, no text, no character, no creature, fantasy game UI icon"
+    )
+
+
+def run_skills(output_base: Path, limit_per_class: int = 0):
+    """스킬 아이콘 일괄 생성. limit_per_class>0 이면 그 수만 (smoke)."""
+    skills = parse_skill_seeds(limit_per_class)
+    total = len(skills)
+    if total == 0:
+        print("⚠️ no skills parsed from skillSeeds.ts")
+        return 0, 0
+    print(f"\n🎨 === SKILLS Icons ({total}장, {len(set(s['class'] for s in skills))} classes) ===")
+    success, fail = 0, 0
+    for i, sk in enumerate(skills):
+        filename = f"{sk['code']}.png"
+        save_path = output_base / "skills" / sk["class"] / filename
+        positive = skill_to_prompt(sk)
+        negative = (
+            "character, creature, monster, person, body, limbs, face, "
+            "multiple objects, complex scene, text, signature, watermark, realistic, photo"
+        )
+        print(f"  [{i+1}/{total}] {sk['class']}/{filename} ({sk['element']})...", end=" ", flush=True)
+        ok = generate_image(positive, negative, save_path)
+        if ok:
+            success += 1
+            print("✅")
+        else:
+            fail += 1
+            print("❌")
+    print(f"  skills: {success}✅ {fail}❌ / {total}")
+    return success, fail
+
+
 def run_test_batch(output_base: Path):
     """테스트 배치: 5장 (캐릭터 3 + 몬스터 2)"""
     print("\n🧪 === TEST BATCH (5장) ===")
@@ -364,5 +466,10 @@ if __name__ == "__main__":
         run_monsters_sample(OUTPUT_DIR)
     elif mode == "full":
         run_full_batch()
+    elif mode == "skills":
+        # 두 번째 인자: limit_per_class. 0=무제한, 1=클래스별 1개(smoke).
+        limit_per_class = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        run_skills(OUTPUT_DIR, limit_per_class=limit_per_class)
     else:
-        print(f"Usage: {sys.argv[0]} [test|characters|npcs|monsters_sample|full]")
+        print(f"Usage: {sys.argv[0]} [test|characters|npcs|monsters_sample|full|skills [limit_per_class]]")
