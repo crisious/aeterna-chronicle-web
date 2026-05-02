@@ -30,6 +30,12 @@ export interface PassiveCombatant {
   // Phase 4 (부분)
   critEchoPercent?: number;
   moveDamageAuraValue?: number;
+  // Phase 4 (auto_resurrect)
+  autoResurrectDelay?: number;
+  autoResurrectHpPercent?: number;
+  autoResurrectChargesRemaining?: number;
+  /** 사망 시 set, 부활 후 undefined 로 reset */
+  resurrectAtTick?: number;
 }
 
 /**
@@ -194,4 +200,48 @@ export function applyMoveDamageAura(
     log.push({ enemyId: enemy.id, damage: aura });
   }
   return log;
+}
+
+/**
+ * auto_resurrect 예약 — 사망 직후 호출.
+ * 조건: chargesRemaining > 0 이고 아직 예약 안 됨(resurrectAtTick === undefined).
+ *
+ * 발동 시: resurrectAtTick = currentTick + delay (delay=0 이면 바로 다음 tick), charges 1 차감.
+ * 반환: 예약 성공 여부.
+ *
+ * **mutates `actor`**: chargesRemaining, resurrectAtTick 변경.
+ */
+export function scheduleAutoResurrect(actor: PassiveCombatant, currentTick: number): boolean {
+  const charges = actor.autoResurrectChargesRemaining ?? 0;
+  if (charges <= 0) return false;
+  if (actor.resurrectAtTick !== undefined) return false; // 이미 예약됨
+  const delay = Math.max(0, actor.autoResurrectDelay ?? 0);
+  actor.resurrectAtTick = currentTick + delay;
+  actor.autoResurrectChargesRemaining = charges - 1;
+  return true;
+}
+
+/**
+ * auto_resurrect 발동 — processTick 마다 호출 (dead participants 대상).
+ * resurrectAtTick 이 정의되어 있고 currentTick >= resurrectAtTick 이면 부활.
+ * 부활: alive=true, hp=floor(maxHp × hpPercent/100, 최소 1), resurrectAtTick=undefined.
+ *
+ * **mutates `actor`**: alive, hp, resurrectAtTick.
+ * 반환: 부활 발생 여부.
+ */
+export function tryAutoResurrect(actor: PassiveCombatant, currentTick: number): boolean {
+  if (actor.resurrectAtTick === undefined) return false;
+  if (actor.alive === true) return false; // 이미 살아있음
+  if (currentTick < actor.resurrectAtTick) return false;
+
+  const pct = Math.max(0, Math.min(100, actor.autoResurrectHpPercent ?? 0));
+  if (pct <= 0) {
+    // 부활 % 가 0 이면 의미 없음 — 예약 취소
+    actor.resurrectAtTick = undefined;
+    return false;
+  }
+  actor.hp = Math.max(1, Math.floor((actor.maxHp * pct) / 100));
+  actor.alive = true;
+  actor.resurrectAtTick = undefined;
+  return true;
 }
