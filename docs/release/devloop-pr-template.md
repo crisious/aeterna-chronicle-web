@@ -145,6 +145,26 @@ feat(devloop/verify): battle/save/map 3시나리오 verify:core 도입
 - `docs/release/devloop-error-messages.md`
 - `docs/release/monster-art-pr-template.md` — 자매 SSOT
 - `docs/release/a11y-pr-template.md` — 자매 SSOT
+- `docs/release/devloop-changelog-draft.md` — CHANGELOG 항목 초안 (본 PR이 머지될 출전)
+- `docs/release/design-system_dev-loop.md` — 가춘운 디자인 SSOT (PR 본문 한 줄 요약 80자 폭 정합)
+
+---
+
+## v1.0 → v1.1 정합 푸터 (2026-04-30)
+
+본 컨벤션은 **v1.0 (2026-04-27)** 의 7 스코프 / 7 섹션을 그대로 유지하되, 본 스프린트(2026-04-30)에서 다음 한 가지가 추가 봉인되옵니다:
+
+**[봉인 5] PR 본문 §자동 측정 표 — `npm run loop` 한 줄 요약 첨부 강제**
+
+```markdown
+## 자동 측정 (npm run loop)
+
+PASS · loop 48.2s · boot 1.42s · scenario 46.8s · gate 4:11.8 여유
+```
+
+위 한 줄(가춘운 디자인 §4.2 정본)은 `devloop/*` 스코프 PR 모든 본문에 **반드시** 포함. 미첨부 시 적경홍 QA 단계에서 reject. CI 스크립트 `npm run loop --json | jq -r '.summary'` 출력을 그대로 복붙 가능.
+
+**리뷰어 추가 행동 가이드 1항** (이소화 비협상): PR 본문에 **2줄 에러 규칙** 위반 카피(BLOCK·ERROR가 1줄로 합쳐졌거나 `path:line:col` 누락)가 보이면 즉시 reject — 대표 핵심 요구가 깨진 것이옵니다.
 
 ---
 

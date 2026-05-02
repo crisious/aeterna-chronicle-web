@@ -285,6 +285,19 @@ export interface DevGateMessage {
 - `docs/release/devloop-pr-template.md` — PR/커밋 컨벤션
 - `docs/release/monster-art-error-messages.md` — 자매 SSOT (몬스터 게이트)
 - `docs/release/a11y-error-messages.md` — 자매 SSOT (접근성 게이트)
+- `docs/release/design-system_dev-loop.md` — 가춘운 디자인 SSOT (4상태 ANSI · 글리프 카탈로그)
+- `docs/release/devloop-changelog-draft.md` — CHANGELOG 항목 초안 (본 카피들의 머지 출전)
+
+---
+
+## v1.0 → v1.1 정합 푸터 (2026-04-30)
+
+본 카피 카탈로그는 **v1.0 (2026-04-27)** 의 20슬롯 본문을 그대로 유지하옵니다. 다음 두 가지만 v1.1에서 명문화:
+
+1. **글리프 정합** — `🟢/🔴/🟡/🟠` 이모지 카피는 가춘운 `design-system_dev-loop.md` §1.1의 **`✓ ▲ ✗ ›` ANSI 글리프**와 1:1 매핑. 코드 상수 `LOOP_TOKENS.glyph`가 두 표기를 모두 지원해야 하옵니다(터미널은 글리프, 디스코드/PR 본문은 이모지).
+2. **2줄 에러 규칙 비협상** — 모든 BLOCK·ERROR 카피는 본 카탈로그에서 이미 1줄(원인 + 처방) + 별도 hint 구조. 코드 미러 시 BLOCK·ERROR 출력은 **반드시 두 줄로 분리** — 1줄=`message`, 2줄=`{file}:{line}:{column}` (Vite sourcemap 그대로).
+
+**키 안정성 약속**: `dev.gate.<gate>.<state>.<reason>` 키 20개는 v1.x 동안 **추가만 가능, 변경/삭제 금지** — 외부 절차서·로깅 파이프라인이 이 키에 의존.
 
 ---
 

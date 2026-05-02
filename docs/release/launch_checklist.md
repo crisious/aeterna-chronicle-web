@@ -179,6 +179,25 @@
 - [ ] **접근성** — 자막 ko/en 16/20/24px 3단계 · 코칭 오버레이 ARIA `role="status" aria-live="polite"` · 모션 감소 모드 ON 시 화면 흔들림·플래시 0%
 - [ ] **ship-gate 3-AND** — `verify:tutorial 🟢` AND `누적 5회 평균 ≤ 30:00` AND `verify:tutorial-copy 🟢` 모두 PASS · 한 가닥이라도 끊기면 봉인(이소화 Security 비협상)
 
+### 2.22 데이터 검증 시스템 게이트 (Sprint Auto-Data-Validation 2026-04-28)
+
+> 본 항목은 "에테르나 크로니클 게임 데이터 검증 시스템 구축" 스프린트의 SSOT 게이트이옵니다.
+> 연계 문서: `data-validation-user-guide.md` · `data-validation-error-messages.md` · `data-validation-pr-template.md` · `data-validation-readme-skeleton.md` · `data-validation-changelog-draft.md` · `design-system_data-validation.md` (가춘운)
+> 자동화 스크립트: `scripts/validate-data.ts` (4 게이트 — Schema/Load/Audit/Report) · `data/schemas/<domain>.schema.json` (Build 단계 인계 — 계섬월/두련사)
+> 핵심 약속: Phase 52 누적 데이터(스킬·아이템·몬스터·시나리오 JSON 수백~수천 건) 위에 콘텐츠 1건 추가할 때마다, 4 게이트가 자동으로 schema·참조·밸런스·노출을 보증한다.
+> 백능파 게이트 (REDUCTION): `monster_data.json` 단일 ajv 검증 PASS + 1커밋 머지 — 본 스프린트 한정 스코프.
+
+- [ ] **Schema 통과 = 100%** — `npm run data:validate` 1회 실행 → 전 데이터 파일 ajv 검증 PASS율 100% (REDUCTION 스코프: `monsterManifest.json` 우선)
+- [ ] **참조 끊김 = 0건** — `npm run data:audit:refs` 3종 참조(skill→effect / item→category / encounter→monster) 모두 끊김 0건
+- [ ] **Balance outlier ±2σ 내** — `npm run data:audit:balance` 챕터별 HP/데미지/EXP 분포 z-score 기록 · ±3σ 초과는 머지 차단 · ±2σ 초과는 정경패 + 백능파 승인 필수
+- [ ] **실패 노출 = 100%** — 모든 ERROR/WARN 줄에 `path:line:field` 3정보 포함 (가춘운 디자인 §4 *2줄 ERROR* 1:1 일치) · NO_COLOR 환경 회귀 테스트 PASS
+- [ ] **카피 16슬롯 i18n 100% 충진** — `npm run verify:data-copy` 🟢 (4 게이트 × 4 상태 = 16슬롯, ko + en 동시 = 32줄)
+- [ ] **키 규약 통일 100%** — `data.<domain>.<gate>.<state>.<reason>` 정규식 lint 0 위반
+- [ ] **출력 모드 3종 회귀** — TTY 컬러 / NO_COLOR / `--json` 세 모드 모두 동일 카운트(PASS·WARN·ERROR) 산출
+- [ ] **outlier 면제 절차** — `// @balance-exempt: <근거>` 주석 + PR 본문 §밸런스 메모 (정경패 + 백능파 승인 트레일 첨부) 외 통과 ❌
+- [ ] **Schema 안정성 약속** — 하위 호환(기존 manifest 무수정 PASS) · append-only(필드 *제거* 없음, deprecated 마킹만) · required 추가 시 마이그레이션 스크립트 동봉
+- [ ] **ship-gate 3-AND** — `npm run data:validate 🟢 (Schema 100%)` AND `data:audit:refs 🟢 (끊김 0건)` AND `data:audit:balance 🟢 (±3σ 초과 0건)` 모두 PASS · 한 가닥이라도 끊기면 봉인(이소화 Security 비협상)
+
 ---
 
 ## 3. 마케팅 (Marketing) — 12항목
