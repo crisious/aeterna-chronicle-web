@@ -1,0 +1,79 @@
+{
+  "_meta": {
+    "description": "verify-core.mjs 시나리오 3종 실배선 — 측정 baseline + trend 회귀 임계. .ac/verify-trend.json 누적 분석용 SSOT.",
+    "author": "심요연 (Data Analyst)",
+    "version": "1.0.0",
+    "createdAt": "2026-05-01",
+    "sprint": "Auto: verify-core.mjs 시나리오 3종 실배선",
+    "consumers": [
+      "scripts/dev-cycle/verify-core.mjs (BUDGETS 검증)",
+      "scripts/analytics/verify-trend.sql (예정)"
+    ]
+  },
+
+  "promise": {
+    "totalMaxSec": 60,
+    "exitCode": 0,
+    "scenariosPassRequired": ["battle", "save", "map"],
+    "rationale": "토픽 약속: 3 시나리오 모두 PASS, exit code 0, 단일 실행 ≤ 60초"
+  },
+
+  "budgets": {
+    "battle": { "softSec": 60, "hardSec": 90, "killAtSec": 120 },
+    "save": { "softSec": 10, "hardSec": 30, "killAtSec": 60 },
+    "map": { "softSec": 30, "hardSec": 60, "killAtSec": 90 },
+    "total": { "softSec": 60, "hardSec": 300, "killAtSec": 360 }
+  },
+
+  "trendThresholds": {
+    "consecutiveOverBudget": 3,
+    "rationale": "verify-core.mjs L162-173 — 7일 �window에서 over_budget 3회 누적 시 BLOCK 승격 (현재 WARN→exit 2)",
+    "regressionDeltaPct": 25,
+    "regressionDeltaRationale": "직전 7일 중앙값 대비 +25% 초과 시 회귀 의심 — 별도 알람 키 dev.gate.verify.warn.regression 권고"
+  },
+
+  "p50P95Targets": {
+    "comment": "10회 연속 실행 후 다음 스프린트 reflect에서 채울 자리 (현재 baseline 미측정)",
+    "battleP50Sec": null,
+    "battleP95Sec": null,
+    "saveP50Sec": null,
+    "saveP95Sec": null,
+    "mapP50Sec": null,
+    "mapP95Sec": null,
+    "totalP50Sec": null,
+    "totalP95Sec": null
+  },
+
+  "expectedCounts": {
+    "vitestSuites": { "battle": 2, "save": 1, "map": 1 },
+    "minAssertions": { "battle": 12, "save": 8, "map": 4 },
+    "rationale": "실배선 PR 직후 vitest --reporter=json 으로 검증 (assertion < min 시 silent pass 의심)"
+  },
+
+  "trackingFields": {
+    "perRun": [
+      "at",
+      "totalElapsed",
+      "ok",
+      "scenarios[].name",
+      "scenarios[].elapsed",
+      "scenarios[].ok",
+      "scenarios[].testFile",
+      "scenarios[].failureFile",
+      "scenarios[].failureLine"
+    ],
+    "rollup7d": [
+      "p50Total",
+      "p95Total",
+      "passRate",
+      "overBudgetCount",
+      "regressionDeltaPct"
+    ]
+  },
+
+  "baselineNotes": [
+    "본 baseline은 *무관측* 상태 — 실배선 PR landing 직후 10회 자동 실행 후 p50P95Targets 채움",
+    "verify-trend.json 의 runs[].at 은 epoch ms — 7일 윈도우는 Date.now() - 7*24*3600*1000",
+    "trend 누적 30회 cap (verify-core.mjs L155) 은 그대로 유지 — 분석은 외부 SQL 쪽으로 위임"
+  ]
+}

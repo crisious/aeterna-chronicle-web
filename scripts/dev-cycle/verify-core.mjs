@@ -9,6 +9,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
+import { C, colorize, icon } from './cli-colors.mjs';
 
 const ROOT = resolve(new URL('../../', import.meta.url).pathname.replace(/^\//, ''));
 const STATE_DIR = join(ROOT, '.ac');
@@ -22,10 +23,11 @@ const BUDGETS = {
 };
 
 const SCENARIO_TESTS = {
-    // 기존 vitest 스위트의 빠른 슬라이스만 골라 시나리오에 매핑
-    battle: ['tests/unit/combat', 'tests/integration/combat-flow.test.ts'],
-    save: ['tests/integration/ui-inventory-save-flow.test.ts'],
-    map: ['tests/e2e/chapter1.test.ts'],
+    // Build 단계 (계섬월) — lean dev-cycle 전용 시나리오. 외부 의존 0, ms 단위로 끝남.
+    // 본 매핑은 scripts/dev-cycle/scenario-harness.mjs 의 in-memory mock에 의존.
+    battle: ['tests/integration/dev-cycle/battle.scenario.test.ts'],
+    save: ['tests/integration/dev-cycle/save.scenario.test.ts'],
+    map: ['tests/integration/dev-cycle/map.scenario.test.ts'],
 };
 
 const args = new Map(
@@ -56,9 +58,9 @@ function saveTrend(state) {
 
 function emit(state, key, message, hint) {
     const stamp = new Date().toISOString();
-    process.stdout.write(`[${stamp}] dev.gate.verify.${state.toLowerCase()}.${key}\n`);
-    process.stdout.write(`  ${message}\n`);
-    if (hint) process.stdout.write(`  hint: ${hint}\n`);
+    const head = `${colorize(state, icon(state))} ${C.dim}[${stamp}]${C.reset} ${C.dim}dev.gate.verify.${state.toLowerCase()}.${key}${C.reset}`;
+    process.stdout.write(`${head}\n  ${message}\n`);
+    if (hint) process.stdout.write(`  ${C.info}처방${C.reset} ${C.dim}${hint}${C.reset}\n`);
 }
 
 async function runScenario(name) {
@@ -121,8 +123,12 @@ function extractFirstFailure(text) {
     for (const s of scenarios) {
         const r = await runScenario(s);
         results.push(r);
-        const status = r.ok ? '✓' : '✗';
-        process.stdout.write(`  [${status}] ${s}: ${r.elapsed.toFixed(1)}s\n`);
+        const stateKey = r.ok ? 'PASS' : 'BLOCK';
+        const symbol = colorize(stateKey, icon(stateKey));
+        const t = r.elapsed.toFixed(1);
+        const overBudget = r.elapsed > BUDGETS[s];
+        const tColored = overBudget ? `${C.warn}${t}s${C.reset}` : `${C.accent}${t}s${C.reset}`;
+        process.stdout.write(`  ${symbol} ${C.bold}${s.padEnd(7)}${C.reset} ${tColored}${overBudget ? ` ${C.warn}(>${BUDGETS[s]}s)${C.reset}` : ''}\n`);
         if (!r.ok && r.elapsed > BUDGETS[s] * 0.99) break; // fast-fail on timeout
     }
 
@@ -143,7 +149,7 @@ function extractFirstFailure(text) {
         emit(
             'BLOCK',
             reasonKey,
-            `🔴 시나리오 \`${first.name}\` 실패 — ${fileLoc}${loc?.testFile ? ` (${loc.testFile})` : ''}`,
+            `시나리오 ${C.accent}${first.name}${C.reset} 실패 — ${C.error}${fileLoc}${C.reset}${loc?.testFile ? ` ${C.dim}(${loc.testFile})${C.reset}` : ''}`,
             '검의 날이 무뎌지면 사람이 다칩니다. 첫 실패부터 베어내십시오.',
         );
         trend.runs = (trend.runs ?? []).concat({ at: Date.now(), totalElapsed, ok: false });
@@ -160,7 +166,7 @@ function extractFirstFailure(text) {
         emit(
             'WARN',
             'over_budget',
-            `🟡 verify:core ${totalElapsed.toFixed(1)}s — 5분 약속 초과 (${(totalElapsed - BUDGETS.total).toFixed(1)}s). 누적 ${recent + 1}/3회.`,
+            `verify:core ${C.accent}${totalElapsed.toFixed(1)}s${C.reset} — 5분 약속 초과 (${C.warn}+${(totalElapsed - BUDGETS.total).toFixed(1)}s${C.reset}). 누적 ${C.accent}${recent + 1}${C.reset}/3회.`,
         );
         trend.runs = (trend.runs ?? []).concat({ at: Date.now(), totalElapsed, ok: true });
         trend.runs = trend.runs.slice(-30);
@@ -169,12 +175,12 @@ function extractFirstFailure(text) {
     }
 
     const breakdown = results
-        .map((r) => `${r.name[0]} ${r.elapsed.toFixed(1)}s`)
+        .map((r) => `${C.bold}${r.name[0]}${C.reset} ${r.elapsed.toFixed(1)}s`)
         .join(' · ');
     emit(
         'PASS',
         'all',
-        `🟢 핵심 시나리오 ${results.length}종 통과 (${totalElapsed.toFixed(1)}s · ${breakdown})`,
+        `핵심 시나리오 ${C.accent}${results.length}${C.reset}종 통과 (${C.accent}${totalElapsed.toFixed(1)}s${C.reset} · ${breakdown})`,
         '곡조가 맞아 떨어졌사옵니다.',
     );
     trend.runs = (trend.runs ?? []).concat({ at: Date.now(), totalElapsed, ok: true });

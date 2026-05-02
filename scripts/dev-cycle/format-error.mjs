@@ -7,6 +7,7 @@
 // 종료 코드: 0 PASS · 1 BLOCK · 2 WARN
 
 import { resolve, relative, isAbsolute } from 'node:path';
+import { C, colorize, errorCard, icon } from './cli-colors.mjs';
 
 const args = new Map(
     process.argv.slice(2).map((a) => {
@@ -83,31 +84,50 @@ process.stdin.on('end', () => {
     process.stdout.write(stdin);
 
     if (errors.length === 0) {
-        process.stdout.write(`\n[dev.gate.${gate}.pass.zero] 🟢 0 errors\n`);
+        process.stdout.write(
+            `\n${colorize('PASS', icon('PASS'))} ${C.dim}dev.gate.${gate}.pass.zero${C.reset}  ${colorize('PASS', '0 errors')}\n`,
+        );
         process.exit(0);
     }
 
     const first = errors[0];
     const total = errors.length;
-    process.stdout.write('\n──── dev-cycle: 첫 원인 ─────────────────────────\n');
+    process.stdout.write('\n');
 
+    let title, message, hint, fileLine, snippet;
     if (first.kind === 'ts') {
         const fix = FIX_HINTS[first.code] ?? 'tsc --noEmit 후 첫 에러부터 단계적 해소';
-        process.stdout.write(
-            `[dev.gate.type.block.error] 🔴 TS${first.code} ${first.file}:${first.line}:${first.column} — ${first.message}\n`,
-        );
-        process.stdout.write(`  처방: ${fix}\n`);
-        if (first.snippet) process.stdout.write(`  코드: ${first.snippet}\n`);
+        title = `TS${first.code} · type 게이트 차단`;
+        message = first.message;
+        hint = fix;
+        snippet = first.snippet;
     } else if (first.kind === 'resolve') {
-        process.stdout.write(
-            `[dev.gate.build.block.import] 🔴 import 해결 실패 — ${first.file}:${first.line} \`${first.importName}\` 모듈을 찾을 수 없사옵니다.\n`,
-        );
+        title = `import 해결 실패 · build 게이트 차단`;
+        message = `'${first.importName}' 모듈을 찾을 수 없습니다.`;
+        hint = '경로 오타 / package.json 의존성 / tsconfig paths 점검';
     } else {
-        process.stdout.write(
-            `[dev.gate.${gate}.block.error] 🔴 ${first.file}:${first.line}:${first.column} — ${first.message}\n`,
-        );
+        title = `${gate} 게이트 차단`;
+        message = first.message;
+        hint = '첫 에러부터 단계적 해소';
     }
-    process.stdout.write(`  총 에러 ${total}건 (첫 1건만 SSOT 노출 — 해결 후 재실행).\n`);
+
+    process.stdout.write(
+        errorCard({
+            title,
+            file: first.file,
+            line: first.line,
+            column: first.column,
+            message,
+            snippet,
+            hint,
+        }) + '\n',
+    );
+    process.stdout.write(
+        `  ${C.dim}총 에러 ${C.accent}${total}${C.reset}${C.dim}건 — 첫 1건만 SSOT 노출. 해결 후 재실행.${C.reset}\n`,
+    );
+    process.stdout.write(
+        `  ${C.dim}dev.gate.${gate}.block.${first.kind === 'resolve' ? 'import' : 'error'}${C.reset}\n`,
+    );
     process.exit(1);
 });
 

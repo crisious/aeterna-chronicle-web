@@ -11,9 +11,13 @@
 |---|---|---|
 | `players.seed.json` | 5단계 성장 곡선 플레이어 샘플 (Lv1/15/30/50/80) | `03_데이터테이블/combat_balance_table.md` |
 | `combat-scenarios.seed.json` | 전투 회귀 검증 — 콤보·크리·상태이상·P2W 가드 | `CHANGELOG.md#1.0.0-rc.2` |
+| `verify-core.scenarios.json` | **verify-core.mjs 3 시나리오 minimal seed** (battle 1 turn / save round-trip / map scene swap) | `scripts/dev-cycle/verify-core.mjs` |
 | `npc-choice-events.mock.json` | 텔레메트리 스키마 v1 mock 페이로드 6건 | `03_데이터테이블/npc_choice_event_telemetry_schema_v1.md` |
+| `ui-inventory-save.scenarios.json` | UI 인벤토리 + 세이브 통합 시나리오 (계섬월) | `tests/integration/ui-inventory-save-flow.test.ts` |
 | `../benchmarks/performance-cases.json` | 성능 SLO 벤치 케이스 7종 | `DESIGN.md` |
+| `../benchmarks/verify-core-baseline.json` | **verify-core baseline + trend 임계** | `scripts/dev-cycle/verify-core.mjs` |
 | `../../scripts/analytics/queries.sql` | KPI·UX·밸런스 SQL 쿼리 8종 | 텔레메트리 스키마 v1 |
+| `../../scripts/analytics/verify-trend.mjs` | **verify-trend.json 7일 롤업 분석기** | `tests/benchmarks/verify-core-baseline.json` |
 
 ## 사용 규칙
 
@@ -26,9 +30,28 @@
 - `combat-scenarios.seed.json#combat-combo-3hit` → `tests/unit/combatEngine.test.ts`
 - `combat-scenarios.seed.json#combat-p2w-guard` → `server/security/p2wGuard.test.ts`
 - `players.seed.json` → E2E 엔딩 분기 시나리오 (`tests/e2e/ending-flow.spec.ts`)
+- `verify-core.scenarios.json#battle` → `scripts/dev-cycle/verify-core.mjs --scenario=battle` + 신설 vitest `tests/integration/verify-core/battle-1turn.test.ts`
+- `verify-core.scenarios.json#save` → `scripts/dev-cycle/verify-core.mjs --scenario=save` + 신설 vitest `tests/unit/save/verify-roundtrip.test.ts`
+- `verify-core.scenarios.json#map` → `scripts/dev-cycle/verify-core.mjs --scenario=map` + 신설 vitest `tests/integration/verify-core/scene-swap.test.ts`
+
+## verify-core 시드 사용법
+
+```ts
+import { loadJsonFixture } from '../helpers/loadFixture';
+const seed = loadJsonFixture<typeof import('../fixtures/verify-core.scenarios.json')>('verify-core.scenarios.json');
+// seed.battle / seed.save / seed.map  — 각 시나리오 1개 (배열 아님, in-process minimal)
+```
+
+trend 분석:
+```bash
+node scripts/analytics/verify-trend.mjs --window=7d        # 사람용 출력
+node scripts/analytics/verify-trend.mjs --window=7d --json # CI 파이프용
+```
 
 ## 다음 단계
 
-- [ ] fixture 로더 유틸 `tests/helpers/loadFixture.ts` 추가
+- [x] fixture 로더 유틸 `tests/helpers/loadFixture.ts` 추가
+- [ ] **`verify-core.scenarios.json` 실배선 PR** — 계섬월 Build 인계 (3 시나리오 vitest 신설)
+- [ ] **baseline p50/p95 채움** — 실배선 PR landing 직후 10회 자동 실행 후 `verify-core-baseline.json` 갱신
 - [ ] CI 단계에 벤치 케이스 FPS 회귀 감시 추가 (gstack + Lighthouse)
 - [ ] A/B 쿼리(Q8)에 카이제곱 유의성 검정 래퍼 작성

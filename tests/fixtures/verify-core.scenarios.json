@@ -1,0 +1,217 @@
+{
+  "_meta": {
+    "description": "verify-core.mjs 3 시나리오 실배선용 minimal seed — battle 1 turn / save round-trip / map scene swap. 게이트 약속: 단일 실행 ≤ 60초, exit code 0.",
+    "author": "심요연 (Data Analyst)",
+    "version": "1.0.0",
+    "createdAt": "2026-05-01",
+    "sprint": "Auto: verify-core.mjs 시나리오 3종 실배선",
+    "referenceDocs": [
+      "scripts/dev-cycle/verify-core.mjs",
+      "docs/release/retro_dev-cycle-shortening-sprint.md (P0 A4)",
+      "client/src/combat/CombatManager.ts",
+      "client/src/save/schema.ts",
+      "client/src/scenes/SceneManager.ts"
+    ],
+    "ssotHierarchy": [
+      "1차: 본 fixture (verify-core.mjs 직접 참조)",
+      "2차: tests/fixtures/combat-scenarios.seed.json (전투 회귀 — 콤보·크리·상태이상)",
+      "3차: tests/fixtures/ui-inventory-save.scenarios.json (UI 인벤토리 통합)"
+    ],
+    "budget": {
+      "battleSec": 90,
+      "saveSec": 30,
+      "mapSec": 60,
+      "totalSec": 300,
+      "promiseSec": 60,
+      "rationale": "약속(60s)은 행복 경로 — battle 90s/map 60s는 BUDGETS 안전마진. verify-trend.json 누적 3회 초과 시 BLOCK."
+    }
+  },
+
+  "battle": {
+    "id": "verify-battle-atb-1turn",
+    "title": "ATB 1 turn 실배선 — 첫 행동까지 PASS",
+    "description": "전투 시작 → ATB 게이지 0→100 충전 → 첫 unit 행동 큐 진입 → 데미지 적용 1회. 라운드 종료(전체 unit 행동 완료) 미요구.",
+    "scope": "in-process (socket 미사용 — CombatManager 오프라인 모드)",
+    "preconditions": {
+      "atbStub": "현재 server/src/combat/atb/atbTimeline 은 NOT_IMPLEMENTED throw — 실배선은 본 시드와 함께 PR로 풀어야 함",
+      "fallback": "ATB 미구현 시 client/src/combat/CombatManager.requestAttack 직접 호출 + 동기 데미지 계산으로 우회 PASS 가능"
+    },
+    "setup": {
+      "battleId": "verify-core-battle-001",
+      "tick": { "deltaMs": 16.67, "ticksPerTurn": 240, "rationale": "60fps 기준 4초 충전 (ATB_BASE_CHARGE_PER_SEC=25 × 4s = 100)" },
+      "rngSeed": 42,
+      "party": [
+        {
+          "unitId": "p1-erien",
+          "classId": "ether_knight",
+          "name": "에리언",
+          "level": 5,
+          "hp": 220,
+          "mp": 60,
+          "atk": 38,
+          "def": 22,
+          "spd": 50,
+          "speedTier": 3,
+          "atbStart": 0
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "e1-shadowWisp",
+          "monsterId": "MON-ch1-001-shadowWisp",
+          "name": "그림자 잔영",
+          "level": 4,
+          "hp": 80,
+          "atk": 25,
+          "def": 8,
+          "spd": 40,
+          "speedTier": 2,
+          "atbStart": 0
+        }
+      ]
+    },
+    "turn": {
+      "actorId": "p1-erien",
+      "rationale": "spd 50 (tier 3, scalar 1.0) > spd 40 (tier 2) — p1-erien이 100 게이지 먼저 도달",
+      "action": {
+        "type": "attack",
+        "skillId": "SKILL-001-slash",
+        "targetId": "e1-shadowWisp",
+        "expectedLocalDamage": { "min": 28, "max": 32 }
+      }
+    },
+    "expected": {
+      "atbAfter4Sec": { "p1-erien": 100, "e1-shadowWisp": 80 },
+      "actorReady": "p1-erien",
+      "actionApplied": true,
+      "enemyHpAfter": { "min": 48, "max": 52 },
+      "battleEndEvent": false,
+      "elapsedMaxMs": 5000
+    },
+    "tags": ["battle", "atb", "verify-core", "1-turn"]
+  },
+
+  "save": {
+    "id": "verify-save-roundtrip-min",
+    "title": "Save round-trip — 직렬화 → 역직렬화 → deep equal",
+    "description": "minimal SavePayloadV2 → JSON.stringify → JSON.parse → isSavePayloadV2 가드 + deep equal. 마이그레이션·integrity 미요구 (각각 별도 vitest 스위트).",
+    "scope": "in-process (no localStorage, no IndexedDB — pure schema round-trip)",
+    "preconditions": {
+      "schemaVersion": 2,
+      "guard": "client/src/save/schema.ts#isSavePayloadV2"
+    },
+    "payload": {
+      "header": {
+        "schemaVersion": 2,
+        "saveId": "verify-core-save-001",
+        "createdAt": "2026-05-01T00:00:00.000Z",
+        "playerLabel": "verify-core-test"
+      },
+      "party": {
+        "members": [
+          {
+            "classId": "ether_knight",
+            "level": 5,
+            "exp": 480,
+            "hp": 220,
+            "mp": 60,
+            "learnedSkillIds": ["SKILL-001-slash", "SKILL-005-guard"]
+          }
+        ],
+        "formation": "standard",
+        "leadIndex": 0
+      },
+      "inventory": {
+        "items": [
+          { "itemId": "WP-010-bronzeSword", "quantity": 1 },
+          { "itemId": "POT-001-healSmall", "quantity": 3 }
+        ],
+        "equipped": { "weapon": "WP-010-bronzeSword", "body": null },
+        "gold": 320,
+        "etherCrystal": 12
+      },
+      "scenario": {
+        "chapterId": "ch1",
+        "questFlags": { "metStorageKeeper": true, "ch1Tutorial": true },
+        "choiceLog": [
+          { "nodeId": "ch1_intro_01", "choiceId": "accept_quest", "tsMs": 1714521600000 }
+        ],
+        "endingPath": null
+      },
+      "map": {
+        "unlockedZoneIds": ["erebos", "silvanheim"],
+        "visitedNodeIds": ["erebos_start", "erebos_market"],
+        "currentZoneId": "erebos",
+        "currentNodeId": "erebos_market"
+      }
+    },
+    "expected": {
+      "stringifyOk": true,
+      "stringifyMaxBytes": 2048,
+      "parseOk": true,
+      "guardV2Pass": true,
+      "deepEqual": true,
+      "extractedSchemaVersion": 2,
+      "elapsedMaxMs": 200
+    },
+    "negativeCases": [
+      {
+        "id": "save-missing-map",
+        "mutation": "delete payload.map",
+        "expectGuardPass": false,
+        "expectFallbackVersion": 1
+      },
+      {
+        "id": "save-bad-version",
+        "mutation": "header.schemaVersion = 99",
+        "expectGuardPass": false,
+        "expectExtractedVersion": 99
+      }
+    ],
+    "tags": ["save", "schema", "verify-core", "roundtrip"]
+  },
+
+  "map": {
+    "id": "verify-map-scene-swap",
+    "title": "Phaser scene swap 1회 — WorldScene → BattleScene init 완료",
+    "description": "scene transition 1회 (페이드 단축) → 새 scene create() 완료 이벤트 → 새 scene 활성 1 tick. 카메라/입력 검증 미요구.",
+    "scope": "in-process Phaser HEADLESS 모드 (jsdom + Phaser.HEADLESS)",
+    "preconditions": {
+      "sceneManager": "client/src/scenes/SceneManager.ts (싱글톤 sceneManager)",
+      "fadeMs": 0,
+      "rationale": "전환 효과 0ms — verify-core 60s 예산 보호"
+    },
+    "setup": {
+      "fromSceneKey": "WorldScene",
+      "toSceneKey": "BattleScene",
+      "transitionData": {
+        "battleId": "verify-core-battle-001",
+        "encounterId": "MON-ch1-001-shadowWisp"
+      },
+      "options": {
+        "fadeOutMs": 0,
+        "fadeInMs": 0,
+        "fadeColor": 0x000000
+      }
+    },
+    "expected": {
+      "fromSceneSleeping": true,
+      "toSceneCreateFired": true,
+      "toSceneActive": true,
+      "toSceneDataReceived": {
+        "battleId": "verify-core-battle-001",
+        "encounterId": "MON-ch1-001-shadowWisp"
+      },
+      "tickAfterCreate": 1,
+      "elapsedMaxMs": 1500
+    },
+    "alternativeKeys": {
+      "rationale": "WorldScene/BattleScene 등록 키 차이 시 폴백",
+      "candidates": ["GameScene", "DungeonScene"]
+    },
+    "tags": ["map", "scene", "verify-core", "swap"]
+  },
+
+  "executionOrder": ["save", "map", "battle"],
+  "executionOrderRationale": "save(가장 빠름·schema only) → map(중간·Phaser headless) → battle(가장 무거움·ATB tick). fast-fail 우선."
+}
