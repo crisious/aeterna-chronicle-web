@@ -1,0 +1,515 @@
+/**
+ * 에테르나 크로니클 — 세이브·로드 시스템 CSS 미러 v1.0
+ *
+ * SSOT: docs/release/design-system_save-load-system.md (1차)
+ *      → docs/release/assets_save-load-visual-pack.md (4차 시각 자원)
+ *      → 본 파일 (CSS 미러, 4차)
+ *
+ * 단방향 흐름. 본 파일 → SSOT 역방향 갱신 ❌
+ *
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-28 · Build 단계
+ * 인계: 계섬월 (SaveSlotCard / AutoSaveToast / RecoveryDialog 컴포넌트)
+ */
+
+/* ========================================================================
+ * 1. 슬롯 상태 토큰 (6종)
+ *    DESIGN.md §2 코어 팔레트 + 토픽 확장 컬러를 조합으로만 사용
+ * ====================================================================== */
+
+:root {
+  /* --- 토픽 확장 액센트 (design-system.css 기존 토큰 보완) --- */
+  --color-accent-gold:        #FFD24A;   /* 활성 슬롯 정체성 */
+  --color-accent-blue:        #4A9EFF;   /* 백업 슬롯 — 차분한 신뢰 */
+  --color-accent-blue-soft:   rgba(74, 158, 255, 0.6); /* 자동세이브 */
+  --color-warning-amber:      #E8A33A;   /* 손상 — 빨강 ❌ 호박색 ✓ */
+  --color-info-indigo:        #7A6BFF;   /* 마이그레이션 */
+  --color-neutral-600:        #3A3A52;   /* 빈 슬롯 점선 */
+  --color-text-warm:          #F5E1B8;   /* 손상 슬롯 텍스트 */
+  --color-text-cool:          #DCD8FF;   /* 마이그레이션 텍스트 */
+
+  /* --- 슬롯 배경 (어두운 변형 5종) --- */
+  --save-slot-bg-active:      #1A1A2E;
+  --save-slot-bg-backup:      #16162A;
+  --save-slot-bg-auto:        #14142A;
+  --save-slot-bg-corrupted:   #2A1F14;
+  --save-slot-bg-migration:   #1A1830;
+  --save-slot-bg-empty:       #0F0F1E;
+
+  /* --- 글로우 (활성/백업/손상만) --- */
+  --save-slot-active-glow:
+    0 0 12px rgba(255, 210,  74, 0.40),
+    inset 0 0  8px rgba(255, 210,  74, 0.15);
+  --save-slot-backup-glow:
+    0 0  8px rgba( 74, 158, 255, 0.30),
+    inset 0 0  6px rgba( 74, 158, 255, 0.12);
+  --save-slot-corrupted-glow:
+    0 0  6px rgba(232, 163,  58, 0.35),
+    inset 0 0  4px rgba(232, 163,  58, 0.10);
+
+  /* --- 슬롯 카드 치수 (DESIGN.md §4 미러) --- */
+  --save-slot-card-w:         320px;
+  --save-slot-card-h:         120px;   /* assets pack 기준; 리스트형은 88px */
+  --save-slot-card-h-list:     88px;
+  --save-slot-card-radius:     12px;
+  --save-slot-card-pad:        16px;
+  --save-slot-card-gap:        12px;
+
+  /* --- 토스트 --- */
+  --save-toast-w:             280px;
+  --save-toast-h:              56px;
+  --save-toast-margin:         16px;
+  --save-toast-radius:          8px;
+  --save-toast-z:            9000;
+
+  /* --- 모달 (복구 다이얼로그) --- */
+  --save-modal-w:             480px;
+  --save-modal-radius:         12px;
+  --save-modal-backdrop:      rgba(10, 10, 20, 0.72);
+  --save-modal-backdrop-blur:  4px;
+  --save-modal-z:           10000;
+}
+
+/* ========================================================================
+ * 2. 슬롯 카드 — 베이스 + 6 상태
+ * ====================================================================== */
+
+.save-slot-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  grid-template-rows: auto auto auto;
+  column-gap: var(--space-3, 12px);
+  row-gap: var(--space-1, 4px);
+  align-items: center;
+
+  width: var(--save-slot-card-w);
+  min-height: var(--save-slot-card-h);
+  padding: var(--save-slot-card-pad);
+
+  background: var(--save-slot-bg-active);
+  color: var(--text-primary, #F5F5F5);
+  font-family: var(--font-body);
+
+  border: 1px solid var(--border-subtle, #3A3A4A);
+  border-radius: var(--save-slot-card-radius);
+
+  cursor: pointer;
+  transition:
+    transform 180ms ease-out,
+    box-shadow 220ms ease-out,
+    border-color 180ms ease-out;
+}
+
+.save-slot-card:hover {
+  transform: translateY(-1px);
+}
+
+.save-slot-card:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.save-slot-card__icon {
+  grid-row: 1 / span 3;
+  grid-column: 1;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.save-slot-card__title {
+  grid-row: 1;
+  grid-column: 2;
+  font-size: var(--font-lg, 18px);
+  font-weight: 700;
+  color: var(--text-primary, #F5F5F5);
+}
+
+.save-slot-card__state-badge {
+  grid-row: 1;
+  grid-column: 3;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.save-slot-card__meta {
+  grid-row: 2;
+  grid-column: 2 / span 2;
+  font-size: var(--font-md, 14px);
+  font-weight: 500;
+  color: #C8C8D8;
+}
+
+.save-slot-card__timestamp {
+  grid-row: 3;
+  grid-column: 2 / span 2;
+  font-size: var(--font-sm, 12px);
+  font-weight: 400;
+  color: var(--text-secondary, #A0A0A0);
+}
+
+/* --- 상태별 변형 --- */
+
+.save-slot-card[data-state="active"] {
+  background: var(--save-slot-bg-active);
+  border: 2px solid var(--color-accent-gold);
+  box-shadow: var(--save-slot-active-glow);
+}
+.save-slot-card[data-state="active"] .save-slot-card__state-badge {
+  color: var(--color-accent-gold);
+  background: rgba(255, 210, 74, 0.12);
+}
+.save-slot-card[data-state="active"] .save-slot-card__timestamp {
+  color: var(--color-accent-gold);
+}
+
+.save-slot-card[data-state="backup"] {
+  background: var(--save-slot-bg-backup);
+  border: 1px solid var(--color-accent-blue);
+  box-shadow: var(--save-slot-backup-glow);
+}
+.save-slot-card[data-state="backup"] .save-slot-card__state-badge {
+  color: var(--color-accent-blue);
+  background: rgba(74, 158, 255, 0.12);
+}
+.save-slot-card[data-state="backup"] .save-slot-card__timestamp {
+  color: var(--color-accent-blue);
+}
+
+.save-slot-card[data-state="auto"] {
+  background: var(--save-slot-bg-auto);
+  border: 1px dashed var(--color-accent-blue-soft);
+  color: #C8C8D8;
+}
+.save-slot-card[data-state="auto"] .save-slot-card__state-badge {
+  color: var(--color-accent-blue);
+  background: rgba(74, 158, 255, 0.08);
+}
+
+.save-slot-card[data-state="corrupted"] {
+  background: var(--save-slot-bg-corrupted);
+  border: 2px solid var(--color-warning-amber);
+  box-shadow: var(--save-slot-corrupted-glow);
+  color: var(--color-text-warm);
+}
+.save-slot-card[data-state="corrupted"] .save-slot-card__state-badge {
+  color: var(--color-warning-amber);
+  background: rgba(232, 163, 58, 0.12);
+}
+.save-slot-card[data-state="corrupted"] .save-slot-card__title,
+.save-slot-card[data-state="corrupted"] .save-slot-card__meta {
+  color: var(--color-text-warm);
+}
+
+.save-slot-card[data-state="migration"] {
+  background: var(--save-slot-bg-migration);
+  border: 1px solid var(--color-info-indigo);
+  color: var(--color-text-cool);
+}
+.save-slot-card[data-state="migration"] .save-slot-card__state-badge {
+  color: var(--color-info-indigo);
+  background: rgba(122, 107, 255, 0.14);
+}
+
+.save-slot-card[data-state="empty"] {
+  background: var(--save-slot-bg-empty);
+  border: 1px dashed var(--color-neutral-600);
+  color: #7A7A92;
+  justify-content: center;
+}
+.save-slot-card[data-state="empty"] .save-slot-card__state-badge {
+  display: none;
+}
+
+/* ========================================================================
+ * 3. 슬롯 액션 버튼
+ * ====================================================================== */
+
+.save-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 4px);
+  height: 36px;
+  padding: 0 16px;
+  font-family: var(--font-body);
+  font-size: var(--font-md, 14px);
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 160ms ease-out, transform 120ms ease-out;
+}
+
+.save-action--primary {
+  background: var(--color-accent-gold);
+  color: #1A1A2E;
+}
+.save-action--primary:hover { transform: translateY(-1px); filter: brightness(1.06); }
+
+.save-action--ghost {
+  background: transparent;
+  color: var(--text-primary, #F5F5F5);
+  border-color: var(--color-neutral-600);
+}
+.save-action--ghost:hover { background: rgba(255, 255, 255, 0.04); }
+
+.save-action--recover {
+  background: var(--color-warning-amber);
+  color: #2A1F14;
+}
+
+/* ========================================================================
+ * 4. 자동세이브 토스트 — 무방해
+ * ====================================================================== */
+
+.save-toast {
+  position: fixed;
+  right: var(--save-toast-margin);
+  bottom: var(--save-toast-margin);
+  width: var(--save-toast-w);
+  min-height: var(--save-toast-h);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  background: rgba(26, 26, 46, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 210, 74, 0.30);
+  border-left: 3px solid var(--color-accent-gold);
+  border-radius: var(--save-toast-radius);
+
+  color: var(--text-primary, #F5F5F5);
+  font-family: var(--font-body);
+  z-index: var(--save-toast-z);
+
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  animation: save-toast-cycle 1800ms ease-out forwards;
+}
+
+.save-toast__title {
+  font-size: var(--font-md, 14px);
+  font-weight: 600;
+  color: var(--color-accent-gold);
+}
+.save-toast__meta {
+  font-size: var(--font-sm, 12px);
+  color: #C8C8D8;
+}
+
+@keyframes save-toast-cycle {
+  0%   { opacity: 0; transform: translateY(8px);  }
+  11%  { opacity: 1; transform: translateY(0);    } /* 200ms / 1800ms ≈ 11% */
+  83%  { opacity: 1; transform: translateY(0);    } /* 1500ms hold end */
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+/* 손상 복구 토스트는 무방해 규칙 예외 — 상단 중앙 + 5초 hold */
+.save-toast--recovery {
+  right: auto;
+  bottom: auto;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left-color: var(--color-warning-amber);
+  border-color: rgba(232, 163, 58, 0.40);
+  width: 360px;
+  pointer-events: auto;
+  animation: save-toast-recovery 5300ms ease-out forwards;
+}
+.save-toast--recovery .save-toast__title {
+  color: var(--color-warning-amber);
+}
+
+@keyframes save-toast-recovery {
+  0%   { opacity: 0; transform: translate(-50%,  -8px); }
+  6%   { opacity: 1; transform: translate(-50%,   0);   }
+  94%  { opacity: 1; transform: translate(-50%,   0);   }
+  100% { opacity: 0; transform: translate(-50%,  -4px); }
+}
+
+/* ========================================================================
+ * 5. 손상 복구 다이얼로그 — 불안 최소화
+ * ====================================================================== */
+
+.save-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--save-modal-backdrop);
+  backdrop-filter: blur(var(--save-modal-backdrop-blur));
+  z-index: calc(var(--save-modal-z) - 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: save-modal-fade 220ms ease-out forwards;
+}
+
+.save-modal {
+  width: var(--save-modal-w);
+  max-width: calc(100vw - 32px);
+  background: var(--save-slot-bg-active);
+  border: 1px solid rgba(255, 210, 74, 0.20);
+  border-radius: var(--save-modal-radius);
+  padding: 32px 28px 24px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.50),
+    var(--save-slot-active-glow);
+
+  font-family: var(--font-body);
+  color: var(--text-primary, #F5F5F5);
+  z-index: var(--save-modal-z);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+
+.save-modal__icon {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--color-accent-gold);
+}
+
+.save-modal__headline {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: var(--lh-tight, 1.2);
+}
+
+.save-modal__body {
+  font-size: var(--font-md, 14px);
+  font-weight: 400;
+  line-height: var(--lh-normal, 1.4);
+  color: #C8C8D8;
+}
+
+.save-modal__backup-card {
+  border: 1px solid var(--color-accent-blue);
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--save-slot-bg-backup);
+}
+.save-modal__backup-card .label {
+  font-size: var(--font-sm, 12px);
+  color: var(--color-accent-blue);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.save-modal__backup-card .info {
+  font-size: var(--font-md, 14px);
+  color: var(--text-primary, #F5F5F5);
+}
+
+.save-modal__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+@keyframes save-modal-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ========================================================================
+ * 6. 로드 검증 진행 인디케이터 — 4단계
+ * ====================================================================== */
+
+.save-validate {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--save-slot-bg-active);
+  border: 1px solid var(--border-subtle, #3A3A4A);
+  border-radius: 8px;
+}
+
+.save-validate__step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.save-validate__step .label {
+  font-size: var(--font-sm, 12px);
+  color: var(--text-secondary, #A0A0A0);
+}
+.save-validate__step .bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-neutral-600);
+  overflow: hidden;
+  position: relative;
+}
+.save-validate__step .bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--progress, 0%);
+  background: var(--color-accent-blue);
+  transition: width 220ms ease-out;
+}
+.save-validate__step[data-status="done"] .bar::after { width: 100%; background: var(--color-accent-gold); }
+.save-validate__step[data-status="active"] .bar::after { width: var(--progress, 50%); background: var(--color-accent-blue); }
+.save-validate__step[data-status="failed"] .bar::after { width: 100%; background: var(--color-warning-amber); }
+.save-validate__step[data-status="failed"] .label { color: var(--color-warning-amber); }
+
+/* ========================================================================
+ * 7. 접근성 & 모션 감소 모드
+ * ====================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .save-toast,
+  .save-toast--recovery {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    transform: none;
+  }
+  .save-slot-card,
+  .save-action {
+    transition: none;
+  }
+  .save-slot-card[data-state="active"],
+  .save-slot-card[data-state="backup"],
+  .save-slot-card[data-state="corrupted"] {
+    box-shadow: none; /* glow 펄스 제거 */
+  }
+}
+
+/* 색약 대응: 상태 ID 시각 라벨 명시 (3중 인코딩 — 색 + 아이콘 + 텍스트) */
+.save-slot-card[data-state]::before {
+  content: attr(data-state-label);
+  position: absolute;
+  left: 0;
+  top: -1px;
+  font-size: 0; /* 시각 사용자에겐 invisible — sr-only 패턴은 별도 .sr-only 클래스 */
+}
+
+/* ========================================================================
+ * 8. 반응형 — 모바일/태블릿
+ * ====================================================================== */
+
+@media (max-width: 720px) {
+  :root {
+    --save-slot-card-w: 100%;
+    --save-toast-w: calc(100vw - 32px);
+    --save-modal-w: calc(100vw - 32px);
+  }
+  .save-slot-card {
+    grid-template-columns: 28px 1fr;
+  }
+  .save-slot-card__state-badge {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+}

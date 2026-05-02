@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>세이브·로드 스타일 가이드 — 에테르나 크로니클</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css" />
+  <link rel="stylesheet" href="/src/styles/design-system-save.css" />
+  <style>
+    /* 가이드 페이지 자체 스타일 — 회귀용이므로 최소화 */
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #0D0D1A;
+      color: #E8E8E8;
+      font-family: Pretendard, 'Noto Sans KR', system-ui, sans-serif;
+    }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 32px 0 16px; color: #FFD24A; }
+    .meta { color: #A0A0A0; font-size: 13px; margin-bottom: 24px; }
+    section { margin-bottom: 48px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .demo-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .demo-card {
+      padding: 20px;
+      background: #16162A;
+      border: 1px solid #2A2A3A;
+      border-radius: 8px;
+    }
+    .demo-card__caption {
+      font-size: 12px;
+      color: #A0A0A0;
+      margin-top: 12px;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+      font-size: 13px;
+    }
+    .swatch {
+      width: 24px; height: 24px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    /* 토스트는 fixed 라 동시에 보이지 않으므로 데모용 인라인 박스 */
+    .toast-demo {
+      position: relative;
+      width: 320px; height: 120px;
+      padding: 24px;
+      background: #1A1A2E;
+      border: 1px dashed #3A3A52;
+      border-radius: 8px;
+    }
+    .toast-demo .save-toast {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      animation: none; /* 정지 — 회귀 비교용 */
+      opacity: 1;
+      transform: none;
+    }
+    /* 모달도 정지 상태로 */
+    .modal-demo {
+      position: relative;
+      padding: 32px;
+      background: rgba(10, 10, 20, 0.50);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+    }
+    .modal-demo .save-modal { position: static; }
+    .badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .badges span {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255, 210, 74, 0.12);
+      color: #FFD24A;
+    }
+  </style>
+</head>
+<body>
+  <h1>💾 세이브·로드 스타일 가이드 v1.0</h1>
+  <p class="meta">
+    SSOT 미러 · DESIGN.md §11 후보 · 디자인: 가춘운 (CMO/디자인) · 2026-04-28
+    <br/>
+    /design-review 자동 시각 회귀 게이트 — 6 슬롯 상태 + 토스트 + 다이얼로그 + 진행 인디케이터
+  </p>
+
+  <div class="badges">
+    <span>왕복 일치 100%</span>
+    <span>자동 백업 복구</span>
+    <span>a11y AAA</span>
+    <span>색상 외 형태/아이콘 3중 인코딩</span>
+  </div>
+
+  <!-- ============================================================ -->
+  <section>
+    <h2>1. 슬롯 카드 6 상태</h2>
+    <div class="grid">
+
+      <div>
+        <div class="save-slot-card" data-state="active" data-state-label="활성" tabindex="0">
+          <div class="save-slot-card__icon">⚔️</div>
+          <div class="save-slot-card__title">슬롯 1 — 에리언 Lv.42</div>
+          <div class="save-slot-card__state-badge">ACTIVE</div>
+          <div class="save-slot-card__meta">Ch.4 · 망각의 고원 · 32:14</div>
+          <div class="save-slot-card__timestamp">💾 2분 전 자동저장</div>
+        </div>
+        <p class="demo-card__caption">현재 진행 중 — 금색 glow + 우상단 펄스</p>
+      </div>
+
+      <div>
+        <div class="save-slot-card" data-state="backup" data-state-label="백업" tabindex="0">
+          <div class="save-slot-card__icon">🛡️</div>
+          <div class="save-slot-card__title">백업 슬롯 — Lv.42</div>
+          <div class="save-slot-card__state-badge">BACKUP</div>
+          <div class="save-slot-card__meta">Ch.4 · 망각의 고원 · 32:11</div>
+          <div class="save-slot-card__timestamp">🔒 3분 전 안전 보관</div>
+        </div>
+        <p class="demo-card__caption">직전 정상 스냅샷 — 손상 시 자동 복구 후보</p>
+      </div>
+
+      <div>
+        <div class="save-slot-card" data-state="auto" data-state-label="자동세이브" tabindex="0">
+          <div class="save-slot-card__icon">🌀</div>
+          <div class="save-slot-card__title">자동세이브 — Lv.42</div>
+          <div class="save-slot-card__state-badge">AUTO</div>
+          <div class="save-slot-card__meta">Ch.4 · 망각의 고원 · 32:14</div>
+          <div class="save-slot-card__timestamp">🕐 방금 전 (보스 직전)</div>
+        </div>
+        <p class="demo-card__caption">30초 주기 + 트리거 (방 전환/보스/레벨업)</p>
+      </div>
+
+      <div>
+        <div class="save-slot-card" data-state="corrupted" data-state-label="손상" tabindex="0">
+          <div class="save-slot-card__icon">⚠️</div>
+          <div class="save-slot-card__title">슬롯 2 — 체크섬 불일치</div>
+          <div class="save-slot-card__state-badge">CORRUPT</div>
+          <div class="save-slot-card__meta">에리언 · ?</div>
+          <div class="save-slot-card__timestamp">💛 백업 슬롯에서 복구 가능</div>
+        </div>
+        <p class="demo-card__caption">호박색 = "걱정 마세요" 톤 (절대 빨강 ❌)</p>
+      </div>
+
+      <div>
+        <div class="save-slot-card" data-state="migration" data-state-label="마이그레이션" tabindex="0">
+          <div class="save-slot-card__icon">🔄</div>
+          <div class="save-slot-card__title">슬롯 3 — v1 → v2 호환</div>
+          <div class="save-slot-card__state-badge">MIGRATE</div>
+          <div class="save-slot-card__meta">에리언 · 기억술사 (구버전)</div>
+          <div class="save-slot-card__timestamp">✨ 자동 변환 후 로드</div>
+        </div>
+        <p class="demo-card__caption">유저는 'migration' 단어를 안 봅니다 — 자동 변환!</p>
+      </div>
+
+      <div>
+        <div class="save-slot-card" data-state="empty" data-state-label="빈 슬롯" tabindex="0">
+          <div class="save-slot-card__icon">➕</div>
+          <div class="save-slot-card__title">빈 슬롯</div>
+          <div class="save-slot-card__meta">새 모험을 시작하세요</div>
+          <div class="save-slot-card__timestamp">&nbsp;</div>
+        </div>
+        <p class="demo-card__caption">차분한 점선 — 빈 상태 식별</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <h2>2. 자동세이브 토스트 (무방해)</h2>
+    <div class="demo-row">
+      <div class="toast-demo">
+        <div class="save-toast">
+          <div class="save-toast__title">💾 자동저장 완료</div>
+          <div class="save-toast__meta">슬롯 auto-3 · 방금 전</div>
+        </div>
+      </div>
+
+      <div class="toast-demo" style="width:400px;height:140px">
+        <div class="save-toast save-toast--recovery" style="position:absolute;top:16px;left:50%;transform:translateX(-50%)">
+          <div class="save-toast__title">💛 백업으로 안전하게 이어집니다</div>
+          <div class="save-toast__meta">슬롯 2 → 백업-1 · 손실 ≈ 2분 30초</div>
+        </div>
+      </div>
+    </div>
+    <p class="demo-card__caption">
+      <strong>일반 토스트</strong>: 우하단 280×56, 200ms fade-in / 1.5s hold / 300ms fade-out (총 1800ms)
+      <br/>
+      <strong>복구 토스트</strong>: 무방해 예외 — 상단 중앙 360px, 5s hold + 사용자 dismiss
+    </p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <h2>3. 손상 복구 다이얼로그 (불안 최소화)</h2>
+    <div class="modal-demo">
+      <div class="save-modal" role="dialog" aria-labelledby="rec-headline">
+        <div class="save-modal__icon">💛</div>
+        <div class="save-modal__headline" id="rec-headline">걱정 마세요!</div>
+        <div class="save-modal__body">
+          슬롯 2의 데이터가 일부 손상되었지만,<br/>
+          백업 슬롯에서 안전하게 복구할 수 있어요.
+        </div>
+        <div class="save-modal__backup-card">
+          <div class="label">🛡️ 백업: 3분 전 (Ch.4 32:11:42)</div>
+          <div class="info">손실: 약 2분 30초 분량 진행</div>
+        </div>
+        <div class="save-modal__actions">
+          <button class="save-action save-action--primary">백업으로 복구 ✨</button>
+          <button class="save-action save-action--ghost">나중에 결정</button>
+        </div>
+      </div>
+    </div>
+    <p class="demo-card__caption">
+      카피톤 5계명 — "치명적 오류" ❌ → "걱정 마세요" ✅ · 빨강/검정 ❌ → 호박색/금색 ✅
+    </p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <h2>4. 로드 검증 진행 인디케이터 (4단계)</h2>
+    <div class="save-validate" style="max-width:680px">
+      <div class="save-validate__step" data-status="done">
+        <span class="label">① 파일 읽기</span>
+        <div class="bar"></div>
+      </div>
+      <div class="save-validate__step" data-status="active" style="--progress: 60%">
+        <span class="label">② 스키마 검증</span>
+        <div class="bar"></div>
+      </div>
+      <div class="save-validate__step" data-status="pending">
+        <span class="label">③ 마이그레이션</span>
+        <div class="bar"></div>
+      </div>
+      <div class="save-validate__step" data-status="pending">
+        <span class="label">④ 참조 검증</span>
+        <div class="bar"></div>
+      </div>
+    </div>
+    <br/>
+    <div class="save-validate" style="max-width:680px">
+      <div class="save-validate__step" data-status="done">
+        <span class="label">① 파일 읽기</span>
+        <div class="bar"></div>
+      </div>
+      <div class="save-validate__step" data-status="failed">
+        <span class="label">② 스키마 검증 (실패)</span>
+        <div class="bar"></div>
+      </div>
+      <div class="save-validate__step" data-status="pending">
+        <span class="label">③ 마이그레이션</span>
+        <div class="bar"></div>
+      </div>
+      <div class="save-validate__step" data-status="pending">
+        <span class="label">④ 참조 검증</span>
+        <div class="bar"></div>
+      </div>
+    </div>
+    <p class="demo-card__caption">
+      두련사 SaveSnapshot 파이프라인 미러 · 150ms 이내 단계는 인디케이터 생략 (UX 노이즈 방지)
+    </p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <h2>5. 컬러 팔레트 (토픽 확장)</h2>
+    <div class="legend-row"><div class="swatch" style="background:#FFD24A"></div> <code>--color-accent-gold</code> · #FFD24A · 활성 슬롯</div>
+    <div class="legend-row"><div class="swatch" style="background:#4A9EFF"></div> <code>--color-accent-blue</code> · #4A9EFF · 백업/자동</div>
+    <div class="legend-row"><div class="swatch" style="background:#E8A33A"></div> <code>--color-warning-amber</code> · #E8A33A · 손상 (빨강 ❌)</div>
+    <div class="legend-row"><div class="swatch" style="background:#7A6BFF"></div> <code>--color-info-indigo</code> · #7A6BFF · 마이그레이션</div>
+    <div class="legend-row"><div class="swatch" style="background:#3A3A52"></div> <code>--color-neutral-600</code> · #3A3A52 · 빈 슬롯 점선</div>
+  </section>
+
+</body>
+</html>
