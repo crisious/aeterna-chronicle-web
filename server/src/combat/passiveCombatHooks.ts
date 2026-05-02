@@ -27,6 +27,9 @@ export interface PassiveCombatant {
   projectileReflectPercent?: number;
   hpRegenPerTurn?: number;
   cheatDeathChargesRemaining?: number;
+  // Phase 4 (부분)
+  critEchoPercent?: number;
+  moveDamageAuraValue?: number;
 }
 
 /**
@@ -147,4 +150,48 @@ export function tryCheatDeath(target: PassiveCombatant, incomingDamage: number):
   target.hp = 1;
   target.cheatDeathChargesRemaining = charges - 1;
   return true;
+}
+
+// ─── Phase 4 (부분) ──────────────────────────────────────────
+
+/**
+ * crit_echo — 크리티컬 시 추가 데미지.
+ * isCritical=true 이고 attacker.critEchoPercent > 0 면 baseDamage × critEchoPercent/100 추가 데미지 반환.
+ * 아니면 0.
+ */
+export function computeCritEchoDamage(
+  attacker: PassiveCombatant,
+  isCritical: boolean,
+  baseDamage: number,
+): number {
+  if (!isCritical) return 0;
+  const pct = attacker.critEchoPercent ?? 0;
+  if (pct <= 0 || baseDamage <= 0) return 0;
+  return Math.floor(baseDamage * (pct / 100));
+}
+
+/**
+ * move_damage_aura — 매 tick 적군 전체에 가하는 광역 데미지.
+ * actor.moveDamageAuraValue 가 적용되며, alive 만 적용.
+ *
+ * **mutates `enemies`**: 각 enemy.hp 감소.
+ * 사망 처리(alive=false) 는 호출자가 enemy.hp ≤ 0 검사 후 수행.
+ *
+ * 반환: [{ enemyId, damage }] — 로깅용.
+ */
+export function applyMoveDamageAura(
+  actor: PassiveCombatant & { id?: string },
+  enemies: ReadonlyArray<PassiveCombatant & { id: string; alive?: boolean }>,
+): Array<{ enemyId: string; damage: number }> {
+  if (actor.alive === false) return [];
+  const aura = actor.moveDamageAuraValue ?? 0;
+  if (aura <= 0) return [];
+
+  const log: Array<{ enemyId: string; damage: number }> = [];
+  for (const enemy of enemies) {
+    if (enemy.alive === false) continue;
+    enemy.hp = Math.max(0, enemy.hp - aura);
+    log.push({ enemyId: enemy.id, damage: aura });
+  }
+  return log;
 }
