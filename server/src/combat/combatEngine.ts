@@ -124,6 +124,10 @@ export interface CombatParticipant {
   autoResurrectChargesMax?: number;
   /** 사망 시 set 되는 부활 예약 tick. 부활 후 undefined */
   resurrectAtTick?: number;
+
+  // ── Phase 55-S7: poison_amplify ────────────────────────────
+  /** 시전자가 가한 DoT(poison/burn/bleed) 데미지 증폭 비율(%) */
+  poisonAmplifyPercent?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -401,11 +405,20 @@ export class CombatEngine {
       }
     }
 
-    // 3. 상태이상 틱
-    const tickResults = statusEffectManager.tick(1, (targetId: string) => {
-      const target = this.participants.get(targetId);
-      return target ? target.maxHp ?? target.hp : 0;
-    });
+    // 3. 상태이상 틱 — P55-S7: 시전자(sourceId) 의 poison_amplify 등 DoT 증폭 적용
+    const tickResults = statusEffectManager.tick(
+      1,
+      (targetId: string) => {
+        const target = this.participants.get(targetId);
+        return target ? target.maxHp ?? target.hp : 0;
+      },
+      (sourceId: string, _effectId) => {
+        const source = this.participants.get(sourceId);
+        if (!source) return 1;
+        const amp = source.poisonAmplifyPercent ?? 0;
+        return amp > 0 ? 1 + amp / 100 : 1;
+      },
+    );
     for (const result of tickResults) {
       const p = this.participants.get(result.targetId);
       if (!p || !p.alive) continue;
