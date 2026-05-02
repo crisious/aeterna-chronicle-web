@@ -14,31 +14,41 @@ import uuid
 import shutil
 from pathlib import Path
 
-COMFYUI_API = "http://127.0.0.1:8188"
-PROJECT_ROOT = Path("/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클")
+# Windows cp949 환경에서 emoji print 가능하도록 UTF-8 강제
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
+COMFYUI_API = os.environ.get("COMFYUI_API", "http://127.0.0.1:8188")
+# 환경변수 AETERNA_ROOT 로 override 가능. 기본은 repo root.
+PROJECT_ROOT = Path(os.environ.get("AETERNA_ROOT", Path(__file__).resolve().parent.parent))
 ASSETS_DIR = PROJECT_ROOT / "assets" / "generated"
 BACKUP_DIR = PROJECT_ROOT / "assets" / "generated_backup_sd15"
-OUTPUT_DIR = PROJECT_ROOT / "assets" / "generated_pixel_art"
+OUTPUT_DIR = Path(os.environ.get("AETERNA_PIXEL_OUT", PROJECT_ROOT / "client" / "public" / "generated_pixel_art"))
 
-# LoRA 설정
-LORA_NAME = "pixel_art_style_v1.0.safetensors"  # 164MB, SD 1.5 전용
-LORA_NAME_2 = "PixelArtRedmond-sd15.safetensors"  # 26MB, trigger: PixArFK
-CHECKPOINT = "v1-5-pruned-emaonly.safetensors"
-UPSCALER = "4x-UltraSharp.pth"
+# 픽셀아트 fine-tune checkpoint 단독 사용 — LoRA/Upscaler 의존성 옵셔널화
+CHECKPOINT = os.environ.get("COMFYUI_CHECKPOINT", "pixel-art-style.ckpt")
+# USE_LORA=1 일 때만 LoRA chain 활성화 (gated 모델 보유 시)
+USE_LORA = os.environ.get("USE_LORA", "0") == "1"
+LORA_NAME = os.environ.get("LORA_NAME", "pixel_art_style_v1.0.safetensors")
+LORA_NAME_2 = os.environ.get("LORA_NAME_2", "PixelArtRedmond-sd15.safetensors")
+UPSCALER = os.environ.get("UPSCALER", "4x-UltraSharp.pth")
 
 # 생성 파라미터
 # SD 1.5 native resolution = 512. 128px은 garbage 출력.
-# 512×512 직접 생성 + LoRA로 픽셀아트 스타일 적용
 PIXEL_SIZE = 512
 FINAL_SIZE = 512
 STEPS = 30
-CFG = 8.0
+# CFG 11 — T1-3a 튜닝 검증값 (CFG 8 대비 적격률 33%→100% on 3 샘플)
+CFG = 11.0
 SAMPLER = "euler_ancestral"
 SCHEDULER = "normal"
 
-# 공통 프롬프트 요소
-POSITIVE_BASE = "(pixel art:1.4), (16-bit rpg style:1.3), snes era, retro game sprite, (clean pixel edges:1.3), (limited color palette:1.2), fantasy rpg, chrono trigger style, moonlighter style, PixArFK, (pixelated:1.3), game asset, (sharp pixels:1.2), no anti-aliasing, (dithering shading:1.1), dark outline, centered composition"
-NEGATIVE_BASE = "(blurry:1.5), (realistic:1.5), photograph, (3d render:1.4), (smooth gradients:1.4), anti-aliasing, high resolution details, noise, watermark, text, modern, photorealistic, 3d, cgi, painting, oil painting, sketch, pencil, soft shading, multiple views, collage, grid, tiled"
+# 공통 프롬프트 요소 — T1-3a 강화 적용 (single creature / full body / white background)
+POSITIVE_BASE = "(pixel art:1.4), (16-bit rpg style:1.3), snes era, retro game sprite, (clean pixel edges:1.3), (limited color palette:1.2), fantasy rpg, chrono trigger style, moonlighter style, PixArFK, (pixelated:1.3), game asset, (sharp pixels:1.2), no anti-aliasing, (dithering shading:1.1), dark outline, (centered composition:1.3), (single creature:1.4), (full body:1.3), (full character visible:1.3), (white background:1.3)"
+NEGATIVE_BASE = "(blurry:1.5), (realistic:1.5), photograph, (3d render:1.4), (smooth gradients:1.4), anti-aliasing, high resolution details, noise, watermark, text, modern, photorealistic, 3d, cgi, painting, oil painting, sketch, pencil, soft shading, multiple views, collage, grid, tiled, (abstract pattern:1.4), (texture only:1.3), (background scenery:1.3), (no character:1.4), (cropped:1.2)"
 
 
 def build_workflow(positive_prompt: str, negative_prompt: str, width: int = PIXEL_SIZE, height: int = PIXEL_SIZE, seed: int = -1, use_upscale: bool = False) -> dict:
@@ -46,74 +56,29 @@ def build_workflow(positive_prompt: str, negative_prompt: str, width: int = PIXE
     if seed == -1:
         seed = int.from_bytes(os.urandom(4), 'big') % (2**32)
 
-    workflow = {
-        "1": {
-            "class_type": "CheckpointLoaderSimple",
-            "inputs": {"ckpt_name": CHECKPOINT}
-        },
-        # LoRA chain: checkpoint → PixelArtRedmond → pixel_art_style → CLIP encode
-        "5": {
-            "class_type": "LoraLoader",
-            "inputs": {
-                "lora_name": LORA_NAME_2,
-                "strength_model": 0.7,
-                "strength_clip": 0.7,
-                "model": ["1", 0],
-                "clip": ["1", 1]
-            }
-        },
-        "4": {
-            "class_type": "LoraLoader",
-            "inputs": {
-                "lora_name": LORA_NAME,
-                "strength_model": 0.8,
-                "strength_clip": 0.8,
-                "model": ["5", 0],
-                "clip": ["5", 1]
-            }
-        },
-        "2": {
-            "class_type": "CLIPTextEncode",
-            "inputs": {
-                "text": f"{POSITIVE_BASE}, {positive_prompt}",
-                "clip": ["4", 1]
-            }
-        },
-        "3": {
-            "class_type": "CLIPTextEncode",
-            "inputs": {
-                "text": f"{NEGATIVE_BASE}, {negative_prompt}",
-                "clip": ["4", 1]
-            }
-        },
-        "6": {
-            "class_type": "EmptyLatentImage",
-            "inputs": {"width": width, "height": height, "batch_size": 1}
-        },
-        "7": {
-            "class_type": "KSampler",
-            "inputs": {
-                "model": ["4", 0],
-                "positive": ["2", 0],
-                "negative": ["3", 0],
-                "latent_image": ["6", 0],
-                "seed": seed,
-                "steps": STEPS,
-                "cfg": CFG,
-                "sampler_name": SAMPLER,
-                "scheduler": SCHEDULER,
-                "denoise": 1.0
-            }
-        },
-        "8": {
-            "class_type": "VAEDecode",
-            "inputs": {"samples": ["7", 0], "vae": ["1", 2]}
-        },
-        "12": {
-            "class_type": "SaveImage",
-            "inputs": {"images": ["8", 0], "filename_prefix": "pixel_art"}
-        },
-    }
+    # USE_LORA=1 면 LoRA chain, 아니면 CheckpointLoader → CLIP 직결 (T1-1 패턴)
+    if USE_LORA:
+        workflow = {
+            "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": CHECKPOINT}},
+            "5": {"class_type": "LoraLoader", "inputs": {"lora_name": LORA_NAME_2, "strength_model": 0.7, "strength_clip": 0.7, "model": ["1", 0], "clip": ["1", 1]}},
+            "4": {"class_type": "LoraLoader", "inputs": {"lora_name": LORA_NAME, "strength_model": 0.8, "strength_clip": 0.8, "model": ["5", 0], "clip": ["5", 1]}},
+            "2": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{POSITIVE_BASE}, {positive_prompt}", "clip": ["4", 1]}},
+            "3": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{NEGATIVE_BASE}, {negative_prompt}", "clip": ["4", 1]}},
+            "6": {"class_type": "EmptyLatentImage", "inputs": {"width": width, "height": height, "batch_size": 1}},
+            "7": {"class_type": "KSampler", "inputs": {"model": ["4", 0], "positive": ["2", 0], "negative": ["3", 0], "latent_image": ["6", 0], "seed": seed, "steps": STEPS, "cfg": CFG, "sampler_name": SAMPLER, "scheduler": SCHEDULER, "denoise": 1.0}},
+            "8": {"class_type": "VAEDecode", "inputs": {"samples": ["7", 0], "vae": ["1", 2]}},
+            "12": {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "pixel_art"}},
+        }
+    else:
+        workflow = {
+            "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": CHECKPOINT}},
+            "2": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{POSITIVE_BASE}, {positive_prompt}", "clip": ["1", 1]}},
+            "3": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{NEGATIVE_BASE}, {negative_prompt}", "clip": ["1", 1]}},
+            "6": {"class_type": "EmptyLatentImage", "inputs": {"width": width, "height": height, "batch_size": 1}},
+            "7": {"class_type": "KSampler", "inputs": {"model": ["1", 0], "positive": ["2", 0], "negative": ["3", 0], "latent_image": ["6", 0], "seed": seed, "steps": STEPS, "cfg": CFG, "sampler_name": SAMPLER, "scheduler": SCHEDULER, "denoise": 1.0}},
+            "8": {"class_type": "VAEDecode", "inputs": {"samples": ["7", 0], "vae": ["1", 2]}},
+            "12": {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "pixel_art"}},
+        }
     return workflow
 
 
