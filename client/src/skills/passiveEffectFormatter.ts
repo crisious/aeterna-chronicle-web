@@ -7,23 +7,26 @@
 import { scalePassiveLevel } from './passiveLevelScaling';
 
 export const IMPLEMENTED_EFFECT_TYPES: ReadonlyArray<string> = [
+  // Phase 1
   'mp_regen',
   'evasion_up',
   'bonus_hit_chance',
   'low_hp_atk_up',
   'defense_up_conditional',
+  // Phase 3
   'reflect',
   'projectile_reflect',
   'battle_regen',
   'cheat_death',
+  // Phase 4 (부분)
+  'crit_echo',
+  'move_damage_aura',
 ];
 
 export const PENDING_EFFECT_TYPES: ReadonlyArray<string> = [
   'auto_resurrect',
-  'crit_echo',
   'poison_amplify',
   'drain_amplify',
-  'move_damage_aura',
 ];
 
 export interface PassiveEffectFormat {
@@ -72,17 +75,19 @@ export function formatPassiveEffect(
     case 'cheat_death':
       return { text: `사망 시 ${scaled}회 1HP 로 생존`, status: 'implemented' };
 
+    // ─ Phase 4 (부분 구현) ────────────────────────────────
+    case 'crit_echo':
+      return { text: `크리티컬 시 추가 데미지 +${scaled}%`, status: 'implemented' };
+    case 'move_damage_aura':
+      return { text: `매 턴 적군 전체에 ${scaled} 데미지`, status: 'implemented' };
+
     // ─ Phase 4 (대기 — stub) ──────────────────────────────
     case 'auto_resurrect':
       return { text: `사망 후 일정 시간 뒤 부활 (구현 대기)`, status: 'pending' };
-    case 'crit_echo':
-      return { text: `크리티컬 시 추가 효과 +${scaled}% (구현 대기)`, status: 'pending' };
     case 'poison_amplify':
       return { text: `중독 데미지 +${scaled}% (구현 대기)`, status: 'pending' };
     case 'drain_amplify':
       return { text: `흡수 효과 +${scaled}% (구현 대기)`, status: 'pending' };
-    case 'move_damage_aura':
-      return { text: `이동 시 주변 데미지 ${scaled} (구현 대기)`, status: 'pending' };
 
     default:
       return { text: `미상 효과: ${effectType} (${scaled})`, status: 'unknown' };
