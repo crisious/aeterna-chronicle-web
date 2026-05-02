@@ -22,6 +22,7 @@ import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';
 import { prisma } from '../db';
 import { extractUserIdFromRequest } from '../security/jwtManager';
+import { resolvePassiveModifiers } from '../skill/passiveResolver';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
 const CLASS_BASE_COMBAT_STATS: Record<string, {
@@ -290,10 +291,17 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
 
       const engine = combatInstanceManager.create({ autoMode: autoMode ?? false });
 
+      // P55-S1: 캐릭터별 장착 패시브 효과 병렬 resolve
+      const passiveResolutions = await Promise.all(
+        characters.map(async (c) => ({ id: c.id, result: await resolvePassiveModifiers(c.id) })),
+      );
+      const passiveByCharacter = new Map(passiveResolutions.map((p) => [p.id, p.result]));
+
       for (const c of characters) {
         const base = CLASS_BASE_COMBAT_STATS[c.classId] ?? CLASS_BASE_COMBAT_STATS['ether_knight'];
         const growth = CLASS_GROWTH[c.classId] ?? CLASS_GROWTH['ether_knight'];
         const lvl = c.level - 1;
+        const passiveMods = passiveByCharacter.get(c.id)?.modifiers;
 
         engine.addParticipant({
           id: c.id,
@@ -322,6 +330,12 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           baseExp: 0,
           baseGold: 0,
           dropTable: [],
+          // P55-S1 passive modifiers (Phase 1 — 5종)
+          evasionAddPercent: passiveMods?.evasionAddPercent ?? 0,
+          hitChanceAddPercent: passiveMods?.hitChanceAddPercent ?? 0,
+          mpRegenPerTurn: passiveMods?.mpRegenPerTurn ?? 0,
+          lowHpAtkBonusPercent: passiveMods?.lowHpAtkBonusPercent ?? 0,
+          defenseUpConditionalPercent: passiveMods?.defenseUpConditionalPercent ?? 0,
         });
       }
 
@@ -400,11 +414,20 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
 
       engine.start();
 
+      // P55-S1: 패시브 트레이스 — 캐릭터별 적용/대기 effect 노출 (QA/UI 검증용)
+      const passiveTrace = Array.from(passiveByCharacter.entries()).map(([id, r]) => ({
+        characterId: id,
+        modifiers: r.modifiers,
+        applied: r.applied,
+        pending: r.pending,
+      }));
+
       return {
         success: true,
         combatId: engine.combatId,
         state: engine.getState(),
         participants: engine.getSnapshot(),
+        passiveTrace,
       };
     } catch (err: any) {
       return reply.status(400).send({ error: err.message });

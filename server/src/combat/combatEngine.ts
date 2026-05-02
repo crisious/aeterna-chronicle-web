@@ -68,6 +68,18 @@ export interface CombatParticipant {
   baseGold: number;
   /** 드롭 테이블 (몬스터용) */
   dropTable: DropEntry[];
+
+  // ── Phase 55-S1: 패시브 효과 modifier (선택, 기본 0) ──────────
+  /** 회피율 가산 (백분율, evasion_up 패시브 누적) */
+  evasionAddPercent?: number;
+  /** 명중률 가산 (백분율, bonus_hit_chance 패시브 누적) */
+  hitChanceAddPercent?: number;
+  /** 매 턴 MP 회복량 (mp_regen 패시브 누적) */
+  mpRegenPerTurn?: number;
+  /** 저체력(<30%) 시 ATK 증가율 (low_hp_atk_up 패시브 누적) */
+  lowHpAtkBonusPercent?: number;
+  /** 피격 시 임시 DEF 증가율 (defense_up_conditional 패시브 누적) */
+  defenseUpConditionalPercent?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
