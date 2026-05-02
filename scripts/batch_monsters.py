@@ -12,13 +12,20 @@ import sys
 import uuid
 from pathlib import Path
 
-COMFYUI_API = "http://127.0.0.1:8188"
-PROJECT_ROOT = Path("/Users/crisious_mini/Library/CloudStorage/SynologyDrive-Obsidian/게임기획/에테르나크로니클")
-OUTPUT_DIR = PROJECT_ROOT / "assets" / "generated_pixel_art"
+# Windows cp949 환경에서 emoji print 가능하도록 UTF-8 강제
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 
-LORA_NAME = "pixel_art_style_v1.0.safetensors"
-LORA_NAME_2 = "PixelArtRedmond-sd15.safetensors"
-CHECKPOINT = "v1-5-pruned-emaonly.safetensors"
+COMFYUI_API = os.environ.get("COMFYUI_API", "http://127.0.0.1:8188")
+# 환경변수 AETERNA_ROOT 로 override 가능. 기본은 repo root.
+PROJECT_ROOT = Path(os.environ.get("AETERNA_ROOT", Path(__file__).resolve().parent.parent))
+OUTPUT_DIR = Path(os.environ.get("AETERNA_PIXEL_OUT", PROJECT_ROOT / "client" / "public" / "generated_pixel_art"))
+
+# 픽셀아트 fine-tune checkpoint 단독 사용 — LoRA 의존성 제거 (gated/오프라인 회피)
+CHECKPOINT = os.environ.get("COMFYUI_CHECKPOINT", "pixel-art-style.ckpt")
 
 POSITIVE_BASE = "(pixel art:1.4), (16-bit rpg style:1.3), snes era, retro game sprite, (clean pixel edges:1.3), (limited color palette:1.2), fantasy rpg, chrono trigger style, moonlighter style, PixArFK, (pixelated:1.3), game asset, (sharp pixels:1.2), no anti-aliasing, (dithering shading:1.1), dark outline, centered composition"
 NEGATIVE_BASE = "(blurry:1.5), (realistic:1.5), photograph, (3d render:1.4), (smooth gradients:1.4), anti-aliasing, high resolution details, noise, watermark, text, modern, photorealistic, 3d, cgi, painting, oil painting, sketch, pencil, soft shading, multiple views, collage, grid, tiled"
@@ -37,16 +44,18 @@ ZONE_STYLE = {
 
 
 def build_workflow(positive: str, negative: str, seed: int = -1):
+    """
+    픽셀아트 fine-tune checkpoint 단독 워크플로 (LoRA 노드 제거).
+    CheckpointLoader → CLIPText × 2 → KSampler → VAEDecode → SaveImage.
+    """
     if seed == -1:
         seed = int.from_bytes(os.urandom(4), 'big') % (2**32)
     return {
         "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": CHECKPOINT}},
-        "5": {"class_type": "LoraLoader", "inputs": {"lora_name": LORA_NAME_2, "strength_model": 0.7, "strength_clip": 0.7, "model": ["1", 0], "clip": ["1", 1]}},
-        "4": {"class_type": "LoraLoader", "inputs": {"lora_name": LORA_NAME, "strength_model": 0.8, "strength_clip": 0.8, "model": ["5", 0], "clip": ["5", 1]}},
-        "2": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{POSITIVE_BASE}, {positive}", "clip": ["4", 1]}},
-        "3": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{NEGATIVE_BASE}, {negative}", "clip": ["4", 1]}},
+        "2": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{POSITIVE_BASE}, {positive}", "clip": ["1", 1]}},
+        "3": {"class_type": "CLIPTextEncode", "inputs": {"text": f"{NEGATIVE_BASE}, {negative}", "clip": ["1", 1]}},
         "6": {"class_type": "EmptyLatentImage", "inputs": {"width": 512, "height": 512, "batch_size": 1}},
-        "7": {"class_type": "KSampler", "inputs": {"model": ["4", 0], "positive": ["2", 0], "negative": ["3", 0], "latent_image": ["6", 0], "seed": seed, "steps": 30, "cfg": 8.0, "sampler_name": "euler_ancestral", "scheduler": "normal", "denoise": 1.0}},
+        "7": {"class_type": "KSampler", "inputs": {"model": ["1", 0], "positive": ["2", 0], "negative": ["3", 0], "latent_image": ["6", 0], "seed": seed, "steps": 30, "cfg": 8.0, "sampler_name": "euler_ancestral", "scheduler": "normal", "denoise": 1.0}},
         "8": {"class_type": "VAEDecode", "inputs": {"samples": ["7", 0], "vae": ["1", 2]}},
         "12": {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "pixel_art"}},
     }
@@ -118,10 +127,15 @@ def name_to_prompt(monster_name: str, tier: str = "normal") -> str:
         return f"pixel art raid boss, {clean}, {zone_desc}, fantasy rpg final boss, epic monster, massive creature, centered, devastating power, ultimate enemy"
 
 
-def run_monster_batch(source_dir: str, tier: str, subfolder: str):
-    """특정 tier의 몬스터 일괄 생성"""
+def run_monster_batch(source_dir: str, tier: str, subfolder: str, limit: int = 0):
+    """특정 tier의 몬스터 일괄 생성. limit>0 이면 그 수만큼만 (시범용)."""
     src = PROJECT_ROOT / "assets" / "generated" / "monsters" / source_dir
+    if not src.exists():
+        print(f"❌ source dir not found: {src}")
+        return 0, 0
     files = sorted([f.replace(".png", "") for f in os.listdir(src) if f.endswith(".png")])
+    if limit > 0:
+        files = files[:limit]
     total = len(files)
     print(f"\n🎨 === {tier.upper()} Monsters ({total}장) ===")
 
@@ -146,27 +160,35 @@ def run_monster_batch(source_dir: str, tier: str, subfolder: str):
 
 if __name__ == "__main__":
     tier = sys.argv[1] if len(sys.argv) > 1 else "normal"
+    # 두 번째 인자는 limit (시범용 — 시간 절약). 0=무제한.
+    limit = int(sys.argv[2]) if len(sys.argv) > 2 else 0
 
     try:
         resp = requests.get(f"{COMFYUI_API}/system_stats", timeout=5)
-        print("✅ ComfyUI connected")
-    except:
-        print("❌ ComfyUI not running")
+        print(f"✅ ComfyUI connected ({COMFYUI_API})")
+        print(f"📁 source: {PROJECT_ROOT / 'assets' / 'generated' / 'monsters'}")
+        print(f"📁 output: {OUTPUT_DIR}")
+        print(f"🎨 checkpoint: {CHECKPOINT}")
+    except Exception as e:
+        print(f"❌ ComfyUI not running ({COMFYUI_API}): {e}")
         sys.exit(1)
 
-    if tier == "normal":
-        run_monster_batch("normal", "normal", "normal")
+    if tier == "smoke":
+        # 최소 검증 — 1마리만 생성
+        run_monster_batch("normal", "normal", "normal", limit=1)
+    elif tier == "normal":
+        run_monster_batch("normal", "normal", "normal", limit=limit)
     elif tier == "elite":
-        run_monster_batch("elite_boss", "elite", "elite_boss")
+        run_monster_batch("elite_boss", "elite", "elite_boss", limit=limit)
     elif tier == "raid":
-        run_monster_batch("raid_boss", "raid", "raid_boss")
+        run_monster_batch("raid_boss", "raid", "raid_boss", limit=limit)
     elif tier == "all":
         results = {}
         for t, src, sub in [("normal", "normal", "normal"), ("elite", "elite_boss", "elite_boss"), ("raid", "raid_boss", "raid_boss")]:
-            s, f = run_monster_batch(src, t, sub)
+            s, f = run_monster_batch(src, t, sub, limit=limit)
             results[t] = (s, f)
         print("\n📊 === 몬스터 전체 결과 ===")
         for t, (s, f) in results.items():
             print(f"  {t}: {s}✅ {f}❌")
     else:
-        print(f"Usage: {sys.argv[0]} [normal|elite|raid|all]")
+        print(f"Usage: {sys.argv[0]} [smoke|normal|elite|raid|all] [limit]")
