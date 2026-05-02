@@ -221,11 +221,31 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
   // ── POST /combat/start ────────────────────────────────────
   // 전투 인스턴스 생성 + 시작
   // Security: 클라이언트 스탯을 무시하고 DB에서 조회
+  interface LegacyCombatantInput {
+    id: string;
+    name?: string;
+    hp?: number;
+    maxHp?: number;
+    mp?: number;
+    maxMp?: number;
+    attack?: number;
+    defense?: number;
+    speed?: number;
+    level?: number;
+    classId?: string;
+  }
+
   interface CombatStartBody {
-    partyCharacterIds: string[];
-    monsterIds: string[];
+    partyCharacterIds?: string[];
+    monsterIds?: string[];
+    party?: LegacyCombatantInput[];
+    monsters?: LegacyCombatantInput[];
     autoMode?: boolean;
   }
+
+  const toFiniteNumber = (value: number | undefined, fallback: number): number => (
+    typeof value === 'number' && Number.isFinite(value) ? value : fallback
+  );
 
   fastify.post('/combat/start', async (
     request: FastifyRequest<{ Body: CombatStartBody }>,
@@ -237,27 +257,35 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
 
-    const { partyCharacterIds, monsterIds, autoMode } = request.body;
+    const { partyCharacterIds, monsterIds, party, monsters, autoMode } = request.body;
+    const legacyPayload = Array.isArray(party) || Array.isArray(monsters);
+    const effectivePartyCharacterIds = partyCharacterIds?.length
+      ? partyCharacterIds
+      : (party ?? []).map((member) => member.id).filter(Boolean);
 
-    if (!partyCharacterIds?.length || !monsterIds?.length) {
+    if (legacyPayload && process.env.NODE_ENV !== 'test') {
+      return reply.status(400).send({ error: '레거시 전투 페이로드는 테스트 환경에서만 허용됩니다.' });
+    }
+
+    if (!effectivePartyCharacterIds.length) {
+      return reply.status(400).send({ error: '파티 캐릭터 ID와 몬스터 ID 모두 필요합니다.' });
+    }
+
+    if (legacyPayload && (!party?.length || !monsters?.length || effectivePartyCharacterIds.length !== party.length)) {
+      return reply.status(400).send({ error: '레거시 전투 페이로드의 party/monsters 배열이 유효하지 않습니다.' });
+    }
+
+    if (!legacyPayload && !monsterIds?.length) {
       return reply.status(400).send({ error: '파티 캐릭터 ID와 몬스터 ID 모두 필요합니다.' });
     }
 
     try {
       // DB에서 파티 캐릭터 조회 (JWT userId 소유 검증)
       const characters = await prisma.character.findMany({
-        where: { id: { in: partyCharacterIds }, userId },
+        where: { id: { in: effectivePartyCharacterIds }, userId },
       });
-      if (characters.length !== partyCharacterIds.length) {
+      if (characters.length !== effectivePartyCharacterIds.length) {
         return reply.status(403).send({ error: '소유하지 않은 캐릭터가 포함되어 있습니다.' });
-      }
-
-      // DB에서 몬스터 조회
-      const dbMonsters = await prisma.monster.findMany({
-        where: { id: { in: monsterIds }, isActive: true },
-      });
-      if (dbMonsters.length !== monsterIds.length) {
-        return reply.status(400).send({ error: '존재하지 않거나 비활성 몬스터가 포함되어 있습니다.' });
       }
 
       const engine = combatInstanceManager.create({ autoMode: autoMode ?? false });
@@ -297,35 +325,77 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
         });
       }
 
-      for (const m of dbMonsters) {
-        engine.addParticipant({
-          id: m.id,
-          name: m.name,
-          classId: m.type,
-          level: m.level,
-          hp: m.hp,
-          maxHp: m.hp,
-          mp: 0,
-          maxMp: 0,
-          atk: m.attack,
-          def: m.defense,
-          matk: m.attack,
-          mdef: m.defense,
-          spd: m.speed,
-          critRate: 0.05,
-          critDamage: 1.5,
-          isMonster: true,
-          atbGauge: 0,
-          alive: true,
-          team: 'monsters',
-          isBoss: m.type === 'boss' || m.type === 'raid_boss' || m.type === 'field_boss',
-          element: (m.element ?? 'neutral') as ElementType,
-          armorPenetration: 0,
-          armorPenetrationPercent: 0,
-          baseExp: m.expReward,
-          baseGold: m.goldReward,
-          dropTable: (m.dropTable as unknown as DropEntry[]) ?? [],
+      if (legacyPayload) {
+        for (const m of monsters ?? []) {
+          const maxHp = Math.max(1, toFiniteNumber(m.maxHp ?? m.hp, 100));
+          engine.addParticipant({
+            id: m.id,
+            name: m.name ?? m.id,
+            classId: m.classId ?? 'normal',
+            level: Math.max(1, toFiniteNumber(m.level, 1)),
+            hp: Math.max(1, Math.min(toFiniteNumber(m.hp, maxHp), maxHp)),
+            maxHp,
+            mp: Math.max(0, toFiniteNumber(m.mp, 0)),
+            maxMp: Math.max(0, toFiniteNumber(m.maxMp ?? m.mp, 0)),
+            atk: Math.max(1, toFiniteNumber(m.attack, 10)),
+            def: Math.max(0, toFiniteNumber(m.defense, 0)),
+            matk: Math.max(1, toFiniteNumber(m.attack, 10)),
+            mdef: Math.max(0, toFiniteNumber(m.defense, 0)),
+            spd: Math.max(1, toFiniteNumber(m.speed, 10)),
+            critRate: 0.05,
+            critDamage: 1.5,
+            isMonster: true,
+            atbGauge: 0,
+            alive: true,
+            team: 'monsters',
+            isBoss: false,
+            element: 'neutral' as ElementType,
+            armorPenetration: 0,
+            armorPenetrationPercent: 0,
+            baseExp: 0,
+            baseGold: 0,
+            dropTable: [],
+          });
+        }
+      } else {
+        // DB에서 몬스터 조회
+        const dbMonsters = await prisma.monster.findMany({
+          where: { id: { in: monsterIds ?? [] }, isActive: true },
         });
+        if (dbMonsters.length !== monsterIds?.length) {
+          return reply.status(400).send({ error: '존재하지 않거나 비활성 몬스터가 포함되어 있습니다.' });
+        }
+
+        for (const m of dbMonsters) {
+          engine.addParticipant({
+            id: m.id,
+            name: m.name,
+            classId: m.type,
+            level: m.level,
+            hp: m.hp,
+            maxHp: m.hp,
+            mp: 0,
+            maxMp: 0,
+            atk: m.attack,
+            def: m.defense,
+            matk: m.attack,
+            mdef: m.defense,
+            spd: m.speed,
+            critRate: 0.05,
+            critDamage: 1.5,
+            isMonster: true,
+            atbGauge: 0,
+            alive: true,
+            team: 'monsters',
+            isBoss: m.type === 'boss' || m.type === 'raid_boss' || m.type === 'field_boss',
+            element: (m.element ?? 'neutral') as ElementType,
+            armorPenetration: 0,
+            armorPenetrationPercent: 0,
+            baseExp: m.expReward,
+            baseGold: m.goldReward,
+            dropTable: (m.dropTable as unknown as DropEntry[]) ?? [],
+          });
+        }
       }
 
       engine.start();

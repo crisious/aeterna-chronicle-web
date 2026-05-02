@@ -14,13 +14,14 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { prisma } from '../db';
 import { inventoryManager } from '../inventory/inventoryManager';
 import { seedItems, getItemSeedCount } from '../inventory/itemSeeds';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
-interface _UserIdParams { userId: string }
+interface OwnerIdParams { ownerId: string }
 interface SlotIdParams { slotId: string }
 
 interface AddBody {
@@ -73,6 +74,41 @@ export async function inventoryRoutes(fastify: FastifyInstance): Promise<void> {
       success: true,
       data: {
         userId,
+        slotCount: inventory.length,
+        items: inventory,
+      },
+    };
+  });
+
+  /** GET /api/inventory/:ownerId — 하위 호환 인벤토리 조회 (userId 또는 characterId) */
+  fastify.get('/api/inventory/:ownerId', async (
+    request: FastifyRequest<{ Params: OwnerIdParams }>,
+    reply: FastifyReply,
+  ) => {
+    const authUserId = await extractUserIdFromRequest(request);
+    if (!authUserId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { ownerId } = request.params;
+    let inventoryUserId: string | null = ownerId === authUserId ? authUserId : null;
+
+    if (!inventoryUserId) {
+      const character = await prisma.character.findFirst({
+        where: { id: ownerId, userId: authUserId },
+        select: { userId: true },
+      });
+      inventoryUserId = character?.userId ?? null;
+    }
+
+    if (!inventoryUserId) {
+      return reply.status(404).send({ error: '인벤토리 소유자를 찾을 수 없습니다.' });
+    }
+
+    const inventory = await inventoryManager.getInventory(inventoryUserId);
+    return {
+      success: true,
+      data: {
+        userId: inventoryUserId,
+        ownerId,
         slotCount: inventory.length,
         items: inventory,
       },
