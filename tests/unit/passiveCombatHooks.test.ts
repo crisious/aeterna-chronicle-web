@@ -16,6 +16,8 @@ import {
   getEffectiveDef,
   LOW_HP_THRESHOLD,
   rollMiss,
+  scheduleAutoResurrect,
+  tryAutoResurrect,
   tryCheatDeath,
   type PassiveCombatant,
 } from '../../server/src/combat/passiveCombatHooks';
@@ -366,5 +368,145 @@ describe('applyMoveDamageAura', () => {
     const enemies = [enemy('e1', 30)];
     applyMoveDamageAura(a, enemies);
     expect(enemies[0].hp).toBe(0);
+  });
+});
+
+// ─── scheduleAutoResurrect / tryAutoResurrect ──────────────────
+
+describe('scheduleAutoResurrect — 사망 시 부활 예약', () => {
+  test('charges 0 → 예약 안 함', () => {
+    const a = makeCombatant({ alive: false, autoResurrectChargesRemaining: 0, autoResurrectDelay: 30 });
+    expect(scheduleAutoResurrect(a, 5)).toBe(false);
+    expect(a.resurrectAtTick).toBeUndefined();
+  });
+
+  test('정상 예약 — delay 30, currentTick 5 → resurrectAtTick=35, charges 1→0', () => {
+    const a = makeCombatant({
+      alive: false,
+      autoResurrectChargesRemaining: 1,
+      autoResurrectDelay: 30,
+      autoResurrectHpPercent: 100,
+    });
+    expect(scheduleAutoResurrect(a, 5)).toBe(true);
+    expect(a.resurrectAtTick).toBe(35);
+    expect(a.autoResurrectChargesRemaining).toBe(0);
+  });
+
+  test('delay 0 → resurrectAtTick = currentTick', () => {
+    const a = makeCombatant({
+      alive: false,
+      autoResurrectChargesRemaining: 1,
+      autoResurrectDelay: 0,
+      autoResurrectHpPercent: 100,
+    });
+    scheduleAutoResurrect(a, 10);
+    expect(a.resurrectAtTick).toBe(10);
+  });
+
+  test('이미 예약됨 → 두 번째 schedule 무시', () => {
+    const a = makeCombatant({
+      alive: false,
+      autoResurrectChargesRemaining: 1,
+      autoResurrectDelay: 30,
+      autoResurrectHpPercent: 100,
+      resurrectAtTick: 35,
+    });
+    expect(scheduleAutoResurrect(a, 5)).toBe(false);
+    expect(a.autoResurrectChargesRemaining).toBe(1); // 차감 안 됨
+  });
+});
+
+describe('tryAutoResurrect — 시간 도달 시 부활', () => {
+  test('예약 없음 → false', () => {
+    const a = makeCombatant({ alive: false });
+    expect(tryAutoResurrect(a, 100)).toBe(false);
+    expect(a.alive).toBe(false);
+  });
+
+  test('아직 시간 미도달 → false', () => {
+    const a = makeCombatant({
+      alive: false, hp: 0, maxHp: 100,
+      resurrectAtTick: 50,
+      autoResurrectHpPercent: 100,
+    });
+    expect(tryAutoResurrect(a, 30)).toBe(false);
+    expect(a.alive).toBe(false);
+  });
+
+  test('정확히 도달 — currentTick == resurrectAtTick → 부활', () => {
+    const a = makeCombatant({
+      alive: false, hp: 0, maxHp: 100,
+      resurrectAtTick: 50,
+      autoResurrectHpPercent: 100,
+    });
+    expect(tryAutoResurrect(a, 50)).toBe(true);
+    expect(a.alive).toBe(true);
+    expect(a.hp).toBe(100);
+    expect(a.resurrectAtTick).toBeUndefined();
+  });
+
+  test('hpPercent 50% — hp = floor(maxHp * 0.5) = 50', () => {
+    const a = makeCombatant({
+      alive: false, hp: 0, maxHp: 100,
+      resurrectAtTick: 50,
+      autoResurrectHpPercent: 50,
+    });
+    tryAutoResurrect(a, 50);
+    expect(a.hp).toBe(50);
+  });
+
+  test('hpPercent 1% — 최소 1 보장', () => {
+    const a = makeCombatant({
+      alive: false, hp: 0, maxHp: 7,
+      resurrectAtTick: 50,
+      autoResurrectHpPercent: 1,
+    });
+    tryAutoResurrect(a, 50);
+    // floor(7 * 0.01) = 0 → max(1, 0) = 1
+    expect(a.hp).toBe(1);
+  });
+
+  test('hpPercent 0 — 부활 안 함, 예약 취소', () => {
+    const a = makeCombatant({
+      alive: false, hp: 0, maxHp: 100,
+      resurrectAtTick: 50,
+      autoResurrectHpPercent: 0,
+    });
+    expect(tryAutoResurrect(a, 50)).toBe(false);
+    expect(a.alive).toBe(false);
+    expect(a.resurrectAtTick).toBeUndefined();
+  });
+
+  test('이미 살아있음 → false', () => {
+    const a = makeCombatant({
+      alive: true, hp: 50, maxHp: 100,
+      resurrectAtTick: 50,
+      autoResurrectHpPercent: 100,
+    });
+    expect(tryAutoResurrect(a, 50)).toBe(false);
+    expect(a.hp).toBe(50); // 변경 없음
+  });
+
+  test('cycle: 사망 → schedule → tick 진행 → 도달 → 부활', () => {
+    const a = makeCombatant({
+      alive: false, hp: 0, maxHp: 100,
+      autoResurrectChargesRemaining: 1,
+      autoResurrectDelay: 30,
+      autoResurrectHpPercent: 100,
+    });
+    // tick 5 사망
+    scheduleAutoResurrect(a, 5);
+    expect(a.resurrectAtTick).toBe(35);
+
+    // tick 10 — 미도달
+    expect(tryAutoResurrect(a, 10)).toBe(false);
+
+    // tick 35 — 부활
+    expect(tryAutoResurrect(a, 35)).toBe(true);
+    expect(a.alive).toBe(true);
+    expect(a.hp).toBe(100);
+    // charges 소진됨 — 두 번째 사망 시 schedule 안 됨
+    a.alive = false;
+    expect(scheduleAutoResurrect(a, 50)).toBe(false);
   });
 });

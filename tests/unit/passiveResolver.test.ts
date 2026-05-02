@@ -218,21 +218,50 @@ describe('resolvePassiveModifiers', () => {
     expect(result.modifiers.cheatDeathChargesMax).toBe(1);
   });
 
-  test('Phase 4 잔여 stub effect (auto_resurrect/poison_amplify/drain_amplify) 는 pending', async () => {
+  test('Phase 4 잔여 stub effect (poison_amplify/drain_amplify) 는 pending', async () => {
     findManyMock.mockResolvedValue([
-      makePlayerSkill({ code: 'mw_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }),
       makePlayerSkill({ code: 'sw_poison_amp', type: 'passive', effectType: 'poison_amplify', value: 100, level: 1 }),
+      makePlayerSkill({ code: 'mb_drain_amp', type: 'passive', effectType: 'drain_amplify', value: 50, level: 1 }),
       makePlayerSkill({ code: 'sw_crit_echo', type: 'passive', effectType: 'crit_echo', value: 30, level: 1 }),
       makePlayerSkill({ code: 'ek_ether_charge', type: 'passive', effectType: 'mp_regen', value: 5, level: 1 }),
     ]);
     const result = await resolvePassiveModifiers('char1');
     // applied: mp_regen + crit_echo (구현됨)
     expect(result.applied).toHaveLength(2);
-    // pending: auto_resurrect + poison_amplify
+    // pending: poison_amplify + drain_amplify
     expect(result.pending).toHaveLength(2);
-    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['auto_resurrect', 'poison_amplify']);
+    expect(result.pending.map((p) => p.effectType).sort()).toEqual(['drain_amplify', 'poison_amplify']);
     expect(result.modifiers.mpRegenPerTurn).toBe(5);
     expect(result.modifiers.critEchoPercent).toBe(30);
+  });
+
+  test('auto_resurrect — duration + value 두 필드 추출 + charges 누적', async () => {
+    findManyMock.mockResolvedValue([
+      // mw: duration=30, value=100 (lv1)
+      {
+        ...makePlayerSkill({ code: 'mw_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }),
+        skill: {
+          ...makePlayerSkill({ code: 'mw_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }).skill,
+          effect: { type: 'auto_resurrect', duration: 30, value: 100 },
+        },
+      },
+      // tg: duration=0, value=100 (lv1)
+      {
+        ...makePlayerSkill({ code: 'tg_eternal', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }),
+        skill: {
+          ...makePlayerSkill({ code: 'tg_eternal', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 1 }).skill,
+          effect: { type: 'auto_resurrect', duration: 0, value: 100 },
+        },
+      },
+    ]);
+    const result = await resolvePassiveModifiers('char1');
+    expect(result.applied).toHaveLength(2);
+    // delay: max(30, 0) = 30
+    expect(result.modifiers.autoResurrectDelay).toBe(30);
+    // hpPercent: max(100, 100) = 100
+    expect(result.modifiers.autoResurrectHpPercent).toBe(100);
+    // charges: 2개 누적
+    expect(result.modifiers.autoResurrectChargesMax).toBe(2);
   });
 
   test('미장착(isEquipped=false) 은 prisma 쿼리에서 필터링됨 — 결과 0', async () => {
@@ -292,6 +321,9 @@ describe('applyModifiersToStats', () => {
       cheatDeathChargesMax: 0,
       critEchoPercent: 0,
       moveDamageAuraValue: 0,
+      autoResurrectDelay: 0,
+      autoResurrectHpPercent: 0,
+      autoResurrectChargesMax: 0,
     });
   });
 });

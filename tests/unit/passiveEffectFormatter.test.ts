@@ -58,7 +58,7 @@ describe('formatPassiveEffect — 9 구현 effect', () => {
   });
 });
 
-describe('formatPassiveEffect — 11 구현 effect (S1+S2+S3+S5)', () => {
+describe('formatPassiveEffect — 12 구현 effect (S1+S2+S3+S5+S6)', () => {
   test('crit_echo (P55-S5)', () => {
     const r = formatPassiveEffect('crit_echo', 30, 1);
     expect(r.status).toBe('implemented');
@@ -70,15 +70,15 @@ describe('formatPassiveEffect — 11 구현 effect (S1+S2+S3+S5)', () => {
     expect(r.status).toBe('implemented');
     expect(r.text).toBe('매 턴 적군 전체에 15 데미지');
   });
+
+  test('auto_resurrect (P55-S6)', () => {
+    const r = formatPassiveEffect('auto_resurrect', 100, 1);
+    expect(r.status).toBe('implemented');
+    expect(r.text).toBe('사망 시 100% HP 로 부활');
+  });
 });
 
-describe('formatPassiveEffect — 3 stub effect (Phase 4 잔여)', () => {
-  test('auto_resurrect', () => {
-    const r = formatPassiveEffect('auto_resurrect', 100, 1);
-    expect(r.status).toBe('pending');
-    expect(r.text).toContain('구현 대기');
-  });
-
+describe('formatPassiveEffect — 2 stub effect (Phase 4 잔여)', () => {
   test('poison_amplify', () => {
     expect(formatPassiveEffect('poison_amplify', 100, 1).status).toBe('pending');
   });
@@ -98,12 +98,12 @@ describe('formatPassiveEffect — 미인식', () => {
 });
 
 describe('상수 검증', () => {
-  test('IMPLEMENTED_EFFECT_TYPES 11개 (S1+S2+S3+S5)', () => {
-    expect(IMPLEMENTED_EFFECT_TYPES.length).toBe(11);
+  test('IMPLEMENTED_EFFECT_TYPES 12개 (S1+S2+S3+S5+S6)', () => {
+    expect(IMPLEMENTED_EFFECT_TYPES.length).toBe(12);
   });
 
-  test('PENDING_EFFECT_TYPES 3개 (Phase 4 잔여)', () => {
-    expect(PENDING_EFFECT_TYPES.length).toBe(3);
+  test('PENDING_EFFECT_TYPES 2개 (Phase 4 잔여)', () => {
+    expect(PENDING_EFFECT_TYPES.length).toBe(2);
   });
 
   test('두 배열 합 = 14 (skillSeeds 14 distinct effect type)', () => {
