@@ -21,10 +21,10 @@ export const IMPLEMENTED_EFFECT_TYPES: ReadonlyArray<string> = [
   // Phase 4 (부분)
   'crit_echo',
   'move_damage_aura',
+  'auto_resurrect',
 ];
 
 export const PENDING_EFFECT_TYPES: ReadonlyArray<string> = [
-  'auto_resurrect',
   'poison_amplify',
   'drain_amplify',
 ];
@@ -80,10 +80,10 @@ export function formatPassiveEffect(
       return { text: `크리티컬 시 추가 데미지 +${scaled}%`, status: 'implemented' };
     case 'move_damage_aura':
       return { text: `매 턴 적군 전체에 ${scaled} 데미지`, status: 'implemented' };
+    case 'auto_resurrect':
+      return { text: `사망 시 ${scaled}% HP 로 부활`, status: 'implemented' };
 
     // ─ Phase 4 (대기 — stub) ──────────────────────────────
-    case 'auto_resurrect':
-      return { text: `사망 후 일정 시간 뒤 부활 (구현 대기)`, status: 'pending' };
     case 'poison_amplify':
       return { text: `중독 데미지 +${scaled}% (구현 대기)`, status: 'pending' };
     case 'drain_amplify':
