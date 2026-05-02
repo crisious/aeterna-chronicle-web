@@ -1,0 +1,4 @@
+[
+  { "id": "enc_erebos_field", "regionId": "erebos",     "chapter": 1, "monsterIds": ["mon_slime_g", "mon_skeleton"], "weight": 1.0 },
+  { "id": "enc_silvan_path",  "regionId": "silvanheim", "chapter": 2, "monsterIds": ["mon_wolf", "mon_golem"],       "weight": 0.8 }
+]

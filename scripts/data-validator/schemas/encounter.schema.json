@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aeterna://schemas/encounter.schema.json",
+  "title": "Encounter",
+  "description": "STUB — Build 단계에서 챕터별 인카운터 테이블 기반으로 채운다. 책임자: 계섬월. 참조 엣지: encounter→monster.",
+  "type": "object",
+  "required": ["id", "regionId", "monsterIds"],
+  "properties": {
+    "id":         { "type": "string", "pattern": "^enc_[a-z0-9_]+$" },
+    "regionId":   { "type": "string" },
+    "chapter":    { "type": "integer", "minimum": 1, "maximum": 8 },
+    "monsterIds": { "type": "array", "minItems": 1, "items": { "type": "string", "description": "참조: monster.id" } },
+    "weight":     { "type": "number", "minimum": 0 },
+    "_stub":      { "const": true, "description": "Build 단계에서 제거" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aeterna://schemas/scenario.schema.json",
+  "title": "Scenario",
+  "description": "STUB — Build 단계에서 시나리오/연대표 + npc_choice_event_telemetry_schema_v1 기반으로 채운다. 책임자: 계섬월. 참조 엣지: scenario→{skill,item,encounter}.",
+  "type": "object",
+  "required": ["id", "chapter", "nodes"],
+  "properties": {
+    "id":      { "type": "string", "pattern": "^scn_[a-z0-9_]+$" },
+    "chapter": { "type": "integer", "minimum": 1, "maximum": 8 },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nodeId", "kind"],
+        "properties": {
+          "nodeId":      { "type": "string" },
+          "kind":        { "type": "string", "enum": ["dialog", "battle", "choice", "reward"] },
+          "skillRefs":   { "type": "array", "items": { "type": "string", "description": "참조: skill.id" } },
+          "itemRefs":    { "type": "array", "items": { "type": "string", "description": "참조: item.id" } },
+          "encounterRefs": { "type": "array", "items": { "type": "string", "description": "참조: encounter.id" } }
+        },
+        "additionalProperties": true
+      }
+    },
+    "_stub":   { "const": true, "description": "Build 단계에서 제거" }
+  },
+  "additionalProperties": true
+}

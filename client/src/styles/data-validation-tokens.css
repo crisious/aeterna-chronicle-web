@@ -1,0 +1,163 @@
+/**
+ * client/src/styles/data-validation-tokens.css — 데이터 검증 시각 토큰 CSS 미러 (가춘운)
+ *
+ * SSOT 위계: assets_data-validation.md §2 (상태 4종) + §7 (코드 미러)의 웹 표면
+ *
+ * 용도:
+ *   - data-validation-style-guide.html (CLI 모킹업 미리보기)
+ *   - 향후 검증 리포트를 웹에서 렌더할 때 (PR 코멘트 미리보기 등)
+ *
+ * CLI ANSI ↔ 웹 hex 1:1 매핑 — 신규 컬러 추가 시 design-system §2 동시 갱신
+ *
+ * 어머~ CLI 색감을 웹에서도 똑같이 ✨
+ */
+
+:root {
+  /* §2.1 검증 상태 4종 — assets §2 표 그대로 */
+  --dv-pass: #5FCB7A;        /* green   ANSI 32 */
+  --dv-warn: #E8A33A;        /* yellow  ANSI 33 */
+  --dv-error: #E85A5A;       /* red     ANSI 31 */
+  --dv-info: #4A9EFF;        /* cyan    ANSI 36 */
+
+  /* §2.2 정보 강조 4종 */
+  --dv-path: #FFFFFF;        /* bold white */
+  --dv-field: #C77DFF;       /* magenta */
+  --dv-value: #AAAAAA;       /* dim white */
+  --dv-expected: #4A9EFF;    /* cyan */
+  --dv-tree: #888888;        /* dim */
+
+  /* CLI 배경 — 터미널 톤 (검정 #0A0A0A 베이스) */
+  --dv-cli-bg: #0A0A0A;
+  --dv-cli-border: #2A2A2A;
+  --dv-cli-text: #E8E8E8;
+
+  /* 의미 매핑 — 알파 블렌드 (배경 그라데이션용) */
+  --dv-pass-bg: rgba(95, 203, 122, 0.10);
+  --dv-warn-bg: rgba(232, 163, 58, 0.10);
+  --dv-error-bg: rgba(232, 90, 90, 0.10);
+  --dv-info-bg: rgba(74, 158, 255, 0.10);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §1 CLI 출력 모킹업 — 터미널 박스 컴포넌트
+   ────────────────────────────────────────────────────────────── */
+
+.dv-terminal {
+  background: var(--dv-cli-bg);
+  border: 1px solid var(--dv-cli-border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'D2Coding', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dv-cli-text);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.dv-terminal__header {
+  color: var(--dv-info);
+  margin-bottom: 4px;
+}
+
+/* 상태별 라인 — 색상만, 구조는 인라인으로 */
+.dv-pass { color: var(--dv-pass); }
+.dv-warn { color: var(--dv-warn); }
+.dv-error { color: var(--dv-error); }
+.dv-info { color: var(--dv-info); }
+.dv-path { color: var(--dv-path); font-weight: 700; }
+.dv-field { color: var(--dv-field); }
+.dv-value { color: var(--dv-value); }
+.dv-expected { color: var(--dv-expected); }
+.dv-tree { color: var(--dv-tree); }
+
+/* ──────────────────────────────────────────────────────────────
+   §2 상태 아이콘 세트 — 4종 카드
+   ────────────────────────────────────────────────────────────── */
+
+.dv-status-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 14px;
+}
+
+.dv-status-card--pass {
+  background: var(--dv-pass-bg);
+  border-color: var(--dv-pass);
+  color: var(--dv-pass);
+}
+
+.dv-status-card--warn {
+  background: var(--dv-warn-bg);
+  border-color: var(--dv-warn);
+  color: var(--dv-warn);
+}
+
+.dv-status-card--error {
+  background: var(--dv-error-bg);
+  border-color: var(--dv-error);
+  color: var(--dv-error);
+}
+
+.dv-status-card--info {
+  background: var(--dv-info-bg);
+  border-color: var(--dv-info);
+  color: var(--dv-info);
+}
+
+.dv-status-card__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.dv-status-card__label {
+  font-weight: 600;
+}
+
+.dv-status-card__count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   §6 ASCII 히스토그램 — bar 표시 (참조용 미리보기)
+   ────────────────────────────────────────────────────────────── */
+
+.dv-histogram {
+  background: var(--dv-cli-bg);
+  border: 1px solid var(--dv-cli-border);
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--dv-cli-text);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.dv-histogram__bar { color: var(--dv-info); }
+.dv-histogram__bar--mu { color: var(--dv-pass); }
+.dv-histogram__bar--outlier { color: var(--dv-warn); }
+
+/* ──────────────────────────────────────────────────────────────
+   접근성 — 색약 대응 (assets §2.3 봉인)
+   ────────────────────────────────────────────────────────────── */
+
+@media (prefers-contrast: more) {
+  :root {
+    --dv-pass: #00FF66;
+    --dv-warn: #FFD700;
+    --dv-error: #FF3030;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* CLI는 본래 정적 — 향후 watch 모드 spinner 애니메이션 추가 시 비활성화 */
+  .dv-spinner { animation: none !important; }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aeterna://schemas/monster.schema.json",
+  "title": "Monster",
+  "description": "STUB — Build 단계에서 03_데이터테이블/monster_data_table.md + monsterManifest.json 기반으로 채운다. 책임자: 계섬월. 참조 타겟(encounter→monster).",
+  "type": "object",
+  "required": ["id", "nameKo", "regionId", "tierId"],
+  "properties": {
+    "id":       { "type": "string", "pattern": "^mon_[a-z0-9_]+$" },
+    "nameKo":   { "type": "string", "minLength": 1 },
+    "regionId": { "type": "string", "enum": ["erebos", "silvanheim", "solaris", "argentium", "northland", "eternal_ice", "britalia", "fog_sea", "abyss", "oblivion"] },
+    "tierId":   { "type": "string" },
+    "hp":       { "type": "integer", "minimum": 1, "description": "balance metric" },
+    "exp":      { "type": "integer", "minimum": 0, "description": "balance metric" },
+    "spritePath": { "type": "string", "description": "asset 경로 (monsterManifest.json 매칭)" },
+    "_stub":    { "const": true, "description": "Build 단계에서 제거" }
+  },
+  "additionalProperties": true
+}

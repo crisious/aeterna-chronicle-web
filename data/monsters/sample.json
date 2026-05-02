@@ -1,0 +1,6 @@
+[
+  { "id": "mon_slime_g", "nameKo": "녹색 슬라임",   "regionId": "erebos",     "tierId": "t1", "hp": 50,  "exp": 10 },
+  { "id": "mon_wolf",    "nameKo": "회색늑대",      "regionId": "silvanheim", "tierId": "t1", "hp": 70,  "exp": 14 },
+  { "id": "mon_skeleton","nameKo": "해골 병사",      "regionId": "erebos",     "tierId": "t2", "hp": 90,  "exp": 18 },
+  { "id": "mon_golem",   "nameKo": "이끼 골렘",      "regionId": "silvanheim", "tierId": "t2", "hp": 110, "exp": 22 }
+]

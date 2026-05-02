@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>데이터 검증 스타일 가이드 — 에테르나 크로니클</title>
+  <link rel="stylesheet" href="/src/styles/design-system.css" />
+  <link rel="stylesheet" href="/src/styles/data-validation-tokens.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #0D0D1A;
+      color: #E8E8E8;
+      font-family: Pretendard, 'Noto Sans KR', system-ui, sans-serif;
+    }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 40px 0 16px; color: #FFD24A; border-bottom: 1px solid #2A2A3A; padding-bottom: 8px; }
+    h3 { font-size: 15px; margin: 20px 0 10px; color: #C0C0C0; }
+    .meta { color: #A0A0A0; font-size: 13px; margin-bottom: 24px; }
+    .meta a { color: #4A9EFF; }
+    section { margin-bottom: 36px; max-width: 960px; }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .swatch-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; background: #16162A; border-radius: 6px;
+      font-size: 13px;
+    }
+    .swatch {
+      width: 24px; height: 24px; border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .swatch-row code {
+      margin-left: auto;
+      color: #A0A0A0;
+      font-size: 12px;
+    }
+    .caption {
+      font-size: 12px; color: #A0A0A0;
+      margin-top: 8px; padding-left: 4px;
+    }
+    .ssot-link {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #1A1A2E;
+      border: 1px solid #2A2A3A;
+      border-radius: 4px;
+      color: #4A9EFF;
+      font-size: 12px;
+      text-decoration: none;
+      margin-right: 6px;
+    }
+    .ssot-link:hover { background: #2A2A3A; }
+  </style>
+</head>
+<body>
+
+  <h1>🛡️ 데이터 검증 스타일 가이드</h1>
+  <p class="meta">
+    가춘운 (CMO/디자인) · 2026-04-28 · v1.0 (REDUCTION 스코프)<br>
+    SSOT 미러 →
+    <a class="ssot-link" href="../../docs/release/design-system_data-validation.md">design-system §2</a>
+    <a class="ssot-link" href="../../docs/release/assets_data-validation.md">assets §1·§7</a>
+    <a class="ssot-link" href="../../scripts/lib/validation_tokens.ts">validation_tokens.ts</a>
+  </p>
+
+  <!-- ───────── §1 컬러 토큰 ───────── -->
+  <section>
+    <h2>1. 컬러 토큰 — 검증 상태 4종 + 정보 강조 4종</h2>
+    <h3>1.1 검증 상태 4종 (CLI ANSI ↔ 웹 hex 1:1)</h3>
+    <div class="grid-4">
+      <div class="swatch-row">
+        <div class="swatch" style="background:#5FCB7A"></div>
+        <span>✅ PASS</span>
+        <code>#5FCB7A</code>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#E8A33A"></div>
+        <span>⚠️ WARN</span>
+        <code>#E8A33A</code>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#E85A5A"></div>
+        <span>❌ ERROR</span>
+        <code>#E85A5A</code>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#4A9EFF"></div>
+        <span>💡 INFO</span>
+        <code>#4A9EFF</code>
+      </div>
+    </div>
+
+    <h3>1.2 정보 강조 4종</h3>
+    <div class="grid-4">
+      <div class="swatch-row">
+        <div class="swatch" style="background:#FFFFFF"></div>
+        <span>path (bold)</span>
+        <code>#FFFFFF</code>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#C77DFF"></div>
+        <span>field (magenta)</span>
+        <code>#C77DFF</code>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#AAAAAA"></div>
+        <span>value (dim)</span>
+        <code>#AAAAAA</code>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#888888"></div>
+        <span>tree (└─)</span>
+        <code>#888888</code>
+      </div>
+    </div>
+    <p class="caption">⚠ 봉인: 신규 hex 추가 ❌ — DESIGN.md §2 + ANSI 16색 외 모두 차단</p>
+  </section>
+
+  <!-- ───────── §2 상태 카드 ───────── -->
+  <section>
+    <h2>2. 상태 카드 — PR 임베드/Discord 미리보기</h2>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="dv-status-card dv-status-card--pass">
+        <span class="dv-status-card__icon">✅</span>
+        <span class="dv-status-card__label">PASS — schema 일치</span>
+        <span class="dv-status-card__count">142건</span>
+      </div>
+      <div class="dv-status-card dv-status-card--warn">
+        <span class="dv-status-card__icon">⚠️</span>
+        <span class="dv-status-card__label">WARN — outlier (±2σ 밖)</span>
+        <span class="dv-status-card__count">3건</span>
+      </div>
+      <div class="dv-status-card dv-status-card--error">
+        <span class="dv-status-card__icon">❌</span>
+        <span class="dv-status-card__label">ERROR — schema/참조 위반 (머지 차단)</span>
+        <span class="dv-status-card__count">1건</span>
+      </div>
+      <div class="dv-status-card dv-status-card--info">
+        <span class="dv-status-card__icon">💡</span>
+        <span class="dv-status-card__label">INFO — 통계·요약·힌트</span>
+        <span class="dv-status-card__count">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── §3 CLI 모킹업 ───────── -->
+  <section>
+    <h2>3. CLI 출력 모킹업 (assets §1 글자 단위 미러)</h2>
+
+    <h3>3.1 PASS — 무소음 (1줄)</h3>
+    <div class="dv-terminal"><span class="dv-info">─── 🛡️  Aeterna Data Validation v1.0 ───</span>
+<span class="dv-pass">✅</span> <span class="dv-path">data/monsters/monster_data.json</span> — 142 entries · schema OK
+<span class="dv-pass">✅</span> 142 PASS · <span class="dv-warn">⚠️</span> 0 WARN · <span class="dv-error">❌</span> 0 ERROR · 0.8s
+<span class="dv-info">💡</span> 다음: git add data/monsters/monster_data.json &amp;&amp; git commit</div>
+
+    <h3>3.2 ERROR — 정확히 2줄 (path 1줄 + reason 1줄)</h3>
+    <div class="dv-terminal"><span class="dv-info">─── 🛡️  Aeterna Data Validation v1.0 ───</span>
+  <span class="dv-error">❌</span> <span class="dv-path">data/monsters/chapter4_boss.json:128</span>
+    <span class="dv-tree">└─</span> <span class="dv-field">monsters[3].stats.hp</span> = `<span class="dv-value">999999</span>` (expected: <span class="dv-expected">integer ≤ 50000</span>)
+
+<span class="dv-pass">✅</span> 141 PASS · <span class="dv-warn">⚠️</span> 0 WARN · <span class="dv-error">❌</span> 1 ERROR · 0.9s
+<span class="dv-info">💡</span> 고쳐주세요: data/monsters/chapter4_boss.json:128 — hp 값이 너무 커요 🛡️</div>
+
+    <h3>3.3 WARN — outlier (±2σ 밖)</h3>
+    <div class="dv-terminal"><span class="dv-info">─── 🛡️  Aeterna Data Validation v1.0 ───</span>
+  <span class="dv-warn">⚠️</span> <span class="dv-path">data/monsters/chapter4_boss.json:128</span>
+    <span class="dv-tree">└─</span> <span class="dv-field">monsters[3].stats.hp</span> = `<span class="dv-value">48000</span>` (outlier: μ=12000, σ=4500, +8.0σ)
+
+<span class="dv-pass">✅</span> 141 PASS · <span class="dv-warn">⚠️</span> 1 WARN · <span class="dv-error">❌</span> 0 ERROR · 1.1s
+<span class="dv-info">💡</span> 검토 권장: hp가 ch4 평균보다 8σ 높아요. 의도된 보스라면 통과 ✨</div>
+
+    <h3>3.4 참조 무결성 끊김 (skill→effect 미스, "가까운 후보" 확장 1줄)</h3>
+    <div class="dv-terminal"><span class="dv-info">─── 🛡️  Aeterna Data Validation v1.0 ───</span>
+  <span class="dv-error">❌</span> <span class="dv-path">data/skills/erien_skills.json:54</span>
+    <span class="dv-tree">└─</span> <span class="dv-field">skills[7].effects[0].id</span> = `<span class="dv-value">eth_burn_v2</span>` (referenced effect not found)
+    <span class="dv-tree">└─</span> 가까운 후보: `eth_burn`, `eth_burst` — 오타일까요? 💭
+
+<span class="dv-pass">✅</span> 87 PASS · <span class="dv-warn">⚠️</span> 0 WARN · <span class="dv-error">❌</span> 1 ERROR · 1.3s
+<span class="dv-info">💡</span> 고쳐주세요: data/skills/erien_skills.json:54 — effect id 확인</div>
+    <p class="caption">"가까운 후보" 줄은 ERROR 2줄 규약의 <strong>선택 확장 1줄</strong> — Levenshtein ≤ 2일 때만 추가</p>
+  </section>
+
+  <!-- ───────── §4 ASCII 히스토그램 ───────── -->
+  <section>
+    <h2>4. 밸런스 outlier ASCII 히스토그램 (--report 모드)</h2>
+    <div class="dv-histogram"><span class="dv-info">─── 📊 Balance Report — Chapter 4 Monsters · HP 분포 ───</span>
+
+  HP 분포 (n=24, μ=12000, σ=4500)
+
+   0 ─ 5k  │ <span class="dv-histogram__bar">███</span>                    (3)
+   5k─10k  │ <span class="dv-histogram__bar">█████████</span>              (9)
+  10k─15k  │ <span class="dv-histogram__bar--mu">██████████████</span>         (14)  <span class="dv-pass">← μ</span>
+  15k─20k  │ <span class="dv-histogram__bar">███████</span>                (7)
+  20k─25k  │ <span class="dv-histogram__bar">██</span>                     (2)
+  25k─30k  │                        (0)
+  30k─35k  │                        (0)
+  35k─40k  │                        (0)
+  40k─45k  │                        (0)
+  45k─50k  │ <span class="dv-histogram__bar--outlier">▌</span>                      (1) <span class="dv-warn">⚠️ ← +8.0σ outlier</span>
+
+  ±2σ 범위: 3,000 ─ 21,000
+  <span class="dv-warn">⚠️</span> 1건 outlier: chapter4_boss.json:128 (hp=48000)
+
+<span class="dv-pass">✅</span> 23 within ±2σ · <span class="dv-warn">⚠️</span> 1 outlier · 0 ERROR
+<span class="dv-info">💡</span> 의도된 보스라면 schema의 `extends: "boss"` 추가 시 자동 면제 ✨</div>
+    <p class="caption">bar 문자 = <code>█</code> (full block) + <code>▌</code> (half block) — 봉인: 다른 문자 ❌</p>
+  </section>
+
+  <!-- ───────── §5 봉인 ───────── -->
+  <section>
+    <h2>5. 봉인 (이소화 비협상)</h2>
+    <ol style="line-height:1.8; font-size:14px; color:#C0C0C0;">
+      <li>이모지 매핑 4종 — ✅⚠️❌💡 외 신규 ❌ (🚫🛑🔥 절대 금지)</li>
+      <li>2줄 ERROR 포맷 — path 1줄 + reason 1줄, 합쳐도/늘려도 ❌</li>
+      <li>PASS·WARN·ERROR 카운트 순서 — 절대 바뀌지 않음</li>
+      <li>NO_COLOR 자동 감지 — 옵션 아니라 <strong>필수</strong></li>
+      <li>🛡️ 도메인 마크 — 검증 시스템 모든 표면에 동일</li>
+    </ol>
+    <p class="caption">변경 절차: DESIGN.md §12 → design-system_data-validation.md → assets_data-validation.md → 코드 (위에서 아래로만)</p>
+  </section>
+
+  <p class="meta" style="margin-top:48px; padding-top:16px; border-top:1px solid #2A2A3A;">
+    어머~ 끝났어요 ✨ CLI 한 화면이 웹에서도 똑같이 보이죠?<br>
+    계섬월 언니 — <code>scripts/lib/validation_tokens.ts</code>의 <code>formatHeader/formatPass/formatError/formatWarn/formatFooter</code> 헬퍼만 호출하면 위 모킹업 그대로 나와요! 화이팅 ⚔️
+  </p>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aeterna://schemas/skill.schema.json",
+  "title": "Skill",
+  "description": "STUB — Build 단계에서 client/src/data/classSkills.ts + GDD 스킬 명세 기반으로 채운다. 책임자: 계섬월. 참조 엣지: skill→effect.",
+  "type": "object",
+  "required": ["id", "nameKo", "classId", "effectId"],
+  "properties": {
+    "id":        { "type": "string", "pattern": "^skl_[a-z0-9_]+$" },
+    "nameKo":    { "type": "string", "minLength": 1 },
+    "classId":   { "type": "string", "enum": ["ether_knight", "memory_mage", "shadow_weaver", "memory_breaker", "time_guardian", "void_wanderer"] },
+    "effectId":  { "type": "string", "description": "참조: effect.id" },
+    "damage":    { "type": "number", "minimum": 0, "description": "balance metric" },
+    "castTime":  { "type": "number", "minimum": 0, "description": "balance metric (sec)" },
+    "_stub":     { "const": true, "description": "Build 단계에서 제거" }
+  },
+  "additionalProperties": true
+}

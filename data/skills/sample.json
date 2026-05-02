@@ -1,0 +1,26 @@
+[
+  {
+    "id": "skl_basic_slash",
+    "nameKo": "기본 베기",
+    "classId": "ether_knight",
+    "effectId": "eff_phys_basic",
+    "damage": 100,
+    "castTime": 0.5
+  },
+  {
+    "id": "skl_memory_arrow",
+    "nameKo": "기억의 화살",
+    "classId": "memory_mage",
+    "effectId": "eff_mem_arrow",
+    "damage": 110,
+    "castTime": 0.7
+  },
+  {
+    "id": "skl_shadow_step",
+    "nameKo": "그림자 도약",
+    "classId": "shadow_weaver",
+    "effectId": "eff_shadow_step",
+    "damage": 90,
+    "castTime": 0.6
+  }
+]

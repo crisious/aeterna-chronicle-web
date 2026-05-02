@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aeterna://schemas/item.schema.json",
+  "title": "Item",
+  "description": "STUB — Build 단계에서 03_데이터테이블/item_data_table.md(100개 + 신화 6세트) 기반으로 채운다. 책임자: 계섬월. 참조 엣지: item→category.",
+  "type": "object",
+  "required": ["id", "nameKo", "categoryId"],
+  "properties": {
+    "id":         { "type": "string", "pattern": "^itm_[a-z0-9_]+$" },
+    "nameKo":     { "type": "string", "minLength": 1 },
+    "categoryId": { "type": "string", "description": "참조: category.id" },
+    "rarity":     { "type": "string", "enum": ["common", "rare", "epic", "legendary", "mythic"] },
+    "price":      { "type": "integer", "minimum": 0, "description": "balance metric (gold)" },
+    "_stub":      { "const": true, "description": "Build 단계에서 제거" }
+  },
+  "additionalProperties": true
+}
