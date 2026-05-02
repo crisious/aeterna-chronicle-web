@@ -12,6 +12,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { formatPassiveEffect, STATUS_COLOR } from '../skills/passiveEffectFormatter';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
 
 // ── 타입 ──────────────────────────────────────────────────────
@@ -31,6 +32,10 @@ export interface SkillDef {
   classId: string;
   damageMultiplier?: number;
   effectType?: string;
+  /** P55-S4: 패시브 효과 데이터 (서버 Skill.effect 와 동일 shape) */
+  effect?: { type: string; value: number; duration?: number } | null;
+  /** P55-S4: 스킬 종류 — active / passive / ultimate */
+  type?: 'active' | 'passive' | 'ultimate' | string;
 }
 
 export type ClassId = 'ether_knight' | 'memory_weaver' | 'shadow_weaver' | 'memory_breaker' | 'time_guardian' | 'void_wanderer';
@@ -318,6 +323,13 @@ export class SkillTreeUI {
     line(`마나: ${skill.manaCost}`, '#5599ff');
     line(`쿨다운: ${(skill.cooldownMs / 1000).toFixed(1)}초`, '#aaaacc');
     line(`해금 레벨: ${skill.unlockLevel}`, '#88cc88');
+
+    // P55-S4: 패시브 효과 표시
+    if (skill.type === 'passive' && skill.effect && typeof skill.effect.value === 'number') {
+      const lvl = Math.max(1, skill.currentLevel || 1);
+      const fmt = formatPassiveEffect(skill.effect.type, skill.effect.value, lvl);
+      line(`패시브: ${fmt.text}`, STATUS_COLOR[fmt.status], '11px');
+    }
 
     // 업그레이드 버튼
     const canUpgrade = skill.unlocked && skill.currentLevel < skill.maxLevel && this.skillPoints > 0;
