@@ -51,6 +51,12 @@ export interface PassiveModifierBag {
   hpRegenPerTurn: number;
   /** 사망 모면 횟수 (전투당) — fatal damage 시 hp=1 유지, 1회 차감 */
   cheatDeathChargesMax: number;
+
+  // ─ Phase 4 (트리거 — 부분) ────────────────────────────────
+  /** 크리티컬 시 추가 데미지 비율 (% of critical damage). crit_echo */
+  critEchoPercent: number;
+  /** 매 tick 적군 전체에 가하는 광역 데미지. move_damage_aura */
+  moveDamageAuraValue: number;
 }
 
 /** 패시브 적용 결과 — 디버깅/노출용 */
@@ -94,6 +100,9 @@ const ALWAYS_KIND: ReadonlySet<PassiveEffectType> = new Set<PassiveEffectType>([
   'projectile_reflect',
   'battle_regen',
   'cheat_death',
+  // Phase 4 (부분) — 단순 hook 2종
+  'crit_echo',
+  'move_damage_aura',
 ]);
 
 // ─── 헬퍼 ──────────────────────────────────────────────────────
@@ -109,6 +118,8 @@ export function emptyModifierBag(): PassiveModifierBag {
     projectileReflectPercent: 0,
     hpRegenPerTurn: 0,
     cheatDeathChargesMax: 0,
+    critEchoPercent: 0,
+    moveDamageAuraValue: 0,
   };
 }
 
@@ -171,8 +182,15 @@ export function accumulatePassive(
       // cheat_death value 는 "사용 가능 횟수". 여러 패시브 누적 시 합산.
       bag.cheatDeathChargesMax += scaledValue;
       return;
+    // Phase 4 (부분)
+    case 'crit_echo':
+      bag.critEchoPercent += scaledValue;
+      return;
+    case 'move_damage_aura':
+      bag.moveDamageAuraValue += scaledValue;
+      return;
     default:
-      // 미구현 stub — Phase 4 분리 (poison_amplify, drain_amplify, auto_resurrect, crit_echo, move_damage_aura)
+      // 미구현 stub — 매니저 신설 동반 (poison_amplify/drain_amplify: status manager 후속 sprint, auto_resurrect: deferred event queue)
       return;
   }
 }
@@ -259,6 +277,8 @@ export interface AppliedStats extends BaseStats {
   projectileReflectPercent: number;
   hpRegenPerTurn: number;
   cheatDeathChargesMax: number;
+  critEchoPercent: number;
+  moveDamageAuraValue: number;
 }
 
 export function applyModifiersToStats(
@@ -276,5 +296,7 @@ export function applyModifiersToStats(
     projectileReflectPercent: bag.projectileReflectPercent,
     hpRegenPerTurn: bag.hpRegenPerTurn,
     cheatDeathChargesMax: bag.cheatDeathChargesMax,
+    critEchoPercent: bag.critEchoPercent,
+    moveDamageAuraValue: bag.moveDamageAuraValue,
   };
 }
