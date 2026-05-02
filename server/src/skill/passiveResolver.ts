@@ -28,22 +28,29 @@ export type PassiveEffectType =
   | 'projectile_reflect'
   | 'move_damage_aura';
 
-/** Phase 1 에서 실제 stat 에 누적되는 modifier bag. */
+/** modifier bag — Phase 1+3 누적 9종. */
 export interface PassiveModifierBag {
+  // ─ Phase 1 (상시) ─────────────────────────────────────────
   /** 매 ATB tick / 턴 마다 회복할 MP */
   mpRegenPerTurn: number;
   /** 회피율 가산 (단위: 백분율 — 15 = +15% 회피) */
   evasionAddPercent: number;
   /** 명중률 가산 */
   hitChanceAddPercent: number;
-  /**
-   * 저체력(<30%) 시 ATK 증가율. 전투 엔진이 hp 비율 검사 후 atk *= (1 + this/100) 적용.
-   */
+  /** 저체력(<30%) 시 ATK 증가율 */
   lowHpAtkBonusPercent: number;
-  /**
-   * 피격 시 일시적 DEF 증가율 (조건부). 전투 엔진이 'on_hit' 트리거에서 사용.
-   */
+  /** 피격 시 일시적 DEF 증가율 */
   defenseUpConditionalPercent: number;
+
+  // ─ Phase 3 (트리거) ───────────────────────────────────────
+  /** physical 피격 시 attacker 에 반사 데미지 비율 (% of damage taken) */
+  reflectPercent: number;
+  /** magical 피격 시 attacker 에 반사 데미지 비율 */
+  projectileReflectPercent: number;
+  /** 매 tick HP 회복량 */
+  hpRegenPerTurn: number;
+  /** 사망 모면 횟수 (전투당) — fatal damage 시 hp=1 유지, 1회 차감 */
+  cheatDeathChargesMax: number;
 }
 
 /** 패시브 적용 결과 — 디버깅/노출용 */
@@ -75,12 +82,18 @@ const PASSIVE_LEVEL_VALUE_BONUS: Record<number, number> = {
   5: 45,
 };
 
-const ALWAYS_KIND: ReadonlySet<PassiveEffectType> = new Set([
+const ALWAYS_KIND: ReadonlySet<PassiveEffectType> = new Set<PassiveEffectType>([
+  // Phase 1
   'mp_regen',
   'evasion_up',
   'bonus_hit_chance',
   'low_hp_atk_up',
   'defense_up_conditional',
+  // Phase 3 — 모두 modifier bag 에 누적되며 engine 이 트리거 시점에 사용
+  'reflect',
+  'projectile_reflect',
+  'battle_regen',
+  'cheat_death',
 ]);
 
 // ─── 헬퍼 ──────────────────────────────────────────────────────
@@ -92,6 +105,10 @@ export function emptyModifierBag(): PassiveModifierBag {
     hitChanceAddPercent: 0,
     lowHpAtkBonusPercent: 0,
     defenseUpConditionalPercent: 0,
+    reflectPercent: 0,
+    projectileReflectPercent: 0,
+    hpRegenPerTurn: 0,
+    cheatDeathChargesMax: 0,
   };
 }
 
@@ -124,6 +141,7 @@ export function accumulatePassive(
   scaledValue: number,
 ): void {
   switch (effectType) {
+    // Phase 1
     case 'mp_regen':
       bag.mpRegenPerTurn += scaledValue;
       return;
@@ -139,8 +157,22 @@ export function accumulatePassive(
     case 'defense_up_conditional':
       bag.defenseUpConditionalPercent += scaledValue;
       return;
+    // Phase 3
+    case 'reflect':
+      bag.reflectPercent += scaledValue;
+      return;
+    case 'projectile_reflect':
+      bag.projectileReflectPercent += scaledValue;
+      return;
+    case 'battle_regen':
+      bag.hpRegenPerTurn += scaledValue;
+      return;
+    case 'cheat_death':
+      // cheat_death value 는 "사용 가능 횟수". 여러 패시브 누적 시 합산.
+      bag.cheatDeathChargesMax += scaledValue;
+      return;
     default:
-      // Phase 2 stub — 의도적으로 무시
+      // 미구현 stub — Phase 4 분리 (poison_amplify, drain_amplify, auto_resurrect, crit_echo, move_damage_aura)
       return;
   }
 }
@@ -223,6 +255,10 @@ export interface AppliedStats extends BaseStats {
   mpRegenPerTurn: number;
   lowHpAtkBonusPercent: number;
   defenseUpConditionalPercent: number;
+  reflectPercent: number;
+  projectileReflectPercent: number;
+  hpRegenPerTurn: number;
+  cheatDeathChargesMax: number;
 }
 
 export function applyModifiersToStats(
@@ -236,5 +272,9 @@ export function applyModifiersToStats(
     mpRegenPerTurn: bag.mpRegenPerTurn,
     lowHpAtkBonusPercent: bag.lowHpAtkBonusPercent,
     defenseUpConditionalPercent: bag.defenseUpConditionalPercent,
+    reflectPercent: bag.reflectPercent,
+    projectileReflectPercent: bag.projectileReflectPercent,
+    hpRegenPerTurn: bag.hpRegenPerTurn,
+    cheatDeathChargesMax: bag.cheatDeathChargesMax,
   };
 }
