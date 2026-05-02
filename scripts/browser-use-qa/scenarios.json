@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "baseUrl": "http://127.0.0.1:5173",
+  "reportDir": ".ac/browser-use-qa",
+  "scenarios": [
+    {
+      "id": "client.home.boot",
+      "name": "클라이언트 부팅 화면",
+      "path": "/",
+      "expectedTitle": "에테르나 크로니클",
+      "htmlIncludes": [
+        "에테르나 크로니클",
+        "/src/main.ts",
+        "/src/styles/tutorial-onboarding.css"
+      ],
+      "browserIncludes": [
+        "AETERNA CHRONICLE"
+      ],
+      "browserSelectors": [
+        "#loading-screen",
+        "#game-container"
+      ]
+    },
+    {
+      "id": "style.design-system",
+      "name": "디자인 시스템 스타일 가이드",
+      "path": "/style-guide.html",
+      "expectedTitle": "디자인 시스템 스타일 가이드",
+      "htmlIncludes": [
+        "에테르나 크로니클",
+        "디자인 시스템 스타일 가이드",
+        "/src/styles/design-system.css"
+      ],
+      "browserIncludes": [
+        "디자인 시스템 스타일 가이드"
+      ],
+      "browserSelectors": [
+        ".sg-container",
+        ".sg-section"
+      ]
+    },
+    {
+      "id": "style.battle-hud",
+      "name": "전투 HUD 스타일 가이드",
+      "path": "/battle-style-guide.html",
+      "expectedTitle": "FF6 ATB 전투 HUD 스타일 가이드",
+      "htmlIncludes": [
+        "FF6 ATB 전투 HUD 스타일 가이드",
+        "/src/styles/design-system-battle.css"
+      ],
+      "browserIncludes": [
+        "FF6 ATB 전투 HUD"
+      ],
+      "browserSelectors": [
+        ".sg",
+        ".sg-section"
+      ]
+    },
+    {
+      "id": "style.tutorial-onboarding",
+      "name": "튜토리얼 온보딩 스타일 가이드",
+      "path": "/tutorial-style-guide.html",
+      "expectedTitle": "튜토리얼·온보딩 스타일 가이드",
+      "htmlIncludes": [
+        "튜토리얼·온보딩 스타일 가이드",
+        "/src/styles/tutorial-onboarding.css",
+        "coach.move.pass.arrived"
+      ],
+      "browserIncludes": [
+        "튜토리얼·온보딩 스타일 가이드",
+        "코칭 오버레이"
+      ],
+      "browserSelectors": [
+        ".coach-overlay",
+        ".tutorial-progress",
+        ".beat-card"
+      ]
+    },
+    {
+      "id": "compat.cross-browser",
+      "name": "크로스브라우저 호환성 검증 페이지",
+      "path": "/compat-check.html",
+      "expectedTitle": "크로스브라우저 호환성 검증",
+      "htmlIncludes": [
+        "크로스브라우저 호환성 검증",
+        "/src/styles/design-system-compat.css"
+      ],
+      "browserIncludes": [
+        "크로스브라우저 호환성 검증"
+      ],
+      "browserSelectors": [
+        ".grid",
+        ".swatch"
+      ]
+    }
+  ]
+}
