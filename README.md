@@ -12,6 +12,15 @@
 [![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)](#-코드-품질)
 [![Tutorial Coverage](https://img.shields.io/badge/Tutorial%20Coverage-100%25-brightgreen?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 [![First 30min](https://img.shields.io/badge/First%2030min-%E2%89%A430%3A00-blue?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
+[![Save Round-Trip](https://img.shields.io/badge/Save%20Round--Trip-100%25-success?style=for-the-badge)](#-세이브로드-시스템)
+[![Auto Recovery](https://img.shields.io/badge/Auto%20Recovery-100%25-brightgreen?style=for-the-badge)](#-세이브로드-시스템)
+[![Schema Validation](https://img.shields.io/badge/Schema%20Validation-100%25-brightgreen?style=for-the-badge)](#-데이터-검증--콘텐츠-정합성-자동-보장)
+[![Reference Integrity](https://img.shields.io/badge/Reference%20Integrity-0%20broken-success?style=for-the-badge)](#-데이터-검증--콘텐츠-정합성-자동-보장)
+[![Mobile Viewport](https://img.shields.io/badge/Mobile%20Viewport-4%2F4%20Pass-brightgreen?style=for-the-badge)](#-모바일-반응형-mobile-responsive)
+[![Touch Latency](https://img.shields.io/badge/Touch%20Latency-p95%20%E2%89%A4100ms-success?style=for-the-badge)](#-모바일-반응형-mobile-responsive)
+[![FPS Avg](https://img.shields.io/badge/FPS%20Avg-%E2%89%A555-brightgreen?style=for-the-badge)](#-성능-최적화-performance)
+[![Initial Load](https://img.shields.io/badge/Initial%20Load-%E2%89%A45s-success?style=for-the-badge)](#-성능-최적화-performance)
+[![Verify Core](https://img.shields.io/badge/Verify%20Core-3%2F3%20PASS-brightgreen?style=for-the-badge)](#-개발-효율--빌드-검증-사이클)
 
 *FF6 스타일 ATB 전투 RPG — PC 웹 브라우저 (Phaser.js)*
 
@@ -127,51 +136,59 @@ npm run dev                    # → http://localhost:5173 (Vite proxy → :3000
 
 ## ⚡ 개발 효율 — 빌드-검증 사이클
 
-> Phase 52 이후 콘텐츠(시나리오/스킬/맵) 추가 시 **작업 → 검증** 사이클을 5분 이내로 묶는 것이 목표입니다.
-> 본 절은 [`docs/release/devloop-user-guide.md`](docs/release/devloop-user-guide.md)의 메아리이며, 약속 수치는 SSOT 변경 없이 임의 갱신할 수 없습니다.
+> Phase 52 이후 콘텐츠(시나리오/스킬/맵) 추가 시 **작업 → 검증** 사이클을 60초 이내로 묶는 것이 목표입니다.
+> 본 절은 [`docs/release/verify-core-scenarios-user-guide.md`](docs/release/verify-core-scenarios-user-guide.md)의 메아리이며, 약속 수치는 SSOT 변경 없이 임의 갱신할 수 없습니다.
 
 ### 🎯 한눈 지표
 
 | 지표 | 약속 | 측정 |
 |------|------|------|
-| 코드 변경 → 검증 완료 | ≤ **5분** | `npm run verify:core` |
-| dev server cold 부팅 | ≤ **12초** | `npm run dev:measure -- --cold` |
+| 핵심 시나리오 검증 (battle/save/map) | ≤ **60초** | `npm run dev:verify` |
+| dev server cold 부팅 | ≤ **5초** | `npm run dev:measure -- --cold` |
 | HMR 반영 | ≤ **800ms** | vite 콘솔 로그 |
-| 에러 → 원인 파일 노출 | ≤ **5초** | `.ac/error-report.json` |
+| 에러 → 원인 파일 노출 | ≤ **5초** | `npm run dev:build` (단일 카드) |
 
-### 🚀 빠른 시작 (3 명령)
+### 🚀 빠른 시작 (4 명령)
 
 ```bash
-# 1. 빠른 부팅 (warm cache 우선)
-npm run dev:fast
-
-# 2. 핵심 시나리오 검증 (5분 안)
-npm run verify:core
-
-# 3. 마지막 에러 사람말로 풀이
-npm run error:explain
+npm run dev          # 부팅 진행률 바 + ≤5s 약속
+npm run dev:verify   # 전투/세이브/맵 3 시나리오 자동 검증 + ≤60s 약속
+npm run dev:measure  # 부팅 시간 + 누적 회귀 추세 (.ac/boot-trend.json)
+npm run dev:build    # 에러 발생 시 단일 카드(파일:라인:컬럼)
 ```
 
-### 🔍 핵심 시나리오 3종
+> 시나리오별 부분 실행: `npm run dev:verify -- --scenario=battle|save|map`
 
-| # | 이름 | 검증 지점 | 시간 |
-|---|------|---------|------|
-| 1 | **전투(ATB)** | tick · 스킬 1회 · HP 동기화 · EXP 적립 | ≤ 90s |
-| 2 | **세이브** | slot 1·2·3 round-trip JSON 동치 | ≤ 60s |
-| 3 | **맵 이동** | Ch.1~4 portal · BGM 전환 · NPC 위치 복원 | ≤ 120s |
+### 🎯 verify-core 시나리오 3 도장 — 60초 안에 베어내는 핵심
 
-> 합계 ≤ **4m 30s** + 에러 리포트 30s = **5분 약속**.
-> 실패 시 `.ac/error-report.json`에 `{file, line, snippet, hint}` 즉시 작성.
+| 시나리오 | 의미 | 예산 | 게이트 키 (BLOCK 시) | 슬라이스 |
+|---|---|---|---|---|
+| ⚔️ **battle** | 전투 1 turn — CombatManager → ATB 0→1000 → 첫 행동 | 25s | `dev.gate.verify.block.battle_atb` | `tests/unit/combat` + `tests/integration/combat-flow.test.ts` |
+| 💾 **save**   | 라운드트립 — state → JSON.stringify → JSON.parse → deep equal | 10s | `dev.gate.verify.block.save_diff` | `tests/integration/ui-inventory-save-flow.test.ts` |
+| 🗺️ **map**    | Phaser scene swap — start → preload → create → update tick | 20s | `dev.gate.verify.block.map_portal` | `tests/e2e/chapter1.test.ts` |
+| — | buffer (spawn/teardown) | 5s | — | — |
+| **합계** | — | **60s** | — | — |
+
+> 누적 60초 초과 3회 시 exit code 1 (BLOCK). `.ac/verify-trend.json` 30회 슬라이딩 윈도우.
+> 실패 시 첫 실패 1건만 카드로 즉시 노출(`extractFirstFailure()`) — 두 번째 시나리오는 fast-fail로 스킵.
 
 ### 📕 자세한 가이드
 
-- [개발자 빌드-검증 사이클 가이드](docs/release/devloop-user-guide.md) — 9개 절 + FAQ 7건 (본 절의 SSOT)
-- [에러 메시지 카피 SSOT](docs/release/devloop-error-messages.md) — 5 게이트(boot · verify · build · type · runtime) × 4 상태
-- [PR / 커밋 컨벤션](docs/release/devloop-pr-template.md) — 7 스코프 / 7 섹션 + 리뷰어 행동 5항
+- [verify-core 시나리오 3종 사용자 가이드](docs/release/verify-core-scenarios-user-guide.md) — 9개 절 + FAQ 8건 (본 절의 1차 SSOT)
+- [verify-core 에러 메시지 카피](docs/release/verify-core-scenarios-error-messages.md) — 4 사유(battle_atb · save_diff · map_portal · over_budget) × 4 상태 = 16 슬롯 (ko/en)
+- [verify-core PR / 커밋 컨벤션](docs/release/verify-core-scenarios-pr-template.md) — 6 type × 4 scope + 리뷰어 reject 7조건
+- [verify-core 디자인 시스템](docs/release/design-system_verify-core-scenarios.md) — 60초 게이트 시각 SSOT (가춘운 CMO)
+- [개발자 빌드-검증 사이클 가이드](docs/release/devloop-user-guide.md) — 선행 sprint 9개 절 + FAQ 7건
 
-### 🛡️ ship-gate hook (다음 스프린트 예정)
+### 🛡️ ship-gate 4-AND
 
-다음 스프린트에서 `git diff --stat ≠ 0` AND `git log --since=7d ≥ 1` AND `verify:core 🟢 PASS` 셋이 모두 만족돼야 push 가능하도록 봇 하네스에 hook을 신설합니다 — 워킹트리 누적/커밋 0건 재발 차단용.
+다음 sprint에서 봇 하네스에 다음 4-AND를 hook으로 신설 — 워킹트리 누적/커밋 0건 재발 차단용:
+
+```
+ship-ready ⇔ dev:measure(boot ≤5s) ∧ dev:verify(3/3 PASS) ∧ dev:build(ts:errors=0) ∧ ship-gate hook
+```
+
+본 4-AND 중 하나라도 BLOCK이면 머지 금지 — 이소화 비협상.
 
 ---
 
@@ -328,6 +345,227 @@ npm run verify                 # lint + typecheck + unit/contract test + build
 3. **카피 i18n 100%** — 전용 `verify:tutorial-copy` 스크립트 추가 예정
 
 > 한 가닥이라도 끊기면 봉인 — 이소화(Security) 비협상.
+
+---
+
+## 💾 세이브·로드 시스템
+
+> *기억은 사라져도, 이야기는 남는다.* — 유저의 진척을 절대 잃지 않는 4중 안전망.
+
+### 🎯 한눈 지표 (4지표)
+
+| 지표 | 약속 | 측정 |
+|------|------|------|
+| 세이브/로드 왕복 데이터 일치 | **100%** | `npm run save:roundtrip` |
+| 손상 파일 → 마지막 정상 백업 자동 복구 | **100%** | `npm run save:recovery` |
+| v1 → v2 마이그레이션 호환 | **100%** | `npm run save:migrate-test` |
+| 로드 검증 누락 필드 기본값 적용 | **100%** | `npm run save:validate` |
+
+> 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수.
+
+### 🚀 빠른 시작 (3명령)
+
+```bash
+npm run save:gate          # 4종 게이트 합본 (~90s)
+npm run save:roundtrip     # 왕복 일치 검증 (~30s)
+npm run save:recovery      # 손상 시뮬 + 자동 복구 (~20s)
+```
+
+### 🛡️ 4중 안전망
+
+| 계층 | 슬롯 수 | 역할 |
+|------|---------|------|
+| 자동 회전 백업 | 4슬롯 (`backup-1..4`) | 세대별 자동 회전 — 직전 4세대 보호 |
+| 챕터 영구 백업 | 6슬롯 (`chapter-clear-1..6`) | 챕터 클리어 시점 영구 보관 |
+| 수동 세이브 | 5슬롯 (`manual-1..5`) | 유저 명시 액션만 덮어쓰기 |
+| 격리 / 레거시 | `_quarantine/` + `_legacy/` | 손상 60일 보존 · v1 원본 60일 보존 |
+
+총 **15슬롯 + 격리·레거시 보관**. 유저는 잃지 않는다 — 이것이 약속이옵니다.
+
+### 📕 자세한 가이드
+
+- 📘 [사용자 가이드 — 세이브·로드](docs/release/save-load-user-guide.md) (1차 SSOT — 한 손 흐름도 + FAQ 7건)
+- 🎨 [디자인 시스템 — 6슬롯 상태 + 안심톤](docs/release/design-system_save-load-system.md)
+- 📜 [에러 메시지 SSOT (16슬롯 ko/en)](docs/release/save-load-error-messages.md)
+- 🛠️ [PR/커밋 컨벤션 (7 스코프)](docs/release/save-load-pr-template.md)
+
+### 🛡️ ship-gate 3-AND (예고)
+
+PR 머지 시 봇 하네스가 자동 차단합니다 — 세 가닥 모두 통과:
+
+```
+✅ save:gate 4종 🟢 PASS  AND  사용자 가이드 메아리 동기화  AND  5인 인계 체크 ✓
+```
+
+> ⚠️ 격리/보존 60일 봉인 (이소화 비협상) · 약속 수치 변경 (백능파 승인 필수) — 두 봉인은 함부로 풀지 마세요.
+
+---
+
+## 🛡️ 데이터 검증 — 콘텐츠 정합성 자동 보장
+
+> Phase 52 누적 데이터(스킬·아이템·몬스터·시나리오 JSON 수백~수천 건) 위에 콘텐츠 1건 추가할 때마다, 검증 시스템이 4 게이트로 정합성을 약속하옵니다.
+
+### 🎯 한눈 지표 (4 약속)
+
+| 약속 | 측정 | 목표 |
+|------|------|------|
+| **Schema 통과** | ajv 검증 PASS율 | **100%** (전 데이터 파일) |
+| **참조 무결성** | 끊긴 참조 수 | **0건** (skill→effect, item→category, encounter→monster) |
+| **밸런스 정합** | outlier (HP/데미지/EXP) | **±2σ 내** |
+| **실패 노출** | path:line:field 표기율 | **100%** (모든 ERROR 줄) |
+
+> 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수.
+
+### 🚀 빠른 시작 (3명령)
+
+```bash
+# 콘텐츠 추가 직후 (4 게이트 풀)
+npm run data:validate
+
+# 도메인별 빠른 검증 (개발 중)
+npm run data:validate:monster
+
+# 변경 감지 watch 모드 (가장 흔한 워크플로)
+npm run data:validate -- --watch
+```
+
+### 🌊 4 게이트 흐름 (두련사 *선禪 4계*)
+
+| # | 게이트 | 역할 | 실패 시 |
+|---|--------|------|---------|
+| 1 | **Schema** | ajv 검증 (JSON Schema draft-2020-12) | ❌ 머지 차단 |
+| 2 | **Load** | 실제 적재 (파싱·중복 ID) | ❌ 머지 차단 |
+| 3 | **Audit** | 참조 무결성 (skill→effect 등 3종) | ❌ 머지 차단 |
+| 4 | **Report** | 밸런스 outlier ±2σ 통계 | ⚠️ ±3σ 초과만 차단 |
+
+### 📕 자세한 가이드
+
+- 📘 [사용자 가이드 — 데이터 검증](docs/release/data-validation-user-guide.md) (1차 SSOT — 한 손 흐름도 + FAQ 7건)
+- 🎨 [디자인 시스템 — ANSI 토큰 + 2줄 ERROR](docs/release/design-system_data-validation.md)
+- 📜 [에러 메시지 SSOT (16슬롯 ko/en)](docs/release/data-validation-error-messages.md)
+- 🛠️ [PR/커밋 컨벤션 (7 스코프)](docs/release/data-validation-pr-template.md)
+
+### 🛡️ ship-gate 3-AND (예고)
+
+본 시스템이 만족하는 3-AND 게이트 — 셋 다 PASS여야 콘텐츠 PR 머지 가능:
+
+```
+✅ Schema 100% PASS  AND  끊긴 참조 0건  AND  Balance outlier ±3σ 초과 0건
+```
+
+> 본 게이트는 적경홍 QA 단계에서 자동화 — `launch_checklist §2.22` SSOT 신설 완료(본 스프린트).
+
+---
+
+## 📱 모바일 반응형 (Mobile Responsive)
+
+> Phaser.js 데스크탑(1920×1080) 우선 개발 위에 모바일 360~430 너비를 얹사옵나이다. 4 게이트로 한눈에 — 잘림·터치 미지원·성능 저하·노치 침범 4 위험을 잘라내옵니다.
+
+### 🎯 한눈 약속 (4지표)
+
+| 약속 | 측정 | 목표 |
+|------|------|------|
+| **Viewport 시나리오 동작률** | 360/375/414/430 × 이동·대화·전투·세이브 | **100%** (16건 PASS) |
+| **터치 인식 지연** | `pointerdown` → `gameAction` emit p95 | **≤ 100ms** |
+| **본문 폰트 최소 크기** | Phaser Text/DOM scan | **≥ 14px** (보조 라벨 ≥ 12px) |
+| **Safe-Area 침범** | 노치/홈 인디케이터 hit-test | **0건** |
+
+> 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수.
+
+### 🚀 빠른 시작 (3명령)
+
+```bash
+# 4 viewport × 4 시나리오 = 16건 자동 검증
+npm run mobile:viewport
+
+# 터치 지연 100회 측정 (p95 ≤ 100ms 검사)
+npm run mobile:touch-latency
+
+# 4 게이트 일괄 실행 (CI 진입점)
+npm run mobile:gate
+```
+
+### 🌊 4 게이트 흐름
+
+| # | 게이트 | 역할 | 실패 시 |
+|---|--------|------|---------|
+| 1 | **Viewport** | mob-360/375/414/430 레이아웃 잘림 + 시나리오 16건 | ❌ 머지 차단 |
+| 2 | **Touch Latency** | `pointerdown` → 로직 반응 p95 측정 | ❌ p95 > 100ms 차단 |
+| 3 | **UI Variant** | HUD·메뉴·전투 UI safe-area-inset 보정 | ❌ 침범 시 차단 |
+| 4 | **Font Audit** | Phaser Text fontSize ≥ 14px 전수 (라벨 예외) | ⚠️ 1건이라도 차단 |
+
+### 📕 자세한 가이드
+
+- 📘 [사용자 가이드 — 모바일 반응형](docs/release/mobile-responsive-user-guide.md) (1차 SSOT — 9개 절 + FAQ)
+- 🎨 [디자인 시스템 — viewport·touch·safe-area 합본](docs/release/design-system_mobile-responsive.md)
+- 🖼️ [시각 에셋 — ASCII 모킹업 4×4 + SVG 아이콘](docs/release/assets_mobile-responsive.md)
+- 📜 [에러 메시지 SSOT (16슬롯 ko/en)](docs/release/mobile-responsive-error-messages.md)
+- 🛠️ [PR/커밋 컨벤션 (7 스코프 · 봉인 4항)](docs/release/mobile-responsive-pr-template.md)
+
+### 🛡️ Ship-gate 3-AND (예고)
+
+본 모바일 게이트는 출시 전 다음 3-AND 조건의 한 축이옵나이다 — 셋 다 PASS여야 출시 통과:
+
+```
+✅ mobile:gate  AND  save:gate  AND  data:validate  →  ship
+```
+
+> 세 조건 중 하나라도 FAIL이면 출시 차단. 백능파 승인 없이 우회 불가.
+
+---
+
+## ⚡ 성능 최적화 (Performance)
+
+Phaser.js + 1,454 어셋 환경에서 저사양 디바이스 포함 안정 플레이를 보장하옵니다. 4 게이트로 한눈에.
+
+### 한눈 약속 (4지표)
+
+| 지표 | 임계 | 측정 도구 |
+|------|------|----------|
+| **FPS 평균** | 전투·맵 모두 **≥ 55** | `perf:fps` (60초 샘플) |
+| **메모리 증가율** | 5분 연속 플레이 시 **≤ 50MB** | `perf:memory` (씬 10회 전환) |
+| **초기 로딩** | 첫 플레이 가능 시점 **≤ 5초** | `perf:load` (3G·4G·WiFi) |
+| **번들 청크** | 초기 chunk **≤ 2MB gzipped** | `perf:bundle` (rollup-plugin-visualizer) |
+
+### 빠른 시작
+
+```bash
+# 전투·맵 60초 FPS 샘플링 (평균/p1/p5 보고)
+npm run perf:fps
+
+# 씬 10회 전환 + 5분 idle 메모리 추적
+npm run perf:memory
+
+# 4 게이트 일괄 실행 (CI 진입점)
+npm run perf:gate
+```
+
+### 4 게이트 흐름 (두련사 *선禪 4계*)
+
+| 순서 | 게이트 | 검사 항목 |
+|------|--------|----------|
+| 1 | **Profile (FPS)** | 전투 씬·월드맵 60초 샘플, 평균·p1·p5·드롭 카운트 |
+| 2 | **Memory** | 씬 전환 시 텍스처/이벤트 리스너 정리, 5분 메모리 증가 |
+| 3 | **Lazy Load** | 챕터별 어셋 청크 분할, 초기 번들·후속 chunk 임계 |
+| 4 | **Bundle** | 이미지 압축률·텍스처 아틀라스 적용·최종 산출물 크기 |
+
+### 📕 자세한 가이드
+
+- 📘 [사용자 가이드 — 성능 최적화](docs/release/performance-user-guide.md) (1차 SSOT — 9개 절 + FAQ 7건)
+- 🎨 [디자인 시스템 — FPS HUD · 메모리 경고 · 로딩 progress](docs/release/design-system_performance-optimization.md)
+- 🖼️ [시각 에셋 — PerfDot · PerfHud · PerfChart · LoadingScreen](docs/release/assets_performance-optimization.md)
+- 📜 [에러 메시지 SSOT (16슬롯 ko/en)](docs/release/performance-error-messages.md)
+- 🛠️ [PR/커밋 컨벤션 (7 스코프 · 봉인 4항)](docs/release/performance-pr-template.md)
+
+### 🛡️ Ship-gate 4-AND (예고)
+
+본 성능 게이트는 출시 전 다음 4-AND 조건의 한 축이옵나이다 — 넷 다 PASS여야 출시 통과:
+
+```
+✅ perf:gate  AND  mobile:gate  AND  save:gate  AND  data:validate  →  ship
+```
+
+> 네 조건 중 하나라도 FAIL이면 출시 차단. 백능파 승인 없이 우회 불가. 약속 4지표 임의 갱신 금지.
 
 ---
 

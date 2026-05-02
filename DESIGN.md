@@ -500,6 +500,50 @@
 | `768~1023` | `600×160` | 64×64 | 1열 스택 |
 | `< 768` | `100% - 32px × 200` | 48×48 | 1열 스택 |
 
+### 8.4 모바일 viewport 4종 SSOT (Sprint Mobile-Responsive, 2026-04-29)
+
+> 본 절은 `client/src/config/mobile-viewport.ts` (3차 토픽 확장) 와 `client/src/styles/design-system-mobile.css` (CSS 미러) 의 1차 SSOT. 너비/safe area inset/폰트 스케일 변경 시 위에서 아래로만 (DESIGN.md → mobile-viewport.ts → design-system-mobile.css 순).
+
+| ID | 너비 | 높이 | 카테고리 | 폰트 스케일 | safe top/bottom | 대표 디바이스 |
+|----|------|------|----------|------------|-----------------|--------------|
+| `sm-360` | 360px | 800px | compact  | 0.78x | 24 / 16 | Galaxy S 시리즈, 갤폴드 외부 |
+| `sm-375` | 375px | 812px | compact  | 0.82x | 44 / 34 | iPhone X / 11 Pro / 12·13 mini |
+| `md-414` | 414px | 896px | standard | 0.88x | 44 / 34 | iPhone XR / 11 / Plus, 다수 안드로이드 |
+| `md-430` | 430px | 932px | standard | 0.92x | 47 / 34 | iPhone 14·15·16 Pro Max, 최신 대형 |
+
+#### 약속 4지표 (스프린트 토픽)
+
+| # | 지표 | 측정 방식 |
+|---|------|----------|
+| 1 | 4종 viewport 핵심 시나리오 100% 동작 | `npm run qa:mobile -- --vp=all` (이동/대화/전투/세이브) |
+| 2 | 터치 인식 지연 ≤ 100ms | `touch-action: manipulation` + Performance API |
+| 3 | safe area·노치 회피 | `env(safe-area-inset-*)` 폴백 + Phaser 캔버스 inset 패딩 |
+| 4 | 텍스트 가독성 ≥ 14px | `--font-min-legible: 14px`, `.text-xs/.text-sm` 자동 승격 |
+
+#### 카테고리별 HUD 변형
+
+| 카테고리 | viewport | 변형 |
+|----------|----------|------|
+| **compact** | sm-360, sm-375 | 미니맵 숨김, 게이지 1열 스택, 선택지 1열 |
+| **standard** | md-414, md-430 | 미니맵 0.7x~0.8x 축소, 선택지 (md-430만) 2열 |
+
+#### 터치 입력 매핑 SSOT
+
+| 입력 | 매핑 | 임계값 | CSS 클래스 |
+|------|------|--------|-----------|
+| 탭 | 클릭 | 거리 < 8px AND 시간 < 500ms | `.touch-tappable` |
+| 드래그 | 이동 | 거리 ≥ 8px (`--drag-threshold-px`) | `.touch-draggable` |
+| 롱프레스 | 컨텍스트 메뉴 | 시간 ≥ 500ms (`--longpress-threshold-ms`) | `.touch-longpressable` |
+
+#### 봉인 항목 (이소화 비협상)
+
+- 4종 viewport 너비 수치 (360 / 375 / 414 / 430)
+- safe area inset 4 viewport × 4 방향 = 16 값
+- 폰트 스케일 4 값 (0.78 / 0.82 / 0.88 / 0.92)
+- 터치 입력 3 임계값 (8px / 500ms / 100ms)
+
+> 변경 절차: 본 §8.4 갱신 → `mobile-viewport.ts` MOBILE_VIEWPORTS 상수 갱신 → `design-system-mobile.css` `:root` CSS 변수 갱신 → 시각 회귀 (`style-guide.html` 모바일 모드 + `qa:mobile` 실행) 검증.
+
 ---
 
 ## 9. 구현 가이드

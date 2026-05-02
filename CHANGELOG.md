@@ -11,6 +11,264 @@
 > 상태: 개발 중 (Phase 4 — 구현) · 단계: Build
 
 ### Added
+- **에테르나 크로니클 verify-core 시나리오 3종 실배선 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Verify-Core-Scenarios, 2026-05-01) — 진채봉 Editor 합본 정리
+  - 직전 회고 *Build-Catchup §1 P0 A4 P1* 직접 해소 — 기존 `scripts/dev-cycle/verify-core.mjs`가 골격만 있고 battle/save/map 3 시나리오 모두 unknown FAIL 상태였던 적자(赤字)를 청산하옵나이다.
+  - **사용자: 대표(crisi) 본인 1인** — 외부 사용자 X. 신규 콘텐츠(시나리오/스킬/맵) 변경 시 자동 검증 보장이 단 하나의 약속.
+  - 약속 4지표:
+    - 시나리오 합계 **≤ 60초** (실측 _TBD_ s · 3회 평균 — 적경홍 Test 단계 충진)
+    - 시나리오 PASS **3/3** (battle + save + map)
+    - Exit code **0** (`verify-core.mjs §exit(0|1|2|3)` SSOT)
+    - 첫 실패 노출 **0초** (`extractFirstFailure()` BLOCK 카드 즉시 발현)
+  - 시나리오 3 도장 (두련사 *선禪* 3계):
+    1. **⚔️ battle** — 전투 1 turn 실배선 (CombatManager → ATB 0→1000 → 첫 행동 dispatch ≥1) · 예산 25s · 슬라이스 `tests/unit/combat` + `tests/integration/combat-flow.test.ts`
+    2. **💾 save** — 라운드트립 (GameState → JSON.stringify → JSON.parse → deep equal) · 예산 10s · 슬라이스 `tests/integration/ui-inventory-save-flow.test.ts`
+    3. **🗺️ map** — Phaser scene swap (scene.start → preload OK → create OK → update tick ≥1) · 예산 20s · 슬라이스 `tests/e2e/chapter1.test.ts`
+    - + buffer 5s (spawn/teardown 여유) → 합계 **60s**
+  - **README §⚡ 개발 효율 절 통합 완료** (`README.md` §🚀 빠른 시작 ↔ §🎵 사운드 시스템 사이) — 한눈 지표 표 row 1 (`verify:core ≤5min` → `dev:verify ≤60s`) · 빠른 시작 3명령 → 4명령 (`dev` + `dev:verify` + `dev:measure` + `dev:build`) · 핵심 시나리오 3종 표를 *🎯 verify-core 시나리오 3 도장*으로 60초 예산 분배(25/10/20+5) 표로 갱신 · 자세한 가이드 링크 5개 (verify-core 4편 + 선행 devloop) · ship-gate 4-AND 표현 신설 · 상단 배지 신규 1종 (`Verify Core 3/3 PASS`) 추가
+  - **사용자 가이드 v1.0** (`docs/release/verify-core-scenarios-user-guide.md`, ~248줄) — 진채봉 Editor
+    - 9개 절 + FAQ 8건 — 한 손 흐름도(변경 → dev:verify → 시나리오 카드 → exit 0) · 약속 4지표 표 · 빠른 시작 4명령 + 시나리오별 부분 실행(`--scenario=battle|save|map|all`) · 시나리오 3 도장 깊이 보기(PASS 조건 4단계 / 자주 막히는 곳) · 결과 해석 4 종료 코드(0 PASS · 1 BLOCK · 2 WARN · 3 ERROR) · 첫 실패 카드 8영역 · `.ac/verify-trend.json` 30회 슬라이딩 윈도우 · 봉인 5항
+    - 본 문서가 1차 SSOT — `README.md §⚡` 메아리, 약속 수치 변경 시 §3 표 동시 갱신
+  - **에러 메시지 카피 SSOT v1.0** (`docs/release/verify-core-scenarios-error-messages.md`) — 진채봉 Editor
+    - 4종 사유(`battle_atb` · `save_diff` · `map_portal` · `over_budget`) × 4 상태(PASS/WARN/BLOCK/ERROR) = **16개 카피 슬롯** + ko/en 동시 = **32줄**
+    - 키 규약 `dev.gate.verify.<state>.<reason>` · 코드 상수 매핑(계섬월 인계용 `scripts/dev-cycle/verify-messages.mjs` 스니펫, BLOCK 4슬롯 우선)
+    - 톤 5계명(가춘운 디자인 미러): 원인→처방 · 수치는 사실(`12.4s / 25s` · `+4.2s` · `누적 1/3회`) · 경로 절단 금지 · 시는 hint만 · 게이트 키 규약
+  - **PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/verify-core-scenarios-pr-template.md`) — 진채봉 Editor
+    - PR 제목 6 type (`feat`/`fix`/`perf`/`refactor`/`test`/`docs`) × 4 scope (`verify`/`verify:battle`/`verify:save`/`verify:map`)
+    - PR 본문 7개 섹션 — 측정 표(약속/Before/After/Δ/상태 5열) · 봉인 5항 점검 · 자동 측정 로그(`verify-pr.json`) · 회귀 사유(60초 초과 시 의무) · 5인 인계 체크 · ship-gate 4-AND 자가 점검
+    - 리뷰어 행동 가이드 — reject 7조건 (이소화 비협상): `verify-pr.json` 첨부 누락 · TS 에러 · 60초 초과+사유 누락 · 게이트 키 규약 위반 · 봉인 5항 임의 갱신 · 시나리오 3종 외 추가/삭제 · ko/en 동시 갱신 누락
+  - **README §🛠️ verify-core 절 — 골격 SSOT v1.0** (`docs/release/verify-core-scenarios-readme-skeleton.md`) — 진채봉 Editor
+    - 기존 §⚡ 개발 효율 절을 *증보(增補)* — 4 갱신 + 1 신설(부속 표 *시나리오 3 도장*)
+    - 약속 수치 5분 → 60초 *축약* SSOT — 임의 갱신 금지 (이소화 비협상)
+    - 봉인 5항 (수치 / 시나리오 3종 / 예산 분배 / 키 규약 / 빠른 시작 4명령) — 백능파 승인 필수
+  - **CHANGELOG 항목 초안 v1.0** (`docs/release/verify-core-scenarios-changelog-draft.md`) — 진채봉 Editor (본 항목의 출전)
+    - 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Test/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+  - 연관 SSOT 정합:
+    - 시각 SSOT `docs/release/design-system_verify-core-scenarios.md` (가춘운, 별도 sprint) — 60초 게이트 예산 시각화 + 시나리오 카드 3종 + BLOCK 카드 8영역 + emit 라인 SSOT + JSON 스키마 + 6 컬러 토큰 미러
+    - 짝꿍 코드 `scripts/dev-cycle/verify-core.mjs` (계섬월 Build 단계, SCENARIO_TESTS 매핑 실배선 진행 중) — 현재 슬라이스 매핑은 골격, vitest 슬라이스 PASS는 _TBD_
+    - 직전 회고 `docs/release/retro_dev-cycle-shortening-sprint.md §7 후속 측정 부록` (P0 A4 P1 적자 → 본 sprint로 청산)
+    - 게이트 `docs/release/launch_checklist.md §개발자 동선` (verify 게이트 행 신설 예정)
+  - **다음 단계 (Build → Review → Test → Ship)**:
+    - [ ] `scripts/dev-cycle/verify-core.mjs §SCENARIO_TESTS` 실배선 — battle/save/map 슬라이스 PASS까지 (계섬월)
+    - [ ] `scripts/dev-cycle/verify-messages.mjs` 신설 — BLOCK 4슬롯 우선 (계섬월)
+    - [ ] `tests/unit/combat/combat-manager.test.ts` ATB 1 turn 케이스 7건 (계섬월 + 적경홍)
+    - [ ] `tests/integration/ui-inventory-save-flow.test.ts` 라운드트립 deep equal 4건 (계섬월 + 적경홍)
+    - [ ] `tests/e2e/chapter1.test.ts` Phaser scene swap 3건 (계섬월 + 적경홍)
+    - [ ] `.github/PULL_REQUEST_TEMPLATE.md` §verify-core 섹션 통합 (계섬월)
+    - [ ] `.github/workflows/verify-core.yml` 신설 (계섬월)
+    - [ ] 적경홍 Test 단계 — 약속 4지표 실측 캡처(3회 평균 `verify-pr.json`) → 본 항목 _TBD_ 슬롯 충진
+    - [ ] Ship 단계 — VERSION 범프 + `launch_checklist §개발자 동선` 신설 verify 게이트 행
+
+- **개발자 빌드-검증 사이클 단축 — 도구·문서 합본 v1.0** (Sprint Auto-DevCycle, 2026-04-30) — 진채봉 Editor 회고 합본 (대표 crisi 본인 효율 토픽)
+  - Phase 52 출시 직전, 신규 콘텐츠(시나리오/스킬/맵) 추가 시 *작업 → 검증* 사이클이 늘어지는 마찰 셋(부팅 측정 부재 / 핵심 시나리오 자동 검증 부재 / 빌드 에러 가독성 저하)을 끊고자, **`scripts/dev-cycle/` 도구 5종 + `npm run dev:*` 인터페이스 5종 + 사용자·에러카피·PR·README 4 SSOT + 디자인 오버레이**를 한 다발로 묶어 두옵나이다.
+  - 약속 2지표: **코드 변경 → 핵심 시나리오 검증 ≤ 5분** (실측 _TBD_ — 다음 스프린트 D-0 첫 시간 A1 이행) · **에러 발생 시 원인 파일/라인 즉시 노출** (🟢 코드 PASS / 🔴 회귀 테스트 0건)
+  - 도구 5종 / **761 LOC** (`scripts/dev-cycle/`):
+    - `measure-boot.mjs` (232 LOC) — Phaser dev server 부팅 시간 측정 + `devloop-baseline.json` 등재
+    - `verify-core.mjs` (189 LOC) — 전투·세이브·맵이동 3 시나리오 자동 검증 골격
+    - `format-error.mjs` (140 LOC) — `tsc`/`build` stderr → `path:line:reason` 1줄 요약 (게이트 키 `--gate=type|build`)
+    - `cli-colors.mjs` (75 LOC) — TTY/NO_COLOR/JSON 3출력 모드 SSOT
+    - `types.d.ts` (125 LOC) — 도구 간 공통 타입 SSOT
+  - npm 인터페이스 5종 (`package.json`): `dev:measure` · `dev:verify` · `dev:fmt-error` · `dev:typecheck` · `dev:build`
+  - 산출물 9건 / 총 **1,915 LOC** (코드 902 + 문서 1,013):
+    - 도구 3종 핵심: 478 LOC (계섬월 Build) — `measure-boot` 174 + `verify-core` 184 + `format-error` 120 (v1.0 시점, v1.1 보강 +283)
+    - 디자인 합주: `client/src/styles/devloop-overlay.css` 424 + `docs/release/design-system_devloop.md` 233 = 657 LOC (가춘운 CMO)
+    - 텍스트 4 SSOT: `dev-cycle-shortening-user-guide.md` 289 + `-error-messages.md` 251 + `-pr-template.md` 228 + `-readme-skeleton.md` 110 + `-changelog-draft.md` 109 = **987 LOC** (진채봉 Editor)
+  - 회고 SSOT: `docs/release/retro_dev-cycle-shortening-sprint.md` v1.1 (140 LOC + 신설 §7 후속 측정 부록 ~50 LOC) — 두련사 일감(一感) + 심요연 데이터로 *과녁 미관측* 적자 명문화
+  - 핵심 발견 (Reflect):
+    - 🟢 **계섬월 Build의 직전 결손 회복** — `scripts/dev-cycle/` 한 디렉터리에 도구 5종 정좌(正坐), 다음 스프린트가 곧장 부를 수 있는 SSOT 안착
+    - 🔴 **A1 *변경→검증 ≤ 5분* 실측 0회** — *과녁 보지 않은 활*. 본 토픽의 단 하나뿐인 약속이 측정 데이터 부재로 판정 불가
+    - 🔴 **워킹트리 122 → 129 entries 단조 증가** — a11y AAA + monster-art + dev-cycle 3 스프린트 변경이 한 줄에 뒤엉켜 추적 난이도 상승 (A2 이월)
+    - 🔴 **5스프린트 연속 7일 커밋 0건 → 4스프린트로 한 칸 회복** — 14일 윈도우 활성률 7.1%, 임계 미달
+  - **다음 스프린트 P0 재이월** (Sprint *Build-Catchup §1 — Working Tree Zero + Baseline One*):
+    - [ ] **A1** — `npm run dev:measure && npm run dev:verify` 1회 실측, `docs/release/devloop-baseline.json` 기준선 등재 (계섬월 + 적경홍)
+    - [ ] **A2** — 워킹트리 129 → 0 분류 PR 4건 (a11y / monster-art / dev-cycle / housekeeping)
+    - [ ] **A3** — 봇 하네스 `ship-gate` hook 신설 (`git diff --stat ≠ 0` AND `git log --since=7d ≥ 1` 양쪽 만족 시에만 Reflect 종료)
+    - [ ] **A4** — `verify-core.mjs` 시나리오 실배선 (전투 turn 1회 / 세이브 라운드트립 / 맵이동 scene swap 3종 PASS) (P1)
+    - [ ] **A5** — *Dead Module Drift* 주간 대시보드 확장 — 5스프린트 추세 + 측정-부재 지표 별도 트랙 (심요연, P2)
+  - 연관 SSOT 정합:
+    - 직전 회고 `docs/release/retro_monster-art-pipeline-sprint.md` (A1·A2 이월 → 본 스프린트 누적)
+    - 전전 회고 `docs/release/retro_wcag-aaa-a11y-audit-sprint.md` (동일 패턴 첫 발현)
+    - 게이트 `docs/release/launch_checklist.md §개발자 동선` (체크리스트 round-trip 미완)
+
+- **에테르나 크로니클 성능 최적화 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Performance, 2026-04-30) — 진채봉 Editor 합본 정리
+  - Phase 52 출시 직전, 1,454 어셋 + Phaser.js 환경에서 저사양 디바이스 포함 안정 플레이를 보장하고자, 사람 손에 잡히는 텍스트 에셋 5편 + 디자인 시스템 합본 + 시각 에셋 묶음 + README §⚡ 성능 최적화 절을 묶어 두옵나이다.
+  - 약속 4지표: 전투·맵 FPS 평균 **≥ 55** (실측 _TBD_) · 5분 플레이 메모리 증가 **≤ 50MB** (실측 _TBD_MB) · 초기 로딩 4G 기준 **≤ 5초** (실측 _TBD_s) · 초기 chunk **≤ 2MB gzipped** (실측 _TBD_MB) — `launch_checklist §2.24` SSOT 신설 예정
+  - 4 게이트 흐름 (두련사 *선禪 4계*): Profile (FPS 60초 샘플 + 핫스팟 식별) → Memory (씬 전환 텍스처/리스너 정리 + 5분 idle 증가) → Lazy (챕터별 어셋 청크 분할 + manualChunks) → Bundle (이미지 압축 + 텍스처 아틀라스 + Brotli)
+  - 산출물 5건 / 총 **740 LOC** (SSOT 5편: skeleton 112 + user-guide 203 + error-messages 174 + pr-template 158 + changelog-draft 93) + 디자인 시스템 307줄 + assets 합본 604줄 + README §⚡ 신설 ~63줄 + `launch_checklist §2.24` 신설 예정 ~25줄 = **~1,739줄** — assets 단계 통합 완료, Build(계섬월) 인계
+  - **README §⚡ 성능 최적화 절 통합 완료** (`README.md` §📱 모바일 반응형 ↔ §📁 문서 링크 사이) — 한눈 지표 4 약속 표 · 빠른 시작 3명령(`npm run perf:fps` / `perf:memory` / `perf:gate`) · 4 게이트 흐름 표 · 자세한 가이드 링크 5개 · ship-gate 4-AND 예고 (`perf:gate ∧ mobile:gate ∧ save:gate ∧ data:validate`) · 상단 배지 2종(`FPS Avg ≥55` · `Initial Load ≤5s`) 추가
+  - **성능 최적화 사용자 가이드 v1.0** (`docs/release/performance-user-guide.md`, 203줄) — 진채봉 Editor
+    - 9개 절 + FAQ 7건 — 한 손 흐름도(Profile → Memory → Lazy → Bundle) · 약속 4지표 표 · 4 게이트 상세(전투/월드맵 측정 환경 명시) · 핫스팟 우선순위 4종(전투 ATB/월드맵 카메라/NPC 페이드/인벤토리) · 메모리 정리 체크리스트 5종(textures/events/tweens/sound/cache) · 청크 분할 정책 5종(core/chapter-N/battle) · 압축 기법 5종(pngquant/WebP/atlas/OGG/Brotli) · 출력 모드 3종(TTY/NO_COLOR/JSON)
+    - 본 문서가 1차 SSOT — `README.md §⚡ 성능 최적화` 메아리, 약속 수치 변경 시 §1 표 동시 갱신
+  - **성능 최적화 에러 메시지 카피 SSOT v1.0** (`docs/release/performance-error-messages.md`, 174줄) — 진채봉 Editor
+    - 4종 게이트(profile · memory · lazy · bundle) × 4 상태(PASS/WARN/ERROR/BLOCK) = **16개 카피 슬롯** + ko/en 동시 = **32줄**
+    - 키 규약 `perf.<gate>.<state>.<reason>` · 코드 상수 매핑(계섬월 인계용 `client/src/constants/performance_messages.ts` 스니펫, REDUCTION 스코프 4 BLOCK 슬롯 우선)
+    - 톤 5계명(가춘운 디자인 미러): 원인→처방 · 수치는 사실(`58.3fps / 35.8MB / 5.4s / 2.1MB`) · 경로 절단 금지 · 시는 hint만 · 게이트 키 규약
+  - **성능 최적화 PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/performance-pr-template.md`, 158줄) — 진채봉 Editor
+    - PR 제목 7 스코프 (`fps`/`memory`/`lazy`/`bundle`/`atlas`/`gate`/`docs`)
+    - PR 본문 7개 섹션 — 자동 측정 표(Before/After/Δ/약속 5행) · 핫스팟 매트릭스(Top 3) · 메모리 누수 점검 표 · 청크·번들 분포 트리 · 봉인 4항 · 5인 인계 체크
+    - 리뷰어 행동 가이드 5항 (이소화·두련사·적경홍 봉인 — `perf:gate` JSON 첨부 강제 · p1 < 30 reject · 메모리 +51MB도 reject · `manualChunks` 미설정 reject) + ship-gate 4-AND
+  - **README §⚡ 성능 최적화 절 — 골격 SSOT v1.0** (`docs/release/performance-readme-skeleton.md`, 112줄) — 진채봉 Editor
+    - `README.md §⚡ 성능 최적화` 신설 골격 — 한눈 지표 4 약속 표 · 빠른 시작 3명령 · 4 게이트 흐름 표 · 자세한 가이드 링크 5개 · ship-gate 4-AND 예고
+    - 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수 명시
+    - 봉인 항목 4종 (4 약속 수치 · 4 게이트 순서 · 빠른 시작 3명령 · 4-AND) — 이소화 비협상
+    - 선택 배지 2종 (`FPS Avg ≥55` · `Initial Load ≤5s`) 추가 안내
+  - **성능 최적화 CHANGELOG 항목 초안 v1.0** (`docs/release/performance-changelog-draft.md`, 93줄) — 진채봉 Editor
+    - 본 항목의 출전 — 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Test/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+    - assets 단계에서 5편 LOC(112+203+174+158+93=740줄) · README §⚡ 63줄 슬롯 모두 실측 치환 완료, `launch_checklist §2.24` 25줄 슬롯은 Ship 단계 보류
+  - 연관 SSOT 정합:
+    - 디자인 시스템 `docs/release/design-system_performance-optimization.md` (가춘운, 307줄, 2026-04-30) — FPS HUD 오버레이 토큰(우상단 4×4 PerfDot 4상태) + 메모리 경고 색(good/warn/error/info) + 로딩 progress bar SSOT
+    - 시각 에셋 `docs/release/assets_performance-optimization.md` (가춘운, 604줄, 2026-04-30) — PerfDot/PerfHud/PerfChart/LoadingScreen/배지/PR임베드/Discord embed 7표면 ASCII 모킹업 + Phaser 코드 스니펫 + SVG 명세
+    - 아키텍처 두련사 *선禪 4계* — Profile → Memory → Lazy → Bundle (4 단계 그대로 본 문서들에 미러)
+    - 게이트 백능파 **REDUCTION** — `BattleScene` 단일 FPS HUD + 메모리 1포인트 측정 PASS + 1커밋 머지 (본 스프린트 한정 스코프, BLOCK 4슬롯·PerfDot·PerfChart·Discord embed만 머지)
+  - **다음 단계 (Build → Review → Test → Ship)**:
+    - [ ] `client/src/debug/FPSMonitor.ts` 신설 (1초 단위 평균/p1/p5 + 핫스팟 캡처, 두련사·계섬월 합주)
+    - [ ] `client/src/scenes/perf/PerfDot.ts` 신설 (assets §1 코드 그대로 미러, 우상단 4×4 4상태)
+    - [ ] `client/src/config/perf-tokens.ts` 신설 (디자인 시스템 §2 컬러·임계값 미러)
+    - [ ] `client/src/scenes/BaseScene.ts` shutdown() 5항 체크리스트 적용 (textures/events/tweens/sound/cache)
+    - [ ] `vite.config.ts` `manualChunks` 설정 (core/chapter-N/battle 분리)
+    - [ ] `client/src/loaders/LazyLoader.ts` 신설 (`import.meta.glob` 기반 dynamic import)
+    - [ ] `client/src/constants/performance_messages.ts` BLOCK 4슬롯 카피 (에러 메시지 §6 미러)
+    - [ ] `npm run perf:*` 5종 npm scripts 등록 (`package.json`)
+    - [ ] 빌드 파이프라인에 `pngquant` + `oxipng` + 텍스처 아틀라스 단계 추가
+    - [ ] CI workflow에 `perf:gate` 게이트 추가 (적경홍 QA 단계)
+    - [ ] 적경홍 Test 단계 — 약속 4지표 실측 캡처(60초 FPS + 5분 메모리 + 4G 로딩 + bundle gz) → 본 항목 _TBD_ 슬롯 충진
+    - [ ] Ship 단계 — VERSION 범프 + `launch_checklist §2.24` SSOT 확정
+
+- **에테르나 크로니클 개발자 빌드-검증 사이클 단축 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Dev-Cycle-Shortening, 2026-04-30) — 진채봉 Editor 합본 정리
+  - Phase 52 출시 후 신규 콘텐츠(시나리오/스킬/맵) 추가 시 작업 → 검증 사이클이 길어지는 마찰을 잘라내고자, 사람 손에 잡히는 텍스트 에셋 5편 + 시각 에셋 묶음 + README §🛠️ 개발자 도구 절을 묶어 두옵나이다.
+  - **사용자: 대표(crisi) 본인 1인** — 외부 사용자 X. "내가 매일 50번 보는 화면"이 1차 표면.
+  - 약속 4지표: dev server 부팅 **≤ 5초** (실측 _TBD_ s) · 핵심 시나리오(전투/세이브/맵) 자동 검증 **≤ 5분** (실측 _TBD_ s) · 프로덕션 빌드 **≤ 90초** (실측 _TBD_ s) · 에러 → 원인 파일/라인 노출 **0초** (단일 카드) — `launch_checklist §2.25` SSOT 신설 예정
+  - 4 게이트 흐름 (REDUCTION 스코프, 백능파): CLI 컬러 토큰(`scripts/cli/cli-colors.ts` 5상태 ANSI 팔레트 + NO_COLOR/JSON 모드 3종) → 부팅 진행률 바(`client/vite-plugins/boot-progress.ts` 4단계 가중치 vite 20% / ts 35% / assets 30% / phaser 15% + 5초 초과 시 WARN 자동 전환) → 에러 카드(`scripts/cli/error-card.ts` 60칸 폭 단일 카드 + 8영역 SSOT) → Discord 알림(`scripts/qa/discord-embed.ts` embed 4색 + 5필드)
+  - 산출물 5건 / 총 **~860 LOC** (SSOT 5편: skeleton ~100 + user-guide ~270 + error-messages ~190 + pr-template ~200 + changelog-draft ~100) + 시각 에셋 합본 495줄(가춘운 작) + README §🛠️ 신설 ~70줄 + `launch_checklist §2.25` 신설 예정 ~25줄 = **~1,450줄 산출**
+  - **사용자 가이드 v1.0** (`docs/release/dev-cycle-shortening-user-guide.md`, ~270줄) — 진채봉 Editor — 9개 절 + FAQ 7건 — 한 손 흐름도(npm run dev → qa:smoke → 에러 카드 → Discord) · 약속 4지표 표 · 4 게이트 상세 · 톤 5계명 + 봉인 5항 · 출력 모드 3종(TTY/NO_COLOR/JSON) — 본 문서가 1차 SSOT
+  - **에러 메시지 카피 SSOT v1.0** (`docs/release/dev-cycle-shortening-error-messages.md`, ~190줄) — 진채봉 Editor — 4종 게이트(boot · smoke · build · runtime) × 4 상태(PASS/WARN/ERROR/BLOCK) = **16개 카피 슬롯** + ko/en 동시 = **32줄** · 키 규약 `dev.<gate>.<state>.<reason>` · 코드 상수 매핑(`client/src/constants/dev_cycle_messages.ts` 스니펫, REDUCTION BLOCK 4슬롯 우선)
+  - **PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/dev-cycle-shortening-pr-template.md`, ~200줄) — 진채봉 Editor — PR 제목 7 스코프(`boot`/`smoke`/`build`/`error`/`cli`/`discord`/`docs`) · PR 본문 7개 섹션(자동 측정 표 5열 / 핫스팟 Top 3 / 회귀 4항 봉인 점검 / 측정 로그 / 회귀 사유 조건부 의무 / 5인 인계 체크 / 봉인 4항) · 리뷰어 행동 가이드 7항(이소화 TS 에러 reject · 적경홍 perf-pr.json 누락 reject · 가춘운 카드 봉인 5항 reject · 백능파 약속 수치 임의 갱신 reject) + ship-gate 4-AND
+  - **README §🛠️ 개발자 도구 절 — 골격 SSOT v1.0** (`docs/release/dev-cycle-shortening-readme-skeleton.md`, ~100줄) — 진채봉 Editor — 한눈 약속 4지표 표 · 빠른 시작 3명령 · 4 게이트 흐름 표 · 자세한 가이드 링크 5개 · ship-gate 4-AND 예고 · 봉인 4항 · 선택 배지 3종(`Boot Time ≤5s` · `QA Smoke 100%` · `Build ≤90s`)
+  - **CHANGELOG 항목 초안 v1.0** (`docs/release/dev-cycle-shortening-changelog-draft.md`, ~100줄) — 본 항목의 출전. 9단계 Auto 스프린트 진행에 따라 Build/Review/Test/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+  - 연관 SSOT 정합:
+    - 시각 에셋 `docs/release/assets_dev-cycle-shortening.md` (가춘운, 495줄, 2026-04-30) — CLI 5상태 팔레트 + 부팅 진행률 ASCII 모킹업 + 에러 카드 8영역 + Discord embed 4색 + OSC 8 / VS Code 링크 8표면 SSOT
+    - 디자인 시스템 미러 `docs/release/design-system_dev-cycle-shortening.md` *(예정)*
+    - 게이트 백능파 **REDUCTION** — `assets_dev-cycle-shortening.md §1·§2·§4·§7` 만 본 스프린트 한정 머지 (BLOCK 4슬롯·CLI 컬러·부팅 진행률·에러 카드·Discord embed)
+  - **다음 단계 (Build → Review → Test → Ship)**:
+    - [ ] `scripts/cli/cli-colors.ts` 신설 (`assets §1.2` 그대로, 5상태 팔레트)
+    - [ ] `client/vite-plugins/boot-progress.ts` 신설 (`assets §2.4` 그대로, 4단계 가중치)
+    - [ ] `scripts/cli/error-card.ts` 신설 (`assets §4.1·§4.2` 모킹업 그대로 렌더)
+    - [ ] `scripts/qa/discord-embed.ts` 신설 (`assets §7.1·§7.2` JSON SSOT)
+    - [ ] `client/src/constants/dev_cycle_messages.ts` 신설 (BLOCK 4슬롯 우선, error-messages §5)
+    - [ ] `package.json` scripts 등록 — `dev` (boot-progress 적용), `qa:smoke` (3 시나리오 headless), `build` (에러 카드 적용)
+    - [ ] `.github/PULL_REQUEST_TEMPLATE.md`에 §2.1 측정 표 통합 (pr-template §2.1)
+    - [ ] `.github/workflows/dev-cycle-perf.yml` 신설 (PR마다 측정 → 봇 코멘트)
+    - [ ] 적경홍 Test 단계 — 약속 4지표 실측 캡처(`npm run dev` 3회 평균 / `qa:smoke` 1회 / `build` 3회 평균) → 본 항목 _TBD_ 슬롯 충진
+    - [ ] Ship 단계 — VERSION 범프 + `launch_checklist §2.25` SSOT 확정
+
+- **에테르나 크로니클 모바일 반응형 적응 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Mobile-Responsive, 2026-04-29) — 진채봉 Editor 합본 정리
+  - Phaser.js 데스크탑 우선 개발(1920×1080) 위에 모바일(360~430 너비) 진입 시 UI 잘림·터치 미지원·성능 저하·노치 침범 4 위험을 잘라내고자, 사람 손에 잡히는 텍스트 에셋 5편 + 디자인 시스템 합본 + 시각 에셋 묶음 + README §📱 모바일 반응형 절을 묶어 두옵나이다.
+  - 약속 4지표: 4종 viewport(360/375/414/430) × 4 시나리오(이동/대화/전투/세이브) = 16건 동작률 **100%** · 터치 인식 지연 **p95 ≤ 100ms** · 본문 폰트 **≥ 14px** (보조 라벨 ≥ 12px 예외) · Safe-Area 침범 **0건** — `launch_checklist §2.23` SSOT 신설 예정
+  - 4 게이트 흐름 (두련사 *선禪 4계*): Viewport (4종 레이아웃 잘림 + 16건 시나리오) → Touch Latency (`pointerdown` → 로직 반응 p95) → UI Variant (HUD·메뉴·전투 safe-area-inset 보정) → Font Audit (Phaser Text fontSize ≥ 14px 전수)
+  - 산출물 7건 / 총 ~1,500 LOC (SSOT 5편 827줄 + 디자인 시스템 196줄 + assets 합본 309줄) + README §📱 신설 ~64줄 + `launch_checklist §2.23` 신설 ~25줄 = **~1,421줄** — assets 단계 통합 완료, Build(계섬월) 인계
+  - **README §📱 모바일 반응형 절 통합 완료** (`README.md` §🛡️ 데이터 검증 ↔ §📁 문서 링크 사이) — 한눈 지표 4 약속 표 · 빠른 시작 3명령(`npm run mobile:viewport` / `mobile:touch-latency` / `mobile:gate`) · 4 게이트 흐름 표 · 자세한 가이드 링크 5개 · ship-gate 3-AND 예고 (`mobile:gate ∧ save:gate ∧ data:validate`) · 상단 배지 2종(`Mobile Viewport 4/4 Pass` · `Touch Latency p95 ≤100ms`) 추가
+  - **모바일 반응형 사용자 가이드 v1.0** (`docs/release/mobile-responsive-user-guide.md`, 206줄) — 진채봉 Editor
+    - 9개 절 + FAQ — 한 손 흐름도(Viewport → Touch → UI Variant → Font) · 4종 viewport 표(MOB_360/375/414/430 + safe-top/bottom) · 터치 제스처 5종(Tap/Long-press/Pan/Pinch/Hover-fallback) · HUD 모바일 변형 영역 SSOT · 가로 회전 안내 정책 · npm 명령어 5종
+    - 본 문서가 1차 SSOT — `README.md §📱 모바일 반응형` 메아리, 약속 수치 변경 시 §0 표 동시 갱신
+  - **모바일 반응형 에러 메시지 카피 SSOT v1.0** (`docs/release/mobile-responsive-error-messages.md`, 203줄) — 진채봉 Editor
+    - 4종 게이트(viewport · touch · ui-variant · font) × 4 상태(PASS/WARN/ERROR/BLOCK) = **16개 카피 슬롯** + ko/en 동시 = **32줄**
+    - 키 규약 `mobile.<gate>.<state>.<reason>` · 코드 상수 매핑(계섬월 인계용 `client/src/constants/mobile_responsive_messages.ts` 스니펫, REDUCTION 스코프 4슬롯 우선)
+    - 톤 5계명(가춘운 디자인 미러): 원인→처방 · 수치는 사실(`360w / 14px / 100ms`) · 경로 절단 금지 · 시는 hint만 · 게이트 키 규약
+  - **모바일 반응형 PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/mobile-responsive-pr-template.md`, 175줄) — 진채봉 Editor
+    - PR 제목 7 스코프 (`viewport`/`touch`/`ui-variant`/`font`/`safe-area`/`copy`/`docs`)
+    - PR 본문 7개 섹션 — 자동 측정 표(Before/After/Δ/약속 4행) · viewport 4종 시나리오 매트릭스(16건) · 터치 지연 p95 첨부(100회 측정) · 봉인 4항 · 5인 인계 체크
+    - 리뷰어 행동 가이드 5항 (이소화 봉인 비협상 — viewport 4종 별칭 · 터치 타깃 CRITICAL 48 · 본문 14px · safe-area env() 우선) + ship-gate 3-AND
+  - **README §📱 모바일 반응형 절 — 골격 SSOT v1.0** (`docs/release/mobile-responsive-readme-skeleton.md`, 136줄) — 진채봉 Editor
+    - `README.md §📱 모바일 반응형` 신설 골격 — 한눈 지표 4 약속 표 · 빠른 시작 3명령 · 4 게이트 흐름 표 · 자세한 가이드 링크 5개 · ship-gate 3-AND 예고
+    - 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수 명시
+    - 봉인 항목 4종 (4 약속 수치 · 4 게이트 순서 · 빠른 시작 3명령 · 3-AND) — 이소화 비협상
+    - 선택 배지 2종 (`Mobile Viewport 4/4 Pass` · `Touch Latency p95 ≤100ms`) 추가 안내
+  - **모바일 반응형 CHANGELOG 항목 초안 v1.0** (`docs/release/mobile-responsive-changelog-draft.md`, 107줄) — 진채봉 Editor
+    - 본 항목의 출전 — 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Test/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+    - assets 단계에서 5편 LOC(206+203+175+136+107=827줄) · README §📱 64줄 · launch_checklist §2.23 25줄 슬롯 모두 실측 치환 완료
+  - 연관 SSOT 정합:
+    - 디자인 시스템 `docs/release/design-system_mobile-responsive.md` (가춘운, 196줄, 2026-04-29) — viewport 4종 + safe-area env() + 터치 타깃 4등급(CRITICAL 48 / PRIMARY 44) + 타이포 모바일 변형 SSOT
+    - 시각 에셋 `docs/release/assets_mobile-responsive.md` (가춘운, 309줄, 2026-04-29) — ASCII 모킹업 4 viewport × 4 시나리오 16건 + SVG 핫바 5종 + CSS 미디어쿼리 SSOT + Discord embed 카드 시안
+    - 아키텍처 두련사 *선禪 4계* — Viewport → Touch → UI Variant → Font (4 단계 그대로 본 문서들에 미러)
+    - 게이트 백능파 **REDUCTION** — `mobile-responsive-readme-skeleton.md` 기준 README §📱 통합 1커밋 머지 (본 스프린트 한정 스코프)
+  - **다음 단계 (Build → Review → Test → Ship)**:
+    - [ ] `client/src/config/responsive-tokens.ts` 신설 (assets §1 코드 그대로 미러, 두련사·계섬월 합주)
+    - [ ] `client/src/input/TouchAdapter.ts` 4 제스처 구현 (Tap / Long-press / Pan / Pinch — 디자인 시스템 §4 임계값 미러)
+    - [ ] `client/src/styles/design-system-mobile.css` 4종 viewport 미디어쿼리 + safe-area env() 변수
+    - [ ] `client/src/constants/mobile_responsive_messages.ts` 4슬롯 카피 (에러 메시지 §5.1 미러)
+    - [ ] `npm run mobile:*` 5종 npm scripts 등록 (`package.json`)
+    - [ ] CI workflow에 `mobile:gate` 게이트 추가 (적경홍 QA 단계)
+    - [ ] 적경홍 Test 단계 — 약속 4지표 실측 캡처(16건 시나리오 + p95 100회) → CHANGELOG 본 항목 _TBD_ 슬롯 충진
+
+- **에테르나 크로니클 게임 데이터 검증 시스템 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Data-Validation, 2026-04-28) — 진채봉 Editor 합본 정리
+  - Phase 52에서 콘텐츠 728/728 · 어셋 1,454편을 갖췄으나, 신규 콘텐츠 1건 추가 시마다 수동 검증 비용이 누적되는 결을 메우고자, 사람 손에 잡히는 텍스트 에셋 5편 + 디자인 시스템 합본 + README §🛡️ 데이터 검증 절을 묶어 두옵니다.
+  - 약속 4지표: 모든 데이터 파일 schema validation 통과 **100%** · 참조 끊김 **0건** (skill→effect / item→category / encounter→monster) · balance outlier **±2σ 내** · ERROR `path:line:field` 노출 **100%** — `launch_checklist §2.22` SSOT 신설 완료
+  - 4 게이트 흐름 (두련사 *선禪 4계*): Schema (ajv draft-2020-12) → Load (실제 적재) → Audit (참조 무결성 3종) → Report (밸런스 ±2σ outlier)
+  - 산출물 7건 / 총 ~1,389 LOC (SSOT 5편 808줄 + 디자인 시스템 206줄 + assets 합본 375줄) + README §🛡️ 신설 ~70줄 + `launch_checklist §2.22` 신설 ~25줄 = **~1,484줄** — Build(계섬월) 단계 통합 완료, Review(정경패) 인계
+  - **README §🛡️ 데이터 검증 절 통합 완료** (`README.md` §💾 세이브·로드 ↔ §📁 문서 링크 사이) — 한눈 지표 4 약속 표 · 빠른 시작 3명령(`npm run data:validate*`) · 4 게이트 흐름 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고 · 상단 배지 2종(`Schema Validation 100%` · `Reference Integrity 0 broken`) 추가
+  - **데이터 검증 시스템 사용자 가이드 v1.0** (`docs/release/data-validation-user-guide.md`, 218줄) — 진채봉 Editor
+    - 9개 절 + FAQ 7건 — 한 손 흐름도(Schema → Load → Audit → Report) · 도메인 5종 schema 표(monster/item/skill/encounter/scenario) · 참조 3종 표(skill→effect/item→category/encounter→monster) · 밸런스 outlier 정책 표(±1σ/±2σ/±3σ) · 출력 모드 3종(TTY/NO_COLOR/JSON) · npm 명령어 5종
+    - 본 문서가 1차 SSOT — `README.md §🛡️ 데이터 검증` 메아리, 약속 수치 변경 시 §0 표 동시 갱신
+  - **데이터 검증 에러 메시지 카피 SSOT v1.0** (`docs/release/data-validation-error-messages.md`, 153줄) — 진채봉 Editor
+    - 4종 게이트(schema · load · ref · balance) × 4 상태(PASS/WARN/ERROR/BLOCK) = **16개 카피 슬롯** + ko/en 동시 = **32줄**
+    - 키 규약 `data.<domain>.<gate>.<state>.<reason>` · 코드 상수 매핑 (계섬월 인계용 `client/src/constants/data_validation_messages.ts` 스니펫, REDUCTION 스코프 4슬롯 우선)
+    - 톤 5계명(가춘운 디자인 미러): 원인→처방 · 수치는 사실 · 경로 절단 금지 · 시는 hint만 · 도메인 키 규약
+  - **데이터 검증 PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/data-validation-pr-template.md`, 177줄) — 진채봉 Editor
+    - PR 제목 7 스코프 (`schema`/`script`/`audit`/`balance`/`ci`/`copy`/`docs`)
+    - PR 본문 7개 섹션 — 자동 감사 표(Before/After/Δ/약속 4행) · Schema 안정성 약속(하위 호환·append-only) · 참조/밸런스 메모 · 봉인 4항 · 5인 인계 체크
+    - 리뷰어 행동 가이드 5항 (이소화 봉인 비협상 — 2줄 ERROR · 카운트 순서 · NO_COLOR 필수 · outlier 면제 절차) + ship-gate 3-AND
+  - **README §🛡️ 데이터 검증 절 — 골격 SSOT v1.0** (`docs/release/data-validation-readme-skeleton.md`, 127줄) — 진채봉 Editor
+    - `README.md §🛡️ 데이터 검증` 신설 골격 — 한눈 지표 4 약속 표 · 빠른 시작 3명령 · 4 게이트 흐름 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고
+    - 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수 명시
+    - 봉인 항목 4종 (4 약속 수치 · 4 게이트 순서 · 빠른 시작 3명령 · 3-AND) — 이소화 비협상
+    - 선택 배지 2종 (`Schema Validation 100%` · `Reference Integrity 0 broken`) 추가 안내
+  - **데이터 검증 CHANGELOG 항목 초안 v1.0** (`docs/release/data-validation-changelog-draft.md`, 133줄) — 진채봉 Editor
+    - 본 항목의 출전 — 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Test/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+    - Build 단계에서 5편 LOC(218+153+177+127+133=808줄) · README §🛡️ 70줄 · launch_checklist §2.22 25줄 슬롯 모두 실측 치환 완료
+  - 연관 SSOT 정합:
+    - 디자인 시스템 `docs/release/design-system_data-validation.md` (가춘운, 206줄, 2026-04-28) — ANSI 16색 토큰 + 2줄 ERROR 표준 출력 + NO_COLOR 폴백 SSOT
+    - 아키텍처 두련사 *선禪 4계* — Schema → Load → Audit → Report (4 단계 그대로 본 문서들에 미러)
+    - 게이트 백능파 **REDUCTION** — `monsterManifest.json` 단일 ajv 검증 PASS + 1커밋 머지 (본 스프린트 한정 스코프)
+  - **다음 단계 (Build → Review → Test → Ship)**:
+    - [ ] `data/schemas/monster.schema.json` 작성 (REDUCTION 스코프, 두련사·계섬월 합주)
+    - [ ] `scripts/validate-data.ts` 4 게이트 골격 (Schema/Load/Audit/Report)
+    - [ ] `client/src/constants/data_validation_messages.ts` 4슬롯 카피 (가춘운 §5.1 미러)
+    - [ ] `npm run data:validate*` 5종 npm scripts 등록 (`package.json`)
+    - [ ] CI workflow에 `data:validate` 게이트 추가 (적경홍 QA 단계)
+    - [ ] 적경홍 Test 단계 — 약속 4지표 실측 캡처 → CHANGELOG 본 항목 _TBD_ 슬롯 충진
+
+- **에테르나 크로니클 세이브·로드 시스템 안정성 검증 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Save-Load-Stability, 2026-04-28) — 진채봉 Editor 합본 정리
+  - Phase 52에서 콘텐츠 728/728 · 어셋 1,454편을 갖췄으나, 유저가 진행 도중 잃을 수 있는 데이터(파티 레벨/인벤토리/시나리오 진척/맵 해금)가 늘어남에 따라, 사람 손에 잡히는 텍스트 에셋 5편 + 디자인 시스템 합본 + README §💾 세이브·로드 절을 묶어 두옵니다.
+  - 안정성 약속 4지표: 세이브/로드 왕복 데이터 일치 **100%** · 손상 파일 → 마지막 정상 백업 자동 복구 **100%** · v1→v2 마이그레이션 호환 **100%** · 로드 검증 누락 필드 기본값 적용 **100%** — `launch_checklist §2.21` SSOT 신설 예정
+  - 4중 안전망: 자동 회전 백업 4슬롯 + 챕터 영구 백업 6슬롯 + 수동 5슬롯 + 격리/레거시 60일 보존 = **총 15슬롯 + 보관 봉인**
+  - 산출물 5건 / 총 ~1,400 LOC (SSOT 5편 ~1,300줄) + README §💾 신설 ~60줄 = **~1,400줄** — 에셋 단계 완료, Build(계섬월) 인계
+  - **README §💾 세이브·로드 절 통합 완료** (`README.md` §🎓 첫 30분 ↔ §📁 문서 링크 사이) — 한눈 지표 4지표 표 · 빠른 시작 3명령(`npm run save:gate` 등) · 4중 안전망 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고 · 상단 배지 2종(`Save Round-Trip 100%` · `Auto Recovery 100%`) 추가
+  - **세이브·로드 시스템 사용자 가이드 v1.0** (`docs/release/save-load-user-guide.md`) — 진채봉 Editor
+    - 9개 절 + FAQ 7건 — 한 손 흐름도(자동세이브 → 직렬화 → 백업 회전 → 로드 검증 → 손상 복구) · schema v2 6영역 표(playthrough/party/inventory/scenario/world/meta) · v1→v2 마이그레이션 변환 규칙 표 6행 · 자동세이브 트리거 5종(씬 전환/보스/레벨업/챕터 클리어/30s idle) · 4슬롯 회전 + 6슬롯 영구 + 5슬롯 수동 정책 · 4단계 검증 파이프라인 · 누락 필드 기본값 정책 · npm 명령어 6종
+    - 본 문서가 1차 SSOT — `README.md §💾 세이브·로드` 메아리, 약속 수치 변경 시 §1 흐름도 동시 갱신
+  - **세이브·로드 에러 메시지 카피 SSOT v1.0** (`docs/release/save-load-error-messages.md`) — 진채봉 Editor
+    - 4종 게이트(roundtrip · migration · recovery · validation) × 4 상태(PASS/BLOCK/WARN/ERROR) = **16개 카피 슬롯** + ko/en 동시 = **32줄**
+    - 키 규약 `save.gate.<gate>.<state>.<reason>` · 코드 상수 매핑 (계섬월 인계용 `src/constants/save_gate_messages.ts` 스니펫)
+    - 톤 5계명: 원인→처방 · 수치는 사실 · 경로 절단 금지 · 시는 hint만 · 도메인 키 규약
+  - **세이브·로드 PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/save-load-pr-template.md`) — 진채봉 Editor
+    - PR 제목 7 스코프 (`schema`/`migrate`/`auto`/`backup`/`recovery`/`validate`/`docs`)
+    - PR 본문 7개 섹션 — 자동 감사 표(Before/After/Δ/약속) · schema 안정성 약속(하위 호환·append-only) · 마이그레이션 회복(v1 60일 보존) · 5인 인계 체크
+    - 리뷰어 행동 가이드 5항 (이소화 봉인 비협상 — 격리/레거시 60일 보존 · 4슬롯 회전 · 6슬롯 챕터 영구 백업) + ship-gate 3-AND
+  - **README §💾 세이브·로드 절 — 골격 SSOT v1.0** (`docs/release/save-load-readme-skeleton.md`) — 진채봉 Editor
+    - `README.md §💾 세이브·로드` 신설 골격 — 한눈 지표 4지표 표 · 빠른 시작 3명령 · 4중 안전망 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고
+    - 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수 명시
+    - 봉인 항목 4종 (격리/레거시 60일 · 4슬롯 회전 · 6슬롯 영구) — 이소화 비협상
+    - 선택 배지 2종 (`Save Round-Trip 100%` · `Auto Recovery 100%`) 추가 안내
+  - **세이브·로드 CHANGELOG 항목 초안 v1.0** (`docs/release/save-load-changelog-draft.md`) — 진채봉 Editor
+    - 본 항목의 출전 — 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+  - 연관 SSOT 정합:
+    - 디자인 시스템 `docs/release/design-system_save-load-system.md` (가춘운, 2026-04-28) — 6슬롯 상태 토큰 + 안심톤 카피("살짝 흔들렸네요 🛡️") + 손상 복구 다이얼로그 SSOT
+    - 아키텍처 두련사 *선禪 4계* — Schema → AutoSave → Backup → Validate (4 단계 그대로 본 문서들에 미러)
+    - 게이트 백능파 *왕복 100% · 자동 백업 복구* HOLD 결정 정합
+  - **세이브·로드 시스템 안정성 검증 — 스프린트 회고** (`docs/release/retro_save-load-stability-sprint.md`) — 진채봉 Editor
+    - 9단계 Auto 스프린트 결과 정량 정리 · Keep/Problem/Try · **8개 액션 아이템 (A1·A2·A3 P0)**
+    - **진전**: SSOT 7편 합주 재현(가춘운 디자인 + 진채봉 Editor 5편) · 코드 골격 단일 디렉터리 안착(`client/src/save/SaveManager.ts` 456 + `AutoSaveScheduler.ts` 153) · 에러 카피 16슬롯 ko/en 32줄 · 회고록 라이브러리 9편 등재
+    - **재발/후퇴 (정정 사실)**: 본 항목 상단의 *통합 완료* 표기는 SSOT 합본 한정 — 본 토픽 산출 약 **2,673 LOC가 0 커밋·워킹트리 18+ entries에 머무름** · README §💾 본문 통합·CHANGELOG 미러·`launch_checklist §2.21` 신설 모두 **Pending** · 핵심 지표 4종(*왕복 100% / 자동 복구 / 마이그레이션 호환 / 로드 검증*) **실측 0회** — *과녁 보지 않은 활* 패턴 3스프린트 연속(두련사·심요연 정량 진단)
+    - **다음 권고**: *Save-Load Round-Trip §1 — First Save, First Load* — 5커밋 분리 · e2e 라운드트립 1회 PASS · 손상 복구 1회 PASS 만으로 본 스프린트 *지연된 종결(Deferred Closure)* 풀림
 - **에테르나 크로니클 첫 30분 튜토리얼·온보딩 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Tutorial-Onboarding, 2026-04-28) — 진채봉 Editor 합본 정리
   - Phase 52에서 콘텐츠 728/728 · 어셋 1,454편을 갖췄으나, 첫 진입자가 ATB 전투/스킬/파티 시스템을 익힐 가이드가 비어 있어 손이 멎던 결을 메우고자, 사람 손에 잡히는 텍스트 에셋 5편 + README §🎓 첫 30분 절을 묶어 두옵니다.
   - 30분 약속: 핵심 시스템 5종(이동/대화/전투/스킬/세이브) 학습 커버리지 **100%** · 튜토리얼 누적 길이 **≤ 30:00** · 첫 보스 처치율 **≥ 90%** · 30분 이탈률 **≤ 15%** — `launch_checklist §2.20` SSOT 신설 완료
@@ -33,6 +291,11 @@
     - 선택 배지 2종 (`Tutorial Coverage 100%` · `First 30min ≤30:00`) 추가 안내
   - **첫 30분 CHANGELOG 항목 초안 v1.0** (`docs/release/tutorial-onboarding-changelog-draft.md`) — 진채봉 Editor
     - 본 항목의 출전 — 9단계 Auto 스프린트가 진행됨에 따라 Build/Review/Ship 단계에서 실측 수치로 _TBD_ 슬롯을 메우도록 가이드
+  - **첫 30분 튜토리얼·온보딩 — 스프린트 회고** (`docs/release/retro_tutorial-onboarding-sprint.md`) — 진채봉 Editor
+    - 9단계 Auto 스프린트 결과 정리 · Keep/Problem/Try · 6개 액션 아이템 (A1·A2·A3 P0)
+    - **진전**: 9-에이전트 협주로 20건 산출 · 단일 커밋 / **3,813 LOC** (코드 2,137 + 스타일 가이드 469 + 문서 1,113 + 미러 94) — `client/src/ui/onboarding/` 7파일 + `TutorialCoachManager` + `tutorialTelemetry` 단일 디렉터리 안착 · **5스프린트 연속 7일 커밋 0건 침묵 깨짐** (0 → 2건) · 워킹트리 **129 → 4 entries** (직전 회고 A2 96.9% 이행)
+    - **재발(절반)**: 본 토픽 핵심 지표 4종(*5종 100% / ≤30:00 / 첫 보스 ≥90% / 이탈 ≤15%*) **실측 0회** — *과녁 보지 않은 활* 패턴 일부 재발 · 1 커밋에 3,813 LOC 단일 합본으로 *분류 분리* 부재 · i18n en 24슬롯 0/24 · telemetry 실데이터 0건 (심요연 지적)
+    - **다음 권고**: *Tutorial Round-Trip §1 — First Player, First 30:00* — 첫 진입자 1명 라이브 30분 라운드트립 1회 실측만으로 본 스프린트 *지연된 종결*
 - **에테르나 크로니클 BGM·SFX 사운드 시스템 통합 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Sound-Integration, 2026-04-27) — 진채봉 Editor 합본 정리
   - Phase 52에서 비주얼 어셋 1,454개는 갖췄으나 사운드 레이어가 비어 플레이 체감이 정적이던 결을 메우고자, 사람 손에 잡히는 텍스트 에셋 5편 + README §🎵 사운드 시스템 절을 묶어 두옵니다.
   - 사운드 약속: BGM 매핑 커버리지 **100%** · 핵심 전투 SFX 커버리지 **100%** · 라이선스 위험 **0건** · SFX 평균 응답 지연 **≤ 50ms** — `launch_checklist §2.19` SSOT 신설 예정
