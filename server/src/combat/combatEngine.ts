@@ -14,6 +14,8 @@ import {
   getEffectiveAtk,
   getEffectiveDef,
   rollMiss,
+  scheduleAutoResurrect,
+  tryAutoResurrect,
   tryCheatDeath,
 } from './passiveCombatHooks';
 import type { MonsterAIConfig} from './monsterAI';
@@ -110,6 +112,18 @@ export interface CombatParticipant {
   critEchoPercent?: number;
   /** 매 tick 적군 전체에 가하는 광역 데미지 — move_damage_aura 패시브 */
   moveDamageAuraValue?: number;
+
+  // ── Phase 55-S6: auto_resurrect 패시브 ──────────────────────
+  /** 사망 후 부활 대기 tick 수 (skillSeeds.duration). 0 이면 즉시(다음 tick) */
+  autoResurrectDelay?: number;
+  /** 부활 시 hp 비율 (0~100) */
+  autoResurrectHpPercent?: number;
+  /** 잔여 부활 횟수 (전투당). addParticipant 시 chargesMax 로 초기화 */
+  autoResurrectChargesRemaining?: number;
+  /** 부활 가능 횟수 최대치 (디버그/UI 노출용) */
+  autoResurrectChargesMax?: number;
+  /** 사망 시 set 되는 부활 예약 tick. 부활 후 undefined */
+  resurrectAtTick?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -256,13 +270,16 @@ export class CombatEngine {
       throw new Error('전투 진행 중에는 참가자를 추가할 수 없습니다.');
     }
 
-    // P55-S3: cheat_death 잔여 횟수 = 최대치(전투당 사용 가능). addParticipant 가 정식 진입점.
+    // P55-S3: cheat_death 잔여 횟수 = 최대치. P55-S6: auto_resurrect 도 동일 패턴.
     const cheatDeathInit = p.cheatDeathChargesMax ?? 0;
+    const autoRezInit = p.autoResurrectChargesMax ?? 0;
     this.participants.set(p.id, {
       ...p,
       atbGauge: 0,
       alive: true,
       cheatDeathChargesRemaining: cheatDeathInit,
+      autoResurrectChargesRemaining: autoRezInit,
+      resurrectAtTick: undefined,
     });
     this.manaManager.init(p.id, p.mp, p.maxMp);
     this.logger.registerParticipant(p.id, p.name, p.isMonster);
@@ -339,6 +356,15 @@ export class CombatEngine {
     const actions: ActionResult[] = [];
     const phaseEvents: PhaseTransitionEvent[] = [];
     const enrageEvents: EnrageEvent[] = [];
+
+    // 0. P55-S6: auto_resurrect — 직전 tick 끝에 예약된 부활 처리
+    for (const p of this.participants.values()) {
+      if (p.alive) continue;
+      if (tryAutoResurrect(p, this.currentTick)) {
+        p.atbGauge = 0;
+        this.logger.logHeal(p.id, p.id, p.hp, 'auto_resurrect');
+      }
+    }
 
     // 1. ATB 게이지 충전
     for (const p of this.participants.values()) {
@@ -476,7 +502,15 @@ export class CombatEngine {
       ai.processTick();
     }
 
-    // 7. 승패 판정
+    // 6.5 P55-S6: 이번 tick 에 사망한 참가자 중 auto_resurrect 가능한 자 부활 예약
+    for (const p of this.participants.values()) {
+      if (p.alive) continue;
+      if (p.resurrectAtTick !== undefined) continue;
+      scheduleAutoResurrect(p, this.currentTick);
+    }
+
+    // 7. 승패 판정 — 부활 예약된 사망자도 "alive=false" 로 카운트되어 KO 인정.
+    //    승패 직후 그 다음 tick 에서 부활하면 전투 재개됨. (즉시 패배 방지하려면 별도 체크 필요)
     const combatEnded = this.checkWinCondition();
     let winner: 'party' | 'monsters' | 'draw' | undefined;
     let rewards: RewardResult | undefined;

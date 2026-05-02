@@ -344,6 +344,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           // P55-S5 Phase 4 (부분) — 2종
           critEchoPercent: passiveMods?.critEchoPercent ?? 0,
           moveDamageAuraValue: passiveMods?.moveDamageAuraValue ?? 0,
+          // P55-S6 auto_resurrect — duration + value + charges
+          autoResurrectDelay: passiveMods?.autoResurrectDelay ?? 0,
+          autoResurrectHpPercent: passiveMods?.autoResurrectHpPercent ?? 0,
+          autoResurrectChargesMax: passiveMods?.autoResurrectChargesMax ?? 0,
         });
       }
 
