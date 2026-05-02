@@ -340,11 +340,13 @@ export class StatusEffectManager {
    * 매 서버 틱마다 호출. 지속시간 감소 + DoT 처리
    * @param deltaSec 경과 시간 (초)
    * @param getMaxHp targetId → 최대 HP 조회 함수
+   * @param getDotMultiplier (sourceId, effectId) → DoT 데미지 배수 (P55-S7 poison_amplify 등)
    * @returns 이번 틱에 발생한 DoT 데미지 목록
    */
   tick(
     deltaSec: number,
     getMaxHp: (targetId: string) => number,
+    getDotMultiplier?: (sourceId: string, effectId: EffectId) => number,
   ): TickDamageResult[] {
     const damages: TickDamageResult[] = [];
 
@@ -370,7 +372,10 @@ export class StatusEffectManager {
 
           if (eff.tickTimer <= 0) {
             eff.tickTimer += def.tickInterval;
-            const dmg = this._calculateTickDamage(eff, getMaxHp(targetId));
+            const baseDmg = this._calculateTickDamage(eff, getMaxHp(targetId));
+            // P55-S7: 시전자(applier)의 DoT 증폭 modifier 적용 — poison_amplify 등
+            const multiplier = getDotMultiplier ? getDotMultiplier(eff.sourceId, eff.effectId) : 1;
+            const dmg = Math.floor(baseDmg * Math.max(0, multiplier));
             if (dmg > 0) {
               damages.push({
                 targetId,
