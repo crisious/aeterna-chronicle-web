@@ -336,6 +336,11 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           mpRegenPerTurn: passiveMods?.mpRegenPerTurn ?? 0,
           lowHpAtkBonusPercent: passiveMods?.lowHpAtkBonusPercent ?? 0,
           defenseUpConditionalPercent: passiveMods?.defenseUpConditionalPercent ?? 0,
+          // P55-S3 trigger passive modifiers (Phase 3 — 4종)
+          reflectPercent: passiveMods?.reflectPercent ?? 0,
+          projectileReflectPercent: passiveMods?.projectileReflectPercent ?? 0,
+          hpRegenPerTurn: passiveMods?.hpRegenPerTurn ?? 0,
+          cheatDeathChargesMax: passiveMods?.cheatDeathChargesMax ?? 0,
         });
       }
 

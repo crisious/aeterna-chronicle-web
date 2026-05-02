@@ -4,7 +4,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { DamageType, ElementType } from './damageCalculator';
 import { calculateDamage } from './damageCalculator';
-import { applyMpRegen, getEffectiveAtk, getEffectiveDef, rollMiss } from './passiveCombatHooks';
+import {
+  applyHpRegen,
+  applyMpRegen,
+  computeProjectileReflectDamage,
+  computeReflectDamage,
+  getEffectiveAtk,
+  getEffectiveDef,
+  rollMiss,
+  tryCheatDeath,
+} from './passiveCombatHooks';
 import type { MonsterAIConfig} from './monsterAI';
 import { MonsterAIEngine } from './monsterAI';
 import type { RewardResult, DropEntry } from './rewardEngine';
@@ -81,6 +90,18 @@ export interface CombatParticipant {
   lowHpAtkBonusPercent?: number;
   /** 피격 시 임시 DEF 증가율 (defense_up_conditional 패시브 누적) */
   defenseUpConditionalPercent?: number;
+
+  // ── Phase 55-S3: 트리거 패시브 modifier ──────────────────────
+  /** physical 피격 시 attacker 에 반사 비율(%) — reflect 패시브 */
+  reflectPercent?: number;
+  /** magical 피격 시 attacker 에 반사 비율(%) — projectile_reflect 패시브 */
+  projectileReflectPercent?: number;
+  /** 매 턴 HP 회복량 — battle_regen 패시브 */
+  hpRegenPerTurn?: number;
+  /** 사망 모면 잔여 횟수 — cheat_death 패시브. addParticipant 시 cheatDeathChargesMax 로 초기화. */
+  cheatDeathChargesRemaining?: number;
+  /** 사망 모면 최대 횟수 (디버그/UI 노출용) */
+  cheatDeathChargesMax?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -227,7 +248,14 @@ export class CombatEngine {
       throw new Error('전투 진행 중에는 참가자를 추가할 수 없습니다.');
     }
 
-    this.participants.set(p.id, { ...p, atbGauge: 0, alive: true });
+    // P55-S3: cheat_death 잔여 횟수 = 최대치(전투당 사용 가능). addParticipant 가 정식 진입점.
+    const cheatDeathInit = p.cheatDeathChargesMax ?? 0;
+    this.participants.set(p.id, {
+      ...p,
+      atbGauge: 0,
+      alive: true,
+      cheatDeathChargesRemaining: cheatDeathInit,
+    });
     this.manaManager.init(p.id, p.mp, p.maxMp);
     this.logger.registerParticipant(p.id, p.name, p.isMonster);
 
@@ -315,10 +343,11 @@ export class CombatEngine {
     this.cooldownManager.tick();
     this.manaManager.tickRegen();
 
-    // 2.5 P55-S2: passive mp_regen — 살아있는 참가자 중 mpRegenPerTurn>0 인 경우 회복
+    // 2.5 P55-S2/S3: passive mp_regen + hp_regen (battle_regen) — 살아있는 참가자만
     for (const p of this.participants.values()) {
       if (!p.alive) continue;
       applyMpRegen(p);
+      applyHpRegen(p);
     }
 
     // 3. 상태이상 틱
@@ -513,10 +542,30 @@ export class CombatEngine {
       levelDifference: actor.level - target.level,
     });
 
-    target.hp = Math.max(0, target.hp - result.damage);
-    if (target.hp <= 0) {
-      target.alive = false;
-      this.logger.logDeath(target.id, actor.id);
+    // P55-S3: cheat_death — fatal damage 시 hp=1 로 유지 (1회 차감). 발동 시 alive 유지.
+    const cheatedDeath = tryCheatDeath(target, result.damage);
+    if (!cheatedDeath) {
+      target.hp = Math.max(0, target.hp - result.damage);
+      if (target.hp <= 0) {
+        target.alive = false;
+        this.logger.logDeath(target.id, actor.id);
+      }
+    }
+    this.logger.logDamage(actor.id, target.id, result.damage, result.isCritical);
+
+    // P55-S3: reflect — physical 피격이면 attacker 에 반사 데미지 (살아있을 때만)
+    const reflectDmg = computeReflectDamage(target, result.damage);
+    if (reflectDmg > 0 && actor.alive) {
+      // attacker 에도 cheat_death 적용 (자기 패시브)
+      const attackerCheated = tryCheatDeath(actor, reflectDmg);
+      if (!attackerCheated) {
+        actor.hp = Math.max(0, actor.hp - reflectDmg);
+        if (actor.hp <= 0) {
+          actor.alive = false;
+          this.logger.logDeath(actor.id, target.id);
+        }
+      }
+      this.logger.logDamage(target.id, actor.id, reflectDmg, false);
     }
 
     // 어그로 추가
@@ -529,8 +578,6 @@ export class CombatEngine {
     if (!actor.isMonster) {
       comboManager.recordSkillUse(actor.id, 'basic_attack', actor.classId, 1);
     }
-
-    this.logger.logDamage(actor.id, target.id, result.damage, result.isCritical);
 
     return {
       actorId: actor.id,
@@ -623,10 +670,30 @@ export class CombatEngine {
       levelDifference: actor.level - target.level,
     });
 
-    target.hp = Math.max(0, target.hp - result.damage);
-    if (target.hp <= 0) {
-      target.alive = false;
-      this.logger.logDeath(target.id, actor.id);
+    // P55-S3: cheat_death — fatal damage 시 hp=1 유지
+    const cheatedDeath = tryCheatDeath(target, result.damage);
+    if (!cheatedDeath) {
+      target.hp = Math.max(0, target.hp - result.damage);
+      if (target.hp <= 0) {
+        target.alive = false;
+        this.logger.logDeath(target.id, actor.id);
+      }
+    }
+
+    // P55-S3: reflect / projectile_reflect — physical/magical 분기
+    const reflectDmg = dmgType === 'physical'
+      ? computeReflectDamage(target, result.damage)
+      : computeProjectileReflectDamage(target, result.damage);
+    if (reflectDmg > 0 && actor.alive) {
+      const attackerCheated = tryCheatDeath(actor, reflectDmg);
+      if (!attackerCheated) {
+        actor.hp = Math.max(0, actor.hp - reflectDmg);
+        if (actor.hp <= 0) {
+          actor.alive = false;
+          this.logger.logDeath(actor.id, target.id);
+        }
+      }
+      this.logger.logDamage(target.id, actor.id, reflectDmg, false, undefined, skill.element);
     }
 
     // 상태이상 적용
