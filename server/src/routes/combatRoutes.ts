@@ -341,6 +341,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           projectileReflectPercent: passiveMods?.projectileReflectPercent ?? 0,
           hpRegenPerTurn: passiveMods?.hpRegenPerTurn ?? 0,
           cheatDeathChargesMax: passiveMods?.cheatDeathChargesMax ?? 0,
+          // P55-S5 Phase 4 (부분) — 2종
+          critEchoPercent: passiveMods?.critEchoPercent ?? 0,
+          moveDamageAuraValue: passiveMods?.moveDamageAuraValue ?? 0,
         });
       }
 

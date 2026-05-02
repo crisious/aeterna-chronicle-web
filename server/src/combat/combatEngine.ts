@@ -6,7 +6,9 @@ import type { DamageType, ElementType } from './damageCalculator';
 import { calculateDamage } from './damageCalculator';
 import {
   applyHpRegen,
+  applyMoveDamageAura,
   applyMpRegen,
+  computeCritEchoDamage,
   computeProjectileReflectDamage,
   computeReflectDamage,
   getEffectiveAtk,
@@ -102,6 +104,12 @@ export interface CombatParticipant {
   cheatDeathChargesRemaining?: number;
   /** 사망 모면 최대 횟수 (디버그/UI 노출용) */
   cheatDeathChargesMax?: number;
+
+  // ── Phase 55-S5: Phase 4 부분 — crit_echo / move_damage_aura ──
+  /** 크리티컬 시 추가 데미지 비율(%) — crit_echo 패시브 */
+  critEchoPercent?: number;
+  /** 매 tick 적군 전체에 가하는 광역 데미지 — move_damage_aura 패시브 */
+  moveDamageAuraValue?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -350,6 +358,23 @@ export class CombatEngine {
       applyHpRegen(p);
     }
 
+    // 2.6 P55-S5: move_damage_aura — 살아있는 party member 가 적군 전체에 광역 데미지
+    const partyAlive = Array.from(this.participants.values()).filter(p => p.alive && p.team === 'party');
+    const monstersAlive = Array.from(this.participants.values()).filter(p => p.alive && p.team === 'monsters');
+    for (const ally of partyAlive) {
+      if ((ally.moveDamageAuraValue ?? 0) <= 0) continue;
+      const auraResults = applyMoveDamageAura(ally, monstersAlive);
+      for (const { enemyId, damage } of auraResults) {
+        const enemy = this.participants.get(enemyId);
+        if (!enemy) continue;
+        if (enemy.hp <= 0) {
+          enemy.alive = false;
+          this.logger.logDeath(enemy.id, ally.id);
+        }
+        this.logger.logDamage(ally.id, enemy.id, damage, false);
+      }
+    }
+
     // 3. 상태이상 틱
     const tickResults = statusEffectManager.tick(1, (targetId: string) => {
       const target = this.participants.get(targetId);
@@ -553,6 +578,20 @@ export class CombatEngine {
     }
     this.logger.logDamage(actor.id, target.id, result.damage, result.isCritical);
 
+    // P55-S5: crit_echo — 크리티컬 시 추가 데미지 (target 에 한 번 더, 추가 crit roll 없음)
+    const echoDmg = computeCritEchoDamage(actor, result.isCritical, result.damage);
+    if (echoDmg > 0 && target.alive) {
+      const echoCheatedDeath = tryCheatDeath(target, echoDmg);
+      if (!echoCheatedDeath) {
+        target.hp = Math.max(0, target.hp - echoDmg);
+        if (target.hp <= 0) {
+          target.alive = false;
+          this.logger.logDeath(target.id, actor.id);
+        }
+      }
+      this.logger.logDamage(actor.id, target.id, echoDmg, false);
+    }
+
     // P55-S3: reflect — physical 피격이면 attacker 에 반사 데미지 (살아있을 때만)
     const reflectDmg = computeReflectDamage(target, result.damage);
     if (reflectDmg > 0 && actor.alive) {
@@ -678,6 +717,20 @@ export class CombatEngine {
         target.alive = false;
         this.logger.logDeath(target.id, actor.id);
       }
+    }
+
+    // P55-S5: crit_echo — 크리티컬 시 추가 데미지 (스킬 데미지에도 적용)
+    const echoDmg = computeCritEchoDamage(actor, result.isCritical, result.damage);
+    if (echoDmg > 0 && target.alive) {
+      const echoCheatedDeath = tryCheatDeath(target, echoDmg);
+      if (!echoCheatedDeath) {
+        target.hp = Math.max(0, target.hp - echoDmg);
+        if (target.hp <= 0) {
+          target.alive = false;
+          this.logger.logDeath(target.id, actor.id);
+        }
+      }
+      this.logger.logDamage(actor.id, target.id, echoDmg, false, skillId, skill.element);
     }
 
     // P55-S3: reflect / projectile_reflect — physical/magical 분기
