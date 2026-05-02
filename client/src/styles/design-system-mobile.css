@@ -1,0 +1,469 @@
+/**
+ * design-system-mobile.css — 에테르나 크로니클 모바일 반응형 디자인 시스템
+ *
+ * Single Source of Truth (CSS 측면):
+ *   - 4종 viewport 토큰: client/src/config/mobile-viewport.ts 와 1:1 미러
+ *   - DESIGN.md §8.4 모바일 viewport 4종 (360/375/414/430) 미러
+ *
+ * SSOT 위계 (DESIGN.md ⚠️ 절):
+ *   1차 — DESIGN.md §8 반응형 브레이크포인트
+ *   2차 — design-tokens.ts (코어)
+ *   3차 — mobile-viewport.ts (토픽 확장)
+ *   4차 (본 파일 짝꿍) — CSS 미러
+ *
+ * 사용처:
+ *   - index.html (모바일 진입 시 즉시 적용)
+ *   - HTML 오버레이 (HUD, 메뉴, 모달, 대화창)
+ *   - Phaser 캔버스 외 모든 DOM
+ *
+ * 약속 4지표 (스프린트 토픽):
+ *   1) 4종 viewport(360/375/414/430)에서 핵심 시나리오 100% 동작
+ *   2) 터치 인식 지연 ≤ 100ms (touch-action: manipulation 통한 300ms 탭 지연 제거)
+ *   3) HUD·메뉴·전투 UI safe area·노치 회피
+ *   4) 텍스트 가독성 최소 14px (--font-md 이하 사용 금지)
+ *
+ * 참조: DESIGN.md §8, mobile-viewport.ts
+ * 작성: 가춘운 (CMO/디자인) · 2026-04-29
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 모바일 디자인 토큰 (CSS Custom Properties)
+   mobile-viewport.ts MOBILE_VIEWPORTS 와 1:1 미러
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* ── 모바일 viewport 4종 너비 SSOT ── */
+  --vp-sm-360: 360px;
+  --vp-sm-375: 375px;
+  --vp-md-414: 414px;
+  --vp-md-430: 430px;
+  --vp-mobile-max: 430px;
+  --vp-tablet-min: 431px;
+
+  /* ── 데스크탑 기준 너비 (폰트 스케일 분모 SSOT) ── */
+  --vp-desktop-ref: 1920px;
+
+  /* ── 폰트 스케일 (mobile-viewport.ts fontScale 미러) ── */
+  --font-scale-sm-360: 0.78;
+  --font-scale-sm-375: 0.82;
+  --font-scale-md-414: 0.88;
+  --font-scale-md-430: 0.92;
+
+  /* ── 텍스트 최소 가독성 (토픽 지표 4) ── */
+  --font-min-legible: 14px;
+
+  /* ── Safe area inset (env() 우선, fallback 값) ── */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+
+  /* ── 터치 타깃 최소 크기 (WCAG 2.5.5 AA = 44px, AAA = 48px) ── */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+
+  /* ── 터치 입력 지연 예산 (토픽 지표) ── */
+  --touch-latency-budget: 100ms;
+
+  /* ── 모바일 HUD 게이지 높이 (데스크탑 대비 축소) ── */
+  --hud-gauge-height-mobile: 6px;
+
+  /* ── 모바일 대화창 (DESIGN.md §8.3 < 768 행 기반) ── */
+  --dialogue-mobile-padding-x: 16px;
+  --dialogue-mobile-height: 200px;
+  --dialogue-portrait-mobile: 48px;
+
+  /* ── 롱프레스 임계 (터치 입력 매핑 SSOT) ── */
+  --longpress-threshold-ms: 500ms;
+
+  /* ── 드래그 임계 (탭 vs 드래그 분기 거리, px) ── */
+  --drag-threshold-px: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 모바일 진입 게이트 — 너비 ≤ 430 OR coarse pointer
+   isMobileMode() (mobile-viewport.ts) 와 동일 의도
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px), (pointer: coarse) and (max-width: 768px) {
+  /* 2.1 베이스 — touch-action 으로 300ms 탭 지연 제거 (지표 2) */
+  html {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    /* 노치/홀펀치 회피 — env() 폴백 포함 */
+    padding-top:    var(--safe-top);
+    padding-right:  var(--safe-right);
+    padding-bottom: var(--safe-bottom);
+    padding-left:   var(--safe-left);
+    overscroll-behavior: none; /* 풀투리프레시·바운스 차단 */
+  }
+
+  /* 2.2 텍스트 가독성 최소 14px 강제 (지표 4)
+        --font-xs(10), --font-sm(12) 사용 시 자동 14px 으로 승격 */
+  .text-xs,
+  .text-sm {
+    font-size: var(--font-min-legible) !important;
+    line-height: var(--lh-normal);
+  }
+
+  /* 2.3 터치 타깃 최소 44px 보장 (WCAG 2.5.5) */
+  button,
+  .btn,
+  [role="button"],
+  a.btn,
+  .menu-item,
+  .dialogue-choice {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    touch-action: manipulation;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. Viewport-specific 분기 — 4종 (360/375/414/430)
+   각 분기는 mobile-viewport.ts MOBILE_VIEWPORTS[id] 와 1:1
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 3.1 sm-360 (compact) — Galaxy S series, 갤폴드 외부 */
+@media (min-width: 360px) and (max-width: 374px) {
+  :root {
+    --vp-active: 'sm-360';
+    --vp-active-width: 360px;
+    --font-scale-active: var(--font-scale-sm-360);
+  }
+  /* 가장 좁은 화면 — HUD 미니맵 숨김, 게이지 1열 스택 */
+  .hud-minimap        { display: none; }
+  .hud-stack          { flex-direction: column; gap: var(--space-1); }
+  .dialogue-choices   { grid-template-columns: 1fr; }
+}
+
+/* 3.2 sm-375 (compact) — iPhone X/11 Pro/12 mini/13 mini */
+@media (min-width: 375px) and (max-width: 413px) {
+  :root {
+    --vp-active: 'sm-375';
+    --vp-active-width: 375px;
+    --font-scale-active: var(--font-scale-sm-375);
+  }
+  .hud-minimap        { display: none; }
+  .dialogue-choices   { grid-template-columns: 1fr; }
+}
+
+/* 3.3 md-414 (standard) — iPhone XR/11/Plus 시리즈, 다수 안드로이드 */
+@media (min-width: 414px) and (max-width: 429px) {
+  :root {
+    --vp-active: 'md-414';
+    --vp-active-width: 414px;
+    --font-scale-active: var(--font-scale-md-414);
+  }
+  /* 미니맵 축소 표시 */
+  .hud-minimap        { transform: scale(0.7); transform-origin: top right; }
+  .dialogue-choices   { grid-template-columns: 1fr; }
+}
+
+/* 3.4 md-430 (standard) — iPhone 14/15/16 Pro Max, 최신 대형 */
+@media (min-width: 430px) and (max-width: 479px) {
+  :root {
+    --vp-active: 'md-430';
+    --vp-active-width: 430px;
+    --font-scale-active: var(--font-scale-md-430);
+  }
+  .hud-minimap        { transform: scale(0.8); transform-origin: top right; }
+  /* 가장 넓은 모바일 — 선택지 2열 가능 */
+  .dialogue-choices   { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. HUD 모바일 변형 (safe area + 노치 회피)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) {
+  .hud-root {
+    position: fixed;
+    inset: 0;
+    pointer-events: none; /* HUD 컨테이너는 터치 통과, 자식만 활성화 */
+  }
+
+  /* 상단 HUD — 노치 아래로 밀기 */
+  .hud-top {
+    position: absolute;
+    top: calc(var(--safe-top) + var(--space-2));
+    left: calc(var(--safe-left) + var(--space-3));
+    right: calc(var(--safe-right) + var(--space-3));
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 40px;
+  }
+
+  /* 하단 HUD — 홈 인디케이터 회피 */
+  .hud-bottom {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + var(--space-2));
+    left: calc(var(--safe-left) + var(--space-3));
+    right: calc(var(--safe-right) + var(--space-3));
+    pointer-events: auto;
+  }
+
+  /* HP/MP 게이지 — 데스크탑 대비 축소 */
+  .gauge-hp,
+  .gauge-mp {
+    height: var(--hud-gauge-height-mobile);
+    border-radius: 3px;
+  }
+
+  /* 게이지 라벨 — 14px 최소 */
+  .gauge-label {
+    font-size: var(--font-min-legible);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. 메뉴 모바일 변형 — 풀스크린 오버레이 패턴
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) {
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    /* safe area 내부 패딩 */
+    padding-top:    calc(var(--safe-top) + var(--space-4));
+    padding-right:  calc(var(--safe-right) + var(--space-4));
+    padding-bottom: calc(var(--safe-bottom) + var(--space-4));
+    padding-left:   calc(var(--safe-left) + var(--space-4));
+    background: var(--bg-primary);
+    z-index: var(--z-modal);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-target-comfortable); /* 48px — 메뉴는 더 여유 */
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-lg);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .menu-item:active {
+    background: var(--bg-hover);
+  }
+
+  /* 메뉴 닫기 버튼 — 우상단 고정, 터치 타깃 보장 */
+  .menu-close {
+    position: absolute;
+    top: calc(var(--safe-top) + var(--space-2));
+    right: calc(var(--safe-right) + var(--space-2));
+    width: var(--touch-target-comfortable);
+    height: var(--touch-target-comfortable);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. 전투 UI 모바일 변형 — ATB 게이지 + 스킬 패널
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) {
+  .battle-root {
+    position: fixed;
+    inset: 0;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  /* ATB 게이지 컬럼 — 우하단 4명 수직 스택 */
+  .battle-atb-column {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + 60px); /* 스킬 패널 위 */
+    right: calc(var(--safe-right) + var(--space-3));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  /* 스킬 패널 — 하단 가로 스크롤 */
+  .battle-skill-panel {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + var(--space-2));
+    left: calc(var(--safe-left) + var(--space-2));
+    right: calc(var(--safe-right) + var(--space-2));
+    height: 56px;
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: var(--space-1);
+  }
+
+  .battle-skill-icon {
+    flex: 0 0 var(--touch-target-comfortable);
+    height: var(--touch-target-comfortable);
+    scroll-snap-align: start;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+    touch-action: manipulation;
+  }
+
+  .battle-skill-icon:active {
+    border-color: var(--border-accent);
+    box-shadow: var(--glow-gold);
+  }
+
+  /* 적 타깃 인디케이터 — 터치 영역 확대 (가시 크기는 유지) */
+  .battle-enemy-target {
+    position: relative;
+  }
+  .battle-enemy-target::before {
+    content: '';
+    position: absolute;
+    inset: -12px; /* 가시 영역 + 12px 패딩 = 터치 타깃 확장 */
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. 대화창 모바일 변형 (DESIGN.md §8.3 < 768 행 미러 + 4종 정밀화)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) {
+  .dialogue-box {
+    position: fixed;
+    bottom: calc(var(--safe-bottom) + var(--space-3));
+    left:   calc(var(--safe-left) + var(--dialogue-mobile-padding-x));
+    right:  calc(var(--safe-right) + var(--dialogue-mobile-padding-x));
+    height: var(--dialogue-mobile-height);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    padding: var(--space-3) var(--space-4);
+    box-shadow: var(--shadow-modal);
+    z-index: var(--z-dialogue);
+  }
+
+  .dialogue-portrait {
+    width:  var(--dialogue-portrait-mobile);
+    height: var(--dialogue-portrait-mobile);
+  }
+
+  .dialogue-name {
+    color: var(--text-accent);
+    font-size: var(--font-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .dialogue-text {
+    font-size: var(--font-min-legible); /* 14px 최소 */
+    line-height: var(--lh-loose);
+    color: var(--text-primary);
+  }
+
+  .dialogue-choices {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .dialogue-choice {
+    padding: var(--space-3);
+    background: var(--bg-button);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: var(--font-min-legible);
+    text-align: left;
+    min-height: var(--touch-target-min);
+  }
+
+  .dialogue-choice:active {
+    background: var(--bg-hover);
+    border-color: var(--border-accent);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. 터치 입력 매핑 시각 피드백 SSOT
+   (탭→클릭 / 드래그→이동 / 롱프레스→메뉴)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px), (pointer: coarse) {
+  /* 탭 — :active 즉시 반응 (지연 0ms 목표) */
+  .touch-tappable {
+    transition: background var(--transition-fast),
+                transform var(--transition-fast);
+    touch-action: manipulation;
+  }
+  .touch-tappable:active {
+    transform: scale(0.97);
+    background: var(--bg-hover);
+  }
+
+  /* 드래그 — pan-x/y 명시로 브라우저 제스처 차단 */
+  .touch-draggable {
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .touch-draggable:active {
+    cursor: grabbing;
+  }
+
+  /* 롱프레스 — 시각 컨펌 (500ms 후 발광) */
+  .touch-longpressable {
+    position: relative;
+    touch-action: manipulation;
+  }
+  .touch-longpressable.is-pressing::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--accent-ether);
+    border-radius: 8px;
+    animation: longpress-pulse var(--longpress-threshold-ms) ease-out;
+    pointer-events: none;
+  }
+
+  @keyframes longpress-pulse {
+    0%   { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); box-shadow: var(--glow-ether); }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. 가로/세로 회전 분기
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) and (orientation: landscape) {
+  /* 가로 모드 — 대화창 높이 축소, 좌측 portrait, 우측 텍스트 */
+  .dialogue-box {
+    height: 120px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+  }
+
+  .dialogue-choices {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* HUD 상하단 동시 표시 가능 (세로 여유 부족 시 우측으로 이동) */
+  .hud-bottom {
+    bottom: calc(var(--safe-bottom) + var(--space-1));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. 접근성 — reduce-motion 우선
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) and (prefers-reduced-motion: reduce) {
+  .touch-tappable,
+  .touch-tappable:active {
+    transition: none;
+    transform: none;
+  }
+  .touch-longpressable.is-pressing::after {
+    animation: none;
+    opacity: 1;
+  }
+}
