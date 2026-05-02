@@ -1,0 +1,242 @@
+/**
+ * 유닛 테스트 — skillAdapter (P56-S1)
+ *
+ * DB Skill → combat SkillDefinition 매핑 회귀.
+ */
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
+// Mock prisma BEFORE imports
+vi.mock('../../server/src/db', () => ({
+  prisma: {
+    skill: { findMany: vi.fn() },
+  },
+}));
+
+import { prisma } from '../../server/src/db';
+import {
+  extractStatusEffect,
+  inferDamageType,
+  inferTargetCount,
+  loadCombatSkillsFromDb,
+  mapDbSkillToCombatDef,
+  mapElement,
+  type DbSkillLike,
+} from '../../server/src/combat/skillAdapter';
+
+const findManyMock = prisma.skill.findMany as unknown as ReturnType<typeof vi.fn>;
+
+beforeEach(() => {
+  findManyMock.mockReset();
+});
+
+function makeDbSkill(overrides: Partial<DbSkillLike> = {}): DbSkillLike {
+  return {
+    code: 'ek_ether_slash',
+    name: '에테르 슬래시',
+    description: '에테르로 강화된 참격',
+    class: 'ether_knight',
+    type: 'active',
+    element: 'aether',
+    damage: 45,
+    damageScale: 1.2,
+    mpCost: 15,
+    cooldown: 3,
+    targetType: 'single',
+    aoeRadius: null,
+    effect: null,
+    requiredLevel: 1,
+    ...overrides,
+  };
+}
+
+// ─── mapElement ───────────────────────────────────────────────
+
+describe('mapElement', () => {
+  test('직접 매핑: fire/water/wind/earth/light/dark/neutral', () => {
+    expect(mapElement('fire')).toBe('fire');
+    expect(mapElement('water')).toBe('water');
+    expect(mapElement('wind')).toBe('wind');
+    expect(mapElement('earth')).toBe('earth');
+    expect(mapElement('light')).toBe('light');
+    expect(mapElement('dark')).toBe('dark');
+    expect(mapElement('neutral')).toBe('neutral');
+  });
+
+  test('DB 만의 element → 가까운 combat 매핑', () => {
+    expect(mapElement('aether')).toBe('light');
+    expect(mapElement('time')).toBe('neutral');
+    expect(mapElement('void')).toBe('dark');
+    expect(mapElement('ice')).toBe('water');
+  });
+
+  test('알 수 없는 element → neutral fallback', () => {
+    expect(mapElement('quantum')).toBe('neutral');
+    expect(mapElement('')).toBe('neutral');
+  });
+});
+
+// ─── inferDamageType ──────────────────────────────────────────
+
+describe('inferDamageType', () => {
+  test('클래스 기본값', () => {
+    expect(inferDamageType({ class: 'ether_knight', effect: null })).toBe('physical');
+    expect(inferDamageType({ class: 'memory_breaker', effect: null })).toBe('physical');
+    expect(inferDamageType({ class: 'shadow_weaver', effect: null })).toBe('physical');
+    expect(inferDamageType({ class: 'memory_weaver', effect: null })).toBe('magical');
+    expect(inferDamageType({ class: 'time_guardian', effect: null })).toBe('magical');
+    expect(inferDamageType({ class: 'void_wanderer', effect: null })).toBe('magical');
+  });
+
+  test('알 수 없는 클래스 → physical fallback', () => {
+    expect(inferDamageType({ class: 'unknown', effect: null })).toBe('physical');
+  });
+
+  test('effect.type silence/curse → magical override', () => {
+    expect(inferDamageType({ class: 'memory_breaker', effect: { type: 'silence' } })).toBe('magical');
+    expect(inferDamageType({ class: 'ether_knight', effect: { type: 'curse' } })).toBe('magical');
+  });
+});
+
+// ─── inferTargetCount ─────────────────────────────────────────
+
+describe('inferTargetCount', () => {
+  test('targetType → 숫자', () => {
+    expect(inferTargetCount('single')).toBe(1);
+    expect(inferTargetCount('self')).toBe(1);
+    expect(inferTargetCount('aoe')).toBe(-1);
+    expect(inferTargetCount('multi')).toBe(3);
+    expect(inferTargetCount('unknown')).toBe(1);
+  });
+});
+
+// ─── extractStatusEffect ──────────────────────────────────────
+
+describe('extractStatusEffect', () => {
+  test('null/non-object → null', () => {
+    expect(extractStatusEffect(null)).toBeNull();
+    expect(extractStatusEffect(undefined)).toBeNull();
+    expect(extractStatusEffect('string')).toBeNull();
+    expect(extractStatusEffect(42)).toBeNull();
+  });
+
+  test('passive effect (status 가 아님) → null', () => {
+    expect(extractStatusEffect({ type: 'mp_regen', value: 5 })).toBeNull();
+    expect(extractStatusEffect({ type: 'reflect', value: 20 })).toBeNull();
+    expect(extractStatusEffect({ type: 'lifesteal', value: 50 })).toBeNull();
+  });
+
+  test('status effect type 추출 + value 가 chance', () => {
+    expect(extractStatusEffect({ type: 'stun', value: 30 })).toEqual({ effect: 'stun', chance: 30 });
+    expect(extractStatusEffect({ type: 'poison', value: 70 })).toEqual({ effect: 'poison', chance: 70 });
+    expect(extractStatusEffect({ type: 'burn' })).toEqual({ effect: 'burn', chance: 50 }); // default
+  });
+
+  test('value 가 범위 밖 → default 50', () => {
+    expect(extractStatusEffect({ type: 'stun', value: 200 })).toEqual({ effect: 'stun', chance: 50 });
+    expect(extractStatusEffect({ type: 'stun', value: -10 })).toEqual({ effect: 'stun', chance: 50 });
+    expect(extractStatusEffect({ type: 'stun', value: 0 })).toEqual({ effect: 'stun', chance: 50 });
+  });
+});
+
+// ─── mapDbSkillToCombatDef ────────────────────────────────────
+
+describe('mapDbSkillToCombatDef', () => {
+  test('기본 active skill — ether_knight aether single', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill());
+    expect(def).toEqual({
+      id: 'ek_ether_slash',
+      name: '에테르 슬래시',
+      description: '에테르로 강화된 참격',
+      classId: 'ether_knight',
+      damageType: 'physical',
+      element: 'light', // aether → light
+      damageMultiplier: 1.2,
+      manaCost: 15,
+      cooldownTicks: 3,
+      targetCount: 1,
+      requiredLevel: 1,
+    });
+  });
+
+  test('aoe magical skill — memory_weaver chronosphere', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({
+      code: 'mw_chronosphere',
+      name: '크로노스피어',
+      class: 'memory_weaver',
+      element: 'time',
+      targetType: 'aoe',
+      aoeRadius: 5,
+      damageScale: 2.5,
+      cooldown: 6,
+    }));
+    expect(def.id).toBe('mw_chronosphere');
+    expect(def.classId).toBe('memory_weaver');
+    expect(def.damageType).toBe('magical');
+    expect(def.element).toBe('neutral'); // time → neutral
+    expect(def.targetCount).toBe(-1);    // aoe → -1
+    expect(def.cooldownTicks).toBe(6);
+  });
+
+  test('status effect skill — sw_poison_blade', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({
+      code: 'sw_poison_blade',
+      class: 'shadow_weaver',
+      element: 'dark',
+      effect: { type: 'poison', value: 70 },
+    }));
+    expect(def.statusEffect).toBe('poison');
+    expect(def.statusEffectChance).toBe(70);
+    expect(def.damageType).toBe('physical');
+    expect(def.element).toBe('dark');
+  });
+
+  test('passive effect 가 statusEffect 로 흘러가지 않음', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({
+      code: 'sw_soul_drain',
+      class: 'shadow_weaver',
+      effect: { type: 'lifesteal', value: 50 },
+    }));
+    expect(def.statusEffect).toBeUndefined();
+    expect(def.statusEffectChance).toBeUndefined();
+  });
+
+  test('cooldown floor — 소수점 처리', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({ cooldown: 7.8 }));
+    expect(def.cooldownTicks).toBe(7);
+  });
+
+  test('cooldown 음수 보호', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({ cooldown: -1 }));
+    expect(def.cooldownTicks).toBe(0);
+  });
+});
+
+// ─── loadCombatSkillsFromDb ───────────────────────────────────
+
+describe('loadCombatSkillsFromDb', () => {
+  test('active/ultimate 만 쿼리 + Map 반환', async () => {
+    findManyMock.mockResolvedValue([
+      makeDbSkill({ code: 'ek_ether_slash' }),
+      makeDbSkill({ code: 'mw_chronosphere', class: 'memory_weaver', element: 'time' }),
+      makeDbSkill({ code: 'tg_ultimate_test', type: 'ultimate', element: 'light' }),
+    ]);
+    const m = await loadCombatSkillsFromDb();
+    expect(m.size).toBe(3);
+    expect(m.get('ek_ether_slash')?.classId).toBe('ether_knight');
+    expect(m.get('mw_chronosphere')?.element).toBe('neutral');
+    expect(m.get('tg_ultimate_test')?.element).toBe('light');
+
+    // Prisma 쿼리에 type filter 포함 검증
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ type: { in: ['active', 'ultimate'] } }),
+      }),
+    );
+  });
+
+  test('빈 DB → 빈 Map', async () => {
+    findManyMock.mockResolvedValue([]);
+    const m = await loadCombatSkillsFromDb();
+    expect(m.size).toBe(0);
+  });
+});
