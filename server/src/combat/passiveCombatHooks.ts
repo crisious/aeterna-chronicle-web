@@ -15,11 +15,18 @@ export interface PassiveCombatant {
   maxHp: number;
   mp: number;
   maxMp: number;
+  alive?: boolean;
+  // Phase 1
   evasionAddPercent?: number;
   hitChanceAddPercent?: number;
   mpRegenPerTurn?: number;
   lowHpAtkBonusPercent?: number;
   defenseUpConditionalPercent?: number;
+  // Phase 3 (트리거)
+  reflectPercent?: number;
+  projectileReflectPercent?: number;
+  hpRegenPerTurn?: number;
+  cheatDeathChargesRemaining?: number;
 }
 
 /**
@@ -82,4 +89,62 @@ export function applyMpRegen(actor: PassiveCombatant): number {
   const before = actor.mp;
   actor.mp = Math.min(actor.maxMp, actor.mp + regen);
   return actor.mp - before;
+}
+
+// ─── Phase 3 (트리거) ────────────────────────────────────────
+
+/**
+ * battle_regen tick — actor.hp 를 hpRegenPerTurn 만큼 증가 (maxHp 캡, alive 만).
+ * 변경된 HP 양 반환.
+ *
+ * **mutates `actor`**: actor.hp 직접 변경.
+ */
+export function applyHpRegen(actor: PassiveCombatant): number {
+  if (actor.alive === false) return 0;
+  const regen = actor.hpRegenPerTurn ?? 0;
+  if (regen <= 0) return 0;
+  if (actor.hp >= actor.maxHp) return 0;
+  const before = actor.hp;
+  actor.hp = Math.min(actor.maxHp, actor.hp + regen);
+  return actor.hp - before;
+}
+
+/**
+ * physical 피격 시 attacker 에 반사 — damage * reflectPercent/100.
+ * defender.reflectPercent 를 사용. 음수/0 이면 0 반환.
+ */
+export function computeReflectDamage(defender: PassiveCombatant, damageTaken: number): number {
+  const pct = defender.reflectPercent ?? 0;
+  if (pct <= 0 || damageTaken <= 0) return 0;
+  return Math.floor(damageTaken * (pct / 100));
+}
+
+/**
+ * magical 피격 시 attacker 에 반사 — damage * projectileReflectPercent/100.
+ */
+export function computeProjectileReflectDamage(defender: PassiveCombatant, damageTaken: number): number {
+  const pct = defender.projectileReflectPercent ?? 0;
+  if (pct <= 0 || damageTaken <= 0) return 0;
+  return Math.floor(damageTaken * (pct / 100));
+}
+
+/**
+ * 치명 데미지 처리 — fatal damage 가 들어왔을 때 cheat_death 발동 시 hp=1 으로 유지.
+ *
+ * 입력:
+ *   - target: cheatDeathChargesRemaining 보유 가능
+ *   - incomingDamage: 적용 예정 데미지
+ * 동작:
+ *   - target.hp - incomingDamage <= 0 이고 chargesRemaining > 0 면 hp=1, charge 1 차감, true 반환
+ *   - 그 외엔 noop, false
+ *
+ * **mutates `target`**: hp 와 cheatDeathChargesRemaining 변경 (트리거 발동 시).
+ */
+export function tryCheatDeath(target: PassiveCombatant, incomingDamage: number): boolean {
+  const charges = target.cheatDeathChargesRemaining ?? 0;
+  if (charges <= 0) return false;
+  if (target.hp - incomingDamage > 0) return false;
+  target.hp = 1;
+  target.cheatDeathChargesRemaining = charges - 1;
+  return true;
 }
