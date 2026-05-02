@@ -276,25 +276,25 @@ import re
 
 SKILL_SEEDS_TS = PROJECT_ROOT / "server" / "src" / "skill" / "skillSeeds.ts"
 
-# element → 시각적 motif
+# element → 구체 오브젝트 (T1-skill-prompt: 추상 → 구체화)
 ELEMENT_STYLE = {
-    "aether": "glowing magical aether energy, white-blue luminescence",
-    "neutral": "silver gray steel, simple metallic shape",
-    "light": "bright golden holy light, radiant aura",
-    "earth": "brown stone rock, mossy texture, earthy tones",
-    "fire": "orange red flame, ember sparks",
-    "water": "deep blue water, flowing liquid",
-    "dark": "deep purple void, shadow tendrils",
-    "time": "ornate clock gear, golden hands, temporal swirl",
-    "void": "cosmic black hole, starfield distortion",
-    "ice": "pale blue crystal frost, snowflake",
+    "aether": "glowing white-blue magical orb with light rays radiating outward",
+    "neutral": "polished silver steel sword blade pointing up",
+    "light": "golden sunburst halo with eight rays",
+    "earth": "brown rocky boulder with green moss and small crystals",
+    "fire": "red orange flame swirl with ember sparks rising",
+    "water": "single blue water droplet with ripple",
+    "dark": "purple shadow vortex with curling tendrils",
+    "time": "ornate brass clock face with golden hour hand",
+    "void": "black circular void portal with white stars",
+    "ice": "pale blue crystal ice shard with sharp facets",
 }
 
-# type → 컴포지션 hint
+# type → 구체 컴포지션 (single object 강제)
 SKILL_TYPE_HINT = {
-    "active": "weapon or spell symbol, kinetic motion",
-    "passive": "shield or aura emblem, calm centered icon",
-    "ultimate": "elaborate ornate emblem, intricate detail, climactic energy",
+    "active": "with motion lines around it",
+    "passive": "with calm aura ring framing it",
+    "ultimate": "with intricate runic glow surrounding it",
 }
 
 
@@ -333,13 +333,13 @@ def parse_skill_seeds(limit_per_class: int = 0):
 
 
 def skill_to_prompt(skill):
-    """element/type 기반 RPG 스킬 아이콘 prompt"""
-    elem_hint = ELEMENT_STYLE.get(skill["element"], "fantasy energy")
-    type_hint = SKILL_TYPE_HINT.get(skill["type"], "RPG skill emblem")
+    """element/type 기반 RPG 스킬 아이콘 prompt — 구체 오브젝트 강제"""
+    elem_hint = ELEMENT_STYLE.get(skill["element"], "fantasy energy ball")
+    type_hint = SKILL_TYPE_HINT.get(skill["type"], "")
     return (
-        f"RPG skill icon, {skill['name']}, {elem_hint}, {type_hint}, "
-        f"single centered icon object, simple flat composition, white background, "
-        f"clean shape, no text, no character, no creature, fantasy game UI icon"
+        f"(single icon:1.5), (one object:1.4), {elem_hint} {type_hint}, "
+        f"(centered:1.3), (white background:1.4), (flat icon:1.3), "
+        f"RPG game UI symbol, simple shape, clean silhouette"
     )
 
 
@@ -357,8 +357,10 @@ def run_skills(output_base: Path, limit_per_class: int = 0):
         save_path = output_base / "skills" / sk["class"] / filename
         positive = skill_to_prompt(sk)
         negative = (
-            "character, creature, monster, person, body, limbs, face, "
-            "multiple objects, complex scene, text, signature, watermark, realistic, photo"
+            "(character:1.5), (creature:1.5), (monster:1.5), (person:1.5), body, limbs, face, hands, "
+            "(multiple objects:1.5), (collage:1.5), (grid layout:1.4), (sprite sheet:1.4), "
+            "(repeated pattern:1.4), (frame border:1.3), (multiple views:1.4), "
+            "complex scene, text, signature, watermark, realistic, photo"
         )
         print(f"  [{i+1}/{total}] {sk['class']}/{filename} ({sk['element']})...", end=" ", flush=True)
         ok = generate_image(positive, negative, save_path)
