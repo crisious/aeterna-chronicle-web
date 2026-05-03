@@ -5,6 +5,8 @@ import { prisma } from '../db';
 // P6-04/05: 상태이상 + 콤보 시스템 연동
 import { statusEffectManager } from '../combat/statusEffectManager';
 import { comboManager } from '../combat/comboManager';
+// D-S1: 스킬 트리 분기 (mutual exclusion)
+import { getSiblingBranchSkills } from './skillBranches';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 const MAX_EQUIP_SLOTS = 6;                         // 장착 슬롯 최대 수
@@ -118,6 +120,27 @@ export async function unlockSkill(
   const remaining = await getRemainingSkillPoints(userId, characterLevel);
   if (remaining < 1) {
     return { success: false, error: '스킬 포인트 부족' };
+  }
+
+  // 6.5. D-S1: 분기 그룹 mutual exclusion 검증
+  const siblings = getSiblingBranchSkills(skillCode);
+  if (siblings.length > 0) {
+    const siblingRows = await prisma.skill.findMany({
+      where: { code: { in: [...siblings] } },
+      select: { id: true, code: true },
+    });
+    if (siblingRows.length > 0) {
+      const siblingUnlocked = await prisma.playerSkill.findFirst({
+        where: { userId, skillId: { in: siblingRows.map((s) => s.id) } },
+        include: { skill: { select: { code: true } } },
+      });
+      if (siblingUnlocked) {
+        return {
+          success: false,
+          error: `분기 충돌 — 같은 그룹의 다른 스킬 이미 해금됨 (${siblingUnlocked.skill?.code})`,
+        };
+      }
+    }
   }
 
   // 7. 해금
