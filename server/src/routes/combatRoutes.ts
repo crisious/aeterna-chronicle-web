@@ -23,6 +23,7 @@ import type { DropEntry } from '../combat/rewardEngine';
 import { prisma } from '../db';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 import { resolvePassiveModifiers } from '../skill/passiveResolver';
+import { initCombatSkillsFromDb } from '../combat/skillAdapter';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
 const CLASS_BASE_COMBAT_STATS: Record<string, {
@@ -288,6 +289,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       if (characters.length !== effectivePartyCharacterIds.length) {
         return reply.status(403).send({ error: '소유하지 않은 캐릭터가 포함되어 있습니다.' });
       }
+
+      // P56-S2: DB 스킬 cache lazy init — 첫 /combat/start 직전 한 번. 이후 호출은 즉시 resolve.
+      await initCombatSkillsFromDb();
 
       const engine = combatInstanceManager.create({ autoMode: autoMode ?? false });
 

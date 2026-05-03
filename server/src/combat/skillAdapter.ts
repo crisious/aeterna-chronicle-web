@@ -11,6 +11,7 @@
 import { prisma } from '../db';
 import type { DamageType, ElementType } from './damageCalculator';
 import type { SkillDefinition } from './skillSystem';
+import { setDbSkillCache } from './skillSystem';
 
 // ─── 매핑 테이블 ───────────────────────────────────────────────
 
@@ -168,4 +169,38 @@ export async function loadCombatSkillsFromDb(): Promise<Map<string, SkillDefinit
     out.set(row.code, mapDbSkillToCombatDef(row as unknown as DbSkillLike));
   }
   return out;
+}
+
+// ─── 초기화 진입점 (P56-S2) ────────────────────────────────────
+
+let initInFlight: Promise<Map<string, SkillDefinition>> | null = null;
+let initialized = false;
+
+/**
+ * combat 시스템에 DB 스킬 cache 를 주입. 앱 라이프사이클 동안 한 번만 실제 실행.
+ * 이미 초기화 됐으면 즉시 반환. 동시 호출은 단일 promise 공유.
+ *
+ * 호출 위치 권장: combatRoutes 의 첫 /combat/start 직전 (lazy).
+ * 또는 server bootstrap 끝에 fire-and-forget.
+ */
+export async function initCombatSkillsFromDb(force: boolean = false): Promise<Map<string, SkillDefinition>> {
+  if (initialized && !force) {
+    return (await initInFlight)!;
+  }
+  if (!initInFlight || force) {
+    initInFlight = (async () => {
+      const cache = await loadCombatSkillsFromDb();
+      setDbSkillCache(cache);
+      initialized = true;
+      return cache;
+    })();
+  }
+  return initInFlight;
+}
+
+/** 테스트용 — 상태 reset */
+export function _resetInitState(): void {
+  initialized = false;
+  initInFlight = null;
+  setDbSkillCache(null);
 }

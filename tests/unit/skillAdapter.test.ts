@@ -14,14 +14,21 @@ vi.mock('../../server/src/db', () => ({
 
 import { prisma } from '../../server/src/db';
 import {
+  _resetInitState,
   extractStatusEffect,
   inferDamageType,
   inferTargetCount,
+  initCombatSkillsFromDb,
   loadCombatSkillsFromDb,
   mapDbSkillToCombatDef,
   mapElement,
   type DbSkillLike,
 } from '../../server/src/combat/skillAdapter';
+import {
+  getDbSkillCache,
+  getSkillById,
+  getSkillsByClass,
+} from '../../server/src/combat/skillSystem';
 
 const findManyMock = prisma.skill.findMany as unknown as ReturnType<typeof vi.fn>;
 
@@ -238,5 +245,88 @@ describe('loadCombatSkillsFromDb', () => {
     findManyMock.mockResolvedValue([]);
     const m = await loadCombatSkillsFromDb();
     expect(m.size).toBe(0);
+  });
+});
+
+// ─── P56-S2: initCombatSkillsFromDb + getSkillById fallback ───
+
+describe('initCombatSkillsFromDb + skillSystem cache wiring', () => {
+  beforeEach(() => {
+    _resetInitState();
+  });
+
+  test('init 1회 호출 시 cache 주입 — getSkillById fallback 동작', async () => {
+    findManyMock.mockResolvedValue([
+      makeDbSkill({ code: 'sw_soul_drain', class: 'shadow_weaver', element: 'dark', effect: { type: 'lifesteal', value: 50 } }),
+    ]);
+
+    // init 전: hardcoded 만, sw_soul_drain 없음
+    expect(getSkillById('sw_soul_drain')).toBeUndefined();
+
+    await initCombatSkillsFromDb();
+
+    // init 후: cache fallback 으로 조회 가능
+    const def = getSkillById('sw_soul_drain');
+    expect(def).toBeDefined();
+    expect(def?.classId).toBe('shadow_weaver');
+    expect(def?.element).toBe('dark');
+    expect(def?.statusEffect).toBeUndefined(); // lifesteal 은 status 가 아님
+    expect(getDbSkillCache()?.size).toBe(1);
+  });
+
+  test('hardcoded SKILL_DATABASE 우선 — DB 가 같은 id 있어도 hard 사용', async () => {
+    // ek_slash 는 hardcoded 에 존재. DB 에서 동일 id 다른 값으로 줘도 hard 사용해야 함.
+    findManyMock.mockResolvedValue([
+      makeDbSkill({ code: 'ek_slash', class: 'memory_weaver', element: 'fire', damageScale: 99 }),
+    ]);
+    await initCombatSkillsFromDb(true);
+    const def = getSkillById('ek_slash');
+    // hardcoded ek_slash: classId=ether_knight, damageMultiplier=1.5
+    expect(def?.classId).toBe('ether_knight');
+    expect(def?.damageMultiplier).toBe(1.5);
+  });
+
+  test('동시 init 호출 — single promise 공유 (1회 fetch)', async () => {
+    findManyMock.mockResolvedValue([makeDbSkill({ code: 'mw_chronosphere', class: 'memory_weaver' })]);
+    const [a, b, c] = await Promise.all([
+      initCombatSkillsFromDb(),
+      initCombatSkillsFromDb(),
+      initCombatSkillsFromDb(),
+    ]);
+    expect(a).toBe(b);
+    expect(b).toBe(c);
+    expect(findManyMock).toHaveBeenCalledTimes(1);
+  });
+
+  test('이미 초기화 됨 — force=false 면 추가 fetch 없음', async () => {
+    findManyMock.mockResolvedValue([makeDbSkill({ code: 'first' })]);
+    await initCombatSkillsFromDb();
+    findManyMock.mockClear();
+    await initCombatSkillsFromDb();
+    expect(findManyMock).not.toHaveBeenCalled();
+  });
+
+  test('force=true → 강제 재로드', async () => {
+    findManyMock.mockResolvedValue([makeDbSkill({ code: 'v1' })]);
+    await initCombatSkillsFromDb();
+    findManyMock.mockResolvedValue([makeDbSkill({ code: 'v2' })]);
+    await initCombatSkillsFromDb(true);
+    expect(getSkillById('v2')).toBeDefined();
+    expect(findManyMock).toHaveBeenCalledTimes(2);
+  });
+
+  test('getSkillsByClass — hardcoded + DB 합본 (id 중복 dedup)', async () => {
+    findManyMock.mockResolvedValue([
+      makeDbSkill({ code: 'ek_slash', class: 'ether_knight' }),         // hardcoded 와 충돌
+      makeDbSkill({ code: 'ek_ether_explode', class: 'ether_knight' }), // 신규
+      makeDbSkill({ code: 'mw_only', class: 'memory_weaver' }),         // 다른 클래스
+    ]);
+    await initCombatSkillsFromDb(true);
+    const ek = getSkillsByClass('ether_knight');
+    const ekIds = ek.map(s => s.id);
+    // ek_slash 1번만 (hardcoded), ek_ether_explode 신규
+    expect(ekIds.filter(id => id === 'ek_slash').length).toBe(1);
+    expect(ekIds).toContain('ek_ether_explode');
+    expect(ekIds).not.toContain('mw_only');
   });
 });

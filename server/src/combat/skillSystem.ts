@@ -78,21 +78,47 @@ const SKILL_DATABASE: SkillDefinition[] = [
   { id: 'vw_void_collapse', name: '공허 붕괴', classId: 'void_wanderer', damageType: 'magical', element: 'dark', damageMultiplier: 4.5, manaCost: 60, cooldownTicks: 10, targetCount: 1, requiredLevel: 35, description: '공허를 붕괴시켜 최대 데미지' },
 ];
 
+// ─── DB 어댑터 cache (P56-S2) ──────────────────────────────────
+// skillAdapter.initCombatSkillsFromDb() 가 호출되면 채워짐.
+// getSkillById 가 SKILL_DATABASE 미스 시 fallback 으로 조회.
+// 기존 30 hardcoded 스킬 우선, DB 보강은 보완 — 회귀 0 보장.
+
+let dbSkillCache: Map<string, SkillDefinition> | null = null;
+
+/** P56-S2: 어댑터에서 호출. cache 주입 (동일 호출 시 덮어씀). */
+export function setDbSkillCache(cache: Map<string, SkillDefinition> | null): void {
+  dbSkillCache = cache;
+}
+
+/** 디버그/테스트 — cache 상태 조회 */
+export function getDbSkillCache(): ReadonlyMap<string, SkillDefinition> | null {
+  return dbSkillCache;
+}
+
 // ─── 스킬 조회 ─────────────────────────────────────────────────
 
-/** 클래스별 스킬 목록 반환 */
+/** 클래스별 스킬 목록 반환 (hardcoded + DB cache 합본) */
 export function getSkillsByClass(classId: string): SkillDefinition[] {
-  return SKILL_DATABASE.filter(s => s.classId === classId);
+  const base = SKILL_DATABASE.filter(s => s.classId === classId);
+  if (!dbSkillCache) return base;
+  const baseIds = new Set(base.map(s => s.id));
+  const extra: SkillDefinition[] = [];
+  for (const def of dbSkillCache.values()) {
+    if (def.classId === classId && !baseIds.has(def.id)) extra.push(def);
+  }
+  return [...base, ...extra];
 }
 
-/** 스킬 ID로 조회 */
+/** 스킬 ID로 조회 — hardcoded 우선, miss 시 DB cache fallback */
 export function getSkillById(skillId: string): SkillDefinition | undefined {
-  return SKILL_DATABASE.find(s => s.id === skillId);
+  const hard = SKILL_DATABASE.find(s => s.id === skillId);
+  if (hard) return hard;
+  return dbSkillCache?.get(skillId);
 }
 
-/** 레벨에서 사용 가능한 스킬 */
+/** 레벨에서 사용 가능한 스킬 (hardcoded + DB cache 합본) */
 export function getAvailableSkills(classId: string, level: number): SkillDefinition[] {
-  return SKILL_DATABASE.filter(s => s.classId === classId && s.requiredLevel <= level);
+  return getSkillsByClass(classId).filter(s => s.requiredLevel <= level);
 }
 
 // ─── 쿨다운 매니저 ─────────────────────────────────────────────
