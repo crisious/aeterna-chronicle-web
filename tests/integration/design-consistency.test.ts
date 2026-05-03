@@ -523,3 +523,41 @@ describe('7. 콤보 server comboManager ↔ client comboMirror 동기화', () =>
     expect(orphan, `server 부재: ${JSON.stringify(orphan)}`).toHaveLength(0);
   });
 });
+
+// ════════════════════════════════════════════════════════════════
+// 8. 분기 server skillBranches ↔ client branchMirror 동기화 (D-S3)
+// ════════════════════════════════════════════════════════════════
+describe('8. 분기 server ↔ client mirror 동기화', () => {
+  const serverSrc = read('server/src/skill/skillBranches.ts');
+  const clientSrc = read('client/src/skills/branchMirror.ts');
+
+  function extractGroupSkills(src: string): Map<string, string[]> {
+    const out = new Map<string, string[]>();
+    const re = /\b([a-z_]+_t\d+_[a-z]+):\s*\[([^\]]+)\]/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(src)) !== null) {
+      const codes = Array.from(m[2].matchAll(/'([^']+)'/g)).map((mm) => mm[1]);
+      out.set(m[1], codes);
+    }
+    return out;
+  }
+
+  const serverGroups = extractGroupSkills(serverSrc);
+  const clientGroups = extractGroupSkills(clientSrc);
+
+  test('그룹 갯수 동일', () => {
+    expect(serverGroups.size).toBe(clientGroups.size);
+    expect(serverGroups.size).toBeGreaterThanOrEqual(6);
+  });
+
+  test('모든 그룹 ID 일치', () => {
+    expect([...serverGroups.keys()].sort()).toEqual([...clientGroups.keys()].sort());
+  });
+
+  test('각 그룹의 skill 목록 동일', () => {
+    for (const [g, serverCodes] of serverGroups.entries()) {
+      const clientCodes = clientGroups.get(g) ?? [];
+      expect(clientCodes.sort(), `group ${g}`).toEqual([...serverCodes].sort());
+    }
+  });
+});

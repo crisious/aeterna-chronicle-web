@@ -14,6 +14,7 @@ import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { formatPassiveEffect, STATUS_COLOR } from '../skills/passiveEffectFormatter';
 import { getCombosUsingSkill } from '../skills/comboMirror';
+import { formatBranchLabel, getBranchGroupClient, getBranchSiblingsClient } from '../skills/branchMirror';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
 
 // ── 타입 ──────────────────────────────────────────────────────
@@ -330,6 +331,22 @@ export class SkillTreeUI {
       const lvl = Math.max(1, skill.currentLevel || 1);
       const fmt = formatPassiveEffect(skill.effect.type, skill.effect.value, lvl);
       line(`패시브: ${fmt.text}`, STATUS_COLOR[fmt.status], '11px');
+    }
+
+    // D-S3: 분기 그룹 표시 (있으면)
+    const branchGroup = getBranchGroupClient(skill.id);
+    if (branchGroup) {
+      line(`⚔ 분기: ${formatBranchLabel(branchGroup)}`, '#ff8855', '11px');
+      const siblings = getBranchSiblingsClient(skill.id);
+      // 같은 그룹 다른 skill 중 이미 unlock 된 게 있으면 lock 경고
+      const lockedSibling = siblings.find((sk) =>
+        this.skills.some((s) => s.id === sk && s.unlocked)
+      );
+      if (lockedSibling) {
+        line(`  ✗ 잠김: ${lockedSibling} 이미 해금`, '#ff5555', '10px');
+      } else {
+        line(`  대안: ${siblings.join(', ')}`, '#bb6655', '10px');
+      }
     }
 
     // E-S3: 이 스킬을 사용하는 콤보 목록 (있으면)
