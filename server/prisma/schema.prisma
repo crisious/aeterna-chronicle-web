@@ -857,6 +857,8 @@ model Skill {
   icon          String?
   animation     String?
   isActive      Boolean  @default(true) @map("is_active")
+  // D-S4: 분기 그룹 ID (null = 분기 외, 같은 group skill 들 간 mutually exclusive)
+  branchGroup   String?  @map("branch_group")
   createdAt     DateTime @default(now()) @map("created_at")
 
   playerSkills  PlayerSkill[]
