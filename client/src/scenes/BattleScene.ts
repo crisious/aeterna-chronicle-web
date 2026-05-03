@@ -1195,6 +1195,12 @@ export class BattleScene extends Phaser.Scene {
       const pos = ENEMY_POSITIONS[idx % ENEMY_POSITIONS.length];
       const isBoss = (unit.id ?? '').toUpperCase().startsWith('BOSS');
 
+      // B-S3: 적 monster 에 evasion 부여 (보스 30%, 일반 15% — server seed 가 지원하면 override)
+      if (unit.evasionAddPercent === undefined) {
+        unit.evasionAddPercent = isBoss ? 30 : 15;
+      }
+      if (unit.alive === undefined) unit.alive = true;
+
       // 몬스터 이미지 키 찾기 (preload에서 로드됨)
       const cleanId = (unit.id ?? '').replace(/_\d+$/, '');
       const monTexKey = `mon_battle_${cleanId}`;
