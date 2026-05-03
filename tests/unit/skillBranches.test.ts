@@ -40,9 +40,9 @@ describe('SKILL_BRANCH_GROUPS — 6 클래스', () => {
 
 describe('getBranchGroup — skill → group 역방향', () => {
   test('정의된 skill → group ID 반환', () => {
-    expect(getBranchGroup('ek_sword_mastery')).toBe('ether_knight_t2_mastery');
-    expect(getBranchGroup('mw_chrono_school')).toBe('memory_weaver_t2_school');
-    expect(getBranchGroup('vw_phase_path')).toBe('void_wanderer_t2_dimension');
+    expect(getBranchGroup('ek_ether_explode_sword')).toBe('ether_knight_t2_style');
+    expect(getBranchGroup('mw_time_stop')).toBe('memory_weaver_t2_style');
+    expect(getBranchGroup('vw_void_eye')).toBe('void_wanderer_t2_dimension');
   });
 
   test('정의되지 않은 skill → null', () => {
@@ -54,18 +54,18 @@ describe('getBranchGroup — skill → group 역방향', () => {
 
 describe('getSiblingBranchSkills', () => {
   test('같은 그룹 다른 skills 반환', () => {
-    const siblings = getSiblingBranchSkills('ek_sword_mastery');
-    expect(siblings.sort()).toEqual(['ek_magic_mastery', 'ek_shield_mastery']);
+    const siblings = getSiblingBranchSkills('ek_ether_explode_sword');
+    expect(siblings.sort()).toEqual(['ek_combo_strike', 'ek_ether_absorb']);
   });
 
   test('자기 자신 제외', () => {
-    const siblings = getSiblingBranchSkills('ek_sword_mastery');
-    expect(siblings).not.toContain('ek_sword_mastery');
+    const siblings = getSiblingBranchSkills('ek_ether_explode_sword');
+    expect(siblings).not.toContain('ek_ether_explode_sword');
   });
 
   test('2 중 택 1 그룹 — 1 sibling', () => {
-    const siblings = getSiblingBranchSkills('mb_berserker_path');
-    expect(siblings).toEqual(['mb_destroyer_path']);
+    const siblings = getSiblingBranchSkills('mb_shatter_rush');
+    expect(siblings).toEqual(['mb_frenzy_strike']);
   });
 
   test('정의 외 skill → 빈 배열', () => {
@@ -76,20 +76,20 @@ describe('getSiblingBranchSkills', () => {
 
 describe('isMutuallyExclusive', () => {
   test('같은 그룹 다른 skill → true', () => {
-    expect(isMutuallyExclusive('ek_sword_mastery', 'ek_shield_mastery')).toBe(true);
-    expect(isMutuallyExclusive('mb_berserker_path', 'mb_destroyer_path')).toBe(true);
+    expect(isMutuallyExclusive('ek_ether_explode_sword', 'ek_combo_strike')).toBe(true);
+    expect(isMutuallyExclusive('mb_shatter_rush', 'mb_frenzy_strike')).toBe(true);
   });
 
   test('자기 자신 → false (해금 가능)', () => {
-    expect(isMutuallyExclusive('ek_sword_mastery', 'ek_sword_mastery')).toBe(false);
+    expect(isMutuallyExclusive('ek_ether_explode_sword', 'ek_ether_explode_sword')).toBe(false);
   });
 
   test('다른 그룹 → false', () => {
-    expect(isMutuallyExclusive('ek_sword_mastery', 'mw_chrono_school')).toBe(false);
+    expect(isMutuallyExclusive('ek_ether_explode_sword', 'mw_time_stop')).toBe(false);
   });
 
   test('한쪽이 분기 외 → false', () => {
-    expect(isMutuallyExclusive('ek_sword_mastery', 'ek_ether_slash')).toBe(false);
+    expect(isMutuallyExclusive('ek_ether_explode_sword', 'ek_ether_slash')).toBe(false);
     expect(isMutuallyExclusive('unknown1', 'unknown2')).toBe(false);
   });
 });

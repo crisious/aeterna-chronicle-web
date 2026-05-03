@@ -21,45 +21,51 @@
  *   - 그룹 명: '<class>_t<tier>_<concept>'
  */
 export const SKILL_BRANCH_GROUPS: Record<string, ReadonlyArray<string>> = {
-  // ── 에테르 기사 tier 2 — 마스터리 분기 (3 중 택 1) ────────
-  ether_knight_t2_mastery: [
-    'ek_sword_mastery',
-    'ek_shield_mastery',
-    'ek_magic_mastery',
+  // ── 에테르 기사 tier 2 — 전투 스타일 분기 (3 중 택 1) ─────
+  // 폭발(burst) / 연속(combo) / 흡수(defensive) 3 path
+  ether_knight_t2_style: [
+    'ek_ether_explode_sword',
+    'ek_combo_strike',
+    'ek_ether_absorb',
   ],
 
-  // ── 기억술사 tier 2 — 학파 분기 (3 중 택 1) ───────────────
-  memory_weaver_t2_school: [
-    'mw_chrono_school',
-    'mw_arcane_school',
-    'mw_void_school',
+  // ── 기억술사 tier 2 — 운용 분기 (3 중 택 1) ──────────────
+  // 광역(storm) / 제어(stop) / 디버프(mind) 3 path
+  memory_weaver_t2_style: [
+    'mw_memory_storm',
+    'mw_time_stop',
+    'mw_mind_control',
   ],
 
-  // ── 그림자 직조사 tier 2 — 무기 분기 (3 중 택 1) ──────────
-  shadow_weaver_t2_weapon: [
-    'sw_dagger_path',
-    'sw_bow_path',
-    'sw_chakram_path',
+  // ── 그림자 직조사 tier 2 — 처형 분기 (3 중 택 1) ─────────
+  // 광역(explosion) / 단일처형(assassinate) / 저주(curse) 3 path
+  shadow_weaver_t2_style: [
+    'sw_shadow_explosion',
+    'sw_assassinate',
+    'sw_curse',
   ],
 
   // ── 기억 파괴자 tier 2 — 분노 분기 (2 중 택 1) ────────────
+  // 가속(rush) / 광폭(frenzy) 2 path
   memory_breaker_t2_rage: [
-    'mb_berserker_path',
-    'mb_destroyer_path',
+    'mb_shatter_rush',
+    'mb_frenzy_strike',
   ],
 
   // ── 시간 수호자 tier 2 — 흐름 분기 (3 중 택 1) ────────────
+  // 지원(heal) / 공격(explosion) / 제어(prison) 3 path
   time_guardian_t2_flow: [
-    'tg_chrono_path',
-    'tg_pause_path',
-    'tg_loop_path',
+    'tg_time_heal',
+    'tg_time_explosion',
+    'tg_time_prison',
   ],
 
   // ── 허공의 방랑자 tier 2 — 차원 분기 (3 중 택 1) ──────────
+  // 이동(leap) / 직접(hand) / 시야(eye) 3 path
   void_wanderer_t2_dimension: [
-    'vw_warp_path',
-    'vw_void_path',
-    'vw_phase_path',
+    'vw_dimension_leap',
+    'vw_void_hand',
+    'vw_void_eye',
   ],
 };
 

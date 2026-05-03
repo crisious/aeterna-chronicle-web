@@ -448,3 +448,40 @@ describe('5. ComboManager ↔ skillSeeds 일치', () => {
     }
   });
 });
+
+// ════════════════════════════════════════════════════════════════
+// 6. SKILL_BRANCH_GROUPS ↔ skillSeeds (D-S2)
+// ════════════════════════════════════════════════════════════════
+describe('6. SKILL_BRANCH_GROUPS ↔ skillSeeds 일치 (D-S2)', () => {
+  const branchSrc = read('server/src/skill/skillBranches.ts');
+  const skillSeedsSrc = read('server/src/skill/skillSeeds.ts');
+
+  // skillSeeds 의 모든 code
+  const skillCodes = new Set<string>();
+  const codeRe = /code:\s*'([^']+)'/g;
+  let m: RegExpExecArray | null;
+  while ((m = codeRe.exec(skillSeedsSrc)) !== null) {
+    skillCodes.add(m[1]);
+  }
+
+  // SKILL_BRANCH_GROUPS 의 모든 skill code 추출
+  const branchCodes: string[] = [];
+  const groupBlockRe = /\b[a-z_]+_t\d+_[a-z]+:\s*\[([^\]]+)\]/g;
+  while ((m = groupBlockRe.exec(branchSrc)) !== null) {
+    const codes = Array.from(m[1].matchAll(/'([^']+)'/g)).map((mm) => mm[1]);
+    branchCodes.push(...codes);
+  }
+
+  test('branchGroups 에서 skill code 추출 (≥ 16)', () => {
+    expect(branchCodes.length).toBeGreaterThanOrEqual(16);
+  });
+
+  test('모든 분기 skill code 가 skillSeeds 에 존재', () => {
+    const missing = branchCodes.filter((c) => !skillCodes.has(c));
+    expect(missing, `미존재 분기 skill: ${JSON.stringify(missing)}`).toHaveLength(0);
+  });
+
+  test('분기 skill code 중복 없음 (한 skill 은 한 그룹만)', () => {
+    expect(new Set(branchCodes).size).toBe(branchCodes.length);
+  });
+});
