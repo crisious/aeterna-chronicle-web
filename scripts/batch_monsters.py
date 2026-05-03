@@ -27,8 +27,8 @@ OUTPUT_DIR = Path(os.environ.get("AETERNA_PIXEL_OUT", PROJECT_ROOT / "client" / 
 # 픽셀아트 fine-tune checkpoint 단독 사용 — LoRA 의존성 제거 (gated/오프라인 회피)
 CHECKPOINT = os.environ.get("COMFYUI_CHECKPOINT", "pixel-art-style.ckpt")
 
-POSITIVE_BASE = "(pixel art:1.4), (16-bit rpg style:1.3), snes era, retro game sprite, (clean pixel edges:1.3), (limited color palette:1.2), fantasy rpg, chrono trigger style, moonlighter style, PixArFK, (pixelated:1.3), game asset, (sharp pixels:1.2), no anti-aliasing, (dithering shading:1.1), dark outline, (centered composition:1.3), (single creature:1.4), (full body:1.3), (full character visible:1.3), (white background:1.3)"
-NEGATIVE_BASE = "(blurry:1.5), (realistic:1.5), photograph, (3d render:1.4), (smooth gradients:1.4), anti-aliasing, high resolution details, noise, watermark, text, modern, photorealistic, 3d, cgi, painting, oil painting, sketch, pencil, soft shading, multiple views, collage, grid, tiled, (abstract pattern:1.4), (texture only:1.3), (background scenery:1.3), (no character:1.4), (cropped:1.2)"
+POSITIVE_BASE = "(pixel art:1.4), (16-bit rpg style:1.3), snes era, retro game sprite, (clean pixel edges:1.3), (limited color palette:1.2), fantasy rpg, chrono trigger style, moonlighter style, PixArFK, (pixelated:1.3), game asset, (sharp pixels:1.2), no anti-aliasing, (dithering shading:1.1), dark outline, (centered composition:1.3), (monstrous creature:1.5), (non-humanoid beast:1.4), (animal anatomy:1.3), (full body:1.3), (white background:1.3)"
+NEGATIVE_BASE = "(blurry:1.5), (realistic:1.5), photograph, (3d render:1.4), (smooth gradients:1.4), anti-aliasing, high resolution details, noise, watermark, text, modern, photorealistic, 3d, cgi, painting, oil painting, sketch, pencil, soft shading, multiple views, collage, grid, tiled, (abstract pattern:1.4), (texture only:1.3), (background scenery:1.3), (cropped:1.2), (humanoid:1.5), (human:1.4), (person:1.4), (warrior character:1.4), (ninja:1.3), (anthropomorphic:1.3), (two legs walking upright:1.3), (clothing:1.2), (armor with helmet:1.3)"
 
 # Zone → element/atmosphere mapping
 ZONE_STYLE = {
@@ -120,11 +120,11 @@ def name_to_prompt(monster_name: str, tier: str = "normal") -> str:
     zone_desc = ZONE_STYLE.get(zone, "dark fantasy")
 
     if tier == "normal":
-        return f"pixel art monster sprite, {clean}, {zone_desc}, fantasy rpg enemy, chrono trigger monster style, single creature, centered, small enemy"
+        return f"pixel art monster, ({clean}:1.4), {zone_desc}, fantasy rpg beast enemy, chrono trigger monster style, (creature with animal body shape:1.3), single beast, centered"
     elif tier == "elite":
-        return f"pixel art boss monster, {clean}, {zone_desc}, fantasy rpg boss enemy, chrono trigger boss style, single large creature, centered, powerful, menacing, elite monster, imposing"
+        return f"pixel art boss beast, ({clean}:1.4), {zone_desc}, fantasy rpg boss creature, chrono trigger boss style, (large monstrous beast:1.4), single large creature, centered, menacing"
     else:  # raid
-        return f"pixel art raid boss, {clean}, {zone_desc}, fantasy rpg final boss, epic monster, massive creature, centered, devastating power, ultimate enemy"
+        return f"pixel art raid boss creature, ({clean}:1.4), {zone_desc}, fantasy rpg final boss beast, (massive monstrous form:1.4), single epic creature, centered"
 
 
 def run_monster_batch(source_dir: str, tier: str, subfolder: str, limit: int = 0):
