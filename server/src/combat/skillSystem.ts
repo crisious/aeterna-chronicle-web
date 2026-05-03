@@ -28,6 +28,8 @@ export interface SkillDefinition {
   statusEffect?: string;
   /** 상태이상 확률 (%) */
   statusEffectChance?: number;
+  /** P56-S3: lifesteal — damage 의 N% 만큼 attacker hp 회복 */
+  lifestealPercent?: number;
   /** 스킬 설명 */
   description: string;
 }

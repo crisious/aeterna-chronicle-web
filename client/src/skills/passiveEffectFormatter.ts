@@ -23,11 +23,10 @@ export const IMPLEMENTED_EFFECT_TYPES: ReadonlyArray<string> = [
   'move_damage_aura',
   'auto_resurrect',
   'poison_amplify',
-];
-
-export const PENDING_EFFECT_TYPES: ReadonlyArray<string> = [
   'drain_amplify',
 ];
+
+export const PENDING_EFFECT_TYPES: ReadonlyArray<string> = [];
 
 export interface PassiveEffectFormat {
   /** 사용자에게 보여줄 문구 (한 줄) */
@@ -84,10 +83,8 @@ export function formatPassiveEffect(
       return { text: `사망 시 ${scaled}% HP 로 부활`, status: 'implemented' };
     case 'poison_amplify':
       return { text: `시전자 DoT 데미지 +${scaled}%`, status: 'implemented' };
-
-    // ─ Phase 4 (대기 — stub) ──────────────────────────────
     case 'drain_amplify':
-      return { text: `흡수 효과 +${scaled}% (구현 대기)`, status: 'pending' };
+      return { text: `흡수(lifesteal) 회복 +${scaled}%`, status: 'implemented' };
 
     default:
       return { text: `미상 효과: ${effectType} (${scaled})`, status: 'unknown' };

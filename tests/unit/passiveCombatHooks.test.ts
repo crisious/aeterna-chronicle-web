@@ -6,6 +6,7 @@
 import { describe, expect, test } from 'vitest';
 import {
   applyHpRegen,
+  applyLifesteal,
   applyMoveDamageAura,
   applyMpRegen,
   computeCritEchoDamage,
@@ -508,5 +509,62 @@ describe('tryAutoResurrect — 시간 도달 시 부활', () => {
     // charges 소진됨 — 두 번째 사망 시 schedule 안 됨
     a.alive = false;
     expect(scheduleAutoResurrect(a, 50)).toBe(false);
+  });
+});
+
+// ─── applyLifesteal (P56-S3) ───────────────────────────────────
+
+describe('applyLifesteal — lifesteal + drain_amplify', () => {
+  test('lifestealPct 0 → 0', () => {
+    const a = makeCombatant({ hp: 50, maxHp: 100 });
+    expect(applyLifesteal(a, 0, 100)).toBe(0);
+    expect(a.hp).toBe(50);
+  });
+
+  test('damage 0 → 0', () => {
+    const a = makeCombatant({ hp: 50, maxHp: 100 });
+    expect(applyLifesteal(a, 50, 0)).toBe(0);
+  });
+
+  test('정상 회복 — 50% × 100 dmg = 50', () => {
+    const a = makeCombatant({ hp: 30, maxHp: 100 });
+    expect(applyLifesteal(a, 50, 100)).toBe(50);
+    expect(a.hp).toBe(80);
+  });
+
+  test('drain_amplify 50% → 1.5x 회복', () => {
+    const a = makeCombatant({ hp: 10, maxHp: 200, drainAmplifyPercent: 50 });
+    // base = 100 × 0.5 = 50, amplified = floor(50 × 1.5) = 75
+    expect(applyLifesteal(a, 50, 100)).toBe(75);
+    expect(a.hp).toBe(85);
+  });
+
+  test('maxHp cap', () => {
+    const a = makeCombatant({ hp: 95, maxHp: 100 });
+    // 50% × 100 = 50, 그러나 cap=100 → 5만 회복
+    expect(applyLifesteal(a, 50, 100)).toBe(5);
+    expect(a.hp).toBe(100);
+  });
+
+  test('이미 max → 0', () => {
+    const a = makeCombatant({ hp: 100, maxHp: 100 });
+    expect(applyLifesteal(a, 50, 100)).toBe(0);
+  });
+
+  test('alive=false → 0', () => {
+    const a = makeCombatant({ hp: 0, maxHp: 100, alive: false });
+    expect(applyLifesteal(a, 50, 100)).toBe(0);
+  });
+
+  test('drain_amplify 100% — 2배', () => {
+    const a = makeCombatant({ hp: 10, maxHp: 500, drainAmplifyPercent: 100 });
+    // base = 60 × 0.5 = 30, amplified = 30 × 2 = 60
+    expect(applyLifesteal(a, 50, 60)).toBe(60);
+  });
+
+  test('floor 적용 — 33 × 0.5 × 1.5 = 24.75 → 24', () => {
+    const a = makeCombatant({ hp: 0, maxHp: 1000, alive: true, drainAmplifyPercent: 50 });
+    // base = 33 × 0.5 = 16.5, amplified = floor(16.5 × 1.5) = floor(24.75) = 24
+    expect(applyLifesteal(a, 50, 33)).toBe(24);
   });
 });

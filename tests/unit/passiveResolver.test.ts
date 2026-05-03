@@ -153,10 +153,11 @@ describe('accumulatePassive', () => {
     expect(bag.poisonAmplifyPercent).toBe(150);
   });
 
-  test('잔여 stub 은 noop (drain_amplify)', () => {
+  test('drain_amplify 누적 (P56-S3)', () => {
     const bag = emptyModifierBag();
     accumulatePassive(bag, 'drain_amplify', 50);
-    expect(bag).toEqual(emptyModifierBag());
+    accumulatePassive(bag, 'drain_amplify', 25);
+    expect(bag.drainAmplifyPercent).toBe(75);
   });
 });
 
@@ -223,7 +224,7 @@ describe('resolvePassiveModifiers', () => {
     expect(result.modifiers.cheatDeathChargesMax).toBe(1);
   });
 
-  test('Phase 4 잔여 stub (drain_amplify 만) 은 pending — poison_amplify 는 구현됨', async () => {
+  test('14 effect 모두 구현됨 — pending 0 (P56-S3 후)', async () => {
     findManyMock.mockResolvedValue([
       makePlayerSkill({ code: 'sw_poison_amp', type: 'passive', effectType: 'poison_amplify', value: 100, level: 1 }),
       makePlayerSkill({ code: 'mb_drain_amp', type: 'passive', effectType: 'drain_amplify', value: 50, level: 1 }),
@@ -231,14 +232,12 @@ describe('resolvePassiveModifiers', () => {
       makePlayerSkill({ code: 'ek_ether_charge', type: 'passive', effectType: 'mp_regen', value: 5, level: 1 }),
     ]);
     const result = await resolvePassiveModifiers('char1');
-    // applied: mp_regen + crit_echo + poison_amplify
-    expect(result.applied).toHaveLength(3);
-    // pending: drain_amplify
-    expect(result.pending).toHaveLength(1);
-    expect(result.pending[0].effectType).toBe('drain_amplify');
+    expect(result.applied).toHaveLength(4);
+    expect(result.pending).toHaveLength(0);
     expect(result.modifiers.mpRegenPerTurn).toBe(5);
     expect(result.modifiers.critEchoPercent).toBe(30);
     expect(result.modifiers.poisonAmplifyPercent).toBe(100);
+    expect(result.modifiers.drainAmplifyPercent).toBe(50);
   });
 
   test('auto_resurrect — duration + value 두 필드 추출 + charges 누적', async () => {
@@ -331,6 +330,7 @@ describe('applyModifiersToStats', () => {
       autoResurrectHpPercent: 0,
       autoResurrectChargesMax: 0,
       poisonAmplifyPercent: 0,
+      drainAmplifyPercent: 0,
     });
   });
 });

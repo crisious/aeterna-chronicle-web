@@ -6,6 +6,7 @@ import type { DamageType, ElementType } from './damageCalculator';
 import { calculateDamage } from './damageCalculator';
 import {
   applyHpRegen,
+  applyLifesteal,
   applyMoveDamageAura,
   applyMpRegen,
   computeCritEchoDamage,
@@ -128,6 +129,10 @@ export interface CombatParticipant {
   // ── Phase 55-S7: poison_amplify ────────────────────────────
   /** 시전자가 가한 DoT(poison/burn/bleed) 데미지 증폭 비율(%) */
   poisonAmplifyPercent?: number;
+
+  // ── P56-S3: drain_amplify (lifesteal 증폭) ─────────────────
+  /** lifesteal 효과 증폭 비율(%) — applyLifesteal 에서 사용 */
+  drainAmplifyPercent?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -778,6 +783,14 @@ export class CombatEngine {
         }
       }
       this.logger.logDamage(actor.id, target.id, echoDmg, false, skillId, skill.element);
+    }
+
+    // P56-S3: lifesteal — skill.effect.type === 'lifesteal' 면 attacker hp 회복 (drain_amplify 곱)
+    if (skill.lifestealPercent && skill.lifestealPercent > 0) {
+      const healed = applyLifesteal(actor, skill.lifestealPercent, result.damage);
+      if (healed > 0) {
+        this.logger.logHeal(actor.id, actor.id, healed, skillId);
+      }
     }
 
     // P55-S3: reflect / projectile_reflect — physical/magical 분기

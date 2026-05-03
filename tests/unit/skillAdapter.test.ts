@@ -15,6 +15,7 @@ vi.mock('../../server/src/db', () => ({
 import { prisma } from '../../server/src/db';
 import {
   _resetInitState,
+  extractLifestealPercent,
   extractStatusEffect,
   inferDamageType,
   inferTargetCount,
@@ -145,6 +146,30 @@ describe('extractStatusEffect', () => {
   });
 });
 
+// ─── extractLifestealPercent (P56-S3) ─────────────────────────
+
+describe('extractLifestealPercent', () => {
+  test('null/non-object → null', () => {
+    expect(extractLifestealPercent(null)).toBeNull();
+    expect(extractLifestealPercent(42)).toBeNull();
+  });
+
+  test('lifesteal type + 양수 value → percent', () => {
+    expect(extractLifestealPercent({ type: 'lifesteal', value: 50 })).toBe(50);
+    expect(extractLifestealPercent({ type: 'lifesteal', value: 100 })).toBe(100);
+  });
+
+  test('lifesteal type + 음수/0 → null', () => {
+    expect(extractLifestealPercent({ type: 'lifesteal', value: 0 })).toBeNull();
+    expect(extractLifestealPercent({ type: 'lifesteal', value: -5 })).toBeNull();
+  });
+
+  test('lifesteal 아닌 type → null', () => {
+    expect(extractLifestealPercent({ type: 'poison', value: 50 })).toBeNull();
+    expect(extractLifestealPercent({ type: 'mp_regen', value: 5 })).toBeNull();
+  });
+});
+
 // ─── mapDbSkillToCombatDef ────────────────────────────────────
 
 describe('mapDbSkillToCombatDef', () => {
@@ -205,6 +230,22 @@ describe('mapDbSkillToCombatDef', () => {
     }));
     expect(def.statusEffect).toBeUndefined();
     expect(def.statusEffectChance).toBeUndefined();
+  });
+
+  test('lifesteal effect → lifestealPercent 추출 (P56-S3)', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({
+      code: 'sw_soul_drain',
+      class: 'shadow_weaver',
+      effect: { type: 'lifesteal', value: 50 },
+    }));
+    expect(def.lifestealPercent).toBe(50);
+  });
+
+  test('lifesteal 외 effect 는 lifestealPercent 부재', () => {
+    const def = mapDbSkillToCombatDef(makeDbSkill({
+      effect: { type: 'poison', value: 70 },
+    }));
+    expect(def.lifestealPercent).toBeUndefined();
   });
 
   test('cooldown floor — 소수점 처리', () => {

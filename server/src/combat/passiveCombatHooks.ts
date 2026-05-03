@@ -36,6 +36,9 @@ export interface PassiveCombatant {
   autoResurrectChargesRemaining?: number;
   /** 사망 시 set, 부활 후 undefined 로 reset */
   resurrectAtTick?: number;
+  // Phase 4 (drain_amplify) — P56-S3
+  /** lifesteal 효과 증폭 비율(%) */
+  drainAmplifyPercent?: number;
 }
 
 /**
@@ -135,6 +138,32 @@ export function computeProjectileReflectDamage(defender: PassiveCombatant, damag
   const pct = defender.projectileReflectPercent ?? 0;
   if (pct <= 0 || damageTaken <= 0) return 0;
   return Math.floor(damageTaken * (pct / 100));
+}
+
+/**
+ * lifesteal 회복량 계산 — damage × lifestealPct/100, drain_amplify 로 ×(1 + drainPct/100).
+ * 발동 조건: lifestealPct > 0 + damage > 0.
+ *
+ * **mutates `attacker`**: hp 증가 (maxHp 캡).
+ * 반환: 실제 회복된 hp 양.
+ */
+export function applyLifesteal(
+  attacker: PassiveCombatant,
+  lifestealPct: number,
+  damage: number,
+): number {
+  if (lifestealPct <= 0 || damage <= 0) return 0;
+  if (attacker.alive === false) return 0;
+  if (attacker.hp >= attacker.maxHp) return 0;
+
+  const drainAmp = attacker.drainAmplifyPercent ?? 0;
+  const baseHeal = damage * (lifestealPct / 100);
+  const amplified = Math.floor(baseHeal * (1 + drainAmp / 100));
+  if (amplified <= 0) return 0;
+
+  const before = attacker.hp;
+  attacker.hp = Math.min(attacker.maxHp, attacker.hp + amplified);
+  return attacker.hp - before;
 }
 
 /**

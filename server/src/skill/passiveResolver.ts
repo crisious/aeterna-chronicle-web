@@ -67,6 +67,9 @@ export interface PassiveModifierBag {
   // ─ Phase 4 (poison_amplify) ──────────────────────────────
   /** 시전자가 가한 poison/burn/bleed DoT 증폭 비율(%) */
   poisonAmplifyPercent: number;
+  // ─ Phase 4 (drain_amplify) — P56-S3 ──────────────────────
+  /** lifesteal 효과 증폭 비율(%) — 추가 회복 */
+  drainAmplifyPercent: number;
 }
 
 /** 패시브 적용 결과 — 디버깅/노출용 */
@@ -117,6 +120,8 @@ const ALWAYS_KIND: ReadonlySet<PassiveEffectType> = new Set<PassiveEffectType>([
   'auto_resurrect',
   // Phase 4 (poison_amplify) — DoT tick 훅
   'poison_amplify',
+  // Phase 4 (drain_amplify) — P56-S3 lifesteal 증폭
+  'drain_amplify',
 ]);
 
 // ─── 헬퍼 ──────────────────────────────────────────────────────
@@ -138,6 +143,7 @@ export function emptyModifierBag(): PassiveModifierBag {
     autoResurrectHpPercent: 0,
     autoResurrectChargesMax: 0,
     poisonAmplifyPercent: 0,
+    drainAmplifyPercent: 0,
   };
 }
 
@@ -211,8 +217,11 @@ export function accumulatePassive(
     case 'poison_amplify':
       bag.poisonAmplifyPercent += scaledValue;
       return;
+    case 'drain_amplify':
+      bag.drainAmplifyPercent += scaledValue;
+      return;
     default:
-      // 미구현 stub — drain_amplify (lifesteal 메커니즘 부재) 외 일부.
+      // 14 effect type 모두 처리됨. 알 수 없는 type 만 noop.
       return;
   }
 }
@@ -317,6 +326,7 @@ export interface AppliedStats extends BaseStats {
   autoResurrectHpPercent: number;
   autoResurrectChargesMax: number;
   poisonAmplifyPercent: number;
+  drainAmplifyPercent: number;
 }
 
 export function applyModifiersToStats(
@@ -340,5 +350,6 @@ export function applyModifiersToStats(
     autoResurrectHpPercent: bag.autoResurrectHpPercent,
     autoResurrectChargesMax: bag.autoResurrectChargesMax,
     poisonAmplifyPercent: bag.poisonAmplifyPercent,
+    drainAmplifyPercent: bag.drainAmplifyPercent,
   };
 }

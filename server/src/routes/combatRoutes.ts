@@ -354,6 +354,8 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           autoResurrectChargesMax: passiveMods?.autoResurrectChargesMax ?? 0,
           // P55-S7 poison_amplify — DoT 증폭
           poisonAmplifyPercent: passiveMods?.poisonAmplifyPercent ?? 0,
+          // P56-S3 drain_amplify — lifesteal 증폭
+          drainAmplifyPercent: passiveMods?.drainAmplifyPercent ?? 0,
         });
       }
 

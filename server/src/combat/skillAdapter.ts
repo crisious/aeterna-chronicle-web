@@ -116,6 +116,18 @@ export function extractStatusEffect(
   return { effect: e.type, chance };
 }
 
+/**
+ * effect json 이 lifesteal 이면 percent 추출, 아니면 null.
+ * (sw_soul_drain: { type: 'lifesteal', value: 50 })
+ */
+export function extractLifestealPercent(effect: unknown): number | null {
+  if (!effect || typeof effect !== 'object') return null;
+  const e = effect as { type?: unknown; value?: unknown };
+  if (e.type !== 'lifesteal') return null;
+  if (typeof e.value !== 'number' || e.value <= 0) return null;
+  return e.value;
+}
+
 // ─── 메인 어댑터 ───────────────────────────────────────────────
 
 /**
@@ -132,6 +144,7 @@ export function extractStatusEffect(
  */
 export function mapDbSkillToCombatDef(dbSkill: DbSkillLike): SkillDefinition {
   const status = extractStatusEffect(dbSkill.effect);
+  const lifesteal = extractLifestealPercent(dbSkill.effect);
   const def: SkillDefinition = {
     id: dbSkill.code,
     name: dbSkill.name,
@@ -148,6 +161,9 @@ export function mapDbSkillToCombatDef(dbSkill: DbSkillLike): SkillDefinition {
   if (status) {
     def.statusEffect = status.effect;
     def.statusEffectChance = status.chance;
+  }
+  if (lifesteal !== null) {
+    def.lifestealPercent = lifesteal;
   }
   return def;
 }
