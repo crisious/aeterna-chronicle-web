@@ -18,6 +18,7 @@ import { SoundManager } from '../sound/SoundManager';
 import { BattleUI } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
 import { rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
+import { COMBO_MIRROR } from '../skills/comboMirror';
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
@@ -908,9 +909,21 @@ export class BattleScene extends Phaser.Scene {
     attacker.unit.mp -= skill.mpCost;
     skill.currentCooldown = skill.cooldown;
 
+    // E-S4: 스킬 이력 추가 + 콤보 검출
+    this._recordSkillUse(attacker.unit.id, skill.skillId);
+    const combo = this._detectCombo(attacker.unit.id);
+    let comboBonus = 1.0;
+    if (combo) {
+      comboBonus = 1 + combo.damageBonus / 100;
+      this._spawnComboText(attacker.sprite.x, attacker.sprite.y - 60, combo.name, combo.damageBonus);
+      this.battleUI?.addLog(`⚡ 콤보: ${combo.name}! +${combo.damageBonus}%`);
+      // 콤보 발동 후 이력 리셋 (재사용 방지)
+      this._unitSkillHistory.set(attacker.unit.id, []);
+    }
+
     const baseDmg = skill.damage + (attacker.unit.attack * (skill.damageScale ?? 1));
     const variance = 0.9 + Math.random() * 0.2;
-    const dmg = Math.round(baseDmg * variance);
+    const dmg = Math.round(baseDmg * variance * comboBonus);
 
     // 서버 동기화
     this.combatManager?.requestSkill(attacker.unit.id, target.unit.id, skill.skillId, dmg);
@@ -1001,6 +1014,63 @@ export class BattleScene extends Phaser.Scene {
   }
 
   // ─── FF6 스타일 데미지 숫자 팝업 ──────────────────────────────
+
+  // E-S4: 콤보 검출 + 시각화 인프라 ─────────────────────────────
+  private _unitSkillHistory: Map<string, string[]> = new Map();
+
+  private _recordSkillUse(unitId: string, skillCode: string): void {
+    const hist = this._unitSkillHistory.get(unitId) ?? [];
+    hist.push(skillCode);
+    // 최근 6개만 유지 (콤보 sequence 최대 ~3 이라 6 충분)
+    if (hist.length > 6) hist.splice(0, hist.length - 6);
+    this._unitSkillHistory.set(unitId, hist);
+  }
+
+  /**
+   * 최근 사용 이력의 끝과 콤보 sequence 가 정확히 일치하면 그 콤보 반환.
+   * 여러 콤보 동시 매칭 시 가장 긴 sequence 우선.
+   */
+  private _detectCombo(unitId: string): typeof COMBO_MIRROR[number] | null {
+    const hist = this._unitSkillHistory.get(unitId) ?? [];
+    if (hist.length < 2) return null;
+    // 가장 긴 sequence 부터 검사
+    const sorted = [...COMBO_MIRROR].sort((a, b) => b.sequence.length - a.sequence.length);
+    for (const combo of sorted) {
+      const seq = combo.sequence;
+      if (hist.length < seq.length) continue;
+      const tail = hist.slice(-seq.length);
+      if (tail.every((s, i) => s === seq[i])) return combo;
+    }
+    return null;
+  }
+
+  private _spawnComboText(x: number, y: number, name: string, bonus: number): void {
+    const text = this.add.text(x, y, `⚡ ${name} +${bonus}%`, {
+      fontSize: '18px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffaa44',
+      stroke: '#000000',
+      strokeThickness: 4,
+      fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(9100).setAlpha(0).setScale(0.6);
+    this.tweens.add({
+      targets: text,
+      scale: 1.2,
+      alpha: 1,
+      duration: 300,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: text,
+          y: y - 50,
+          alpha: 0,
+          duration: 800,
+          delay: 600,
+          onComplete: () => text.destroy(),
+        });
+      },
+    });
+  }
 
   private _spawnMissText(x: number, y: number): void {
     // B-S2: passive evasion 발동 시 "MISS!" 텍스트
