@@ -13,6 +13,7 @@
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { formatPassiveEffect, STATUS_COLOR } from '../skills/passiveEffectFormatter';
+import { getCombosUsingSkill } from '../skills/comboMirror';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
 
 // ── 타입 ──────────────────────────────────────────────────────
@@ -329,6 +330,18 @@ export class SkillTreeUI {
       const lvl = Math.max(1, skill.currentLevel || 1);
       const fmt = formatPassiveEffect(skill.effect.type, skill.effect.value, lvl);
       line(`패시브: ${fmt.text}`, STATUS_COLOR[fmt.status], '11px');
+    }
+
+    // E-S3: 이 스킬을 사용하는 콤보 목록 (있으면)
+    const combos = getCombosUsingSkill(skill.id);
+    if (combos.length > 0) {
+      line(`콤보 (${combos.length}):`, '#ffaa44', '11px');
+      for (const combo of combos.slice(0, 3)) {
+        line(`  • ${combo.name} (+${combo.damageBonus}%)`, '#ffcc88', '10px');
+      }
+      if (combos.length > 3) {
+        line(`  ... 외 ${combos.length - 3}개`, '#aa8866', '10px');
+      }
     }
 
     // 업그레이드 버튼

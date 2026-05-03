@@ -485,3 +485,41 @@ describe('6. SKILL_BRANCH_GROUPS ↔ skillSeeds 일치 (D-S2)', () => {
     expect(new Set(branchCodes).size).toBe(branchCodes.length);
   });
 });
+
+// ════════════════════════════════════════════════════════════════
+// 7. 콤보 서버 ↔ 클라 미러 동기화 (E-S3)
+// ════════════════════════════════════════════════════════════════
+describe('7. 콤보 server comboManager ↔ client comboMirror 동기화', () => {
+  const serverSrc = read('server/src/combat/comboManager.ts');
+  const clientSrc = read('client/src/skills/comboMirror.ts');
+
+  // server 의 ComboDefinition id 추출
+  const serverIds = new Set<string>();
+  let m: RegExpExecArray | null;
+  const idRe = /id:\s*'([^']+)',[\s\S]*?classId:\s*'[^']+'/g;
+  while ((m = idRe.exec(serverSrc)) !== null) {
+    serverIds.add(m[1]);
+  }
+
+  // client 의 ComboMirror id 추출
+  const clientIds = new Set<string>();
+  const clientIdRe = /id:\s*'([^']+)'[^}]*classId:\s*'[^']+'/g;
+  while ((m = clientIdRe.exec(clientSrc)) !== null) {
+    clientIds.add(m[1]);
+  }
+
+  test('server 와 client 콤보 갯수 동일 (30)', () => {
+    expect(serverIds.size).toBe(30);
+    expect(clientIds.size).toBe(30);
+  });
+
+  test('모든 server 콤보 id 가 client 미러에 존재', () => {
+    const missing = [...serverIds].filter((id) => !clientIds.has(id));
+    expect(missing, `client 누락: ${JSON.stringify(missing)}`).toHaveLength(0);
+  });
+
+  test('모든 client 미러 id 가 server 에 존재 (orphan 방지)', () => {
+    const orphan = [...clientIds].filter((id) => !serverIds.has(id));
+    expect(orphan, `server 부재: ${JSON.stringify(orphan)}`).toHaveLength(0);
+  });
+});
