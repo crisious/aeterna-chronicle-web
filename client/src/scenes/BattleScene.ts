@@ -17,7 +17,7 @@ import { EffectManager } from '../effects/EffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { BattleUI } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
-import { rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
+import { computeCritEchoDamage, computeReflectDamage, rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
 import { COMBO_MIRROR } from '../skills/comboMirror';
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
@@ -783,6 +783,23 @@ export class BattleScene extends Phaser.Scene {
     // 데미지 팝업 (FF6 스타일)
     this._spawnDamageNumber(target.sprite.x, target.sprite.y, dmg, isCritical ? 'critical' : 'normal');
 
+    // B-S4: critEcho — crit 시 attacker 의 critEchoPercent 만큼 추가 데미지
+    const echoDmg = computeCritEchoDamage(attacker.unit as PassiveCombatantClient, isCritical, dmg);
+    if (echoDmg > 0 && target.unit.hp > 0) {
+      target.unit.hp = Math.max(0, target.unit.hp - echoDmg);
+      this._spawnEchoText(target.sprite.x, target.sprite.y, echoDmg);
+      this.battleUI?.addLog(`✨ ECHO! +${echoDmg}`);
+    }
+
+    // B-S4: reflect — target 의 reflectPercent 만큼 attacker 에 반사
+    const reflectDmg = computeReflectDamage(target.unit as PassiveCombatantClient, dmg);
+    if (reflectDmg > 0 && !attacker.isDead) {
+      attacker.unit.hp = Math.max(0, attacker.unit.hp - reflectDmg);
+      this._spawnReflectText(attacker.sprite.x, attacker.sprite.y, reflectDmg);
+      this.battleUI?.addLog(`🛡 반사 → ${attacker.unit.name} : -${reflectDmg}`);
+      if (attacker.unit.hp <= 0) this._killUnit(attacker);
+    }
+
     // 히트 이펙트 + 화면 흔들림
     this._showHitVFX(target.sprite.x, target.sprite.y);
     this.cameras.main.shake(100, 0.005);
@@ -1072,6 +1089,63 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  private _spawnEchoText(x: number, y: number, dmg: number): void {
+    // B-S4: critEcho 발동 시 보라 "ECHO! +N" 팝업
+    const text = this.add.text(x + 30, y - 10, `✨ ECHO +${dmg}`, {
+      fontSize: '16px',
+      fontFamily: FONT_FAMILY,
+      color: '#cc88ff',
+      stroke: '#000000',
+      strokeThickness: 3,
+      fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(9100).setAlpha(0).setScale(0.5);
+    this.tweens.add({
+      targets: text,
+      scale: 1.0,
+      alpha: 1,
+      duration: 200,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: text,
+          y: y - 60,
+          alpha: 0,
+          duration: 700,
+          delay: 400,
+          onComplete: () => text.destroy(),
+        });
+      },
+    });
+  }
+
+  private _spawnReflectText(x: number, y: number, dmg: number): void {
+    // B-S4: reflect 발동 시 청 "🛡 -N" 팝업 (attacker 위치)
+    const text = this.add.text(x, y - 30, `🛡 -${dmg}`, {
+      fontSize: '17px',
+      fontFamily: FONT_FAMILY,
+      color: '#88ccff',
+      stroke: '#000000',
+      strokeThickness: 3,
+      fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(9100).setAlpha(0).setScale(0.5);
+    this.tweens.add({
+      targets: text,
+      scale: 1.0,
+      alpha: 1,
+      duration: 200,
+      onComplete: () => {
+        this.tweens.add({
+          targets: text,
+          y: y - 70,
+          alpha: 0,
+          duration: 700,
+          delay: 400,
+          onComplete: () => text.destroy(),
+        });
+      },
+    });
+  }
+
   private _spawnMissText(x: number, y: number): void {
     // B-S2: passive evasion 발동 시 "MISS!" 텍스트
     const text = this.add.text(x, y, 'MISS!', {
@@ -1221,6 +1295,12 @@ export class BattleScene extends Phaser.Scene {
       const classId = unit.classId ?? '';
       const texKey = `char_battle_${classId}`;
 
+      // B-S4: ally 에 critEcho 부여 (default 30%)
+      if (unit.critEchoPercent === undefined) {
+        unit.critEchoPercent = 30;
+      }
+      if (unit.alive === undefined) unit.alive = true;
+
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
@@ -1265,9 +1345,12 @@ export class BattleScene extends Phaser.Scene {
       const pos = ENEMY_POSITIONS[idx % ENEMY_POSITIONS.length];
       const isBoss = (unit.id ?? '').toUpperCase().startsWith('BOSS');
 
-      // B-S3: 적 monster 에 evasion 부여 (보스 30%, 일반 15% — server seed 가 지원하면 override)
+      // B-S3/S4: 적 monster 에 passive 부여 (보스 강화, 일반 약간)
       if (unit.evasionAddPercent === undefined) {
         unit.evasionAddPercent = isBoss ? 30 : 15;
+      }
+      if (unit.reflectPercent === undefined) {
+        unit.reflectPercent = isBoss ? 25 : 10; // 피격 데미지 25% / 10% 반사
       }
       if (unit.alive === undefined) unit.alive = true;
 

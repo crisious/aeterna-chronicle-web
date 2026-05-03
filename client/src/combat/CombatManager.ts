@@ -28,10 +28,12 @@ export interface CombatUnit {
   isAlly: boolean;
   classId?: string;      // P35: 아군 클래스 ID (그래픽 매핑용)
   buffs?: ActiveBuff[];
-  // ── B-S3: passive modifier (서버 PassiveCombatant 미러) ──
+  // ── B-S3/S4: passive modifier (서버 PassiveCombatant 미러) ──
   evasionAddPercent?: number;
   hitChanceAddPercent?: number;
   reflectPercent?: number;
+  critEchoPercent?: number;
+  lifestealPercent?: number;
   alive?: boolean;
 }
 
