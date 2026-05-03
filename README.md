@@ -132,6 +132,10 @@ cd client && npm install
 npm run dev                    # → http://localhost:5173 (Vite proxy → :3000)
 ```
 
+> **Windows 사용자**: repo 의 git symlink 가 텍스트 파일로 저장되어 Vite 가 asset 을 못 찾는 문제가 있습니다.
+> `scripts\setup-windows-symlinks.cmd` 한 번 실행하여 NTFS junction 으로 변환 (admin 불필요).
+> 검증: `npx vitest run tests/integration/asset-integrity.test.ts` (5/5 expected).
+
 ---
 
 ## ⚡ 개발 효율 — 빌드-검증 사이클
