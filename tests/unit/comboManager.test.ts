@@ -197,4 +197,51 @@ describe('ComboManager', () => {
     mockTime += 4000;
     expect(cm.getHitCount(playerId)).toBe(0);
   });
+
+  // ── E-S1: COMBO_DEFINITIONS 데이터 회귀 ──
+
+  it('12. COMBO_DEFINITIONS 30개 — 6 클래스 × 5 (E-S1 mb/tg/vw 추가 후)', () => {
+    expect(COMBO_DEFINITIONS.length).toBe(30);
+  });
+
+  it('13. 모든 6 클래스 콤보 5개씩', () => {
+    const byClass: Record<string, number> = {};
+    for (const c of COMBO_DEFINITIONS) {
+      byClass[c.classId] = (byClass[c.classId] ?? 0) + 1;
+    }
+    expect(byClass).toEqual({
+      ether_knight: 5,
+      memory_weaver: 5,
+      shadow_weaver: 5,
+      memory_breaker: 5,
+      time_guardian: 5,
+      void_wanderer: 5,
+    });
+  });
+
+  it('14. 모든 콤보 id 유니크', () => {
+    const ids = COMBO_DEFINITIONS.map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('15. 모든 콤보 skillSequence 길이 ≥ 2', () => {
+    for (const c of COMBO_DEFINITIONS) {
+      expect(c.skillSequence.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('16. mb/tg/vw 신규 15 콤보 — 클래스 prefix 와 skill prefix 일치', () => {
+    const newClasses = ['memory_breaker', 'time_guardian', 'void_wanderer'];
+    const prefixMap: Record<string, string> = {
+      memory_breaker: 'mb_',
+      time_guardian: 'tg_',
+      void_wanderer: 'vw_',
+    };
+    for (const c of COMBO_DEFINITIONS.filter((c) => newClasses.includes(c.classId))) {
+      const expected = prefixMap[c.classId];
+      for (const sk of c.skillSequence) {
+        expect(sk.startsWith(expected)).toBe(true);
+      }
+    }
+  });
 });
