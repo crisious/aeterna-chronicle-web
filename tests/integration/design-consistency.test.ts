@@ -394,3 +394,57 @@ describe('5. Class Definitions Consistency', () => {
     }
   });
 });
+
+// ════════════════════════════════════════════════════════════════
+// 5. COMBO_DEFINITIONS ↔ skillSeeds (E-S2)
+// ════════════════════════════════════════════════════════════════
+describe('5. ComboManager ↔ skillSeeds 일치', () => {
+  const comboSrc = read('server/src/combat/comboManager.ts');
+  const skillSeedsSrc = read('server/src/skill/skillSeeds.ts');
+
+  // skillSeeds 의 모든 code 추출
+  const skillCodes = new Set<string>();
+  const codeRe = /code:\s*'([^']+)'/g;
+  let m: RegExpExecArray | null;
+  while ((m = codeRe.exec(skillSeedsSrc)) !== null) {
+    skillCodes.add(m[1]);
+  }
+
+  // COMBO_DEFINITIONS 의 모든 skillSequence 항목 추출
+  const skillSequences: { comboId: string; classId: string; seq: string[] }[] = [];
+  const comboRe = /id:\s*'([^']+)',[\s\S]*?classId:\s*'([^']+)',[\s\S]*?skillSequence:\s*\[([^\]]+)\]/g;
+  while ((m = comboRe.exec(comboSrc)) !== null) {
+    const seq = Array.from(m[3].matchAll(/'([^']+)'/g)).map((mm) => mm[1]);
+    skillSequences.push({ comboId: m[1], classId: m[2], seq });
+  }
+
+  test('comboManager 에서 30개 콤보 정의 추출', () => {
+    expect(skillSequences.length).toBe(30);
+  });
+
+  test('각 콤보의 skill code 가 skillSeeds 에 존재', () => {
+    const missing: { combo: string; skill: string }[] = [];
+    for (const { comboId, seq } of skillSequences) {
+      for (const sk of seq) {
+        if (!skillCodes.has(sk)) missing.push({ combo: comboId, skill: sk });
+      }
+    }
+    expect(missing, `미존재 skill: ${JSON.stringify(missing.slice(0, 10))}`).toHaveLength(0);
+  });
+
+  test('mb/tg/vw 신규 15 콤보 — 클래스 prefix 와 skill prefix 일치', () => {
+    const newClasses = ['memory_breaker', 'time_guardian', 'void_wanderer'];
+    const prefixMap: Record<string, string> = {
+      memory_breaker: 'mb_',
+      time_guardian: 'tg_',
+      void_wanderer: 'vw_',
+    };
+    for (const { classId, seq, comboId } of skillSequences) {
+      if (!newClasses.includes(classId)) continue;
+      const expected = prefixMap[classId];
+      for (const sk of seq) {
+        expect(sk.startsWith(expected), `${comboId}: ${sk} → expected prefix ${expected}`).toBe(true);
+      }
+    }
+  });
+});
