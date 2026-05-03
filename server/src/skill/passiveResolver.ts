@@ -265,7 +265,9 @@ export async function resolvePassiveModifiers(
     if (parsed.type === 'auto_resurrect') {
       // 특수 처리: duration + value 두 필드 모두 사용. 여러 개 장착 시 각자 max(delay)/max(hpPct) 채택, charges 합산.
       bag.autoResurrectDelay = Math.max(bag.autoResurrectDelay, parsed.duration);
-      bag.autoResurrectHpPercent = Math.max(bag.autoResurrectHpPercent, scaled);
+      // hpPercent 는 의미상 0~100 (% of maxHp). PASSIVE_SCALING 으로 100% 초과 가능 → modifier bag 단계에서 cap.
+      // tryAutoResurrect 도 안전망 cap 하지만 modifier bag 자체의 의미적 일관성 위해 여기서 cap.
+      bag.autoResurrectHpPercent = Math.max(bag.autoResurrectHpPercent, Math.min(100, scaled));
       bag.autoResurrectChargesMax += 1;
       applied.push({
         skillCode: ps.skill.code,

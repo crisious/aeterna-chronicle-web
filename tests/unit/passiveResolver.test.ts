@@ -269,6 +269,38 @@ describe('resolvePassiveModifiers', () => {
     expect(result.modifiers.autoResurrectChargesMax).toBe(2);
   });
 
+  test('이슈 5 fix: auto_resurrect lv5 hpPercent cap 100 (PASSIVE_SCALING ×1.45 초과 방지)', async () => {
+    findManyMock.mockResolvedValue([
+      {
+        ...makePlayerSkill({ code: 'mw_absolute_memory', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 5 }),
+        skill: {
+          ...makePlayerSkill({ code: 'mw_absolute_memory', type: 'passive', effectType: 'auto_resurrect', value: 100, level: 5 }).skill,
+          effect: { type: 'auto_resurrect', duration: 30, value: 100 },
+        },
+      },
+    ]);
+    const result = await resolvePassiveModifiers('char1');
+    // value=100 lv5 → scaled=floor(100×1.45)=145 → cap 100
+    expect(result.modifiers.autoResurrectHpPercent).toBe(100);
+    expect(result.modifiers.autoResurrectDelay).toBe(30);
+    expect(result.modifiers.autoResurrectChargesMax).toBe(1);
+  });
+
+  test('이슈 5 fix: 낮은 value (60%) lv5 → scaled 87 < 100, cap 영향 없음', async () => {
+    findManyMock.mockResolvedValue([
+      {
+        ...makePlayerSkill({ code: 'mw_partial_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 60, level: 5 }),
+        skill: {
+          ...makePlayerSkill({ code: 'mw_partial_resurrect', type: 'passive', effectType: 'auto_resurrect', value: 60, level: 5 }).skill,
+          effect: { type: 'auto_resurrect', duration: 0, value: 60 },
+        },
+      },
+    ]);
+    const result = await resolvePassiveModifiers('char1');
+    // value=60 lv5 → scaled=floor(60×1.45)=87 (≤100, cap 영향 없음)
+    expect(result.modifiers.autoResurrectHpPercent).toBe(87);
+  });
+
   test('미장착(isEquipped=false) 은 prisma 쿼리에서 필터링됨 — 결과 0', async () => {
     // findMany 가 isEquipped:true 만 반환하도록 모킹 — 빈 배열
     findManyMock.mockResolvedValue([]);
