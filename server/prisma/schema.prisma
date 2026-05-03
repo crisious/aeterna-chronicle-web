@@ -32,6 +32,9 @@ model User {
   partyMembers PartyMember[]
   equipment    Equipment[]
 
+  // 이슈 6 fix: PlayerSkill ↔ User FK 양방향 relation
+  playerSkills PlayerSkill[]
+
   // P7-14: DAU/MAU 집계 + 밴 필터 + 역할 조회 최적화
   @@index([lastLoginAt])
   @@index([isBanned])
@@ -878,6 +881,8 @@ model PlayerSkill {
   unlockedAt  DateTime @default(now()) @map("unlocked_at")
 
   skill       Skill    @relation(fields: [skillId], references: [id])
+  // 이슈 6 fix: User FK — orphan player_skills 차단 (user 삭제 시 cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([userId, skillId])
   @@map("player_skills")
   @@index([userId])

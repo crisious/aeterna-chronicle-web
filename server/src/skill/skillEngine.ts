@@ -80,6 +80,10 @@ export async function unlockSkill(
   characterLevel: number,
   characterClass: string,
 ): Promise<{ success: boolean; error?: string }> {
+  // 0. 이슈 6 fix: user 존재 검증 — orphan player_skills 차단 + 명확한 400 에러
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+  if (!user) return { success: false, error: '존재하지 않는 사용자' };
+
   // 1. 스킬 존재 확인
   const skill = await prisma.skill.findUnique({ where: { code: skillCode } });
   if (!skill) return { success: false, error: '존재하지 않는 스킬' };
