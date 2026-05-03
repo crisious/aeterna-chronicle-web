@@ -17,6 +17,7 @@ import { EffectManager } from '../effects/EffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { BattleUI } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
+import { rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
@@ -759,6 +760,14 @@ export class BattleScene extends Phaser.Scene {
   // ─── 전투 행동 ───────────────────────────────────────────────
 
   private _performAttack(attacker: UnitSprite, target: UnitSprite): void {
+    // B-S2: passive evasion / hit_chance 미러 — miss 판정
+    if (rollMiss(attacker.unit as PassiveCombatantClient, target.unit as PassiveCombatantClient)) {
+      this._spawnMissText(target.sprite.x, target.sprite.y);
+      this.battleUI?.addLog(`${attacker.unit.name} → ${target.unit.name} : MISS!`);
+      this._flashSprite(target);
+      return;
+    }
+
     const rawDmg = Math.max(1, attacker.unit.attack - (target.unit.defense ?? 0));
     const isCritical = Math.random() < 0.15;
     const variance = 0.85 + Math.random() * 0.3;
@@ -992,6 +1001,33 @@ export class BattleScene extends Phaser.Scene {
   }
 
   // ─── FF6 스타일 데미지 숫자 팝업 ──────────────────────────────
+
+  private _spawnMissText(x: number, y: number): void {
+    // B-S2: passive evasion 발동 시 "MISS!" 텍스트
+    const text = this.add.text(x, y, 'MISS!', {
+      fontSize: '20px',
+      fontFamily: FONT_FAMILY,
+      color: '#aaaaaa',
+      stroke: '#000000',
+      strokeThickness: 3,
+      fontStyle: 'italic',
+    }).setOrigin(0.5).setDepth(9000).setAlpha(0);
+    this.tweens.add({
+      targets: text,
+      y: y - 40,
+      alpha: { from: 0, to: 1 },
+      duration: 200,
+      onComplete: () => {
+        this.tweens.add({
+          targets: text,
+          alpha: 0,
+          duration: 600,
+          delay: 400,
+          onComplete: () => text.destroy(),
+        });
+      },
+    });
+  }
 
   private _spawnDamageNumber(x: number, y: number, value: number, type: 'normal' | 'critical' | 'heal'): void {
     let color = '#ffffff';
