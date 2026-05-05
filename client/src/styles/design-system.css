@@ -18,6 +18,9 @@
    1. 디자인 토큰 (CSS Custom Properties)
    ═══════════════════════════════════════════════════════════════ */
 :root {
+  /* FINDING-M2 fix: DESIGN.md 명세는 다크 테마 — color-scheme 토큰 명시 */
+  color-scheme: dark;
+
   /* ── 배경 ── */
   --bg-abyss:   #0D0D1A;
   --bg-primary: #1A1A2E;
