@@ -596,13 +596,14 @@ export class AccessibilityManager {
 
   /** UI 요소에 ARIA 라벨 자동 부여 */
   private applyAriaLabels(): void {
-    if (!this.settings.screenReaderEnabled) return;
-
-    // 캔버스에 role 부여
+    // FINDING-A5 fix: 캔버스 a11y 는 screenReader 옵션과 독립으로 항상 부여
+    // (WCAG 1.1.1 Non-text Content / 4.1.2 Name, Role, Value)
     if (this.gameCanvas) {
       this.gameCanvas.setAttribute('role', 'application');
       this.gameCanvas.setAttribute('aria-label', '에테르나 크로니클 게임 화면');
     }
+
+    if (!this.settings.screenReaderEnabled) return;
 
     // data-aria-label 속성이 있는 DOM 요소에 aria-label 복사
     const elements = document.querySelectorAll('[data-aria-label]');
