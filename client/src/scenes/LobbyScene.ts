@@ -367,14 +367,12 @@ export class LobbyScene extends Phaser.Scene {
 
     const doAccept = () => {
       playSfx(this, UI_SFX.CONFIRM);
-      panel.destroy();
-      this.dialoguePanel = null;
+      panel.destroy(); // _registerModalPanel destroy hook 가 dialoguePanel = null 자동 처리
       this._executeNpcAction(npc);
     };
     const doClose = () => {
       playSfx(this, UI_SFX.CANCEL);
-      panel.destroy();
-      this.dialoguePanel = null;
+      panel.destroy(); // 동일 — register hook 자동 처리
     };
 
     acceptBtn.on('pointerover', () => { dialogueIndex = 0; renderDialogueChoice(); });
