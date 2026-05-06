@@ -8,6 +8,7 @@
  */
 
 import * as Phaser from 'phaser';
+import { isScreenShakeEnabled } from '../scenes/SettingsScene';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -216,8 +217,10 @@ export class ComboUI {
       },
     });
 
-    // 화면 흔들림
-    this.scene.cameras.main.shake(SHAKE_DURATION, SHAKE_INTENSITY / 1000);
+    // 화면 흔들림 (FINDING-A4 ext11: 설정 + reduce-motion 검사)
+    if (isScreenShakeEnabled()) {
+      this.scene.cameras.main.shake(SHAKE_DURATION, SHAKE_INTENSITY / 1000);
+    }
   }
 
   // ─── 콤보 힌트 표시 ─────────────────────────────────────────

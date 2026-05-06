@@ -28,6 +28,22 @@ export function applyColorblindMode(mode: string): void {
   }
 }
 
+// FINDING-A4 ext11: screenShake 설정 검사 (BattleScene/ComboUI 의 cameras.shake() 전)
+// 또 prefers-reduced-motion 도 우선 — 사용자 OS 설정 존중.
+export function isScreenShakeEnabled(): boolean {
+  if (typeof document === 'undefined') return true;
+  // prefers-reduced-motion 우선 (WCAG 2.3.3)
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return true; // default true
+    const parsed = JSON.parse(raw) as { screenShake?: boolean };
+    return parsed.screenShake !== false;
+  } catch {
+    return true;
+  }
+}
+
 // ── 기본 설정 값 ─────────────────────────────────────────────
 
 interface GameSettings {

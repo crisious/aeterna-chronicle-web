@@ -22,6 +22,7 @@ import { COMBO_MIRROR } from '../skills/comboMirror';
 import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
+import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 
@@ -800,9 +801,9 @@ export class BattleScene extends Phaser.Scene {
       if (attacker.unit.hp <= 0) this._killUnit(attacker);
     }
 
-    // 히트 이펙트 + 화면 흔들림
+    // 히트 이펙트 + 화면 흔들림 (FINDING-A4 ext11: 설정 + reduce-motion 검사)
     this._showHitVFX(target.sprite.x, target.sprite.y);
-    this.cameras.main.shake(100, 0.005);
+    if (isScreenShakeEnabled()) this.cameras.main.shake(100, 0.005);
 
     // SFX + Voice
     if (attacker.isAlly) {
@@ -951,7 +952,8 @@ export class BattleScene extends Phaser.Scene {
     // 이펙트
     this._spawnDamageNumber(target.sprite.x, target.sprite.y, dmg, 'normal');
     this._showHitVFX(target.sprite.x, target.sprite.y);
-    this.cameras.main.shake(80, 0.003);
+    // FINDING-A4 ext11: 설정 + reduce-motion 검사
+    if (isScreenShakeEnabled()) this.cameras.main.shake(80, 0.003);
 
     playSfx(this, skill.sfxKey ?? 'sfx_combat_magic_cast', 0.6);
     playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.6);
