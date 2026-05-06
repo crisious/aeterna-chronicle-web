@@ -62,6 +62,11 @@ export class LobbyScene extends Phaser.Scene {
   private characterData!: LobbySceneData;
   private npcSprites: Phaser.GameObjects.Container[] = [];
   private dialoguePanel: Phaser.GameObjects.Container | null = null;
+
+  // FINDING-A4 ext5: 하단 nav 버튼 키보드 nav state
+  private navButtonItems: Array<{ text: Phaser.GameObjects.Text; action: () => void; label: string }> = [];
+  private navIndex = 0;
+  private _lobbyKeyboardCleanup: (() => void) | null = null;
   private minimapContainer!: Phaser.GameObjects.Container;
   private connectionIndicator!: Phaser.GameObjects.Text;
   private goldText!: Phaser.GameObjects.Text;
@@ -519,18 +524,83 @@ export class LobbyScene extends Phaser.Scene {
       { label: '📜 퀘스트', x: w * 0.8, action: () => this._showQuests() },
     ];
 
-    for (const def of buttons) {
-      this.add.text(def.x, btnY, def.label, {
+    this.navButtonItems = [];
+
+    buttons.forEach((def, i) => {
+      const t = this.add.text(def.x, btnY, def.label, {
         fontSize: '14px', fontFamily: 'monospace', color: '#cccccc',
         backgroundColor: '#1a1a2e', padding: { x: 10, y: 5 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-        .on('pointerover', function (this: Phaser.GameObjects.Text) { this.setColor('#ffffff'); })
-        .on('pointerout', function (this: Phaser.GameObjects.Text) { this.setColor('#cccccc'); })
+        .on('pointerover', () => this._setNavIndex(i))
         .on('pointerdown', () => {
           playSfx(this, UI_SFX.CLICK);
           def.action();
         });
+      this.navButtonItems.push({ text: t, action: def.action, label: def.label });
+    });
+
+    // FINDING-A4 ext5: 메인 nav 버튼 키보드 navigation (WCAG 2.1.1)
+    if (this.navButtonItems.length > 0) {
+      this.navIndex = 0;
+      this._renderNavButton(0);
     }
+
+    const len = this.navButtonItems.length;
+    const onLeft = () => {
+      if (len === 0) return;
+      this._setNavIndex((this.navIndex + len - 1) % len);
+    };
+    const onRight = () => {
+      if (len === 0) return;
+      this._setNavIndex((this.navIndex + 1) % len);
+    };
+    const onActivate = () => {
+      const item = this.navButtonItems[this.navIndex];
+      if (item) {
+        playSfx(this, UI_SFX.CLICK);
+        item.action();
+      }
+    };
+    const onEsc = () => {
+      // 다이얼로그 패널 열려있으면 닫기, 아니면 캐릭터 선택 복귀
+      if (this.dialoguePanel) {
+        this.dialoguePanel.destroy();
+        this.dialoguePanel = null;
+      } else {
+        this.scene.start('CharacterSelectScene');
+      }
+    };
+
+    this.input.keyboard?.on('keydown-LEFT', onLeft);
+    this.input.keyboard?.on('keydown-RIGHT', onRight);
+    this.input.keyboard?.on('keydown-ENTER', onActivate);
+    this.input.keyboard?.on('keydown-SPACE', onActivate);
+    this.input.keyboard?.on('keydown-ESC', onEsc);
+
+    this._lobbyKeyboardCleanup = () => {
+      this.input.keyboard?.off('keydown-LEFT', onLeft);
+      this.input.keyboard?.off('keydown-RIGHT', onRight);
+      this.input.keyboard?.off('keydown-ENTER', onActivate);
+      this.input.keyboard?.off('keydown-SPACE', onActivate);
+      this.input.keyboard?.off('keydown-ESC', onEsc);
+    };
+  }
+
+  // FINDING-A4 ext5: nav 버튼 highlight 동기화 + 라벨 ▶ prefix
+  private _setNavIndex(i: number): void {
+    if (i === this.navIndex || !this.navButtonItems[i]) return;
+    const oldI = this.navIndex;
+    this.navIndex = i;
+    this._renderNavButton(oldI);
+    this._renderNavButton(i);
+  }
+
+  private _renderNavButton(i: number): void {
+    const item = this.navButtonItems[i];
+    if (!item) return;
+    const isActive = i === this.navIndex;
+    item.text.setText(isActive ? `▶ ${item.label}` : item.label);
+    item.text.setColor(isActive ? '#ffffff' : '#cccccc');
   }
 
   // ── P25-04: 인벤토리 / 퀘스트 표시 ─────────────────────
@@ -669,5 +739,12 @@ export class LobbyScene extends Phaser.Scene {
     this.minimapContainer.add(this.add.text(MINIMAP_SIZE / 2, -8, '미니맵', {
       fontSize: '10px', color: '#888888', fontFamily: 'monospace',
     }).setOrigin(0.5));
+  }
+
+  shutdown(): void {
+    // FINDING-A4 ext5: scene 종료 시 keyboard listener 정리
+    this._lobbyKeyboardCleanup?.();
+    this._lobbyKeyboardCleanup = null;
+    this.navButtonItems = [];
   }
 }
