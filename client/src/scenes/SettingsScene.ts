@@ -12,6 +12,7 @@
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { accessibilityManager, type SubtitleSize } from '../accessibility/AccessibilityManager';
+import { i18n, type SupportedLocale } from '../i18n/i18nManager';
 
 // ── 설정 저장 키 ─────────────────────────────────────────────
 
@@ -155,7 +156,11 @@ export class SettingsScene extends Phaser.Scene {
     this._addCycleButton(leftX, y, '언어',
       LANGUAGE_OPTIONS.map(o => o.label),
       LANGUAGE_OPTIONS.findIndex(o => o.code === this.settings.language),
-      (idx) => { this.settings.language = LANGUAGE_OPTIONS[idx].code; },
+      (idx) => {
+        this.settings.language = LANGUAGE_OPTIONS[idx].code;
+        // FINDING-A4 ext14: i18nManager 동기화 — locale 변경 + 리스너 알림
+        i18n.setLocale(this.settings.language as SupportedLocale);
+      },
     );
     y += 60;
 
