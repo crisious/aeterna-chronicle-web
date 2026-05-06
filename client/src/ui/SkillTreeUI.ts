@@ -164,6 +164,12 @@ export class SkillTreeUI {
     playSfx(this.scene, UI_SFX.OPEN);
     await this._loadSkills();
     this._renderTree();
+
+    // FINDING-A4 ext16: ESC 로 패널 닫기 (WCAG 2.1.1)
+    if (!this._escHandler) {
+      this._escHandler = () => this.close();
+      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
+    }
   }
 
   close(): void {
@@ -171,7 +177,15 @@ export class SkillTreeUI {
     this.container.setVisible(false);
     this._closeDetail();
     playSfx(this.scene, UI_SFX.CLOSE);
+    // FINDING-A4 ext16: keyboard listener cleanup
+    if (this._escHandler) {
+      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
+      this._escHandler = null;
+    }
   }
+
+  // FINDING-A4 ext16: ESC handler 참조(off 위해)
+  private _escHandler: (() => void) | null = null;
 
   isOpen(): boolean { return this.visible; }
 
