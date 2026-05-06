@@ -68,9 +68,21 @@ const KEYBINDS = [
 
 // ── SettingsScene ────────────────────────────────────────────
 
+// FINDING-A4 ext4: Settings 항목 키보드 nav 인터페이스
+type SettingsSelectable = {
+  setHighlighted: (b: boolean) => void;
+  activate: () => void;
+  adjust?: (delta: number) => void;
+};
+
 export class SettingsScene extends Phaser.Scene {
   private settings!: GameSettings;
   private uiElements: Phaser.GameObjects.GameObject[] = [];
+
+  // FINDING-A4 ext4: 키보드 nav state
+  private settingsItems: SettingsSelectable[] = [];
+  private settingsIndex = 0;
+  private _settingsKeyboardCleanup: (() => void) | null = null;
 
   constructor() {
     super({ key: 'SettingsScene' });
@@ -149,6 +161,7 @@ export class SettingsScene extends Phaser.Scene {
     }
 
     // ── 뒤로가기 버튼 ──
+    let backHighlighted = false;
     const backBtn = this.add.text(width / 2, height - 60, '◀ 뒤로가기', {
       fontSize: '20px',
       fontFamily: 'monospace',
@@ -156,12 +169,60 @@ export class SettingsScene extends Phaser.Scene {
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
-      .on('pointerover', () => backBtn.setColor('#ffffff'))
-      .on('pointerout', () => backBtn.setColor('#88ff88'))
+      .on('pointerover', () => this._setSettingsIndex(this.settingsItems.length - 1))
       .on('pointerdown', () => this._onBack());
 
-    // ESC로 뒤로가기
-    this.input.keyboard?.on('keydown-ESC', () => this._onBack());
+    const backBtnIndex = this.settingsItems.length;
+    backBtn.on('pointerover', () => this._setSettingsIndex(backBtnIndex));
+    this.settingsItems.push({
+      setHighlighted: (b) => {
+        backHighlighted = b;
+        backBtn.setColor(b ? '#ffffff' : '#88ff88');
+        backBtn.setFontStyle(b ? 'bold' : 'normal');
+      },
+      activate: () => this._onBack(),
+    });
+    void backHighlighted;
+
+    // FINDING-A4 ext4: Settings 항목 키보드 nav (WCAG 2.1.1)
+    // ArrowUp/Down: 항목 cycle / ArrowLeft/Right: slider 5% adjust 또는 cycle prev/next
+    // Enter/Space: 활성화 (toggle / cycle next / 뒤로가기)
+    if (this.settingsItems.length > 0) {
+      this.settingsIndex = 0;
+      this.settingsItems[0].setHighlighted(true);
+    }
+
+    const len = () => this.settingsItems.length;
+    const onUp = () => {
+      if (len() === 0) return;
+      this._setSettingsIndex((this.settingsIndex + len() - 1) % len());
+    };
+    const onDown = () => {
+      if (len() === 0) return;
+      this._setSettingsIndex((this.settingsIndex + 1) % len());
+    };
+    const onLeft = () => this.settingsItems[this.settingsIndex]?.adjust?.(-1);
+    const onRight = () => this.settingsItems[this.settingsIndex]?.adjust?.(+1);
+    const onActivate = () => this.settingsItems[this.settingsIndex]?.activate();
+    const onEsc = () => this._onBack();
+
+    this.input.keyboard?.on('keydown-UP', onUp);
+    this.input.keyboard?.on('keydown-DOWN', onDown);
+    this.input.keyboard?.on('keydown-LEFT', onLeft);
+    this.input.keyboard?.on('keydown-RIGHT', onRight);
+    this.input.keyboard?.on('keydown-ENTER', onActivate);
+    this.input.keyboard?.on('keydown-SPACE', onActivate);
+    this.input.keyboard?.on('keydown-ESC', onEsc);
+
+    this._settingsKeyboardCleanup = () => {
+      this.input.keyboard?.off('keydown-UP', onUp);
+      this.input.keyboard?.off('keydown-DOWN', onDown);
+      this.input.keyboard?.off('keydown-LEFT', onLeft);
+      this.input.keyboard?.off('keydown-RIGHT', onRight);
+      this.input.keyboard?.off('keydown-ENTER', onActivate);
+      this.input.keyboard?.off('keydown-SPACE', onActivate);
+      this.input.keyboard?.off('keydown-ESC', onEsc);
+    };
 
     // 페이드 인
     SceneManager.fadeIn(this, 300);
@@ -188,7 +249,14 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private _addSlider(x: number, y: number, label: string, value: number, onChange: (v: number) => void): void {
-    this._addText(x, y, `${label}: ${Math.round(value * 100)}%`, 14, '#cccccc');
+    let highlighted = false;
+    let currentRatio = value;
+    const labelText = this._addText(x, y, '', 14, '#cccccc');
+    const renderLabel = () => {
+      const prefix = highlighted ? '▶ ' : '   ';
+      labelText.setText(`${prefix}${label}: ${Math.round(currentRatio * 100)}%`);
+    };
+    renderLabel();
 
     const barWidth = 200;
     const barY = y + 22;
@@ -207,33 +275,93 @@ export class SettingsScene extends Phaser.Scene {
     this.uiElements.push(hitZone);
 
     hitZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      const ratio = Phaser.Math.Clamp((pointer.x - x) / barWidth, 0, 1);
-      fill.setSize(barWidth * ratio, 8);
-      onChange(ratio);
+      currentRatio = Phaser.Math.Clamp((pointer.x - x) / barWidth, 0, 1);
+      fill.setSize(barWidth * currentRatio, 8);
+      renderLabel();
+      onChange(currentRatio);
+    });
+
+    // FINDING-A4 ext4: 키보드 nav 등록 (slider 는 ArrowLeft/Right 5% 조정)
+    const itemIndex = this.settingsItems.length;
+    hitZone.on('pointerover', () => this._setSettingsIndex(itemIndex));
+    this.settingsItems.push({
+      setHighlighted: (b) => {
+        highlighted = b;
+        labelText.setColor(b ? '#ffffff' : '#cccccc');
+        fill.setFillStyle(b ? 0x9966cc : 0x6644aa);
+        renderLabel();
+      },
+      activate: () => { /* slider 는 Enter 동작 없음 */ },
+      adjust: (delta) => {
+        currentRatio = Phaser.Math.Clamp(currentRatio + delta * 0.05, 0, 1);
+        fill.setSize(barWidth * currentRatio, 8);
+        renderLabel();
+        onChange(currentRatio);
+      },
     });
   }
 
   private _addToggle(x: number, y: number, label: string, value: boolean, onChange: (v: boolean) => void): void {
     let current = value;
-    const txt = this._addText(x, y, `${label}: ${current ? 'ON' : 'OFF'}`, 14, current ? '#88ff88' : '#ff8888');
-    txt.setInteractive({ useHandCursor: true });
-    txt.on('pointerdown', () => {
-      current = !current;
-      txt.setText(`${label}: ${current ? 'ON' : 'OFF'}`);
+    let highlighted = false;
+    const txt = this._addText(x, y, '', 14, current ? '#88ff88' : '#ff8888');
+    const renderLabel = () => {
+      const prefix = highlighted ? '▶ ' : '   ';
+      txt.setText(`${prefix}${label}: ${current ? 'ON' : 'OFF'}`);
       txt.setColor(current ? '#88ff88' : '#ff8888');
+    };
+    renderLabel();
+    txt.setInteractive({ useHandCursor: true });
+    const flip = () => {
+      current = !current;
+      renderLabel();
       onChange(current);
+    };
+    txt.on('pointerdown', flip);
+
+    // FINDING-A4 ext4: 키보드 nav 등록
+    const itemIndex = this.settingsItems.length;
+    txt.on('pointerover', () => this._setSettingsIndex(itemIndex));
+    this.settingsItems.push({
+      setHighlighted: (b) => { highlighted = b; renderLabel(); },
+      activate: flip,
     });
   }
 
   private _addCycleButton(x: number, y: number, label: string, options: string[], currentIndex: number, onChange: (idx: number) => void): void {
     let idx = Math.max(0, currentIndex);
-    const txt = this._addText(x, y, `${label}: < ${options[idx]} >`, 14, '#cccccc');
+    let highlighted = false;
+    const txt = this._addText(x, y, '', 14, '#cccccc');
+    const renderLabel = () => {
+      const prefix = highlighted ? '▶ ' : '   ';
+      txt.setText(`${prefix}${label}: < ${options[idx]} >`);
+      txt.setColor(highlighted ? '#ffffff' : '#cccccc');
+    };
+    renderLabel();
     txt.setInteractive({ useHandCursor: true });
-    txt.on('pointerdown', () => {
-      idx = (idx + 1) % options.length;
-      txt.setText(`${label}: < ${options[idx]} >`);
+    const cycle = (delta: number) => {
+      idx = (idx + delta + options.length) % options.length;
+      renderLabel();
       onChange(idx);
+    };
+    txt.on('pointerdown', () => cycle(+1));
+
+    // FINDING-A4 ext4: 키보드 nav 등록 (cycle 은 Enter=다음, ArrowLeft=이전, ArrowRight=다음)
+    const itemIndex = this.settingsItems.length;
+    txt.on('pointerover', () => this._setSettingsIndex(itemIndex));
+    this.settingsItems.push({
+      setHighlighted: (b) => { highlighted = b; renderLabel(); },
+      activate: () => cycle(+1),
+      adjust: (delta) => cycle(delta > 0 ? +1 : -1),
     });
+  }
+
+  // FINDING-A4 ext4: 키보드 highlight 동기화
+  private _setSettingsIndex(i: number): void {
+    if (i === this.settingsIndex || !this.settingsItems[i]) return;
+    this.settingsItems[this.settingsIndex]?.setHighlighted(false);
+    this.settingsIndex = i;
+    this.settingsItems[i].setHighlighted(true);
   }
 
   // ── 설정 저장/로드 ────────────────────────────────────────
@@ -256,5 +384,9 @@ export class SettingsScene extends Phaser.Scene {
 
   shutdown(): void {
     this.uiElements = [];
+    // FINDING-A4 ext4: keyboard listener 정리
+    this._settingsKeyboardCleanup?.();
+    this._settingsKeyboardCleanup = null;
+    this.settingsItems = [];
   }
 }
