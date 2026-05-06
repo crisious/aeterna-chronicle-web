@@ -338,23 +338,56 @@ export class LobbyScene extends Phaser.Scene {
     const acceptBtn = this.add.text(-60, 50, '[ 이용하기 ]', {
       fontSize: '14px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    acceptBtn.on('pointerdown', () => {
-      playSfx(this, UI_SFX.CONFIRM);
-      panel.destroy();
-      this.dialoguePanel = null;
-      this._executeNpcAction(npc);
-    });
     panel.add(acceptBtn);
 
     const closeBtn = this.add.text(60, 50, '[ 닫기 ]', {
       fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => {
+    panel.add(closeBtn);
+
+    // FINDING-A4 ext8: 다이얼로그 패널 키보드 nav (WCAG 2.1.1)
+    // 0 = 이용하기 / 1 = 닫기. 첫 highlight = 이용하기(default action)
+    let dialogueIndex = 0;
+    const renderDialogueChoice = () => {
+      acceptBtn.setText(dialogueIndex === 0 ? '▶ [ 이용하기 ]' : '   [ 이용하기 ]');
+      acceptBtn.setColor(dialogueIndex === 0 ? '#ffffff' : '#88ff88');
+      closeBtn.setText(dialogueIndex === 1 ? '▶ [ 닫기 ]' : '   [ 닫기 ]');
+      closeBtn.setColor(dialogueIndex === 1 ? '#ffffff' : '#888888');
+    };
+    renderDialogueChoice();
+
+    const doAccept = () => {
+      playSfx(this, UI_SFX.CONFIRM);
+      panel.destroy();
+      this.dialoguePanel = null;
+      this._executeNpcAction(npc);
+    };
+    const doClose = () => {
       playSfx(this, UI_SFX.CANCEL);
       panel.destroy();
       this.dialoguePanel = null;
+    };
+
+    acceptBtn.on('pointerover', () => { dialogueIndex = 0; renderDialogueChoice(); });
+    acceptBtn.on('pointerdown', doAccept);
+    closeBtn.on('pointerover', () => { dialogueIndex = 1; renderDialogueChoice(); });
+    closeBtn.on('pointerdown', doClose);
+
+    const onDialogLeft = () => { dialogueIndex = 0; renderDialogueChoice(); };
+    const onDialogRight = () => { dialogueIndex = 1; renderDialogueChoice(); };
+    const onDialogActivate = () => (dialogueIndex === 0 ? doAccept() : doClose());
+
+    this.input.keyboard?.on('keydown-LEFT', onDialogLeft);
+    this.input.keyboard?.on('keydown-RIGHT', onDialogRight);
+    this.input.keyboard?.on('keydown-ENTER', onDialogActivate);
+    this.input.keyboard?.on('keydown-SPACE', onDialogActivate);
+
+    panel.on('destroy', () => {
+      this.input.keyboard?.off('keydown-LEFT', onDialogLeft);
+      this.input.keyboard?.off('keydown-RIGHT', onDialogRight);
+      this.input.keyboard?.off('keydown-ENTER', onDialogActivate);
+      this.input.keyboard?.off('keydown-SPACE', onDialogActivate);
     });
-    panel.add(closeBtn);
 
     // P34-A: NPC 인사 보이스
     const voiceKey = NPC_VOICE[npc.id];
@@ -576,12 +609,14 @@ export class LobbyScene extends Phaser.Scene {
 
     const len = this.navButtonItems.length;
     const onLeft = () => {
+      if (this.dialoguePanel) return; // FINDING-A4 ext8: 다이얼로그 모달 모드 — handler 양보
       if (len === 0) return;
       this.focusGroup = 'nav';
       if (this.npcHighlightRing) this.npcHighlightRing.setVisible(false);
       this._setNavIndex((this.navIndex + len - 1) % len);
     };
     const onRight = () => {
+      if (this.dialoguePanel) return;
       if (len === 0) return;
       this.focusGroup = 'nav';
       if (this.npcHighlightRing) this.npcHighlightRing.setVisible(false);
@@ -589,16 +624,19 @@ export class LobbyScene extends Phaser.Scene {
     };
     // FINDING-A4 ext7: ArrowUp/Down → NPC group 활성 + cycle
     const onUp = () => {
+      if (this.dialoguePanel) return;
       if (TOWN_NPCS.length === 0) return;
       this.focusGroup = 'npc';
       this._setNpcIndex((this.npcIndex + TOWN_NPCS.length - 1) % TOWN_NPCS.length);
     };
     const onDown = () => {
+      if (this.dialoguePanel) return;
       if (TOWN_NPCS.length === 0) return;
       this.focusGroup = 'npc';
       this._setNpcIndex((this.npcIndex + 1) % TOWN_NPCS.length);
     };
     const onActivate = () => {
+      if (this.dialoguePanel) return; // 다이얼로그 자체 handler 가 처리
       // FINDING-A4 ext7: focus group 별 activate 분기
       if (this.focusGroup === 'npc') {
         const npc = TOWN_NPCS[this.npcIndex];
