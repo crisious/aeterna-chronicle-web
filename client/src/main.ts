@@ -12,6 +12,7 @@ import { CutsceneScene } from './scenes/CutsceneScene';
 import { sceneManager } from './scenes/SceneManager';
 import { errorBoundary } from './error/ErrorBoundary';
 import { accessibilityManager } from './accessibility/AccessibilityManager';
+import { focusManager } from './accessibility/screen_reader/FocusManager';
 import {
     createA11yProbeBridgeFromAriaMaps,
     installA11yProbeBridge,
@@ -92,6 +93,17 @@ errorBoundary.initialize(game);
 game.events.once(Phaser.Core.Events.READY, () => {
     const canvas = game.canvas;
     accessibilityManager.init(canvas instanceof HTMLCanvasElement ? canvas : undefined);
+
+    // FINDING-A4 fix part 1: WCAG 2.1.1 Keyboard — 캔버스 키보드 focus 가능하게.
+    // Phaser 기본 tabIndex=-1 이라 Tab/Arrow/Enter 가 캔버스에 도달 못 함.
+    if (canvas instanceof HTMLCanvasElement) {
+        canvas.tabIndex = 0;
+        canvas.focus();
+    }
+
+    // FINDING-A4 fix part 3: WCAG 2.4.7 Focus Visible — focus-visible ring 스타일 주입 + Tab 순환 핸들러.
+    // FocusManager singleton 이 정의돼 있었으나 init() wiring 누락 상태.
+    focusManager.init();
 
     if (canvas instanceof HTMLCanvasElement && caps.renderer === 'webgl') {
         attachContextLossHandler(canvas);
