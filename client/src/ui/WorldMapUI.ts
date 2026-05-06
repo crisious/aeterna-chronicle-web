@@ -74,13 +74,26 @@ export class WorldMapUI {
     this.container.setVisible(true);
     await this._loadZones();
     this._renderMap();
+
+    // FINDING-A4 ext18: ESC 닫기 (WCAG 2.1.1)
+    if (!this._escHandler) {
+      this._escHandler = () => this.close();
+      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
+    }
   }
 
   close(): void {
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
+    if (this._escHandler) {
+      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
+      this._escHandler = null;
+    }
   }
+
+  // FINDING-A4 ext18: ESC handler 참조
+  private _escHandler: (() => void) | null = null;
 
   isOpen(): boolean { return this.visible; }
 
