@@ -124,12 +124,12 @@ export class CharacterSelectScene extends Phaser.Scene {
 
     // 타이틀
     this.add.text(width / 2, 40, '캐릭터 선택', {
-      fontSize: '28px', fontFamily: 'monospace', color: '#c8a2ff',
+      fontSize: '28px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#c8a2ff',
     }).setOrigin(0.5);
 
     // 에러 메시지
     this.errorText = this.add.text(width / 2, height - 40, '', {
-      fontSize: '13px', color: '#ff6666', fontFamily: 'monospace',
+      fontSize: '13px', color: '#ff6666', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
     // P25-02: 서버에서 데이터 로딩
@@ -143,7 +143,7 @@ export class CharacterSelectScene extends Phaser.Scene {
 
     // 뒤로가기 버튼
     this.add.text(20, 20, '← 로그아웃', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
         networkManager.logout();
@@ -203,7 +203,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.charListContainer = this.add.container(0, 0);
 
     this.add.text(w / 2, 80, '기존 캐릭터를 선택하거나 새로 생성하세요', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
     // FINDING-A4 ext: 키보드 nav 가능한 항목 추적
@@ -227,13 +227,13 @@ export class CharacterSelectScene extends Phaser.Scene {
         icon = this.add.circle(-210, 0, 18, classColor);
       }
       const nameText = this.add.text(-170, -12, `${char.name} (Lv.${char.level})`, {
-        fontSize: '16px', color: '#ffffff', fontFamily: 'monospace',
+        fontSize: '16px', color: '#ffffff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       });
       const classText = this.add.text(-170, 10, char.classId.replace(/_/g, ' '), {
-        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+        fontSize: '11px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       });
       const statsText = this.add.text(120, -5, `HP ${char.hp}/${char.maxHp}  MP ${char.mp}/${char.maxMp}`, {
-        fontSize: '11px', color: '#aaaaaa', fontFamily: 'monospace',
+        fontSize: '11px', color: '#aaaaaa', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       });
 
       card.add([bg, icon, nameText, classText, statsText]);
@@ -253,7 +253,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     // 새 캐릭터 생성 버튼
     const createY = 140 + this.existingCharacters.length * 80 + 20;
     const createBtn = this.add.text(w / 2, createY, '+ 새 캐릭터 생성', {
-      fontSize: '16px', color: '#88ccff', fontFamily: 'monospace',
+      fontSize: '16px', color: '#88ccff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     const createBtnIndex = this.existingCharacters.length;
@@ -444,18 +444,18 @@ export class CharacterSelectScene extends Phaser.Scene {
       icon = this.add.circle(0, -80, 24, cls.color);
     }
     const name = this.add.text(0, -40, cls.name, {
-      fontSize: '15px', fontFamily: 'monospace', color: '#ffffff',
+      fontSize: '15px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffffff',
     }).setOrigin(0.5);
     const nameEn = this.add.text(0, -22, cls.nameEn, {
-      fontSize: '10px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '10px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
     const desc = this.add.text(0, 20, cls.description, {
-      fontSize: '10px', color: '#aaaaaa', fontFamily: 'monospace',
+      fontSize: '10px', color: '#aaaaaa', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       wordWrap: { width: CARD_WIDTH - 20 }, align: 'center',
     }).setOrigin(0.5);
     const statStr = `HP ${cls.stats.hp}  MP ${cls.stats.mp}\nATK ${cls.stats.atk}  DEF ${cls.stats.def}`;
     const stats = this.add.text(0, 90, statStr, {
-      fontSize: '11px', color: '#cccccc', fontFamily: 'monospace', align: 'center',
+      fontSize: '11px', color: '#cccccc', fontFamily: '"Pretendard", "Noto Sans KR", monospace', align: 'center',
     }).setOrigin(0.5);
 
     container.add([bg, icon, name, nameEn, desc, stats]);
@@ -487,10 +487,10 @@ export class CharacterSelectScene extends Phaser.Scene {
     }
 
     const txt = this.add.text(40, -20, `선택: ${cls.name}`, {
-      fontSize: '16px', color: '#c8a2ff', fontFamily: 'monospace',
+      fontSize: '16px', color: '#c8a2ff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0, 0.5);
     const subTxt = this.add.text(40, 10, cls.nameEn, {
-      fontSize: '12px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '12px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0, 0.5);
     this.previewContainer.add([txt, subTxt]);
     this.errorText.setText('');
@@ -517,7 +517,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     document.body.appendChild(this.nameInput);
 
     this.add.text(sceneW / 2, sceneH * 0.9, '[ 캐릭터 생성 ]', {
-      fontSize: '18px', fontFamily: 'monospace', color: '#88ff88',
+      fontSize: '18px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#88ff88',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this._onCreate());
   }

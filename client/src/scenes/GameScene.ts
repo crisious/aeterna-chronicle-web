@@ -155,25 +155,25 @@ export class GameScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#1a0a0a');
     this.add.text(width / 2, height / 2 - 60, `⚠️ 존 로딩 실패`, {
-      fontSize: '20px', color: '#ff6644', fontFamily: 'monospace',
+      fontSize: '20px', color: '#ff6644', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
     this.add.text(width / 2, height / 2 - 20, `존: ${this.currentZoneName ?? '알 수 없음'}`, {
-      fontSize: '14px', color: '#cccccc', fontFamily: 'monospace',
+      fontSize: '14px', color: '#cccccc', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
     this.add.text(width / 2, height / 2 + 20, `${err?.message ?? '알 수 없는 오류'}`, {
-      fontSize: '12px', color: '#ff8888', fontFamily: 'monospace', wordWrap: { width: 600 },
+      fontSize: '12px', color: '#ff8888', fontFamily: '"Pretendard", "Noto Sans KR", monospace', wordWrap: { width: 600 },
     }).setOrigin(0.5);
     this.add.text(width / 2, height / 2 + 60, `${err?.stack?.split('\n')[1]?.trim() ?? ''}`, {
-      fontSize: '10px', color: '#666666', fontFamily: 'monospace', wordWrap: { width: 600 },
+      fontSize: '10px', color: '#666666', fontFamily: '"Pretendard", "Noto Sans KR", monospace', wordWrap: { width: 600 },
     }).setOrigin(0.5);
 
     const backBtn = this.add.text(width / 2, height / 2 + 110, '[ 월드맵으로 돌아가기 ] (Enter)', {
-      fontSize: '16px', color: '#88ccff', fontFamily: 'monospace',
+      fontSize: '16px', color: '#88ccff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     backBtn.on('pointerdown', () => this.scene.start('WorldScene'));
 
     const lobbyBtn = this.add.text(width / 2, height / 2 + 140, '[ 로비로 돌아가기 ] (ESC)', {
-      fontSize: '14px', color: '#88ff88', fontFamily: 'monospace',
+      fontSize: '14px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     lobbyBtn.on('pointerdown', () => this.scene.start('LobbyScene'));
 
@@ -246,11 +246,11 @@ export class GameScene extends Phaser.Scene {
     // 존 라벨 — 반드시 소켓 이벤트 등록 전에 생성해야 함
     const { width } = this.cameras.main;
     this.zoneLabel = this.add.text(width / 2, 20, `📍 ${this.currentZoneName}`, {
-      fontSize: '16px', color: '#88cc88', fontFamily: 'monospace',
+      fontSize: '16px', color: '#88cc88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setScrollFactor(0).setDepth(10000).setOrigin(0.5, 0);
 
     this.connectionLabel = this.add.text(width - 10, 20, '', {
-      fontSize: '10px', color: '#44cc44', fontFamily: 'monospace',
+      fontSize: '10px', color: '#44cc44', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setScrollFactor(0).setDepth(10000).setOrigin(1, 0);
 
     // P25-04: 존 정보 + 소켓 연결 — UI 생성 이후에 호출
@@ -375,7 +375,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     const tag = this.add.text(x, y - 42, name, {
-      fontSize: '11px', color: '#88ff88', fontFamily: 'monospace',
+      fontSize: '11px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
     sprite.on('pointerdown', () => {
       this.hudOrchestrator?.toggleSampleDialogue();
@@ -401,7 +401,7 @@ export class GameScene extends Phaser.Scene {
     sprite.once('destroy', () => emojiText.destroy());
 
     const tag = this.add.text(x, y - 34, name, {
-      fontSize: '10px', color: '#ff8888', fontFamily: 'monospace',
+      fontSize: '10px', color: '#ff8888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
     sprite.on('pointerdown', () => {
@@ -428,7 +428,7 @@ export class GameScene extends Phaser.Scene {
       if (!this.remoteEntities.has(d.characterId)) {
         const sprite = this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff);
         const tag = this.add.text(d.x, d.y - 38, d.name, {
-          fontSize: '11px', color: '#88ccff', fontFamily: 'monospace',
+          fontSize: '11px', color: '#88ccff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
         }).setOrigin(0.5);
         this.remoteEntities.set(d.characterId, {
           id: d.characterId, name: d.name, sprite, nameTag: tag, isMonster: false,

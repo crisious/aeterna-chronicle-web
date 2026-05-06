@@ -164,7 +164,7 @@ export class SettingsScene extends Phaser.Scene {
     let backHighlighted = false;
     const backBtn = this.add.text(width / 2, height - 60, '◀ 뒤로가기', {
       fontSize: '20px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#88ff88',
     })
       .setOrigin(0.5)
@@ -240,7 +240,7 @@ export class SettingsScene extends Phaser.Scene {
   private _addText(x: number, y: number, text: string, size: number, color: string, center = false): Phaser.GameObjects.Text {
     const t = this.add.text(x, y, text, {
       fontSize: `${size}px`,
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color,
     });
     if (center) t.setOrigin(0.5, 0);

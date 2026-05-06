@@ -98,7 +98,7 @@ export class WorldScene extends Phaser.Scene {
     // 타이틀
     this.add.text(width / 2, 28, '🗺️ 에테르나 월드맵', {
       fontSize: '22px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#cccc88',
     }).setOrigin(0.5);
 
@@ -125,7 +125,7 @@ export class WorldScene extends Phaser.Scene {
     this.add.text(20, height - 30, '← 마을로 돌아가기 (ESC)', {
       fontSize: '13px',
       color: '#888888',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     })
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.scene.start('LobbyScene'));
@@ -261,7 +261,7 @@ export class WorldScene extends Phaser.Scene {
     // 이름 라벨
     const label = this.add.text(0, NODE_RADIUS + 10, zone.name, {
       fontSize: '12px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: zone.unlocked ? '#ffffff' : '#666666',
     }).setOrigin(0.5);
 
@@ -299,14 +299,14 @@ export class WorldScene extends Phaser.Scene {
     const info = this.add.text(-140, -20, `${zone.name} — ${zone.description}`, {
       fontSize: '13px',
       color: '#cccccc',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     });
     panel.add(info);
 
     const enterBtn = this.add.text(180, 0, '[ 이동 ]', {
       fontSize: '15px',
       color: '#88ff88',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     enterBtn.on('pointerdown', () => this._travelToZone(zone));
     panel.add(enterBtn);

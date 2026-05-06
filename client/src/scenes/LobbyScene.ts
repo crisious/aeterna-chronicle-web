@@ -114,7 +114,7 @@ export class LobbyScene extends Phaser.Scene {
 
     // P25-03: 소켓 연결 + 연결 상태 표시
     this.connectionIndicator = this.add.text(width - 12, height - 12, '', {
-      fontSize: '10px', fontFamily: 'monospace', color: '#44cc44',
+      fontSize: '10px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#44cc44',
     }).setOrigin(1, 1);
 
     this._connectToServer();
@@ -163,7 +163,7 @@ export class LobbyScene extends Phaser.Scene {
   private _showNotification(msg: string): void {
     const { width } = this.cameras.main;
     const notif = this.add.text(width / 2, 110, msg, {
-      fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+      fontSize: '13px', color: '#ffcc44', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       backgroundColor: '#00000088', padding: { x: 8, y: 4 },
     }).setOrigin(0.5).setAlpha(0);
 
@@ -200,7 +200,7 @@ export class LobbyScene extends Phaser.Scene {
     this.add.rectangle(w / 2, h / 2, w, h, 0x0a1a12, 0.4);
 
     this.add.text(w / 2, 80, '☆ 아에테리아 마을 ☆', {
-      fontSize: '20px', fontFamily: 'monospace', color: '#88cc88',
+      fontSize: '20px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#88cc88',
     }).setOrigin(0.5);
   }
 
@@ -210,12 +210,12 @@ export class LobbyScene extends Phaser.Scene {
     const lv = this.characterData?.level ?? 1;
 
     this.add.text(12, 12, `${name} [${cls}] Lv.${lv}`, {
-      fontSize: '14px', fontFamily: 'monospace', color: '#ffffff',
+      fontSize: '14px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffffff',
       backgroundColor: '#00000088', padding: { x: 8, y: 4 },
     });
 
     this.goldText = this.add.text(w - 12, 12, '💰 --- Gold', {
-      fontSize: '13px', fontFamily: 'monospace', color: '#ffcc44',
+      fontSize: '13px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffcc44',
     }).setOrigin(1, 0);
 
     // 서버에서 실제 골드 조회
@@ -254,11 +254,11 @@ export class LobbyScene extends Phaser.Scene {
           .setInteractive({ useHandCursor: true });
       }
       const label = this.add.text(0, -32, npc.name, {
-        fontSize: '12px', fontFamily: 'monospace', color: '#ffffff',
+        fontSize: '12px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffffff',
         backgroundColor: '#00000088', padding: { x: 4, y: 2 },
       }).setOrigin(0.5);
       const roleTag = this.add.text(0, 28, npc.role, {
-        fontSize: '10px', color: '#aaaaaa', fontFamily: 'monospace',
+        fontSize: '10px', color: '#aaaaaa', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }).setOrigin(0.5);
 
       container.add([body, label, roleTag]);
@@ -298,16 +298,16 @@ export class LobbyScene extends Phaser.Scene {
     }
 
     panel.add(this.add.text(0, -70, `💬 ${npc.name}`, {
-      fontSize: '16px', color: '#ffffff', fontFamily: 'monospace',
+      fontSize: '16px', color: '#ffffff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
 
     panel.add(this.add.text(0, -20, `"어서 와, 모험가. 내 ${npc.role} 서비스가 필요한가?"`, {
-      fontSize: '13px', color: '#cccccc', fontFamily: 'monospace',
+      fontSize: '13px', color: '#cccccc', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       wordWrap: { width: 380 }, align: 'center',
     }).setOrigin(0.5));
 
     const acceptBtn = this.add.text(-60, 50, '[ 이용하기 ]', {
-      fontSize: '14px', color: '#88ff88', fontFamily: 'monospace',
+      fontSize: '14px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     acceptBtn.on('pointerdown', () => {
       playSfx(this, UI_SFX.CONFIRM);
@@ -318,7 +318,7 @@ export class LobbyScene extends Phaser.Scene {
     panel.add(acceptBtn);
 
     const closeBtn = this.add.text(60, 50, '[ 닫기 ]', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => {
       playSfx(this, UI_SFX.CANCEL);
@@ -372,7 +372,7 @@ export class LobbyScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 500, 350, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x44cc88);
     panel.add(bg);
     panel.add(this.add.text(0, -150, `🛒 ${npc.name} — 아이템 상점`, {
-      fontSize: '18px', color: '#44cc88', fontFamily: 'monospace',
+      fontSize: '18px', color: '#44cc88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
 
     const shopItems = [
@@ -386,13 +386,13 @@ export class LobbyScene extends Phaser.Scene {
     shopItems.forEach((item, i) => {
       const y = -80 + i * 40;
       panel.add(this.add.text(-200, y, item.name, {
-        fontSize: '13px', color: '#ffffff', fontFamily: 'monospace',
+        fontSize: '13px', color: '#ffffff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }));
       panel.add(this.add.text(100, y, `${item.price}G`, {
-        fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+        fontSize: '13px', color: '#ffcc44', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }));
       const buyBtn = this.add.text(180, y, '[구매]', {
-        fontSize: '12px', color: '#88ff88', fontFamily: 'monospace',
+        fontSize: '12px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }).setInteractive({ useHandCursor: true });
       buyBtn.on('pointerdown', async () => {
         try {
@@ -423,7 +423,7 @@ export class LobbyScene extends Phaser.Scene {
     });
 
     const closeBtn = this.add.text(0, 140, '[ 닫기 ]', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
@@ -435,17 +435,17 @@ export class LobbyScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xff8844);
     panel.add(bg);
     panel.add(this.add.text(0, -90, `🔨 ${npc.name} — 장비 강화`, {
-      fontSize: '18px', color: '#ff8844', fontFamily: 'monospace',
+      fontSize: '18px', color: '#ff8844', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
     panel.add(this.add.text(0, -30, '"장비를 가져오면 강화해주지.\n강화 재료와 골드가 필요하다."', {
-      fontSize: '13px', color: '#cccccc', fontFamily: 'monospace',
+      fontSize: '13px', color: '#cccccc', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       align: 'center',
     }).setOrigin(0.5));
     panel.add(this.add.text(0, 30, '장비를 선택하세요 (인벤토리에서 장비 보유 필요)', {
-      fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '11px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
     const closeBtn = this.add.text(0, 90, '[ 닫기 ]', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
@@ -457,24 +457,24 @@ export class LobbyScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x4488ff);
     panel.add(bg);
     panel.add(this.add.text(0, -90, `⚔️ ${npc.name} — 파티 모집`, {
-      fontSize: '18px', color: '#4488ff', fontFamily: 'monospace',
+      fontSize: '18px', color: '#4488ff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
     panel.add(this.add.text(0, -20, '"파티원을 모집하거나 참여할 수 있다.\n함께라면 더 강한 적도 쓰러뜨릴 수 있지."', {
-      fontSize: '13px', color: '#cccccc', fontFamily: 'monospace',
+      fontSize: '13px', color: '#cccccc', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       align: 'center',
     }).setOrigin(0.5));
     const createBtn = this.add.text(-80, 50, '[ 파티 생성 ]', {
-      fontSize: '13px', color: '#88ff88', fontFamily: 'monospace',
+      fontSize: '13px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     createBtn.on('pointerdown', () => { panel.destroy(); this._showNotification('파티를 생성했습니다!'); });
     panel.add(createBtn);
     const searchBtn = this.add.text(80, 50, '[ 파티 검색 ]', {
-      fontSize: '13px', color: '#88ccff', fontFamily: 'monospace',
+      fontSize: '13px', color: '#88ccff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     searchBtn.on('pointerdown', () => { panel.destroy(); this._showNotification('현재 모집 중인 파티가 없습니다.'); });
     panel.add(searchBtn);
     const closeBtn = this.add.text(0, 90, '[ 닫기 ]', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
@@ -492,14 +492,14 @@ export class LobbyScene extends Phaser.Scene {
     }
 
     panel.add(this.add.text(0, -120, `📖 ${npc.name} — 메인 스토리`, {
-      fontSize: '18px', color: '#cc88ff', fontFamily: 'monospace',
+      fontSize: '18px', color: '#cc88ff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
     panel.add(this.add.text(20, -50, '"대망각이 세계를 덮친 지 212년...\n에리언이여, 기억의 파편을 찾아야 한다.\n에레보스의 폐허에서 첫 번째 단서가 기다리고 있다."', {
-      fontSize: '12px', color: '#cccccc', fontFamily: 'monospace',
+      fontSize: '12px', color: '#cccccc', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       align: 'center', wordWrap: { width: 440 },
     }).setOrigin(0.5));
     const startBtn = this.add.text(-80, 80, '[ 챕터 1 시작 ]', {
-      fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+      fontSize: '13px', color: '#ffcc44', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     startBtn.on('pointerdown', () => {
       panel.destroy();
@@ -507,7 +507,7 @@ export class LobbyScene extends Phaser.Scene {
     });
     panel.add(startBtn);
     const closeBtn = this.add.text(80, 80, '[ 닫기 ]', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
@@ -528,7 +528,7 @@ export class LobbyScene extends Phaser.Scene {
 
     buttons.forEach((def, i) => {
       const t = this.add.text(def.x, btnY, def.label, {
-        fontSize: '14px', fontFamily: 'monospace', color: '#cccccc',
+        fontSize: '14px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#cccccc',
         backgroundColor: '#1a1a2e', padding: { x: 10, y: 5 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         .on('pointerover', () => this._setNavIndex(i))
@@ -636,24 +636,24 @@ export class LobbyScene extends Phaser.Scene {
     panel.add(bg);
 
     panel.add(this.add.text(0, -panelH / 2 + 20, `🎒 인벤토리 (${items.length}개)`, {
-      fontSize: '18px', color: '#cc8844', fontFamily: 'monospace',
+      fontSize: '18px', color: '#cc8844', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
 
     if (items.length === 0) {
       panel.add(this.add.text(0, 0, '아이템이 없습니다.', {
-        fontSize: '13px', color: '#888888', fontFamily: 'monospace',
+        fontSize: '13px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }).setOrigin(0.5));
     } else {
       // 헤더
       const headerY = -panelH / 2 + 50;
       panel.add(this.add.text(-220, headerY, '아이템', {
-        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+        fontSize: '11px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }));
       panel.add(this.add.text(80, headerY, '수량', {
-        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+        fontSize: '11px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }));
       panel.add(this.add.text(160, headerY, '상태', {
-        fontSize: '11px', color: '#888888', fontFamily: 'monospace',
+        fontSize: '11px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       }));
 
       items.forEach((item: any, i: number) => {
@@ -672,27 +672,27 @@ export class LobbyScene extends Phaser.Scene {
         const nameColor = rarityColors[rarity] ?? '#ffffff';
 
         panel.add(this.add.text(-220, y, itemName, {
-          fontSize: '13px', color: nameColor, fontFamily: 'monospace',
+          fontSize: '13px', color: nameColor, fontFamily: '"Pretendard", "Noto Sans KR", monospace',
         }));
         panel.add(this.add.text(80, y, `×${qty}`, {
-          fontSize: '13px', color: '#ffcc44', fontFamily: 'monospace',
+          fontSize: '13px', color: '#ffcc44', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
         }));
         if (equipped) {
           panel.add(this.add.text(160, y, equipped, {
-            fontSize: '11px', color: '#88ff88', fontFamily: 'monospace',
+            fontSize: '11px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
           }));
         }
       });
 
       if (items.length > 8) {
         panel.add(this.add.text(0, headerY + 30 + 8 * 36, `... 외 ${items.length - 8}개`, {
-          fontSize: '11px', color: '#666666', fontFamily: 'monospace',
+          fontSize: '11px', color: '#666666', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
         }).setOrigin(0.5));
       }
     }
 
     const closeBtn = this.add.text(0, panelH / 2 - 25, '[ 닫기 ]', {
-      fontSize: '14px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '14px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => {
       playSfx(this, UI_SFX.CANCEL);
@@ -737,7 +737,7 @@ export class LobbyScene extends Phaser.Scene {
     }
 
     this.minimapContainer.add(this.add.text(MINIMAP_SIZE / 2, -8, '미니맵', {
-      fontSize: '10px', color: '#888888', fontFamily: 'monospace',
+      fontSize: '10px', color: '#888888', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
   }
 

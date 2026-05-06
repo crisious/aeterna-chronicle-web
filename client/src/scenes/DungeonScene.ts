@@ -196,28 +196,28 @@ export class DungeonScene extends Phaser.Scene {
     // ── 던전 이름 ──
     this.add.text(width / 2, 18, `⚔ ${this.config.dungeonName}`, {
       fontSize: '20px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#ff8844',
     }).setOrigin(0.5);
 
     // ── 웨이브 카운터 ──
     this.waveText = this.add.text(20, 50, '', {
       fontSize: '16px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#ffffff',
     });
 
     // ── 타이머 ──
     this.timerText = this.add.text(width - 20, 50, '', {
       fontSize: '16px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#ffcc44',
     }).setOrigin(1, 0);
 
     // ── 중앙 상태 텍스트 ──
     this.phaseText = this.add.text(width / 2, height / 2, '', {
       fontSize: '28px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#ffffff',
       align: 'center',
     }).setOrigin(0.5).setAlpha(0);
@@ -232,7 +232,7 @@ export class DungeonScene extends Phaser.Scene {
     this.add.text(20, height - 30, '← 퇴장 (ESC)', {
       fontSize: '13px',
       color: '#888888',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     })
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.scene.start('LobbyScene'));
@@ -286,7 +286,7 @@ export class DungeonScene extends Phaser.Scene {
     this.add.text(PLAYER_X, py + 55, '플레이어', {
       fontSize: '11px',
       color: '#88ccff',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
     // FF6 대기 모션 (부드러운 상하 흔들림)
@@ -310,23 +310,23 @@ export class DungeonScene extends Phaser.Scene {
 
     // HP
     this.add.text(baseX, baseY - 2, 'HP', {
-      fontSize: '11px', color: '#44ff44', fontFamily: 'monospace',
+      fontSize: '11px', color: '#44ff44', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     });
     this.playerHpBarBg = this.add.rectangle(baseX + 25 + barW / 2, baseY + 4, barW, barH, 0x333333);
     this.playerHpBar = this.add.rectangle(baseX + 25 + barW / 2, baseY + 4, barW, barH, 0x44ff44);
     this.playerHpText = this.add.text(baseX + 25 + barW + 8, baseY - 2, `${this.playerHp}/${PLAYER_MAX_HP}`, {
-      fontSize: '11px', color: '#ffffff', fontFamily: 'monospace',
+      fontSize: '11px', color: '#ffffff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     });
 
     // MP
     const mpY = baseY + 20;
     this.add.text(baseX, mpY - 2, 'MP', {
-      fontSize: '11px', color: '#4488ff', fontFamily: 'monospace',
+      fontSize: '11px', color: '#4488ff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     });
     this.playerMpBarBg = this.add.rectangle(baseX + 25 + barW / 2, mpY + 4, barW, barH, 0x333333);
     this.playerMpBar = this.add.rectangle(baseX + 25 + barW / 2, mpY + 4, barW, barH, 0x4488ff);
     this.playerMpText = this.add.text(baseX + 25 + barW + 8, mpY - 2, `${this.playerMp}/${PLAYER_MAX_MP}`, {
-      fontSize: '11px', color: '#ffffff', fontFamily: 'monospace',
+      fontSize: '11px', color: '#ffffff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
     });
 
     this._updatePlayerBars();
@@ -427,7 +427,7 @@ export class DungeonScene extends Phaser.Scene {
       const monName = MONSTER_NAMES[monKey] ?? monKey;
       const nameLabel = this.add.text(x, y - (isBoss ? 92 : 54), isBoss ? `★ ${monName} ★` : monName, {
         fontSize: isBoss ? '13px' : '10px',
-        fontFamily: 'monospace',
+        fontFamily: '"Pretendard", "Noto Sans KR", monospace',
         color: isBoss ? '#ff4444' : '#cccccc',
       }).setOrigin(0.5);
 
@@ -461,7 +461,7 @@ export class DungeonScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     this.battleBtn = this.add.text(width / 2, height - 55, '⚔ Battle!', {
       fontSize: '22px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#ffffff',
       backgroundColor: '#882222',
       padding: { x: 24, y: 12 },
@@ -604,12 +604,12 @@ export class DungeonScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     const msg = this.add.text(width / 2, height / 2 - 20, `Wave ${this.currentWave} 클리어!`, {
-      fontSize: '24px', fontFamily: 'monospace', color: '#ffcc44',
+      fontSize: '24px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffcc44',
       stroke: '#000000', strokeThickness: 3,
     }).setOrigin(0.5).setAlpha(0);
 
     const reward = this.add.text(width / 2, height / 2 + 20, `EXP +${exp}   Gold +${gold}`, {
-      fontSize: '14px', fontFamily: 'monospace', color: '#aaffaa',
+      fontSize: '14px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#aaffaa',
       stroke: '#000000', strokeThickness: 2,
     }).setOrigin(0.5).setAlpha(0);
 
@@ -640,7 +640,7 @@ export class DungeonScene extends Phaser.Scene {
 
     // 승리 텍스트
     const victoryText = this.add.text(width / 2, height / 2 - 60, '🏆 던전 클리어!', {
-      fontSize: '32px', fontFamily: 'monospace', color: '#ffdd44',
+      fontSize: '32px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffdd44',
       stroke: '#000000', strokeThickness: 4,
     }).setOrigin(0.5).setAlpha(0);
 
@@ -654,13 +654,13 @@ export class DungeonScene extends Phaser.Scene {
       `Gold +${this.earnedGold}`,
       `웨이브 ${this.config.totalWaves}/${this.config.totalWaves} 완료`,
     ].join('\n'), {
-      fontSize: '14px', fontFamily: 'monospace', color: '#ffffff',
+      fontSize: '14px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#ffffff',
       align: 'center', lineSpacing: 6,
     }).setOrigin(0.5).setAlpha(0);
 
     // 복귀 버튼
     const returnBtn = this.add.text(width / 2, height / 2 + 100, '[ 로비로 복귀 ]', {
-      fontSize: '16px', fontFamily: 'monospace', color: '#88ccff',
+      fontSize: '16px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#88ccff',
       backgroundColor: '#223355', padding: { x: 20, y: 10 },
     }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
@@ -731,7 +731,7 @@ export class DungeonScene extends Phaser.Scene {
 
     const text = this.add.text(0, 0, '⚠ WARNING ⚠\n보스 등장!', {
       fontSize: '36px',
-      fontFamily: 'monospace',
+      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
       color: '#ff2222',
       align: 'center',
       stroke: '#440000',
