@@ -11,6 +11,7 @@
 
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
+import { accessibilityManager, type SubtitleSize } from '../accessibility/AccessibilityManager';
 
 // ── 설정 저장 키 ─────────────────────────────────────────────
 
@@ -169,7 +170,11 @@ export class SettingsScene extends Phaser.Scene {
 
     this._addCycleButton(leftX, y, '자막 크기', SUBTITLE_SIZES,
       SUBTITLE_SIZES.indexOf(this.settings.subtitleSize),
-      (idx) => { this.settings.subtitleSize = SUBTITLE_SIZES[idx]; },
+      (idx) => {
+        this.settings.subtitleSize = SUBTITLE_SIZES[idx];
+        // FINDING-A4 ext12: AccessibilityManager 와 동기화 — 자막 표시 즉시 갱신
+        accessibilityManager.setSubtitleSize(SUBTITLE_SIZES[idx] as SubtitleSize);
+      },
     );
     y += 40;
 
