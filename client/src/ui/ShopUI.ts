@@ -83,6 +83,12 @@ export class ShopUI {
     playSfx(this.scene, UI_SFX.OPEN);
     await this._refreshPlayerData();
     this._renderList();
+
+    // FINDING-A4 ext17: ESC 닫기 (WCAG 2.1.1)
+    if (!this._escHandler) {
+      this._escHandler = () => this.close();
+      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
+    }
   }
 
   close(): void {
@@ -90,7 +96,14 @@ export class ShopUI {
     this.container.setVisible(false);
     this._closeConfirm();
     playSfx(this.scene, UI_SFX.CLOSE);
+    if (this._escHandler) {
+      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
+      this._escHandler = null;
+    }
   }
+
+  // FINDING-A4 ext17: ESC handler 참조
+  private _escHandler: (() => void) | null = null;
 
   isOpen(): boolean { return this.visible; }
 
