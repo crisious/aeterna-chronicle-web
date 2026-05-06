@@ -485,6 +485,20 @@ export class DungeonScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+
+    // FINDING-A4 ext13: Enter/Space 로 wave 시작 (WCAG 2.1.1)
+    // once 사용 — _launchBattle 후 battleBtn 사라지므로 자동 정리
+    const onBattleKey = () => {
+      playSfx(this, UI_SFX.CLICK, 0.3);
+      this._launchBattle(isBoss);
+    };
+    this.input.keyboard?.once('keydown-ENTER', onBattleKey);
+    this.input.keyboard?.once('keydown-SPACE', onBattleKey);
+    // battleBtn destroy 시 listener 강제 정리 (사용자가 ESC 등 다른 path 시)
+    this.battleBtn.once('destroy', () => {
+      this.input.keyboard?.off('keydown-ENTER', onBattleKey);
+      this.input.keyboard?.off('keydown-SPACE', onBattleKey);
+    });
   }
 
   // ── BattleScene 전환 ─────────────────────────────────────
@@ -687,6 +701,18 @@ export class DungeonScene extends Phaser.Scene {
       alpha: 1,
       duration: 300,
       delay: 800,
+    });
+
+    // FINDING-A4 ext13: Enter/Space 로 로비 복귀 (WCAG 2.1.1)
+    // ESC 는 이미 _create() 의 globally 등록 — 여기엔 Enter/Space 만.
+    // 1100ms 지연(연출 끝나고) 후 listener once 등록.
+    this.time.delayedCall(1100, () => {
+      const onReturnKey = () => {
+        playSfx(this, UI_SFX.CLICK, 0.3);
+        this.scene.start('LobbyScene');
+      };
+      this.input.keyboard?.once('keydown-ENTER', onReturnKey);
+      this.input.keyboard?.once('keydown-SPACE', onReturnKey);
     });
   }
 
