@@ -88,6 +88,10 @@ export class CharacterSelectScene extends Phaser.Scene {
   private selectIndex = 0;
   private _selectKeyboardCleanup: (() => void) | null = null;
 
+  // FINDING-A4 ext2: create 모드(클래스 그리드) 키보드 nav state
+  private classCardIndex = 0;
+  private _createKeyboardCleanup: (() => void) | null = null;
+
   // P33-A: 클래스 일러스트 키 매핑
   private static readonly CLASS_IDS = [
     'ether_knight', 'memory_weaver', 'shadow_weaver',
@@ -154,6 +158,8 @@ export class CharacterSelectScene extends Phaser.Scene {
     // FINDING-A4 ext: scene 종료 시 keyboard listener 정리
     this._selectKeyboardCleanup?.();
     this._selectKeyboardCleanup = null;
+    this._createKeyboardCleanup?.();
+    this._createKeyboardCleanup = null;
   }
 
   // ── P25-02: 서버 데이터 로딩 ────────────────────────────
@@ -343,12 +349,76 @@ export class CharacterSelectScene extends Phaser.Scene {
       const x = startX + i * (CARD_WIDTH + CARD_GAP);
       const card = this._createClassCard(x, h * 0.38, cls);
       this.cards.push(card);
+      // FINDING-A4 ext2: pointer hover 시 키보드 highlight 동기화
+      const bg = card.getAt(0) as Phaser.GameObjects.Rectangle;
+      bg.on('pointerover', () => this._setClassCardIndex(i));
     });
 
     // 미리보기 컨테이너
     this.previewContainer = this.add.container(w / 2, h * 0.72);
 
     this._createNameInput(w, h);
+
+    // FINDING-A4 ext2: create 모드 키보드 nav (Arrow Left/Right + Enter/Space + ESC)
+    // WCAG 2.1.1 — 클래스 선택 키보드 진입 가능. 한 줄 수평 그리드라 LEFT/RIGHT 만.
+    if (this.cards.length > 0) {
+      this.classCardIndex = 0;
+      this._setClassCardIndex(0);
+    }
+
+    const onLeft = () => {
+      const next = (this.classCardIndex + this.cards.length - 1) % this.cards.length;
+      this._setClassCardIndex(next);
+    };
+    const onRight = () => {
+      const next = (this.classCardIndex + 1) % this.cards.length;
+      this._setClassCardIndex(next);
+    };
+    const onSelectKey = () => {
+      const cls = this.classes[this.classCardIndex];
+      if (cls) this._selectClass(cls);
+    };
+    const onEsc = () => {
+      this._createKeyboardCleanup?.();
+      this._createKeyboardCleanup = null;
+      if (this.existingCharacters.length > 0) {
+        // 캐릭터 있으면 select 화면 재구성 (scene restart 가 가장 안전 — 임시 DOM cleanup 포함)
+        this.scene.restart();
+      } else {
+        networkManager.logout();
+        this.scene.start('MainMenuScene');
+      }
+    };
+
+    this.input.keyboard?.on('keydown-LEFT', onLeft);
+    this.input.keyboard?.on('keydown-RIGHT', onRight);
+    this.input.keyboard?.on('keydown-ENTER', onSelectKey);
+    this.input.keyboard?.on('keydown-SPACE', onSelectKey);
+    this.input.keyboard?.on('keydown-ESC', onEsc);
+
+    this._createKeyboardCleanup = () => {
+      this.input.keyboard?.off('keydown-LEFT', onLeft);
+      this.input.keyboard?.off('keydown-RIGHT', onRight);
+      this.input.keyboard?.off('keydown-ENTER', onSelectKey);
+      this.input.keyboard?.off('keydown-SPACE', onSelectKey);
+      this.input.keyboard?.off('keydown-ESC', onEsc);
+    };
+  }
+
+  // FINDING-A4 ext2: create 모드 클래스 그리드 키보드 highlight 동기화
+  private _setClassCardIndex(idx: number): void {
+    if (!this.cards[idx]) return;
+    this.classCardIndex = idx;
+    this.cards.forEach((card, i) => {
+      const bg = card.getAt(0) as Phaser.GameObjects.Rectangle;
+      if (i === idx) {
+        bg.setStrokeStyle(2, 0x6644aa);
+      } else if (this.selectedClass?.id === this.classes[i].id) {
+        bg.setStrokeStyle(2, 0xc8a2ff);
+      } else {
+        bg.setStrokeStyle(2, 0x333366);
+      }
+    });
   }
 
   // ── 클래스 카드 ──────────────────────────────────────────
@@ -402,10 +472,9 @@ export class CharacterSelectScene extends Phaser.Scene {
   private _selectClass(cls: CharacterClass): void {
     this.selectedClass = cls;
 
-    this.cards.forEach((card, i) => {
-      const bg = card.getAt(0) as Phaser.GameObjects.Rectangle;
-      bg.setStrokeStyle(2, this.classes[i].id === cls.id ? 0xc8a2ff : 0x333366);
-    });
+    // FINDING-A4 ext2: 키보드 highlight + selected 색상 통합 처리
+    // (_setClassCardIndex 가 highlight idx 우선 → selectedClass → default 순으로 결정)
+    this._setClassCardIndex(this.classCardIndex);
 
     this.previewContainer.removeAll(true);
 
