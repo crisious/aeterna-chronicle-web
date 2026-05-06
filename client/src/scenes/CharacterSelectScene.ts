@@ -83,6 +83,11 @@ export class CharacterSelectScene extends Phaser.Scene {
   private charListContainer: Phaser.GameObjects.Container | null = null;
   private mode: 'select' | 'create' = 'select';
 
+  // FINDING-A4 ext: select 모드 키보드 nav state
+  private selectables: Array<{ focus: () => void; blur: () => void; activate: () => void }> = [];
+  private selectIndex = 0;
+  private _selectKeyboardCleanup: (() => void) | null = null;
+
   // P33-A: 클래스 일러스트 키 매핑
   private static readonly CLASS_IDS = [
     'ether_knight', 'memory_weaver', 'shadow_weaver',
@@ -146,6 +151,9 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   shutdown(): void {
     if (this.nameInput) { this.nameInput.remove(); this.nameInput = null; }
+    // FINDING-A4 ext: scene 종료 시 keyboard listener 정리
+    this._selectKeyboardCleanup?.();
+    this._selectKeyboardCleanup = null;
   }
 
   // ── P25-02: 서버 데이터 로딩 ────────────────────────────
@@ -192,6 +200,9 @@ export class CharacterSelectScene extends Phaser.Scene {
       fontSize: '14px', color: '#888888', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
+    // FINDING-A4 ext: 키보드 nav 가능한 항목 추적
+    this.selectables = [];
+
     this.existingCharacters.forEach((char, i) => {
       const y = 140 + i * 80;
       const card = this.add.container(w / 2, y);
@@ -221,10 +232,15 @@ export class CharacterSelectScene extends Phaser.Scene {
 
       card.add([bg, icon, nameText, classText, statsText]);
 
-      bg.on('pointerdown', () => this._selectExistingCharacter(char));
-      bg.on('pointerover', () => bg.setStrokeStyle(1, 0xc8a2ff));
-      bg.on('pointerout', () => bg.setStrokeStyle(1, 0x333366));
+      const cardIndex = i;
+      const focusFn = () => bg.setStrokeStyle(2, 0xc8a2ff);
+      const blurFn = () => bg.setStrokeStyle(1, 0x333366);
+      const activateFn = () => this._selectExistingCharacter(char);
 
+      bg.on('pointerdown', activateFn);
+      bg.on('pointerover', () => this._setSelectIndex(cardIndex));
+
+      this.selectables.push({ focus: focusFn, blur: blurFn, activate: activateFn });
       this.charListContainer!.add(card);
     });
 
@@ -232,13 +248,70 @@ export class CharacterSelectScene extends Phaser.Scene {
     const createY = 140 + this.existingCharacters.length * 80 + 20;
     const createBtn = this.add.text(w / 2, createY, '+ 새 캐릭터 생성', {
       fontSize: '16px', color: '#88ccff', fontFamily: 'monospace',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        this.charListContainer?.destroy();
-        this.charListContainer = null;
-        this._showCreateMode(w, h);
-      });
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+    const createBtnIndex = this.existingCharacters.length;
+    const createFocus = () => createBtn.setColor('#ffffff').setFontStyle('bold');
+    const createBlur = () => createBtn.setColor('#88ccff').setFontStyle('normal');
+    const createActivate = () => {
+      this._selectKeyboardCleanup?.();
+      this._selectKeyboardCleanup = null;
+      this.charListContainer?.destroy();
+      this.charListContainer = null;
+      this._showCreateMode(w, h);
+    };
+
+    createBtn.on('pointerdown', createActivate);
+    createBtn.on('pointerover', () => this._setSelectIndex(createBtnIndex));
+    this.selectables.push({ focus: createFocus, blur: createBlur, activate: createActivate });
+
     this.charListContainer.add(createBtn);
+
+    // FINDING-A4 ext: 키보드 nav 활성화 — Arrow Up/Down + Enter/Space
+    // WCAG 2.1.1 — 캐릭터 선택 화면 키보드 진입 가능.
+    if (this.selectables.length > 0) {
+      this.selectIndex = 0;
+      this.selectables[0].focus();
+    }
+
+    const onUp = () => {
+      const next = (this.selectIndex + this.selectables.length - 1) % this.selectables.length;
+      this._setSelectIndex(next);
+    };
+    const onDown = () => {
+      const next = (this.selectIndex + 1) % this.selectables.length;
+      this._setSelectIndex(next);
+    };
+    const onActivate = () => {
+      this.selectables[this.selectIndex]?.activate();
+    };
+    const onEsc = () => {
+      networkManager.logout();
+      this.scene.start('MainMenuScene');
+    };
+
+    this.input.keyboard?.on('keydown-UP', onUp);
+    this.input.keyboard?.on('keydown-DOWN', onDown);
+    this.input.keyboard?.on('keydown-ENTER', onActivate);
+    this.input.keyboard?.on('keydown-SPACE', onActivate);
+    this.input.keyboard?.on('keydown-ESC', onEsc);
+
+    this._selectKeyboardCleanup = () => {
+      this.input.keyboard?.off('keydown-UP', onUp);
+      this.input.keyboard?.off('keydown-DOWN', onDown);
+      this.input.keyboard?.off('keydown-ENTER', onActivate);
+      this.input.keyboard?.off('keydown-SPACE', onActivate);
+      this.input.keyboard?.off('keydown-ESC', onEsc);
+      this.selectables = [];
+    };
+  }
+
+  // FINDING-A4 ext: select 모드 키보드 highlight 동기화
+  private _setSelectIndex(i: number): void {
+    if (i === this.selectIndex || !this.selectables[i]) return;
+    this.selectables[this.selectIndex]?.blur();
+    this.selectIndex = i;
+    this.selectables[this.selectIndex]?.focus();
   }
 
   private _selectExistingCharacter(char: CharacterData): void {
@@ -256,6 +329,11 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   private _showCreateMode(w: number, h: number): void {
     this.mode = 'create';
+
+    // FINDING-A4 ext: select 모드 keyboard listener 잔존 방지 (이미 createActivate 에서
+    // 호출되지만 직접 진입(existingCharacters.length===0) 경로 안전망)
+    this._selectKeyboardCleanup?.();
+    this._selectKeyboardCleanup = null;
 
     // 클래스 카드 배치
     const totalWidth = this.classes.length * CARD_WIDTH + (this.classes.length - 1) * CARD_GAP;
