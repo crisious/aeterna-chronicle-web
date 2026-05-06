@@ -27,6 +27,10 @@ interface MenuItem {
 
 export class MainMenuScene extends Phaser.Scene {
   private menuItems: Phaser.GameObjects.Text[] = [];
+  // FINDING-A4 fix part 2: 키보드 highlight state + label cache (▶ 동적 prefix)
+  private menuLabels: string[] = [];
+  private menuActions: (() => void)[] = [];
+  private menuHighlightIndex = 0;
   private titleText!: Phaser.GameObjects.Text;
   private subtitleText!: Phaser.GameObjects.Text;
   private particleTimer?: Phaser.Time.TimerEvent;
@@ -103,30 +107,50 @@ export class MainMenuScene extends Phaser.Scene {
       color: '#ffcc44',
     }).setOrigin(0.5);
 
-    // 메뉴 버튼
+    // 메뉴 버튼 — ▶ prefix 는 highlight index 따라 동적 적용 (FINDING-A4 part 2)
     const menuDefs: MenuItem[] = [
-      { label: '▶  게임 시작', action: () => this._onStart() },
-      { label: '⚙  설정',     action: () => this._onSettings() },
-      { label: '📜 크레딧',   action: () => this._onCredits() },
+      { label: '게임 시작', action: () => this._onStart() },
+      { label: '⚙  설정',  action: () => this._onSettings() },
+      { label: '📜 크레딧', action: () => this._onCredits() },
     ];
+
+    this.menuLabels = menuDefs.map(d => d.label);
+    this.menuActions = menuDefs.map(d => d.action);
+    this.menuHighlightIndex = 0;
 
     const menuStartY = height * 0.58;
     const menuGap = 48;
 
     menuDefs.forEach((def, i) => {
-      const btn = this.add.text(width / 2, menuStartY + i * menuGap, def.label, {
+      const btn = this.add.text(width / 2, menuStartY + i * menuGap, this._formatMenuLabel(i), {
         fontSize: '20px',
         fontFamily: 'monospace',
-        color: '#cccccc',
+        color: i === 0 ? '#ffffff' : '#cccccc',
       })
         .setOrigin(0.5)
         .setAlpha(0)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => btn.setColor('#ffffff'))
-        .on('pointerout', () => btn.setColor('#cccccc'))
+        .on('pointerover', () => this._setMenuHighlight(i))
         .on('pointerdown', def.action);
 
       this.menuItems.push(btn);
+    });
+
+    // FINDING-A4 part 2: 키보드 navigation (Arrow Up/Down + Enter)
+    // WCAG 2.1.1 — 모든 기능을 키보드로 작동 가능해야.
+    this.input.keyboard?.on('keydown-UP', () => {
+      const next = (this.menuHighlightIndex + this.menuItems.length - 1) % this.menuItems.length;
+      this._setMenuHighlight(next);
+    });
+    this.input.keyboard?.on('keydown-DOWN', () => {
+      const next = (this.menuHighlightIndex + 1) % this.menuItems.length;
+      this._setMenuHighlight(next);
+    });
+    this.input.keyboard?.on('keydown-ENTER', () => {
+      this.menuActions[this.menuHighlightIndex]?.();
+    });
+    this.input.keyboard?.on('keydown-SPACE', () => {
+      this.menuActions[this.menuHighlightIndex]?.();
     });
 
     // 페이드 인 시퀀스
@@ -361,6 +385,21 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   // ── 기존 메뉴 동작 ──────────────────────────────────────
+
+  // FINDING-A4 fix part 2: 키보드 highlight 동기화 helper
+  private _formatMenuLabel(i: number): string {
+    const label = this.menuLabels[i] ?? '';
+    return i === this.menuHighlightIndex ? `▶  ${label}` : `   ${label}`;
+  }
+
+  private _setMenuHighlight(index: number): void {
+    if (index === this.menuHighlightIndex) return;
+    this.menuHighlightIndex = index;
+    this.menuItems.forEach((btn, i) => {
+      btn.setText(this._formatMenuLabel(i));
+      btn.setColor(i === index ? '#ffffff' : '#cccccc');
+    });
+  }
 
   private _onSettings(): void {
     this.scene.start('SettingsScene');
