@@ -291,6 +291,15 @@ export class LobbyScene extends Phaser.Scene {
     }
   }
 
+  // FINDING-A4 ext8 helper: 모든 모달 패널이 ESC 로 닫히도록 dialoguePanel 추적 통일
+  // panel.destroy() 만 호출하면 자동 null 처리 → onEsc 가 패널 닫기로 동작
+  private _registerModalPanel(panel: Phaser.GameObjects.Container): void {
+    this.dialoguePanel = panel;
+    panel.on('destroy', () => {
+      if (this.dialoguePanel === panel) this.dialoguePanel = null;
+    });
+  }
+
   // FINDING-A4 ext7: NPC 키보드 highlight ring 동기화
   private _setNpcIndex(i: number): void {
     if (TOWN_NPCS[i] === undefined) return;
@@ -431,6 +440,7 @@ export class LobbyScene extends Phaser.Scene {
   private _showShopPanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
+    this._registerModalPanel(panel);
     const bg = this.add.rectangle(0, 0, 500, 350, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x44cc88);
     panel.add(bg);
     panel.add(this.add.text(0, -150, `🛒 ${npc.name} — 아이템 상점`, {
@@ -494,6 +504,7 @@ export class LobbyScene extends Phaser.Scene {
   private _showEnhancePanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
+    this._registerModalPanel(panel);
     const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xff8844);
     panel.add(bg);
     panel.add(this.add.text(0, -90, `🔨 ${npc.name} — 장비 강화`, {
@@ -516,6 +527,7 @@ export class LobbyScene extends Phaser.Scene {
   private _showPartyPanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
+    this._registerModalPanel(panel);
     const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x4488ff);
     panel.add(bg);
     panel.add(this.add.text(0, -90, `⚔️ ${npc.name} — 파티 모집`, {
@@ -545,6 +557,7 @@ export class LobbyScene extends Phaser.Scene {
   private _showStoryPanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
+    this._registerModalPanel(panel);
     const bg = this.add.rectangle(0, 0, 500, 300, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xcc88ff);
     panel.add(bg);
 
@@ -724,6 +737,7 @@ export class LobbyScene extends Phaser.Scene {
 
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
+    this._registerModalPanel(panel);
 
     const panelH = Math.min(400, 120 + items.length * 36);
     const bg = this.add.rectangle(0, 0, 520, panelH, 0x0a0a1a, 0.95)
