@@ -46,6 +46,12 @@ export class WorldScene extends Phaser.Scene {
   private playerMarker!: Phaser.GameObjects.Arc;
   private currentZoneId = 'aether_plains';
 
+  // FINDING-A4 ext3: zone 키보드 nav state
+  private navigableZoneIndices: number[] = [];
+  private zoneIndex = 0;
+  private highlightRing: Phaser.GameObjects.Arc | null = null;
+  private _zoneKeyboardCleanup: (() => void) | null = null;
+
   // P33-A: 존 코드 → 배경 에셋 매핑
   private static readonly ZONE_BG_MAP: Record<string, string> = {
     aether_plains: 'SYL-BG-FAR-DAY',
@@ -116,7 +122,7 @@ export class WorldScene extends Phaser.Scene {
     this._pulseMarker();
 
     // 하단 뒤로가기
-    this.add.text(20, height - 30, '← 마을로 돌아가기', {
+    this.add.text(20, height - 30, '← 마을로 돌아가기 (ESC)', {
       fontSize: '13px',
       color: '#888888',
       fontFamily: 'monospace',
@@ -124,7 +130,83 @@ export class WorldScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.scene.start('LobbyScene'));
 
+    // FINDING-A4 ext3: zone 키보드 nav (WCAG 2.1.1)
+    // unlocked zone 만 cycle. ArrowLeft/Right + Up/Down 모두 zone idx 단방향.
+    this.navigableZoneIndices = WORLD_ZONES
+      .map((z, i) => z.unlocked ? i : -1)
+      .filter(i => i >= 0);
+
+    if (this.navigableZoneIndices.length > 0) {
+      // currentZoneId 부터 시작 (있으면)
+      const startNi = this.navigableZoneIndices.findIndex(
+        zi => WORLD_ZONES[zi].id === this.currentZoneId,
+      );
+      this.zoneIndex = startNi >= 0 ? startNi : 0;
+      this._highlightZone(this.zoneIndex);
+    }
+
+    const len = this.navigableZoneIndices.length;
+    const onPrev = () => {
+      if (len === 0) return;
+      this._highlightZone((this.zoneIndex + len - 1) % len);
+    };
+    const onNext = () => {
+      if (len === 0) return;
+      this._highlightZone((this.zoneIndex + 1) % len);
+    };
+    const onSelect = () => {
+      const zoneIdx = this.navigableZoneIndices[this.zoneIndex];
+      const zone = WORLD_ZONES[zoneIdx];
+      if (zone) this._onZoneClick(zone);
+    };
+    const onEsc = () => this.scene.start('LobbyScene');
+
+    this.input.keyboard?.on('keydown-LEFT', onPrev);
+    this.input.keyboard?.on('keydown-UP', onPrev);
+    this.input.keyboard?.on('keydown-RIGHT', onNext);
+    this.input.keyboard?.on('keydown-DOWN', onNext);
+    this.input.keyboard?.on('keydown-ENTER', onSelect);
+    this.input.keyboard?.on('keydown-SPACE', onSelect);
+    this.input.keyboard?.on('keydown-ESC', onEsc);
+
+    this._zoneKeyboardCleanup = () => {
+      this.input.keyboard?.off('keydown-LEFT', onPrev);
+      this.input.keyboard?.off('keydown-UP', onPrev);
+      this.input.keyboard?.off('keydown-RIGHT', onNext);
+      this.input.keyboard?.off('keydown-DOWN', onNext);
+      this.input.keyboard?.off('keydown-ENTER', onSelect);
+      this.input.keyboard?.off('keydown-SPACE', onSelect);
+      this.input.keyboard?.off('keydown-ESC', onEsc);
+    };
+
     SceneManager.fadeIn(this, 300);
+  }
+
+  shutdown(): void {
+    // FINDING-A4 ext3: scene 종료 시 keyboard listener 정리
+    this._zoneKeyboardCleanup?.();
+    this._zoneKeyboardCleanup = null;
+    if (this.highlightRing) { this.highlightRing.destroy(); this.highlightRing = null; }
+  }
+
+  // FINDING-A4 ext3: 키보드 highlight ring (Phaser Arc) — zone 노드 위에 visual indicator
+  private _highlightZone(navigableIdx: number): void {
+    if (this.navigableZoneIndices[navigableIdx] === undefined) return;
+    this.zoneIndex = navigableIdx;
+    const zoneIdx = this.navigableZoneIndices[navigableIdx];
+    const zone = WORLD_ZONES[zoneIdx];
+    if (!zone) return;
+    const { width, height } = this.cameras.main;
+    const x = zone.posRatioX * width;
+    const y = zone.posRatioY * height;
+    if (!this.highlightRing) {
+      this.highlightRing = this.add.circle(x, y, NODE_RADIUS + 12)
+        .setStrokeStyle(3, 0xc8a2ff)
+        .setFillStyle(0x000000, 0)
+        .setDepth(50);
+    } else {
+      this.highlightRing.setPosition(x, y);
+    }
   }
 
   // ── 연결선 ───────────────────────────────────────────────
