@@ -167,15 +167,21 @@ export class GameScene extends Phaser.Scene {
       fontSize: '10px', color: '#666666', fontFamily: 'monospace', wordWrap: { width: 600 },
     }).setOrigin(0.5);
 
-    const backBtn = this.add.text(width / 2, height / 2 + 110, '[ 월드맵으로 돌아가기 ]', {
+    const backBtn = this.add.text(width / 2, height / 2 + 110, '[ 월드맵으로 돌아가기 ] (Enter)', {
       fontSize: '16px', color: '#88ccff', fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     backBtn.on('pointerdown', () => this.scene.start('WorldScene'));
 
-    const lobbyBtn = this.add.text(width / 2, height / 2 + 140, '[ 로비로 돌아가기 ]', {
+    const lobbyBtn = this.add.text(width / 2, height / 2 + 140, '[ 로비로 돌아가기 ] (ESC)', {
       fontSize: '14px', color: '#88ff88', fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     lobbyBtn.on('pointerdown', () => this.scene.start('LobbyScene'));
+
+    // FINDING-A4 ext6: 에러 화면 키보드 nav (WCAG 2.1.1)
+    // Enter → 월드맵, ESC → 로비. 단순 fallback 이라 cycle 보다 직접 매핑이 명확.
+    this.input.keyboard?.on('keydown-ENTER', () => this.scene.start('WorldScene'));
+    this.input.keyboard?.on('keydown-SPACE', () => this.scene.start('WorldScene'));
+    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
   }
 
   private _createSafe(): void {

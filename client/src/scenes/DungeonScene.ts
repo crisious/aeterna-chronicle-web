@@ -229,13 +229,16 @@ export class DungeonScene extends Phaser.Scene {
     this._createPlayerStatusBars(width, height);
 
     // ── 뒤로가기 ──
-    this.add.text(20, height - 30, '← 퇴장', {
+    this.add.text(20, height - 30, '← 퇴장 (ESC)', {
       fontSize: '13px',
       color: '#888888',
       fontFamily: 'monospace',
     })
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.scene.start('LobbyScene'));
+
+    // FINDING-A4 ext6: ESC 로 던전 퇴장 (WCAG 2.1.1)
+    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
 
     // ── 시작 또는 복귀 분기 ──
     if (isResume) {
