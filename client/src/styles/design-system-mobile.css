@@ -467,3 +467,34 @@
     opacity: 1;
   }
 }
+
+/**
+ * FINDING-A2 fix: 모바일 portrait 모드 안내 오버레이
+ *
+ * Phaser 게임이 1920x1080 (16:9 가로) 베이스라 모바일 portrait
+ * (예: 375x812, ~9:19) 에서는 FIT 시 세로 211px 작은 letterbox 가 됨.
+ * landscape 회전 권장 안내로 사용성 확보.
+ *
+ * Note: tablet portrait (768~) 에서는 letterbox 가 충분히 큼 — 안내 불필요.
+ *       430px 이하 mobile 에서만 적용.
+ */
+@media (orientation: portrait) and (max-width: 430px) {
+  body::before {
+    content: '📱  화면을 가로로 회전해 주세요\A \A Aeterna Chronicle 은 가로 모드 게임입니다';
+    white-space: pre-wrap;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(13, 13, 26, 0.97); /* var(--bg-abyss) 0.97 */
+    color: var(--accent-ether, #89cff0);
+    font-family: 'Pretendard', 'Noto Sans KR', monospace;
+    font-size: 18px;
+    line-height: 1.5;
+    padding: 20px;
+    pointer-events: none;
+  }
+}
