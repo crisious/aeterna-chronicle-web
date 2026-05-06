@@ -67,6 +67,13 @@ export class LobbyScene extends Phaser.Scene {
   private navButtonItems: Array<{ text: Phaser.GameObjects.Text; action: () => void; label: string }> = [];
   private navIndex = 0;
   private _lobbyKeyboardCleanup: (() => void) | null = null;
+
+  // FINDING-A4 ext7: NPC sprite 키보드 nav state
+  // focusGroup: 'nav' = 하단 버튼 활성 / 'npc' = NPC 활성
+  // ArrowLeft/Right → group='nav', ArrowUp/Down → group='npc' 자동 전환
+  private focusGroup: 'nav' | 'npc' = 'nav';
+  private npcIndex = 0;
+  private npcHighlightRing: Phaser.GameObjects.Arc | null = null;
   private minimapContainer!: Phaser.GameObjects.Container;
   private connectionIndicator!: Phaser.GameObjects.Text;
   private goldText!: Phaser.GameObjects.Text;
@@ -273,8 +280,30 @@ export class LobbyScene extends Phaser.Scene {
       body.on('pointerover', () => {
         body.setScale(baseScaleX * 1.15, baseScaleY * 1.15);
         playSfx(this, UI_SFX.HOVER);
+        // FINDING-A4 ext7: pointer hover ↔ NPC 키보드 highlight 동기화
+        const idx = TOWN_NPCS.findIndex(n => n.id === npc.id);
+        if (idx >= 0) {
+          this.focusGroup = 'npc';
+          this._setNpcIndex(idx);
+        }
       });
       body.on('pointerout', () => body.setScale(baseScaleX, baseScaleY));
+    }
+  }
+
+  // FINDING-A4 ext7: NPC 키보드 highlight ring 동기화
+  private _setNpcIndex(i: number): void {
+    if (TOWN_NPCS[i] === undefined) return;
+    this.npcIndex = i;
+    const npc = TOWN_NPCS[i];
+    if (!this.npcHighlightRing) {
+      this.npcHighlightRing = this.add.circle(npc.x, npc.y, 32)
+        .setStrokeStyle(3, 0xc8a2ff)
+        .setFillStyle(0x000000, 0)
+        .setDepth(50);
+    } else {
+      this.npcHighlightRing.setPosition(npc.x, npc.y);
+      this.npcHighlightRing.setVisible(true);
     }
   }
 
@@ -548,17 +577,41 @@ export class LobbyScene extends Phaser.Scene {
     const len = this.navButtonItems.length;
     const onLeft = () => {
       if (len === 0) return;
+      this.focusGroup = 'nav';
+      if (this.npcHighlightRing) this.npcHighlightRing.setVisible(false);
       this._setNavIndex((this.navIndex + len - 1) % len);
     };
     const onRight = () => {
       if (len === 0) return;
+      this.focusGroup = 'nav';
+      if (this.npcHighlightRing) this.npcHighlightRing.setVisible(false);
       this._setNavIndex((this.navIndex + 1) % len);
     };
+    // FINDING-A4 ext7: ArrowUp/Down → NPC group 활성 + cycle
+    const onUp = () => {
+      if (TOWN_NPCS.length === 0) return;
+      this.focusGroup = 'npc';
+      this._setNpcIndex((this.npcIndex + TOWN_NPCS.length - 1) % TOWN_NPCS.length);
+    };
+    const onDown = () => {
+      if (TOWN_NPCS.length === 0) return;
+      this.focusGroup = 'npc';
+      this._setNpcIndex((this.npcIndex + 1) % TOWN_NPCS.length);
+    };
     const onActivate = () => {
-      const item = this.navButtonItems[this.navIndex];
-      if (item) {
-        playSfx(this, UI_SFX.CLICK);
-        item.action();
+      // FINDING-A4 ext7: focus group 별 activate 분기
+      if (this.focusGroup === 'npc') {
+        const npc = TOWN_NPCS[this.npcIndex];
+        if (npc) {
+          playSfx(this, UI_SFX.CLICK);
+          this._openNpcDialogue(npc);
+        }
+      } else {
+        const item = this.navButtonItems[this.navIndex];
+        if (item) {
+          playSfx(this, UI_SFX.CLICK);
+          item.action();
+        }
       }
     };
     const onEsc = () => {
@@ -573,6 +626,8 @@ export class LobbyScene extends Phaser.Scene {
 
     this.input.keyboard?.on('keydown-LEFT', onLeft);
     this.input.keyboard?.on('keydown-RIGHT', onRight);
+    this.input.keyboard?.on('keydown-UP', onUp);
+    this.input.keyboard?.on('keydown-DOWN', onDown);
     this.input.keyboard?.on('keydown-ENTER', onActivate);
     this.input.keyboard?.on('keydown-SPACE', onActivate);
     this.input.keyboard?.on('keydown-ESC', onEsc);
@@ -580,6 +635,8 @@ export class LobbyScene extends Phaser.Scene {
     this._lobbyKeyboardCleanup = () => {
       this.input.keyboard?.off('keydown-LEFT', onLeft);
       this.input.keyboard?.off('keydown-RIGHT', onRight);
+      this.input.keyboard?.off('keydown-UP', onUp);
+      this.input.keyboard?.off('keydown-DOWN', onDown);
       this.input.keyboard?.off('keydown-ENTER', onActivate);
       this.input.keyboard?.off('keydown-SPACE', onActivate);
       this.input.keyboard?.off('keydown-ESC', onEsc);
@@ -746,5 +803,10 @@ export class LobbyScene extends Phaser.Scene {
     this._lobbyKeyboardCleanup?.();
     this._lobbyKeyboardCleanup = null;
     this.navButtonItems = [];
+    // FINDING-A4 ext7: NPC highlight ring 정리
+    if (this.npcHighlightRing) {
+      this.npcHighlightRing.destroy();
+      this.npcHighlightRing = null;
+    }
   }
 }
