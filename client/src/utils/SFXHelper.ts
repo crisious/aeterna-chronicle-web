@@ -5,13 +5,17 @@
  */
 
 import * as Phaser from 'phaser';
+import { getSfxVolume } from '../scenes/SettingsScene';
 
 /**
  * 간편 SFX 재생 — 키가 로드되어 있으면 재생, 없으면 무시
+ *
+ * FINDING-A4 ext15: SettingsScene.sfxVolume 곱셈 적용 — 사용자가 SFX 볼륨
+ * 슬라이더 조정 시 즉시 반영. master volume(BGM 슬라이더) 와 별개.
  */
 export function playSfx(scene: Phaser.Scene, key: string, volume = 0.5): void {
   if (scene.cache.audio.has(key)) {
-    scene.sound.play(key, { volume });
+    scene.sound.play(key, { volume: volume * getSfxVolume() });
   }
 }
 
@@ -22,7 +26,7 @@ export function playRandomVoice(scene: Phaser.Scene, keys: string[], volume = 0.
   const available = keys.filter(k => scene.cache.audio.has(k));
   if (available.length === 0) return;
   const key = available[Math.floor(Math.random() * available.length)];
-  scene.sound.play(key, { volume });
+  scene.sound.play(key, { volume: volume * getSfxVolume() });
 }
 
 /**

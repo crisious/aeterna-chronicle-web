@@ -30,6 +30,22 @@ export function applyColorblindMode(mode: string): void {
   }
 }
 
+// FINDING-A4 ext15: SFX 볼륨 검사 (SFXHelper.playSfx 의 master volume 별개)
+// SettingsScene 의 BGM 볼륨은 sound.setVolume(v) 로 master 적용,
+// SFX 볼륨은 별개 슬라이더로 playSfx 호출 시 곱셈.
+export function getSfxVolume(): number {
+  if (typeof document === 'undefined') return 1;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return 0.8; // default
+    const parsed = JSON.parse(raw) as { sfxVolume?: number };
+    const v = parsed.sfxVolume;
+    return typeof v === 'number' ? Math.max(0, Math.min(1, v)) : 0.8;
+  } catch {
+    return 0.8;
+  }
+}
+
 // FINDING-A4 ext11: screenShake 설정 검사 (BattleScene/ComboUI 의 cameras.shake() 전)
 // 또 prefers-reduced-motion 도 우선 — 사용자 OS 설정 존중.
 export function isScreenShakeEnabled(): boolean {
