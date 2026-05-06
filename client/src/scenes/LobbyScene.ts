@@ -404,7 +404,9 @@ export class LobbyScene extends Phaser.Scene {
 
     playSfx(this, UI_SFX.OPEN);
 
-    this.dialoguePanel = panel;
+    // FINDING-A4 ext20: _registerModalPanel 패턴 통일 (다른 5 모달과 일관)
+    // 기존 doAccept/doClose 의 panel.destroy() → register hook 으로 자동 dialoguePanel null
+    this._registerModalPanel(panel);
   }
 
   // ── NPC 액션 실행 ────────────────────────────────────────
