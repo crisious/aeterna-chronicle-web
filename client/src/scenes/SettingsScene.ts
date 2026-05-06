@@ -16,6 +16,18 @@ import { SceneManager } from './SceneManager';
 
 const STORAGE_KEY = 'aeterna_settings';
 
+// FINDING-A4 ext10: 색약 모드 → html data-cb-sim 속성 적용
+// cb-simulator-filters.css 가 [data-cb-sim="..."] selector 로 SVG 필터 활성
+// (#game-container + .a11y-cb-sim-target). index.html 124-140 의 inline SVG defs 참조.
+export function applyColorblindMode(mode: string): void {
+  if (typeof document === 'undefined') return;
+  if (mode === 'off' || !mode) {
+    document.documentElement.removeAttribute('data-cb-sim');
+  } else {
+    document.documentElement.setAttribute('data-cb-sim', mode);
+  }
+}
+
 // ── 기본 설정 값 ─────────────────────────────────────────────
 
 interface GameSettings {
@@ -90,6 +102,8 @@ export class SettingsScene extends Phaser.Scene {
 
   create(): void {
     this.settings = this._loadSettings();
+    // FINDING-A4 ext10: 색약 모드 진입 시 즉시 적용 (cb-simulator-filters.css SVG 필터)
+    applyColorblindMode(this.settings.colorblindMode);
     const { width, height } = this.cameras.main;
 
     // 배경
@@ -146,7 +160,11 @@ export class SettingsScene extends Phaser.Scene {
     this._addCycleButton(leftX, y, '색약 모드',
       COLORBLIND_MODES.map(m => COLORBLIND_LABELS[m] ?? m),
       COLORBLIND_MODES.indexOf(this.settings.colorblindMode),
-      (idx) => { this.settings.colorblindMode = COLORBLIND_MODES[idx]; },
+      (idx) => {
+        this.settings.colorblindMode = COLORBLIND_MODES[idx];
+        // FINDING-A4 ext10: cycle 변경 시 즉시 SVG 필터 갱신
+        applyColorblindMode(this.settings.colorblindMode);
+      },
     );
     y += 60;
 

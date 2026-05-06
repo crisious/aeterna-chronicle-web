@@ -13,6 +13,7 @@ import { sceneManager } from './scenes/SceneManager';
 import { errorBoundary } from './error/ErrorBoundary';
 import { accessibilityManager } from './accessibility/AccessibilityManager';
 import { focusManager } from './accessibility/screen_reader/FocusManager';
+import { applyColorblindMode } from './scenes/SettingsScene';
 import {
     createA11yProbeBridgeFromAriaMaps,
     installA11yProbeBridge,
@@ -81,6 +82,16 @@ const config: Phaser.Types.Core.GameConfig = {
     ],
     pixelArt: true,
 };
+
+// FINDING-A4 ext10: 부팅 시 localStorage 의 색약 모드 즉시 적용
+// (SettingsScene 진입 전이라도 메인 메뉴부터 SVG 필터 작동)
+try {
+    const raw = localStorage.getItem('aeterna_settings');
+    if (raw) {
+        const parsed = JSON.parse(raw) as { colorblindMode?: string };
+        applyColorblindMode(parsed.colorblindMode ?? 'off');
+    }
+} catch { /* localStorage 비활성/파싱 실패 무시 */ }
 
 // 게임 인스턴스 초기화
 const game = new Phaser.Game(config);
