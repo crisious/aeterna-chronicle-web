@@ -281,6 +281,13 @@ export class MainMenuScene extends Phaser.Scene {
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = placeholder;
+    // FINDING-DR-1: 스크린 리더 호환 — id/name/aria-label/autocomplete 부여
+    // (WCAG 1.3.1 Info & Relationships, 4.1.2 Name/Role/Value)
+    const slug = placeholder === '아이디' ? 'username' : placeholder === '비밀번호' ? 'password' : placeholder;
+    input.id = `login-${slug}`;
+    input.name = slug;
+    input.setAttribute('aria-label', placeholder);
+    input.autocomplete = slug === 'username' ? 'username' : slug === 'password' ? 'current-password' : 'off';
     input.style.cssText = `
       position: absolute;
       left: ${left}px;
