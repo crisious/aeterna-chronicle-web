@@ -40,9 +40,9 @@
     --border-subtle:  #3A3A4A;
   }
 
-  /* 기본 HTML 스타일 */
+  /* 기본 HTML 스타일 (DR-11: Inter 제거 — AI Slop default stack 회피) */
   html {
-    font-family: Pretendard, 'Noto Sans KR', Inter, system-ui, sans-serif;
+    font-family: Pretendard, 'Noto Sans KR', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
