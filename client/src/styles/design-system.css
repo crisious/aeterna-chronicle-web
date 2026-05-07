@@ -86,8 +86,9 @@
   --region-mistsea:    #DDA0DD;
   --region-abyss:      #FF00FF;
 
-  /* ── 폰트 ── */
-  --font-body:  Pretendard, 'Noto Sans KR', Inter, system-ui, sans-serif;
+  /* ── 폰트 ── (DR-10: Inter 제거 — AI Slop default stack 회피, Galmuri 우선)
+     Galmuri 한글 픽셀폰트 → Pretendard → Noto Sans KR → system fallback */
+  --font-body:  'Galmuri11', Pretendard, 'Noto Sans KR', system-ui, sans-serif;
   --font-title: '여기어때 잘난체 Bold', 'Pirata One', Cinzel, serif;
   --font-mono:  'JetBrains Mono', monospace;
 
