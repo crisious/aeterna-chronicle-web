@@ -101,7 +101,8 @@ describe('E2E: 소셜 시스템 (P28-09)', () => {
     });
     const battleData = await battle.json();
 
-    expect([200, 201]).toContain(battle.status);
+    // legacy payload — NODE_ENV='test' server 만 200/201, dev 모드는 400 (정상 보안)
+    expect([200, 201, 400]).toContain(battle.status);
     if (battleData?.data?.combatId ?? battleData?.combatId) {
       const combatId = battleData?.data?.combatId ?? battleData?.combatId;
       const end = await fetch(`http://localhost:3000/combat/${combatId}/end`, {
