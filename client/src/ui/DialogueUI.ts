@@ -10,6 +10,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { bindEscClose } from '../utils/uiEsc';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -88,12 +89,9 @@ export class DialogueUI {
     this.visible = true;
     this.container.setVisible(true);
 
-    // FINDING-A4 ext19: ESC 닫기 (WCAG 2.1.1) — DialogueBox 가 SPACE/ENTER/숫자키
-    // 처리하지만 닫기 키는 없음. ESC 추가로 일관 패턴.
-    if (!this._escHandler) {
-      this._escHandler = () => this.close();
-      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
-    }
+    // FINDING-A4 ext19/ext24: ESC 닫기 (bindEscClose helper)
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.close());
 
     // 서버에서 대화 데이터 로드
     try {
@@ -114,19 +112,16 @@ export class DialogueUI {
     }
   }
 
-  // FINDING-A4 ext19: ESC handler 참조
-  private _escHandler: (() => void) | null = null;
+  // FINDING-A4 ext24: bindEscClose unbind 참조
+  private _escUnbind: (() => void) | null = null;
 
   close(): void {
     this.visible = false;
     this.container.setVisible(false);
     this._stopTyping();
     this.nodes.clear();
-    // FINDING-A4 ext19: keyboard listener cleanup
-    if (this._escHandler) {
-      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
-      this._escHandler = null;
-    }
+    this._escUnbind?.();
+    this._escUnbind = null;
     this.currentNode = null;
   }
 

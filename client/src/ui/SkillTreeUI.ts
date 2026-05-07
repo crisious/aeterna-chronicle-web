@@ -13,6 +13,7 @@
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { formatPassiveEffect, STATUS_COLOR } from '../skills/passiveEffectFormatter';
+import { bindEscClose } from '../utils/uiEsc';
 import { getCombosUsingSkill } from '../skills/comboMirror';
 import { formatBranchLabel, getBranchGroupClient, getBranchSiblingsClient } from '../skills/branchMirror';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
@@ -165,11 +166,9 @@ export class SkillTreeUI {
     await this._loadSkills();
     this._renderTree();
 
-    // FINDING-A4 ext16: ESC 로 패널 닫기 (WCAG 2.1.1)
-    if (!this._escHandler) {
-      this._escHandler = () => this.close();
-      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
-    }
+    // FINDING-A4 ext16/ext24: ESC 닫기 (bindEscClose helper)
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.close());
   }
 
   close(): void {
@@ -177,15 +176,12 @@ export class SkillTreeUI {
     this.container.setVisible(false);
     this._closeDetail();
     playSfx(this.scene, UI_SFX.CLOSE);
-    // FINDING-A4 ext16: keyboard listener cleanup
-    if (this._escHandler) {
-      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
-      this._escHandler = null;
-    }
+    this._escUnbind?.();
+    this._escUnbind = null;
   }
 
-  // FINDING-A4 ext16: ESC handler 참조(off 위해)
-  private _escHandler: (() => void) | null = null;
+  // FINDING-A4 ext24: bindEscClose unbind 참조
+  private _escUnbind: (() => void) | null = null;
 
   isOpen(): boolean { return this.visible; }
 

@@ -11,6 +11,7 @@
 import * as Phaser from 'phaser';
 import { NetworkManager, InventoryItem } from '../network/NetworkManager';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
+import { bindEscClose } from '../utils/uiEsc';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -84,11 +85,9 @@ export class ShopUI {
     await this._refreshPlayerData();
     this._renderList();
 
-    // FINDING-A4 ext17: ESC 닫기 (WCAG 2.1.1)
-    if (!this._escHandler) {
-      this._escHandler = () => this.close();
-      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
-    }
+    // FINDING-A4 ext17/ext24: ESC 닫기 (bindEscClose helper)
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.close());
   }
 
   close(): void {
@@ -96,14 +95,12 @@ export class ShopUI {
     this.container.setVisible(false);
     this._closeConfirm();
     playSfx(this.scene, UI_SFX.CLOSE);
-    if (this._escHandler) {
-      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
-      this._escHandler = null;
-    }
+    this._escUnbind?.();
+    this._escUnbind = null;
   }
 
-  // FINDING-A4 ext17: ESC handler 참조
-  private _escHandler: (() => void) | null = null;
+  // FINDING-A4 ext24: bindEscClose unbind 참조
+  private _escUnbind: (() => void) | null = null;
 
   isOpen(): boolean { return this.visible; }
 

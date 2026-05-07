@@ -10,6 +10,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { bindEscClose } from '../utils/uiEsc';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -75,25 +76,21 @@ export class WorldMapUI {
     await this._loadZones();
     this._renderMap();
 
-    // FINDING-A4 ext18: ESC 닫기 (WCAG 2.1.1)
-    if (!this._escHandler) {
-      this._escHandler = () => this.close();
-      this.scene.input.keyboard?.on('keydown-ESC', this._escHandler);
-    }
+    // FINDING-A4 ext18/ext24: ESC 닫기 (bindEscClose helper)
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.close());
   }
 
   close(): void {
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
-    if (this._escHandler) {
-      this.scene.input.keyboard?.off('keydown-ESC', this._escHandler);
-      this._escHandler = null;
-    }
+    this._escUnbind?.();
+    this._escUnbind = null;
   }
 
-  // FINDING-A4 ext18: ESC handler 참조
-  private _escHandler: (() => void) | null = null;
+  // FINDING-A4 ext24: bindEscClose unbind 참조
+  private _escUnbind: (() => void) | null = null;
 
   isOpen(): boolean { return this.visible; }
 
