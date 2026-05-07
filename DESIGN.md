@@ -152,12 +152,17 @@
 
 | 용도 | 폰트 | 대체(Fallback) | 설명 |
 |------|------|----------------|------|
-| **게임 UI (캔버스)** | 커스텀 픽셀 폰트 | — | Phaser BitmapFont, 픽셀 정합 |
+| **게임 UI (캔버스)** | Galmuri11 (한글 픽셀폰트) | Pretendard, Noto Sans KR | quiple/galmuri SIL OFL, local 호스팅(/fonts/Galmuri11.woff2) |
 | **제목 (한글, 웹)** | 여기어때 잘난체 Bold | Noto Sans KR Bold | 판타지 느낌 강조 |
 | **본문 (한글, 웹)** | Pretendard | Noto Sans KR | 가독성 최우선 |
 | **영문 제목** | Pirata One | Cinzel | 다크 판타지 분위기 |
-| **영문 본문** | Inter | system-ui | 깔끔한 보조 텍스트 |
+| **영문 본문** | Galmuri11 | system-ui | 게임 톤 일관 (Inter 폐기 — DR-13) |
 | **수치/코드** | JetBrains Mono | monospace | 숫자 정렬, 대미지 팝업 |
+
+> **DR-8/10/11/12/13 (2026-05-08)**: Inter 가 AI Slop default font stack 으로
+> 분류되어 전수 제거. Galmuri11 한글 픽셀폰트가 게임 UI(Phaser BitmapFont 대신)
+> + 영문 본문 fallback 양쪽에 적용되어 다크 판타지 게임 톤 일관.
+> jsDelivr CDN 의존도 폐기 → /fonts/Galmuri11.woff2 local 호스팅(505KB, SIL OFL).
 
 ### 3.2 타이포 스케일
 
