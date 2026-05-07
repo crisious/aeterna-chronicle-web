@@ -90,6 +90,10 @@ export class FeedbackForm extends Phaser.Scene {
     const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
     overlay.setInteractive();
 
+    // FINDING-A4 ext26: ESC 닫기 (WCAG 2.1.1) — sub-scene 라 자체 keyboard.
+    // scene.stop 시 listener 자동 cleanup.
+    this.input.keyboard?.on('keydown-ESC', () => this.closeFeedbackForm());
+
     this.formContainer = this.add.container(width / 2, height / 2);
 
     // 폼 배경 패널
