@@ -162,8 +162,11 @@ export const ReportsPage: React.FC = () => {
 
           {/* 제재 선택 */}
           <div className="flex items-center gap-3">
-            <label className="text-sm text-gray-400">제재 조치:</label>
+            <label htmlFor="report-action" className="text-sm text-gray-400">제재 조치:</label>
             <select
+              id="report-action"
+              name="report-action"
+              aria-label="제재 조치"
               value={reviewAction}
               onChange={(e) => setReviewAction(e.target.value as SanctionAction)}
               className="bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-sm text-white"
@@ -177,6 +180,9 @@ export const ReportsPage: React.FC = () => {
 
           {/* 검토 메모 */}
           <textarea
+            id="report-review-note"
+            name="report-review-note"
+            aria-label="검토 메모"
             placeholder="검토 메모 (선택)"
             value={reviewNote}
             onChange={(e) => setReviewNote(e.target.value)}

@@ -164,6 +164,9 @@ export const AnnouncementsPage: React.FC = () => {
 
           <input
             type="text"
+            id="announcement-title"
+            name="announcement-title"
+            aria-label="공지 제목"
             placeholder="제목"
             value={formTitle}
             onChange={(e) => setFormTitle(e.target.value)}
@@ -171,6 +174,9 @@ export const AnnouncementsPage: React.FC = () => {
           />
 
           <textarea
+            id="announcement-content"
+            name="announcement-content"
+            aria-label="공지 내용"
             placeholder="내용"
             value={formContent}
             onChange={(e) => setFormContent(e.target.value)}
@@ -179,6 +185,9 @@ export const AnnouncementsPage: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <select
+              id="announcement-category"
+              name="announcement-category"
+              aria-label="공지 카테고리"
               value={formCategory}
               onChange={(e) => setFormCategory(e.target.value)}
               className="bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-sm text-white"
@@ -189,6 +198,9 @@ export const AnnouncementsPage: React.FC = () => {
             <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
               <input
                 type="checkbox"
+                id="announcement-pinned"
+                name="announcement-pinned"
+                aria-label="상단 고정"
                 checked={formPinned}
                 onChange={(e) => setFormPinned(e.target.checked)}
                 className="rounded border-gray-600"

@@ -96,7 +96,10 @@ export const UsersPage: React.FC = () => {
       {/* 검색 */}
       <div className="flex gap-3">
         <input
-          type="text"
+          type="search"
+          id="user-search"
+          name="user-search"
+          aria-label="유저 검색 (닉네임 또는 이메일)"
           placeholder="닉네임 또는 이메일 검색..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
