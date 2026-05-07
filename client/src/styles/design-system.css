@@ -17,12 +17,14 @@
 /* ═══════════════════════════════════════════════════════════════
    1. 디자인 토큰 (CSS Custom Properties)
    ═══════════════════════════════════════════════════════════════ */
-/* FINDING-A1 2차: Galmuri 한글 픽셀폰트 (jsDelivr CDN)
- * quiple/galmuri 한글 픽셀폰트로 게임 다크 판타지 톤 회복.
- * font-display: swap → 로드 전 fallback 폰트(Pretendard/Noto) 즉시 표시. */
+/* FINDING-A1 2차: Galmuri 한글 픽셀폰트 (local 호스팅 — DR-8 fix)
+ * 이전 jsDelivr CDN 의존 → /fonts/Galmuri11.woff2 local. 인터넷 끊겨도
+ * 게임 동작 + 외부 CDN 의존성 제거.
+ * 라이센스: SIL Open Font License (quiple/galmuri).
+ * font-display: swap → 로드 전 fallback(Pretendard/Noto) 즉시 표시. */
 @font-face {
   font-family: 'Galmuri11';
-  src: url('https://cdn.jsdelivr.net/gh/quiple/galmuri/dist/Galmuri11.woff2') format('woff2');
+  src: url('/fonts/Galmuri11.woff2') format('woff2');
   font-display: swap;
   unicode-range: U+0020-007E, U+AC00-D7AF, U+3131-318E, U+FF00-FFEF;
 }
