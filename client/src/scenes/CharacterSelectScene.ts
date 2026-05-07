@@ -521,6 +521,14 @@ export class CharacterSelectScene extends Phaser.Scene {
     `;
     document.body.appendChild(this.nameInput);
 
+    // FINDING-DR-4: nameInput Enter → _onCreate 호출 (form submit) — WCAG 2.1.1
+    this.nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this._onCreate();
+      }
+    });
+
     this.add.text(sceneW / 2, sceneH * 0.9, '[ 캐릭터 생성 ]', {
       fontSize: '18px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#88ff88',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
