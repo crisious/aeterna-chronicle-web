@@ -506,6 +506,11 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.nameInput.type = 'text';
     this.nameInput.placeholder = '캐릭터 이름 입력 (2~12자)';
     this.nameInput.maxLength = 12;
+    // FINDING-DR-2: 스크린 리더 / autocomplete 호환 (WCAG 1.3.1, 4.1.2)
+    this.nameInput.id = 'character-name';
+    this.nameInput.name = 'character-name';
+    this.nameInput.setAttribute('aria-label', '캐릭터 이름');
+    this.nameInput.autocomplete = 'off';
     this.nameInput.style.cssText = `
       position: absolute;
       left: ${rect.left + sceneW / 2 - 120}px;

@@ -175,7 +175,15 @@ export class FeedbackForm extends Phaser.Scene {
         outline: 'none',
       }
     );
-    (titleInput.node as HTMLInputElement).placeholder = '제목을 입력하세요';
+    {
+      const node = titleInput.node as HTMLInputElement;
+      node.placeholder = '제목을 입력하세요';
+      // FINDING-DR-2: 스크린 리더 / form 식별 (WCAG 1.3.1, 4.1.2)
+      node.id = 'feedback-title';
+      node.name = 'feedback-title';
+      node.setAttribute('aria-label', '피드백 제목');
+      node.autocomplete = 'off';
+    }
     (titleInput.node as HTMLInputElement).addEventListener('input', (e) => {
       this.titleText = (e.target as HTMLInputElement).value;
     });
@@ -196,7 +204,14 @@ export class FeedbackForm extends Phaser.Scene {
         resize: 'none',
       }
     );
-    (descInput.node as HTMLTextAreaElement).placeholder = '상세 설명을 입력하세요...\n\n재현 방법, 기대 동작, 실제 동작 등';
+    {
+      const node = descInput.node as HTMLTextAreaElement;
+      node.placeholder = '상세 설명을 입력하세요...\n\n재현 방법, 기대 동작, 실제 동작 등';
+      // FINDING-DR-2: 스크린 리더 / form 식별
+      node.id = 'feedback-description';
+      node.name = 'feedback-description';
+      node.setAttribute('aria-label', '피드백 상세 설명');
+    }
     (descInput.node as HTMLTextAreaElement).addEventListener('input', (e) => {
       this.descriptionText = (e.target as HTMLTextAreaElement).value;
     });
