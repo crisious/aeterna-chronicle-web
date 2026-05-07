@@ -519,6 +519,10 @@ export class AccessibilityManager {
     if (this.keyHandler) return;
     this.keyHandler = (e: KeyboardEvent) => {
       if (!this.settings.keyboardNavEnabled) return;
+      // FINDING-DR-7: focusChain 비어있으면 preventDefault 호출 안 함 — Phaser
+      // canvas 키보드 이벤트(MainMenu Enter, BattleScene cursor 등)와 충돌 방지.
+      // 또 currentFocusIndex < 0 (해제 상태) 의 Enter/Space/ESC 도 양보.
+      if (this.focusChain.length === 0) return;
 
       switch (e.key) {
         case 'Tab':
@@ -531,10 +535,12 @@ export class AccessibilityManager {
           break;
         case 'Enter':
         case ' ':
+          if (this.currentFocusIndex < 0) return; // focus 없으면 Phaser 에 양보
           e.preventDefault();
           this.activateCurrent();
           break;
         case 'Escape':
+          if (this.currentFocusIndex < 0) return; // focus 없으면 Phaser 에 양보
           e.preventDefault();
           this.currentFocusIndex = -1;
           this.announce('포커스 해제');
