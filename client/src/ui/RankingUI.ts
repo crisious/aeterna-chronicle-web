@@ -10,6 +10,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { bindEscClose } from '../utils/uiEsc';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -197,12 +198,27 @@ export class RankingUI {
 
   // ═══ 공개 API ═══
 
-  public show(): void { this.container.setVisible(true); this.switchCategory('power'); }
-  public hide(): void { this.container.setVisible(false); }
+  // FINDING-A4 ext23: ESC 닫기 (WCAG 2.1.1) — bindEscClose helper
+  private _escUnbind: (() => void) | null = null;
+
+  public show(): void {
+    this.container.setVisible(true);
+    this.switchCategory('power');
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.hide());
+  }
+  public hide(): void {
+    this.container.setVisible(false);
+    this._escUnbind?.();
+    this._escUnbind = null;
+  }
   public toggle(): void {
     if (this.container.visible) this.hide();
     else this.show();
   }
   public isVisible(): boolean { return this.container.visible; }
-  public destroy(): void { this.container.destroy(); }
+  public destroy(): void {
+    this._escUnbind?.();
+    this.container.destroy();
+  }
 }

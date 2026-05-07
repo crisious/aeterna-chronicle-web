@@ -12,6 +12,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { bindEscClose } from '../utils/uiEsc';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -402,8 +403,19 @@ export class GuildUI {
 
   // ═══ 공개 API ═══
 
-  public show(): void { this.container.setVisible(true); this.switchTab('info'); }
-  public hide(): void { this.container.setVisible(false); }
+  // FINDING-A4 ext23: ESC 닫기
+  private _escUnbind: (() => void) | null = null;
+  public show(): void {
+    this.container.setVisible(true);
+    this.switchTab('info');
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.hide());
+  }
+  public hide(): void {
+    this.container.setVisible(false);
+    this._escUnbind?.();
+    this._escUnbind = null;
+  }
   public toggle(): void {
     if (this.container.visible) this.hide();
     else this.show();
