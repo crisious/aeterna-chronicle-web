@@ -252,8 +252,8 @@ export const FONT = {
   BODY_KO:   'Pretendard, "Noto Sans KR", sans-serif',
   /** 제목 영문 */
   TITLE_EN:  '"Pirata One", Cinzel, serif',
-  /** 본문 영문 */
-  BODY_EN:   'Inter, system-ui, sans-serif',
+  /** 본문 영문 (DR-13: Inter 제거 — AI Slop default stack 회피, system 우선) */
+  BODY_EN:   '"Galmuri11", system-ui, sans-serif',
   /** 수치/코드 */
   MONO:      '"JetBrains Mono", monospace',
 } as const;
