@@ -11,6 +11,7 @@
 
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
+import { bindEscClose } from '../utils/uiEsc';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -335,8 +336,19 @@ export class NotificationUI {
 
   // ═══ 공개 API ═══
 
-  public showPanel(): void { this.panelContainer.setVisible(true); this.loadNotifications(); }
-  public hidePanel(): void { this.panelContainer.setVisible(false); }
+  // FINDING-A4 ext25: ESC 닫기 (NotificationUI panel)
+  private _escUnbind: (() => void) | null = null;
+  public showPanel(): void {
+    this.panelContainer.setVisible(true);
+    this.loadNotifications();
+    this._escUnbind?.();
+    this._escUnbind = bindEscClose(this.scene, () => this.hidePanel());
+  }
+  public hidePanel(): void {
+    this.panelContainer.setVisible(false);
+    this._escUnbind?.();
+    this._escUnbind = null;
+  }
   public togglePanel(): void {
     if (this.panelContainer.visible) this.hidePanel();
     else this.showPanel();
