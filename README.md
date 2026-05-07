@@ -283,7 +283,7 @@ npm run audio:license-check # 라이선스 안전성 확인 (~3s)
 | FHD | 1920×1080 FHD 전환 | Scale.FIT · 전씬 UI 좌표 보정 · DOM 입력 스케일 보정 |
 | SDXL | 아트 파이프라인 업그레이드 | SDXL Base + Pixel Art XL LoRA · 크로노트리거 스타일 · rembg 투명배경 |
 | ATB | FF6 ATB 자동전투 | 던전↔BattleScene 통합 · Auto모드 · 속도조절 1x/2x/3x |
-| **DR** | **Design Review chapter** | **48 sprint · WCAG 7항목 PASS · 16 UI 패널 ESC helper · Galmuri11 픽셀폰트(local 호스팅) · Settings 6/6 wiring · 13 form a11y · 1,204 tests 통과 · Inter 전수 제거** |
+| **DR** | **Design Review chapter** | **50 sprint · WCAG 7항목 PASS · 16 UI 패널 ESC helper · Galmuri11 픽셀폰트(local 505KB SIL OFL) · Settings 6/6 wiring · 13 form a11y · 1,204 tests + production build 통과 · Inter 전수 제거 · 4-tier SSOT 동기화** |
 
 <details>
 <summary><b>정합성 검증 상세</b></summary>
@@ -299,7 +299,12 @@ rembg 투명 배경 처리 19장 완료.
 TypeScript 에러: 811 → 0 (서버+클라이언트).
 개연성 검토 13/13 완료, 정합성 37테스트 통과, E2E 60파일.
 
-**Design Review chapter (2026-05-06~08, 48 sprint, 회귀 0)**
+**Design Review chapter (2026-05-06~08, 50 sprint, 회귀 0)**
+
+추가 polish (DR-15/16 + M1):
+- BattleScene FONT_FAMILY 도 Galmuri11 우선 (9 scene 일관)
+- Phaser render config 명시 (antialias=false / pixelArt=true / roundPixels=true / powerPreference='high-performance' / batchSize=4096) — NVIDIA NV_path_rendering stall 회피 시도, dGPU 강제, drawcall batching
+- Vite production build 88 modules 11.31s 정상 ✅
 
 - WCAG 2.1 AAA 7항목 PASS: 1.1.1 Non-text / 1.3.1 Info & Relationships / 1.4.4 Resize Text / 2.1.1 Keyboard / 2.3.3 Animation from Interactions / 2.4.7 Focus Visible / 4.1.2 Name/Role/Value
 - 메인 진입 chain 키보드 nav 완성: MainMenu → 로그인 모달(Enter+ESC) → CharacterSelect(2모드 + nameInput Enter) → Lobby(NPC+5모달+다이얼로그) → World → Dungeon → Settings
