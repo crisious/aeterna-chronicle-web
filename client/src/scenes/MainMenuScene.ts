@@ -85,7 +85,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.titleText = this.add.text(width / 2, height * 0.25, TITLE_TEXT, {
       fontSize: '64px',
-      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#c8a2ff',
       align: 'center',
       stroke: '#4a0080',
@@ -95,7 +95,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.subtitleText = this.add.text(width / 2, height * 0.42, SUBTITLE_TEXT, {
       fontSize: '18px',
-      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#8888cc',
       align: 'center',
     }).setOrigin(0.5).setAlpha(0);
@@ -103,7 +103,7 @@ export class MainMenuScene extends Phaser.Scene {
     // 상태 텍스트
     this.statusText = this.add.text(width / 2, height * 0.48, '', {
       fontSize: '12px',
-      fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#ffcc44',
     }).setOrigin(0.5);
 
@@ -124,7 +124,7 @@ export class MainMenuScene extends Phaser.Scene {
     menuDefs.forEach((def, i) => {
       const btn = this.add.text(width / 2, menuStartY + i * menuGap, this._formatMenuLabel(i), {
         fontSize: '20px',
-        fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+        fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
         color: i === 0 ? '#ffffff' : '#cccccc',
       })
         .setOrigin(0.5)
@@ -232,7 +232,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.loginContainer.add(bg);
 
     const title = this.add.text(0, -110, '로그인 / 회원가입', {
-      fontSize: '18px', color: '#c8a2ff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontSize: '18px', color: '#c8a2ff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
     this.loginContainer.add(title);
 
@@ -250,21 +250,21 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 로그인 버튼
     const loginBtn = this.add.text(-60, 40, '[ 로그인 ]', {
-      fontSize: '15px', color: '#88ff88', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontSize: '15px', color: '#88ff88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this._doLogin());
     this.loginContainer.add(loginBtn);
 
     // 회원가입 버튼
     const registerBtn = this.add.text(60, 40, '[ 가입 ]', {
-      fontSize: '15px', color: '#88ccff', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontSize: '15px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this._doRegister());
     this.loginContainer.add(registerBtn);
 
     // 에러 표시
     const errorText = this.add.text(0, 80, '', {
-      fontSize: '12px', color: '#ff6644', fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+      fontSize: '12px', color: '#ff6644', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
     this.loginContainer.add(errorText);
     (this.loginContainer as any)._errorText = errorText;
@@ -465,7 +465,7 @@ export class MainMenuScene extends Phaser.Scene {
       const txt = this.add.text(0, -100 + i * 28, line, {
         fontSize: isClose ? '16px' : '14px',
         color: isClose ? '#88ff88' : '#cccccc',
-        fontFamily: '"Pretendard", "Noto Sans KR", monospace',
+        fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       }).setOrigin(0.5);
       if (isClose) {
         txt.setInteractive({ useHandCursor: true });

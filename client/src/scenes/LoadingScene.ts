@@ -52,12 +52,12 @@ export class LoadingScene extends Phaser.Scene {
 
     // ── 타이틀 ──
     this.add.text(width / 2, height * 0.28, 'AETERNA CHRONICLE', {
-      fontSize: '32px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#d4a8ff',
+      fontSize: '32px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#d4a8ff',
       stroke: '#6a20c0', strokeThickness: 3,
     }).setOrigin(0.5);
 
     this.add.text(width / 2, height * 0.36, '에테르나 크로니클', {
-      fontSize: '14px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#7777aa',
+      fontSize: '14px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#7777aa',
     }).setOrigin(0.5);
 
     // ── 프로그레스 바 ──
@@ -72,20 +72,20 @@ export class LoadingScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     this.progressText = this.add.text(width / 2, barY + 20, '0%', {
-      fontSize: '13px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#9977cc',
+      fontSize: '13px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#9977cc',
     }).setOrigin(0.5);
 
     this.loadingDotsText = this.add.text(width / 2, barY - 22, 'LOADING', {
-      fontSize: '10px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#555577', letterSpacing: 4,
+      fontSize: '10px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#555577', letterSpacing: 4,
     }).setOrigin(0.5);
 
     // ── 팁 ──
     this.add.text(width / 2, height * 0.72, '─── TIP ───', {
-      fontSize: '9px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#444466',
+      fontSize: '9px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#444466',
     }).setOrigin(0.5);
 
     this.tipText = this.add.text(width / 2, height * 0.78, '', {
-      fontSize: '12px', fontFamily: '"Pretendard", "Noto Sans KR", monospace', color: '#8888aa',
+      fontSize: '12px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#8888aa',
       wordWrap: { width: 520 }, align: 'center',
     }).setOrigin(0.5);
     this._showRandomTip();
