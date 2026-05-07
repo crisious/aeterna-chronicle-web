@@ -49,6 +49,17 @@ const config: Phaser.Types.Core.GameConfig = {
     height: 1080,
     parent: 'game-container',
     backgroundColor: '#16213E',
+    // FINDING-M1 fix: pixelArt 게임 명시 + NVIDIA NV_path_rendering 회피
+    // antialias=false 강제 → strokePath 의 GL_CLOSE_PATH_NV stall 감소.
+    // powerPreference='high-performance' → 외장 GPU 강제(노트북 dGPU/iGPU 분기).
+    render: {
+        antialias: false,
+        antialiasGL: false,
+        pixelArt: true,
+        roundPixels: true,
+        powerPreference: 'high-performance',
+        batchSize: 4096,
+    },
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
