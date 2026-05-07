@@ -60,9 +60,9 @@ export default {
         },
       },
 
-      // ── 폰트 패밀리 ──
+      // ── 폰트 패밀리 (DR-12: Inter 제거 — AI Slop default stack 회피) ──
       fontFamily: {
-        body:  ['Pretendard', 'Noto Sans KR', 'Inter', 'system-ui', 'sans-serif'],
+        body:  ['Pretendard', 'Noto Sans KR', 'system-ui', 'sans-serif'],
         title: ['여기어때 잘난체 Bold', 'Pirata One', 'Cinzel', 'serif'],
         mono:  ['JetBrains Mono', 'monospace'],
       },
