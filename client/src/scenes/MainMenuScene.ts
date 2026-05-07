@@ -275,6 +275,23 @@ export class MainMenuScene extends Phaser.Scene {
     }).setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this._closeLoginUI());
     this.loginContainer.add(closeBtn);
+
+    // FINDING-DR-3: 로그인 모달 키보드 nav (WCAG 2.1.1)
+    // - input Enter → 로그인 (가장 자연스러운 form submit)
+    // - ESC → 모달 닫기
+    const onInputEnter = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this._doLogin();
+      }
+    };
+    this.usernameInput?.addEventListener('keydown', onInputEnter);
+    this.passwordInput?.addEventListener('keydown', onInputEnter);
+
+    const onLoginEsc = () => this._closeLoginUI();
+    this.input.keyboard?.on('keydown-ESC', onLoginEsc);
+    // 모달 닫힐 때 cleanup — _closeLoginUI 안 listener 정리는 별도 변경
+    (this.loginContainer as any)._loginEscHandler = onLoginEsc;
   }
 
   private _createInput(placeholder: string, left: number, top: number, w = 240): HTMLInputElement {
@@ -377,6 +394,9 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   private _closeLoginUI(): void {
+    // FINDING-DR-3: ESC handler cleanup
+    const escHandler = (this.loginContainer as any)?._loginEscHandler;
+    if (escHandler) this.input.keyboard?.off('keydown-ESC', escHandler);
     this._cleanupDom();
     this.loginContainer?.destroy();
     this.loginContainer = null;
