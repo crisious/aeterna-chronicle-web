@@ -160,6 +160,51 @@ describe('browser compatibility bootstrap', () => {
     expect(body.getAttribute('data-browser')).toBe('webkit');
   });
 
+  test('renderer=canvas 쿼리는 WebGL 가능 환경에서도 Canvas 렌더러를 강제한다', () => {
+    const body = new MockElement('body');
+    const documentMock = {
+      body,
+      createElement(tag: string) {
+        if (tag === 'canvas') {
+          return {
+            getContext(type: string) {
+              if (type === 'webgl2') return { getExtension: () => ({}) };
+              if (type === 'webgl' || type === 'experimental-webgl') return { getExtension: () => ({}) };
+              return null;
+            },
+          };
+        }
+
+        return new MockElement(tag);
+      },
+    };
+
+    stubGlobal('document', documentMock as unknown as Document);
+    stubGlobal('window', { location: { search: '?renderer=canvas' } } as Window & typeof globalThis);
+    stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 Chrome/120.0.0.0 Safari/537.36',
+      platform: 'Win32',
+      maxTouchPoints: 0,
+    } as Navigator);
+    stubGlobal('CSS', {
+      supports: (prop: string, value: string) => {
+        if (prop === 'backdrop-filter' || prop === '-webkit-backdrop-filter') return value === 'blur(4px)';
+        if (prop === 'color') return value.startsWith('color-mix');
+        if (prop === 'height') return value === '100dvh';
+        return false;
+      },
+    } as CSS);
+    stubGlobal('sessionStorage', createStorageMock() as Storage);
+
+    const caps = detectAndApply();
+
+    expect(caps.renderer).toBe('canvas');
+    expect(caps.webglVersion).toBe(2);
+    expect(caps.compatMode).toBe('canvas');
+    expect(body.getAttribute('data-renderer')).toBe('canvas');
+    expect(body.getAttribute('data-browser')).toBe('blink');
+  });
+
   test('localStorage 쓰기가 막히면 메모리 폴백으로 계속 동작한다', () => {
     const { documentMock } = createDocumentMock(false);
     const windowMock = {

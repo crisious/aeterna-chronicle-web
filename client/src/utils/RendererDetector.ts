@@ -31,6 +31,24 @@ export interface RendererCapabilities {
 
 const CANVAS_FALLBACK_REASON_KEY = 'aeterna:renderer-fallback-reason';
 
+function getRendererOverride(): RendererMode | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const renderer = params.get('renderer');
+    if (renderer === 'canvas' || renderer === 'webgl') {
+      return renderer;
+    }
+  } catch {
+    // 비표준 location/mock 환경에서는 자동 검출만 사용한다.
+  }
+
+  return null;
+}
+
 /**
  * WebGL 컨텍스트 가용성 + 버전 검출
  */
@@ -42,7 +60,10 @@ function detectWebGL(): { version: 0 | 1 | 2; canvas2dRequired: boolean } {
     const gl2 = test.getContext('webgl2');
     if (gl2) {
       // 컨텍스트 손실 즉시 감지
-      const lost = (gl2 as WebGL2RenderingContext).getExtension('WEBGL_lose_context');
+      const getExtension = (gl2 as { getExtension?: (name: string) => unknown }).getExtension;
+      const lost = typeof getExtension === 'function'
+        ? getExtension.call(gl2, 'WEBGL_lose_context')
+        : null;
       if (lost) {
         // 정상 종료
         return { version: 2, canvas2dRequired: false };
@@ -118,11 +139,16 @@ function probeFeatures(): {
  */
 export function detectAndApply(): RendererCapabilities {
   const webgl = detectWebGL();
+  const rendererOverride = getRendererOverride();
   const engine = detectEngine();
   const isIOSSafari = detectIOSSafari();
   const features = probeFeatures();
 
-  const renderer: RendererMode = webgl.version === 0 ? 'canvas' : 'webgl';
+  const shouldForceCanvas =
+    rendererOverride === 'canvas' ||
+    webgl.version === 0 ||
+    (rendererOverride !== 'webgl' && (engine === 'webkit' || isIOSSafari));
+  const renderer: RendererMode = shouldForceCanvas ? 'canvas' : 'webgl';
 
   let compatMode: CompatMode = 'normal';
   if (renderer === 'canvas') {
