@@ -283,7 +283,7 @@ npm run audio:license-check # 라이선스 안전성 확인 (~3s)
 | FHD | 1920×1080 FHD 전환 | Scale.FIT · 전씬 UI 좌표 보정 · DOM 입력 스케일 보정 |
 | SDXL | 아트 파이프라인 업그레이드 | SDXL Base + Pixel Art XL LoRA · 크로노트리거 스타일 · rembg 투명배경 |
 | ATB | FF6 ATB 자동전투 | 던전↔BattleScene 통합 · Auto모드 · 속도조절 1x/2x/3x |
-| **DR** | **Design Review chapter** | **33 sprint · WCAG 6항목 PASS · 16 UI 패널 ESC helper · Galmuri11 픽셀폰트 · Settings 6/6 wiring · 1,204 tests 통과** |
+| **DR** | **Design Review chapter** | **48 sprint · WCAG 7항목 PASS · 16 UI 패널 ESC helper · Galmuri11 픽셀폰트(local 호스팅) · Settings 6/6 wiring · 13 form a11y · 1,204 tests 통과 · Inter 전수 제거** |
 
 <details>
 <summary><b>정합성 검증 상세</b></summary>
@@ -299,13 +299,17 @@ rembg 투명 배경 처리 19장 완료.
 TypeScript 에러: 811 → 0 (서버+클라이언트).
 개연성 검토 13/13 완료, 정합성 37테스트 통과, E2E 60파일.
 
-**Design Review chapter (2026-05-06~07, 33 sprint, 회귀 0)**
+**Design Review chapter (2026-05-06~08, 48 sprint, 회귀 0)**
 
-- WCAG 2.1 AAA 6항목 PASS: 1.1.1 Non-text / 1.4.4 Resize Text / 2.1.1 Keyboard / 2.3.3 Animation from Interactions / 2.4.7 Focus Visible / 4.1.2 Name/Role/Value
-- 메인 진입 chain 키보드 nav 완성: MainMenu → CharacterSelect(2모드) → Lobby(NPC+5모달+다이얼로그) → World → Dungeon → Settings
+- WCAG 2.1 AAA 7항목 PASS: 1.1.1 Non-text / 1.3.1 Info & Relationships / 1.4.4 Resize Text / 2.1.1 Keyboard / 2.3.3 Animation from Interactions / 2.4.7 Focus Visible / 4.1.2 Name/Role/Value
+- 메인 진입 chain 키보드 nav 완성: MainMenu → 로그인 모달(Enter+ESC) → CharacterSelect(2모드 + nameInput Enter) → Lobby(NPC+5모달+다이얼로그) → World → Dungeon → Settings
 - 16 UI 패널 ESC helper(`client/src/utils/uiEsc.ts`) 통일: SkillTree / Shop / WorldMap / Dialogue / Inventory / Ranking / FriendList / Mail / Party / Trade / Pvp / Guild / GuildRaid / Auction / Notification + FeedbackForm sub-scene
+- 13 form elements 완전 a11y(id/name/aria-label/autocomplete): 로그인 2 input + CharacterSelect nameInput + FeedbackForm 2 + admin-dashboard 7 + AnnouncementsPage textarea/select/checkbox
+- keyboardNav preventDefault 가드: focusChain 비어있을 때 Phaser canvas 키보드 양보 (DR-7)
 - Settings wiring 6/6: BGM 볼륨(master) / SFX 볼륨(개별 곱셈) / language(i18n.setLocale) / screenShake(+ prefers-reduced-motion) / subtitleSize(accessibilityManager) / colorblindMode(data-cb-sim 4 SVG 필터 protanopia/deuteranopia/tritanopia/achromatopsia)
-- Galmuri11 한글 픽셀폰트(jsDelivr CDN @font-face) 8 scene 일괄 — 다크 판타지 게임 톤 회복
+- Galmuri11 한글 픽셀폰트 local 호스팅(client/public/fonts/Galmuri11.woff2 505KB SIL OFL) — jsDelivr CDN 의존 제거 → 인터넷 끊긴 환경에서도 게임 작동
+- 9 scene + DOM CSS + admin tailwind + design-tokens 모두 Galmuri11 우선 적용 + Inter 전수 제거 (AI Slop default font stack 회피, 4-tier SSOT 동기화: DESIGN.md → design-tokens.ts → design-system.css → admin)
+- .gitattributes woff/woff2/ttf/otf LFS 등록 — 향후 폰트 자산 자동 LFS
 - 모바일 portrait 가로 회전 안내 + design-system-mobile.css link 누락 보완
 - canvas tabIndex=0 + role="application" + aria-label="에테르나 크로니클 게임 화면" + FocusManager.injectFocusStyles
 - Test suite: typecheck × 3 (0 errors) + unit 486 + contract 31 + integration 143 + e2e 544 = **1,204 tests 통과**
