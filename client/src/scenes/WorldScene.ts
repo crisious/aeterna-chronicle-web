@@ -9,6 +9,13 @@
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
+import {
+  CHRONO_ERAS,
+  cycleChronoEra,
+  projectZoneToEra,
+  type ChronoEraId,
+} from '../time/ChronoTimeline';
+import { resolveZoneBackground } from '../data/zoneBackgrounds';
 
 // ── 지역 정의 ───────────────────────────────────────────────
 
@@ -29,6 +36,7 @@ interface WorldZone {
 const WORLD_ZONES: WorldZone[] = [
   { id: 'aether_plains',     name: '에테르 평원',     description: 'Lv.1~10 / 시작 지역',       color: 0x88cc44, posRatioX: 0.2,  posRatioY: 0.55, minLevel: 1,  unlocked: true },
   { id: 'memory_forest',     name: '기억의 숲',       description: 'Lv.10~20 / 고대 정령 서식지', color: 0x44aa88, posRatioX: 0.4,  posRatioY: 0.35, minLevel: 10, unlocked: true },
+  { id: 'malatus_sanctuary', name: '말라투스 성소',   description: 'Lv.20~28 / 실반헤임 봉인 유적', color: 0x7fd8a8, posRatioX: 0.52, posRatioY: 0.26, minLevel: 20, unlocked: true },
   { id: 'shadow_gorge',      name: '그림자 협곡',     description: 'Lv.20~30 / 그림자 세력 근거지', color: 0x664488, posRatioX: 0.6,  posRatioY: 0.6,  minLevel: 20, unlocked: true },
   { id: 'crystal_cave',      name: '결정 동굴',       description: 'Lv.30~40 / 에테르 결정 광맥',  color: 0x44cccc, posRatioX: 0.75, posRatioY: 0.3,  minLevel: 30, unlocked: true },
   { id: 'forgotten_citadel', name: '잊혀진 성채',     description: 'Lv.40~50 / 고대 문명 유적',   color: 0xcc8844, posRatioX: 0.85, posRatioY: 0.55, minLevel: 40, unlocked: false },
@@ -45,6 +53,10 @@ export class WorldScene extends Phaser.Scene {
   private infoPanel: Phaser.GameObjects.Container | null = null;
   private playerMarker!: Phaser.GameObjects.Arc;
   private currentZoneId = 'aether_plains';
+  private currentEraId: ChronoEraId = 'present';
+  private selectedZone: WorldZone | null = null;
+  private eraLabelText: Phaser.GameObjects.Text | null = null;
+  private eraHintText: Phaser.GameObjects.Text | null = null;
 
   // FINDING-A4 ext3: zone 키보드 nav state
   private navigableZoneIndices: number[] = [];
@@ -52,18 +64,13 @@ export class WorldScene extends Phaser.Scene {
   private highlightRing: Phaser.GameObjects.Arc | null = null;
   private _zoneKeyboardCleanup: (() => void) | null = null;
 
-  // P33-A: 존 코드 → 배경 에셋 매핑
-  private static readonly ZONE_BG_MAP: Record<string, string> = {
-    aether_plains: 'SYL-BG-FAR-DAY',
-    memory_forest: 'SYL-BG-FAR-DUSK',
-    shadow_gorge: 'ERB-BG-MID-NIGHT',
-    crystal_cave: 'NOR-BG-FAR-DAY',
-    forgotten_citadel: 'ABY-BG-FAR-DAY',
-    chrono_spire: 'TEM-BG-FAR-DUSK',
-  };
-
   constructor() {
     super({ key: 'WorldScene' });
+  }
+
+  init(data?: { eraId?: ChronoEraId }): void {
+    this.currentEraId = data?.eraId ?? this.currentEraId;
+    this.selectedZone = null;
   }
 
   // ── 라이프사이클 ─────────────────────────────────────────
@@ -83,6 +90,16 @@ export class WorldScene extends Phaser.Scene {
     for (const iconKey of Object.values(WorldScene.ZONE_ICON_MAP)) {
       this.load.image(iconKey, `assets/generated/ui/worldmap/${iconKey}.png`);
     }
+
+    // 선택 패널 미리보기: 현재 시간대 기준으로 지역별 배경을 고유 키로 로드한다.
+    const loadedPreviewKeys = new Set<string>();
+    for (const zone of WORLD_ZONES) {
+      const background = resolveZoneBackground(zone.id, this.currentEraId);
+      if (loadedPreviewKeys.has(background.farKey) || this.textures.exists(background.farKey)) continue;
+      this.load.image(background.farKey, background.farPath);
+      loadedPreviewKeys.add(background.farKey);
+    }
+
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[World] 이미지 로드 실패: ${file.key}`);
     });
@@ -101,6 +118,8 @@ export class WorldScene extends Phaser.Scene {
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#cccc88',
     }).setOrigin(0.5);
+
+    this._createChronoControls(width);
 
     // 경로 연결선
     this.travelLine = this.add.graphics();
@@ -168,6 +187,8 @@ export class WorldScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ENTER', onSelect);
     this.input.keyboard?.on('keydown-SPACE', onSelect);
     this.input.keyboard?.on('keydown-ESC', onEsc);
+    this.input.keyboard?.on('keydown-Q', () => this._setChronoEra(cycleChronoEra(this.currentEraId, -1)));
+    this.input.keyboard?.on('keydown-E', () => this._setChronoEra(cycleChronoEra(this.currentEraId, 1)));
 
     this._zoneKeyboardCleanup = () => {
       this.input.keyboard?.off('keydown-LEFT', onPrev);
@@ -177,9 +198,57 @@ export class WorldScene extends Phaser.Scene {
       this.input.keyboard?.off('keydown-ENTER', onSelect);
       this.input.keyboard?.off('keydown-SPACE', onSelect);
       this.input.keyboard?.off('keydown-ESC', onEsc);
+      this.input.keyboard?.removeAllListeners('keydown-Q');
+      this.input.keyboard?.removeAllListeners('keydown-E');
     };
 
     SceneManager.fadeIn(this, 300);
+  }
+
+  private _createChronoControls(width: number): void {
+    const leftBtn = this.add.text(width / 2 - 185, 70, '[Q] ◀', {
+      fontSize: '13px',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      color: '#88ccff',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    leftBtn.on('pointerdown', () => this._setChronoEra(cycleChronoEra(this.currentEraId, -1)));
+
+    this.eraLabelText = this.add.text(width / 2, 60, '', {
+      fontSize: '17px',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      color: '#c8a2ff',
+      align: 'center',
+    }).setOrigin(0.5);
+
+    this.eraHintText = this.add.text(width / 2, 84, '', {
+      fontSize: '11px',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      color: '#9fb0d0',
+      align: 'center',
+    }).setOrigin(0.5);
+
+    const rightBtn = this.add.text(width / 2 + 185, 70, '▶ [E]', {
+      fontSize: '13px',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      color: '#88ccff',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    rightBtn.on('pointerdown', () => this._setChronoEra(cycleChronoEra(this.currentEraId, 1)));
+
+    this._refreshChronoControls();
+  }
+
+  private _setChronoEra(nextEraId: ChronoEraId): void {
+    this.currentEraId = nextEraId;
+    this._refreshChronoControls();
+    if (this.selectedZone) {
+      this._onZoneClick(this.selectedZone);
+    }
+  }
+
+  private _refreshChronoControls(): void {
+    const era = CHRONO_ERAS.find((e) => e.id === this.currentEraId) ?? CHRONO_ERAS[1];
+    this.eraLabelText?.setText(`${era.label}  ${era.yearLabel}`).setColor(`#${era.tintColor.toString(16).padStart(6, '0')}`);
+    this.eraHintText?.setText(era.ambientLine);
   }
 
   shutdown(): void {
@@ -280,30 +349,53 @@ export class WorldScene extends Phaser.Scene {
   // ── 존 클릭 ──────────────────────────────────────────────
 
   private _onZoneClick(zone: WorldZone): void {
+    this.selectedZone = zone;
     // 정보 패널 표시
     if (this.infoPanel) {
       this.infoPanel.destroy();
     }
 
     const { width, height } = this.cameras.main;
-    const panel = this.add.container(width / 2, height - 100);
+    const projection = projectZoneToEra(zone.id, this.currentEraId);
+    const background = resolveZoneBackground(zone.id, this.currentEraId);
+    const panel = this.add.container(width / 2, height - 112);
 
-    const bg = this.add.rectangle(0, 0, 500, 80, 0x000000, 0.85)
+    const bg = this.add.rectangle(0, 0, 760, 124, 0x000000, 0.86)
       .setStrokeStyle(1, 0x446688);
     panel.add(bg);
 
+    const previewFrame = this.add.rectangle(-290, -4, 156, 88, 0x111827, 1)
+      .setStrokeStyle(1, projection.tintColor, 0.9);
+    panel.add(previewFrame);
+
+    if (this.textures.exists(background.farKey)) {
+      const preview = this.add.image(-290, -4, background.farKey)
+        .setDisplaySize(150, 84)
+        .setAlpha(0.92);
+      panel.add(preview);
+    }
+
     // 존 색상 아이콘
-    const dot = this.add.circle(-200, 0, 15, zone.color);
+    const dot = this.add.circle(-190, -26, 15, projection.tintColor);
     panel.add(dot);
 
-    const info = this.add.text(-140, -20, `${zone.name} — ${zone.description}`, {
+    const info = this.add.text(-152, -46, `${projection.displayName} — ${zone.description}`, {
       fontSize: '13px',
       color: '#cccccc',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      wordWrap: { width: 390 },
     });
     panel.add(info);
 
-    const enterBtn = this.add.text(180, 0, '[ 이동 ]', {
+    const eraInfo = this.add.text(-152, -10, `${projection.ambientLine} / 레벨 보정 ${projection.monsterLevelOffset >= 0 ? '+' : ''}${projection.monsterLevelOffset}`, {
+      fontSize: '11px',
+      color: '#9fb0d0',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      wordWrap: { width: 390 },
+    });
+    panel.add(eraInfo);
+
+    const enterBtn = this.add.text(288, 30, '[ 시간 이동 ]', {
       fontSize: '15px',
       color: '#88ff88',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
@@ -330,17 +422,25 @@ export class WorldScene extends Phaser.Scene {
       ease: 'Power2',
       onComplete: () => {
         this.currentZoneId = zone.id;
+        const projection = projectZoneToEra(zone.id, this.currentEraId);
 
-        // P25-06: 소켓으로 텔레포트 요청
-        networkManager.emit('world:teleport', {
-          characterId: networkManager.socketId ?? '',
-          zoneId: zone.id,
-        });
+        // P25-06: 소켓이 준비된 실제 온라인 상태에서만 텔레포트 브로드캐스트를 보낸다.
+        if (networkManager.isConnected) {
+          networkManager.emit('world:teleport', {
+            characterId: networkManager.socketId ?? '',
+            zoneId: zone.id,
+            eraId: this.currentEraId,
+          });
+        }
 
         // 페이드 아웃 후 씬 전환
         this.cameras.main.fadeOut(300, 0, 0, 0);
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-          this.scene.start('GameScene', { zoneId: zone.id, zoneName: zone.name });
+          this.scene.start('GameScene', {
+            zoneId: zone.id,
+            zoneName: projection.displayName,
+            eraId: this.currentEraId,
+          });
         });
       },
     });

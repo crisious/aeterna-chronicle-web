@@ -25,6 +25,9 @@ import { networkManager, CombatResult } from '../network/NetworkManager';
 import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
+import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
+import { resolveZoneBackground } from '../data/zoneBackgrounds';
+import type { ATBMode } from '../../../shared/types/atb';
 
 
 // ─── 전투 상태 ──────────────────────────────────────────────────
@@ -42,32 +45,20 @@ export interface BattleSceneData {
   monsterId?: string;
   monsterName?: string;
   characterId?: string;
+  eraId?: ChronoEraId;
+  atbMode?: ATBMode;
+  enemyHpMultiplier?: number;
+  enemyAttackSpeedMultiplier?: number;
+  rewardMultiplier?: number;
+  offlineQa?: boolean;
   /** 전투 종료 후 복귀할 씬 (없으면 GameScene) */
   returnScene?: string;
   /** 복귀 시 전달할 데이터 (victory/allyState 자동 추가) */
   returnData?: Record<string, unknown>;
 }
 
-// ─── 존 → 배경 접두어 매핑 ──────────────────────────────────────
-
-const ZONE_BG_PREFIX: Record<string, string> = {
-  aether_plains:     'ERB',
-  memory_forest:     'SYL',
-  shadow_gorge:      'ABY',
-  crystal_cave:      'NOR',
-  forgotten_citadel: 'ARG',
-  chrono_spire:      'TEM',
-  erebos:            'ERB',
-  sylvanheim:        'SYL',
-  solaris:           'SOL',
-  boreal:            'NOR',
-  argentium:         'ARG',
-  britalia:          'BRI',
-  plateau_oblivion:  'OBL',
-  fog_sea:           'FOG',
-};
-
-const DEFAULT_BG_PREFIX = 'ERB';
+const DUNGEON_BATTLE_BG_KEY = 'battle_bg_dungeon';
+const DUNGEON_BATTLE_BG_PATH = 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
@@ -197,12 +188,15 @@ export class BattleScene extends Phaser.Scene {
   // Auto-battle & speed control
   private autoMode = false;
   private speedMultiplier = 1;
+  private atbMode: ATBMode = 'WAIT';
   private autoButton: Phaser.GameObjects.Text | null = null;
   private speedButton: Phaser.GameObjects.Text | null = null;
+  private atbModeButton: Phaser.GameObjects.Text | null = null;
   private phaseText: Phaser.GameObjects.Text | null = null;
   private introFallbackTimer: Phaser.Time.TimerEvent | null = null;
 
   private _initData!: BattleSceneData;
+  private battleBackgroundKey = DUNGEON_BATTLE_BG_KEY;
 
 
   constructor() {
@@ -235,8 +229,10 @@ export class BattleScene extends Phaser.Scene {
     this.targetCursor = null;
     this.autoMode = false;
     this.speedMultiplier = 1;
+    this.atbMode = data.atbMode ?? 'WAIT';
     this.autoButton = null;
     this.speedButton = null;
+    this.atbModeButton = null;
     this.phaseText = null;
     this.introFallbackTimer = null;
 
@@ -248,11 +244,17 @@ export class BattleScene extends Phaser.Scene {
   preload(): void {
     // 전투 배경: 던전에서 왔으면 던전 배경, 아니면 zoneId 기반
     if (this._initData?.returnScene === 'DungeonScene') {
-      this.load.image('battle_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
+      this.battleBackgroundKey = DUNGEON_BATTLE_BG_KEY;
+      if (!this.textures.exists(DUNGEON_BATTLE_BG_KEY)) {
+        this.load.image(DUNGEON_BATTLE_BG_KEY, DUNGEON_BATTLE_BG_PATH);
+      }
     } else {
       const zoneId = this._initData?.zoneId ?? '';
-      const zoneCode = ZONE_BG_PREFIX[zoneId] ?? DEFAULT_BG_PREFIX;
-      this.load.image('battle_bg', `assets/generated/environment/backgrounds/${zoneCode}-BG-FAR-DAY.png`);
+      const background = resolveZoneBackground(zoneId, this._initData?.eraId ?? 'present');
+      this.battleBackgroundKey = background.battleKey;
+      if (!this.textures.exists(background.battleKey)) {
+        this.load.image(background.battleKey, background.battlePath);
+      }
     }
 
     // 몬스터 이미지 로드 제거 — 프로그래매틱 아이콘 스프라이트 사용
@@ -289,18 +291,30 @@ export class BattleScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#0a0a1e');
 
     try {
-      if (this.textures.exists('battle_bg')) {
-        const bgImg = this.add.image(scW / 2, scH / 2, 'battle_bg');
+      if (this.textures.exists(this.battleBackgroundKey)) {
+        const bgImg = this.add.image(scW / 2, scH / 2, this.battleBackgroundKey);
         const sw = scW / bgImg.width;
         const sh = scH / bgImg.height;
         bgImg.setScale(Math.max(sw, sh));
       }
     } catch (e) { console.warn('[Battle] bg error:', e); }
 
+    const era = getChronoEra(this._initData.eraId ?? 'present');
+    this.add.rectangle(scW / 2, scH / 2, scW, scH, era.tintColor, 0.08).setDepth(1);
+    this.add.text(scW - 20, 12, `${era.label} / ${era.yearLabel}`, {
+      fontSize: '13px',
+      fontFamily: FONT_FAMILY,
+      color: `#${era.tintColor.toString(16).padStart(6, '0')}`,
+    }).setOrigin(1, 0).setDepth(250);
+
     // ── 매니저 초기화 (개별 try-catch) ────────────────────────
     try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
     try { this.soundManager = new SoundManager(this); } catch (e) { console.warn('[Battle] SoundManager init error:', e); }
-    try { this.combatManager = new CombatManager(this.battleId); } catch (e) { console.warn('[Battle] CombatManager init error:', e); }
+    try {
+      this.combatManager = new CombatManager(this.battleId, {
+        useSocket: this._shouldUseServerCombat(),
+      });
+    } catch (e) { console.warn('[Battle] CombatManager init error:', e); }
 
     // ── 유닛 생성 ──────────────────────────────────────────
     const allies = this._initData.allies ?? this._createDefaultAllies();
@@ -358,8 +372,12 @@ export class BattleScene extends Phaser.Scene {
     try { this.comboUI = new ComboUI(this); } catch (e) { console.warn('[Battle] ComboUI init error:', e); }
 
     // ── 서버 연동 ──────────────────────────────────────────
-    this._startServerCombat();
-    this._setupCombatSocket();
+    if (this._shouldUseServerCombat()) {
+      this._startServerCombat();
+      this._setupCombatSocket();
+    } else {
+      this.battleUI?.addLog('[로컬] 비로그인 전투 모드');
+    }
 
     // ── Auto / Speed 버튼 ──────────────────────────────────
     this.autoButton = this.add.text(scW - 220, UI_PANEL_Y + 20, 'AUTO: OFF', {
@@ -397,6 +415,20 @@ export class BattleScene extends Phaser.Scene {
       else if (this.speedMultiplier === 2) this.speedMultiplier = 3;
       else this.speedMultiplier = 1;
       this.speedButton!.setText(`${this.speedMultiplier}x`);
+    });
+
+    this.atbModeButton = this.add.text(scW - 340, UI_PANEL_Y + 20, `MODE: ${this.atbMode}`, {
+      fontSize: '13px',
+      fontFamily: FONT_FAMILY,
+      color: '#c8a2ff',
+      backgroundColor: '#222244',
+      padding: { x: 6, y: 3 },
+    }).setDepth(200).setInteractive({ useHandCursor: true });
+
+    this.atbModeButton.on('pointerdown', () => {
+      this.atbMode = this.atbMode === 'WAIT' ? 'ACTIVE' : this.atbMode === 'ACTIVE' ? 'SEMI' : 'WAIT';
+      this.atbModeButton!.setText(`MODE: ${this.atbMode}`);
+      this.battleUI?.addLog(`ATB 모드: ${this.atbMode}`);
     });
 
     // ── 인트로 연출 ─────────────────────────────────────────
@@ -488,6 +520,10 @@ export class BattleScene extends Phaser.Scene {
   // ─── ATB 시스템 ──────────────────────────────────────────────
 
   private _updateATB(delta: number): void {
+    if (this._isATBTimelineFrozen()) {
+      return;
+    }
+
     const dt = (delta / 1000) * this.speedMultiplier;
     const autoSpeedBonus = this.autoMode ? 1.5 : 1;
 
@@ -583,6 +619,21 @@ export class BattleScene extends Phaser.Scene {
         this._openCommandMenu(next);
       }
     }
+  }
+
+  private _isATBTimelineFrozen(): boolean {
+    if (this.atbMode === 'ACTIVE') {
+      return false;
+    }
+
+    if (this.atbMode === 'SEMI') {
+      return this.targetSelectMode;
+    }
+
+    return this.activeCommander !== null
+      || this.targetSelectMode
+      || this.cmdMenuContainer !== null
+      || this.cmdSubMenu !== null;
   }
 
   // ─── 커맨드 메뉴 ─────────────────────────────────────────────
@@ -1565,8 +1616,9 @@ export class BattleScene extends Phaser.Scene {
 
     // EXP / 골드 (간이 계산)
     const totalEnemyLevel = this.enemySprites.reduce((sum, e) => sum + (e.unit.level ?? 1), 0);
-    const exp = totalEnemyLevel * 25 + Phaser.Math.Between(10, 50);
-    const gold = totalEnemyLevel * 10 + Phaser.Math.Between(5, 30);
+    const rewardMultiplier = this._initData.rewardMultiplier ?? 1;
+    const exp = Math.round((totalEnemyLevel * 25 + Phaser.Math.Between(10, 50)) * rewardMultiplier);
+    const gold = Math.round((totalEnemyLevel * 10 + Phaser.Math.Between(5, 30)) * rewardMultiplier);
 
     const expText = this.add.text(-150, -80, `✨ 경험치: +${exp}`, {
       fontSize: '16px', fontFamily: FONT_FAMILY, color: '#88ccff',
@@ -1689,14 +1741,17 @@ export class BattleScene extends Phaser.Scene {
 
   private _createDefaultEnemies(): CombatUnit[] {
     const monsterName = this._initData.monsterName ?? '공허 딱정벌레';
+    const hpMultiplier = this._initData.enemyHpMultiplier ?? 1;
+    const speedMultiplier = this._initData.enemyAttackSpeedMultiplier ?? 1;
+    const maxHp = Math.max(1, Math.round(300 * hpMultiplier));
     return [{
       id: this._initData.monsterId ?? 'enemy_1',
       name: monsterName,
-      hp: 300, maxHp: 300,
+      hp: maxHp, maxHp,
       mp: 0, maxMp: 0,
       attack: 15,
       defense: 5,
-      attackSpeed: 0.8,
+      attackSpeed: 0.8 * speedMultiplier,
       level: 1,
       isAlly: false,
     }];
@@ -1735,6 +1790,10 @@ export class BattleScene extends Phaser.Scene {
   // ─── P25-05: 서버 전투 연동 ───────────────────────────────────
 
   private async _startServerCombat(): Promise<void> {
+    if (!this._shouldUseServerCombat()) {
+      return;
+    }
+
     try {
       const result = await networkManager.combatStart({
         characterId: this._initData.characterId ?? networkManager.userId ?? '',
@@ -1748,7 +1807,18 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
+  private _shouldUseServerCombat(): boolean {
+    if (this._initData.offlineQa) {
+      return false;
+    }
+    return networkManager.isAuthenticated || !!this._initData.characterId;
+  }
+
   private _setupCombatSocket(): void {
+    if (!this._shouldUseServerCombat()) {
+      return;
+    }
+
     const unsub1 = networkManager.on('combat:tick', (data) => {
       const d = data as { combatId: string; turn: number; actions: unknown[] };
       if (d.combatId === this.serverCombatId) {
@@ -1798,7 +1868,10 @@ export class BattleScene extends Phaser.Scene {
         allyState,
       });
     } else {
-      this.scene.start('GameScene');
+      this.scene.start('GameScene', {
+        zoneId: this._initData.zoneId,
+        eraId: this._initData.eraId,
+      });
     }
   }
 }

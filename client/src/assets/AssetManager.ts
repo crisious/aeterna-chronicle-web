@@ -105,6 +105,7 @@ export const ZONE_BGM_MAP: Record<string, string> = {
   // 레거시 호환
   aether_plains: 'bgm_village',
   memory_forest: 'bgm_syl_01',
+  malatus_sanctuary: 'bgm_syl_03',
   shadow_gorge: 'bgm_erb_01',
   crystal_cave: 'bgm_aby_01',
   forgotten_citadel: 'bgm_arg_01',

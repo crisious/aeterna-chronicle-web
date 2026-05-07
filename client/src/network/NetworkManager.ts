@@ -146,6 +146,164 @@ export interface ZoneInfo {
   npcs: Array<{ id: string; name: string; role: string }>;
 }
 
+interface ServerZoneDetailResponse {
+  ok?: boolean;
+  zone?: {
+    id?: string;
+    code?: string;
+    name?: string;
+    description?: string;
+    levelRange?: { min?: number; max?: number };
+  };
+  monsters?: Array<{
+    id?: string;
+    monsterId?: string;
+    name?: string;
+    level?: number;
+  }>;
+  npcs?: Array<{
+    id?: string;
+    npcId?: string;
+    name?: string;
+    role?: string;
+  }>;
+}
+
+const CLIENT_ZONE_API_CODE_MAP: Record<string, string> = {
+  aether_plains: 'erebos_outskirts',
+  memory_forest: 'silvanhome_entrance',
+  malatus_sanctuary: 'silvanhome_sanctum',
+  shadow_gorge: 'abyss_gate',
+  crystal_cave: 'silvanhome_crystal',
+};
+
+const CLIENT_ZONE_FALLBACKS: Record<string, ZoneInfo> = {
+  aether_plains: {
+    id: 'aether_plains',
+    name: '에테르 평원',
+    description: '에테르나의 시작 지대. 시간대 투영에 따라 몬스터와 보상이 변한다.',
+    minLevel: 1,
+    monsters: [
+      { id: 'mon_erebos_fog_rat', name: '기억 침식쥐', level: 5 },
+      { id: 'mon_erebos_memory_beetle', name: '공허 박쥐', level: 7 },
+      { id: 'mon_erebos_memory_dust', name: '망각 슬라임', level: 8 },
+    ],
+    npcs: [
+      { id: 'npc_guide', name: '수호자단 안내원', role: 'quest' },
+      { id: 'npc_merchant', name: '상인', role: 'shop' },
+    ],
+  },
+  memory_forest: {
+    id: 'memory_forest',
+    name: '기억의 숲',
+    description: '실반헤임으로 향하는 숲 입구. 말라투스 성소로 이어지는 봉인 흔적이 남아 있다.',
+    minLevel: 10,
+    monsters: [
+      { id: 'mob_corrupt_sprite', name: '오염된 숲정령', level: 12 },
+      { id: 'mob_swamp_treant', name: '안개 고목', level: 15 },
+      { id: 'mob_crystal_bat', name: '기억 박쥐', level: 16 },
+    ],
+    npcs: [
+      { id: 'npc_elf_guard', name: '엘프 경비대장 세라핀', role: 'quest' },
+      { id: 'npc_healer', name: '숲의 치유사 에밀리아', role: 'shop' },
+    ],
+  },
+  malatus_sanctuary: {
+    id: 'malatus_sanctuary',
+    name: '말라투스 성소',
+    description: '실반헤임 심층부에 봉인된 말라투스의 성소. 고대 마법의 잔향이 전장을 왜곡한다.',
+    minLevel: 20,
+    monsters: [
+      { id: 'mob_sanctum_guardian', name: '성소 수호정령', level: 20 },
+      { id: 'mob_memory_vine', name: '기억 덩굴', level: 23 },
+      { id: 'boss_malatus_echo', name: '말라투스의 잔향', level: 28 },
+    ],
+    npcs: [
+      { id: 'npc_elf_queen', name: '엘프 여왕 아리안나', role: 'dialogue' },
+    ],
+  },
+  shadow_gorge: {
+    id: 'shadow_gorge',
+    name: '그림자 협곡',
+    description: '그림자 세력이 기억의 심연으로 향하는 협곡에 거점을 세운 위험 지대.',
+    minLevel: 20,
+    monsters: [
+      { id: 'mob_shadow_stalker', name: '그림자 추적자', level: 20 },
+      { id: 'mob_void_hound', name: '공허 사냥개', level: 24 },
+      { id: 'boss_gorge_shade', name: '협곡의 흑영', level: 30 },
+    ],
+    npcs: [
+      { id: 'npc_shadow_scout', name: '협곡 정찰병', role: 'quest' },
+    ],
+  },
+  crystal_cave: {
+    id: 'crystal_cave',
+    name: '결정 동굴',
+    description: '실반헤임의 수정 광맥이 드러난 동굴. 에테르 결정 몬스터가 배회한다.',
+    minLevel: 30,
+    monsters: [
+      { id: 'mob_crystal_crawler', name: '결정 포복자', level: 30 },
+      { id: 'mob_aether_geode', name: '에테르 정동', level: 34 },
+      { id: 'boss_prism_guardian', name: '프리즘 수호자', level: 40 },
+    ],
+    npcs: [
+      { id: 'npc_miner_analyst', name: '광맥 조사관', role: 'dialogue' },
+    ],
+  },
+};
+
+function normalizeZoneInfo(requestedZoneId: string, raw: ZoneInfo | ServerZoneDetailResponse): ZoneInfo {
+  const fallback = CLIENT_ZONE_FALLBACKS[requestedZoneId];
+  const detail = raw as ServerZoneDetailResponse;
+  const direct = raw as ZoneInfo;
+
+  if (!detail.zone && typeof direct.id === 'string' && typeof direct.name === 'string') {
+    return {
+      id: requestedZoneId,
+      name: direct.name,
+      description: direct.description ?? fallback?.description ?? '',
+      minLevel: direct.minLevel ?? fallback?.minLevel ?? 1,
+      monsters: direct.monsters?.length ? direct.monsters : (fallback?.monsters ?? []),
+      npcs: direct.npcs?.length ? direct.npcs : (fallback?.npcs ?? []),
+    };
+  }
+
+  const zone = detail.zone;
+  const minLevel = zone?.levelRange?.min ?? fallback?.minLevel ?? 1;
+  const monsters = (detail.monsters ?? [])
+    .map((monster, index) => {
+      const id = monster.id ?? monster.monsterId;
+      if (!id) return null;
+      return {
+        id,
+        name: monster.name ?? fallback?.monsters[index]?.name ?? id,
+        level: monster.level ?? fallback?.monsters[index]?.level ?? minLevel,
+      };
+    })
+    .filter((monster): monster is { id: string; name: string; level: number } => monster !== null);
+
+  const npcs = (detail.npcs ?? [])
+    .map((npc, index) => {
+      const id = npc.id ?? npc.npcId ?? fallback?.npcs[index]?.id;
+      if (!id) return null;
+      return {
+        id,
+        name: npc.name ?? fallback?.npcs[index]?.name ?? id,
+        role: npc.role ?? fallback?.npcs[index]?.role ?? 'dialogue',
+      };
+    })
+    .filter((npc): npc is { id: string; name: string; role: string } => npc !== null);
+
+  return {
+    id: requestedZoneId,
+    name: fallback?.name ?? zone?.name ?? requestedZoneId,
+    description: fallback?.description ?? zone?.description ?? '',
+    minLevel,
+    monsters: monsters.length > 0 ? monsters : (fallback?.monsters ?? []),
+    npcs: npcs.length > 0 ? npcs : (fallback?.npcs ?? []),
+  };
+}
+
 // ── 소켓 이벤트 타입 ──────────────────────────────────────────
 
 export interface SocketEvents {
@@ -411,7 +569,9 @@ class NetworkManager {
   // ── 존 / NPC API (P25-04) ──────────────────────────────────
 
   async getZoneInfo(zoneId: string): Promise<ZoneInfo> {
-    return this.get<ZoneInfo>(`/api/world/zones/${zoneId}`);
+    const apiCode = CLIENT_ZONE_API_CODE_MAP[zoneId] ?? zoneId;
+    const raw = await this.get<ZoneInfo | ServerZoneDetailResponse>(`/api/world/zones/${apiCode}`);
+    return normalizeZoneInfo(zoneId, raw);
   }
 
   async getZones(): Promise<ZoneInfo[]> {

@@ -1,7 +1,7 @@
 import 'phaser';
 import { MainMenuScene } from './scenes/MainMenuScene';
 import { CharacterSelectScene } from './scenes/CharacterSelectScene';
-import { LobbyScene } from './scenes/LobbyScene';
+import { LobbyScene, type LobbySceneData } from './scenes/LobbyScene';
 import { WorldScene } from './scenes/WorldScene';
 import { GameScene } from './scenes/GameScene';
 import { BattleScene } from './scenes/BattleScene';
@@ -22,11 +22,21 @@ import {
     ARIA_CONTRACT_VERSION,
     getAllAriaMaps,
 } from './accessibility/screen_reader/AriaLabelMap';
+import { loadingProgress } from './ui/LoadingProgress';
 import {
     detectAndApply,
     attachContextLossHandler,
     logCapabilities,
 } from './utils/RendererDetector';
+import type { ChronoEraId } from './time/ChronoTimeline';
+
+declare global {
+    interface Window {
+        __aeternaGame?: Phaser.Game;
+        render_game_to_text?: () => string;
+        advanceTime?: (ms: number) => Promise<void> | void;
+    }
+}
 
 // 크로스브라우저 호환성 검출 — Phaser 인스턴스 전 가장 먼저 실행
 // body[data-renderer], [data-compat-mode] 부여 → CSS 폴백 활성화
@@ -106,6 +116,7 @@ try {
 
 // 게임 인스턴스 초기화
 const game = new Phaser.Game(config);
+window.__aeternaGame = game;
 
 // 글로벌 시스템 초기화
 sceneManager.initialize(game);
@@ -136,6 +147,9 @@ game.events.once(Phaser.Core.Events.READY, () => {
             createA11yProbeBridgeFromAriaMaps(getAllAriaMaps(), ARIA_CONTRACT_VERSION),
         );
     }
+
+    installGameTestHooks(game);
+    startDebugSceneIfRequested(game);
 });
 
 function shouldInstallA11yProbeBridge(): boolean {
@@ -149,4 +163,91 @@ function shouldInstallA11yProbeBridge(): boolean {
     }
 
     return new URLSearchParams(window.location.search).get('a11yAudit') === '1';
+}
+
+function installGameTestHooks(phaserGame: Phaser.Game): void {
+    window.render_game_to_text = () => {
+        const activeScenes = phaserGame.scene.getScenes(true).map((scene) => scene.scene.key);
+        return JSON.stringify({
+            coordinateSystem: 'canvas origin top-left, x right, y down',
+            activeScenes,
+            canvas: {
+                width: phaserGame.canvas?.width ?? 0,
+                height: phaserGame.canvas?.height ?? 0,
+            },
+            url: typeof window !== 'undefined' ? window.location.href : '',
+        });
+    };
+
+    if (typeof window.advanceTime !== 'function') {
+        window.advanceTime = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+}
+
+function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
+    const meta = import.meta as { env?: { DEV?: boolean } };
+    if (!meta.env?.DEV || typeof window === 'undefined') {
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const debugScene = params.get('debugScene');
+    if (!debugScene) {
+        return;
+    }
+
+    loadingProgress.complete();
+
+    const eraId = parseChronoEraId(params.get('era') ?? 'present');
+    const zoneId = params.get('zone') ?? 'aether_plains';
+
+    if (debugScene === 'lobby') {
+        const lobbyData: LobbySceneData = {
+            characterId: params.get('characterId') ?? 'debug-chrono-hero',
+            characterName: params.get('name') ?? '크로노 테스터',
+            characterClass: params.get('class') ?? 'time_knight',
+            className: params.get('className') ?? '시간 기사',
+            baseStats: { hp: 420, mp: 120, atk: 34, def: 22 },
+            level: parseDebugLevel(params.get('level')),
+            offlineQa: true,
+        };
+        phaserGame.scene.stop('MainMenuScene');
+        phaserGame.scene.start('LobbyScene', lobbyData);
+        return;
+    }
+
+    if (debugScene === 'world') {
+        phaserGame.scene.stop('MainMenuScene');
+        phaserGame.scene.start('WorldScene', { eraId });
+        return;
+    }
+
+    if (debugScene === 'battle') {
+        phaserGame.scene.stop('MainMenuScene');
+        phaserGame.scene.start('BattleScene', {
+            zoneId,
+            eraId,
+            monsterId: 'debug_chrono_wraith',
+            monsterName: eraId === 'ruined_future' ? '붕괴미래 시간 망령' : '시간 망령',
+            enemyHpMultiplier: eraId === 'ruined_future' ? 1.25 : 1,
+            enemyAttackSpeedMultiplier: eraId === 'ruined_future' ? 1.15 : 1,
+            rewardMultiplier: eraId === 'ruined_future' ? 1.25 : 1,
+            offlineQa: true,
+        });
+    }
+}
+
+function parseChronoEraId(value: string): ChronoEraId {
+    if (value === 'ancient' || value === 'present' || value === 'ruined_future') {
+        return value;
+    }
+    return 'present';
+}
+
+function parseDebugLevel(value: string | null): number {
+    const parsed = Number(value ?? '12');
+    if (!Number.isFinite(parsed) || parsed < 1) {
+        return 12;
+    }
+    return Math.min(99, Math.floor(parsed));
 }

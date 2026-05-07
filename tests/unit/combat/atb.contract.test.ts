@@ -1,12 +1,10 @@
 /**
- * Contract tests — combat/atb (Phase 54 / v1.0.0-rc.3)
+ * Contract tests — combat/atb
  *
- * 본 모듈은 Build 단계 stub 상태 — 함수 본문은 NOT_IMPLEMENTED throw.
- * 본 테스트는:
- *   1) 상수 SSOT 정합성 (ATB_MAX, SPEED_TIER_SCALAR 등)
- *   2) stub 함수가 명시적으로 throw하는지 (실수로 silent 통과 방지)
- *   3) 공유 타입 (shared/types/atb) 계약 정합성
- * 만 검증한다. 실제 동작 검증은 구현 완료 후 별도 PR.
+ * FF6 레퍼런스 ATB 코어의 서버 SSOT 테스트.
+ * - 속도 스탯 → 게이지 충전량
+ * - Active/Wait/Semi 모드 정지 규칙
+ * - ready 큐 순서와 행동 소비 규칙
  */
 import { describe, it, expect } from 'vitest';
 import {
@@ -61,51 +59,115 @@ describe('atb contract — atbTimeline', () => {
     });
   });
 
-  // ─── stub 함수 — 명시적 NOT_IMPLEMENTED ─────────────────────
-  describe('stub 함수 명시적 throw (silent 우회 방지)', () => {
-    it('createATBEntry: NOT_IMPLEMENTED', () => {
-      expect(() => createATBEntry('a1', 50)).toThrow(/NOT_IMPLEMENTED/);
+  describe('동작 계약', () => {
+    it('createATBEntry는 speed를 안전 범위로 clamp하고 기본 상태를 만든다', () => {
+      expect(createATBEntry('hero', 999)).toEqual({
+        actorId: 'hero',
+        gauge: 0,
+        spd: SPD_CLAMP.max,
+        speedMultiplier: 1,
+        frozen: false,
+        alive: true,
+        readyAtTick: null,
+      });
+
+      expect(createATBEntry('slow', -10).spd).toBe(SPD_CLAMP.min);
     });
 
-    it('computeChargeDelta: NOT_IMPLEMENTED', () => {
-      expect(() => computeChargeDelta(50, 1, 3, 100)).toThrow(/NOT_IMPLEMENTED/);
+    it('computeChargeDelta는 FF6식 속도/배속/티어 스칼라로 게이지를 계산한다', () => {
+      expect(computeChargeDelta(50, 1, 3, 1000)).toBe(25);
+      expect(computeChargeDelta(100, 1, 3, 1000)).toBe(50);
+      expect(computeChargeDelta(50, 2, 6, 1000)).toBe(100);
+      expect(computeChargeDelta(50, 1, 3, -100)).toBe(0);
     });
 
-    it('advanceTick: NOT_IMPLEMENTED', () => {
-      expect(() => advanceTick([], [], 'ACTIVE', 3, 100, false)).toThrow(/NOT_IMPLEMENTED/);
+    it('advanceTick는 생존/비동결 유닛만 충전하고 ready 큐를 한 번만 등록한다', () => {
+      const hero = { ...createATBEntry('hero', 50), gauge: 90 };
+      const frozen = { ...createATBEntry('frozen', 50), gauge: 90, frozen: true };
+      const dead = { ...createATBEntry('dead', 50), gauge: 90, alive: false };
+      const entries = [hero, frozen, dead];
+
+      const result = advanceTick(entries, [], 'ACTIVE', 3, 1000, false);
+
+      expect(result.newlyReady).toEqual(['hero']);
+      expect(hero.gauge).toBe(ATB_MAX);
+      expect(hero.readyAtTick).toBe(1);
+      expect(frozen.gauge).toBe(90);
+      expect(dead.gauge).toBe(90);
+
+      const second = advanceTick(entries, [], 'ACTIVE', 3, 1000, false);
+      expect(second.newlyReady).toEqual([]);
+      expect(hero.readyAtTick).toBe(1);
     });
 
-    it('toSnapshots: NOT_IMPLEMENTED', () => {
-      expect(() => toSnapshots([], [])).toThrow(/NOT_IMPLEMENTED/);
+    it('advanceTick는 WAIT 모드에서 메뉴가 열려 있으면 타임라인을 정지한다', () => {
+      const hero = { ...createATBEntry('hero', 50), gauge: 50 };
+      const result = advanceTick([hero], [], 'WAIT', 3, 1000, true);
+
+      expect(result.newlyReady).toEqual([]);
+      expect(hero.gauge).toBe(50);
     });
 
-    it('consumeGauge: NOT_IMPLEMENTED', () => {
-      expect(() => consumeGauge({} as any, 'attack')).toThrow(/NOT_IMPLEMENTED/);
+    it('toSnapshots는 readyAtTick 순서로 queueIndex를 부여하고 캐스트 잔여치를 반영한다', () => {
+      const later = { ...createATBEntry('later', 50), gauge: 100, readyAtTick: 5 };
+      const first = { ...createATBEntry('first', 50), gauge: 100, readyAtTick: 2 };
+      const charging = { ...createATBEntry('charging', 50), gauge: 30 };
+
+      expect(toSnapshots([later, first, charging], [{
+        actorId: 'charging',
+        skillId: 'fire',
+        targetId: 'later',
+        startedAtTick: 10,
+        completesAtTick: 14,
+        interruptible: true,
+      }])).toEqual([
+        { actorId: 'later', gauge: 100, ready: true, queueIndex: 1, castingRemainMs: null },
+        { actorId: 'first', gauge: 100, ready: true, queueIndex: 0, castingRemainMs: null },
+        { actorId: 'charging', gauge: 30, ready: false, queueIndex: null, castingRemainMs: 4 },
+      ]);
+    });
+
+    it('consumeGauge는 커맨드 종류별 ATB 소비를 적용한다', () => {
+      const hero = { ...createATBEntry('hero', 50), gauge: 100, readyAtTick: 1 };
+      consumeGauge(hero, 'defend');
+      expect(hero.gauge).toBe(50);
+      expect(hero.readyAtTick).toBeNull();
+
+      consumeGauge(hero, 'attack');
+      expect(hero.gauge).toBe(0);
     });
   });
 });
 
 describe('atb contract — waitMode', () => {
-  describe('stub 함수 명시적 throw', () => {
-    it('createWaitModeState: NOT_IMPLEMENTED', () => {
-      expect(() => createWaitModeState('ACTIVE')).toThrow(/NOT_IMPLEMENTED/);
+  describe('동작 계약', () => {
+    it('createWaitModeState는 모드와 UI 게이트 기본값을 만든다', () => {
+      expect(createWaitModeState('WAIT')).toEqual({
+        mode: 'WAIT',
+        menuOpen: false,
+        targetSelecting: false,
+        subMenuDepth: 0,
+      });
     });
 
-    it('shouldFreezeTimeline: NOT_IMPLEMENTED', () => {
-      expect(() => shouldFreezeTimeline({} as any)).toThrow(/NOT_IMPLEMENTED/);
+    it('shouldFreezeTimeline은 ACTIVE/WAIT/SEMI 규칙을 구분한다', () => {
+      expect(shouldFreezeTimeline({ ...createWaitModeState('ACTIVE'), menuOpen: true, targetSelecting: true })).toBe(false);
+      expect(shouldFreezeTimeline({ ...createWaitModeState('WAIT'), menuOpen: true })).toBe(true);
+      expect(shouldFreezeTimeline({ ...createWaitModeState('WAIT'), targetSelecting: true })).toBe(true);
+      expect(shouldFreezeTimeline({ ...createWaitModeState('SEMI'), menuOpen: true })).toBe(false);
+      expect(shouldFreezeTimeline({ ...createWaitModeState('SEMI'), targetSelecting: true })).toBe(true);
     });
 
-    it('setMenuOpen: NOT_IMPLEMENTED', () => {
-      expect(() => setMenuOpen({} as any, true)).toThrow(/NOT_IMPLEMENTED/);
-    });
-
-    it('setTargetSelecting: NOT_IMPLEMENTED', () => {
-      expect(() => setTargetSelecting({} as any, true)).toThrow(/NOT_IMPLEMENTED/);
-    });
-
-    it('switchMode: NOT_IMPLEMENTED', () => {
+    it('setMenuOpen/setTargetSelecting/switchMode는 원본을 보존하고 새 상태를 반환한다', () => {
+      const base = createWaitModeState('ACTIVE');
+      const menu = setMenuOpen(base, true);
+      const target = setTargetSelecting(menu, true);
       const next: ATBMode = 'WAIT';
-      expect(() => switchMode({} as any, next)).toThrow(/NOT_IMPLEMENTED/);
+
+      expect(base.menuOpen).toBe(false);
+      expect(menu.menuOpen).toBe(true);
+      expect(target.targetSelecting).toBe(true);
+      expect(switchMode(target, next)).toEqual({ ...target, mode: 'WAIT' });
     });
   });
 });

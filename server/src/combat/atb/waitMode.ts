@@ -15,8 +15,13 @@ export interface WaitModeState {
 }
 
 /** 초기 상태 팩토리. */
-export function createWaitModeState(_mode: ATBMode): WaitModeState {
-  throw new Error('NOT_IMPLEMENTED: createWaitModeState');
+export function createWaitModeState(mode: ATBMode): WaitModeState {
+  return {
+    mode,
+    menuOpen: false,
+    targetSelecting: false,
+    subMenuDepth: 0,
+  };
 }
 
 /**
@@ -25,24 +30,37 @@ export function createWaitModeState(_mode: ATBMode): WaitModeState {
  * - WAIT:   menuOpen || targetSelecting 이면 true.
  * - SEMI:   targetSelecting 에만 true.
  */
-export function shouldFreezeTimeline(_state: WaitModeState): boolean {
-  throw new Error('NOT_IMPLEMENTED: shouldFreezeTimeline');
+export function shouldFreezeTimeline(state: WaitModeState): boolean {
+  switch (state.mode) {
+    case 'ACTIVE':
+      return false;
+    case 'WAIT':
+      return state.menuOpen || state.targetSelecting || state.subMenuDepth > 0;
+    case 'SEMI':
+      return state.targetSelecting;
+    default:
+      return false;
+  }
 }
 
 /** 메뉴 열림/닫힘 반영. */
-export function setMenuOpen(_state: WaitModeState, _open: boolean): WaitModeState {
-  throw new Error('NOT_IMPLEMENTED: setMenuOpen');
+export function setMenuOpen(state: WaitModeState, open: boolean): WaitModeState {
+  return {
+    ...state,
+    menuOpen: open,
+    subMenuDepth: open ? state.subMenuDepth : 0,
+  };
 }
 
 /** 타겟 선택 진입/종료 반영. */
 export function setTargetSelecting(
-  _state: WaitModeState,
-  _selecting: boolean,
+  state: WaitModeState,
+  selecting: boolean,
 ): WaitModeState {
-  throw new Error('NOT_IMPLEMENTED: setTargetSelecting');
+  return { ...state, targetSelecting: selecting };
 }
 
 /** 모드 런타임 전환 (옵션 메뉴에서 변경). */
-export function switchMode(_state: WaitModeState, _next: ATBMode): WaitModeState {
-  throw new Error('NOT_IMPLEMENTED: switchMode');
+export function switchMode(state: WaitModeState, next: ATBMode): WaitModeState {
+  return { ...state, mode: next };
 }

@@ -12,6 +12,7 @@
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
+import type { QuestData } from '../network/NetworkManager';
 import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
 
 // ── 타입 ────────────────────────────────────────────────────
@@ -23,6 +24,7 @@ export interface LobbySceneData {
   className: string;
   baseStats: { hp: number; mp: number; atk: number; def: number };
   level?: number;
+  offlineQa?: boolean;
 }
 
 interface NpcEntry {
@@ -33,6 +35,8 @@ interface NpcEntry {
   y: number;
   color: number;
 }
+
+type QuestPanelSource = 'server' | 'local';
 
 // ── 상수 ────────────────────────────────────────────────────
 
@@ -55,6 +59,40 @@ const NPC_SPRITE_MAP: Record<string, string> = {
   party_recruit: '13_hashir_sprite', // 모험가 길드 → 하시르 스프라이트
   elder: '04_mateus_sprite',       // 장로 마테우스
 };
+
+const QUEST_STATUS_STYLE: Record<QuestData['status'], { label: string; color: string }> = {
+  available: { label: '수주 가능', color: '#88ff88' },
+  active: { label: '진행중', color: '#ffcc44' },
+  complete: { label: '완료 가능', color: '#88ccff' },
+  turned_in: { label: '완료됨', color: '#888888' },
+};
+
+const FALLBACK_QUESTS: QuestData[] = [
+  {
+    id: 'chrono_echoes',
+    name: '시간의 잔향',
+    description: '기억의 게시판에 남은 시간 파편을 조사한다.',
+    status: 'available',
+    objectives: [{ desc: '기억의 게시판 조사', current: 0, target: 1 }],
+    rewards: { exp: 120, gold: 80, items: ['시간 파편'] },
+  },
+  {
+    id: 'forest_clockwork',
+    name: '숲의 시계장치',
+    description: '실반헤임 숲에 나타난 시간 왜곡 몬스터를 추적한다.',
+    status: 'active',
+    objectives: [{ desc: '시간 왜곡 흔적 수집', current: 2, target: 5 }],
+    rewards: { exp: 240, gold: 150 },
+  },
+  {
+    id: 'ruined_future_signal',
+    name: '붕괴미래의 신호',
+    description: '미래 시대에서 전송된 구조 신호의 좌표를 복원한다.',
+    status: 'complete',
+    objectives: [{ desc: '좌표 복원', current: 3, target: 3 }],
+    rewards: { exp: 360, gold: 220, items: ['공명 코어'] },
+  },
+];
 
 // ── LobbyScene ──────────────────────────────────────────────
 
@@ -132,6 +170,11 @@ export class LobbyScene extends Phaser.Scene {
   // ── P25-03: 서버 연결 ───────────────────────────────────
 
   private _connectToServer(): void {
+    if (this.characterData?.offlineQa) {
+      this.connectionIndicator.setText('● 로컬 QA').setColor('#ffcc44');
+      return;
+    }
+
     // 소켓 연결
     if (!networkManager.isConnected) {
       networkManager.connect();
@@ -226,6 +269,10 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(1, 0);
 
     // 서버에서 실제 골드 조회
+    if (this.characterData?.offlineQa) {
+      this.goldText.setText('💰 999 Gold');
+      return;
+    }
     this._fetchGold();
   }
 
@@ -814,17 +861,165 @@ export class LobbyScene extends Phaser.Scene {
   }
 
   private async _showQuests(): Promise<void> {
-    if (!this.characterData.characterId) {
-      this._showNotification('캐릭터 ID가 없습니다.');
+    if (this.characterData?.offlineQa) {
+      this._showQuestPanel(FALLBACK_QUESTS, 'local');
+      this._showNotification('로컬 QA 퀘스트를 표시합니다.');
       return;
     }
-    try {
-      const quests = await networkManager.getQuests(this.characterData.characterId);
-      console.log('[Lobby] 퀘스트:', quests);
-      this._showNotification(`퀘스트: ${quests.length}개 활성`);
-    } catch {
-      this._showNotification('퀘스트 로드 실패');
+
+    const characterId = this.characterData?.characterId;
+    if (!characterId) {
+      this._showQuestPanel(FALLBACK_QUESTS, 'local');
+      this._showNotification('캐릭터 ID가 없어 로컬 퀘스트를 표시합니다.');
+      return;
     }
+
+    try {
+      const quests = await networkManager.getQuests(characterId);
+      console.log('[Lobby] 퀘스트:', quests);
+      this._showQuestPanel(quests, 'server');
+      this._showNotification(`퀘스트: ${quests.length}개 표시`);
+    } catch {
+      this._showQuestPanel(FALLBACK_QUESTS, 'local');
+      this._showNotification('서버 연결 없음: 로컬 퀘스트를 표시합니다.');
+    }
+  }
+
+  private _showQuestPanel(quests: QuestData[], source: QuestPanelSource): void {
+    if (this.dialoguePanel) {
+      this.dialoguePanel.destroy();
+      this.dialoguePanel = null;
+    }
+
+    const { width, height } = this.cameras.main;
+    const panel = this.add.container(width / 2, height / 2);
+    this._registerModalPanel(panel);
+
+    const panelW = 640;
+    const panelH = 440;
+    const bg = this.add.rectangle(0, 0, panelW, panelH, 0x0a0a1a, 0.96)
+      .setStrokeStyle(2, 0xcccc44);
+    panel.add(bg);
+
+    const sourceLabel = source === 'server' ? '서버 동기화' : '로컬 QA 데이터';
+    panel.add(this.add.text(0, -panelH / 2 + 24, `📜 퀘스트 (${sourceLabel})`, {
+      fontSize: '18px', color: '#ffdd66', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setOrigin(0.5));
+
+    const visibleQuests = quests.slice(0, 4);
+    if (visibleQuests.length === 0) {
+      panel.add(this.add.text(0, 0, '표시할 퀘스트가 없습니다.', {
+        fontSize: '13px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }).setOrigin(0.5));
+    }
+
+    visibleQuests.forEach((quest, i) => {
+      const y = -panelH / 2 + 70 + i * 78;
+      const status = QUEST_STATUS_STYLE[quest.status] ?? QUEST_STATUS_STYLE.available;
+      const objective = quest.objectives[0];
+      const progress = objective
+        ? `${objective.desc} ${objective.current}/${objective.target}`
+        : '목표 없음';
+      const rewardItems = quest.rewards.items?.length
+        ? ` / ${quest.rewards.items.join(', ')}`
+        : '';
+
+      panel.add(this.add.rectangle(0, y + 32, panelW - 52, 1, 0x334433, 0.8));
+      panel.add(this.add.text(-285, y, quest.name, {
+        fontSize: '14px', color: '#ffffff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }));
+      panel.add(this.add.text(-285, y + 22, quest.description, {
+        fontSize: '11px', color: '#bbbbbb', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+        wordWrap: { width: 360 },
+      }));
+      panel.add(this.add.text(-285, y + 42, progress, {
+        fontSize: '11px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }));
+      panel.add(this.add.text(-25, y + 42, `EXP ${quest.rewards.exp} / ${quest.rewards.gold}G${rewardItems}`, {
+        fontSize: '11px', color: '#ffcc44', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }));
+      panel.add(this.add.text(210, y, status.label, {
+        fontSize: '12px', color: status.color, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }));
+
+      const actionText = this._getQuestActionText(quest.status);
+      const actionBtn = this.add.text(210, y + 30, actionText, {
+        fontSize: '12px',
+        color: quest.status === 'turned_in' || quest.status === 'active' ? '#777777' : '#88ff88',
+        fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }).setInteractive({ useHandCursor: quest.status === 'available' || quest.status === 'complete' });
+
+      if (quest.status === 'available') {
+        actionBtn.on('pointerdown', async () => {
+          playSfx(this, UI_SFX.CONFIRM);
+          await this._acceptQuestFromPanel(quest, source);
+          actionBtn.setText('[ 진행중 ]').setColor('#777777').disableInteractive();
+        });
+      } else if (quest.status === 'complete') {
+        actionBtn.on('pointerdown', async () => {
+          playSfx(this, UI_SFX.CONFIRM);
+          await this._completeQuestFromPanel(quest, source);
+          actionBtn.setText('[ 완료됨 ]').setColor('#777777').disableInteractive();
+        });
+      }
+      panel.add(actionBtn);
+    });
+
+    if (quests.length > visibleQuests.length) {
+      panel.add(this.add.text(0, panelH / 2 - 58, `... 외 ${quests.length - visibleQuests.length}개`, {
+        fontSize: '11px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }).setOrigin(0.5));
+    }
+
+    const refreshBtn = this.add.text(-80, panelH / 2 - 26, '[ 새로고침 ]', {
+      fontSize: '13px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    refreshBtn.on('pointerdown', () => {
+      playSfx(this, UI_SFX.CLICK);
+      panel.destroy();
+      void this._showQuests();
+    });
+    panel.add(refreshBtn);
+
+    const closeBtn = this.add.text(90, panelH / 2 - 26, '[ 닫기 ]', {
+      fontSize: '13px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => {
+      playSfx(this, UI_SFX.CANCEL);
+      panel.destroy();
+    });
+    panel.add(closeBtn);
+  }
+
+  private _getQuestActionText(status: QuestData['status']): string {
+    if (status === 'available') return '[ 수주 ]';
+    if (status === 'complete') return '[ 완료 ]';
+    if (status === 'turned_in') return '[ 완료됨 ]';
+    return '[ 진행중 ]';
+  }
+
+  private async _acceptQuestFromPanel(quest: QuestData, source: QuestPanelSource): Promise<void> {
+    if (source === 'server' && this.characterData?.characterId) {
+      try {
+        await networkManager.acceptQuest(quest.id, this.characterData.characterId);
+      } catch {
+        this._showNotification('서버 수주 실패: 로컬 진행 처리');
+        return;
+      }
+    }
+    this._showNotification(`${quest.name} 수주 완료`);
+  }
+
+  private async _completeQuestFromPanel(quest: QuestData, source: QuestPanelSource): Promise<void> {
+    if (source === 'server' && this.characterData?.characterId) {
+      try {
+        await networkManager.completeQuest(quest.id, this.characterData.characterId);
+      } catch {
+        this._showNotification('서버 완료 실패: 로컬 완료 처리');
+        return;
+      }
+    }
+    this._showNotification(`${quest.name} 완료 보상 지급`);
   }
 
   // ── 미니맵 ───────────────────────────────────────────────

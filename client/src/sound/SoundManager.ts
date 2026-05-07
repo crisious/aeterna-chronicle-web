@@ -31,6 +31,18 @@ const DEFAULT_SETTINGS: SoundSettings = {
 
 const SETTINGS_STORAGE_KEY = 'aeterna_sound_settings';
 
+function resolveSoundPath(path: string): string {
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('data:') ||
+    path.startsWith('assets/')
+  ) {
+    return path;
+  }
+  return path.startsWith('audio/') ? `assets/${path}` : path;
+}
+
 // ─── SFX 풀링 설정 ─────────────────────────────────────────────
 /** 동일 SFX 동시 재생 제한 */
 const MAX_CONCURRENT_SFX = 8;
@@ -106,7 +118,7 @@ export class SoundManager {
         (entry.priority ?? 'deferred') === 'essential' &&
         !this.scene.cache.audio.exists(entry.key)
       ) {
-        this.scene.load.audio(entry.key, entry.path);
+        this.scene.load.audio(entry.key, resolveSoundPath(entry.path));
       }
     }
   }
@@ -126,7 +138,7 @@ export class SoundManager {
     this.setupLoadErrorHandler();
 
     for (const entry of deferred) {
-      this.scene.load.audio(entry.key, entry.path);
+      this.scene.load.audio(entry.key, resolveSoundPath(entry.path));
     }
 
     this.scene.load.once('complete', () => {
@@ -154,7 +166,7 @@ export class SoundManager {
     if (!entry) return Promise.resolve();
 
     const promise = new Promise<void>((resolve) => {
-      this.scene.load.audio(key, entry.path);
+      this.scene.load.audio(key, resolveSoundPath(entry.path));
 
       this.scene.load.once(`filecomplete-audio-${key}`, () => {
         this.loadedKeys.add(key);

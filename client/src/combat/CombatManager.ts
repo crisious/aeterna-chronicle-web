@@ -127,6 +127,10 @@ type OnBuffUpdate = (data: BuffUpdatePayload) => void;
 type OnStatusEffectUpdate = (data: StatusEffectUpdatePayload) => void;
 type OnComboAchieved = (data: ComboAchievedPayload) => void;
 
+interface CombatManagerOptions {
+  useSocket?: boolean;
+}
+
 // ─── CombatManager ─────────────────────────────────────────────
 
 export class CombatManager {
@@ -144,9 +148,11 @@ export class CombatManager {
   private onStatusEffectUpdate?: OnStatusEffectUpdate;
   private onComboAchieved?: OnComboAchieved;
 
-  constructor(battleId?: string) {
+  constructor(battleId?: string, options: CombatManagerOptions = {}) {
     this.battleId = battleId;
-    this._connectSocket();
+    if (options.useSocket ?? true) {
+      this._connectSocket();
+    }
   }
 
   // ─── 소켓 연결 ────────────────────────────────────────────────

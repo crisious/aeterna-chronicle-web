@@ -11,6 +11,7 @@
  *   bootstrap/shutdownManager.ts — graceful shutdown 로직
  */
 
+import './bootstrap/loadEnv';
 import { bootstrap } from './bootstrap/compositionRoot';
 
 bootstrap();

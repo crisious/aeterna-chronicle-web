@@ -50,8 +50,16 @@ export interface ATBEntry {
 }
 
 /** 엔트리 초기값 생성. */
-export function createATBEntry(_actorId: string, _spd: number): ATBEntry {
-  throw new Error('NOT_IMPLEMENTED: createATBEntry');
+export function createATBEntry(actorId: string, spd: number): ATBEntry {
+  return {
+    actorId,
+    gauge: 0,
+    spd: clampSpeed(spd),
+    speedMultiplier: 1,
+    frozen: false,
+    alive: true,
+    readyAtTick: null,
+  };
 }
 
 // ─── 충전율 계산 ───────────────────────────────────────────────────
@@ -61,12 +69,27 @@ export function createATBEntry(_actorId: string, _spd: number): ATBEntry {
  * FF6 공식 재매핑: delta = base * (spd/50) * speedMult * tierScalar * (tickMs/1000).
  */
 export function computeChargeDelta(
-  _spd: number,
-  _speedMultiplier: number,
-  _tier: ATBSpeedTier,
-  _tickMs: number,
+  spd: number,
+  speedMultiplier: number,
+  tier: ATBSpeedTier,
+  tickMs: number,
 ): ATBGaugeValue {
-  throw new Error('NOT_IMPLEMENTED: computeChargeDelta');
+  if (!Number.isFinite(tickMs) || tickMs <= 0) {
+    return 0;
+  }
+
+  const clampedSpd = clampSpeed(spd);
+  const safeSpeedMultiplier = Number.isFinite(speedMultiplier)
+    ? Math.max(0, speedMultiplier)
+    : 1;
+  const scalar = SPEED_TIER_SCALAR[tier] ?? SPEED_TIER_SCALAR[3];
+  const delta = ATB_BASE_CHARGE_PER_SEC
+    * (clampedSpd / 50)
+    * safeSpeedMultiplier
+    * scalar
+    * (tickMs / 1000);
+
+  return roundGauge(Math.min(ATB_MAX, Math.max(0, delta)));
 }
 
 // ─── Tick 진행 ─────────────────────────────────────────────────────
@@ -84,24 +107,73 @@ export interface TickAdvanceResult {
  * - 메뉴 열림(mode==WAIT 및 ui.menuOpen)이면 충전 정지.
  */
 export function advanceTick(
-  _entries: ATBEntry[],
-  _casts: CastReservation[],
-  _mode: ATBMode,
-  _tier: ATBSpeedTier,
-  _tickMs: number,
-  _menuOpen: boolean,
+  entries: ATBEntry[],
+  casts: CastReservation[],
+  mode: ATBMode,
+  tier: ATBSpeedTier,
+  tickMs: number,
+  menuOpen: boolean,
 ): TickAdvanceResult {
-  throw new Error('NOT_IMPLEMENTED: advanceTick');
+  const completedCasts = collectCompletedCasts(casts);
+  if (mode === 'WAIT' && menuOpen) {
+    return { newlyReady: [], completedCasts: [] };
+  }
+
+  const newlyReady: string[] = [];
+  let nextReadyTick = getNextReadyTick(entries);
+
+  for (const entry of entries) {
+    if (!entry.alive || entry.frozen || entry.gauge >= ATB_MAX) {
+      continue;
+    }
+
+    entry.gauge = roundGauge(Math.min(
+      ATB_MAX,
+      entry.gauge + computeChargeDelta(entry.spd, entry.speedMultiplier, tier, tickMs),
+    ));
+
+    if (entry.gauge >= ATB_MAX && entry.readyAtTick === null) {
+      entry.readyAtTick = nextReadyTick;
+      nextReadyTick += 1;
+      newlyReady.push(entry.actorId);
+    }
+  }
+
+  return { newlyReady, completedCasts };
 }
 
 // ─── 스냅샷 직렬화 ─────────────────────────────────────────────────
 
 /** 네트워크 전송용 스냅샷 배열로 변환. */
 export function toSnapshots(
-  _entries: ATBEntry[],
-  _casts: CastReservation[],
+  entries: ATBEntry[],
+  casts: CastReservation[],
 ): ATBSnapshot[] {
-  throw new Error('NOT_IMPLEMENTED: toSnapshots');
+  const queueIndexByActor = new Map<string, number>();
+  entries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.gauge >= ATB_MAX && entry.readyAtTick !== null)
+    .sort((a, b) => {
+      const tickDelta = (a.entry.readyAtTick ?? Number.MAX_SAFE_INTEGER)
+        - (b.entry.readyAtTick ?? Number.MAX_SAFE_INTEGER);
+      return tickDelta !== 0 ? tickDelta : a.index - b.index;
+    })
+    .forEach(({ entry }, queueIndex) => {
+      queueIndexByActor.set(entry.actorId, queueIndex);
+    });
+
+  return entries.map((entry) => {
+    const cast = casts.find((c) => c.actorId === entry.actorId);
+    return {
+      actorId: entry.actorId,
+      gauge: roundGauge(entry.gauge),
+      ready: entry.gauge >= ATB_MAX,
+      queueIndex: queueIndexByActor.get(entry.actorId) ?? null,
+      castingRemainMs: cast
+        ? Math.max(0, cast.completesAtTick - cast.startedAtTick)
+        : null,
+    };
+  });
 }
 
 // ─── 행동 소비 ─────────────────────────────────────────────────────
@@ -113,8 +185,34 @@ export function toSnapshots(
  * - 방어: gauge = 50 (반틱 유지, FF6 Defend 유사).
  */
 export function consumeGauge(
-  _entry: ATBEntry,
-  _commandKind: 'attack' | 'skill' | 'item' | 'defend' | 'flee',
+  entry: ATBEntry,
+  commandKind: 'attack' | 'skill' | 'item' | 'defend' | 'flee',
 ): void {
-  throw new Error('NOT_IMPLEMENTED: consumeGauge');
+  entry.gauge = commandKind === 'defend' ? ATB_MAX / 2 : 0;
+  entry.readyAtTick = null;
+}
+
+function clampSpeed(spd: number): number {
+  if (!Number.isFinite(spd)) {
+    return 50;
+  }
+  return Math.min(SPD_CLAMP.max, Math.max(SPD_CLAMP.min, Math.round(spd)));
+}
+
+function roundGauge(value: number): ATBGaugeValue {
+  return Math.round(value * 10000) / 10000;
+}
+
+function getNextReadyTick(entries: ATBEntry[]): number {
+  let maxReadyTick = 0;
+  for (const entry of entries) {
+    if (entry.readyAtTick !== null && entry.readyAtTick > maxReadyTick) {
+      maxReadyTick = entry.readyAtTick;
+    }
+  }
+  return maxReadyTick + 1;
+}
+
+function collectCompletedCasts(casts: CastReservation[]): CastReservation[] {
+  return casts.filter((cast) => cast.completesAtTick <= cast.startedAtTick + 1);
 }

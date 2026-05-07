@@ -13,12 +13,20 @@ import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
 import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
+import { resolveZoneBackground, type ZoneBackgroundDescriptor } from '../data/zoneBackgrounds';
+import {
+  buildChronoBattleSeed,
+  getChronoEra,
+  projectZoneToEra,
+  type ChronoEraId,
+} from '../time/ChronoTimeline';
 
 /** GameScene 전환 시 전달 데이터 */
 interface GameSceneData {
   zoneId?: string;
   zoneName?: string;
   characterId?: string;
+  eraId?: ChronoEraId;
 }
 
 // ── 존 → 챕터 타이틀 카드 매핑 ───────────────────────────────
@@ -31,6 +39,7 @@ interface ChapterTitleInfo {
 const ZONE_CHAPTER_MAP: Record<string, ChapterTitleInfo> = {
   aether_plains:     { imageKey: 'ch_title_1', imagePath: 'assets/cg/chapters/ch1_erebos.png',      label: 'Chapter 1 — 에레보스' },
   memory_forest:     { imageKey: 'ch_title_2', imagePath: 'assets/cg/chapters/ch2_sylvanheim.png',  label: 'Chapter 2 — 실반헤임' },
+  malatus_sanctuary: { imageKey: 'ch_title_2', imagePath: 'assets/cg/chapters/ch2_sylvanheim.png',  label: 'Chapter 2 — 말라투스 성소' },
   shadow_gorge:      { imageKey: 'ch_title_3', imagePath: 'assets/cg/chapters/ch3_solaris.png',     label: 'Chapter 3 — 솔라리스' },
   forgotten_citadel: { imageKey: 'ch_title_4', imagePath: 'assets/cg/chapters/ch4_argentium.png',   label: 'Chapter 4 — 아르겐티움' },
   chrono_spire:      { imageKey: 'ch_title_5', imagePath: 'assets/cg/chapters/ch5_plateau.png',     label: 'Chapter 5 — 망각의 고원' },
@@ -62,8 +71,10 @@ export class GameScene extends Phaser.Scene {
   // P25-04: 존 + 소켓 데이터
   private currentZoneId = 'aether_plains';
   private currentZoneName = '에테르 평원';
+  private currentEraId: ChronoEraId = 'present';
   private zoneInfo: ZoneInfo | null = null;
   private remoteEntities: Map<string, RemoteEntity> = new Map();
+  private zoneBackground: ZoneBackgroundDescriptor = resolveZoneBackground('aether_plains');
   private zoneLabel!: Phaser.GameObjects.Text;
   private connectionLabel!: Phaser.GameObjects.Text;
 
@@ -76,7 +87,9 @@ export class GameScene extends Phaser.Scene {
 
   init(data: GameSceneData): void {
     if (data?.zoneId) this.currentZoneId = data.zoneId;
-    if (data?.zoneName) this.currentZoneName = data.zoneName;
+    if (data?.eraId) this.currentEraId = data.eraId;
+    this.currentZoneName = data?.zoneName ?? projectZoneToEra(this.currentZoneId, this.currentEraId).displayName;
+    this.zoneBackground = resolveZoneBackground(this.currentZoneId, this.currentEraId);
   }
 
   preload(): void {
@@ -92,16 +105,13 @@ export class GameScene extends Phaser.Scene {
     this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_battle/04_mateus_sprite.png');
     this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_battle/01_cryo_sprite.png');
 
-    // 존 배경 이미지 preload
-    const ZONE_BG: Record<string, string> = {
-      aether_plains: 'ERB', memory_forest: 'SYL', shadow_gorge: 'ABY',
-      crystal_cave: 'NOR', forgotten_citadel: 'ARG', chrono_spire: 'TEM',
-      erebos: 'ERB', sylvanheim: 'SYL', solaris: 'SOL', boreal: 'NOR',
-      argentium: 'ARG', britalia: 'BRI', plateau_oblivion: 'OBL', fog_sea: 'FOG',
-    };
-    const bgPrefix = ZONE_BG[this.currentZoneId] ?? 'ERB';
-    this.load.image('zone_bg_far', `assets/generated/environment/backgrounds/${bgPrefix}-BG-FAR-DAY.png`);
-    this.load.image('zone_bg_sky', `assets/generated/environment/backgrounds/${bgPrefix}-BG-SKY-DAY.png`);
+    // 존/시대별 고유 텍스처 키 사용: Phaser 캐시가 이전 지역 배경을 재사용하지 않게 한다.
+    if (!this.textures.exists(this.zoneBackground.farKey)) {
+      this.load.image(this.zoneBackground.farKey, this.zoneBackground.farPath);
+    }
+    if (!this.textures.exists(this.zoneBackground.skyKey)) {
+      this.load.image(this.zoneBackground.skyKey, this.zoneBackground.skyPath);
+    }
 
     // 몬스터 이미지 preload 제거 — 프로그래매틱 아이콘 사용
 
@@ -245,7 +255,8 @@ export class GameScene extends Phaser.Scene {
 
     // 존 라벨 — 반드시 소켓 이벤트 등록 전에 생성해야 함
     const { width } = this.cameras.main;
-    this.zoneLabel = this.add.text(width / 2, 20, `📍 ${this.currentZoneName}`, {
+    const era = getChronoEra(this.currentEraId);
+    this.zoneLabel = this.add.text(width / 2, 20, `📍 ${this.currentZoneName}  /  ${era.label}`, {
       fontSize: '16px', color: '#88cc88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setScrollFactor(0).setDepth(10000).setOrigin(0.5, 0);
 
@@ -258,7 +269,7 @@ export class GameScene extends Phaser.Scene {
     this._setupSocketEvents();
 
     // HUD 안내 텍스트
-    this.add.text(20, 20, '[WASD] 이동  [1~6] 스킬  [T] 대화  [M] 몬스터', {
+    this.add.text(20, 20, '[WASD] 이동  [1~6] 스킬  [T] 대화  몬스터 클릭: ATB 전투', {
       fontSize: '14px', color: '#F0F0F0', fontFamily: 'Noto Sans KR',
     }).setScrollFactor(0).setDepth(10000);
 
@@ -336,7 +347,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.zoneInfo) {
-      this.zoneLabel?.setText(`📍 ${this.zoneInfo.name}`);
+      const projection = projectZoneToEra(this.currentZoneId, this.currentEraId);
+      this.zoneLabel?.setText(`📍 ${projection.displayName}  /  ${getChronoEra(this.currentEraId).label}`);
 
       this.zoneInfo.npcs?.forEach((npc, i) => {
         this._spawnNpc(npc.id, npc.name, 300 + i * 200, 400);
@@ -388,8 +400,9 @@ export class GameScene extends Phaser.Scene {
   private static readonly MONSTER_EMOJIS = ['💀', '🐺', '👻', '🕷', '🪨', '🐛', '🦇', '🔥'];
 
   private _spawnMonster(id: string, name: string, x: number, y: number): void {
+    const battleSeed = buildChronoBattleSeed(this.currentZoneId, this.currentEraId, id, name);
     // 이름 해시 기반 결정적 색상 + 이모지
-    const hash = name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const hash = battleSeed.monsterName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
     const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
 
@@ -400,19 +413,23 @@ export class GameScene extends Phaser.Scene {
     const emojiText = this.add.text(x, y, emoji, { fontSize: '22px' }).setOrigin(0.5);
     sprite.once('destroy', () => emojiText.destroy());
 
-    const tag = this.add.text(x, y - 34, name, {
-      fontSize: '10px', color: '#ff8888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    const tag = this.add.text(x, y - 34, battleSeed.monsterName, {
+      fontSize: '10px', color: `#${getChronoEra(this.currentEraId).tintColor.toString(16).padStart(6, '0')}`, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
     sprite.on('pointerdown', () => {
       this.scene.start('BattleScene', {
         zoneId: this.currentZoneId,
+        eraId: this.currentEraId,
         monsterId: id,
-        monsterName: name,
+        monsterName: battleSeed.monsterName,
+        enemyHpMultiplier: battleSeed.enemyHpMultiplier,
+        enemyAttackSpeedMultiplier: battleSeed.enemyAttackSpeedMultiplier,
+        rewardMultiplier: battleSeed.rewardMultiplier,
       });
     });
 
-    this.remoteEntities.set(id, { id, name, sprite, nameTag: tag, isMonster: true });
+    this.remoteEntities.set(id, { id, name: battleSeed.monsterName, sprite, nameTag: tag, isMonster: true });
   }
 
   // ── P25-04: 소켓 이벤트 ─────────────────────────────────
@@ -529,8 +546,8 @@ export class GameScene extends Phaser.Scene {
 
     // 배경 이미지 — 월드 전체를 덮도록 스케일
     const { width: vw, height: vh } = this.cameras.main;
-    if (this.textures.exists('zone_bg_far')) {
-      const bg = this.add.image(worldW / 2, worldH / 2, 'zone_bg_far')
+    if (this.textures.exists(this.zoneBackground.farKey)) {
+      const bg = this.add.image(worldW / 2, worldH / 2, this.zoneBackground.farKey)
         .setOrigin(0.5, 0.5)
         .setDepth(-10);
       // 월드 전체를 덮도록 스케일
@@ -539,8 +556,8 @@ export class GameScene extends Phaser.Scene {
       bg.setScale(Math.max(scaleX, scaleY));
     }
     // 하늘 배경 (카메라 고정)
-    if (this.textures.exists('zone_bg_sky')) {
-      const sky = this.add.image(vw / 2, vh / 2, 'zone_bg_sky')
+    if (this.textures.exists(this.zoneBackground.skyKey)) {
+      const sky = this.add.image(vw / 2, vh / 2, this.zoneBackground.skyKey)
         .setOrigin(0.5, 0.5)
         .setScrollFactor(0)
         .setDepth(-20);
@@ -548,6 +565,10 @@ export class GameScene extends Phaser.Scene {
       const sy = vh / sky.height;
       sky.setScale(Math.max(sx, sy));
     }
+
+    const projection = projectZoneToEra(this.currentZoneId, this.currentEraId);
+    this.add.rectangle(worldW / 2, worldH / 2, worldW, worldH, projection.tintColor, 0.08)
+      .setDepth(-5);
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
@@ -609,7 +630,10 @@ export class GameScene extends Phaser.Scene {
 
   private createPlayer(): void {
     this.player = this.physics.add.sprite(640, 360, 'player_sprite');
-    // 48x64 원본 그대로 표시 (setDisplaySize 제거 — 원본이 이미 48x64)
+    // 필드용 표시 크기 고정: 현재 에테르 기사 원본은 256x384 전신 일러스트라 원본 크기 표시 시 시야를 가림.
+    const targetHeight = 112;
+    const scale = Math.min(1, targetHeight / Math.max(1, this.player.height));
+    this.player.setScale(scale).setDepth(20);
     this.player.setCollideWorldBounds(true);
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
@@ -643,6 +667,9 @@ export class GameScene extends Phaser.Scene {
 
       this.input.keyboard.on('keydown-T', () => {
         this.hudOrchestrator?.toggleSampleDialogue();
+      });
+      this.input.keyboard.on('keydown-ESC', () => {
+        this.scene.start('WorldScene');
       });
     }
   }

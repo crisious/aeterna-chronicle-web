@@ -32,65 +32,100 @@ interface WorldTeleportPayload {
 
 const userCurrentZone = new Map<string, string>();
 
+function isZoneTransitionPayload(payload: unknown): payload is WorldMovePayload {
+  if (!payload || typeof payload !== 'object') return false;
+  const data = payload as Partial<WorldMovePayload>;
+  return typeof data.userId === 'string'
+    && data.userId.trim().length > 0
+    && typeof data.targetZoneCode === 'string'
+    && data.targetZoneCode.trim().length > 0;
+}
+
+function ackInvalidPayload(ack: ((res: unknown) => void) | undefined): void {
+  if (typeof ack === 'function') {
+    ack({ ok: false, error: 'userId, targetZoneCode는 필수입니다.' });
+  }
+}
+
 // ─── 핸들러 등록 ────────────────────────────────────────────────
 
 export function setupWorldSocketHandlers(io: Server): void {
   io.on('connection', (socket: Socket) => {
     // ── 존 이동 ──
     socket.on('world:move', async (payload: WorldMovePayload, ack?: (res: unknown) => void) => {
+      if (!isZoneTransitionPayload(payload)) {
+        ackInvalidPayload(ack);
+        return;
+      }
+
       const { userId, targetZoneCode } = payload;
 
-      // 이동 전 현재 존 퇴장 브로드캐스트
-      const prevZone = userCurrentZone.get(userId);
-      if (prevZone) {
-        socket.to(zoneRoom(prevZone)).emit('world:leave', { userId, zoneCode: prevZone });
-        await socket.leave(zoneRoom(prevZone));
+      try {
+        // 이동 전 현재 존 퇴장 브로드캐스트
+        const prevZone = userCurrentZone.get(userId);
+        if (prevZone) {
+          socket.to(zoneRoom(prevZone)).emit('world:leave', { userId, zoneCode: prevZone });
+          await socket.leave(zoneRoom(prevZone));
+        }
+
+        // 이동 처리
+        const result = await worldManager.moveToZone(userId, targetZoneCode);
+
+        if (result.ok) {
+          // 새 존 Room 참가
+          await socket.join(zoneRoom(targetZoneCode));
+          userCurrentZone.set(userId, targetZoneCode);
+
+          // 진입 브로드캐스트 (자신 제외)
+          socket.to(zoneRoom(targetZoneCode)).emit('world:enter', {
+            userId,
+            zone: result.zone,
+            position: result.position,
+          });
+        }
+
+        if (typeof ack === 'function') ack(result);
+      } catch (err) {
+        console.error('[WorldSocket] world:move 처리 실패:', err);
+        if (typeof ack === 'function') ack({ ok: false, error: '월드 이동 처리 중 오류가 발생했습니다.' });
       }
-
-      // 이동 처리
-      const result = await worldManager.moveToZone(userId, targetZoneCode);
-
-      if (result.ok) {
-        // 새 존 Room 참가
-        await socket.join(zoneRoom(targetZoneCode));
-        userCurrentZone.set(userId, targetZoneCode);
-
-        // 진입 브로드캐스트 (자신 제외)
-        socket.to(zoneRoom(targetZoneCode)).emit('world:enter', {
-          userId,
-          zone: result.zone,
-          position: result.position,
-        });
-      }
-
-      if (typeof ack === 'function') ack(result);
     });
 
     // ── 텔레포트 ──
     socket.on('world:teleport', async (payload: WorldTeleportPayload, ack?: (res: unknown) => void) => {
+      if (!isZoneTransitionPayload(payload)) {
+        ackInvalidPayload(ack);
+        return;
+      }
+
       const { userId, targetZoneCode } = payload;
 
-      // 이전 존 퇴장
-      const prevZone = userCurrentZone.get(userId);
-      if (prevZone) {
-        socket.to(zoneRoom(prevZone)).emit('world:leave', { userId, zoneCode: prevZone });
-        await socket.leave(zoneRoom(prevZone));
+      try {
+        // 이전 존 퇴장
+        const prevZone = userCurrentZone.get(userId);
+        if (prevZone) {
+          socket.to(zoneRoom(prevZone)).emit('world:leave', { userId, zoneCode: prevZone });
+          await socket.leave(zoneRoom(prevZone));
+        }
+
+        const result = await worldManager.teleportToHub(userId, targetZoneCode);
+
+        if (result.ok) {
+          await socket.join(zoneRoom(targetZoneCode));
+          userCurrentZone.set(userId, targetZoneCode);
+
+          socket.to(zoneRoom(targetZoneCode)).emit('world:enter', {
+            userId,
+            zone: result.zone,
+            position: { x: 0, y: 0 },
+          });
+        }
+
+        if (typeof ack === 'function') ack(result);
+      } catch (err) {
+        console.error('[WorldSocket] world:teleport 처리 실패:', err);
+        if (typeof ack === 'function') ack({ ok: false, error: '월드 텔레포트 처리 중 오류가 발생했습니다.' });
       }
-
-      const result = await worldManager.teleportToHub(userId, targetZoneCode);
-
-      if (result.ok) {
-        await socket.join(zoneRoom(targetZoneCode));
-        userCurrentZone.set(userId, targetZoneCode);
-
-        socket.to(zoneRoom(targetZoneCode)).emit('world:enter', {
-          userId,
-          zone: result.zone,
-          position: { x: 0, y: 0 },
-        });
-      }
-
-      if (typeof ack === 'function') ack(result);
     });
 
     // ── 연결 해제 시 퇴장 처리 ──

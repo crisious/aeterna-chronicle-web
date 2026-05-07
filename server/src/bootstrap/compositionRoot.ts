@@ -40,6 +40,10 @@ export async function bootstrap(): Promise<void> {
 
     // 5. Socket.io 바인딩 + 핸들러 등록
     const io = new Server(fastify.server, { cors: { origin: ALLOWED_ORIGINS } });
+    // 기능별 소켓 모듈이 기본 namespace에 connection listener를 나눠 등록한다.
+    // 등록 모듈 수가 Node 기본 limit(10)을 넘는 것이 정상 구조라, 누수 오탐 경고를 방지한다.
+    io.setMaxListeners(64);
+    io.of('/').setMaxListeners(64);
     await registerSocketHandlers(io, fastify);
 
     // 6. 인프라 서비스 (APM, Redis)
