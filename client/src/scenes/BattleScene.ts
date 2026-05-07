@@ -110,8 +110,8 @@ const ATB_BAR_H = 4;
 const STAT_BAR_W = 120;
 const _STAT_BAR_H = 8;
 
-// 한글 호환 폰트 스택
-const FONT_FAMILY = '"Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", monospace';
+// 한글 호환 폰트 스택 (DR-15: Galmuri11 우선 — 다른 scene 과 일관)
+const FONT_FAMILY = '"Galmuri11", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", monospace';
 
 // ─── 유닛 스프라이트 래퍼 ─────────────────────────────────────
 
