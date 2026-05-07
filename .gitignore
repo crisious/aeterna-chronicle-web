@@ -55,3 +55,4 @@ client/.env
 
 # dev-cycle 게이트 추세/크래시 로그 (scripts/dev-cycle)
 .ac/
+.gstack/
