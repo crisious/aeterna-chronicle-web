@@ -13,11 +13,8 @@
         "/src/main.ts",
         "/src/styles/tutorial-onboarding.css"
       ],
-      "browserIncludes": [
-        "AETERNA CHRONICLE"
-      ],
+      "browserIncludes": [],
       "browserSelectors": [
-        "#loading-screen",
         "#game-container"
       ]
     },
@@ -32,7 +29,8 @@
         "/src/styles/design-system.css"
       ],
       "browserIncludes": [
-        "디자인 시스템 스타일 가이드"
+        "에테르나 크로니클 디자인 시스템",
+        "Aeterna Dark"
       ],
       "browserSelectors": [
         ".sg-container",
