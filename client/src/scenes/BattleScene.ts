@@ -2137,10 +2137,24 @@ export class BattleScene extends Phaser.Scene {
           team: 'party' | 'monsters';
           dualTechHitsTaken?: number;
         }>;
+        // CHRONO-S83: 협공 사용 통계
+        combatStats?: {
+          dualTechFired: number;
+          tripleTechFired: number;
+          maxChainReached: number;
+        };
+        combatEnded?: boolean;
       };
       if (d.combatId === this.serverCombatId) {
         const turn = d.turn ?? d.tick ?? 0;
         this.battleUI?.addLog(`[서버] 턴 ${turn}`);
+        // CHRONO-S83: 전투 종료 시 협공 통계 보고
+        if (d.combatEnded && d.combatStats) {
+          const cs = d.combatStats;
+          this.battleUI?.addLog(
+            `🏆 협공 통계: Dual ${cs.dualTechFired}회 / Triple ${cs.tripleTechFired}회 / 최대 CHAIN ×${cs.maxChainReached}`,
+          );
+        }
         if (d.dualTechCandidates && d.dualTechCandidates.length > 0) {
           const names = d.dualTechCandidates.map((c) => c.name).join(', ');
           this.battleUI?.addLog(`✨ 협공 가능: ${names}`);
