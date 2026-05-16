@@ -796,3 +796,39 @@ describe('STORY-V27 — 협공 description narrative quality', () => {
     expect(new Set(all).size).toBe(all.length); // 36 unique
   });
 });
+
+describe('STORY-V28 — 협공 name + 시그니처 narrative', () => {
+  it('Dual 21 name 1~15자 (한글 narrative)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.name.length, `Dual ${dt.id} name`).toBeGreaterThanOrEqual(1);
+      expect(dt.name.length).toBeLessThanOrEqual(15);
+    }
+  });
+
+  it('Triple 15 name 1~15자', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.name.length, `Triple ${tt.id} name`).toBeGreaterThanOrEqual(1);
+      expect(tt.name.length).toBeLessThanOrEqual(15);
+    }
+  });
+
+  it('Dual + Triple name 모두 unique', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const all = [
+      ...listDualTechs().map((d) => d.name),
+      ...listTripleTechs().map((t) => t.name),
+    ];
+    expect(new Set(all).size).toBe(all.length);
+  });
+
+  it('chrono_spire/present 시그니처 보스 시간 통치자 (chrono_archon)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'present')!;
+    const boss = e.monsterPool.find((s) => s.isBoss);
+    expect(boss?.monsterId).toBe('chrono_archon');
+    expect(boss?.name).toBe('시간 통치자');
+  });
+});
