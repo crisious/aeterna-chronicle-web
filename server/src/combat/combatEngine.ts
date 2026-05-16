@@ -146,6 +146,10 @@ export interface CombatParticipant {
   // ── CHRONO-S43: 누적 보스 저항 카운트 ───────────────────────
   /** 받은 Dual Tech 횟수. 보스 한정으로 저항 강화 (0.05 / hit, 최대 cap 0.3) */
   dualTechHitsTaken?: number;
+
+  // ── CHRONO-S66: Triple Tech 누적 보스 저항 ─────────────────
+  /** 받은 Triple Tech 횟수. 보스 한정 0.1 / hit 저항 강화. */
+  tripleTechHitsTaken?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -244,6 +248,8 @@ export interface ParticipantSnapshot {
   team: 'party' | 'monsters';
   /** CHRONO-S50: 받은 Dual Tech 누적 횟수 (보스 한정 — 저항 단계 UI 표시용). 0 디폴트. */
   dualTechHitsTaken: number;
+  /** CHRONO-S66: 받은 Triple Tech 누적 횟수. 보스 한정 0.1/hit 저항. 0 디폴트. */
+  tripleTechHitsTaken: number;
   buffs: string[];
   debuffs: string[];
 }
@@ -360,6 +366,7 @@ export class CombatEngine {
       alive: p.alive,
       team: p.team,
       dualTechHitsTaken: p.dualTechHitsTaken ?? 0,
+      tripleTechHitsTaken: p.tripleTechHitsTaken ?? 0,
       buffs: [],
       debuffs: [],
     }));
@@ -948,7 +955,8 @@ export class CombatEngine {
 
     let totalDamage = 0;
     for (const t of targets) {
-      const tBossResist = t.isBoss ? Math.max(0.3, 0.6 - 0.05 * (t.dualTechHitsTaken ?? 0)) : 1.0;
+      // CHRONO-S66: Triple Tech 누적 보스 저항 — base 0.7, -0.1/hit, 최저 0.3
+      const tBossResist = t.isBoss ? Math.max(0.3, 0.7 - 0.1 * (t.tripleTechHitsTaken ?? 0)) : 1.0;
       const aoeFalloff = def.aoe && t.id !== target.id ? 0.8 : 1.0;
       const tResult = calculateDamage({
         type: 'physical',
@@ -965,7 +973,7 @@ export class CombatEngine {
         levelDifference: Math.round((a.level + b.level + c.level) / 3) - t.level,
       });
       t.hp = Math.max(0, t.hp - tResult.damage);
-      if (t.isBoss) t.dualTechHitsTaken = (t.dualTechHitsTaken ?? 0) + 1;
+      if (t.isBoss) t.tripleTechHitsTaken = (t.tripleTechHitsTaken ?? 0) + 1;
       if (t.hp <= 0) {
         t.alive = false;
         this.logger.logDeath(t.id, `${a.id}+${b.id}+${c.id}`);
