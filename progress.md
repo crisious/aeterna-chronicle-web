@@ -392,8 +392,18 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 - **V68** Tech description + name 풍부도 (length 2~30, 36 name unique, 시그니처 키워드)
 - **V69** 250 가드 마디 — Triple name 시그니처 + 누적 cohesion 정점
 - **V70** progress.md V61~V70 갱신 + 250 가드 마디 기록
+- **V71** 시대별 협공 가용 (각 시대 ≥5 + present 가장 많음 + aetherna_final eraFilter)
+- **V72** monster id ↔ name 1:1 매핑 (모순 없음 + isBoss 1:1 + encounter 내 unique)
+- **V73** source id 도메인 cross-check (Dual/Triple/Field/zone/class 충돌 없음)
+- **V74** fxKey 패턴 정합성 (모두 'fx_' + id + unique + snake_case)
+- **V75** aetherna 게임명 등장 빈도 (Triple ≥1, 보스 =2, '에테르나' ≥3, chrono_spire 정점)
+- **V76** ambient line 시대 키워드 분포 (present 평화, chrono_spire 시간, aether_plains 평원)
+- **V77** monster name 한글 분위기 (보스 시그니처 ≥18, 일반 ≥30, ancient ≥5)
+- **V78** bossOnlyMode encounter cohesion (chrono_spire/ruined_future + bgm_final_boss + aetherna_collapse)
+- **V79** era default fallback (모든 era bgm/ambientEffect fallback)
+- **V80** chapter II+III 50 sprint 마디 — 모든 source cohesion + aetherna 4중 + Triple>Dual+AOE
 
-회귀: storyConsistency 250/250 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 288/288 + unit 전체 844+/844+ pass.
 
-**40 sprint 마디 + 250 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+89) = 누적 40 sprint, +158 가드 (92 → 250). 모든 narrative source (Field/Tech/Era/zone/클래스/aetherna) 무결성 + 안정성 + cohesion + quality 회귀 가드 완성.
+**50 sprint 마디 + 288 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+127) = 누적 50 sprint, +196 가드 (92 → 288). 게임 narrative source 무결성 + 안정성 + cohesion + quality + cross-check 모두 회귀 가드 land.
 

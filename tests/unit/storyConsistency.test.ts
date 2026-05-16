@@ -2844,3 +2844,57 @@ describe('STORY-V79 — era default fallback narrative cross-check', () => {
     expect(futureFieldCount, 'future bgm usage').toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('STORY-V80 — chapter II+III 50 sprint 마디 종합 stress', () => {
+  it('50 sprint 누적 narrative — Tech ↔ Field ↔ Era 모든 source cohesion 정점', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // 모든 source 한번에 cohesion 검증
+    expect(mod.listDualTechs().length).toBe(21);
+    expect(mod.listTripleTechs().length).toBe(15);
+    expect(mod.listFieldEncounters().length).toBe(21);
+    expect(mod.listAllBossMonsterIds().length).toBe(21);
+    expect(mod.getTotalFieldBosses()).toBe(21);
+    expect(mod.listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
+    expect(mod.listAoeDualTechs().length).toBe(3);
+    expect(mod.listBossOnlyFields().length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('50 sprint 누적 narrative — aetherna 시그니처 종점 4중 cross-check', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const { listAllBossMonsterIds, resolveFieldEncounter, listBossOnlyFields } = await import('../../shared/types/chronoField');
+
+    // aetherna_final
+    expect(resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')?.name).toBe('에테르나 파이널');
+
+    // aetherna_collapse (chrono_spire/ruined_future)
+    const final = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(final.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나의 종말');
+
+    // aetherna_eidolon (chrono_spire/ancient)
+    const ancient = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    expect(ancient.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나 환영');
+
+    // listBossOnlyFields = chrono_spire/ruined_future (단일 종점)
+    const onlys = listBossOnlyFields();
+    expect(onlys.length).toBe(1);
+    expect(onlys[0].zoneId).toBe('chrono_spire');
+  });
+
+  it('50 sprint 누적 narrative — 시대 단조 + Triple > Dual + AOE 정합 (chapter II+III)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    const { listDualTechs, listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    // 시대 단조
+    expect(chronoEraToSpeedTier('ancient')).toBeLessThan(chronoEraToSpeedTier('present'));
+    expect(chronoEraToSpeedTier('present')).toBeLessThan(chronoEraToSpeedTier('ruined_future'));
+
+    // Triple > Dual avg
+    const dualAvg = listDualTechs().reduce((s, dt) => s + dt.damageMultiplier, 0) / 21;
+    const tripleAvg = listTripleTechs().reduce((s, tt) => s + tt.damageMultiplier, 0) / 15;
+    expect(tripleAvg).toBeGreaterThan(dualAvg);
+
+    // AOE
+    expect(listAoeDualTechs().length).toBe(3);
+  });
+});
