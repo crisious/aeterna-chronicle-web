@@ -1475,3 +1475,46 @@ describe('STORY-V44 — chronoEra 진행 순서 + timeline narrative', () => {
     expect(decorateMonsterNameByEra('망령', 'present')).toBe('망령');
   });
 });
+
+describe('STORY-V45 — chrono barrel narrative integration', () => {
+  it('chrono barrel 단일 import 로 시대/협공/Field 정점 모두 접근 narrative', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // chronoEraAtb
+    expect(typeof mod.chronoEraToSpeedTier).toBe('function');
+    expect(typeof mod.isChronoEraId).toBe('function');
+    expect(typeof mod.chronoEraToEnemyMultipliers).toBe('function');
+    expect(typeof mod.decorateMonsterNameByEra).toBe('function');
+    // dualTech
+    expect(typeof mod.listDualTechs).toBe('function');
+    expect(typeof mod.resolveDualTech).toBe('function');
+    expect(typeof mod.listAoeDualTechs).toBe('function');
+    // tripleTech
+    expect(typeof mod.listTripleTechs).toBe('function');
+    expect(typeof mod.resolveTripleTech).toBe('function');
+    // chronoField
+    expect(typeof mod.resolveFieldEncounter).toBe('function');
+    expect(typeof mod.listFieldEncounters).toBe('function');
+    expect(typeof mod.getBossSlot).toBe('function');
+    expect(typeof mod.listAllBossMonsterIds).toBe('function');
+    expect(typeof mod.getTotalFieldBosses).toBe('function');
+  });
+
+  it('chrono barrel 로 aetherna 시그니처 cross-check (정점 narrative 단일 진입점)', async () => {
+    const { resolveTripleTech, resolveFieldEncounter, listAllBossMonsterIds } = await import('../../shared/types/chrono');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver');
+    expect(tt?.id).toBe('aetherna_final');
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(finalE.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_collapse');
+    expect(listAllBossMonsterIds()).toContain('aetherna_collapse');
+    expect(listAllBossMonsterIds()).toContain('aetherna_eidolon');
+  });
+
+  it('chrono barrel 정량 cross-check (21/15/21/7 모두 도달)', async () => {
+    const { listDualTechs, listTripleTechs, listAllBossMonsterIds, getTotalFieldBosses, listFieldEncounters } = await import('../../shared/types/chrono');
+    expect(listDualTechs().length).toBe(21);
+    expect(listTripleTechs().length).toBe(15);
+    expect(listAllBossMonsterIds().length).toBe(21);
+    expect(getTotalFieldBosses()).toBe(21);
+    expect(listFieldEncounters().length).toBe(21);
+  });
+});
