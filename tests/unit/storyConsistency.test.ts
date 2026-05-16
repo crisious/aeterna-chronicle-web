@@ -2759,3 +2759,39 @@ describe('STORY-V77 — monster name 한글 분위기 narrative', () => {
     expect(count, 'ancient name 키워드').toBeGreaterThanOrEqual(5);
   });
 });
+
+describe('STORY-V78 — bossOnlyMode encounter narrative cohesion', () => {
+  it('bossOnlyMode encounter ≥ 1 narrative (최종 보스 영역 보유)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    expect(listBossOnlyFields().length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('bossOnlyMode encounter 모두 chrono_spire zone narrative (정점 zone 종점)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    for (const e of listBossOnlyFields()) {
+      expect(e.zoneId, `boss-only zone`).toBe('chrono_spire');
+    }
+  });
+
+  it('bossOnlyMode encounter 모두 ruined_future era narrative (시간 종점)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    for (const e of listBossOnlyFields()) {
+      expect(e.eraId, `boss-only era`).toBe('ruined_future');
+    }
+  });
+
+  it('bossOnlyMode encounter 모두 bgmTrack = "bgm_final_boss" narrative (시그니처 BGM)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    for (const e of listBossOnlyFields()) {
+      expect(e.bgmTrack, `boss-only bgm`).toBe('bgm_final_boss');
+    }
+  });
+
+  it('bossOnlyMode encounter 보스 = aetherna_collapse narrative (게임 종점 보스)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    for (const e of listBossOnlyFields()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      expect(boss?.monsterId, `boss-only boss`).toBe('aetherna_collapse');
+    }
+  });
+});
