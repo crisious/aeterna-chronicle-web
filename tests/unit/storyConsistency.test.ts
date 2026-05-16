@@ -3870,3 +3870,39 @@ describe('STORY-V106 — rollFieldMonster 분포 stress narrative', () => {
     expect(m99).not.toBeNull();
   });
 });
+
+describe('STORY-V107 — Triple eraFilter 정확 narrative 시그니처', () => {
+  it('void_eternity eraFilter = ruined_future-only narrative (붕괴 미래 시그니처 정점)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const ve = listTripleTechs().find((tt) => tt.id === 'void_eternity')!;
+    expect(ve.eraFilter).toEqual(['ruined_future']);
+  });
+
+  it('aetherna_final eraFilter = present + ruined_future narrative (붕괴 후 가용)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const af = listTripleTechs().find((tt) => tt.id === 'aetherna_final')!;
+    expect(af.eraFilter).toEqual(['present', 'ruined_future']);
+  });
+
+  it('Triple eraFilter 모두 1~3 범위 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      if (tt.eraFilter) {
+        expect(tt.eraFilter.length).toBeGreaterThanOrEqual(1);
+        expect(tt.eraFilter.length).toBeLessThanOrEqual(3);
+      }
+    }
+  });
+
+  it('Triple eraFilter 모두 유효 ChronoEraId narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { isChronoEraId } = await import('../../shared/types/chronoEraAtb');
+    for (const tt of listTripleTechs()) {
+      if (tt.eraFilter) {
+        for (const era of tt.eraFilter) {
+          expect(isChronoEraId(era), `${tt.id} eraFilter ${era}`).toBe(true);
+        }
+      }
+    }
+  });
+});
