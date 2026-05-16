@@ -124,9 +124,10 @@ describe('CombatEngine', () => {
 
   // ── 4. ATB gauge filling ──
 
-  it('4. ATB gauge fills based on speed each tick', () => {
-    const player = makeParticipant({ spd: 100 }); // spdFactor = 1.0
-    const monster = makeMonster({ spd: 50 });     // spdFactor = 0.5
+  it('4. ATB gauge fills based on speed each tick (SSOT computeChargeDelta)', () => {
+    // SSOT: delta = 25 * (spd/50) * mult(1) * tier(3=1.0) * (tickMs/1000=1)
+    const player = makeParticipant({ spd: 100 }); // → 50/tick
+    const monster = makeMonster({ spd: 50 });     // → 25/tick
 
     engine.addParticipant(player);
     engine.addParticipant(monster);
@@ -137,16 +138,13 @@ describe('CombatEngine', () => {
     const p = engine.getParticipant('player1')!;
     const m = engine.getParticipant('monster1')!;
 
-    // Player: base 10 * (1 + 100/100) = 20 per tick. After 1 tick gauge = 20 (< 100, no action)
-    expect(p.atbGauge).toBe(20);
-    // Monster: base 10 * (1 + 50/100) = 15 per tick. After 1 tick gauge = 15
-    expect(m.atbGauge).toBe(15);
+    // Player spd=100 → 25*(100/50)=50 per tick. After 1 tick = 50 (<100, no action)
+    expect(p.atbGauge).toBe(50);
+    // Monster spd=50 → 25*(50/50)=25 per tick. After 1 tick = 25
+    expect(m.atbGauge).toBe(25);
 
-    // After 5 ticks total, player should reach 100 and act (auto mode resets to 0)
-    for (let i = 0; i < 4; i++) {
-      engine.processTick();
-    }
-    // Player had 20 + 4*20 = 100, acted, reset to 0
+    // 2nd tick: player reaches 100, acts, auto mode resets to 0
+    engine.processTick();
     expect(engine.getParticipant('player1')!.atbGauge).toBe(0);
   });
 

@@ -33,6 +33,8 @@ import { CombatLogger } from './combatLogger';
 import type { EffectId } from './statusEffectManager';
 import { statusEffectManager } from './statusEffectManager';
 import { comboManager } from './comboManager';
+import { ATB_MAX, computeChargeDelta } from './atb';
+import type { ATBMode, ATBSpeedTier } from '../../../shared/types/atb';
 
 // ─── 전투 상태 머신 ───────────────────────────────────────────
 
@@ -201,21 +203,33 @@ export interface ParticipantSnapshot {
 // ─── 전투 인스턴스 설정 ────────────────────────────────────────
 
 export interface CombatConfig {
-  /** ATB 게이지 충전 기본량 (틱당) */
-  atbChargeBase: number;
-  /** 틱 간격 (ms) */
+  /**
+   * @deprecated SSOT `atb/atbTimeline.ts` 도입(P54+) 이후 무시됨.
+   * 충전량은 `computeChargeDelta(spd, mult, speedTier, tickMs)` 가 결정.
+   * 기존 호출부 호환을 위해 필드는 유지.
+   */
+  atbChargeBase?: number;
+  /** 틱 간격 (ms) — SSOT computeChargeDelta 의 tickMs 로 전달 */
   tickIntervalMs: number;
   /** 최대 틱 수 (무한 루프 방지) */
   maxTicks: number;
   /** 자동 전투 여부 */
   autoMode: boolean;
+  /** FF6 ATB 모드 (Active / Wait / Semi) — 기본 ACTIVE */
+  atbMode: ATBMode;
+  /** FF6 ATB 배속 티어 (1~6) — 기본 3 (1.0x) */
+  speedTier: ATBSpeedTier;
+  /** WAIT 모드에서 menu 열림 여부 (UI 측에서 set, 기본 false) */
+  menuOpen: boolean;
 }
 
 const DEFAULT_CONFIG: CombatConfig = {
-  atbChargeBase: 10,
   tickIntervalMs: 1000,
   maxTicks: 300, // 5분 (300틱 × 1초)
   autoMode: false,
+  atbMode: 'ACTIVE',
+  speedTier: 3,
+  menuOpen: false,
 };
 
 // ─── 전투 엔진 ─────────────────────────────────────────────────
@@ -375,11 +389,20 @@ export class CombatEngine {
       }
     }
 
-    // 1. ATB 게이지 충전
-    for (const p of this.participants.values()) {
-      if (!p.alive) continue;
-      const spdFactor = p.spd / 100;
-      p.atbGauge = Math.min(100, p.atbGauge + this.config.atbChargeBase * (1 + spdFactor));
+    // 1. ATB 게이지 충전 — SSOT computeChargeDelta(FF6 레퍼런스) 사용
+    // WAIT 모드 + menuOpen 이면 충전 정지 (FF6 명령창 입력 중 정지).
+    const atbHalt = this.config.atbMode === 'WAIT' && this.config.menuOpen;
+    if (!atbHalt) {
+      for (const p of this.participants.values()) {
+        if (!p.alive) continue;
+        const delta = computeChargeDelta(
+          p.spd,
+          1,
+          this.config.speedTier,
+          this.config.tickIntervalMs,
+        );
+        p.atbGauge = Math.min(ATB_MAX, p.atbGauge + delta);
+      }
     }
 
     // 2. 쿨다운 + 마나 회복
