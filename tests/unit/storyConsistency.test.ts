@@ -4494,3 +4494,40 @@ describe('STORY-V124 — 시그니처 협공 narrative final cohesion', () => {
     expect(tt.element).toBe('holy');
   });
 });
+
+describe('STORY-V125 — 95 sprint 마디 시그니처 Dual cohesion', () => {
+  it('chrono_blade 시그니처 narrative final (chrono + 2.2 + 시간+에테르 페어)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('chrono_blade')!;
+    expect(dt.element).toBe('chrono');
+    expect(dt.damageMultiplier).toBeGreaterThanOrEqual(2.0);
+    expect(dt.partnerClasses).toContain('time_knight');
+    expect(dt.partnerClasses).toContain('ether_knight');
+    expect(dt.eraFilter).toEqual(['ancient', 'present']);
+  });
+
+  it('memory_break 시그니처 narrative final (dark + AOE + ruined_future only)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('memory_break')!;
+    expect(dt.element).toBe('dark');
+    expect((dt as { aoe?: boolean }).aoe).toBe(true);
+    expect(dt.eraFilter).toEqual(['ruined_future']);
+    expect(dt.damageMultiplier).toBe(2.5);
+  });
+
+  it('void_oblivion 시그니처 narrative final (void_wanderer + memory_breaker + dark)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('void_oblivion')!;
+    expect(dt.element).toBe('dark');
+    expect(dt.partnerClasses).toContain('void_wanderer');
+    expect(dt.partnerClasses).toContain('memory_breaker');
+    expect((dt as { aoe?: boolean }).aoe).toBe(true);
+  });
+
+  it('time_overflow 시그니처 narrative (chrono + AOE)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('time_overflow')!;
+    expect(dt.element).toBe('chrono');
+    expect((dt as { aoe?: boolean }).aoe).toBe(true);
+  });
+});
