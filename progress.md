@@ -278,11 +278,16 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 130 sprint 마디 도달.
 - 누적 **130 sprint**, PR #11 134 commits.
 
-## TODO (CHRONO-ATB chapter XVI 후보)
+## 2026-05-16 CHRONO-ATB chapter XVI — 보스 cross-product 100% 완성 (4 sprint)
 
-- 라이브 Playwright 자동 QA (전체 시나리오 — era 전환 → visible spawn → 보스 진입)
+- **S131** aether_plains/present 평원 가디언 / **S132** memory_forest/present 숲의 잔영 + shadow_gorge/ancient 황혼 환영 / **S133** malatus_sanctuary/present 부서진 봉인 + crystal_cave/ancient 고대 결정 거인 / **S134** 21 encounter 모두 hasBossSlot=true 회귀 가드.
+- 누적 **134 sprint**, PR #11 138 commits.
+- **7 zone × 3 era = 21 encounter 모두 보스 슬롯 보유 (cross-product 100%)**
+
+## TODO (CHRONO-ATB chapter XVII 후보)
+
+- 라이브 Playwright 자동 QA (전체 시나리오)
 - 협공 통계 DB 영속화 (Prisma 모델)
-- 시대 전환 시 GameScene 재 spawn (현재 1회 init)
+- 시대 전환 시 GameScene 재 spawn
 - BattleScene 승리 시 monster sprite 제거 (visible 보존)
-- chronoField 추가 보스 (cross-product 보강)
 
