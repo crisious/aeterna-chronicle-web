@@ -672,3 +672,25 @@ describe('STORY-V21 — era별 협공 가용성', () => {
     expect(futureOnlyDual.length + futureOnlyTriple.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('STORY-V22 — AOE Tech narrative 일관성', () => {
+  it('Dual AOE 3종 (memory_break / time_overflow / void_oblivion)', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const ids = listAoeDualTechs().map((d) => d.id).sort();
+    expect(ids).toEqual(['memory_break', 'time_overflow', 'void_oblivion']);
+  });
+
+  it('Triple Tech 모두 AOE=true (3인 협공 광역 분위기)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.aoe, `Triple ${tt.id} aoe`).toBe(true);
+    }
+  });
+
+  it('Dual AOE 3종 모두 damageMultiplier 2.4 이상 (광역 강력)', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listAoeDualTechs()) {
+      expect(dt.damageMultiplier, `Dual AOE ${dt.id} dmg`).toBeGreaterThanOrEqual(2.4);
+    }
+  });
+});
