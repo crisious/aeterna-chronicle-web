@@ -917,6 +917,15 @@ export class CombatEngine {
     // CHRONO-S26: 콤보 tick 갱신
     this.lastDualTechTick = this.currentTick;
 
+    // CHRONO-S75: chain 4+ 시 발동 actor HP 5% 회복 (시너지 보상)
+    if (this.chainCount >= 4) {
+      for (const p of [a, b]) {
+        const heal = Math.floor(p.maxHp * 0.05);
+        p.hp = Math.min(p.maxHp, p.hp + heal);
+        this.logger.logHeal(p.id, p.id, heal, 'chain_synergy');
+      }
+    }
+
     // CHRONO-S74: chain 4+ 면 (MAX CHAIN), 2~3은 (CHAIN)
     const chainLabel = this.chainCount >= 4
       ? ' (MAX CHAIN)'
@@ -1002,6 +1011,15 @@ export class CombatEngine {
       this.pendingActions.delete(p.id);
     }
     this.lastDualTechTick = this.currentTick;
+
+    // CHRONO-S75: chain 4+ 시 발동 3 actor 모두 HP 5% 회복
+    if (this.chainCount >= 4) {
+      for (const p of [a, b, c]) {
+        const heal = Math.floor(p.maxHp * 0.05);
+        p.hp = Math.min(p.maxHp, p.hp + heal);
+        this.logger.logHeal(p.id, p.id, heal, 'chain_synergy');
+      }
+    }
 
     // CHRONO-S74: chain 단계 표시
     const tChainLabel = this.chainCount >= 4
