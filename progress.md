@@ -185,12 +185,28 @@ IV 챕터 UI/단축키 위에 게임플레이 다양성 확장 — 18종 + AOE +
 - 검증: 104 files / 1296 tests pass (chapter IV 1290 → +6). combatEngine 26/26, dualTech 27/27, chronoEraAtb 24/24.
 - 누적 sprint: I(9) + II(7) + III(7) + IV(8) + V(11) + 이번 보강(0 — 그대로 V chapter 잔여) = 40 sprint. PR #11 38 commits.
 
-## TODO (CHRONO-ATB chapter VI 후보)
+## 2026-05-16 CHRONO-ATB chapter VI — Dual Tech 완성 + 누적 저항 + UI 정보 풍부화 (7 sprint, 회귀 0)
 
-- 라이브 Playwright 자동 QA: WorldScene era 전환 → 전투 진입 → 협공 버튼 → D 키 → CHAIN + AOE + BOSS RESIST 검증
-- shared dualTech 클라 import: BattleScene 이 def.aoe 직접 조회 (현재 actorName 문자열 검출)
-- monster AI 시대별 차별화 (현재 패시브만, AI decideAction 도 era 따라 광역/방어 우선순위)
-- 누적 보스 저항: 보스가 협공 받을 때마다 저항 증가 (선택)
-- 협공 SFX 키별 차별화 (chrono vs dark vs holy 다른 사운드)
-- Dual Tech 더 추가 (cross-product 18 → 36 페어 완성)
+V 챕터 풀 라인업 위에 cross-product 완성 + 보스 학습 + 클라 UI 깊이.
+
+- **S41 — progress V docs** (`4493ad0`): S33~S40 chapter V 정리.
+- **S42 — Dual Tech 21종 cross-product 완성** (`545b8b8`): +memory_pact / guardian_void / guardian_break. C(7,2)=21 모든 페어 매핑 검증.
+- **S43 — 누적 보스 저항** (`f62f0d0`): CombatParticipant.dualTechHitsTaken. computeBossResist = max(0.3, 0.6 - 0.05 × hits). 보스가 협공 spam 학습.
+- **S44 — element 기반 SFX** (`fc45a3f`): 클라 BattleScene 이 getDualTechById 로 def.element 조회 → DUAL_TECH_SFX_BY_ELEMENT 매핑 (holy → magic_heal).
+- **S45 — DualTechCandidate 정보 확장** (`2f47317`): server 가 element + aoe + mpCost 노출. 클라가 actorName 문자열 검출 의존 줄임.
+- **S46 — 버튼 element 색조 + AOE 아이콘** (`f75150f`): 협공 버튼 라벨 '✨/💥 ', bg tint (chrono cyan / dark purple / holy gold). combat:tick 갱신 + Shift+D cycle 일관 적용.
+- **S47 — AI hints 데이터** (`9ec7ad3`): chronoEraToAIHints (defensive/aoe/aggressive bias). 향후 MonsterAIEngine 통합 위한 데이터.
+
+- 검증: 104 files / 1296+ tests pass. combatEngine 27/27 + dualTech 31/31 + chronoEraAtb 28/28.
+- 누적 sprint: I(9) + II(7) + III(7) + IV(8) + V(8) + VI(7) = **47 sprint**. PR #11 commits 45개.
+
+## TODO (CHRONO-ATB chapter VII 후보)
+
+- MonsterAIEngine 가 chronoEraToAIHints 가중치 사용 (실 AI decideAction 통합)
+- 라이브 Playwright 자동 QA: 전체 시나리오 검증
+- 협공 UI 후보 패널 (현재 단일 버튼) → 다중 후보 동시 표시 sub-menu
+- Dual Tech 더 추가: 보스 협공 면역 일부 (특수 보스만)
+- ATBCommandInput dual_tech kind 활용한 통합 처리 경로 (현재 separate)
+- 시대별 monster 외형 차별화 (sprite tint or filter)
+- Dual Tech 발동 시 카메라 shake / slow-mo 효과
 
