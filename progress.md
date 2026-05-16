@@ -360,6 +360,11 @@ V25 이후 narrative source 변화 보장을 위한 추가 가드 누적.
 - **V45** chrono barrel 단일 진입점 narrative integration cross-check
 - **V46** 시대별 monster id 시그니처 (ancient 무-future-prefix + future ≥5)
 - **V47** 전체 vitest 회귀 마디 (unit 50 파일/844 tests pass)
+- **V48** 협공 mpCost ↔ damageMultiplier 상관 (Triple 최강 ≥ 최약, AOE 평균 ≥ 전체)
+- **V49** chronoField zone-별 분배 (3 era × 보스 unique + 비-narrative null)
+- **V50** 20 sprint 마디 — Field/Dual/Triple/Era 모든 source cross-check + aetherna 시그니처 누적 정점
 
-회귀: storyConsistency 162/162 + unit 전체 844/844 pass.
+회귀: storyConsistency 174/174 + unit 전체 844/844 pass.
+
+chapter II 누적 21 sprint, +82 가드 (92 → 174). aetherna 게임명 정점 + 7 zone × 3 era × 21 보스 × 36 협공 모든 narrative source cohesion 가드 완성.
 
