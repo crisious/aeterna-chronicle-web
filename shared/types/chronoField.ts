@@ -235,7 +235,7 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     monsterPool: [
       { monsterId: 'citadel_knight', name: '성채 기사', weight: 0.5 },
       { monsterId: 'ether_archer', name: '에테르 궁수', weight: 0.4 },
-      { monsterId: 'citadel_lord', name: '성채 영주', weight: 0.1, isBoss: true },
+      { monsterId: 'citadel_lord', name: '고대 성채 영주', weight: 0.1, isBoss: true },
     ],
     maxSpawn: 4,
     hasBossSlot: true,
