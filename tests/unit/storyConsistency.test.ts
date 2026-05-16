@@ -3065,3 +3065,47 @@ describe('STORY-V83b — 300 가드 마디 도달 cross-check', () => {
     expect(grand, '정점 entity sum').toBeGreaterThanOrEqual(128);
   });
 });
+
+describe('STORY-V84 — narrative type / runtime integrity', () => {
+  it('chrono barrel re-export 타입 + 함수 모두 호출 가능 narrative', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // 모든 chrono.ts barrel re-export 가 정의됨
+    const requiredFunctions = [
+      'chronoEraToSpeedTier', 'isChronoEraId', 'chronoEraToEnemyMultipliers',
+      'chronoEraToAIHints', 'chronoEraToMonsterPassives', 'chronoEraBonusDrops',
+      'decorateMonsterNameByEra',
+      'listDualTechs', 'resolveDualTech', 'listDualTechsByEra', 'listDualTechsByElement', 'listAoeDualTechs', 'listDualTechsByClass', 'getDualTechById',
+      'listTripleTechs', 'resolveTripleTech', 'listTripleTechsByEra', 'listTripleTechsByClass',
+      'resolveFieldEncounter', 'listFieldEncounters', 'listFieldEncountersByZone', 'rollFieldMonster', 'getBossSlot', 'listAllFieldMonsterIds', 'getTotalFieldBosses', 'listAllBossMonsterIds', 'listBossOnlyFields',
+    ];
+    const modKeys = new Set(Object.keys(mod));
+    for (const fn of requiredFunctions) {
+      expect(modKeys.has(fn), `chrono barrel missing ${fn}`).toBe(true);
+    }
+  });
+
+  it('chronoField field default fallback 정합 narrative — bgm undefined 면 era default 적용', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    // 모든 21 encounter resolved bgmTrack 비빈 narrative
+    for (const era of STORY_ERAS) {
+      for (const zone of STORY_ZONES) {
+        const e = resolveFieldEncounter(zone, era)!;
+        expect(e.bgmTrack.startsWith('bgm_'), `${zone}/${era} bgm prefix`).toBe(true);
+      }
+    }
+  });
+
+  it('chronoField runtime 안정성 narrative — 모든 resolveFieldEncounter return 21 unique encounter', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const seen = new Set<string>();
+    for (const era of STORY_ERAS) {
+      for (const zone of STORY_ZONES) {
+        const e = resolveFieldEncounter(zone, era)!;
+        const key = `${e.zoneId}:${e.eraId}`;
+        expect(seen.has(key), `duplicate resolve ${key}`).toBe(false);
+        seen.add(key);
+      }
+    }
+    expect(seen.size).toBe(21);
+  });
+});
