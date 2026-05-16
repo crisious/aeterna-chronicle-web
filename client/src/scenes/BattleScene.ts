@@ -1515,6 +1515,14 @@ export class BattleScene extends Phaser.Scene {
         color: '#ff8888',
       }).setOrigin(0.5).setDepth(51);
 
+      // CHRONO-S52: 시대별 monster sprite tint (present 외 era 에 era.tintColor 살짝 적용)
+      const eraId = this._initData.eraId ?? 'present';
+      if (eraId !== 'present' && sprite instanceof Phaser.GameObjects.Image) {
+        const era = getChronoEra(eraId);
+        sprite.setTint(era.tintColor);
+        sprite.setName(`enemy_${unit.id}_eratint`);
+      }
+
       const us: UnitSprite = {
         unit, sprite, nameText,
         atb: Phaser.Math.Between(0, 20),
