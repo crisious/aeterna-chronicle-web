@@ -694,3 +694,29 @@ describe('STORY-V22 — AOE Tech narrative 일관성', () => {
     }
   });
 });
+
+describe('STORY-V23 — ambientLine 무결성 + 게임명 narrative', () => {
+  it('21 ambientLine 모두 1자 이상 + 50자 이하', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(e.ambientLine.length, `${e.zoneId}/${e.eraId}`).toBeGreaterThanOrEqual(1);
+      expect(e.ambientLine.length).toBeLessThanOrEqual(50);
+    }
+  });
+
+  it('chrono_spire/ruined_future ambientLine 게임 종말 narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(finalE.ambientLine).toContain('세계');
+    expect(finalE.ambientLine).toContain('마지막');
+  });
+
+  it('aetherna prefix 정합 — Triple (aetherna_final) + Boss (aetherna_collapse) 모두 게임 제목 시그니처', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    expect(getTripleTechById('aetherna_final')?.name).toContain('에테르나');
+    const bossIds = listAllBossMonsterIds();
+    const aethernaBosses = bossIds.filter((id) => id.startsWith('aetherna'));
+    expect(aethernaBosses.length).toBeGreaterThanOrEqual(1);
+  });
+});
