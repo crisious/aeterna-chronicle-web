@@ -4346,3 +4346,38 @@ describe('STORY-V119 — 클래스 narrative 시그니처 종합', () => {
     }
   });
 });
+
+describe('STORY-V121 — ambient line 시대별 narrative 매칭', () => {
+  it('ancient ambient line 모두 시대 분위기 (고대/유적/봉인/평원/숲/결정/말라투스 등) ≥ 6 매치', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const keywords = ['고대', '유적', '봉인', '평원', '숲', '결정', '말라투스', '에테르', '환영', '거인', '황혼', '수호', '신비', '평화', '사원', '성소', '거대'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'ancient') continue;
+      if (keywords.some((k) => e.ambientLine.includes(k))) count += 1;
+    }
+    expect(count, 'ancient ambient 키워드 매치').toBeGreaterThanOrEqual(6);
+  });
+
+  it('present ambient line 모두 분위기 (평화/평원/숲/도시/현재/조화/시간) ≥ 3 매치', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const keywords = ['평화', '평원', '숲', '도시', '현재', '조화', '시간', '에테르', '거인', '결정', '균형', '신성', '말라투스', '협곡', '동굴', '성채', '첨탑'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'present') continue;
+      if (keywords.some((k) => e.ambientLine.includes(k))) count += 1;
+    }
+    expect(count, 'present ambient 키워드 매치').toBeGreaterThanOrEqual(3);
+  });
+
+  it('ruined_future ambient line 모두 시대 분위기 (붕괴/공허/타락/망각/종말/폐허) ≥ 6 매치', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const keywords = ['붕괴', '공허', '타락', '망각', '종말', '폐허', '버려진', '잃어버린', '시간', '무너진', '부서진', '잔영', '잔재', '죽은', '썩', '산산조각', '암흑'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'ruined_future') continue;
+      if (keywords.some((k) => e.ambientLine.includes(k))) count += 1;
+    }
+    expect(count, 'ruined_future ambient 키워드 매치').toBeGreaterThanOrEqual(5);
+  });
+});
