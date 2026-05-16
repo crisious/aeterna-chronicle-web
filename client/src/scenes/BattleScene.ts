@@ -375,7 +375,11 @@ export class BattleScene extends Phaser.Scene {
     const zoneIdField = this._initData.zoneId ?? '';
     const fieldEnc = zoneIdField ? resolveFieldEncounter(zoneIdField, this._initData.eraId ?? 'present') : null;
     if (fieldEnc) {
-      this.add.text(20, 12, `🛡 ${fieldEnc.ambientLine}${fieldEnc.hasBossSlot ? ' ⚔️ 보스 가능' : ''}`, {
+      // CHRONO-S144: 35자 이상이면 truncate (UI overflow 방지)
+      const ambientShort = fieldEnc.ambientLine.length > 35
+        ? `${fieldEnc.ambientLine.slice(0, 32)}…`
+        : fieldEnc.ambientLine;
+      this.add.text(20, 12, `🛡 ${ambientShort}${fieldEnc.hasBossSlot ? ' ⚔️' : ''}`, {
         fontSize: '12px',
         fontFamily: FONT_FAMILY,
         color: '#ffd54a',
