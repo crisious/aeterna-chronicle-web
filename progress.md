@@ -266,11 +266,17 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 검증: chronoField 29/29.
 - 누적 **116 sprint**, PR #11 119 commits.
 
-## TODO (CHRONO-ATB chapter XIV 후보)
+## 2026-05-16 CHRONO-ATB chapter XIV — Field v3 + barrel + GameScene visible encounter (7 sprint)
 
-- GameScene visible encounter (필드 monster sprite 실 spawn — rollFieldEncounterSpawns)
-- monster click → BattleScene 진입 시 encounter slot 정보 전달
-- Boss spawn 시 별도 마커 (chrono spire aetherna_collapse 등)
+- **S117** docs XIII / **S118** ambientEffect boss_room (chrono_spire/ruined_future 빨간 alpha 0.12) / **S119** forgotten_citadel/ruined_future boss_room + bgm_void_citadel / **S120** chrono_spire ancient/present 시대 BGM / **S121** techCatalog Field 가드 (21 + 보스 슬롯 + 최종 보스 weight 0.4) / **S122** shared/types/chrono.ts barrel single-import + chronoBarrel.test.ts 4 도메인 가드 / **S123** GameScene chronoField encounter visible spawn v1.
+- 검증: chronoField 31/31 + chronoBarrel 4/4 + techCatalog 9/9.
+- 누적 **123 sprint**, PR #11 126 commits.
+
+## TODO (CHRONO-ATB chapter XV 후보)
+
+- BattleScene 진입 시 GameScene 의 encounter slot 정보 전달 (현재 zoneInfo monsters 기본 fallback)
+- 보스 monster sprite 차별화 (visible 시 별도 마커 — gold ring 등)
 - 라이브 Playwright 자동 QA
-- 협공 통계 DB 영속화
+- 협공 통계 DB 영속화 (Prisma 모델)
+- 시대 전환 시 GameScene 재 spawn (현재 1회 init)
 
