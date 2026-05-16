@@ -224,6 +224,8 @@ export interface ParticipantSnapshot {
   atbQueueIndex: number | null;
   alive: boolean;
   team: 'party' | 'monsters';
+  /** CHRONO-S50: 받은 Dual Tech 누적 횟수 (보스 한정 — 저항 단계 UI 표시용). 0 디폴트. */
+  dualTechHitsTaken: number;
   buffs: string[];
   debuffs: string[];
 }
@@ -331,6 +333,7 @@ export class CombatEngine {
       atbQueueIndex: queueIndexByActor.get(p.id) ?? null,
       alive: p.alive,
       team: p.team,
+      dualTechHitsTaken: p.dualTechHitsTaken ?? 0,
       buffs: [],
       debuffs: [],
     }));

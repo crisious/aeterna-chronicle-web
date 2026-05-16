@@ -707,6 +707,8 @@ describe('CombatEngine', () => {
     expect(playerSnap.atbGauge).toBe(0);
     expect(playerSnap.atbReady).toBe(false);
     expect(playerSnap.atbQueueIndex).toBeNull();
+    // CHRONO-S50: 보스 저항 카운트 노출 (0 디폴트)
+    expect(playerSnap.dualTechHitsTaken).toBe(0);
     expect(playerSnap.buffs).toEqual([]);
     expect(playerSnap.debuffs).toEqual([]);
   });
