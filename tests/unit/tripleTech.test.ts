@@ -37,19 +37,22 @@ describe('resolveTripleTech', () => {
 });
 
 describe('listTripleTechs / getTripleTechById', () => {
-  it('전체 목록 5종 (CHRONO-S69 확장)', () => {
+  it('전체 목록 8종 (CHRONO-S71 확장)', () => {
     const list = listTripleTechs();
-    expect(list.length).toBe(5);
+    expect(list.length).toBe(8);
     const ids = list.map((t) => t.id);
-    expect(new Set(ids).size).toBe(5);
+    expect(new Set(ids).size).toBe(8);
   });
 
-  it('getTripleTechById 5종 정상 조회', () => {
-    expect(getTripleTechById('aetherna_final')?.name).toBe('에테르나 파이널');
-    expect(getTripleTechById('chrono_break')?.name).toBe('크로노 브레이크');
-    expect(getTripleTechById('void_eternity')?.name).toBe('보이드 이터니티');
-    expect(getTripleTechById('ether_dark_riff')?.name).toBe('에테르 다크 리프');
-    expect(getTripleTechById('guardian_oath')?.name).toBe('가디언 오스');
+  it('getTripleTechById 8종 정상 조회', () => {
+    const ids = [
+      'aetherna_final', 'chrono_break', 'void_eternity',
+      'ether_dark_riff', 'guardian_oath',
+      'time_void_break', 'shadow_chrono', 'memory_shatter_pact',
+    ];
+    for (const id of ids) {
+      expect(getTripleTechById(id), `${id} 조회 실패`).not.toBeNull();
+    }
   });
 
   it('getTripleTechById 미존재 → null', () => {
@@ -71,6 +74,18 @@ describe('resolveTripleTech — CHRONO-S69 추가 2종', () => {
 
   it('ether_knight + time_guardian + memory_breaker → guardian_oath', () => {
     expect(resolveTripleTech('ether_knight', 'time_guardian', 'memory_breaker')?.id).toBe('guardian_oath');
+  });
+});
+
+describe('resolveTripleTech — CHRONO-S71 추가 3종', () => {
+  it('time_knight + void_wanderer + memory_breaker → time_void_break', () => {
+    expect(resolveTripleTech('time_knight', 'void_wanderer', 'memory_breaker')?.id).toBe('time_void_break');
+  });
+  it('time_knight + shadow_weaver + void_wanderer → shadow_chrono', () => {
+    expect(resolveTripleTech('time_knight', 'shadow_weaver', 'void_wanderer')?.id).toBe('shadow_chrono');
+  });
+  it('memory_weaver + shadow_weaver + memory_breaker → memory_shatter_pact', () => {
+    expect(resolveTripleTech('memory_weaver', 'shadow_weaver', 'memory_breaker')?.id).toBe('memory_shatter_pact');
   });
 });
 
