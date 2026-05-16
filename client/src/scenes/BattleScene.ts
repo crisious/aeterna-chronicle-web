@@ -27,6 +27,7 @@ import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
 import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
+import { loadLastEra } from '../time/eraStorage';
 
 // FF6 SPEED_TIER_SCALAR (atbTimeline 와 일치) — UI 표시 전용
 const TIER_LABEL: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
@@ -249,7 +250,10 @@ export class BattleScene extends Phaser.Scene {
 
     this.skillSlots = data.skillSlots ?? [];
     this.battleId = data.battleId;
-    this._initData = data;
+    // CHRONO-S18: data.eraId 없으면 localStorage 마지막 era 복원 (디버그/직접 진입 ergonomics)
+    this._initData = data.eraId
+      ? data
+      : { ...data, eraId: loadLastEra() ?? undefined };
   }
 
   preload(): void {
