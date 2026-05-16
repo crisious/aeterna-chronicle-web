@@ -30,8 +30,8 @@ export interface FieldEncounterDef {
   ambientLine: string;
   /** CHRONO-S111: BGM 트랙 키 (SoundManager 매핑). 미설정 시 default. */
   bgmTrack?: string;
-  /** CHRONO-S111: 필드 환경 효과 ('mist' | 'dust' | 'glow' | 'void' 등). */
-  ambientEffect?: 'mist' | 'dust' | 'glow' | 'void' | 'none';
+  /** CHRONO-S111/S118: 필드 환경 효과. 'boss_room' 은 최종 보스 분위기 (S118). */
+  ambientEffect?: 'mist' | 'dust' | 'glow' | 'void' | 'boss_room' | 'none';
 }
 
 const ENCOUNTERS: readonly FieldEncounterDef[] = [
@@ -295,7 +295,7 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     hasBossSlot: true,
     ambientLine: '세계가 무너지는 마지막 시간선',
     bgmTrack: 'bgm_final_boss',
-    ambientEffect: 'void',
+    ambientEffect: 'boss_room',
   },
 ] as const;
 
@@ -310,7 +310,7 @@ const DEFAULT_BGM_BY_ERA: Record<ChronoEraId, string> = {
   present: 'bgm_field_calm',
   ruined_future: 'bgm_ruined_future',
 };
-const DEFAULT_EFFECT_BY_ERA: Record<ChronoEraId, 'mist' | 'dust' | 'glow' | 'void' | 'none'> = {
+const DEFAULT_EFFECT_BY_ERA: Record<ChronoEraId, 'mist' | 'dust' | 'glow' | 'void' | 'boss_room' | 'none'> = {
   ancient: 'mist',
   present: 'glow',
   ruined_future: 'void',

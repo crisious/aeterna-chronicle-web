@@ -184,6 +184,11 @@ describe('FieldEncounter bgmTrack + ambientEffect (CHRONO-S111)', () => {
     const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
     expect(e?.bgmTrack).toBe('bgm_final_boss');
   });
+
+  it('CHRONO-S118: chrono_spire/ruined_future ambientEffect boss_room 적용', () => {
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
+    expect(e?.ambientEffect).toBe('boss_room');
+  });
 });
 
 describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {

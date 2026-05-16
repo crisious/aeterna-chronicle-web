@@ -381,17 +381,20 @@ export class BattleScene extends Phaser.Scene {
         strokeThickness: 2,
       }).setOrigin(0, 0).setDepth(250).setName('fieldAmbientLine');
 
-      // CHRONO-S113: ambientEffect 약한 색조 overlay (분위기 시각화)
+      // CHRONO-S113/S118: ambientEffect 약한 색조 overlay (분위기 시각화)
       const effectTint: Record<string, number | null> = {
         mist: 0xeeeeee,
         dust: 0xb38b6a,
         glow: 0xffd54a,
         void: 0x6633aa,
+        boss_room: 0xff3333, // 강렬한 빨간 — 최종 보스 분위기
         none: null,
       };
       const tint = effectTint[fieldEnc.ambientEffect ?? 'none'];
       if (tint !== null && tint !== undefined) {
-        this.add.rectangle(scW / 2, scH / 2, scW, scH, tint, 0.06)
+        // boss_room 은 더 진한 alpha
+        const alpha = fieldEnc.ambientEffect === 'boss_room' ? 0.12 : 0.06;
+        this.add.rectangle(scW / 2, scH / 2, scW, scH, tint, alpha)
           .setDepth(2)
           .setName(`fieldAmbientOverlay_${fieldEnc.ambientEffect}`);
       }
