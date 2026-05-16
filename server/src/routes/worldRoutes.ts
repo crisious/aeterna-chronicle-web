@@ -10,6 +10,8 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { worldManager } from '../world/worldManager';
+import { resolveFieldEncounter } from '../../../shared/types/chronoField';
+import { isChronoEraId } from '../../../shared/types/chronoEraAtb';
 
 // ─── 타입 ───────────────────────────────────────────────────────
 
@@ -96,6 +98,21 @@ export async function worldRoutes(fastify: FastifyInstance): Promise<void> {
     const npcs = await worldManager.getZoneNpcs(code);
 
     return reply.send({ ok: true, zone, monsters, npcs });
+  });
+
+  // CHRONO-S106: 시대별 필드 encounter 데이터
+  fastify.get('/api/world/zones/:code/encounter', async (
+    request: FastifyRequest<{ Params: ZoneCodeParams; Querystring: { eraId?: string } }>,
+    reply: FastifyReply,
+  ) => {
+    const { code } = request.params;
+    const { eraId } = request.query;
+    const validEra = isChronoEraId(eraId) ? eraId : 'present';
+    const encounter = resolveFieldEncounter(code, validEra);
+    if (!encounter) {
+      return reply.status(404).send({ ok: false, error: `${code}/${validEra} encounter 정의 없음` });
+    }
+    return reply.send({ ok: true, encounter });
   });
 
   // 존 이동
