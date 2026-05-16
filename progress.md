@@ -260,11 +260,17 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - server REST + 클라 NetworkManager wire
 - WorldScene 정보 패널 + BattleScene 좌상단 표시
 
-## TODO (CHRONO-ATB chapter XIII 후보)
+## 2026-05-16 CHRONO-ATB chapter XIII — Field 시스템 v2 (BGM + effect + 헬퍼) (7 sprint)
 
-- GameScene visible encounter (필드 monster sprite 실 spawn — chronoField + rollFieldEncounterSpawns 활용)
-- monster click → BattleScene 진입 시 encounter 정보 전달
-- 라이브 Playwright 자동 QA (전체 시나리오)
+- **S110** docs XII / **S111** FieldEncounter bgmTrack/ambientEffect 필드 / **S112** era 기본값 자동 적용 (resolveFieldEncounter override 가능) / **S113** BattleScene 색조 overlay (mist/dust/glow/void alpha 0.06) / **S114** fetchZoneEncounter 응답 타입 갱신 / **S115** getBossSlot + listAllFieldMonsterIds 헬퍼 / **S116** SoundManager.playBgm wire (1500ms crossfade).
+- 검증: chronoField 29/29.
+- 누적 **116 sprint**, PR #11 119 commits.
+
+## TODO (CHRONO-ATB chapter XIV 후보)
+
+- GameScene visible encounter (필드 monster sprite 실 spawn — rollFieldEncounterSpawns)
+- monster click → BattleScene 진입 시 encounter slot 정보 전달
+- Boss spawn 시 별도 마커 (chrono spire aetherna_collapse 등)
+- 라이브 Playwright 자동 QA
 - 협공 통계 DB 영속화
-- chronoField 추가 데이터: 시대별 BGM 트랙 / 필드 effect
 
