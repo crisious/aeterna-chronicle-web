@@ -4608,3 +4608,39 @@ describe('STORY-V127 — Field encounter cross-cohesion narrative', () => {
     expect(new Set(bossIds).size).toBe(21);
   });
 });
+
+describe('STORY-V128 — Tech 종합 final cross-cohesion narrative', () => {
+  it('Dual + Triple = 36 협공 narrative final count', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    expect(listDualTechs().length + listTripleTechs().length).toBe(36);
+  });
+
+  it('36 협공 id + name 모두 unique narrative (전체 cross-domain)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const allIds = [...listDualTechs().map((dt) => dt.id), ...listTripleTechs().map((tt) => tt.id)];
+    const allNames = [...listDualTechs().map((dt) => dt.name), ...listTripleTechs().map((tt) => tt.name)];
+    expect(new Set(allIds).size).toBe(36);
+    expect(new Set(allNames).size).toBe(36);
+  });
+
+  it('36 협공 fxKey 모두 unique narrative (FX 자원 충돌 없음)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const fxKeys = [...listDualTechs().map((dt) => dt.fxKey), ...listTripleTechs().map((tt) => tt.fxKey)];
+    expect(new Set(fxKeys).size).toBe(36);
+  });
+
+  it('Dual + Triple element 모두 KNOWN_ELEMENTS narrative (9 유효 element)', async () => {
+    const KNOWN = new Set(['neutral', 'fire', 'ice', 'lightning', 'wind', 'earth', 'holy', 'dark', 'chrono']);
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(KNOWN.has(dt.element)).toBe(true);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(KNOWN.has(tt.element)).toBe(true);
+    }
+  });
+});
