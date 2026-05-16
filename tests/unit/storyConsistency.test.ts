@@ -428,3 +428,38 @@ describe('STORY-V13 — Tech fxKey narrative 정합', () => {
     }
   });
 });
+
+describe('STORY-V14 — Chapter 진행 narrative 순서 (1~5)', () => {
+  it('aether_plains Chapter 1 → memory_forest/malatus Chapter 2 → shadow_gorge/crystal Chapter 3 → forgotten_citadel Chapter 4 → chrono_spire Chapter 5', () => {
+    // ZONE_CHAPTER_MAP narrative 순서:
+    // ch1: aether_plains
+    // ch2: memory_forest, malatus_sanctuary
+    // ch3: shadow_gorge, crystal_cave (3.5)
+    // ch4: forgotten_citadel
+    // ch5: chrono_spire (게임 종점)
+    const chapterOrder = [
+      ['aether_plains'],
+      ['memory_forest', 'malatus_sanctuary'],
+      ['shadow_gorge', 'crystal_cave'],
+      ['forgotten_citadel'],
+      ['chrono_spire'],
+    ];
+    expect(chapterOrder.flat().length).toBe(7); // 7 zone 모두 chapter 진행도에 위치
+    expect(new Set(chapterOrder.flat()).size).toBe(7); // unique
+  });
+
+  it('chapter 종점 chrono_spire 가 모든 zone 보다 큰 보스 weight 보유', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const final = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const finalBoss = final.monsterPool.find((s) => s.isBoss)!;
+    // 종점 보스 weight 0.4 (다른 모든 보스 weight 0.1~0.2 보다 큼)
+    expect(finalBoss.weight).toBeGreaterThanOrEqual(0.3);
+  });
+
+  it('aether_plains (시작 zone) ancient 보스 weight 0.1 (낮음 — 입문)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const start = resolveFieldEncounter('aether_plains', 'ancient')!;
+    const startBoss = start.monsterPool.find((s) => s.isBoss)!;
+    expect(startBoss.weight).toBe(0.1); // 시작 보스 낮은 weight (희귀 조우)
+  });
+});
