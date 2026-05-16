@@ -244,10 +244,27 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 검증: combatEngine 33/33 + dualTech 38/38 + tripleTech 25/25 + techCatalog 5/5.
 - 누적 **98 sprint**, PR #11 96 commits.
 
-## TODO (CHRONO-ATB chapter XII 후보)
+## 2026-05-16 CHRONO-ATB chapter XII — 100 sprint 마디 + Field 시스템 시작 (10 sprint)
 
-- 라이브 Playwright 자동 QA: 전체 시나리오 (era 전환 → 전투 → 협공 발동 → 보상)
-- 협공 사용 통계 DB 영속화 (User 누적 — Prisma 모델)
-- 다중 후보 동시 표시 sub-menu (Dual + Triple 통합 패널)
-- 시대별 monster AI decideAction 차별화 (skill 선택 weighted)
+100 sprint 도달 + 크로노 트리거 핵심 컨셉 'visible encounter / 시대별 필드' 데이터 + wire 시작.
+
+- **S100** chain MAX 도달 알림 효과 / **S101** chronoField 데이터 구조 + aether_plains 3 era / **S102** memory_forest + shadow_gorge (9 encounter) / **S103** rollFieldMonster weighted picker / **S104** malatus_sanctuary + crystal_cave (15) / **S105** forgotten_citadel + chrono_spire (21 — 7 zone 완성) / **S106** server /api/world/zones/:code/encounter REST / **S107** NetworkManager.fetchZoneEncounter / **S108** WorldScene 정보 패널 encounter line + 보스 indicator / **S109** BattleScene 좌상단 ambient line.
+
+- 검증: chronoField 18/18 + 기존 combatEngine 33/33 + dualTech 38/38 + tripleTech 25/25 + techCatalog 5/5.
+- 누적 **109 sprint**, PR #11 113 commits.
+
+**완성된 크로노 트리거 필드 시스템 v1**:
+- 7 zone × 3 era = 21 encounter (52 unique monster id)
+- 시대별 monster pool / 보스 weight 분리 / 분위기 ambient line
+- weighted picker (rollFieldMonster) + deterministic 검증 가능 (rollFieldEncounterSpawns)
+- server REST + 클라 NetworkManager wire
+- WorldScene 정보 패널 + BattleScene 좌상단 표시
+
+## TODO (CHRONO-ATB chapter XIII 후보)
+
+- GameScene visible encounter (필드 monster sprite 실 spawn — chronoField + rollFieldEncounterSpawns 활용)
+- monster click → BattleScene 진입 시 encounter 정보 전달
+- 라이브 Playwright 자동 QA (전체 시나리오)
+- 협공 통계 DB 영속화
+- chronoField 추가 데이터: 시대별 BGM 트랙 / 필드 effect
 
