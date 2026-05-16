@@ -1894,7 +1894,7 @@ export class BattleScene extends Phaser.Scene {
         combatId: string;
         turn?: number;
         tick?: number;
-        actions: unknown[];
+        actions: Array<{ actionType: string; actorName?: string; damage?: number }>;
         // CHRONO-S23: server TickResult.dualTechCandidates 노출
         dualTechCandidates?: Array<{ techId: string; name: string; actorIds: [string, string] }>;
       };
@@ -1907,6 +1907,12 @@ export class BattleScene extends Phaser.Scene {
           this.lastDualTechCandidates = d.dualTechCandidates;
         } else {
           this.lastDualTechCandidates = [];
+        }
+        // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
+        for (const act of d.actions ?? []) {
+          if (act.actionType === 'dual_tech' && act.actorName?.includes('(CHAIN)')) {
+            this.battleUI?.addLog(`🔥 CHAIN COMBO! +20% 데미지 (${act.damage ?? 0})`);
+          }
         }
       }
     });
