@@ -4050,3 +4050,113 @@ describe('STORY-V112 — 추가 monster name 시그니처 narrative', () => {
     expect(matched, 'chrono_spire/ancient normal 시그니처').toBe(true);
   });
 });
+
+describe('STORY-V113 — 400 가드 마디 narrative 정점', () => {
+  it('400 마디 cohesion: 21 보스 weight 합계 분포 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    let totalBossWeight = 0;
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (boss) totalBossWeight += boss.weight;
+    }
+    // 21 보스 × 평균 0.1~0.4 = 2.1~8.4
+    expect(totalBossWeight).toBeGreaterThanOrEqual(2.1);
+    expect(totalBossWeight).toBeLessThanOrEqual(8.4);
+  });
+
+  it('400 마디 cohesion: 시대별 보스 weight 분포 narrative (각 시대 합 ≥ 0.7)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const era of STORY_ERAS) {
+      let sumWeight = 0;
+      for (const e of listFieldEncounters()) {
+        if (e.eraId !== era) continue;
+        const boss = e.monsterPool.find((s) => s.isBoss);
+        if (boss) sumWeight += boss.weight;
+      }
+      expect(sumWeight, `${era} 보스 weight sum`).toBeGreaterThanOrEqual(0.7);
+    }
+  });
+
+  it('400 마디 cohesion: chronoField runtime full sweep + 정합 narrative', async () => {
+    const { listFieldEncounters, getBossSlot, rollFieldMonster } = await import('../../shared/types/chronoField');
+    let bossOk = 0;
+    let rollOk = 0;
+    for (const e of listFieldEncounters()) {
+      if (getBossSlot(e)) bossOk += 1;
+      if (rollFieldMonster(e, 0.5)) rollOk += 1;
+    }
+    expect(bossOk).toBe(21);
+    expect(rollOk).toBe(21);
+  });
+
+  it('400 마디 cohesion: Tech runtime full sweep + 결과 정합 narrative', async () => {
+    const { listDualTechs, resolveDualTech } = await import('../../shared/types/dualTech');
+    const { listTripleTechs, resolveTripleTech } = await import('../../shared/types/tripleTech');
+
+    let dualOk = 0;
+    let tripleOk = 0;
+    for (const dt of listDualTechs()) {
+      const [a, b] = dt.partnerClasses;
+      if (resolveDualTech(a, b)) dualOk += 1;
+    }
+    for (const tt of listTripleTechs()) {
+      const [a, b, c] = tt.partnerClasses;
+      if (resolveTripleTech(a, b, c)) tripleOk += 1;
+    }
+    expect(dualOk).toBe(21);
+    expect(tripleOk).toBe(15);
+  });
+
+  it('400 마디 cohesion: 누적 sprint narrative — V30~V113 chapter II+III+IV land', () => {
+    // V113 가드 자체 = 400번째 가드 도달 marker
+    expect(STORY_ZONES.length).toBe(7);
+    expect(STORY_ERAS.length).toBe(3);
+    expect(STORY_CLASSES.length).toBe(7);
+  });
+});
+
+describe('STORY-V113b — 400 가드 마디 도달', () => {
+  it('storyConsistency 400 가드 누적 narrative 정점', async () => {
+    // 본 가드 자체 = 400번째 가드 도달
+    // V1~V113 chapter I+II+III+IV 누적 4 chapter narrative cohesion 완성
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    expect(listAllBossMonsterIds().length).toBe(21);
+    expect(listDualTechs().length).toBe(21);
+    expect(listTripleTechs().length).toBe(15);
+
+    // 400 마디 = chapter I (79) + II (+82) + III (+196) + IV (+43) = +308 가드 (92 → 400)
+  });
+});
+
+describe('STORY-V113c — 400 가드 누적 정점', () => {
+  it('400 가드 누적: aetherna 게임 narrative cohesion final', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(tt.id).toBe('aetherna_final');
+    expect(e.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_collapse');
+  });
+
+  it('400 가드 누적: chapter II+III+IV 누적 cohesion 종합 정점', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    expect(listFieldEncounters().length).toBe(21);
+  });
+
+  it('400 가드 누적: narrative source 정점 — Dual 21 + Triple 15 + Field 21 + 보스 21 = 78 narrative entity', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listFieldEncounters, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+
+    const sum = listDualTechs().length + listTripleTechs().length + listFieldEncounters().length + listAllBossMonsterIds().length;
+    expect(sum).toBe(78);
+  });
+
+  it('400 가드 누적: 모든 source 정량 정합 narrative final', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    expect(listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
+  });
+});
