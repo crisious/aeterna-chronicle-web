@@ -747,3 +747,26 @@ describe('STORY-V24 — narrative 정량 정점 (협공/보스/zone/클래스 �
     expect(STORY_CLASSES.length).toBe(7);
   });
 });
+
+describe('STORY-V26 — 클래스 협공 density narrative', () => {
+  it('각 narrative 클래스가 Dual 6 (cross-product 완성, 7-1=6)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    for (const cls of STORY_CLASSES) {
+      const techs = listDualTechsByClass(cls);
+      expect(techs.length, `${cls} Dual count`).toBe(6); // 7-1=6 다른 클래스와 페어
+    }
+  });
+
+  it('ether_knight + memory_breaker 정확히 1 Dual (ether_break)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    expect(resolveDualTech('ether_knight', 'memory_breaker')?.id).toBe('ether_break');
+  });
+
+  it('Triple Tech 각 클래스 카운트 ≥ 2 (다양성)', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    for (const cls of STORY_CLASSES) {
+      const techs = listTripleTechsByClass(cls);
+      expect(techs.length, `${cls} Triple count`).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
