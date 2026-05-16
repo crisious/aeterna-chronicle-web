@@ -198,6 +198,8 @@ export class BattleScene extends Phaser.Scene {
   private serverCombatId: string | null = null;
   // CHRONO-S23: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
   private lastDualTechCandidates: Array<{ techId: string; name: string; actorIds: [string, string] }> = [];
+  // CHRONO-S36: 다중 후보 중 선택 인덱스 (Shift+D 로 cycle)
+  private dualTechSelectedIndex = 0;
   // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
   private dualTechButton: Phaser.GameObjects.Container | null = null;
 
@@ -392,8 +394,15 @@ export class BattleScene extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
       this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-      // CHRONO-S25: 'D' 키 → 첫 Dual Tech 후보 즉시 발동 (UI 발동 버튼 풀 구현 전 빠른 path)
-      this.input.keyboard.on('keydown-D', () => this._triggerFirstDualTech());
+      // CHRONO-S25: 'D' 키 → 선택된 Dual Tech 후보 발동
+      // CHRONO-S36: Shift+D → 다음 후보로 cycle
+      this.input.keyboard.on('keydown-D', (e: KeyboardEvent) => {
+        if (e.shiftKey) {
+          this._cycleDualTechSelection();
+        } else {
+          this._triggerFirstDualTech();
+        }
+      });
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -1857,7 +1866,7 @@ export class BattleScene extends Phaser.Scene {
       this.battleUI?.addLog('[협공] 서버 전투 미연결');
       return;
     }
-    const cand = this.lastDualTechCandidates[0];
+    const cand = this.lastDualTechCandidates[this.dualTechSelectedIndex] ?? this.lastDualTechCandidates[0];
     if (!cand) {
       this.battleUI?.addLog('[협공] 발동 가능한 후보 없음 (양쪽 ATB 100% + 호환 클래스 필요)');
       return;
@@ -1897,6 +1906,23 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * CHRONO-S36: Shift+D 로 협공 후보 cycle. 다음 인덱스로 회전 + 버튼 라벨 갱신.
+   */
+  private _cycleDualTechSelection(): void {
+    if (this.lastDualTechCandidates.length === 0) {
+      this.battleUI?.addLog('[협공] 후보 없음 (cycle 무효)');
+      return;
+    }
+    this.dualTechSelectedIndex = (this.dualTechSelectedIndex + 1) % this.lastDualTechCandidates.length;
+    const sel = this.lastDualTechCandidates[this.dualTechSelectedIndex];
+    this.battleUI?.addLog(
+      `🔁 협공 선택: ${sel.name} (${this.dualTechSelectedIndex + 1}/${this.lastDualTechCandidates.length})`,
+    );
+    const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+    txt?.setText(`✨ ${sel.name} (D)`);
+  }
+
   private _shouldUseServerCombat(): boolean {
     if (this._initData.offlineQa) {
       return false;
@@ -1925,12 +1951,18 @@ export class BattleScene extends Phaser.Scene {
           const names = d.dualTechCandidates.map((c) => c.name).join(', ');
           this.battleUI?.addLog(`✨ 협공 가능: ${names}`);
           this.lastDualTechCandidates = d.dualTechCandidates;
-          // CHRONO-S31: 후보 있으면 버튼 visible + 첫 후보 이름 표시
+          // CHRONO-S36: 후보 목록 갱신 시 selectedIndex 가 범위 밖이면 0 으로 reset
+          if (this.dualTechSelectedIndex >= d.dualTechCandidates.length) {
+            this.dualTechSelectedIndex = 0;
+          }
+          // CHRONO-S31: 후보 있으면 버튼 visible + 선택된 후보 이름 표시
           this.dualTechButton?.setVisible(true);
           const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-          txt?.setText(`✨ ${d.dualTechCandidates[0].name} (D)`);
+          const sel = d.dualTechCandidates[this.dualTechSelectedIndex] ?? d.dualTechCandidates[0];
+          txt?.setText(`✨ ${sel.name} (D)`);
         } else {
           this.lastDualTechCandidates = [];
+          this.dualTechSelectedIndex = 0;
           this.dualTechButton?.setVisible(false);
         }
         // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
