@@ -6,6 +6,8 @@ import {
   resolveFieldEncounter,
   listFieldEncounters,
   listFieldEncountersByZone,
+  rollFieldMonster,
+  rollFieldEncounterSpawns,
 } from '../../shared/types/chronoField';
 
 describe('resolveFieldEncounter', () => {
@@ -87,5 +89,54 @@ describe('resolveFieldEncounter — 추가 zone (CHRONO-S102)', () => {
     const e = resolveFieldEncounter('shadow_gorge', 'ruined_future');
     expect(e?.maxSpawn).toBe(4);
     expect(e!.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('shadow_eternity');
+  });
+});
+
+describe('rollFieldMonster (CHRONO-S103)', () => {
+  it('roll 0.0 → 첫 slot (에테르 정령 weight 0.5)', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ancient')!;
+    const slot = rollFieldMonster(e, 0);
+    expect(slot?.monsterId).toBe('ancient_ether_sprite');
+  });
+
+  it('roll 0.6 → 두번째 slot (안개 늑대 weight 0.4, 0.5~0.9 range)', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ancient')!;
+    const slot = rollFieldMonster(e, 0.6);
+    expect(slot?.monsterId).toBe('ancient_mist_wolf');
+  });
+
+  it('roll 0.95 → 보스 slot (유물 골렘 weight 0.1, 0.9~1.0 range)', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ancient')!;
+    const slot = rollFieldMonster(e, 0.95);
+    expect(slot?.monsterId).toBe('ancient_relic_golem');
+    expect(slot?.isBoss).toBe(true);
+  });
+
+  it('roll 1.0 → clamp 후 마지막 slot fallback', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ancient')!;
+    const slot = rollFieldMonster(e, 1.0);
+    expect(slot).not.toBeNull();
+  });
+});
+
+describe('rollFieldEncounterSpawns (CHRONO-S103)', () => {
+  it('maxSpawn 만큼 슬롯 배열 반환', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ancient')!; // maxSpawn 3
+    const rolls = [0.0, 0.6, 0.95];
+    let i = 0;
+    const spawns = rollFieldEncounterSpawns(e, () => rolls[i++]);
+    expect(spawns.length).toBe(3);
+    expect(spawns[0].monsterId).toBe('ancient_ether_sprite');
+    expect(spawns[1].monsterId).toBe('ancient_mist_wolf');
+    expect(spawns[2].monsterId).toBe('ancient_relic_golem');
+  });
+
+  it('빈 encounter 도 안전 처리 (length 0)', () => {
+    // 임의 빈 pool 테스트는 직접 생성
+    const fakeEmpty = {
+      zoneId: 'fake', eraId: 'present' as const, monsterPool: [],
+      maxSpawn: 0, hasBossSlot: false, ambientLine: '',
+    };
+    expect(rollFieldEncounterSpawns(fakeEmpty, () => 0.5)).toHaveLength(0);
   });
 });

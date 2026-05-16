@@ -168,3 +168,39 @@ export function listFieldEncountersByZone(zoneId: string): readonly FieldEncount
   if (!zoneId) return [];
   return ENCOUNTERS.filter((e) => e.zoneId === zoneId);
 }
+
+/**
+ * CHRONO-S103: weighted random monster picker.
+ * roll: number (0~1) — Math.random() 또는 deterministic seed 주입.
+ * monsterPool weight 누적 비교로 선택.
+ */
+export function rollFieldMonster(
+  encounter: FieldEncounterDef,
+  roll: number,
+): FieldMonsterSlot | null {
+  if (!encounter || encounter.monsterPool.length === 0) return null;
+  const clamped = Math.max(0, Math.min(0.999999, roll));
+  let acc = 0;
+  for (const slot of encounter.monsterPool) {
+    acc += slot.weight;
+    if (clamped < acc) return slot;
+  }
+  // weight 합 < 1.0 edge case — 마지막 slot fallback
+  return encounter.monsterPool[encounter.monsterPool.length - 1];
+}
+
+/**
+ * CHRONO-S103: encounter 의 maxSpawn 만큼 monster 뽑기.
+ * rollProvider: () => number — 매 호출마다 새 roll 반환 (테스트 시 deterministic 가능).
+ */
+export function rollFieldEncounterSpawns(
+  encounter: FieldEncounterDef,
+  rollProvider: () => number,
+): readonly FieldMonsterSlot[] {
+  const out: FieldMonsterSlot[] = [];
+  for (let i = 0; i < encounter.maxSpawn; i++) {
+    const slot = rollFieldMonster(encounter, rollProvider());
+    if (slot) out.push(slot);
+  }
+  return out;
+}
