@@ -720,3 +720,30 @@ describe('STORY-V23 — ambientLine 무결성 + 게임명 narrative', () => {
     expect(aethernaBosses.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('STORY-V24 — narrative 정량 정점 (협공/보스/zone/클래스 총합)', () => {
+  it('총 협공 = 36 (Dual 21 + Triple 15)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    expect(listDualTechs().length).toBe(21);
+    expect(listTripleTechs().length).toBe(15);
+    expect(listDualTechs().length + listTripleTechs().length).toBe(36);
+  });
+
+  it('총 보스 = 21 (zone 7 × era 3, 모든 cross-product)', async () => {
+    const { getTotalFieldBosses, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    expect(getTotalFieldBosses()).toBe(21);
+    expect(listAllBossMonsterIds().length).toBe(21);
+  });
+
+  it('총 monster ≥ 50 unique (시대별 다양성)', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    expect(listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
+  });
+
+  it('총 zone 7 + era 3 + 클래스 7 narrative source 정량', () => {
+    expect(STORY_ZONES.length).toBe(7);
+    expect(STORY_ERAS.length).toBe(3);
+    expect(STORY_CLASSES.length).toBe(7);
+  });
+});
