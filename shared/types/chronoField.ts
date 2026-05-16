@@ -347,6 +347,26 @@ export function listFieldEncountersByZone(zoneId: string): readonly FieldEncount
 }
 
 /**
+ * CHRONO-S115: encounter 의 보스 slot 1개 반환 (or null).
+ */
+export function getBossSlot(encounter: FieldEncounterDef): FieldMonsterSlot | null {
+  return encounter.monsterPool.find((s) => s.isBoss === true) ?? null;
+}
+
+/**
+ * CHRONO-S115: 전체 encounter 에서 등장하는 unique monster id 목록 (DB 시드 / Wiki 활용).
+ */
+export function listAllFieldMonsterIds(): readonly string[] {
+  const set = new Set<string>();
+  for (const e of ENCOUNTERS) {
+    for (const slot of e.monsterPool) {
+      set.add(slot.monsterId);
+    }
+  }
+  return Array.from(set).sort();
+}
+
+/**
  * CHRONO-S103: weighted random monster picker.
  * roll: number (0~1) — Math.random() 또는 deterministic seed 주입.
  * monsterPool weight 누적 비교로 선택.

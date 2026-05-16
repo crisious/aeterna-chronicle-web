@@ -185,3 +185,32 @@ describe('FieldEncounter bgmTrack + ambientEffect (CHRONO-S111)', () => {
     expect(e?.bgmTrack).toBe('bgm_final_boss');
   });
 });
+
+describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {
+  it('getBossSlot 보스 있는 encounter → 슬롯 반환', async () => {
+    const { resolveFieldEncounter, getBossSlot } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const boss = getBossSlot(e);
+    expect(boss?.monsterId).toBe('aetherna_collapse');
+  });
+
+  it('getBossSlot 보스 없는 encounter → null', async () => {
+    const { resolveFieldEncounter, getBossSlot } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('aether_plains', 'present')!;
+    expect(getBossSlot(e)).toBeNull();
+  });
+
+  it('listAllFieldMonsterIds ≥ 50 (52 unique IDs)', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const ids = listAllFieldMonsterIds();
+    expect(ids.length).toBeGreaterThanOrEqual(50);
+    expect(new Set(ids).size).toBe(ids.length); // unique
+  });
+
+  it('listAllFieldMonsterIds 정렬됨 (alphabetical)', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const ids = listAllFieldMonsterIds();
+    const sorted = [...ids].sort();
+    expect(ids).toEqual(sorted);
+  });
+});
