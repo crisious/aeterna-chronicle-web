@@ -1597,3 +1597,40 @@ describe('STORY-V48 — 협공 mpCost ↔ damageMultiplier 상관 narrative', ()
     }
   });
 });
+
+describe('STORY-V49 — chronoField zone-별 narrative 분배', () => {
+  it('각 zone listFieldEncountersByZone 정확히 3 era encounter (cross-product 정합)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    for (const zone of STORY_ZONES) {
+      const list = listFieldEncountersByZone(zone);
+      expect(list.length, `${zone} encounter count`).toBe(3);
+      const eras = new Set(list.map((e) => e.eraId));
+      expect(eras.size, `${zone} eras unique`).toBe(3);
+      for (const era of STORY_ERAS) {
+        expect(eras.has(era), `${zone} missing era ${era}`).toBe(true);
+      }
+    }
+  });
+
+  it('listFieldEncountersByZone 비-narrative zone 빈 list 반환', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    expect(listFieldEncountersByZone('nonexistent_zone').length).toBe(0);
+    expect(listFieldEncountersByZone('').length).toBe(0);
+  });
+
+  it('resolveFieldEncounter 비-narrative 조합 null 반환 narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    expect(resolveFieldEncounter('nonexistent_zone', 'ancient')).toBeNull();
+    expect(resolveFieldEncounter('', 'ancient')).toBeNull();
+  });
+
+  it('각 zone 3 era 의 보스 모두 unique narrative (시대별 보스 다름)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    for (const zone of STORY_ZONES) {
+      const list = listFieldEncountersByZone(zone);
+      const bossIds = list.map((e) => e.monsterPool.find((s) => s.isBoss)?.monsterId);
+      const set = new Set(bossIds.filter(Boolean));
+      expect(set.size, `${zone} 3 era 보스 unique`).toBe(3);
+    }
+  });
+});
