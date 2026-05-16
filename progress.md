@@ -284,10 +284,17 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 누적 **134 sprint**, PR #11 138 commits.
 - **7 zone × 3 era = 21 encounter 모두 보스 슬롯 보유 (cross-product 100%)**
 
-## TODO (CHRONO-ATB chapter XVII 후보)
+## 2026-05-16 CHRONO-ATB chapter XVII — Boss 헬퍼 + Catalog 가드 (3 sprint)
+
+- **S135** docs XVI / **S136** getTotalFieldBosses + listAllBossMonsterIds 헬퍼 / **S137** chronoBarrel test 보스 헬퍼 가드.
+- 누적 **137 sprint**, PR #11 141 commits.
+- **21 보스 unique id 정렬** + barrel 통합 접근.
+
+## TODO (CHRONO-ATB chapter XVIII 후보)
 
 - 라이브 Playwright 자동 QA (전체 시나리오)
 - 협공 통계 DB 영속화 (Prisma 모델)
 - 시대 전환 시 GameScene 재 spawn
 - BattleScene 승리 시 monster sprite 제거 (visible 보존)
+- chronoField encounter 가 boss-only mode 옵션 (특수 boss-rush 필드)
 
