@@ -483,8 +483,14 @@ V129 이후 chapter VI — element 분포 정확 + 시간선 narrative 정합.
 - **V132** Dual element 분포 정확 (chrono 4 + dark 11 + holy 6 = 21)
 - **V133** monster passive 정확 (ancient 회피 5%, future 명중 5%, present 0% baseline)
 - **V134** progress.md V130~V134 갱신
+- **V135** 21 encounter 100% 무결성 stress (모든 필드 + 타입 + 보스 weight 0.1~0.4)
+- **V136** Tech runtime 100% 무결성 (21 Dual + 15 Triple 필드 + resolve cycle 100회)
+- **V137** chronoEra 종합 정확 값 stress (결정성 + speedTier 정확 + non-error)
+- **V138** chronoField helper API non-error stress (전 helper + 50회 cycle + immutable)
+- **V139** description quality 강화 (Triple marker ≥8 + 한글 ≥5 + Dual 한글 ≥3)
+- **V140** progress.md V135~V140 갱신 + 110 sprint 마디 기록
 
-회귀: storyConsistency 465/465 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 480/480 + unit 전체 844+/844+ pass.
 
-**105 sprint 마디 + 465 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) + VI (+15) = 누적 105 sprint, +373 가드 (92 → 465).
+**110 sprint 마디 + 480 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) + VI (+30) = 누적 110 sprint, +388 가드 (92 → 480).
 
