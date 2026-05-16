@@ -1979,3 +1979,32 @@ describe('STORY-V56 — Dual/Triple Tech 구조 무결성 narrative (200 가드 
     }
   });
 });
+
+describe('STORY-V58 — ATBSpeedTier ↔ chronoEra narrative cross-check', () => {
+  it('chronoEraToSpeedTier 반환값 모두 ATBSpeedTier 유효 범위 (1~6)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      const tier = chronoEraToSpeedTier(era);
+      expect(tier).toBeGreaterThanOrEqual(1);
+      expect(tier).toBeLessThanOrEqual(6);
+      expect(Number.isInteger(tier), `${era} tier integer`).toBe(true);
+    }
+  });
+
+  it('3 시대 speedTier 모두 unique narrative (시대 차별성)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    const tiers = STORY_ERAS.map((era) => chronoEraToSpeedTier(era));
+    expect(new Set(tiers).size).toBe(tiers.length);
+  });
+
+  it('ancient < present < ruined_future tier (시대 진행 = tier 증가 narrative)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToSpeedTier('ancient')).toBeLessThan(chronoEraToSpeedTier('present'));
+    expect(chronoEraToSpeedTier('present')).toBeLessThan(chronoEraToSpeedTier('ruined_future'));
+  });
+
+  it('ancient tier ≥ 1 (FF6 ATB 최소 tier 보장)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToSpeedTier('ancient')).toBeGreaterThanOrEqual(1);
+  });
+});
