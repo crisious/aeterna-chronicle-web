@@ -1321,3 +1321,38 @@ describe('STORY-V40 — 10 sprint 마디 narrative 정량 + 게임명 시그니�
     expect(grand, '보스+협공 ≥ 57').toBeGreaterThanOrEqual(57);
   });
 });
+
+describe('STORY-V41 — Dual Tech damageMultiplier + AOE narrative 분포', () => {
+  it('21 Dual Tech damageMultiplier 모두 2.0~2.5 범위 narrative (Triple 3.0+ 보다 약함)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.damageMultiplier, `${dt.id} damageMultiplier`).toBeGreaterThanOrEqual(2.0);
+      expect(dt.damageMultiplier).toBeLessThanOrEqual(2.5);
+    }
+  });
+
+  it('Dual AOE 정확히 3종 narrative (memory_break + time_overflow + void_oblivion)', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const aoes = listAoeDualTechs();
+    expect(aoes.length).toBe(3);
+    const ids = new Set(aoes.map((dt) => dt.id));
+    expect(ids.has('memory_break')).toBe(true);
+    expect(ids.has('time_overflow')).toBe(true);
+    expect(ids.has('void_oblivion')).toBe(true);
+  });
+
+  it('Dual AOE 모두 damageMultiplier 2.5 (광역 = 최강 Dual narrative)', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listAoeDualTechs()) {
+      expect(dt.damageMultiplier, `${dt.id} AOE damage`).toBe(2.5);
+    }
+  });
+
+  it('전체 Dual 평균 damageMultiplier < Triple 평균 narrative (Triple > Dual)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const dualAvg = listDualTechs().reduce((s, dt) => s + dt.damageMultiplier, 0) / 21;
+    const tripleAvg = listTripleTechs().reduce((s, tt) => s + tt.damageMultiplier, 0) / 15;
+    expect(tripleAvg).toBeGreaterThan(dualAvg);
+  });
+});
