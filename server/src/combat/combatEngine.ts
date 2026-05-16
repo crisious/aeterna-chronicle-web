@@ -150,6 +150,10 @@ export interface CombatParticipant {
   // ── CHRONO-S66: Triple Tech 누적 보스 저항 ─────────────────
   /** 받은 Triple Tech 횟수. 보스 한정 0.1 / hit 저항 강화. */
   tripleTechHitsTaken?: number;
+
+  // ── CHRONO-S81: 협공 완전 면역 (특수 보스용) ───────────────
+  /** true 시 Dual/Triple Tech 발동 거부 — 일부 raid 보스 등 특수 케이스용. */
+  dualTechImmune?: boolean;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -837,6 +841,8 @@ export class CombatEngine {
     const def = getDualTechById(req.techId);
     if (!def) return null;
     if (a.mp < def.mpCost || b.mp < def.mpCost) return null;
+    // CHRONO-S81: target 협공 면역 — 발동 거부 + MP/ATB 보존
+    if (target.dualTechImmune) return null;
 
     const avgAtk = (getEffectiveAtk(a, a.atk) + getEffectiveAtk(b, b.atk)) / 2;
     // CHRONO-S26/S73: 연속 콤보 보너스 — 5 tick 이내 이력 시 chainCount 단계 보너스
@@ -964,6 +970,8 @@ export class CombatEngine {
     const def = getTripleTechById(req.techId);
     if (!def) return null;
     if (a.mp < def.mpCost || b.mp < def.mpCost || c.mp < def.mpCost) return null;
+    // CHRONO-S81: target 협공 면역 — 발동 거부
+    if (target.dualTechImmune) return null;
 
     const avgAtk = (
       getEffectiveAtk(a, a.atk) + getEffectiveAtk(b, b.atk) + getEffectiveAtk(c, c.atk)

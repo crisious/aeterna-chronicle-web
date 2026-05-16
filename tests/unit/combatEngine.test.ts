@@ -720,6 +720,30 @@ describe('CombatEngine', () => {
     expect(dmg2).toBeLessThan(dmg1);
   });
 
+  // ── 9o2. Dual Tech immune target (CHRONO-S81) ──
+
+  it('9o2. dualTechImmune target rejects Dual Tech (no damage, no MP loss)', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 500, mp: 999, maxMp: 999 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 500, mp: 999, maxMp: 999 });
+    const immuneBoss = makeMonster({ id: 'immune', spd: 1, hp: 999999, maxHp: 999999, isBoss: true, dualTechImmune: true });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(immuneBoss);
+    e.start();
+    e.processTick();
+
+    const ok = e.submitDualTech('tk', 'ek', 'chrono_blade', 'immune');
+    expect(ok).toBe(true);
+
+    const result = e.processTick();
+    const dualAct = result.actions.find(a => a.actionType === 'dual_tech');
+    expect(dualAct).toBeUndefined();
+    expect(e.getParticipant('tk')!.mp).toBe(999);
+    expect(e.getParticipant('ek')!.mp).toBe(999);
+  });
+
   // ── 9r. Triple Tech execution (CHRONO-S59) ──
 
   it('9q2. tripleTechCandidates detects aetherna_final when 3 party ready', () => {
