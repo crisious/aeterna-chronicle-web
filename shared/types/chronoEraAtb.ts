@@ -51,3 +51,23 @@ const ERA_TO_ENEMY_MULT: Record<ChronoEraId, ChronoEnemyMultipliers> = {
 export function chronoEraToEnemyMultipliers(eraId: ChronoEraId): ChronoEnemyMultipliers {
   return ERA_TO_ENEMY_MULT[eraId] ?? ERA_TO_ENEMY_MULT.present;
 }
+
+/**
+ * CHRONO-S21: 시대별 monster 이름 데코레이터.
+ * 클라/서버 모두 동일 prefix 사용해 UI 표시 일관성 유지.
+ * - ancient: "[고대] " 접두사
+ * - present: 변경 없음
+ * - ruined_future: "[붕괴] " 접두사
+ */
+const ERA_NAME_PREFIX: Record<ChronoEraId, string> = {
+  ancient: '[고대] ',
+  present: '',
+  ruined_future: '[붕괴] ',
+};
+
+export function decorateMonsterNameByEra(name: string, eraId: ChronoEraId): string {
+  const prefix = ERA_NAME_PREFIX[eraId] ?? '';
+  // 중복 prefix 방지 (이미 적용된 이름이라면 그대로 반환)
+  if (prefix && name.startsWith(prefix)) return name;
+  return `${prefix}${name}`;
+}

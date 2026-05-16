@@ -27,6 +27,7 @@ import { initCombatSkillsFromDb } from '../combat/skillAdapter';
 import {
   isChronoEraId,
   chronoEraToEnemyMultipliers,
+  decorateMonsterNameByEra,
 } from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
@@ -383,7 +384,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           const spd = Math.max(1, Math.round(toFiniteNumber(m.speed, 10) * enemyMult.attackSpeed));
           engine.addParticipant({
             id: m.id,
-            name: m.name ?? m.id,
+            name: validEra ? decorateMonsterNameByEra(m.name ?? m.id, validEra) : (m.name ?? m.id),
             classId: m.classId ?? 'normal',
             level: Math.max(1, toFiniteNumber(m.level, 1) + enemyMult.levelOffset),
             hp,
@@ -428,7 +429,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           const adjGold = Math.max(0, Math.round(m.goldReward * enemyMult.reward));
           engine.addParticipant({
             id: m.id,
-            name: m.name,
+            name: validEra ? decorateMonsterNameByEra(m.name, validEra) : m.name,
             classId: m.type,
             level: adjLevel,
             hp: adjHp,

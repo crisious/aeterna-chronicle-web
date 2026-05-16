@@ -7,6 +7,7 @@ import {
   chronoEraToSpeedTier,
   isChronoEraId,
   chronoEraToEnemyMultipliers,
+  decorateMonsterNameByEra,
 } from '../../shared/types/chronoEraAtb';
 
 describe('chronoEraToSpeedTier', () => {
@@ -55,6 +56,31 @@ describe('chronoEraToEnemyMultipliers (CHRONO-S12)', () => {
   it('unknown era → present fallback', () => {
     const m = chronoEraToEnemyMultipliers('chaos_age' as never);
     expect(m).toEqual({ hp: 1.0, attackSpeed: 1.0, reward: 1.0, levelOffset: 0 });
+  });
+});
+
+describe('decorateMonsterNameByEra (CHRONO-S21)', () => {
+  it('ancient prefixes "[고대] "', () => {
+    expect(decorateMonsterNameByEra('시간 망령', 'ancient')).toBe('[고대] 시간 망령');
+  });
+
+  it('present returns original name unchanged', () => {
+    expect(decorateMonsterNameByEra('시간 망령', 'present')).toBe('시간 망령');
+  });
+
+  it('ruined_future prefixes "[붕괴] "', () => {
+    expect(decorateMonsterNameByEra('시간 망령', 'ruined_future')).toBe('[붕괴] 시간 망령');
+  });
+
+  it('이미 prefix 적용된 이름이면 중복 안 함 (idempotent)', () => {
+    const once = decorateMonsterNameByEra('망령', 'ancient');
+    const twice = decorateMonsterNameByEra(once, 'ancient');
+    expect(twice).toBe(once);
+  });
+
+  it('빈 문자열도 안전 처리', () => {
+    expect(decorateMonsterNameByEra('', 'present')).toBe('');
+    expect(decorateMonsterNameByEra('', 'ancient')).toBe('[고대] ');
   });
 });
 
