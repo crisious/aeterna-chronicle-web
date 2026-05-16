@@ -29,6 +29,7 @@ import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
 import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
 import { loadLastEra } from '../time/eraStorage';
 import { getDualTechById } from '../../../shared/types/dualTech';
+import { resolveFieldEncounter } from '../../../shared/types/chronoField';
 
 // CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
 const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
@@ -367,6 +368,19 @@ export class BattleScene extends Phaser.Scene {
       fontFamily: FONT_FAMILY,
       color: `#${era.tintColor.toString(16).padStart(6, '0')}`,
     }).setOrigin(1, 0).setDepth(250).setName('eraTierLabel');
+
+    // CHRONO-S109: 필드 encounter ambient line (좌상단 hint)
+    const zoneIdField = this._initData.zoneId ?? '';
+    const fieldEnc = zoneIdField ? resolveFieldEncounter(zoneIdField, this._initData.eraId ?? 'present') : null;
+    if (fieldEnc) {
+      this.add.text(20, 12, `🛡 ${fieldEnc.ambientLine}${fieldEnc.hasBossSlot ? ' ⚔️ 보스 가능' : ''}`, {
+        fontSize: '12px',
+        fontFamily: FONT_FAMILY,
+        color: '#ffd54a',
+        stroke: '#000000',
+        strokeThickness: 2,
+      }).setOrigin(0, 0).setDepth(250).setName('fieldAmbientLine');
+    }
 
     // CHRONO-S70: chain combo 라벨 (era 라벨 아래)
     this.chainLabel = this.add.text(scW - 20, 32, '', {
