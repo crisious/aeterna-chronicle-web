@@ -603,7 +603,7 @@ class NetworkManager {
     return this.get<ZoneInfo[]>('/api/world/zones');
   }
 
-  // CHRONO-S107: 시대별 필드 encounter 조회
+  // CHRONO-S107/S114: 시대별 필드 encounter 조회 (bgmTrack/ambientEffect 포함)
   async fetchZoneEncounter(zoneId: string, eraId: 'ancient' | 'present' | 'ruined_future'): Promise<{
     ok: boolean;
     encounter?: {
@@ -613,6 +613,8 @@ class NetworkManager {
       maxSpawn: number;
       hasBossSlot: boolean;
       ambientLine: string;
+      bgmTrack?: string;
+      ambientEffect?: 'mist' | 'dust' | 'glow' | 'void' | 'none';
     };
     error?: string;
   }> {
