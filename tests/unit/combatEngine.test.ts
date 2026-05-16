@@ -648,6 +648,44 @@ describe('CombatEngine', () => {
     expect(e.getParticipant('m3')!.hp).toBeLessThan(1000);
   });
 
+  // ── 9q. Cumulative boss Dual Tech resist (CHRONO-S43) ──
+
+  it('9q. boss Dual Tech resist increases per hit (0.6 → 0.55 → 0.50 ...)', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 });
+    const boss = makeMonster({ id: 'bossB', spd: 1, hp: 999999, maxHp: 999999, def: 0, isBoss: true });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(boss);
+    e.start();
+
+    // 첫 번째 발동: hits=0 → 0.6×
+    e.processTick();
+    e.submitDualTech('tk', 'ek', 'chrono_blade', 'bossB');
+    const r1 = e.processTick();
+    const dmg1 = r1.actions.find(a => a.actionType === 'dual_tech')!.damage!;
+
+    // boss hits 카운트 1
+    expect(e.getParticipant('bossB')!.dualTechHitsTaken).toBe(1);
+
+    // 두 번째 발동 위해 chain 윈도우 (5 tick) 초과 대기 — 6 tick 진행
+    // 게이지는 spd=500 → 1 tick 에 250 채워 즉시 100 cap, 5 tick 후에도 100 유지
+    for (let i = 0; i < 6; i++) {
+      e.processTick();
+    }
+
+    // 두 번째: hits=1 → 0.55×, chain 해제 (gap > 5)
+    e.submitDualTech('tk', 'ek', 'chrono_blade', 'bossB');
+    const r2 = e.processTick();
+    expect(e.getParticipant('bossB')!.dualTechHitsTaken).toBe(2);
+    const dmg2 = r2.actions.find(a => a.actionType === 'dual_tech')!.damage!;
+
+    // hits 증가 후 데미지 감소 (0.55x < 0.6x)
+    expect(dmg2).toBeLessThan(dmg1);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {

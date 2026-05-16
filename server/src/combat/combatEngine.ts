@@ -137,6 +137,10 @@ export interface CombatParticipant {
   // ── P56-S3: drain_amplify (lifesteal 증폭) ─────────────────
   /** lifesteal 효과 증폭 비율(%) — applyLifesteal 에서 사용 */
   drainAmplifyPercent?: number;
+
+  // ── CHRONO-S43: 누적 보스 저항 카운트 ───────────────────────
+  /** 받은 Dual Tech 횟수. 보스 한정으로 저항 강화 (0.05 / hit, 최대 cap 0.3) */
+  dualTechHitsTaken?: number;
 }
 
 // ─── 전투 행동 ─────────────────────────────────────────────────
@@ -717,8 +721,13 @@ export class CombatEngine {
     const isChain = this.lastDualTechTick !== null
       && this.currentTick - this.lastDualTechTick <= 5;
     const chainBonus = isChain ? 1.2 : 1.0;
-    // CHRONO-S34: 보스 target Dual Tech 저항 — damage 0.6x (밸런스)
-    const bossResist = target.isBoss ? 0.6 : 1.0;
+    // CHRONO-S34/S43: 보스 target Dual Tech 저항 — base 0.6x, 누적 보스에 -0.05/hit (최저 0.3)
+    const computeBossResist = (p: CombatParticipant): number => {
+      if (!p.isBoss) return 1.0;
+      const hits = p.dualTechHitsTaken ?? 0;
+      return Math.max(0.3, 0.6 - 0.05 * hits);
+    };
+    const bossResist = computeBossResist(target);
 
     const result = calculateDamage({
       type: 'physical',
@@ -742,7 +751,7 @@ export class CombatEngine {
 
     let totalDamage = 0;
     for (const t of targets) {
-      const tBossResist = t.isBoss ? 0.6 : 1.0;
+      const tBossResist = computeBossResist(t);
       const tResult = def.aoe
         ? calculateDamage({
           type: 'physical',
@@ -760,6 +769,10 @@ export class CombatEngine {
         })
         : result;
       t.hp = Math.max(0, t.hp - tResult.damage);
+      // CHRONO-S43: 보스 누적 저항 카운트 증가
+      if (t.isBoss) {
+        t.dualTechHitsTaken = (t.dualTechHitsTaken ?? 0) + 1;
+      }
       if (t.hp <= 0) {
         t.alive = false;
         this.logger.logDeath(t.id, `${a.id}+${b.id}`);
