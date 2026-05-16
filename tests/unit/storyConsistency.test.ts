@@ -2500,3 +2500,44 @@ describe('STORY-V71 — 시대별 협공 가용 narrative cross-check', () => {
     expect(listTripleTechsByEra('ruined_future').find((tt) => tt.id === 'aetherna_final')).toBeDefined();
   });
 });
+
+describe('STORY-V72 — monster id ↔ name narrative 1:1 매핑', () => {
+  it('동일 monsterId 는 모든 encounter 에서 동일 name narrative (모순 없음)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const idToName = new Map<string, string>();
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        const existing = idToName.get(slot.monsterId);
+        if (existing !== undefined) {
+          expect(existing, `${slot.monsterId} name 모순`).toBe(slot.name);
+        } else {
+          idToName.set(slot.monsterId, slot.name);
+        }
+      }
+    }
+  });
+
+  it('동일 monsterId 는 isBoss 도 동일 narrative (보스/일반 모순 없음)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const idToBoss = new Map<string, boolean>();
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        const isB = slot.isBoss === true;
+        const existing = idToBoss.get(slot.monsterId);
+        if (existing !== undefined) {
+          expect(existing, `${slot.monsterId} isBoss 모순`).toBe(isB);
+        } else {
+          idToBoss.set(slot.monsterId, isB);
+        }
+      }
+    }
+  });
+
+  it('일반 monster id 가 같은 encounter 에서 한번만 등장 narrative (중복 slot 없음)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      const ids = e.monsterPool.map((s) => s.monsterId);
+      expect(new Set(ids).size, `${e.zoneId}/${e.eraId} monster id unique in encounter`).toBe(ids.length);
+    }
+  });
+});
