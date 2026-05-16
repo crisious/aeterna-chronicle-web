@@ -35,7 +35,11 @@ import { statusEffectManager } from './statusEffectManager';
 import { comboManager } from './comboManager';
 import { ATB_MAX, computeChargeDelta } from './atb';
 import type { ATBMode, ATBSpeedTier } from '../../../shared/types/atb';
-import { chronoEraToSpeedTier, type ChronoEraId } from '../../../shared/types/chronoEraAtb';
+import {
+  chronoEraToSpeedTier,
+  chronoEraToAIHints,
+  type ChronoEraId,
+} from '../../../shared/types/chronoEraAtb';
 import { resolveDualTech, getDualTechById } from '../../../shared/types/dualTech';
 
 // ─── 전투 상태 머신 ───────────────────────────────────────────
@@ -251,6 +255,8 @@ export interface CombatConfig {
   speedTier: ATBSpeedTier;
   /** WAIT 모드에서 menu 열림 여부 (UI 측에서 set, 기본 false) */
   menuOpen: boolean;
+  /** CHRONO-S53: 시대 (있으면 MonsterAIConfig.basicAttackMultiplier 보정에 사용). */
+  eraId?: ChronoEraId;
 }
 
 const DEFAULT_CONFIG: CombatConfig = {
@@ -362,11 +368,13 @@ export class CombatEngine {
 
     // 몬스터 AI 설정
     if (p.isMonster) {
+      // CHRONO-S53: era hint 로 AI 가중치 보정 (aggressiveBias → basicAttackMultiplier +bias)
+      const aiHints = this.config.eraId ? chronoEraToAIHints(this.config.eraId) : { defensiveBias: 0, aoeBias: 0, aggressiveBias: 0 };
       const aiConfig: MonsterAIConfig = {
         monsterId: p.id,
         tier: p.isBoss ? 'boss' : (p.level > 30 ? 'tactical' : 'basic'),
         skills: [], // 실제로는 몬스터 데이터에서 로드
-        basicAttackMultiplier: 1.0,
+        basicAttackMultiplier: 1.0 + aiHints.aggressiveBias,
         aggroDecayRate: 5,
       };
       this.monsterAIs.set(p.id, new MonsterAIEngine(aiConfig));
@@ -1285,7 +1293,7 @@ export class CombatInstanceManager {
    */
   createFromEra(eraId: ChronoEraId, extraConfig?: Partial<CombatConfig>): CombatEngine {
     const speedTier = chronoEraToSpeedTier(eraId);
-    return this.create({ speedTier, ...extraConfig });
+    return this.create({ speedTier, eraId, ...extraConfig });
   }
 
   /** 전투 조회 */
