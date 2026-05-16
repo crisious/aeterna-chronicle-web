@@ -899,3 +899,42 @@ describe('STORY-V30 — weight 합 narrative balance', () => {
     expect(normalCount).toBeGreaterThanOrEqual(bossCount);
   });
 });
+
+describe('STORY-V31 — 보스 id 시그니처 suffix narrative', () => {
+  const BOSS_SUFFIXES = [
+    'guardian', 'lord', 'titan', 'archon', 'overlord', 'eternity',
+    'phantom', 'wraith', 'seal', 'golem', 'eidolon', 'collapse',
+    'devourer', 'avatar', 'remnant', 'malatus',
+  ];
+
+  it('21 보스 id 모두 시그니처 suffix narrative 매치', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const bossIds = listAllBossMonsterIds();
+    expect(bossIds.length).toBe(21);
+    for (const id of bossIds) {
+      const matched = BOSS_SUFFIXES.some((sfx) => id.includes(sfx));
+      expect(matched, `boss id '${id}' lacks signature suffix`).toBe(true);
+    }
+  });
+
+  it('21 보스 id 모두 unique + length 5~30 narrative + snake_case', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const bossIds = listAllBossMonsterIds();
+    const set = new Set(bossIds);
+    expect(set.size).toBe(bossIds.length);
+    for (const id of bossIds) {
+      expect(id.length, `boss id '${id}' length`).toBeGreaterThanOrEqual(5);
+      expect(id.length).toBeLessThanOrEqual(30);
+      expect(id.match(/^[a-z][a-z0-9_]*$/), `boss id '${id}' snake_case`).not.toBeNull();
+    }
+  });
+
+  it('aetherna 시그니처 보스 2개 (eidolon + collapse) 정확히 보유', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const bossIds = listAllBossMonsterIds();
+    const aetherna = bossIds.filter((id) => id.startsWith('aetherna_'));
+    expect(aetherna.length).toBe(2);
+    expect(aetherna).toContain('aetherna_eidolon');
+    expect(aetherna).toContain('aetherna_collapse');
+  });
+});
