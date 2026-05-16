@@ -380,6 +380,21 @@ export class BattleScene extends Phaser.Scene {
         stroke: '#000000',
         strokeThickness: 2,
       }).setOrigin(0, 0).setDepth(250).setName('fieldAmbientLine');
+
+      // CHRONO-S113: ambientEffect 약한 색조 overlay (분위기 시각화)
+      const effectTint: Record<string, number | null> = {
+        mist: 0xeeeeee,
+        dust: 0xb38b6a,
+        glow: 0xffd54a,
+        void: 0x6633aa,
+        none: null,
+      };
+      const tint = effectTint[fieldEnc.ambientEffect ?? 'none'];
+      if (tint !== null && tint !== undefined) {
+        this.add.rectangle(scW / 2, scH / 2, scW, scH, tint, 0.06)
+          .setDepth(2)
+          .setName(`fieldAmbientOverlay_${fieldEnc.ambientEffect}`);
+      }
     }
 
     // CHRONO-S70: chain combo 라벨 (era 라벨 아래)
