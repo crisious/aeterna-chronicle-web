@@ -120,3 +120,29 @@ const ERA_MONSTER_PASSIVES: Record<ChronoEraId, ChronoMonsterPassives> = {
 export function chronoEraToMonsterPassives(eraId: ChronoEraId): ChronoMonsterPassives {
   return ERA_MONSTER_PASSIVES[eraId] ?? ERA_MONSTER_PASSIVES.present;
 }
+
+/**
+ * CHRONO-S47: 시대별 monster AI 행동 가중치.
+ * 향후 MonsterAIEngine.decideAction 이 이 hint 를 weighted 선택에 활용.
+ * - ancient: 방어 우선 (회상의 분위기)
+ * - present: 균형
+ * - ruined_future: 공격적 + 광역 마법 우선
+ */
+export interface ChronoAIHints {
+  /** 0~1, 방어/회피 행동 선호도. */
+  defensiveBias: number;
+  /** 0~1, 광역 마법/스킬 선호도. */
+  aoeBias: number;
+  /** 0~1, 공격 강화 행동 선호도. */
+  aggressiveBias: number;
+}
+
+const ERA_AI_HINTS: Record<ChronoEraId, ChronoAIHints> = {
+  ancient: { defensiveBias: 0.3, aoeBias: 0.05, aggressiveBias: 0.05 },
+  present: { defensiveBias: 0, aoeBias: 0, aggressiveBias: 0 },
+  ruined_future: { defensiveBias: 0.05, aoeBias: 0.4, aggressiveBias: 0.2 },
+};
+
+export function chronoEraToAIHints(eraId: ChronoEraId): ChronoAIHints {
+  return ERA_AI_HINTS[eraId] ?? ERA_AI_HINTS.present;
+}

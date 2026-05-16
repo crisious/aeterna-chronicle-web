@@ -10,6 +10,7 @@ import {
   decorateMonsterNameByEra,
   chronoEraBonusDrops,
   chronoEraToMonsterPassives,
+  chronoEraToAIHints,
 } from '../../shared/types/chronoEraAtb';
 
 describe('chronoEraToSpeedTier', () => {
@@ -132,6 +133,32 @@ describe('chronoEraToMonsterPassives (CHRONO-S37)', () => {
     expect(chronoEraToMonsterPassives('chaos_age' as never)).toEqual({
       evasionAddPercent: 0,
       hitChanceAddPercent: 0,
+    });
+  });
+});
+
+describe('chronoEraToAIHints (CHRONO-S47)', () => {
+  it('ancient → defensive 0.3, low aoe/aggressive', () => {
+    const h = chronoEraToAIHints('ancient');
+    expect(h.defensiveBias).toBe(0.3);
+    expect(h.aoeBias).toBeLessThan(0.1);
+  });
+
+  it('present → all 0 baseline', () => {
+    expect(chronoEraToAIHints('present')).toEqual({
+      defensiveBias: 0, aoeBias: 0, aggressiveBias: 0,
+    });
+  });
+
+  it('ruined_future → aoe 0.4, aggressive 0.2', () => {
+    const h = chronoEraToAIHints('ruined_future');
+    expect(h.aoeBias).toBe(0.4);
+    expect(h.aggressiveBias).toBe(0.2);
+  });
+
+  it('unknown era → present fallback', () => {
+    expect(chronoEraToAIHints('chaos_age' as never)).toEqual({
+      defensiveBias: 0, aoeBias: 0, aggressiveBias: 0,
     });
   });
 });
