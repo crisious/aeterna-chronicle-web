@@ -251,3 +251,40 @@ describe('getTotalFieldBosses + listAllBossMonsterIds (CHRONO-S136)', () => {
     expect(listAllBossMonsterIds()).toContain('aetherna_collapse');
   });
 });
+
+describe('bossOnlyMode (CHRONO-S139)', () => {
+  it('bossOnlyMode=true 시 보스 슬롯만 picker 후보', async () => {
+    const { rollFieldMonster } = await import('../../shared/types/chronoField');
+    const enc = {
+      zoneId: 'fake', eraId: 'present' as const,
+      monsterPool: [
+        { monsterId: 'normal_a', name: 'A', weight: 0.5 },
+        { monsterId: 'normal_b', name: 'B', weight: 0.4 },
+        { monsterId: 'boss_x', name: 'Boss', weight: 0.1, isBoss: true },
+      ],
+      maxSpawn: 2, hasBossSlot: true, ambientLine: '',
+      bossOnlyMode: true,
+    };
+    // 어떤 roll 이든 보스만 반환
+    const r1 = rollFieldMonster(enc, 0);
+    const r2 = rollFieldMonster(enc, 0.5);
+    const r3 = rollFieldMonster(enc, 0.99);
+    expect(r1?.monsterId).toBe('boss_x');
+    expect(r2?.monsterId).toBe('boss_x');
+    expect(r3?.monsterId).toBe('boss_x');
+  });
+
+  it('bossOnlyMode=false (default) 시 모든 slot 후보', async () => {
+    const { rollFieldMonster } = await import('../../shared/types/chronoField');
+    const enc = {
+      zoneId: 'fake', eraId: 'present' as const,
+      monsterPool: [
+        { monsterId: 'normal_a', name: 'A', weight: 0.5 },
+        { monsterId: 'normal_b', name: 'B', weight: 0.5 },
+      ],
+      maxSpawn: 1, hasBossSlot: false, ambientLine: '',
+    };
+    const r = rollFieldMonster(enc, 0.3);
+    expect(r?.monsterId).toBe('normal_a');
+  });
+});

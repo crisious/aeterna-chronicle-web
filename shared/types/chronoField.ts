@@ -32,6 +32,8 @@ export interface FieldEncounterDef {
   bgmTrack?: string;
   /** CHRONO-S111/S118: 필드 환경 효과. 'boss_room' 은 최종 보스 분위기 (S118). */
   ambientEffect?: 'mist' | 'dust' | 'glow' | 'void' | 'boss_room' | 'none';
+  /** CHRONO-S139: true 시 일반 slot 제외 — 보스 slot 만 spawn (특수 boss-rush). */
+  bossOnlyMode?: boolean;
 }
 
 const ENCOUNTERS: readonly FieldEncounterDef[] = [
@@ -409,14 +411,19 @@ export function rollFieldMonster(
   roll: number,
 ): FieldMonsterSlot | null {
   if (!encounter || encounter.monsterPool.length === 0) return null;
-  const clamped = Math.max(0, Math.min(0.999999, roll));
+  // CHRONO-S139: bossOnlyMode 시 일반 slot 제외, 보스만 후보
+  const pool = encounter.bossOnlyMode
+    ? encounter.monsterPool.filter((s) => s.isBoss === true)
+    : encounter.monsterPool;
+  if (pool.length === 0) return null;
+  const totalWeight = pool.reduce((s, m) => s + m.weight, 0);
+  const clamped = Math.max(0, Math.min(0.999999, roll)) * totalWeight;
   let acc = 0;
-  for (const slot of encounter.monsterPool) {
+  for (const slot of pool) {
     acc += slot.weight;
     if (clamped < acc) return slot;
   }
-  // weight 합 < 1.0 edge case — 마지막 slot fallback
-  return encounter.monsterPool[encounter.monsterPool.length - 1];
+  return pool[pool.length - 1];
 }
 
 /**
