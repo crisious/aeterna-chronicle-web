@@ -2124,3 +2124,49 @@ describe('STORY-V61 — encounter id 시그니처 + chrono_spire 정점', () => 
     expect(boss).toBeDefined();
   });
 });
+
+describe('STORY-V62 — 한글 narrative quality 통합', () => {
+  const KOREAN = /[가-힣]/;
+
+  it('모든 monster name 한글 포함 narrative (50+ slot 모두)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expect(KOREAN.test(slot.name), `${slot.monsterId} name 한글 없음`).toBe(true);
+      }
+    }
+  });
+
+  it('모든 ambient line 한글 포함 narrative (21 line)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(KOREAN.test(e.ambientLine), `${e.zoneId}/${e.eraId} ambient 한글 없음`).toBe(true);
+    }
+  });
+
+  it('모든 Dual/Triple description 한글 포함 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      if (typeof dt.description === 'string') {
+        expect(KOREAN.test(dt.description), `Dual ${dt.id} 한글 없음`).toBe(true);
+      }
+    }
+    for (const tt of listTripleTechs()) {
+      if (typeof tt.description === 'string') {
+        expect(KOREAN.test(tt.description), `Triple ${tt.id} 한글 없음`).toBe(true);
+      }
+    }
+  });
+
+  it('monster name 한글 비율 ≥ 50% 글자 (한글 narrative 우세)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        const koreanCount = (slot.name.match(/[가-힣]/g) ?? []).length;
+        const ratio = koreanCount / slot.name.length;
+        expect(ratio, `${slot.monsterId} 한글 비율`).toBeGreaterThanOrEqual(0.5);
+      }
+    }
+  });
+});
