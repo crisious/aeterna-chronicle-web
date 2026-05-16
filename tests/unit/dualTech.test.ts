@@ -73,3 +73,36 @@ describe('resolveDualTech — additional pairs (CHRONO-S16)', () => {
     }
   });
 });
+
+describe('resolveDualTech — CHRONO-S20 추가 6종', () => {
+  it('time_knight + shadow_weaver → chrono_sealing', () => {
+    expect(resolveDualTech('time_knight', 'shadow_weaver')?.id).toBe('chrono_sealing');
+  });
+
+  it('ether_knight + memory_weaver → ether_recall', () => {
+    expect(resolveDualTech('ether_knight', 'memory_weaver')?.id).toBe('ether_recall');
+  });
+
+  it('shadow_weaver + memory_weaver → shadow_memory', () => {
+    expect(resolveDualTech('shadow_weaver', 'memory_weaver')?.id).toBe('shadow_memory');
+  });
+
+  it('time_guardian + ether_knight → guardian_pact', () => {
+    expect(resolveDualTech('time_guardian', 'ether_knight')?.id).toBe('guardian_pact');
+  });
+
+  it('void_wanderer + time_knight → void_pierce', () => {
+    expect(resolveDualTech('void_wanderer', 'time_knight')?.id).toBe('void_pierce');
+  });
+
+  it('memory_breaker + shadow_weaver → memory_shatter', () => {
+    expect(resolveDualTech('memory_breaker', 'shadow_weaver')?.id).toBe('memory_shatter');
+  });
+
+  it('전체 목록 9종 모두 unique id', () => {
+    const list = listDualTechs();
+    expect(list).toHaveLength(9);
+    const ids = list.map(dt => dt.id);
+    expect(new Set(ids).size).toBe(9);
+  });
+});
