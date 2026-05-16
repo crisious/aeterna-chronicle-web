@@ -382,8 +382,18 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 - **V58** ATBSpeedTier ↔ chronoEra cross-check (1~6 범위 + unique + 단조)
 - **V59** 시그니처 Tech mpCost (aetherna_final ≥30 + void_eternity = max + Dual 12~30)
 - **V60** 30 sprint 마디 — 전체 narrative source 동시 cross-check + 5중 aetherna + entity ≥145
+- **V61** encounter 시그니처 + chrono_spire 정점 (3 era 보스 unique + bossOnlyMode + 시작 분위기)
+- **V62** 한글 narrative quality (monster/ambient/description 한글 + 한글 비율 ≥50%)
+- **V63** 시간선 cohesion (chrono_archon 시그니처 + 시간 키워드 ≥3 + Triple chrono ≥2)
+- **V64** 7 zone narrative 시그니처 (plains/forest/malatus/shadow/crystal/citadel/chrono)
+- **V65** 클래스별 시그니처 협공 (ether/time/memory_weaver/void/memory_breaker)
+- **V66** shadow_weaver + time_guardian Dual/Triple 시그니처
+- **V67** 협공 element 다양성 (chrono ≥3+2, dark ≥5+2, holy ≥2)
+- **V68** Tech description + name 풍부도 (length 2~30, 36 name unique, 시그니처 키워드)
+- **V69** 250 가드 마디 — Triple name 시그니처 + 누적 cohesion 정점
+- **V70** progress.md V61~V70 갱신 + 250 가드 마디 기록
 
-회귀: storyConsistency 211/211 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 250/250 + unit 전체 844+/844+ pass.
 
-**30 sprint 마디 + 211 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+50) = 누적 30 sprint, +119 가드 (92 → 211).
+**40 sprint 마디 + 250 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+89) = 누적 40 sprint, +158 가드 (92 → 250). 모든 narrative source (Field/Tech/Era/zone/클래스/aetherna) 무결성 + 안정성 + cohesion + quality 회귀 가드 완성.
 
