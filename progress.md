@@ -137,13 +137,28 @@ I 챕터 SSOT 정착 위에 사용자 가시 차별화 + 크로노 트리거 시
 - 검증: 104 files / 1263 tests pass (chapter I 1242 → +21 신규 회귀 가드). server+client typecheck 0 errors.
 - PR #11 에 S4~S16 + progress docs 누적 (총 13 commit 머지 대기).
 
-## TODO (CHRONO-ATB chapter III 후보)
+## 2026-05-16 CHRONO-ATB chapter III — Dual Tech wire + 시대 정체성 (7 sprint, 회귀 0)
 
-- Dual Tech 클라 UI: BattleScene 에 후보 패널 + 발동 버튼 + fxKey 매핑 (EffectManager 연동)
-- REST `/combat/dual_tech` 라우트 + 클라 networkManager.combatDualTech 호출
-- WebSocket combatSocketHandler 에 dual_tech command kind 추가 (ATBCommandInput protocol 활용)
-- BattleScene init.eraId localStorage 자동 복원 (현재는 WorldScene 경유시에만)
-- 시대별 monster name 차별화 (예: ruined_future → "붕괴" 접두사) + dropTable rare 추가
-- Dual Tech 6종 추가 정의 (전 클래스 쌍 cross-product)
-- 라이브 검증: /combat/start eraId 전체 흐름 Playwright 자동 QA
+II 챕터 Dual Tech 데이터/실행 위에 server↔클라 wire 완성 + 추가 6종 + 시대별 monster 정체성.
+
+- **S17 — progress II docs** (`a25eecf`): S10~S16 chapter II 정리.
+- **S18 — BattleScene init.eraId localStorage 자동 복원** (`46d4612`): WorldScene 미경유 진입(?debugScene=battle)에서도 마지막 era 유지. loadLastEra fallback.
+- **S19 — REST /combat/dual_tech + 클라 wire** (`d149722`): POST 라우트 (JWT + 필수 파라미터 검증) + NetworkManager.combatDualTech 메서드.
+- **S20 — Dual Tech +6종** (`e156f27`): chrono_sealing, ether_recall, shadow_memory, guardian_pact, void_pierce, memory_shatter — 총 9종, 클래스 9개 cross-product 핵심 페어.
+- **S21 — monster name decorator** (`05fd1e9`): decorateMonsterNameByEra (ancient "[고대] ", ruined_future "[붕괴] "). /combat/start 모든 monster name 적용. idempotent.
+- **S22 — WebSocket combat:dual_tech** (`828bd3e`): combatSocketHandler 핸들러. canControl 권한 검증 양쪽 actor + engine.submitDualTech.
+- **S23 — 클라 BattleScene dualTechCandidates 수신** (`936922c`): combat:tick 핸들러 확장 → '✨ 협공 가능: 크로노 블레이드' 로그 + lastDualTechCandidates 상태 보관 (후속 UI 데이터 소스).
+
+- 라이브 흐름 v2: WorldScene Q/E (S5) → BattleScene (S18) → /combat/start eraId (S7/S12) → server era tier + monster 보정 + name decorator → tick result.dualTechCandidates → 클라 로그 (S23) → 클라 UI 후속 sprint 에서 발동 버튼 추가.
+- 검증: 104 files / 1275 tests pass (chapter II 1263 → +12 신규 회귀 가드). server+client typecheck 0 errors.
+- PR #11 누적 21+ commit.
+
+## TODO (CHRONO-ATB chapter IV 후보)
+
+- BattleScene UI 발동 버튼 / 단축키 'D' → combatDualTech 호출 (lastDualTechCandidates 사용)
+- EffectManager 가 fxKey ('fx_chrono_blade' 등) 매핑 → 협공 시각 효과 재생
+- 시대별 monster dropTable rare 슬롯 추가 (ruined_future 드롭률 +)
+- ATBCommandInput protocol 의 dual_tech kind 분기 (현재 separate event)
+- Dual Tech 콤보 효과 — 연속 발동 시 보너스 (FF6 chain)
+- 라이브 Playwright 자동 QA: era 전환 → 전투 → Dual Tech 후보 표시 검증
 
