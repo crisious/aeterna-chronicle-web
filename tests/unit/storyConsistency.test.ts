@@ -201,3 +201,41 @@ describe('STORY-V4 — era 흐름 narrative + chrono_spire 시그니처', () => 
     expect(finalE.ambientLine).toMatch(/세계|마지막|시간선|종말/);
   });
 });
+
+describe('STORY-V5 — 협공 narrative 시그니처', () => {
+  it('aetherna_final triple tech (게임 제목 정점, e+t+m)', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const tt = getTripleTechById('aetherna_final');
+    expect(tt?.name).toBe('에테르나 파이널');
+    expect(tt?.partnerClasses.sort()).toEqual(['ether_knight', 'memory_weaver', 'time_knight']);
+    expect(tt?.aoe).toBe(true);
+    // 게임 최대 데미지 multiplier ≥ 3.5
+    expect(tt?.damageMultiplier).toBeGreaterThanOrEqual(3.5);
+  });
+
+  it('chrono_blade dual tech 게임 첫 협공 (e+t)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('chrono_blade');
+    expect(dt?.name).toBe('크로노 블레이드');
+    expect(dt?.partnerClasses.sort()).toEqual(['ether_knight', 'time_knight']);
+    expect(dt?.element).toBe('chrono');
+  });
+
+  it('void_eternity (게임 최강 dark triple, ruined_future 전용)', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const tt = getTripleTechById('void_eternity');
+    expect(tt?.damageMultiplier).toBe(3.8); // 최강
+    expect(tt?.eraFilter).toContain('ruined_future');
+  });
+
+  it('aetherna_final 가 게임 최종 보스 (aetherna_collapse) 명 시그니처 일치', async () => {
+    // 둘 다 'aetherna' prefix — 게임 제목 정합성
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const tt = getTripleTechById('aetherna_final')!;
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const boss = finalE.monsterPool.find((s) => s.isBoss)!;
+    expect(tt.id.startsWith('aetherna')).toBe(true);
+    expect(boss.monsterId.startsWith('aetherna')).toBe(true);
+  });
+});
