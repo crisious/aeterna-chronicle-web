@@ -302,6 +302,31 @@ describe('CombatEngine', () => {
     }
   });
 
+  // ── 9b. Defend keeps ATB at 50% (FF6 Defend, SSOT consumeGauge) ──
+
+  it('9b. defend action leaves atbGauge at ATB_MAX/2, others reset to 0', () => {
+    const player = makeParticipant({ spd: 200 }); // 1 tick에 100 도달
+    const monster = makeMonster({ spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(player);
+    e.addParticipant(monster);
+    e.start();
+
+    // tick 1: player 게이지 100 도달
+    e.processTick();
+    expect(e.getParticipant('player1')!.atbGauge).toBeGreaterThanOrEqual(100);
+
+    // tick 2: defend 행동
+    e.submitAction({ type: 'defend', actorId: 'player1' });
+    e.processTick();
+
+    // FF6: defend 후 ATB 50% 유지 (다음 행동까지의 시간 단축)
+    const afterDefend = e.getParticipant('player1')!.atbGauge;
+    expect(afterDefend).toBeGreaterThanOrEqual(50);
+    expect(afterDefend).toBeLessThan(100);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {

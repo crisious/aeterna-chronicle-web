@@ -515,8 +515,8 @@ export class CombatEngine {
         actions.push(result);
       }
 
-      // ATB 리셋
-      actor.atbGauge = 0;
+      // ATB 소비 — SSOT consumeGauge 패턴 (FF6 Defend 시 반틱 유지)
+      actor.atbGauge = action.type === 'defend' ? ATB_MAX / 2 : 0;
     }
 
     // 5. 보스 페이즈 + 분노 체크
