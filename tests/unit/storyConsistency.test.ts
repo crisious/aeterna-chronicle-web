@@ -335,3 +335,33 @@ describe('STORY-V9 — ChronoTimeline ↔ chronoEraAtb 데이터 cross-check', (
     expect(decorateMonsterNameByEra('망령', 'ruined_future')).toContain('[붕괴]');
   });
 });
+
+describe('STORY-V11 — Tech element 분포 narrative', () => {
+  it('Dual Tech 3 element (chrono/dark/holy) 각각 ≥ 1', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const elements = new Set(listDualTechs().map((d) => d.element));
+    expect(elements.has('chrono')).toBe(true);
+    expect(elements.has('dark')).toBe(true);
+    expect(elements.has('holy')).toBe(true);
+  });
+
+  it('Triple Tech 3 element (chrono/dark/holy) 각각 ≥ 1', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const elements = new Set(listTripleTechs().map((t) => t.element));
+    expect(elements.has('chrono')).toBe(true);
+    expect(elements.has('dark')).toBe(true);
+    expect(elements.has('holy')).toBe(true);
+  });
+
+  it('aetherna_final 게임 정점 협공 element chrono (제목 일치)', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    expect(getTripleTechById('aetherna_final')?.element).toBe('chrono');
+  });
+
+  it('void_eternity 최강 dark triple ruined_future 전용', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const tt = getTripleTechById('void_eternity');
+    expect(tt?.element).toBe('dark');
+    expect(tt?.eraFilter).toContain('ruined_future');
+  });
+});
