@@ -1169,3 +1169,45 @@ describe('STORY-V36 — ambientLine 21개 narrative 다양성', () => {
     expect(matchCount, `future ambient keyword match count`).toBeGreaterThanOrEqual(4);
   });
 });
+
+describe('STORY-V37 — maxSpawn + monsterPool size narrative', () => {
+  it('21 encounter maxSpawn 모두 1~6 범위 narrative (전투 합리)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(e.maxSpawn, `${e.zoneId}/${e.eraId} maxSpawn`).toBeGreaterThanOrEqual(1);
+      expect(e.maxSpawn).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it('일반 encounter (bossOnlyMode!=true) maxSpawn ≥ 3 narrative (다수 적)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.bossOnlyMode) continue;
+      expect(e.maxSpawn, `${e.zoneId}/${e.eraId} 일반 maxSpawn`).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('bossOnlyMode encounter 보스 slot 정확히 1개 narrative (단독 보스 출현)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    for (const e of listBossOnlyFields()) {
+      const bosses = e.monsterPool.filter((s) => s.isBoss);
+      expect(bosses.length, `${e.zoneId}/${e.eraId} boss-only boss count`).toBe(1);
+    }
+  });
+
+  it('21 encounter monsterPool size 모두 ≥ 2 narrative (보스 + 일반 ≥ 1)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(e.monsterPool.length, `${e.zoneId}/${e.eraId} pool size`).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('일반 encounter monsterPool 일반 slot ≥ 2 narrative (보스 + 일반 다수)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.bossOnlyMode) continue;
+      const normals = e.monsterPool.filter((s) => !s.isBoss);
+      expect(normals.length, `${e.zoneId}/${e.eraId} 일반 slot count`).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
