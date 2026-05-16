@@ -2212,7 +2212,14 @@ export class BattleScene extends Phaser.Scene {
               this.chainCount = 1;
             }
             this.chainExpireTick = turnNow + 5;
-            this.chainLabel?.setText(`🔥 CHAIN ×${this.chainCount}`).setVisible(true);
+            // CHRONO-S74: 4+ 면 빨간색 강조, 그 외 gold
+            const isMax = act.actorName?.includes('(MAX CHAIN)') ?? false;
+            this.chainLabel
+              ?.setText(`${isMax ? '💥' : '🔥'} CHAIN ×${this.chainCount}${isMax ? ' MAX' : ''}`)
+              .setColor(isMax ? '#ff4444' : '#ffd54a')
+              .setStroke('#000000', isMax ? 4 : 2)
+              .setFontSize(isMax ? 18 : 14)
+              .setVisible(true);
             if (act.actorName?.includes('(AOE)')) {
               this.battleUI?.addLog(`💥 광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
               const aoeName = (act.actorName ?? '').split(' (')[0];

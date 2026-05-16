@@ -917,9 +917,14 @@ export class CombatEngine {
     // CHRONO-S26: 콤보 tick 갱신
     this.lastDualTechTick = this.currentTick;
 
+    // CHRONO-S74: chain 4+ 면 (MAX CHAIN), 2~3은 (CHAIN)
+    const chainLabel = this.chainCount >= 4
+      ? ' (MAX CHAIN)'
+      : this.chainCount >= 2 ? ' (CHAIN)' : '';
+
     return {
       actorId: a.id,
-      actorName: `${a.name} × ${b.name}${isChain ? ' (CHAIN)' : ''}${target.isBoss && !def.aoe ? ' (BOSS RESIST)' : ''}${def.aoe ? ' (AOE)' : ''}`,
+      actorName: `${a.name} × ${b.name}${chainLabel}${target.isBoss && !def.aoe ? ' (BOSS RESIST)' : ''}${def.aoe ? ' (AOE)' : ''}`,
       actionType: 'dual_tech',
       targetId: target.id,
       targetName: def.aoe ? `${targets.length} 적` : target.name,
@@ -998,9 +1003,14 @@ export class CombatEngine {
     }
     this.lastDualTechTick = this.currentTick;
 
+    // CHRONO-S74: chain 단계 표시
+    const tChainLabel = this.chainCount >= 4
+      ? ' (MAX CHAIN)'
+      : this.chainCount >= 2 ? ' (CHAIN)' : '';
+
     return {
       actorId: a.id,
-      actorName: `${a.name} × ${b.name} × ${c.name} (TRIPLE)${def.aoe ? ' (AOE)' : ''}${isChain ? ' (CHAIN)' : ''}`,
+      actorName: `${a.name} × ${b.name} × ${c.name} (TRIPLE)${def.aoe ? ' (AOE)' : ''}${tChainLabel}`,
       actionType: 'triple_tech',
       targetId: target.id,
       targetName: def.aoe ? `${targets.length} 적` : target.name,
