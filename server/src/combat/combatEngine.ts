@@ -1469,8 +1469,9 @@ export class CombatEngine {
       allDrops.push(...m.dropTable);
     }
 
-    // CHRONO-S92: maxChain 4+ 시 EXP/Gold +20% 보너스 (협공 전술 보상)
-    if (this.maxChainReached >= 4) {
+    // CHRONO-S92/S93: maxChain 4+ 시 EXP/Gold +20% 보너스 (협공 전술 보상)
+    const chainBonusApplied = this.maxChainReached >= 4;
+    if (chainBonusApplied) {
       totalBaseExp = Math.round(totalBaseExp * 1.2);
       totalBaseGold = Math.round(totalBaseGold * 1.2);
     }
@@ -1489,6 +1490,8 @@ export class CombatEngine {
       isBoss: hasBoss,
       distributionMode: 'equal',
     });
+    // CHRONO-S93: chain 보너스 적용 여부 노출
+    rewards.chainBonusApplied = chainBonusApplied;
 
     // 레벨업 체크
     const levelUps: LevelUpResult[] = [];
