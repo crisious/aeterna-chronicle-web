@@ -583,3 +583,34 @@ describe('STORY-V18 — 시대 진행 어려움 단조 narrative', () => {
     expect(p).toBeLessThanOrEqual(f);
   });
 });
+
+describe('STORY-V19 — AI hint 시대 분위기 narrative', () => {
+  it('ancient defensiveBias > present (회상 시대 보호 분위기)', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToAIHints('ancient');
+    const p = chronoEraToAIHints('present');
+    expect(a.defensiveBias).toBeGreaterThan(p.defensiveBias);
+  });
+
+  it('ruined_future aoeBias > present (광역 폭주 분위기)', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const f = chronoEraToAIHints('ruined_future');
+    const p = chronoEraToAIHints('present');
+    expect(f.aoeBias).toBeGreaterThan(p.aoeBias);
+  });
+
+  it('ruined_future aggressiveBias > present (공격적 분위기)', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const f = chronoEraToAIHints('ruined_future');
+    const p = chronoEraToAIHints('present');
+    expect(f.aggressiveBias).toBeGreaterThan(p.aggressiveBias);
+  });
+
+  it('present (균형) — 모든 bias 0', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const p = chronoEraToAIHints('present');
+    expect(p.defensiveBias).toBe(0);
+    expect(p.aoeBias).toBe(0);
+    expect(p.aggressiveBias).toBe(0);
+  });
+});
