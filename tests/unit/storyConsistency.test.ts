@@ -1695,3 +1695,54 @@ describe('STORY-V50 — 20 sprint 마디 누적 narrative 정점', () => {
     }
   });
 });
+
+describe('STORY-V51 — 보스 weight 시대별 narrative 분포 (chapter III)', () => {
+  it('21 보스 weight 모두 0.1~0.4 범위 narrative (낮을수록 강력 보스)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      expect(boss.weight, `${e.zoneId}/${e.eraId} boss weight`).toBeGreaterThanOrEqual(0.1);
+      expect(boss.weight).toBeLessThanOrEqual(0.4);
+    }
+  });
+
+  it('aetherna_collapse 보스 weight 0.4 (보스만 출현 시대 종점 narrative)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const boss = e.monsterPool.find((s) => s.isBoss)!;
+    expect(boss.monsterId).toBe('aetherna_collapse');
+    expect(boss.weight).toBe(0.4);
+  });
+
+  it('aetherna_eidolon + chrono_archon weight 0.2 (chrono_spire ancient/present 강력 보스 narrative)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const a = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    const p = resolveFieldEncounter('chrono_spire', 'present')!;
+    expect(a.monsterPool.find((s) => s.isBoss && s.monsterId === 'aetherna_eidolon')?.weight).toBe(0.2);
+    expect(p.monsterPool.find((s) => s.isBoss && s.monsterId === 'chrono_archon')?.weight).toBe(0.2);
+  });
+
+  it('보스 weight 분포 narrative: weight 0.1 ≥ 14 (대부분 보스), weight 0.4 = 1 (정점 1개만)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    let w01Count = 0;
+    let w04Count = 0;
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      if (boss.weight === 0.1) w01Count += 1;
+      if (boss.weight === 0.4) w04Count += 1;
+    }
+    expect(w01Count, 'weight 0.1 보스 count').toBeGreaterThanOrEqual(14);
+    expect(w04Count, 'weight 0.4 보스 count').toBe(1);
+  });
+
+  it('chrono_spire 3 era 보스 weight 단조 증가 narrative (ancient 0.2 < present 0.2 ≤ future 0.4)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const a = resolveFieldEncounter('chrono_spire', 'ancient')!.monsterPool.find((s) => s.isBoss)!.weight;
+    const p = resolveFieldEncounter('chrono_spire', 'present')!.monsterPool.find((s) => s.isBoss)!.weight;
+    const f = resolveFieldEncounter('chrono_spire', 'ruined_future')!.monsterPool.find((s) => s.isBoss)!.weight;
+    expect(a).toBeLessThanOrEqual(p);
+    expect(p).toBeLessThan(f);
+  });
+});
