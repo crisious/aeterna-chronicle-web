@@ -403,6 +403,13 @@ export function listAllBossMonsterIds(): readonly string[] {
 }
 
 /**
+ * CHRONO-S145: bossOnlyMode 활성 필드만 (보스-rush 진행도 추적).
+ */
+export function listBossOnlyFields(): readonly FieldEncounterDef[] {
+  return ENCOUNTERS.filter((e) => e.bossOnlyMode === true);
+}
+
+/**
  * CHRONO-S103: weighted random monster picker.
  * roll: number (0~1) — Math.random() 또는 deterministic seed 주입.
  * monsterPool weight 누적 비교로 선택.

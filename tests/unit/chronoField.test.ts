@@ -296,3 +296,13 @@ describe('CHRONO-S141 final boss-rush 필드', () => {
     expect(e?.bossOnlyMode).toBe(true);
   });
 });
+
+describe('listBossOnlyFields (CHRONO-S145)', () => {
+  it('현재 1종 (chrono_spire/ruined_future S141 게임 최종)', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    const list = listBossOnlyFields();
+    expect(list.length).toBe(1);
+    expect(list[0].zoneId).toBe('chrono_spire');
+    expect(list[0].eraId).toBe('ruined_future');
+  });
+});
