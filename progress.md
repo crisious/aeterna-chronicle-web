@@ -238,10 +238,16 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 검증: combatEngine 33/33 + tripleTech 25/25 + dualTech 35/35.
 - 누적 **88 sprint**, PR #11 87 commits.
 
-## TODO (CHRONO-ATB chapter XI 후보)
+## 2026-05-16 CHRONO-ATB chapter XI — Triple 풀 UI + chain 보상 + 시대 일관성 (10 sprint)
 
-- 라이브 Playwright 자동 QA: 전체 시나리오
-- 협공 사용 통계 누적 DB 저장 (Prisma 모델)
-- CombatLogger 통계 통합 (replay 데이터)
-- 다중 후보 동시 표시 sub-menu UI
+- **S90** CombatLogger 협공 통계 통합 / **S91** Triple 버튼 element 색조+AOE / **S92** chain 4+ EXP/Gold +20% / **S93** RewardResult.chainBonusApplied / **S94** 클라 보상 chain 로그 / **S95** chrono_blade/memory_warp eraFilter / **S96** chrono_break/shadow_chrono eraFilter / **S97** listByEra helpers / **S98** techCatalog 회귀 가드 (Dual 21+Triple 15=36).
+- 검증: combatEngine 33/33 + dualTech 38/38 + tripleTech 25/25 + techCatalog 5/5.
+- 누적 **98 sprint**, PR #11 96 commits.
+
+## TODO (CHRONO-ATB chapter XII 후보)
+
+- 라이브 Playwright 자동 QA: 전체 시나리오 (era 전환 → 전투 → 협공 발동 → 보상)
+- 협공 사용 통계 DB 영속화 (User 누적 — Prisma 모델)
+- 다중 후보 동시 표시 sub-menu (Dual + Triple 통합 패널)
+- 시대별 monster AI decideAction 차별화 (skill 선택 weighted)
 
