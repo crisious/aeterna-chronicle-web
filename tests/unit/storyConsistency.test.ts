@@ -1921,3 +1921,61 @@ describe('STORY-V55 — FieldMonsterSlot 구조 무결성 narrative', () => {
     }
   });
 });
+
+describe('STORY-V56 — Dual/Triple Tech 구조 무결성 narrative (200 가드 마디)', () => {
+  const KNOWN_ELEMENTS = new Set(['neutral', 'fire', 'ice', 'lightning', 'wind', 'earth', 'holy', 'dark', 'chrono']);
+
+  it('21 Dual + 15 Triple id 모두 문자열 + 비빈 + snake_case', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(typeof dt.id).toBe('string');
+      expect(dt.id.match(/^[a-z][a-z0-9_]*$/), `Dual ${dt.id} snake_case`).not.toBeNull();
+    }
+    for (const tt of listTripleTechs()) {
+      expect(typeof tt.id).toBe('string');
+      expect(tt.id.match(/^[a-z][a-z0-9_]*$/), `Triple ${tt.id} snake_case`).not.toBeNull();
+    }
+  });
+
+  it('21 Dual + 15 Triple element 모두 KNOWN_ELEMENTS narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(KNOWN_ELEMENTS.has(dt.element), `Dual ${dt.id} element '${dt.element}'`).toBe(true);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(KNOWN_ELEMENTS.has(tt.element), `Triple ${tt.id} element '${tt.element}'`).toBe(true);
+    }
+  });
+
+  it('Tech damageMultiplier/mpCost 모두 finite 양수 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(Number.isFinite(dt.damageMultiplier)).toBe(true);
+      expect(dt.damageMultiplier).toBeGreaterThan(0);
+      expect(Number.isFinite(dt.mpCost)).toBe(true);
+      expect(dt.mpCost).toBeGreaterThan(0);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(Number.isFinite(tt.damageMultiplier)).toBe(true);
+      expect(tt.damageMultiplier).toBeGreaterThan(0);
+      expect(Number.isFinite(tt.mpCost)).toBe(true);
+      expect(tt.mpCost).toBeGreaterThan(0);
+    }
+  });
+
+  it('Tech partnerClasses 모두 array + length 검증 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(Array.isArray(dt.partnerClasses)).toBe(true);
+      expect(dt.partnerClasses.length).toBe(2);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(Array.isArray(tt.partnerClasses)).toBe(true);
+      expect(tt.partnerClasses.length).toBe(3);
+    }
+  });
+});
