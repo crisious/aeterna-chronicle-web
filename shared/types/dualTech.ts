@@ -207,6 +207,36 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     description: '직조와 파괴가 동시에 — 적의 자아 자체가 산산조각.',
     aoe: true,
   },
+  {
+    id: 'memory_pact',
+    name: '메모리 팩트',
+    partnerClasses: ['memory_weaver', 'time_guardian'],
+    damageMultiplier: 2.3,
+    element: 'holy',
+    mpCost: 19,
+    fxKey: 'fx_memory_pact',
+    description: '기억 직조사와 시간 수호자가 기억의 신성한 결계를 형성.',
+  },
+  {
+    id: 'guardian_void',
+    name: '가디언 보이드',
+    partnerClasses: ['time_guardian', 'void_wanderer'],
+    damageMultiplier: 2.4,
+    element: 'dark',
+    mpCost: 22,
+    fxKey: 'fx_guardian_void',
+    description: '시간 수호자의 결계를 공허가 침투 — 방어 무시 일격.',
+  },
+  {
+    id: 'guardian_break',
+    name: '가디언 브레이크',
+    partnerClasses: ['time_guardian', 'memory_breaker'],
+    damageMultiplier: 2.2,
+    element: 'holy',
+    mpCost: 18,
+    fxKey: 'fx_guardian_break',
+    description: '시간 수호자가 봉인하고 기억 파괴자가 봉인을 부순다.',
+  },
 ] as const;
 
 const PAIR_KEY = (a: string, b: string): string => {

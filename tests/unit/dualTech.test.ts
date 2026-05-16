@@ -99,11 +99,36 @@ describe('resolveDualTech — CHRONO-S20 추가 6종', () => {
     expect(resolveDualTech('memory_breaker', 'shadow_weaver')?.id).toBe('memory_shatter');
   });
 
-  it('전체 목록 18종 모두 unique id (CHRONO-S38 확장)', () => {
+  it('전체 목록 21종 모두 unique id (CHRONO-S42 완성)', () => {
     const list = listDualTechs();
-    expect(list).toHaveLength(18);
+    expect(list).toHaveLength(21);
     const ids = list.map(dt => dt.id);
-    expect(new Set(ids).size).toBe(18);
+    expect(new Set(ids).size).toBe(21);
+  });
+});
+
+describe('resolveDualTech — CHRONO-S42 cross-product 완성 (21 = C(7,2))', () => {
+  it('memory_weaver + time_guardian → memory_pact', () => {
+    expect(resolveDualTech('memory_weaver', 'time_guardian')?.id).toBe('memory_pact');
+  });
+  it('time_guardian + void_wanderer → guardian_void', () => {
+    expect(resolveDualTech('time_guardian', 'void_wanderer')?.id).toBe('guardian_void');
+  });
+  it('time_guardian + memory_breaker → guardian_break', () => {
+    expect(resolveDualTech('time_guardian', 'memory_breaker')?.id).toBe('guardian_break');
+  });
+
+  it('7 클래스 모든 페어 (C(7,2)=21) 매핑 완성', () => {
+    const classes = [
+      'ether_knight', 'time_knight', 'shadow_weaver', 'memory_weaver',
+      'time_guardian', 'void_wanderer', 'memory_breaker',
+    ];
+    for (let i = 0; i < classes.length; i++) {
+      for (let j = i + 1; j < classes.length; j++) {
+        const dt = resolveDualTech(classes[i], classes[j]);
+        expect(dt, `${classes[i]} + ${classes[j]} 페어 매핑 누락`).not.toBeNull();
+      }
+    }
   });
 });
 
