@@ -36,6 +36,7 @@ import { comboManager } from './comboManager';
 import { ATB_MAX, computeChargeDelta } from './atb';
 import type { ATBMode, ATBSpeedTier } from '../../../shared/types/atb';
 import { chronoEraToSpeedTier, type ChronoEraId } from '../../../shared/types/chronoEraAtb';
+import { resolveDualTech } from '../../../shared/types/dualTech';
 
 // ─── 전투 상태 머신 ───────────────────────────────────────────
 
@@ -152,6 +153,16 @@ export interface PlayerAction {
 
 // ─── 틱 결과 ───────────────────────────────────────────────────
 
+/** CHRONO-S14: 이번 tick 에 발동 가능한 Dual Tech 후보. */
+export interface DualTechCandidate {
+  /** DualTechDef.id (예: 'chrono_blade'). */
+  techId: string;
+  /** DualTechDef.name (UI 표시). */
+  name: string;
+  /** 협공 두 actor (party member id). 정렬됨. */
+  actorIds: [string, string];
+}
+
 export interface TickResult {
   tick: number;
   /** 이번 틱에 행동한 참가자들 */
@@ -170,6 +181,8 @@ export interface TickResult {
   levelUps?: LevelUpResult[];
   /** 참가자 현재 상태 */
   participants: ParticipantSnapshot[];
+  /** CHRONO-S14: 이번 tick 에 발동 가능한 협공 후보 (ready 동시 + 호환 클래스). */
+  dualTechCandidates: DualTechCandidate[];
 }
 
 export interface ActionResult {
@@ -630,7 +643,36 @@ export class CombatEngine {
       rewards,
       levelUps,
       participants: this.getSnapshot(),
+      dualTechCandidates: this.computeDualTechCandidates(),
     };
+  }
+
+  /**
+   * CHRONO-S14: ready 큐의 alive party member 중 호환 클래스 쌍 검출.
+   * 한 turn 에 동시 2명 이상 ready 면 모든 가능한 쌍 (n choose 2) 검사.
+   */
+  private computeDualTechCandidates(): DualTechCandidate[] {
+    const readyParty = this.getParticipants().filter(
+      (p) => p.alive && p.team === 'party' && p.atbGauge >= ATB_MAX,
+    );
+    if (readyParty.length < 2) return [];
+
+    const seen = new Set<string>();
+    const out: DualTechCandidate[] = [];
+    for (let i = 0; i < readyParty.length; i++) {
+      for (let j = i + 1; j < readyParty.length; j++) {
+        const a = readyParty[i];
+        const b = readyParty[j];
+        const def = resolveDualTech(a.classId, b.classId);
+        if (!def) continue;
+        const ids: [string, string] = [a.id, b.id].sort() as [string, string];
+        const key = `${def.id}::${ids[0]}::${ids[1]}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({ techId: def.id, name: def.name, actorIds: ids });
+      }
+    }
+    return out;
   }
 
   // ── 행동 실행 ───────────────────────────────────────────
@@ -1025,6 +1067,7 @@ export class CombatEngine {
       enrageEvents: [],
       combatEnded: false,
       participants: this.getSnapshot(),
+      dualTechCandidates: [],
     };
   }
 

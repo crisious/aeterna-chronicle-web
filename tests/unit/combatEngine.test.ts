@@ -430,6 +430,57 @@ describe('CombatEngine', () => {
     expect(result.combatEnded).toBe(false);
   });
 
+  // ── 9h. Dual Tech candidate detection (CHRONO-S14) ──
+
+  it('9h. computeDualTechCandidates detects chrono_blade when time_knight+ether_knight both ready', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 200 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 200 });
+    const m = makeMonster({ id: 'm', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    const result = e.processTick(); // 두 party 동시 ATB 100
+
+    const cands = result.dualTechCandidates;
+    expect(cands).toHaveLength(1);
+    expect(cands[0].techId).toBe('chrono_blade');
+    expect(cands[0].name).toBe('크로노 블레이드');
+    expect(cands[0].actorIds.sort()).toEqual(['ek', 'tk']);
+  });
+
+  it('9i. no candidate when only one party member ready', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 200 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 10 });
+    const m = makeMonster({ id: 'm', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    const result = e.processTick(); // tk만 100 도달
+
+    expect(result.dualTechCandidates).toHaveLength(0);
+  });
+
+  it('9j. no candidate when same class pair (incompatible)', () => {
+    const a = makeParticipant({ id: 'a', classId: 'time_knight', spd: 200 });
+    const b = makeParticipant({ id: 'b', classId: 'time_knight', spd: 200 });
+    const m = makeMonster({ id: 'm', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(a);
+    e.addParticipant(b);
+    e.addParticipant(m);
+    e.start();
+    const result = e.processTick();
+
+    expect(result.dualTechCandidates).toHaveLength(0);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {
