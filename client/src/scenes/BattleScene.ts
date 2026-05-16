@@ -228,6 +228,8 @@ export class BattleScene extends Phaser.Scene {
     aoe?: boolean;
     mpCost?: number;
   }> = [];
+  // CHRONO-S87: Triple Tech 후보 선택 인덱스 (Shift+T cycle)
+  private tripleTechSelectedIndex = 0;
   // CHRONO-S36: 다중 후보 중 선택 인덱스 (Shift+D 로 cycle)
   private dualTechSelectedIndex = 0;
   // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
@@ -463,8 +465,15 @@ export class BattleScene extends Phaser.Scene {
           this._triggerFirstDualTech();
         }
       });
-      // CHRONO-S63: 'T' 키 → 첫 Triple Tech 후보 발동
-      this.input.keyboard.on('keydown-T', () => this._triggerFirstTripleTech());
+      // CHRONO-S63: 'T' 키 → 선택된 Triple Tech 후보 발동
+      // CHRONO-S87: Shift+T → 다음 후보 cycle
+      this.input.keyboard.on('keydown-T', (e: KeyboardEvent) => {
+        if (e.shiftKey) {
+          this._cycleTripleTechSelection();
+        } else {
+          this._triggerFirstTripleTech();
+        }
+      });
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -2047,7 +2056,7 @@ export class BattleScene extends Phaser.Scene {
       this.battleUI?.addLog('[3인 협공] 서버 전투 미연결');
       return;
     }
-    const cand = this.lastTripleTechCandidates[0];
+    const cand = this.lastTripleTechCandidates[this.tripleTechSelectedIndex] ?? this.lastTripleTechCandidates[0];
     if (!cand) {
       this.battleUI?.addLog('[3인 협공] 발동 가능한 후보 없음 (3명 ATB 100 + 호환 클래스 필요)');
       return;
@@ -2089,6 +2098,23 @@ export class BattleScene extends Phaser.Scene {
       console.warn('[BattleScene] 3인 협공 발동 실패:', err);
       this.battleUI?.addLog('[3인 협공] 네트워크 오류');
     }
+  }
+
+  /**
+   * CHRONO-S87: Shift+T 로 Triple Tech 후보 cycle.
+   */
+  private _cycleTripleTechSelection(): void {
+    if (this.lastTripleTechCandidates.length === 0) {
+      this.battleUI?.addLog('[3인 협공] 후보 없음 (cycle 무효)');
+      return;
+    }
+    this.tripleTechSelectedIndex = (this.tripleTechSelectedIndex + 1) % this.lastTripleTechCandidates.length;
+    const sel = this.lastTripleTechCandidates[this.tripleTechSelectedIndex];
+    this.battleUI?.addLog(
+      `🔁 3인 협공 선택: ${sel.name} (${this.tripleTechSelectedIndex + 1}/${this.lastTripleTechCandidates.length})`,
+    );
+    const txt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+    txt?.setText(`🌟 ${sel.name} (T)`);
   }
 
   /**
@@ -2210,16 +2236,21 @@ export class BattleScene extends Phaser.Scene {
           this.dualTechSelectedIndex = 0;
           this.dualTechButton?.setVisible(false);
         }
-        // CHRONO-S63/S65: Triple Tech 후보 수신 + 버튼 가시화
+        // CHRONO-S63/S65/S87: Triple Tech 후보 수신 + 버튼 가시화 + selectedIndex 재정렬
         if (d.tripleTechCandidates && d.tripleTechCandidates.length > 0) {
           const tNames = d.tripleTechCandidates.map((c) => c.name).join(', ');
           this.battleUI?.addLog(`🌟 3인 협공 가능: ${tNames} ('T' 키)`);
           this.lastTripleTechCandidates = d.tripleTechCandidates;
+          if (this.tripleTechSelectedIndex >= d.tripleTechCandidates.length) {
+            this.tripleTechSelectedIndex = 0;
+          }
           this.tripleTechButton?.setVisible(true);
           const tTxt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-          tTxt?.setText(`🌟 ${d.tripleTechCandidates[0].name} (T)`);
+          const tSel = d.tripleTechCandidates[this.tripleTechSelectedIndex] ?? d.tripleTechCandidates[0];
+          tTxt?.setText(`🌟 ${tSel.name} (T)`);
         } else {
           this.lastTripleTechCandidates = [];
+          this.tripleTechSelectedIndex = 0;
           this.tripleTechButton?.setVisible(false);
         }
         // CHRONO-S51/S67/S86: 보스 협공 저항 / 면역 표시
