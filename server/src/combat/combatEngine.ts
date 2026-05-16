@@ -271,6 +271,8 @@ export class CombatEngine {
     techId: string;
     targetId: string;
   } | null = null;
+  // CHRONO-S26: 마지막 Dual Tech 발동 tick (연속 콤보 보너스 추적).
+  private lastDualTechTick: number | null = null;
 
   // 서브시스템
   private cooldownManager = new SkillCooldownManager();
@@ -711,6 +713,11 @@ export class CombatEngine {
     if (a.mp < def.mpCost || b.mp < def.mpCost) return null;
 
     const avgAtk = (getEffectiveAtk(a, a.atk) + getEffectiveAtk(b, b.atk)) / 2;
+    // CHRONO-S26: 연속 콤보 보너스 — 직전 5 tick 이내 Dual Tech 발동 이력 시 1.2x
+    const isChain = this.lastDualTechTick !== null
+      && this.currentTick - this.lastDualTechTick <= 5;
+    const chainBonus = isChain ? 1.2 : 1.0;
+
     const result = calculateDamage({
       type: 'physical',
       attackStat: avgAtk,
@@ -722,7 +729,7 @@ export class CombatEngine {
       critDamage: (a.critDamage + b.critDamage) / 2,
       armorPenetration: Math.max(a.armorPenetration, b.armorPenetration),
       armorPenetrationPercent: Math.max(a.armorPenetrationPercent, b.armorPenetrationPercent),
-      bonusMultiplier: 1.0,
+      bonusMultiplier: chainBonus,
       levelDifference: Math.round((a.level + b.level) / 2) - target.level,
     });
 
@@ -743,9 +750,12 @@ export class CombatEngine {
     this.pendingActions.delete(a.id);
     this.pendingActions.delete(b.id);
 
+    // CHRONO-S26: 콤보 tick 갱신
+    this.lastDualTechTick = this.currentTick;
+
     return {
       actorId: a.id,
-      actorName: `${a.name} × ${b.name}`,
+      actorName: `${a.name} × ${b.name}${isChain ? ' (CHAIN)' : ''}`,
       actionType: 'dual_tech',
       targetId: target.id,
       targetName: target.name,

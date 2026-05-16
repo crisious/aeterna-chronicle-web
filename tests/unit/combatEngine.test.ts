@@ -544,6 +544,44 @@ describe('CombatEngine', () => {
     expect(ok).toBe(false);
   });
 
+  // ── 9n. Consecutive Dual Tech chain bonus (CHRONO-S26) ──
+
+  it('9n. consecutive Dual Tech within 5 ticks gets 1.2x chain bonus damage', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 500, mp: 9999, maxMp: 9999, atk: 100 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 500, mp: 9999, maxMp: 9999, atk: 100 });
+    const m = makeMonster({ id: 'm', spd: 1, hp: 999999, maxHp: 999999, def: 0 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    e.processTick(); // 양쪽 ready
+
+    // 첫번째 Dual Tech
+    e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    const r1 = e.processTick();
+    const first = r1.actions.find(a => a.actionType === 'dual_tech');
+    expect(first).toBeDefined();
+    expect(first?.actorName).not.toContain('CHAIN');
+    const firstDamage = first!.damage!;
+
+    // 두번째 발동 위해 다시 ready 도달
+    for (let i = 0; i < 4; i++) {
+      if (e.getParticipant('tk')!.atbGauge >= 100 && e.getParticipant('ek')!.atbGauge >= 100) break;
+      e.processTick();
+    }
+
+    // 두번째 Dual Tech — 5 tick 이내 → CHAIN
+    e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    const r2 = e.processTick();
+    const second = r2.actions.find(a => a.actionType === 'dual_tech');
+    expect(second).toBeDefined();
+    expect(second?.actorName).toContain('CHAIN');
+    // chainBonus 1.2x → 데미지 약 1.2배 (다른 요소 동일)
+    expect(second!.damage!).toBeGreaterThan(firstDamage);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {
