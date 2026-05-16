@@ -1023,3 +1023,50 @@ describe('STORY-V33 — chronoEraAtb passive/AI hints 시대 narrative', () => {
     expect(chronoEraBonusDrops('present').length).toBe(0);
   });
 });
+
+describe('STORY-V34 — Triple Tech damageMultiplier + element 분포 narrative', () => {
+  it('15 Triple Tech damageMultiplier 모두 3.0 이상 (Dual >2.0 보다 강력) narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.damageMultiplier, `${tt.id} damageMultiplier`).toBeGreaterThanOrEqual(3.0);
+    }
+  });
+
+  it('void_eternity (3.8) 가 최강 Triple narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const sorted = [...listTripleTechs()].sort((a, b) => b.damageMultiplier - a.damageMultiplier);
+    expect(sorted[0].id).toBe('void_eternity');
+    expect(sorted[0].damageMultiplier).toBe(3.8);
+  });
+
+  it('aetherna_final 정점 시그니처 chrono element (게임 제목 정합)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver');
+    expect(tt?.id).toBe('aetherna_final');
+    expect(tt?.element).toBe('chrono');
+  });
+
+  it('15 Triple Tech mpCost 모두 ≥ 28 (Triple > Dual mpCost) narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.mpCost, `${tt.id} mpCost`).toBeGreaterThanOrEqual(28);
+    }
+  });
+
+  it('15 Triple Tech 모두 aoe=true narrative (3인 협공은 광역)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect((tt as { aoe?: boolean }).aoe, `${tt.id} aoe`).toBe(true);
+    }
+  });
+
+  it('element 분포: chrono/dark 시그니처 element narrative ≥ 2 each', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const elementCount = new Map<string, number>();
+    for (const tt of listTripleTechs()) {
+      elementCount.set(tt.element, (elementCount.get(tt.element) ?? 0) + 1);
+    }
+    expect((elementCount.get('chrono') ?? 0), 'chrono Triple count').toBeGreaterThanOrEqual(2);
+    expect((elementCount.get('dark') ?? 0), 'dark Triple count').toBeGreaterThanOrEqual(2);
+  });
+});
