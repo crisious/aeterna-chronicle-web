@@ -309,6 +309,7 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     ambientLine: '세계가 무너지는 마지막 시간선',
     bgmTrack: 'bgm_final_boss',
     ambientEffect: 'boss_room',
+    bossOnlyMode: true,
   },
 ] as const;
 

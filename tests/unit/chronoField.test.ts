@@ -288,3 +288,11 @@ describe('bossOnlyMode (CHRONO-S139)', () => {
     expect(r?.monsterId).toBe('normal_a');
   });
 });
+
+describe('CHRONO-S141 final boss-rush 필드', () => {
+  it('chrono_spire/ruined_future bossOnlyMode=true (게임 최종)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
+    expect(e?.bossOnlyMode).toBe(true);
+  });
+});
