@@ -1784,3 +1784,42 @@ describe('STORY-V52 — 일반 monster weight 분포 narrative', () => {
     expect(weights.size, 'distinct normal weight values').toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('STORY-V53 — chronoField API 비정상 입력 narrative 안정성', () => {
+  it('resolveFieldEncounter: zone "" / null-ish 모두 null 반환', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    expect(resolveFieldEncounter('', 'ancient')).toBeNull();
+    expect(resolveFieldEncounter('   ', 'ancient')).toBeNull();
+    // unknown era 도 안전
+    // @ts-expect-error narrative 비정상 era 입력
+    expect(resolveFieldEncounter('aether_plains', 'future')).toBeNull();
+  });
+
+  it('listFieldEncountersByZone: 빈 / unknown zone 빈 list', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    expect(listFieldEncountersByZone('')).toEqual([]);
+    expect(listFieldEncountersByZone('NONEXISTENT_ZONE_XYZ').length).toBe(0);
+  });
+
+  it('rollFieldMonster: 빈 monsterPool encounter 시 null 안정성 (방어 코드)', async () => {
+    const { rollFieldMonster } = await import('../../shared/types/chronoField');
+    const fakeEmpty = {
+      zoneId: 'fake', eraId: 'present' as const, monsterPool: [],
+      maxSpawn: 1, hasBossSlot: false,
+      ambientLine: '', bgmTrack: 'bgm_test', ambientEffect: 'glow' as const,
+    };
+    const r = rollFieldMonster(fakeEmpty as never, 0.5);
+    expect(r).toBeNull();
+  });
+
+  it('getBossSlot: 보스 없는 encounter null 반환 (방어 narrative)', async () => {
+    const { getBossSlot } = await import('../../shared/types/chronoField');
+    const fakeNoBoss = {
+      zoneId: 'fake', eraId: 'present' as const,
+      monsterPool: [{ monsterId: 'x', name: 'X', weight: 1.0 }],
+      maxSpawn: 1, hasBossSlot: false,
+      ambientLine: '', bgmTrack: 'bgm_test', ambientEffect: 'glow' as const,
+    };
+    expect(getBossSlot(fakeNoBoss as never)).toBeNull();
+  });
+});
