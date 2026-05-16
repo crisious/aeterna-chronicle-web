@@ -4859,3 +4859,50 @@ describe('STORY-V135 — 21 encounter 100% 무결성 stress', () => {
     }
   });
 });
+
+describe('STORY-V136 — Tech runtime 100% 무결성 stress', () => {
+  it('21 Dual 모든 필드 정의 + 타입 valid narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(typeof dt.id).toBe('string');
+      expect(typeof dt.name).toBe('string');
+      expect(Array.isArray(dt.partnerClasses)).toBe(true);
+      expect(typeof dt.element).toBe('string');
+      expect(typeof dt.damageMultiplier).toBe('number');
+      expect(typeof dt.mpCost).toBe('number');
+      expect(typeof dt.fxKey).toBe('string');
+      expect(typeof dt.description).toBe('string');
+    }
+  });
+
+  it('15 Triple 모든 필드 정의 + 타입 valid narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(typeof tt.id).toBe('string');
+      expect(typeof tt.name).toBe('string');
+      expect(Array.isArray(tt.partnerClasses)).toBe(true);
+      expect(typeof tt.element).toBe('string');
+      expect(typeof tt.damageMultiplier).toBe('number');
+      expect(typeof tt.mpCost).toBe('number');
+      expect(typeof tt.fxKey).toBe('string');
+      expect(typeof tt.description).toBe('string');
+    }
+  });
+
+  it('Tech resolve 21+15 호출 cycle stress (100회 random) narrative', async () => {
+    const { listDualTechs, resolveDualTech } = await import('../../shared/types/dualTech');
+    const { listTripleTechs, resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const dual = listDualTechs();
+    const triple = listTripleTechs();
+    for (let i = 0; i < 50; i += 1) {
+      const dt = dual[i % 21];
+      const [a, b] = dt.partnerClasses;
+      expect(resolveDualTech(a, b)?.id, `Dual cycle ${i}`).toBe(dt.id);
+    }
+    for (let i = 0; i < 50; i += 1) {
+      const tt = triple[i % 15];
+      const [a, b, c] = tt.partnerClasses;
+      expect(resolveTripleTech(a, b, c)?.id, `Triple cycle ${i}`).toBe(tt.id);
+    }
+  });
+});
