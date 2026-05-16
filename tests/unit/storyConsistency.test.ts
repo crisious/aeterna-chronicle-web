@@ -4022,3 +4022,31 @@ describe('STORY-V111 — listAllFieldMonsterIds narrative 정합', () => {
     expect(new Set(all).size).toBe(all.length);  // unique
   });
 });
+
+describe('STORY-V112 — 추가 monster name 시그니처 narrative', () => {
+  it('chrono_archon name "시간 통치자" 정확 narrative (present 보스 시그니처)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'present')!;
+    const boss = e.monsterPool.find((s) => s.isBoss)!;
+    expect(boss.monsterId).toBe('chrono_archon');
+    expect(boss.name).toBe('시간 통치자');
+  });
+
+  it('aetherna_eidolon name "에테르나 환영" + aetherna_collapse name "에테르나의 종말" 정확', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const ancient = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    const future = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(ancient.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나 환영');
+    expect(future.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나의 종말');
+  });
+
+  it('chrono_spire/ancient 일반 monster 시그니처 (chrono_warden 시간 파수꾼 등)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    const normals = e.monsterPool.filter((s) => !s.isBoss);
+    // chrono_warden 시간 파수꾼 narrative 있음
+    const sigNames = ['시간 파수꾼', '시간 수비병', '시간 파편 거인'];
+    const matched = normals.some((m) => sigNames.includes(m.name));
+    expect(matched, 'chrono_spire/ancient normal 시그니처').toBe(true);
+  });
+});
