@@ -1940,7 +1940,7 @@ export class BattleScene extends Phaser.Scene {
         combatId: string;
         turn?: number;
         tick?: number;
-        actions: Array<{ actionType: string; actorName?: string; damage?: number }>;
+        actions: Array<{ actionType: string; actorName?: string; targetName?: string; damage?: number }>;
         // CHRONO-S23: server TickResult.dualTechCandidates 노출
         dualTechCandidates?: Array<{ techId: string; name: string; actorIds: [string, string] }>;
       };
@@ -1966,9 +1966,25 @@ export class BattleScene extends Phaser.Scene {
           this.dualTechButton?.setVisible(false);
         }
         // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
+        // CHRONO-S40: AOE 협공 — actorName '(AOE)' 검출 시 모든 alive 적에 시각 효과
         for (const act of d.actions ?? []) {
-          if (act.actionType === 'dual_tech' && act.actorName?.includes('(CHAIN)')) {
-            this.battleUI?.addLog(`🔥 CHAIN COMBO! +20% 데미지 (${act.damage ?? 0})`);
+          if (act.actionType === 'dual_tech') {
+            if (act.actorName?.includes('(CHAIN)')) {
+              this.battleUI?.addLog(`🔥 CHAIN COMBO! +20% 데미지 (${act.damage ?? 0})`);
+            }
+            if (act.actorName?.includes('(AOE)')) {
+              this.battleUI?.addLog(`💥 광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
+              const aoeName = (act.actorName ?? '').split(' (')[0];
+              for (const enemy of this.enemySprites) {
+                if (!enemy.unit.alive) continue;
+                this.effectManager?.spawnDualTechEffect(
+                  enemy.sprite.x,
+                  enemy.sprite.y,
+                  'fx_aoe',
+                  aoeName,
+                );
+              }
+            }
           }
         }
       }
