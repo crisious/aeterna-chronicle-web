@@ -3906,3 +3906,44 @@ describe('STORY-V107 — Triple eraFilter 정확 narrative 시그니처', () => 
     }
   });
 });
+
+describe('STORY-V108 — Dual eraFilter 정확 narrative 시그니처', () => {
+  it('Dual eraFilter 모두 1~3 ChronoEraId 범위 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { isChronoEraId } = await import('../../shared/types/chronoEraAtb');
+    for (const dt of listDualTechs()) {
+      if (dt.eraFilter) {
+        expect(dt.eraFilter.length, `Dual ${dt.id} eraFilter length`).toBeGreaterThanOrEqual(1);
+        expect(dt.eraFilter.length).toBeLessThanOrEqual(3);
+        for (const era of dt.eraFilter) {
+          expect(isChronoEraId(era), `${dt.id} era ${era}`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('chrono element Dual 모두 eraFilter ancient + present narrative (붕괴 차단)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const chronoDuals = listDualTechs().filter((dt) => dt.element === 'chrono');
+    for (const dt of chronoDuals) {
+      if (dt.eraFilter) {
+        // 모든 chrono Dual 이 eraFilter 설정시 ancient + present 만
+        expect(dt.eraFilter.includes('ruined_future'), `chrono Dual ${dt.id}`).toBe(false);
+      }
+    }
+  });
+
+  it('memory_break + void_oblivion eraFilter = [ruined_future] narrative (붕괴 전용)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    expect(getDualTechById('memory_break')!.eraFilter).toEqual(['ruined_future']);
+    expect(getDualTechById('void_oblivion')!.eraFilter).toEqual(['ruined_future']);
+  });
+
+  it('Dual eraFilter 미설정 Dual 가장 많음 narrative (대부분 시대 가용)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const all = listDualTechs();
+    const withFilter = all.filter((dt) => dt.eraFilter);
+    const withoutFilter = all.filter((dt) => !dt.eraFilter);
+    expect(withoutFilter.length, '미설정 Dual count').toBeGreaterThanOrEqual(withFilter.length);
+  });
+});
