@@ -37,18 +37,19 @@ describe('resolveTripleTech', () => {
 });
 
 describe('listTripleTechs / getTripleTechById', () => {
-  it('전체 목록 3종 (aetherna_final + chrono_break + void_eternity)', () => {
+  it('전체 목록 5종 (CHRONO-S69 확장)', () => {
     const list = listTripleTechs();
-    expect(list.length).toBe(3);
-    expect(list.find((t) => t.id === 'aetherna_final')).toBeDefined();
-    expect(list.find((t) => t.id === 'chrono_break')).toBeDefined();
-    expect(list.find((t) => t.id === 'void_eternity')).toBeDefined();
+    expect(list.length).toBe(5);
+    const ids = list.map((t) => t.id);
+    expect(new Set(ids).size).toBe(5);
   });
 
-  it('getTripleTechById 3종 정상 조회', () => {
+  it('getTripleTechById 5종 정상 조회', () => {
     expect(getTripleTechById('aetherna_final')?.name).toBe('에테르나 파이널');
     expect(getTripleTechById('chrono_break')?.name).toBe('크로노 브레이크');
     expect(getTripleTechById('void_eternity')?.name).toBe('보이드 이터니티');
+    expect(getTripleTechById('ether_dark_riff')?.name).toBe('에테르 다크 리프');
+    expect(getTripleTechById('guardian_oath')?.name).toBe('가디언 오스');
   });
 
   it('getTripleTechById 미존재 → null', () => {
@@ -60,6 +61,16 @@ describe('listTripleTechs / getTripleTechById', () => {
       expect(tt.damageMultiplier).toBeGreaterThanOrEqual(3.0);
       expect(tt.damageMultiplier).toBeLessThanOrEqual(3.8);
     }
+  });
+});
+
+describe('resolveTripleTech — CHRONO-S69 추가 2종', () => {
+  it('ether_knight + shadow_weaver + void_wanderer → ether_dark_riff', () => {
+    expect(resolveTripleTech('ether_knight', 'shadow_weaver', 'void_wanderer')?.id).toBe('ether_dark_riff');
+  });
+
+  it('ether_knight + time_guardian + memory_breaker → guardian_oath', () => {
+    expect(resolveTripleTech('ether_knight', 'time_guardian', 'memory_breaker')?.id).toBe('guardian_oath');
   });
 });
 

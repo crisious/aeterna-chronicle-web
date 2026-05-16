@@ -57,6 +57,28 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     description: '공허 방랑자 · 시간 수호자 · 기억 파괴자가 영원으로 흘려보낸다.',
     aoe: true,
   },
+  {
+    id: 'ether_dark_riff',
+    name: '에테르 다크 리프',
+    partnerClasses: ['ether_knight', 'shadow_weaver', 'void_wanderer'],
+    damageMultiplier: 3.4,
+    element: 'dark',
+    mpCost: 30,
+    fxKey: 'fx_ether_dark_riff',
+    description: '에테르 검광이 그림자와 공허를 가로질러 적의 시간을 찢는다.',
+    aoe: true,
+  },
+  {
+    id: 'guardian_oath',
+    name: '가디언 오스',
+    partnerClasses: ['ether_knight', 'time_guardian', 'memory_breaker'],
+    damageMultiplier: 3.2,
+    element: 'holy',
+    mpCost: 28,
+    fxKey: 'fx_guardian_oath',
+    description: '에테르 기사 · 시간 수호자 · 기억 파괴자가 맹약을 맺고 신성한 종결을 선언.',
+    aoe: true,
+  },
 ] as const;
 
 const TRIPLE_KEY = (a: string, b: string, c: string): string => {
