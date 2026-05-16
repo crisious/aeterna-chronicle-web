@@ -3682,3 +3682,35 @@ describe('STORY-V100 — 100 sprint 마디 (V1~V100 chapter I+II+III 종합)', (
     expect(ve.damageMultiplier).toBe(maxDamage);
   });
 });
+
+describe('STORY-V101 — chapter IV 시작 — AOE 시대 narrative', () => {
+  it('Dual AOE 3종 정확 (memory_break + time_overflow + void_oblivion)', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const ids = listAoeDualTechs().map((dt) => dt.id).sort();
+    expect(ids).toEqual(['memory_break', 'time_overflow', 'void_oblivion']);
+  });
+
+  it('Dual AOE 모두 dark 또는 chrono element narrative (광역 = 어둠/시간)', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listAoeDualTechs()) {
+      expect(['dark', 'chrono'], `AOE ${dt.id} element`).toContain(dt.element);
+    }
+  });
+
+  it('Dual AOE damageMultiplier 모두 2.5 (가장 강력 Dual narrative)', async () => {
+    const { listAoeDualTechs, listDualTechs } = await import('../../shared/types/dualTech');
+    const aoes = listAoeDualTechs();
+    for (const dt of aoes) {
+      expect(dt.damageMultiplier, `AOE ${dt.id} damage`).toBe(2.5);
+    }
+    const maxDual = Math.max(...listDualTechs().map((dt) => dt.damageMultiplier));
+    expect(aoes.every((dt) => dt.damageMultiplier === maxDual)).toBe(true);
+  });
+
+  it('Triple 모두 aoe=true narrative (3인 협공은 광역)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect((tt as { aoe?: boolean }).aoe, `Triple ${tt.id} aoe`).toBe(true);
+    }
+  });
+});
