@@ -378,6 +378,28 @@ export function listAllFieldMonsterIds(): readonly string[] {
 }
 
 /**
+ * CHRONO-S136: 전체 encounter 의 보스 슬롯 총합 (Wiki 통계 / 게임 진행도 활용).
+ */
+export function getTotalFieldBosses(): number {
+  return ENCOUNTERS.reduce(
+    (n, e) => n + e.monsterPool.filter((s) => s.isBoss === true).length, 0,
+  );
+}
+
+/**
+ * CHRONO-S136: 보스 monster id 목록만 정렬 반환 (BattleScene boss tier 분류 활용).
+ */
+export function listAllBossMonsterIds(): readonly string[] {
+  const set = new Set<string>();
+  for (const e of ENCOUNTERS) {
+    for (const slot of e.monsterPool) {
+      if (slot.isBoss) set.add(slot.monsterId);
+    }
+  }
+  return Array.from(set).sort();
+}
+
+/**
  * CHRONO-S103: weighted random monster picker.
  * roll: number (0~1) — Math.random() 또는 deterministic seed 주입.
  * monsterPool weight 누적 비교로 선택.

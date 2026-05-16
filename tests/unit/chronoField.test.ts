@@ -230,3 +230,24 @@ describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {
     expect(ids).toEqual(sorted);
   });
 });
+
+describe('getTotalFieldBosses + listAllBossMonsterIds (CHRONO-S136)', () => {
+  it('전체 보스 슬롯 = 21 (각 encounter 1개씩)', async () => {
+    const { getTotalFieldBosses } = await import('../../shared/types/chronoField');
+    expect(getTotalFieldBosses()).toBe(21);
+  });
+
+  it('보스 monster id 21개 unique 정렬', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const ids = listAllBossMonsterIds();
+    expect(ids.length).toBe(21);
+    expect(new Set(ids).size).toBe(21); // unique
+    const sorted = [...ids].sort();
+    expect(ids).toEqual(sorted);
+  });
+
+  it('aetherna_collapse 포함 (게임 최종 보스)', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    expect(listAllBossMonsterIds()).toContain('aetherna_collapse');
+  });
+});
