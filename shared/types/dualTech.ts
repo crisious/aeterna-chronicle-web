@@ -32,6 +32,26 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     fxKey: 'fx_chrono_blade',
     description: '시간 기사와 에테르 기사가 동시에 베어내는 시공간 균열 일격.',
   },
+  {
+    id: 'shadow_eclipse',
+    name: '섀도우 이클립스',
+    partnerClasses: ['shadow_weaver', 'ether_knight'],
+    damageMultiplier: 2.0,
+    element: 'dark',
+    mpCost: 14,
+    fxKey: 'fx_shadow_eclipse',
+    description: '그림자 직조사가 에테르 검에 어둠을 두르고 대상을 양쪽에서 봉인.',
+  },
+  {
+    id: 'memory_warp',
+    name: '메모리 워프',
+    partnerClasses: ['memory_weaver', 'time_knight'],
+    damageMultiplier: 2.4,
+    element: 'chrono',
+    mpCost: 18,
+    fxKey: 'fx_memory_warp',
+    description: '기억의 실로 시간을 끌어당겨 적의 행동 직전 상태로 데미지 누적.',
+  },
 ] as const;
 
 const PAIR_KEY = (a: string, b: string): string => {

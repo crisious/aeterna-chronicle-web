@@ -36,17 +36,40 @@ describe('resolveDualTech', () => {
 });
 
 describe('listDualTechs / getDualTechById', () => {
-  it('전체 목록에 chrono_blade 포함', () => {
+  it('전체 목록 ≥ 3종 (chrono_blade / shadow_eclipse / memory_warp)', () => {
     const list = listDualTechs();
-    expect(list.length).toBeGreaterThanOrEqual(1);
+    expect(list.length).toBeGreaterThanOrEqual(3);
     expect(list.find((dt) => dt.id === 'chrono_blade')).toBeDefined();
+    expect(list.find((dt) => dt.id === 'shadow_eclipse')).toBeDefined();
+    expect(list.find((dt) => dt.id === 'memory_warp')).toBeDefined();
   });
 
-  it('getDualTechById chrono_blade 정상 조회', () => {
+  it('getDualTechById 3종 모두 정상 조회', () => {
     expect(getDualTechById('chrono_blade')?.name).toBe('크로노 블레이드');
+    expect(getDualTechById('shadow_eclipse')?.name).toBe('섀도우 이클립스');
+    expect(getDualTechById('memory_warp')?.name).toBe('메모리 워프');
   });
 
   it('getDualTechById 미존재 ID → null', () => {
     expect(getDualTechById('nonexistent')).toBeNull();
+  });
+});
+
+describe('resolveDualTech — additional pairs (CHRONO-S16)', () => {
+  it('shadow_weaver + ether_knight → shadow_eclipse', () => {
+    expect(resolveDualTech('shadow_weaver', 'ether_knight')?.id).toBe('shadow_eclipse');
+    expect(resolveDualTech('ether_knight', 'shadow_weaver')?.id).toBe('shadow_eclipse');
+  });
+
+  it('memory_weaver + time_knight → memory_warp', () => {
+    expect(resolveDualTech('memory_weaver', 'time_knight')?.id).toBe('memory_warp');
+    expect(resolveDualTech('time_knight', 'memory_weaver')?.id).toBe('memory_warp');
+  });
+
+  it('damage multipliers in design range 2.0~2.5', () => {
+    for (const dt of listDualTechs()) {
+      expect(dt.damageMultiplier).toBeGreaterThanOrEqual(2.0);
+      expect(dt.damageMultiplier).toBeLessThanOrEqual(2.5);
+    }
   });
 });
