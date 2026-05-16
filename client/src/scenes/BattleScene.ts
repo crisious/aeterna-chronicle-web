@@ -395,6 +395,14 @@ export class BattleScene extends Phaser.Scene {
           .setDepth(2)
           .setName(`fieldAmbientOverlay_${fieldEnc.ambientEffect}`);
       }
+      // CHRONO-S116: bgmTrack 재생 시도 (자산 미존재 시 SoundManager 내부 safe fallback)
+      if (fieldEnc.bgmTrack && this.soundManager) {
+        try {
+          this.soundManager.playBgm(fieldEnc.bgmTrack, 1500);
+        } catch (e) {
+          console.warn('[BattleScene] BGM 재생 실패:', fieldEnc.bgmTrack, e);
+        }
+      }
     }
 
     // CHRONO-S70: chain combo 라벨 (era 라벨 아래)
