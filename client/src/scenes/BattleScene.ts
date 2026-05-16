@@ -1989,6 +1989,30 @@ export class BattleScene extends Phaser.Scene {
    * CHRONO-S51: 보스 sprite 위에 협공 저항 단계 텍스트 부착/갱신.
    * sprite 데이터에 캐싱하여 중복 생성 방지.
    */
+  /**
+   * CHRONO-S86: 협공 완전 면역 보스 라벨 (별도 색조 — 흰색 강조).
+   */
+  private _updateBossImmuneLabel(
+    enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
+  ): void {
+    const cacheKey = '__bossResistText';
+    const existing = (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey];
+    const label = '🛡 협공 면역';
+    if (existing) {
+      existing.setText(label).setColor('#ffffff');
+      existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
+      return;
+    }
+    const t = this.add.text(enemy.sprite.x, enemy.sprite.y - 80, label, {
+      fontSize: '12px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(8800).setName(`bossImmune_${enemy.unit.id}`);
+    (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey] = t;
+  }
+
   private _updateBossResistLabel(
     enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
     dualHits: number,
@@ -2136,6 +2160,8 @@ export class BattleScene extends Phaser.Scene {
           id: string;
           team: 'party' | 'monsters';
           dualTechHitsTaken?: number;
+          tripleTechHitsTaken?: number;
+          dualTechImmune?: boolean;
         }>;
         // CHRONO-S83: 협공 사용 통계
         combatStats?: {
@@ -2196,15 +2222,20 @@ export class BattleScene extends Phaser.Scene {
           this.lastTripleTechCandidates = [];
           this.tripleTechButton?.setVisible(false);
         }
-        // CHRONO-S51/S67: 보스 협공 저항 단계 표시 (dualTechHitsTaken + tripleTechHitsTaken)
+        // CHRONO-S51/S67/S86: 보스 협공 저항 / 면역 표시
         for (const sp of d.participants ?? []) {
           if (sp.team !== 'monsters') continue;
           const dHits = sp.dualTechHitsTaken ?? 0;
-          const tHits = (sp as { tripleTechHitsTaken?: number }).tripleTechHitsTaken ?? 0;
-          if (dHits <= 0 && tHits <= 0) continue;
+          const tHits = sp.tripleTechHitsTaken ?? 0;
+          const immune = sp.dualTechImmune ?? false;
+          if (!immune && dHits <= 0 && tHits <= 0) continue;
           const enemy = this.enemySprites.find((es) => es.unit.id === sp.id);
           if (!enemy) continue;
-          this._updateBossResistLabel(enemy, dHits, tHits);
+          if (immune) {
+            this._updateBossImmuneLabel(enemy);
+          } else {
+            this._updateBossResistLabel(enemy, dHits, tHits);
+          }
         }
 
         // CHRONO-S28/S70: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시

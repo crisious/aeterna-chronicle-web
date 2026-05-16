@@ -260,6 +260,8 @@ export interface ParticipantSnapshot {
   dualTechHitsTaken: number;
   /** CHRONO-S66: 받은 Triple Tech 누적 횟수. 보스 한정 0.1/hit 저항. 0 디폴트. */
   tripleTechHitsTaken: number;
+  /** CHRONO-S86: 협공 완전 면역 여부 (UI '🛡 협공 면역' 표시용). */
+  dualTechImmune: boolean;
   buffs: string[];
   debuffs: string[];
 }
@@ -383,6 +385,7 @@ export class CombatEngine {
       team: p.team,
       dualTechHitsTaken: p.dualTechHitsTaken ?? 0,
       tripleTechHitsTaken: p.tripleTechHitsTaken ?? 0,
+      dualTechImmune: p.dualTechImmune ?? false,
       buffs: [],
       debuffs: [],
     }));

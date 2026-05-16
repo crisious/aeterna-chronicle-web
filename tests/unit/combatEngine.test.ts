@@ -872,6 +872,8 @@ describe('CombatEngine', () => {
     expect(playerSnap.dualTechHitsTaken).toBe(0);
     // CHRONO-S66: Triple Tech 저항 카운트 노출 (0 디폴트)
     expect(playerSnap.tripleTechHitsTaken).toBe(0);
+    // CHRONO-S86: dualTechImmune 노출 (false 디폴트)
+    expect(playerSnap.dualTechImmune).toBe(false);
     expect(playerSnap.buffs).toEqual([]);
     expect(playerSnap.debuffs).toEqual([]);
   });
