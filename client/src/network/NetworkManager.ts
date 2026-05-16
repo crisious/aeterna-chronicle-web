@@ -603,6 +603,23 @@ class NetworkManager {
     return this.get<ZoneInfo[]>('/api/world/zones');
   }
 
+  // CHRONO-S107: 시대별 필드 encounter 조회
+  async fetchZoneEncounter(zoneId: string, eraId: 'ancient' | 'present' | 'ruined_future'): Promise<{
+    ok: boolean;
+    encounter?: {
+      zoneId: string;
+      eraId: string;
+      monsterPool: Array<{ monsterId: string; name: string; weight: number; isBoss?: boolean }>;
+      maxSpawn: number;
+      hasBossSlot: boolean;
+      ambientLine: string;
+    };
+    error?: string;
+  }> {
+    const apiCode = CLIENT_ZONE_API_CODE_MAP[zoneId] ?? zoneId;
+    return this.get(`/api/world/zones/${apiCode}/encounter`, { eraId });
+  }
+
   async getNpcs(zoneId: string): Promise<Array<{ id: string; name: string; role: string; dialogueId?: string }>> {
     return this.get('/api/npcs', { zoneId });
   }
