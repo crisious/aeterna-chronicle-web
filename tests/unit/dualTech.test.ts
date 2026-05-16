@@ -6,6 +6,9 @@ import {
   resolveDualTech,
   listDualTechs,
   getDualTechById,
+  listDualTechsByClass,
+  listDualTechsByElement,
+  listAoeDualTechs,
 } from '../../shared/types/dualTech';
 
 describe('resolveDualTech', () => {
@@ -164,5 +167,35 @@ describe('resolveDualTech — CHRONO-S38 추가 6종', () => {
   });
   it('memory_weaver + memory_breaker → memory_break', () => {
     expect(resolveDualTech('memory_weaver', 'memory_breaker')?.id).toBe('memory_break');
+  });
+});
+
+describe('listDualTechsByClass / listDualTechsByElement / listAoeDualTechs (CHRONO-S54)', () => {
+  it('listDualTechsByClass(ether_knight) → ether_knight 포함 모든 페어', () => {
+    const list = listDualTechsByClass('ether_knight');
+    expect(list.length).toBe(6); // ether_knight 가 7 클래스 중 다른 6과 페어
+    for (const dt of list) {
+      expect(dt.partnerClasses).toContain('ether_knight');
+    }
+  });
+
+  it('listDualTechsByClass(unknown) → 빈 배열', () => {
+    expect(listDualTechsByClass('nonexistent_class')).toHaveLength(0);
+    expect(listDualTechsByClass('')).toHaveLength(0);
+  });
+
+  it('listDualTechsByElement(chrono) → chrono 협공만 (chrono_blade, memory_warp, time_overflow, time_break)', () => {
+    const list = listDualTechsByElement('chrono');
+    expect(list.length).toBeGreaterThanOrEqual(3);
+    for (const dt of list) {
+      expect(dt.element).toBe('chrono');
+    }
+  });
+
+  it('listAoeDualTechs → 3종 (memory_break, time_overflow, void_oblivion)', () => {
+    const aoe = listAoeDualTechs();
+    expect(aoe.length).toBe(3);
+    const ids = aoe.map((d) => d.id).sort();
+    expect(ids).toEqual(['memory_break', 'time_overflow', 'void_oblivion']);
   });
 });

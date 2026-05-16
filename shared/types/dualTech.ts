@@ -266,3 +266,25 @@ export function listDualTechs(): readonly DualTechDef[] {
 export function getDualTechById(id: string): DualTechDef | null {
   return DUAL_TECHS.find((dt) => dt.id === id) ?? null;
 }
+
+/**
+ * CHRONO-S54: 특정 클래스가 참여 가능한 모든 협공 목록 (UI 캐릭터 패널 / Wiki 용).
+ */
+export function listDualTechsByClass(classId: string): readonly DualTechDef[] {
+  if (!classId) return [];
+  return DUAL_TECHS.filter((dt) => dt.partnerClasses.includes(classId));
+}
+
+/**
+ * CHRONO-S54: 특정 element 로 협공 필터 (UI 색상별 그룹화).
+ */
+export function listDualTechsByElement(element: DualTechDef['element']): readonly DualTechDef[] {
+  return DUAL_TECHS.filter((dt) => dt.element === element);
+}
+
+/**
+ * CHRONO-S54: AOE 협공만 (광역 강력 협공 필터).
+ */
+export function listAoeDualTechs(): readonly DualTechDef[] {
+  return DUAL_TECHS.filter((dt) => dt.aoe === true);
+}
