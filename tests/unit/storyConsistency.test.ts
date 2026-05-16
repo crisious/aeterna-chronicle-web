@@ -614,3 +614,31 @@ describe('STORY-V19 — AI hint 시대 분위기 narrative', () => {
     expect(p.aggressiveBias).toBe(0);
   });
 });
+
+describe('STORY-V20 — era bonus drops narrative', () => {
+  it('ancient 보너스 드롭 — relic_shard (유물 분위기)', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    const drops = chronoEraBonusDrops('ancient');
+    expect(drops.length).toBeGreaterThanOrEqual(1);
+    expect(drops.some((d) => d.itemId.includes('relic'))).toBe(true);
+  });
+
+  it('ruined_future 보너스 드롭 — chrono_crystal + voidshard (시대 시그니처)', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    const drops = chronoEraBonusDrops('ruined_future');
+    expect(drops.length).toBeGreaterThanOrEqual(2);
+    const ids = drops.map((d) => d.itemId);
+    expect(ids.some((id) => id.includes('chrono'))).toBe(true);
+    expect(ids.some((id) => id.includes('void'))).toBe(true);
+  });
+
+  it('present 보너스 드롭 빈 배열 (표준, narrative 일관)', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraBonusDrops('present').length).toBe(0);
+  });
+
+  it('ruined_future 드롭이 ancient 보다 많거나 같음 (시대 부유함 X — 보상 다양화)', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraBonusDrops('ruined_future').length).toBeGreaterThanOrEqual(chronoEraBonusDrops('ancient').length);
+  });
+});
