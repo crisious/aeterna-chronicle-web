@@ -3714,3 +3714,49 @@ describe('STORY-V101 — chapter IV 시작 — AOE 시대 narrative', () => {
     }
   });
 });
+
+describe('STORY-V102 — ChronoEraId narrative 완전성', () => {
+  it('STORY_ERAS = ChronoEraId 정확 3 시대 narrative (ancient/present/ruined_future)', () => {
+    expect(STORY_ERAS).toEqual(['ancient', 'present', 'ruined_future']);
+  });
+
+  it('isChronoEraId 가 STORY_ERAS 정확히 매칭 narrative', async () => {
+    const { isChronoEraId } = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      expect(isChronoEraId(era), `${era} valid`).toBe(true);
+    }
+    expect(isChronoEraId('past')).toBe(false);
+    expect(isChronoEraId('FUTURE')).toBe(false);
+    expect(isChronoEraId('Ancient')).toBe(false);
+    expect(isChronoEraId(undefined)).toBe(false);
+    expect(isChronoEraId(false)).toBe(false);
+    expect(isChronoEraId([])).toBe(false);
+    expect(isChronoEraId({})).toBe(false);
+  });
+
+  it('STORY_ZONES = 7 zone 정확 narrative', () => {
+    expect(STORY_ZONES.length).toBe(7);
+    expect(STORY_ZONES).toEqual([
+      'aether_plains',
+      'memory_forest',
+      'malatus_sanctuary',
+      'shadow_gorge',
+      'crystal_cave',
+      'forgotten_citadel',
+      'chrono_spire',
+    ]);
+  });
+
+  it('STORY_CLASSES = 7 클래스 정확 narrative', () => {
+    expect(STORY_CLASSES.length).toBe(7);
+    expect(STORY_CLASSES).toEqual([
+      'ether_knight',
+      'time_knight',
+      'shadow_weaver',
+      'memory_weaver',
+      'time_guardian',
+      'void_wanderer',
+      'memory_breaker',
+    ]);
+  });
+});
