@@ -401,6 +401,16 @@ export class BattleScene extends Phaser.Scene {
           .setDepth(2)
           .setName(`fieldAmbientOverlay_${effectKind}`);
       }
+      // CHRONO-S128: 보스 진입 시 카메라 진입 zoom (1.0 → 1.05, 400ms ease)
+      if (this._initData.isBossField) {
+        this.cameras.main.setZoom(1.0);
+        this.tweens.add({
+          targets: this.cameras.main,
+          zoom: 1.05,
+          duration: 400,
+          ease: 'Power2',
+        });
+      }
       // CHRONO-S116: bgmTrack 재생 시도 (자산 미존재 시 SoundManager 내부 safe fallback)
       if (fieldEnc.bgmTrack && this.soundManager) {
         try {
