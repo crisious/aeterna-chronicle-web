@@ -4418,3 +4418,42 @@ describe('STORY-V122 — Tech 페어 ↔ zone narrative cross-check', () => {
     expect(new Set(keys).size).toBe(21);
   });
 });
+
+describe('STORY-V123 — chronoEra AI hints 정확 값 narrative', () => {
+  it('ancient AI hints: defensiveBias 0.3 + aoeBias 0.05 + aggressiveBias 0.05 narrative', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const h = chronoEraToAIHints('ancient');
+    expect(h.defensiveBias).toBe(0.3);
+    expect(h.aoeBias).toBe(0.05);
+    expect(h.aggressiveBias).toBe(0.05);
+  });
+
+  it('present AI hints: 모두 0 (기준 baseline) narrative', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const h = chronoEraToAIHints('present');
+    expect(h.defensiveBias).toBe(0);
+    expect(h.aoeBias).toBe(0);
+    expect(h.aggressiveBias).toBe(0);
+  });
+
+  it('ruined_future AI hints: defensiveBias 0.05 + aoeBias 0.4 + aggressiveBias 0.2 narrative', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    const h = chronoEraToAIHints('ruined_future');
+    expect(h.defensiveBias).toBe(0.05);
+    expect(h.aoeBias).toBe(0.4);
+    expect(h.aggressiveBias).toBe(0.2);
+  });
+
+  it('각 AI hint 모두 0~1 범위 narrative (정규화)', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      const h = chronoEraToAIHints(era);
+      expect(h.defensiveBias).toBeGreaterThanOrEqual(0);
+      expect(h.defensiveBias).toBeLessThanOrEqual(1);
+      expect(h.aoeBias).toBeGreaterThanOrEqual(0);
+      expect(h.aoeBias).toBeLessThanOrEqual(1);
+      expect(h.aggressiveBias).toBeGreaterThanOrEqual(0);
+      expect(h.aggressiveBias).toBeLessThanOrEqual(1);
+    }
+  });
+});
