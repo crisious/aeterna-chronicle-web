@@ -28,6 +28,20 @@ import { classSkills } from '../data/classSkills';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
 import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
 import { loadLastEra } from '../time/eraStorage';
+import { getDualTechById } from '../../../shared/types/dualTech';
+
+// CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
+const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
+  chrono: 'sfx_combat_magic_cast',
+  holy: 'sfx_combat_magic_heal',
+  dark: 'sfx_combat_magic_cast',
+  fire: 'sfx_combat_magic_cast',
+  ice: 'sfx_combat_magic_cast',
+  lightning: 'sfx_combat_magic_cast',
+  wind: 'sfx_combat_magic_cast',
+  earth: 'sfx_combat_magic_cast',
+  neutral: 'sfx_combat_magic_cast',
+};
 
 // FF6 SPEED_TIER_SCALAR (atbTimeline 와 일치) — UI 표시 전용
 const TIER_LABEL: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
@@ -1894,8 +1908,12 @@ export class BattleScene extends Phaser.Scene {
           fxKey,
           cand.name,
         );
-        // CHRONO-S33: 협공 SFX — magic cast + ult voice 조합으로 강조
-        playSfx(this, 'sfx_combat_magic_cast', 0.8);
+        // CHRONO-S33/S44: element 기반 SFX 차별화
+        const def = getDualTechById(cand.techId);
+        const sfxKey = def
+          ? DUAL_TECH_SFX_BY_ELEMENT[def.element] ?? 'sfx_combat_magic_cast'
+          : 'sfx_combat_magic_cast';
+        playSfx(this, sfxKey, 0.8);
         playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.7);
       } else {
         this.battleUI?.addLog(`[협공] 발동 실패`);
