@@ -1937,6 +1937,29 @@ export class BattleScene extends Phaser.Scene {
   }
 
   /**
+   * CHRONO-S51: 보스 sprite 위에 협공 저항 단계 텍스트 부착/갱신.
+   * sprite 데이터에 캐싱하여 중복 생성 방지.
+   */
+  private _updateBossResistLabel(enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle }, hits: number): void {
+    const cacheKey = '__bossResistText';
+    const existing = (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey];
+    const label = `🛡 협공 저항 +${(hits * 5)}%`;
+    if (existing) {
+      existing.setText(label);
+      existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
+      return;
+    }
+    const t = this.add.text(enemy.sprite.x, enemy.sprite.y - 80, label, {
+      fontSize: '11px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffd54a',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(8800).setName(`bossResist_${enemy.unit.id}`);
+    (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey] = t;
+  }
+
+  /**
    * CHRONO-S36: Shift+D 로 협공 후보 cycle. 다음 인덱스로 회전 + 버튼 라벨 갱신.
    */
   private _cycleDualTechSelection(): void {
@@ -1991,6 +2014,12 @@ export class BattleScene extends Phaser.Scene {
           aoe?: boolean;
           mpCost?: number;
         }>;
+        // CHRONO-S51: 보스 저항 단계 표시용 snapshot
+        participants?: Array<{
+          id: string;
+          team: 'party' | 'monsters';
+          dualTechHitsTaken?: number;
+        }>;
       };
       if (d.combatId === this.serverCombatId) {
         const turn = d.turn ?? d.tick ?? 0;
@@ -2024,6 +2053,16 @@ export class BattleScene extends Phaser.Scene {
           this.dualTechSelectedIndex = 0;
           this.dualTechButton?.setVisible(false);
         }
+        // CHRONO-S51: 보스 협공 저항 단계 표시 (snapshot.dualTechHitsTaken 활용)
+        for (const sp of d.participants ?? []) {
+          if (sp.team !== 'monsters') continue;
+          const hits = sp.dualTechHitsTaken ?? 0;
+          if (hits <= 0) continue;
+          const enemy = this.enemySprites.find((es) => es.unit.id === sp.id);
+          if (!enemy) continue;
+          this._updateBossResistLabel(enemy, hits);
+        }
+
         // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
         // CHRONO-S40: AOE 협공 — actorName '(AOE)' 검출 시 모든 alive 적에 시각 효과
         for (const act of d.actions ?? []) {
