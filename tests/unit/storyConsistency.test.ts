@@ -3478,3 +3478,30 @@ describe('STORY-V95 — ambientLine + description 문장 끝 narrative 패턴', 
     }
   });
 });
+
+describe('STORY-V96 — 협공 시대 가용 narrative 확장', () => {
+  it('Triple eraFilter 분포: 5 Triple eraFilter 설정 + 10 Triple 미설정 (모든 시대 가용)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const all = listTripleTechs();
+    const withFilter = all.filter((tt) => tt.eraFilter);
+    const withoutFilter = all.filter((tt) => !tt.eraFilter);
+    expect(withFilter.length).toBeGreaterThanOrEqual(3);
+    expect(withoutFilter.length).toBeGreaterThanOrEqual(5);
+    expect(withFilter.length + withoutFilter.length).toBe(15);
+  });
+
+  it('Triple ruined_future-only 시그니처 ≥ 1 (붕괴 미래 전용)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const futureOnly = listTripleTechs().filter((tt) => Array.isArray(tt.eraFilter) && tt.eraFilter.length === 1 && tt.eraFilter[0] === 'ruined_future');
+    expect(futureOnly.length, 'future-only Triple').toBeGreaterThanOrEqual(1);
+  });
+
+  it('Triple ancient + present 시그니처 (붕괴 전 통합) ≥ 2', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const preFinal = listTripleTechs().filter((tt) => {
+      if (!Array.isArray(tt.eraFilter)) return false;
+      return tt.eraFilter.includes('ancient') && tt.eraFilter.includes('present') && !tt.eraFilter.includes('ruined_future');
+    });
+    expect(preFinal.length, 'ancient+present-only Triple').toBeGreaterThanOrEqual(2);
+  });
+});
