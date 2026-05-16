@@ -20,6 +20,10 @@ import {
   projectZoneToEra,
   type ChronoEraId,
 } from '../time/ChronoTimeline';
+import {
+  resolveFieldEncounter,
+  rollFieldEncounterSpawns,
+} from '../../../shared/types/chrono';
 
 /** GameScene 전환 시 전달 데이터 */
 interface GameSceneData {
@@ -49,12 +53,15 @@ const ZONE_CHAPTER_MAP: Record<string, ChapterTitleInfo> = {
 interface RemoteEntity {
   id: string;
   name: string;
+  role?: string;
   sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   nameTag: Phaser.GameObjects.Text;
   isMonster: boolean;
 }
 
 export class GameScene extends Phaser.Scene {
+  private static readonly NPC_INTERACTION_RANGE_PX = 420;
+
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdKeys!: Record<string, Phaser.Input.Keyboard.Key>;
@@ -74,6 +81,7 @@ export class GameScene extends Phaser.Scene {
   private currentEraId: ChronoEraId = 'present';
   private zoneInfo: ZoneInfo | null = null;
   private remoteEntities: Map<string, RemoteEntity> = new Map();
+  private activeDialogueNpc: RemoteEntity | null = null;
   private zoneBackground: ZoneBackgroundDescriptor = resolveZoneBackground('aether_plains');
   private zoneLabel!: Phaser.GameObjects.Text;
   private connectionLabel!: Phaser.GameObjects.Text;
@@ -229,15 +237,17 @@ export class GameScene extends Phaser.Scene {
 
     // 대화 선택 이벤트 → 텔레메트리 발행
     this.events.on('ui.event.dialogue.choice_confirm', ({ choiceId }: { choiceId: string }) => {
+      const activeNpc = this.activeDialogueNpc;
+      const npcId = activeNpc?.id ?? 'UNKNOWN_NPC';
       this.telemetryEmitter?.emitDialogueChoice({
         sessionId: this.sessionId,
         playerId: networkManager.userId ?? 'debug-player-001',
-        chapterId: 'CH2',
-        sceneId: 'C2-N2',
-        npcId: 'NUARIEL',
-        dialogueNodeId: 'C2_N2_SAMPLE_01',
+        chapterId: this.currentZoneId,
+        sceneId: this.currentZoneName,
+        npcId,
+        dialogueNodeId: `${npcId}_FIELD_DIALOGUE_01`,
         choiceId,
-        choiceTextKey: `dialogue.c2.n2.choice.${choiceId.toLowerCase()}`,
+        choiceTextKey: `dialogue.field.${npcId}.${choiceId.toLowerCase()}`,
         inputMode: 'keyboard',
         latencyMs: this.hudOrchestrator?.dialogueOpenAtMs > 0
           ? Date.now() - this.hudOrchestrator.dialogueOpenAtMs : undefined,
@@ -247,7 +257,19 @@ export class GameScene extends Phaser.Scene {
         platform: 'web',
         region: 'KR',
       });
-      this.hudOrchestrator?.hideDialogue();
+
+      const hasChoiceResult = activeNpc
+        ? this.hudOrchestrator?.showNpcChoiceResult({
+          id: activeNpc.id,
+          name: activeNpc.name,
+          role: activeNpc.role,
+        }, choiceId) ?? false
+        : false;
+
+      if (!hasChoiceResult) {
+        this.hudOrchestrator?.hideDialogue();
+        this.activeDialogueNpc = null;
+      }
     });
 
     // 챕터 타이틀 카드 표시 (존 진입 시)
@@ -351,16 +373,36 @@ export class GameScene extends Phaser.Scene {
       this.zoneLabel?.setText(`📍 ${projection.displayName}  /  ${getChronoEra(this.currentEraId).label}`);
 
       this.zoneInfo.npcs?.forEach((npc, i) => {
-        this._spawnNpc(npc.id, npc.name, 300 + i * 200, 400);
+        this._spawnNpc(npc.id, npc.name, 300 + i * 200, 400, npc.role);
       });
 
-      this.zoneInfo.monsters?.forEach((mon, i) => {
-        this._spawnMonster(mon.id, `${mon.name} Lv.${mon.level}`, 600 + (i % 5) * 150, 600 + Math.floor(i / 5) * 150);
-      });
+      // CHRONO-S123: chronoField encounter 기반 시대별 추가 spawn (visible encounter v1)
+      try {
+        const zid = this.zoneInfo?.id ?? '';
+        const era = this.currentEraId ?? 'present';
+        const encounter = zid ? resolveFieldEncounter(zid, era) : null;
+        if (encounter) {
+          const spawns = rollFieldEncounterSpawns(encounter, () => Math.random());
+          spawns.forEach((slot, i) => {
+            const baseLevel = slot.isBoss ? 30 : 10;
+            this._spawnMonster(slot.monsterId, `${slot.name} Lv.${baseLevel}`,
+              900 + (i % 4) * 130, 450 + Math.floor(i / 4) * 130);
+          });
+        } else {
+          this.zoneInfo.monsters?.forEach((mon, i) => {
+            this._spawnMonster(mon.id, `${mon.name} Lv.${mon.level}`, 600 + (i % 5) * 150, 600 + Math.floor(i / 5) * 150);
+          });
+        }
+      } catch (e) {
+        console.warn('[GameScene] chronoField encounter spawn 실패:', e);
+        this.zoneInfo.monsters?.forEach((mon, i) => {
+          this._spawnMonster(mon.id, `${mon.name} Lv.${mon.level}`, 600 + (i % 5) * 150, 600 + Math.floor(i / 5) * 150);
+        });
+      }
     } else {
       // 오프라인 폴백: 기본 NPC + 몬스터 배치 (매니페스트 실제 키 사용)
-      this._spawnNpc('npc_guide', '수호자단 안내원', 300, 400);
-      this._spawnNpc('npc_merchant', '상인', 500, 400);
+      this._spawnNpc('npc_guide', '수호자단 안내원', 300, 400, 'quest');
+      this._spawnNpc('npc_merchant', '상인', 500, 400, 'shop');
       this._spawnMonster('mon_erebos_fog_rat', '기억 침식쥐 Lv.5', 700, 500);
       this._spawnMonster('mon_erebos_memory_beetle', '공허 박쥐 Lv.7', 850, 550);
       this._spawnMonster('mon_erebos_memory_dust', '망각 슬라임 Lv.8', 1000, 500);
@@ -373,7 +415,7 @@ export class GameScene extends Phaser.Scene {
     npc_merchant: 'npc_merchant_sprite',
   };
 
-  private _spawnNpc(id: string, name: string, x: number, y: number): void {
+  private _spawnNpc(id: string, name: string, x: number, y: number, role = 'dialogue'): void {
     const texKey = GameScene.NPC_SPRITE_MAP[id];
     let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
 
@@ -389,10 +431,47 @@ export class GameScene extends Phaser.Scene {
     const tag = this.add.text(x, y - 42, name, {
       fontSize: '11px', color: '#88ff88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
+
+    const entity: RemoteEntity = { id, name, role, sprite, nameTag: tag, isMonster: false };
     sprite.on('pointerdown', () => {
-      this.hudOrchestrator?.toggleSampleDialogue();
+      this._openNpcDialogue(entity);
     });
-    this.remoteEntities.set(id, { id, name, sprite, nameTag: tag, isMonster: false });
+    this.remoteEntities.set(id, entity);
+  }
+
+  private _openNpcDialogue(npc: RemoteEntity): void {
+    if (npc.isMonster) return;
+
+    this.activeDialogueNpc = npc;
+    this.hudOrchestrator?.showNpcDialogue({
+      id: npc.id,
+      name: npc.name,
+      role: npc.role,
+    });
+  }
+
+  private _openNearestNpcDialogue(): void {
+    if (!this.player) return;
+
+    let nearestNpc: RemoteEntity | null = null;
+    let nearestDistanceSq = Number.POSITIVE_INFINITY;
+    const maxDistanceSq = GameScene.NPC_INTERACTION_RANGE_PX * GameScene.NPC_INTERACTION_RANGE_PX;
+
+    for (const entity of this.remoteEntities.values()) {
+      if (entity.isMonster) continue;
+
+      const dx = entity.sprite.x - this.player.x;
+      const dy = entity.sprite.y - this.player.y;
+      const distanceSq = dx * dx + dy * dy;
+      if (distanceSq <= maxDistanceSq && distanceSq < nearestDistanceSq) {
+        nearestNpc = entity;
+        nearestDistanceSq = distanceSq;
+      }
+    }
+
+    if (nearestNpc) {
+      this._openNpcDialogue(nearestNpc);
+    }
   }
 
   // 프로그래매틱 몬스터 아이콘 팔레트
@@ -534,6 +613,7 @@ export class GameScene extends Phaser.Scene {
     this.socketCleanups.forEach((fn) => fn());
     this.socketCleanups = [];
     this.remoteEntities.clear();
+    this.activeDialogueNpc = null;
   }
 
   // ── 월드/플레이어/입력 생성 ──
@@ -666,7 +746,7 @@ export class GameScene extends Phaser.Scene {
       });
 
       this.input.keyboard.on('keydown-T', () => {
-        this.hudOrchestrator?.toggleSampleDialogue();
+        this._openNearestNpcDialogue();
       });
       this.input.keyboard.on('keydown-ESC', () => {
         this.scene.start('WorldScene');
