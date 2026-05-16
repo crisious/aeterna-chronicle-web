@@ -194,6 +194,10 @@ export interface ParticipantSnapshot {
   mp: number;
   maxMp: number;
   atbGauge: number;
+  /** ATB 100 도달 여부 (행동 가능) — FF6 UI 깜빡임 표시용 */
+  atbReady: boolean;
+  /** ready 큐 인덱스 (0 = 다음 행동 예정). 미도달 시 null */
+  atbQueueIndex: number | null;
   alive: boolean;
   team: 'party' | 'monsters';
   buffs: string[];
@@ -274,6 +278,12 @@ export class CombatEngine {
   }
 
   getSnapshot(): ParticipantSnapshot[] {
+    // FF6 큐 인덱스 — readyAtTick 순서대로 0..N. SSOT atbTimeline.toSnapshots 와 동일 매핑.
+    const queueIndexByActor = new Map<string, number>();
+    Array.from(this.readyAtTick.entries())
+      .sort((a, b) => a[1] - b[1])
+      .forEach(([actorId], queueIndex) => queueIndexByActor.set(actorId, queueIndex));
+
     return this.getParticipants().map(p => ({
       id: p.id,
       name: p.name,
@@ -282,6 +292,8 @@ export class CombatEngine {
       mp: p.mp,
       maxMp: p.maxMp,
       atbGauge: p.atbGauge,
+      atbReady: p.alive && p.atbGauge >= ATB_MAX,
+      atbQueueIndex: queueIndexByActor.get(p.id) ?? null,
       alive: p.alive,
       team: p.team,
       buffs: [],

@@ -366,7 +366,39 @@ describe('CombatEngine', () => {
     expect(playerSnap.alive).toBe(true);
     expect(playerSnap.team).toBe('party');
     expect(playerSnap.atbGauge).toBe(0);
+    expect(playerSnap.atbReady).toBe(false);
+    expect(playerSnap.atbQueueIndex).toBeNull();
     expect(playerSnap.buffs).toEqual([]);
     expect(playerSnap.debuffs).toEqual([]);
+  });
+
+  // ── 11. ATB queue snapshot reveals action order (CHRONO-ATB-S4) ──
+
+  it('11. snapshot exposes atbReady + atbQueueIndex in arrival order', () => {
+    const p1 = makeParticipant({ id: 'p1', spd: 200 });
+    const p2 = makeParticipant({ id: 'p2', spd: 200 });
+    const m = makeMonster({ id: 'm1', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(p1);
+    e.addParticipant(p2);
+    e.addParticipant(m);
+    e.start();
+
+    // 1 tick에 두 player ATB 100 도달 → queue index 0, 1
+    e.processTick();
+    const snap = e.getSnapshot();
+
+    const sp1 = snap.find(s => s.id === 'p1')!;
+    const sp2 = snap.find(s => s.id === 'p2')!;
+    const sm = snap.find(s => s.id === 'm1')!;
+
+    expect(sp1.atbReady).toBe(true);
+    expect(sp2.atbReady).toBe(true);
+    expect(sm.atbReady).toBe(false);
+
+    // 큐 인덱스 0, 1 (도달 순서)
+    expect([sp1.atbQueueIndex, sp2.atbQueueIndex].sort()).toEqual([0, 1]);
+    expect(sm.atbQueueIndex).toBeNull();
   });
 });
