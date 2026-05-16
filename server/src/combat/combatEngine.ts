@@ -36,7 +36,7 @@ import { comboManager } from './comboManager';
 import { ATB_MAX, computeChargeDelta } from './atb';
 import type { ATBMode, ATBSpeedTier } from '../../../shared/types/atb';
 import { chronoEraToSpeedTier, type ChronoEraId } from '../../../shared/types/chronoEraAtb';
-import { resolveDualTech } from '../../../shared/types/dualTech';
+import { resolveDualTech, getDualTechById } from '../../../shared/types/dualTech';
 
 // ─── 전투 상태 머신 ───────────────────────────────────────────
 
@@ -264,6 +264,13 @@ export class CombatEngine {
   private readyOrderCounter = 0;
   // CHRONO-S9: flee 성공 시 winner 결정용 (alive 기반 checkWinCondition 우회).
   private fleeWinner: 'party' | 'monsters' | 'draw' | null = null;
+  // CHRONO-S15: Dual Tech 예약 (다음 processTick 직전에 실행).
+  private pendingDualTech: {
+    actorIdA: string;
+    actorIdB: string;
+    techId: string;
+    targetId: string;
+  } | null = null;
 
   // 서브시스템
   private cooldownManager = new SkillCooldownManager();
@@ -397,6 +404,35 @@ export class CombatEngine {
     return true;
   }
 
+  /**
+   * CHRONO-S15: Dual Tech 발동 예약. 양쪽 ready + 호환 클래스 + 호환 techId 검증.
+   * 다음 processTick 직전에 실행되어 두 actor 가 동시에 행동.
+   */
+  submitDualTech(
+    actorIdA: string,
+    actorIdB: string,
+    techId: string,
+    targetId: string,
+  ): boolean {
+    if (this.state !== 'IN_PROGRESS') return false;
+    const a = this.participants.get(actorIdA);
+    const b = this.participants.get(actorIdB);
+    if (!a || !b) return false;
+    if (a.isMonster || b.isMonster) return false;
+    if (!a.alive || !b.alive) return false;
+    if (a.id === b.id) return false;
+    if (a.atbGauge < ATB_MAX || b.atbGauge < ATB_MAX) return false;
+
+    const def = resolveDualTech(a.classId, b.classId);
+    if (!def || def.id !== techId) return false;
+
+    // MP 검사 (두 actor 모두 코스트 보유)
+    if (a.mp < def.mpCost || b.mp < def.mpCost) return false;
+
+    this.pendingDualTech = { actorIdA, actorIdB, techId, targetId };
+    return true;
+  }
+
   // ── 틱 처리 ─────────────────────────────────────────────
 
   processTick(): TickResult {
@@ -500,6 +536,13 @@ export class CombatEngine {
           this.logger.logDeath(p.id, 'dot');
         }
       }
+    }
+
+    // 3.5 CHRONO-S15: Dual Tech 우선 발동 (ready 큐 처리 전).
+    if (this.pendingDualTech) {
+      const dualResult = this.tryExecuteDualTech(this.pendingDualTech);
+      if (dualResult) actions.push(dualResult);
+      this.pendingDualTech = null;
     }
 
     // 4. 행동 가능한 참가자 처리 (readyAtTick FIFO 우선, 동률 시 SPD 내림차순)
@@ -644,6 +687,71 @@ export class CombatEngine {
       levelUps,
       participants: this.getSnapshot(),
       dualTechCandidates: this.computeDualTechCandidates(),
+    };
+  }
+
+  /**
+   * CHRONO-S15: Dual Tech 발동. 양쪽 actor 의 atk 평균 × damageMultiplier 데미지.
+   * 두 actor 의 게이지 0 리셋, MP 차감, ready 큐 제거.
+   */
+  private tryExecuteDualTech(req: {
+    actorIdA: string;
+    actorIdB: string;
+    techId: string;
+    targetId: string;
+  }): ActionResult | null {
+    const a = this.participants.get(req.actorIdA);
+    const b = this.participants.get(req.actorIdB);
+    const target = this.participants.get(req.targetId);
+    if (!a || !b || !target) return null;
+    if (!a.alive || !b.alive || !target.alive) return null;
+    if (a.atbGauge < ATB_MAX || b.atbGauge < ATB_MAX) return null;
+    const def = getDualTechById(req.techId);
+    if (!def) return null;
+    if (a.mp < def.mpCost || b.mp < def.mpCost) return null;
+
+    const avgAtk = (getEffectiveAtk(a, a.atk) + getEffectiveAtk(b, b.atk)) / 2;
+    const result = calculateDamage({
+      type: 'physical',
+      attackStat: avgAtk,
+      defenseStat: getEffectiveDef(target, target.def),
+      skillMultiplier: def.damageMultiplier,
+      attackerElement: def.element as ElementType,
+      defenderElement: target.element,
+      critRate: (a.critRate + b.critRate) / 2,
+      critDamage: (a.critDamage + b.critDamage) / 2,
+      armorPenetration: Math.max(a.armorPenetration, b.armorPenetration),
+      armorPenetrationPercent: Math.max(a.armorPenetrationPercent, b.armorPenetrationPercent),
+      bonusMultiplier: 1.0,
+      levelDifference: Math.round((a.level + b.level) / 2) - target.level,
+    });
+
+    target.hp = Math.max(0, target.hp - result.damage);
+    if (target.hp <= 0) {
+      target.alive = false;
+      this.logger.logDeath(target.id, `${a.id}+${b.id}`);
+    }
+    this.logger.logDamage(`${a.id}+${b.id}`, target.id, result.damage, result.isCritical);
+
+    // MP 차감 + 게이지 소비 + ready 큐 제거
+    a.mp = Math.max(0, a.mp - def.mpCost);
+    b.mp = Math.max(0, b.mp - def.mpCost);
+    a.atbGauge = 0;
+    b.atbGauge = 0;
+    this.readyAtTick.delete(a.id);
+    this.readyAtTick.delete(b.id);
+    this.pendingActions.delete(a.id);
+    this.pendingActions.delete(b.id);
+
+    return {
+      actorId: a.id,
+      actorName: `${a.name} × ${b.name}`,
+      actionType: 'dual_tech',
+      targetId: target.id,
+      targetName: target.name,
+      damage: result.damage,
+      isCritical: result.isCritical,
+      skillId: def.id,
     };
   }
 

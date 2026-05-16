@@ -481,6 +481,69 @@ describe('CombatEngine', () => {
     expect(result.dualTechCandidates).toHaveLength(0);
   });
 
+  // ── 9k. submitDualTech execution (CHRONO-S15) ──
+
+  it('9k. submitDualTech executes chrono_blade, drains MP, resets ATB', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 200, mp: 50, maxMp: 50, atk: 100 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 200, mp: 50, maxMp: 50, atk: 100 });
+    const m = makeMonster({ id: 'm', spd: 1, hp: 9999, maxHp: 9999, def: 0 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    e.processTick(); // 두 party ready
+
+    const ok = e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    expect(ok).toBe(true);
+
+    const result = e.processTick();
+    const dualAct = result.actions.find(a => a.actionType === 'dual_tech');
+    expect(dualAct).toBeDefined();
+    expect(dualAct?.skillId).toBe('chrono_blade');
+    expect(dualAct?.damage).toBeGreaterThan(0);
+
+    // 양쪽 MP 12 소비
+    expect(e.getParticipant('tk')!.mp).toBe(38);
+    expect(e.getParticipant('ek')!.mp).toBe(38);
+    // 양쪽 ATB 리셋
+    expect(e.getParticipant('tk')!.atbGauge).toBe(0);
+    expect(e.getParticipant('ek')!.atbGauge).toBe(0);
+  });
+
+  it('9l. submitDualTech rejected when MP insufficient', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 200, mp: 5, maxMp: 50 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 200, mp: 5, maxMp: 50 });
+    const m = makeMonster({ id: 'm', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    e.processTick();
+
+    const ok = e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    expect(ok).toBe(false);
+  });
+
+  it('9m. submitDualTech rejected when only one ready', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 200, mp: 50, maxMp: 50 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 10, mp: 50, maxMp: 50 });
+    const m = makeMonster({ id: 'm', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    e.processTick(); // tk만 ready
+
+    const ok = e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    expect(ok).toBe(false);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {
