@@ -234,6 +234,10 @@ export class BattleScene extends Phaser.Scene {
   private dualTechButton: Phaser.GameObjects.Container | null = null;
   // CHRONO-S65: 3인 협공 발동 버튼
   private tripleTechButton: Phaser.GameObjects.Container | null = null;
+  // CHRONO-S70: chain combo 카운터 + UI 라벨
+  private chainCount = 0;
+  private chainLabel: Phaser.GameObjects.Text | null = null;
+  private chainExpireTick = 0;
 
   // Auto-battle & speed control
   private autoMode = false;
@@ -361,6 +365,15 @@ export class BattleScene extends Phaser.Scene {
       fontFamily: FONT_FAMILY,
       color: `#${era.tintColor.toString(16).padStart(6, '0')}`,
     }).setOrigin(1, 0).setDepth(250).setName('eraTierLabel');
+
+    // CHRONO-S70: chain combo 라벨 (era 라벨 아래)
+    this.chainLabel = this.add.text(scW - 20, 32, '', {
+      fontSize: '14px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffd54a',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(1, 0).setDepth(252).setName('chainLabel').setVisible(false);
 
     // CHRONO-S31: 협공 발동 버튼 (우하단, 후보 있을 때만 표시)
     const btnContainer = this.add.container(scW - 90, scH - 50);
@@ -2180,13 +2193,26 @@ export class BattleScene extends Phaser.Scene {
           this._updateBossResistLabel(enemy, dHits, tHits);
         }
 
-        // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
+        // CHRONO-S28/S70: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
         // CHRONO-S40: AOE 협공 — actorName '(AOE)' 검출 시 모든 alive 적에 시각 효과
+        const turnNow = d.turn ?? d.tick ?? 0;
+        // chain 만료 검사 (5 tick 지나면 reset)
+        if (this.chainCount > 0 && turnNow > this.chainExpireTick) {
+          this.chainCount = 0;
+          this.chainLabel?.setVisible(false);
+        }
         for (const act of d.actions ?? []) {
-          if (act.actionType === 'dual_tech') {
-            if (act.actorName?.includes('(CHAIN)')) {
-              this.battleUI?.addLog(`🔥 CHAIN COMBO! +20% 데미지 (${act.damage ?? 0})`);
+          if (act.actionType === 'dual_tech' || act.actionType === 'triple_tech') {
+            const isChain = act.actorName?.includes('(CHAIN)');
+            if (isChain) {
+              this.chainCount += 1;
+              this.battleUI?.addLog(`🔥 CHAIN ×${this.chainCount}! (${act.damage ?? 0})`);
+            } else {
+              // 첫 발동 — chain count 1로 시작
+              this.chainCount = 1;
             }
+            this.chainExpireTick = turnNow + 5;
+            this.chainLabel?.setText(`🔥 CHAIN ×${this.chainCount}`).setVisible(true);
             if (act.actorName?.includes('(AOE)')) {
               this.battleUI?.addLog(`💥 광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
               const aoeName = (act.actorName ?? '').split(' (')[0];
