@@ -8,6 +8,10 @@ import {
   listAoeDualTechs,
 } from '../../shared/types/dualTech';
 import { listTripleTechs } from '../../shared/types/tripleTech';
+import {
+  listFieldEncounters,
+  listAllFieldMonsterIds,
+} from '../../shared/types/chronoField';
 
 describe('Tech catalog 총합', () => {
   it('Dual Tech 21종 + Triple Tech 15종 = 36 총 협공', () => {
@@ -43,5 +47,33 @@ describe('Tech catalog 총합', () => {
     for (const tt of listTripleTechs()) {
       expect(tt.aoe).toBe(true);
     }
+  });
+});
+
+describe('Field encounter catalog 총합 (CHRONO-S121)', () => {
+  it('21 encounter (7 zone × 3 era)', () => {
+    expect(listFieldEncounters().length).toBe(21);
+  });
+
+  it('전체 unique monster id ≥ 50 (52 정렬)', () => {
+    const ids = listAllFieldMonsterIds();
+    expect(ids.length).toBeGreaterThanOrEqual(50);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('보스 슬롯 ≥ 14 (대부분 zone 에 era별 보스)', () => {
+    const bossSlotCount = listFieldEncounters().reduce(
+      (n, e) => n + e.monsterPool.filter((s) => s.isBoss).length, 0,
+    );
+    expect(bossSlotCount).toBeGreaterThanOrEqual(14);
+  });
+
+  it('chrono_spire/ruined_future 보스 weight 가장 강력 (0.4)', () => {
+    const finalE = listFieldEncounters().find(
+      (e) => e.zoneId === 'chrono_spire' && e.eraId === 'ruined_future',
+    );
+    const boss = finalE?.monsterPool.find((s) => s.isBoss);
+    expect(boss?.weight).toBe(0.4);
+    expect(boss?.monsterId).toBe('aetherna_collapse');
   });
 });
