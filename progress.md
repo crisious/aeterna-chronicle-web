@@ -427,3 +427,17 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 
 **🎯 100 sprint 마디 + 357 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+196) = 누적 100 sprint, +265 가드 (92 → 357). aetherna 게임 narrative — 7 zone × 3 era × 21 보스 × 36 협공 × 50+ monster × 7 클래스 × 9 element × 6 tier × 시간선 cohesion + 정점 시그니처 + 시대 단조 + Triple>Dual+AOE + ratification 모두 회귀 가드 완성.
 
+## 2026-05-17 STORY 정합성 chapter IV — runtime stress + 결정성 + 시그니처 element (5 sprint, +18 가드)
+
+V100 이후 chapter IV — runtime 결정성 + 시그니처 cross-check 확장.
+
+- **V101** chapter IV 시작 — AOE 시대 (Dual AOE 3종 + dark/chrono + 2.5 + Triple aoe)
+- **V102** ChronoEraId narrative 완전성 (STORY_ERAS/ZONES/CLASSES 정확 + isChronoEraId 음성 case)
+- **V103** chronoField 결정성 (resolveFieldEncounter immutable + listFieldEncounters 동일)
+- **V104** chrono barrel 단일 진입점 stress (callable + return type + 100회 호출 결정성)
+- **V105** progress.md V101~V105 갱신 + 75 sprint 마디 기록
+
+회귀: storyConsistency 371/371 + unit 전체 844+/844+ pass.
+
+**75 sprint 마디 + 371 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+18) = 누적 75 sprint, +279 가드 (92 → 371).
+
