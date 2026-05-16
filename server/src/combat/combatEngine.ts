@@ -1469,6 +1469,12 @@ export class CombatEngine {
       allDrops.push(...m.dropTable);
     }
 
+    // CHRONO-S92: maxChain 4+ 시 EXP/Gold +20% 보너스 (협공 전술 보상)
+    if (this.maxChainReached >= 4) {
+      totalBaseExp = Math.round(totalBaseExp * 1.2);
+      totalBaseGold = Math.round(totalBaseGold * 1.2);
+    }
+
     const avgMonsterLevel = monsters.reduce((s, m) => s + m.level, 0) / (monsters.length || 1);
     const partyAvgLevel = party.reduce((s, p) => s + p.level, 0) / (party.length || 1);
     const hasBoss = monsters.some(m => m.isBoss);
