@@ -407,8 +407,13 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 - **V83** 300 가드 마디 — 누적 종합 cohesion (정량 + unique + aetherna 4중 + 시대 ↔ tier)
 - **V84** narrative type / runtime integrity (barrel 26 함수 + bgm fallback + unique encounter)
 - **V85** progress.md V81~V85 갱신 + 300 가드 마디 기록
+- **V86** chronoEra 정확 값 (ancient/present/future hp·attackSpeed·reward·levelOffset 정확 + passive 정확)
+- **V87** 클래스 페어 ↔ element 매칭 (void→dark, time_guardian→holy, chrono_blade=chrono)
+- **V88** 시그니처 협공 description (aetherna_final 에테르나/최종, void_eternity 영원/공허, chrono_break 시간 + length 10~100)
+- **V89** 60 sprint 마디 시그니처 element narrative (chrono 시그니처 + dark 시그니처)
+- **V90** progress.md V86~V90 갱신 + 60 sprint 마디 기록
 
-회귀: storyConsistency 303/303 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 321/321 + unit 전체 844+/844+ pass.
 
-**55 sprint 마디 + 303 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+142) = 누적 55 sprint, +211 가드 (92 → 303). 게임 narrative source 무결성 + 안정성 + cohesion + quality + cross-check + type integrity + class balance 모두 회귀 가드 land.
+**60 sprint 마디 + 321 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+160) = 누적 60 sprint, +229 가드 (92 → 321). aetherna 게임 narrative — 7 zone × 3 era × 21 보스 × 36 협공 × 50+ monster × 7 클래스 × 9 element × 6 tier × 시간선 cohesion 모두 회귀 가드 완성.
 
