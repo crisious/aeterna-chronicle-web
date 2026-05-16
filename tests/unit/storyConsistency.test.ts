@@ -3374,3 +3374,49 @@ describe('STORY-V92 — zone-별 일반 monster id prefix 시그니처', () => {
     expect(count).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('STORY-V93 — malatus_sanctuary + forgotten_citadel prefix', () => {
+  it('malatus_sanctuary 일반 monster ≥ 1 sanctuary_/malatus_/corrupted_/lost_ prefix narrative', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('malatus_sanctuary');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('sanctuary_') || slot.monsterId.startsWith('malatus_') || slot.monsterId.startsWith('corrupted_') || slot.monsterId.startsWith('lost_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('forgotten_citadel 일반 monster ≥ 1 citadel_/forsaken_/ruined_/broken_/chrono_ prefix narrative', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('forgotten_citadel');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('citadel_') || slot.monsterId.startsWith('forsaken_') || slot.monsterId.startsWith('ruined_') || slot.monsterId.startsWith('broken_') || slot.monsterId.startsWith('chrono_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('7 zone 모두 일반 monster ≥ 2 narrative (보스 외 일반 다수)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    for (const zone of STORY_ZONES) {
+      const list = listFieldEncountersByZone(zone);
+      let normalCount = 0;
+      for (const e of list) {
+        for (const slot of e.monsterPool) {
+          if (!slot.isBoss) normalCount += 1;
+        }
+      }
+      expect(normalCount, `${zone} 일반 count`).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
