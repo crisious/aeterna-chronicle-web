@@ -35,6 +35,7 @@ import { statusEffectManager } from './statusEffectManager';
 import { comboManager } from './comboManager';
 import { ATB_MAX, computeChargeDelta } from './atb';
 import type { ATBMode, ATBSpeedTier } from '../../../shared/types/atb';
+import { chronoEraToSpeedTier, type ChronoEraId } from '../../../shared/types/chronoEraAtb';
 
 // ─── 전투 상태 머신 ───────────────────────────────────────────
 
@@ -1015,6 +1016,15 @@ export class CombatInstanceManager {
     const engine = new CombatEngine(config);
     this.instances.set(engine.combatId, engine);
     return engine;
+  }
+
+  /**
+   * 시대(ChronoEra) 기반 전투 생성 (CHRONO-S6).
+   * eraId → ATBSpeedTier 매핑 자동 적용. extraConfig 로 추가 옵션 override 가능.
+   */
+  createFromEra(eraId: ChronoEraId, extraConfig?: Partial<CombatConfig>): CombatEngine {
+    const speedTier = chronoEraToSpeedTier(eraId);
+    return this.create({ speedTier, ...extraConfig });
   }
 
   /** 전투 조회 */
