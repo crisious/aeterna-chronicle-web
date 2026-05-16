@@ -722,6 +722,30 @@ describe('CombatEngine', () => {
 
   // ── 9r. Triple Tech execution (CHRONO-S59) ──
 
+  it('9q2. tripleTechCandidates detects aetherna_final when 3 party ready', () => {
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 200 });
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 200 });
+    const mw = makeParticipant({ id: 'mw', classId: 'memory_weaver', spd: 200 });
+    const m = makeMonster({ id: 'm', spd: 1 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(ek);
+    e.addParticipant(tk);
+    e.addParticipant(mw);
+    e.addParticipant(m);
+    e.start();
+    const result = e.processTick();
+
+    const tCands = result.tripleTechCandidates;
+    expect(tCands.length).toBeGreaterThanOrEqual(1);
+    expect(tCands.find(c => c.techId === 'aetherna_final')).toBeDefined();
+    const aetherna = tCands.find(c => c.techId === 'aetherna_final')!;
+    expect(aetherna.aoe).toBe(true);
+    expect(aetherna.element).toBe('chrono');
+    expect(aetherna.mpCost).toBe(30);
+    expect(aetherna.actorIds).toHaveLength(3);
+  });
+
   it('9r. submitTripleTech executes aetherna_final, all 3 actors MP -30 + ATB reset', () => {
     const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 });
     const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 });

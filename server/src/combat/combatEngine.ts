@@ -162,6 +162,17 @@ export interface PlayerAction {
 
 // ─── 틱 결과 ───────────────────────────────────────────────────
 
+/** CHRONO-S60: 이번 tick 에 발동 가능한 Triple Tech 후보. */
+export interface TripleTechCandidate {
+  techId: string;
+  name: string;
+  /** 협공 세 actor (party member id). 정렬됨. */
+  actorIds: [string, string, string];
+  element: string;
+  aoe: boolean;
+  mpCost: number;
+}
+
 /** CHRONO-S14: 이번 tick 에 발동 가능한 Dual Tech 후보. */
 export interface DualTechCandidate {
   /** DualTechDef.id (예: 'chrono_blade'). */
@@ -198,6 +209,8 @@ export interface TickResult {
   participants: ParticipantSnapshot[];
   /** CHRONO-S14: 이번 tick 에 발동 가능한 협공 후보 (ready 동시 + 호환 클래스). */
   dualTechCandidates: DualTechCandidate[];
+  /** CHRONO-S60: 이번 tick 에 발동 가능한 3인 협공 후보. */
+  tripleTechCandidates: TripleTechCandidate[];
 }
 
 export interface ActionResult {
@@ -751,7 +764,45 @@ export class CombatEngine {
       levelUps,
       participants: this.getSnapshot(),
       dualTechCandidates: this.computeDualTechCandidates(),
+      tripleTechCandidates: this.computeTripleTechCandidates(),
     };
+  }
+
+  /**
+   * CHRONO-S60: ready 큐의 alive party member 중 3-조합 (C(n,3)) 호환 검출.
+   */
+  private computeTripleTechCandidates(): TripleTechCandidate[] {
+    const readyParty = this.getParticipants().filter(
+      (p) => p.alive && p.team === 'party' && p.atbGauge >= ATB_MAX,
+    );
+    if (readyParty.length < 3) return [];
+
+    const seen = new Set<string>();
+    const out: TripleTechCandidate[] = [];
+    for (let i = 0; i < readyParty.length; i++) {
+      for (let j = i + 1; j < readyParty.length; j++) {
+        for (let k = j + 1; k < readyParty.length; k++) {
+          const a = readyParty[i];
+          const b = readyParty[j];
+          const c = readyParty[k];
+          const def = resolveTripleTech(a.classId, b.classId, c.classId);
+          if (!def) continue;
+          const ids: [string, string, string] = [a.id, b.id, c.id].sort() as [string, string, string];
+          const key = `${def.id}::${ids[0]}::${ids[1]}::${ids[2]}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          out.push({
+            techId: def.id,
+            name: def.name,
+            actorIds: ids,
+            element: def.element,
+            aoe: def.aoe ?? false,
+            mpCost: def.mpCost,
+          });
+        }
+      }
+    }
+    return out;
   }
 
   /**
@@ -1371,6 +1422,7 @@ export class CombatEngine {
       combatEnded: false,
       participants: this.getSnapshot(),
       dualTechCandidates: [],
+      tripleTechCandidates: [],
     };
   }
 
