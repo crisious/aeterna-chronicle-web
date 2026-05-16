@@ -717,6 +717,8 @@ export class CombatEngine {
     const isChain = this.lastDualTechTick !== null
       && this.currentTick - this.lastDualTechTick <= 5;
     const chainBonus = isChain ? 1.2 : 1.0;
+    // CHRONO-S34: 보스 target Dual Tech 저항 — damage 0.6x (밸런스)
+    const bossResist = target.isBoss ? 0.6 : 1.0;
 
     const result = calculateDamage({
       type: 'physical',
@@ -729,7 +731,7 @@ export class CombatEngine {
       critDamage: (a.critDamage + b.critDamage) / 2,
       armorPenetration: Math.max(a.armorPenetration, b.armorPenetration),
       armorPenetrationPercent: Math.max(a.armorPenetrationPercent, b.armorPenetrationPercent),
-      bonusMultiplier: chainBonus,
+      bonusMultiplier: chainBonus * bossResist,
       levelDifference: Math.round((a.level + b.level) / 2) - target.level,
     });
 
@@ -755,7 +757,7 @@ export class CombatEngine {
 
     return {
       actorId: a.id,
-      actorName: `${a.name} × ${b.name}${isChain ? ' (CHAIN)' : ''}`,
+      actorName: `${a.name} × ${b.name}${isChain ? ' (CHAIN)' : ''}${target.isBoss ? ' (BOSS RESIST)' : ''}`,
       actionType: 'dual_tech',
       targetId: target.id,
       targetName: target.name,

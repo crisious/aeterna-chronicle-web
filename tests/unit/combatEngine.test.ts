@@ -582,6 +582,41 @@ describe('CombatEngine', () => {
     expect(second!.damage!).toBeGreaterThan(firstDamage);
   });
 
+  // ── 9o. Boss Dual Tech resist (CHRONO-S34) ──
+
+  it('9o. boss target reduces Dual Tech damage to 0.6x with (BOSS RESIST) tag', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 });
+
+    // 일반 monster vs boss 데미지 비교
+    const normal = makeMonster({ id: 'norm', spd: 1, hp: 999999, maxHp: 999999, def: 0, isBoss: false });
+    const boss = makeMonster({ id: 'bossA', spd: 1, hp: 999999, maxHp: 999999, def: 0, isBoss: true });
+
+    const e1 = new CombatEngine({ autoMode: false });
+    e1.addParticipant(tk);
+    e1.addParticipant(ek);
+    e1.addParticipant(normal);
+    e1.start();
+    e1.processTick();
+    e1.submitDualTech('tk', 'ek', 'chrono_blade', 'norm');
+    const r1 = e1.processTick();
+    const normalAct = r1.actions.find(a => a.actionType === 'dual_tech')!;
+    expect(normalAct.actorName).not.toContain('BOSS RESIST');
+
+    const e2 = new CombatEngine({ autoMode: false });
+    e2.addParticipant(makeParticipant({ id: 'tk2', classId: 'time_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 }));
+    e2.addParticipant(makeParticipant({ id: 'ek2', classId: 'ether_knight', spd: 500, mp: 999, maxMp: 999, atk: 100 }));
+    e2.addParticipant(boss);
+    e2.start();
+    e2.processTick();
+    e2.submitDualTech('tk2', 'ek2', 'chrono_blade', 'bossA');
+    const r2 = e2.processTick();
+    const bossAct = r2.actions.find(a => a.actionType === 'dual_tech')!;
+    expect(bossAct.actorName).toContain('(BOSS RESIST)');
+    // boss 데미지가 normal 의 ~60% (0.6x bonusMultiplier 적용)
+    expect(bossAct.damage!).toBeLessThan(normalAct.damage!);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {
