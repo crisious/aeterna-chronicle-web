@@ -21,6 +21,11 @@ export interface DualTechDef {
   description: string;
   /** CHRONO-S39: 광역 협공 여부 (true 면 alive monster 전체 타격). 미설정 시 단일 target. */
   aoe?: boolean;
+  /**
+   * CHRONO-S80: 특정 시대에서만 발동 가능 (UI 후보 노출 제한).
+   * 미설정 시 모든 시대 가능. Triple Tech S78 패턴과 통일.
+   */
+  eraFilter?: readonly ('ancient' | 'present' | 'ruined_future')[];
 }
 
 const DUAL_TECHS: readonly DualTechDef[] = [
@@ -206,6 +211,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     fxKey: 'fx_memory_break',
     description: '직조와 파괴가 동시에 — 적의 자아 자체가 산산조각.',
     aoe: true,
+    eraFilter: ['ruined_future'],
   },
   {
     id: 'memory_pact',

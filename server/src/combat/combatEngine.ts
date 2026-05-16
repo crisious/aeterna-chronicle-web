@@ -1059,6 +1059,10 @@ export class CombatEngine {
         const b = readyParty[j];
         const def = resolveDualTech(a.classId, b.classId);
         if (!def) continue;
+        // CHRONO-S80: era 필터 적용 (Triple S78 패턴 통일)
+        if (def.eraFilter && this.config.eraId && !def.eraFilter.includes(this.config.eraId)) {
+          continue;
+        }
         const ids: [string, string] = [a.id, b.id].sort() as [string, string];
         const key = `${def.id}::${ids[0]}::${ids[1]}`;
         if (seen.has(key)) continue;
