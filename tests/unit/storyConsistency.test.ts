@@ -770,3 +770,29 @@ describe('STORY-V26 — 클래스 협공 density narrative', () => {
     }
   });
 });
+
+describe('STORY-V27 — 협공 description narrative quality', () => {
+  it('Dual Tech 21 description 모두 1자 이상', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.description.length, `Dual ${dt.id} description`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('Triple Tech 15 description 모두 1자 이상', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.description.length, `Triple ${tt.id} description`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('Dual + Triple description 모두 unique', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const all = [
+      ...listDualTechs().map((d) => d.description),
+      ...listTripleTechs().map((t) => t.description),
+    ];
+    expect(new Set(all).size).toBe(all.length); // 36 unique
+  });
+});
