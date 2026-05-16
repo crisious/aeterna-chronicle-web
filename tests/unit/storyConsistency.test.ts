@@ -5068,3 +5068,25 @@ describe('STORY-V141 — 시간선 narrative final cross-cohesion', () => {
     expect(futureBgm).toBe('bgm_final_boss');
   });
 });
+
+describe('STORY-V142 — shadow_weaver 클래스 narrative final cohesion', () => {
+  it('shadow_weaver Dual ≥ 5 (어둠 직조 다양 협공)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('shadow_weaver');
+    expect(duals.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('shadow_weaver Dual 모두 dark element narrative (그림자=어둠 정합)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('shadow_weaver');
+    for (const dt of duals) {
+      expect(dt.element, `shadow_weaver Dual ${dt.id} element`).toBe('dark');
+    }
+  });
+
+  it('shadow_weaver Triple 참여 ≥ 3 (3인 협공 분포)', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const triples = listTripleTechsByClass('shadow_weaver');
+    expect(triples.length).toBeGreaterThanOrEqual(3);
+  });
+});
