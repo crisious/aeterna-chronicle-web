@@ -255,3 +255,12 @@ export function listTripleTechsByElement(
 ): readonly TripleTechDef[] {
   return TRIPLE_TECHS.filter((tt) => tt.element === element);
 }
+
+/**
+ * CHRONO-S97: 특정 시대에서 발동 가능한 3인 협공 목록.
+ */
+export function listTripleTechsByEra(
+  era: 'ancient' | 'present' | 'ruined_future',
+): readonly TripleTechDef[] {
+  return TRIPLE_TECHS.filter((tt) => !tt.eraFilter || tt.eraFilter.includes(era));
+}

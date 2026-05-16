@@ -298,3 +298,13 @@ export function listDualTechsByElement(element: DualTechDef['element']): readonl
 export function listAoeDualTechs(): readonly DualTechDef[] {
   return DUAL_TECHS.filter((dt) => dt.aoe === true);
 }
+
+/**
+ * CHRONO-S97: 특정 시대에서 발동 가능한 협공 목록.
+ * eraFilter 미설정 = 모든 시대 가능 → 포함.
+ */
+export function listDualTechsByEra(
+  era: 'ancient' | 'present' | 'ruined_future',
+): readonly DualTechDef[] {
+  return DUAL_TECHS.filter((dt) => !dt.eraFilter || dt.eraFilter.includes(era));
+}

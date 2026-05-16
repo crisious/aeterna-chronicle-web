@@ -9,7 +9,9 @@ import {
   listDualTechsByClass,
   listDualTechsByElement,
   listAoeDualTechs,
+  listDualTechsByEra,
 } from '../../shared/types/dualTech';
+import { listTripleTechsByEra } from '../../shared/types/tripleTech';
 
 describe('resolveDualTech', () => {
   it('time_knight + ether_knight → chrono_blade (정방향)', () => {
@@ -197,5 +199,29 @@ describe('listDualTechsByClass / listDualTechsByElement / listAoeDualTechs (CHRO
     expect(aoe.length).toBe(3);
     const ids = aoe.map((d) => d.id).sort();
     expect(ids).toEqual(['memory_break', 'time_overflow', 'void_oblivion']);
+  });
+});
+
+describe('listDualTechsByEra (CHRONO-S97)', () => {
+  it('ancient → eraFilter ancient 포함 또는 미설정 협공', () => {
+    const list = listDualTechsByEra('ancient');
+    expect(list.length).toBeGreaterThan(0);
+    for (const dt of list) {
+      if (dt.eraFilter) expect(dt.eraFilter).toContain('ancient');
+    }
+  });
+
+  it('ruined_future → memory_break 포함 + chrono_blade 제외 (eraFilter)', () => {
+    const list = listDualTechsByEra('ruined_future');
+    expect(list.find((dt) => dt.id === 'memory_break')).toBeDefined();
+    expect(list.find((dt) => dt.id === 'chrono_blade')).toBeUndefined();
+  });
+});
+
+describe('listTripleTechsByEra (CHRONO-S97)', () => {
+  it('ruined_future → void_eternity 포함 + chrono_break 제외', () => {
+    const list = listTripleTechsByEra('ruined_future');
+    expect(list.find((tt) => tt.id === 'void_eternity')).toBeDefined();
+    expect(list.find((tt) => tt.id === 'chrono_break')).toBeUndefined();
   });
 });
