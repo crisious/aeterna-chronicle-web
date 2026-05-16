@@ -3987,3 +3987,38 @@ describe('STORY-V109 — 80 sprint 진입 narrative source stress', () => {
     }
   });
 });
+
+describe('STORY-V111 — listAllFieldMonsterIds narrative 정합', () => {
+  it('listAllFieldMonsterIds 가 보스 + 일반 모두 포함 narrative', async () => {
+    const { listAllFieldMonsterIds, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const all = listAllFieldMonsterIds();
+    const bosses = listAllBossMonsterIds();
+    // 모든 보스 id가 all에 포함
+    for (const bid of bosses) {
+      expect(all, `boss ${bid} in all`).toContain(bid);
+    }
+    // all - bosses = 일반 monster
+    const normals = all.filter((id) => !bosses.includes(id));
+    expect(normals.length, '일반 monster count').toBeGreaterThanOrEqual(30);
+  });
+
+  it('listAllFieldMonsterIds 모두 snake_case narrative', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    for (const id of listAllFieldMonsterIds()) {
+      expect(id.match(/^[a-z][a-z0-9_]*$/), `${id} snake_case`).not.toBeNull();
+    }
+  });
+
+  it('listAllFieldMonsterIds 정확 count = 일반 + 보스 unique sum narrative', async () => {
+    const { listAllFieldMonsterIds, listAllBossMonsterIds, listFieldEncounters } = await import('../../shared/types/chronoField');
+    const all = listAllFieldMonsterIds();
+    const expectedIds = new Set<string>();
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expectedIds.add(slot.monsterId);
+      }
+    }
+    expect(all.length).toBe(expectedIds.size);
+    expect(new Set(all).size).toBe(all.length);  // unique
+  });
+});
