@@ -4981,3 +4981,32 @@ describe('STORY-V138 — chronoField helper API non-error stress', () => {
     }
   });
 });
+
+describe('STORY-V139 — Dual/Triple description quality 강화 narrative', () => {
+  it('15 Triple description 시그니처 키워드 ("·" 또는 "+" 또는 "—") narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    let withMarker = 0;
+    for (const tt of listTripleTechs()) {
+      if (tt.description.includes('·') || tt.description.includes('+') || tt.description.includes('—')) {
+        withMarker += 1;
+      }
+    }
+    expect(withMarker, '시그니처 separator marker').toBeGreaterThanOrEqual(8);
+  });
+
+  it('15 Triple description 모두 한글 ≥ 5자 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      const koreanChars = (tt.description.match(/[가-힣]/g) ?? []).length;
+      expect(koreanChars, `${tt.id} 한글 char count`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it('21 Dual description 시그니처 한글 ≥ 3자 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      const koreanChars = (dt.description.match(/[가-힣]/g) ?? []).length;
+      expect(koreanChars, `${dt.id} 한글 char count`).toBeGreaterThanOrEqual(3);
+    }
+  });
+});
