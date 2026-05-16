@@ -375,6 +375,8 @@ export class BattleScene extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
       this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+      // CHRONO-S25: 'D' 키 → 첫 Dual Tech 후보 즉시 발동 (UI 발동 버튼 풀 구현 전 빠른 path)
+      this.input.keyboard.on('keydown-D', () => this._triggerFirstDualTech());
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -1825,6 +1827,45 @@ export class BattleScene extends Phaser.Scene {
       this.battleUI?.addLog(`[서버] 전투 ID: ${result.combatId}`);
     } catch (err) {
       console.warn('[BattleScene] 서버 전투 시작 실패 (로컬 모드):', err);
+    }
+  }
+
+  /**
+   * CHRONO-S25: 'D' 키 → 첫 Dual Tech 후보 발동.
+   * lastDualTechCandidates[0] + 첫 alive 적을 target 으로 networkManager.combatDualTech 호출.
+   * UI 발동 버튼 풀 구현 전 빠른 데모 path (사용자 입력 → 협공 발동 가능).
+   */
+  private async _triggerFirstDualTech(): Promise<void> {
+    if (!this.serverCombatId) {
+      this.battleUI?.addLog('[협공] 서버 전투 미연결');
+      return;
+    }
+    const cand = this.lastDualTechCandidates[0];
+    if (!cand) {
+      this.battleUI?.addLog('[협공] 발동 가능한 후보 없음 (양쪽 ATB 100% + 호환 클래스 필요)');
+      return;
+    }
+    const targetSprite = this.enemySprites.find((s) => s.unit.alive);
+    if (!targetSprite) {
+      this.battleUI?.addLog('[협공] 살아있는 적이 없습니다');
+      return;
+    }
+    try {
+      const resp = await networkManager.combatDualTech({
+        combatId: this.serverCombatId,
+        actorIdA: cand.actorIds[0],
+        actorIdB: cand.actorIds[1],
+        techId: cand.techId,
+        targetId: targetSprite.unit.id,
+      });
+      if (resp.success) {
+        this.battleUI?.addLog(`✨ 협공 발동: ${cand.name}`);
+      } else {
+        this.battleUI?.addLog(`[협공] 발동 실패`);
+      }
+    } catch (err) {
+      console.warn('[BattleScene] 협공 발동 실패:', err);
+      this.battleUI?.addLog('[협공] 네트워크 오류');
     }
   }
 
