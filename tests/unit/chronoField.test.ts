@@ -167,9 +167,21 @@ describe('FieldEncounter bgmTrack + ambientEffect (CHRONO-S111)', () => {
     expect(e?.bgmTrack).toBe('bgm_final_boss');
   });
 
-  it('BGM 미설정 encounter 도 안전 (undefined fallback)', () => {
+  it('CHRONO-S112: BGM 미설정 encounter 는 era 기본값 자동 적용', () => {
     const e = resolveFieldEncounter('memory_forest', 'present');
-    // bgmTrack 미설정 → undefined, 호출자 fallback 처리
-    expect(typeof e?.bgmTrack).toBe('undefined');
+    // bgmTrack 미설정 → era 기본값 (present → bgm_field_calm)
+    expect(e?.bgmTrack).toBe('bgm_field_calm');
+    expect(e?.ambientEffect).toBe('glow');
+  });
+
+  it('CHRONO-S112: ruined_future 미설정 encounter 도 void effect 기본', () => {
+    const e = resolveFieldEncounter('memory_forest', 'ruined_future');
+    expect(e?.bgmTrack).toBe('bgm_ruined_future');
+    expect(e?.ambientEffect).toBe('void');
+  });
+
+  it('CHRONO-S112: chrono_spire/ruined_future override 유지 (bgm_final_boss)', () => {
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
+    expect(e?.bgmTrack).toBe('bgm_final_boss');
   });
 });

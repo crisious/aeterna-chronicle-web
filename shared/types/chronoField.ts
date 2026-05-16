@@ -304,6 +304,18 @@ const ENCOUNTER_INDEX = new Map<string, FieldEncounterDef>(
   ENCOUNTERS.map((e) => [ENCOUNTER_KEY(e.zoneId, e.eraId), e]),
 );
 
+// CHRONO-S112: era 기반 BGM + ambientEffect 기본값 (encounter 별 override 가능)
+const DEFAULT_BGM_BY_ERA: Record<ChronoEraId, string> = {
+  ancient: 'bgm_ancient_field',
+  present: 'bgm_field_calm',
+  ruined_future: 'bgm_ruined_future',
+};
+const DEFAULT_EFFECT_BY_ERA: Record<ChronoEraId, 'mist' | 'dust' | 'glow' | 'void' | 'none'> = {
+  ancient: 'mist',
+  present: 'glow',
+  ruined_future: 'void',
+};
+
 /**
  * zone+era 조합으로 필드 encounter 데이터 조회.
  * 미정의 시 null (caller 가 fallback 처리).
@@ -313,7 +325,14 @@ export function resolveFieldEncounter(
   eraId: ChronoEraId,
 ): FieldEncounterDef | null {
   if (!zoneId) return null;
-  return ENCOUNTER_INDEX.get(ENCOUNTER_KEY(zoneId, eraId)) ?? null;
+  const raw = ENCOUNTER_INDEX.get(ENCOUNTER_KEY(zoneId, eraId));
+  if (!raw) return null;
+  // CHRONO-S112: bgm/effect 미설정 시 era 기본값 채워서 반환
+  return {
+    ...raw,
+    bgmTrack: raw.bgmTrack ?? DEFAULT_BGM_BY_ERA[eraId],
+    ambientEffect: raw.ambientEffect ?? DEFAULT_EFFECT_BY_ERA[eraId],
+  };
 }
 
 /** 전체 encounter 목록. */
