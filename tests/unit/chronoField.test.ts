@@ -20,10 +20,11 @@ describe('resolveFieldEncounter', () => {
     expect(bossSlot?.monsterId).toBe('ancient_relic_golem');
   });
 
-  it('aether_plains + present → 보스 없음, 2종', () => {
+  it('aether_plains + present → 평원 가디언 보스 + 일반 2종 (CHRONO-S131)', () => {
     const e = resolveFieldEncounter('aether_plains', 'present');
-    expect(e?.monsterPool).toHaveLength(2);
-    expect(e?.hasBossSlot).toBe(false);
+    expect(e?.monsterPool).toHaveLength(3);
+    expect(e?.hasBossSlot).toBe(true);
+    expect(e!.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('plains_guardian');
   });
 
   it('aether_plains + ruined_future → 시간 포식자 보스 포함', () => {
@@ -205,9 +206,9 @@ describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {
     expect(boss?.monsterId).toBe('aetherna_collapse');
   });
 
-  it('getBossSlot 보스 없는 encounter → null', async () => {
+  it('getBossSlot 보스 없는 encounter → null (memory_forest present)', async () => {
     const { resolveFieldEncounter, getBossSlot } = await import('../../shared/types/chronoField');
-    const e = resolveFieldEncounter('aether_plains', 'present')!;
+    const e = resolveFieldEncounter('memory_forest', 'present')!;
     expect(getBossSlot(e)).toBeNull();
   });
 
