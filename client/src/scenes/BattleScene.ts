@@ -232,6 +232,8 @@ export class BattleScene extends Phaser.Scene {
   private dualTechSelectedIndex = 0;
   // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
   private dualTechButton: Phaser.GameObjects.Container | null = null;
+  // CHRONO-S65: 3인 협공 발동 버튼
+  private tripleTechButton: Phaser.GameObjects.Container | null = null;
 
   // Auto-battle & speed control
   private autoMode = false;
@@ -374,6 +376,21 @@ export class BattleScene extends Phaser.Scene {
     btnContainer.setDepth(260).setVisible(false).setName('dualTechButton');
     btnBg.on('pointerdown', () => this._triggerFirstDualTech());
     this.dualTechButton = btnContainer;
+
+    // CHRONO-S65: 3인 협공 버튼 (Dual 위, 더 큰 강조)
+    const tBtnContainer = this.add.container(scW - 90, scH - 92);
+    const tBtnBg = this.add.rectangle(0, 0, 180, 40, 0xffd54a, 0.92)
+      .setStrokeStyle(3, 0xffffff)
+      .setInteractive({ useHandCursor: true });
+    const tBtnText = this.add.text(0, 0, '🌟 3인 협공 (T)', {
+      fontSize: '15px',
+      fontFamily: FONT_FAMILY,
+      color: '#1a0033',
+    }).setOrigin(0.5);
+    tBtnContainer.add([tBtnBg, tBtnText]);
+    tBtnContainer.setDepth(261).setVisible(false).setName('tripleTechButton');
+    tBtnBg.on('pointerdown', () => this._triggerFirstTripleTech());
+    this.tripleTechButton = tBtnContainer;
 
     // ── 매니저 초기화 (개별 try-catch) ────────────────────────
     try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
@@ -2133,13 +2150,17 @@ export class BattleScene extends Phaser.Scene {
           this.dualTechSelectedIndex = 0;
           this.dualTechButton?.setVisible(false);
         }
-        // CHRONO-S63: Triple Tech 후보 수신
+        // CHRONO-S63/S65: Triple Tech 후보 수신 + 버튼 가시화
         if (d.tripleTechCandidates && d.tripleTechCandidates.length > 0) {
           const tNames = d.tripleTechCandidates.map((c) => c.name).join(', ');
           this.battleUI?.addLog(`🌟 3인 협공 가능: ${tNames} ('T' 키)`);
           this.lastTripleTechCandidates = d.tripleTechCandidates;
+          this.tripleTechButton?.setVisible(true);
+          const tTxt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+          tTxt?.setText(`🌟 ${d.tripleTechCandidates[0].name} (T)`);
         } else {
           this.lastTripleTechCandidates = [];
+          this.tripleTechButton?.setVisible(false);
         }
         // CHRONO-S51: 보스 협공 저항 단계 표시 (snapshot.dualTechHitsTaken 활용)
         for (const sp of d.participants ?? []) {
