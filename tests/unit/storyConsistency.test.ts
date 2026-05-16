@@ -4531,3 +4531,46 @@ describe('STORY-V125 — 95 sprint 마디 시그니처 Dual cohesion', () => {
     expect((dt as { aoe?: boolean }).aoe).toBe(true);
   });
 });
+
+describe('STORY-V126 — 시그니처 보스 narrative final cohesion', () => {
+  it('aetherna_collapse 정점 보스 narrative final', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const boss = e.monsterPool.find((s) => s.isBoss)!;
+    expect(boss.monsterId).toBe('aetherna_collapse');
+    expect(boss.name).toBe('에테르나의 종말');
+    expect(boss.weight).toBe(0.4);
+    expect(boss.isBoss).toBe(true);
+    expect(e.bossOnlyMode).toBe(true);
+    expect(e.bgmTrack).toBe('bgm_final_boss');
+    expect(e.ambientEffect).toBe('boss_room');
+  });
+
+  it('aetherna_eidolon (ancient 정점) narrative final', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    const boss = e.monsterPool.find((s) => s.isBoss)!;
+    expect(boss.monsterId).toBe('aetherna_eidolon');
+    expect(boss.name).toBe('에테르나 환영');
+    expect(boss.weight).toBe(0.2);
+  });
+
+  it('chrono_archon (present 정점) narrative final', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'present')!;
+    const boss = e.monsterPool.find((s) => s.isBoss)!;
+    expect(boss.monsterId).toBe('chrono_archon');
+    expect(boss.name).toBe('시간 통치자');
+    expect(boss.weight).toBe(0.2);
+  });
+
+  it('chrono_spire 3 정점 보스 narrative final cohesion (ancient/present/future)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('chrono_spire');
+    expect(list.length).toBe(3);
+    const bosses = list.map((e) => e.monsterPool.find((s) => s.isBoss)?.monsterId).filter(Boolean);
+    expect(bosses).toContain('aetherna_eidolon');
+    expect(bosses).toContain('chrono_archon');
+    expect(bosses).toContain('aetherna_collapse');
+  });
+});
