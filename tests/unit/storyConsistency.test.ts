@@ -2638,3 +2638,42 @@ describe('STORY-V74 — fxKey 패턴 정합성 narrative', () => {
     }
   });
 });
+
+describe('STORY-V75 — aetherna 게임명 narrative 등장 빈도', () => {
+  it('aetherna prefix Triple ≥ 1 (aetherna_final 정점)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const count = listTripleTechs().filter((tt) => tt.id.startsWith('aetherna_')).length;
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('aetherna prefix 보스 = 2 (eidolon + collapse 정확)', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const count = listAllBossMonsterIds().filter((id) => id.startsWith('aetherna_')).length;
+    expect(count).toBe(2);
+  });
+
+  it('"에테르나" name 시그니처 ≥ 3 (Tech name + 보스 name 합계)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    let count = 0;
+    for (const tt of listTripleTechs()) {
+      if (tt.name.includes('에테르나')) count += 1;
+    }
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        if (slot.name.includes('에테르나')) count += 1;
+      }
+    }
+    expect(count, '"에테르나" 시그니처 등장 횟수').toBeGreaterThanOrEqual(3);
+  });
+
+  it('chrono_spire zone 이 aetherna 시그니처 보스 모두 보유 narrative (게임 정점 위치)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('chrono_spire');
+    const bossIds = list
+      .map((e) => e.monsterPool.find((s) => s.isBoss)?.monsterId)
+      .filter((id): id is string => typeof id === 'string');
+    const aethernaBosses = bossIds.filter((id) => id.startsWith('aetherna_'));
+    expect(aethernaBosses.length).toBeGreaterThanOrEqual(2);
+  });
+});
