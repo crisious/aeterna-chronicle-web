@@ -823,6 +823,34 @@ describe('CombatEngine', () => {
     expect(ok).toBe(false);
   });
 
+  // ── 9t. combatStats counter (CHRONO-S82) ──
+
+  it('9t. TickResult.combatStats counts dualTechFired + maxChainReached', () => {
+    const tk = makeParticipant({ id: 'tk', classId: 'time_knight', spd: 500, mp: 999, maxMp: 999 });
+    const ek = makeParticipant({ id: 'ek', classId: 'ether_knight', spd: 500, mp: 999, maxMp: 999 });
+    const m = makeMonster({ id: 'm', spd: 1, hp: 9999, maxHp: 9999 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(tk);
+    e.addParticipant(ek);
+    e.addParticipant(m);
+    e.start();
+    e.processTick();
+
+    // 첫 발동
+    e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    const r1 = e.processTick();
+    expect(r1.combatStats.dualTechFired).toBe(1);
+    expect(r1.combatStats.maxChainReached).toBe(1);
+
+    // 즉시 두 번째 (chain 2)
+    for (let i = 0; i < 1; i++) e.processTick();
+    e.submitDualTech('tk', 'ek', 'chrono_blade', 'm');
+    const r2 = e.processTick();
+    expect(r2.combatStats.dualTechFired).toBe(2);
+    expect(r2.combatStats.maxChainReached).toBeGreaterThanOrEqual(2);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {

@@ -219,6 +219,12 @@ export interface TickResult {
   dualTechCandidates: DualTechCandidate[];
   /** CHRONO-S60: 이번 tick 에 발동 가능한 3인 협공 후보. */
   tripleTechCandidates: TripleTechCandidate[];
+  /** CHRONO-S82: 협공 사용 통계 (누적). */
+  combatStats: {
+    dualTechFired: number;
+    tripleTechFired: number;
+    maxChainReached: number;
+  };
 }
 
 export interface ActionResult {
@@ -317,6 +323,10 @@ export class CombatEngine {
   private lastDualTechTick: number | null = null;
   // CHRONO-S73: 연속 chain 카운트 (4+ 도달 시 1.5x 보너스).
   private chainCount = 0;
+  // CHRONO-S82: 협공 사용 통계 (TickResult / 보상 계산 / replay 활용).
+  private dualTechFiredCount = 0;
+  private tripleTechFiredCount = 0;
+  private maxChainReached = 0;
   // CHRONO-S59: Triple Tech 예약.
   private pendingTripleTech: {
     actorIds: [string, string, string];
@@ -778,6 +788,11 @@ export class CombatEngine {
       participants: this.getSnapshot(),
       dualTechCandidates: this.computeDualTechCandidates(),
       tripleTechCandidates: this.computeTripleTechCandidates(),
+      combatStats: {
+        dualTechFired: this.dualTechFiredCount,
+        tripleTechFired: this.tripleTechFiredCount,
+        maxChainReached: this.maxChainReached,
+      },
     };
   }
 
@@ -927,6 +942,10 @@ export class CombatEngine {
     // CHRONO-S26: 콤보 tick 갱신
     this.lastDualTechTick = this.currentTick;
 
+    // CHRONO-S82: 통계 카운트
+    this.dualTechFiredCount += 1;
+    if (this.chainCount > this.maxChainReached) this.maxChainReached = this.chainCount;
+
     // CHRONO-S75: chain 4+ 시 발동 actor HP 5% 회복 (시너지 보상)
     if (this.chainCount >= 4) {
       for (const p of [a, b]) {
@@ -1023,6 +1042,10 @@ export class CombatEngine {
       this.pendingActions.delete(p.id);
     }
     this.lastDualTechTick = this.currentTick;
+
+    // CHRONO-S82: Triple Tech 통계
+    this.tripleTechFiredCount += 1;
+    if (this.chainCount > this.maxChainReached) this.maxChainReached = this.chainCount;
 
     // CHRONO-S75: chain 4+ 시 발동 3 actor 모두 HP 5% 회복
     if (this.chainCount >= 4) {
@@ -1482,6 +1505,11 @@ export class CombatEngine {
       participants: this.getSnapshot(),
       dualTechCandidates: [],
       tripleTechCandidates: [],
+      combatStats: {
+        dualTechFired: this.dualTechFiredCount,
+        tripleTechFired: this.tripleTechFiredCount,
+        maxChainReached: this.maxChainReached,
+      },
     };
   }
 
