@@ -2719,3 +2719,43 @@ describe('STORY-V76 — ambient line 시대 키워드 분포 narrative', () => {
     expect(matchCount, 'aether_plains ambient keyword').toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V77 — monster name 한글 분위기 narrative', () => {
+  it('보스 21 name 한글 시그니처 키워드 ≥ 18 (수호자/군주/거인/영주/통치자/환영/봉인 등)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const sigKeywords = ['수호자', '군주', '거인', '영주', '통치자', '환영', '봉인', '가디언', '화신', '망령', '뱀', '거대', '신', '왕', '여왕', '용', '천사', '악마', '종말', '파편', '잔영', '파수꾼', '포식자', '골렘', '세라프'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      if (sigKeywords.some((k) => boss.name.includes(k))) count += 1;
+    }
+    expect(count, '보스 시그니처 키워드').toBeGreaterThanOrEqual(18);
+  });
+
+  it('일반 monster name 시그니처 키워드 ≥ 30 (정령/늑대/박쥐/사제/잠복자/도깨비불 등)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const sigKeywords = ['정령', '늑대', '박쥐', '사제', '잠복자', '도깨비불', '뱀', '괴물', '아콜라이트', '궁수', '기사', '경비병', '뱀', '거미', '잔영', '망령', '폭주', '안개', '결정', '에테르'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (sigKeywords.some((k) => slot.name.includes(k))) count += 1;
+      }
+    }
+    expect(count, '일반 monster 시그니처 키워드').toBeGreaterThanOrEqual(30);
+  });
+
+  it('ancient 시대 monster name "고대/유적/봉인/세라프/평원/숲" 키워드 ≥ 5', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const keywords = ['고대', '유적', '봉인', '세라프', '평원', '숲', '결정', '에테르', '말라투스', '환영', '거인'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'ancient') continue;
+      for (const slot of e.monsterPool) {
+        if (keywords.some((k) => slot.name.includes(k))) count += 1;
+      }
+    }
+    expect(count, 'ancient name 키워드').toBeGreaterThanOrEqual(5);
+  });
+});
