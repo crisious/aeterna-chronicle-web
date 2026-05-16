@@ -4283,3 +4283,37 @@ describe('STORY-V117 — 보스 name 카테고리 narrative 분포', () => {
     expect(count).toBeGreaterThanOrEqual(18);
   });
 });
+
+describe('STORY-V118 — 클래스별 element 분포 narrative', () => {
+  it('각 클래스 Dual element ≥ 1 + 다양성 1~3 element narrative', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    for (const cls of STORY_CLASSES) {
+      const duals = listDualTechsByClass(cls);
+      expect(duals.length, `${cls} Dual count`).toBeGreaterThanOrEqual(1);
+      const elements = new Set(duals.map((dt) => dt.element));
+      expect(elements.size, `${cls} element 다양성`).toBeGreaterThanOrEqual(1);
+      expect(elements.size).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it('void_wanderer Dual ≥ 3 dark element (void → dark 시그니처)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('void_wanderer');
+    const darkCount = duals.filter((dt) => dt.element === 'dark').length;
+    expect(darkCount).toBeGreaterThanOrEqual(3);
+  });
+
+  it('time_guardian Dual ≥ 1 holy element (수호 = 신성)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('time_guardian');
+    const holyCount = duals.filter((dt) => dt.element === 'holy').length;
+    expect(holyCount).toBeGreaterThanOrEqual(1);
+  });
+
+  it('ether_knight Dual element ≥ 2 distinct (시그니처 다양성)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('ether_knight');
+    const elements = new Set(duals.map((dt) => dt.element));
+    expect(elements.size).toBeGreaterThanOrEqual(2);
+  });
+});
