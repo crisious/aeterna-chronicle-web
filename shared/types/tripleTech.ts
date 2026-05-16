@@ -85,6 +85,7 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     fxKey: 'fx_guardian_oath',
     description: '에테르 기사 · 시간 수호자 · 기억 파괴자가 맹약을 맺고 신성한 종결을 선언.',
     aoe: true,
+    eraFilter: ['ancient', 'present'],
   },
   {
     id: 'time_void_break',

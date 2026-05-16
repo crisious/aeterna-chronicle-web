@@ -78,6 +78,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     mpCost: 16,
     fxKey: 'fx_ether_recall',
     description: '잊혀진 영광의 기억을 에테르 검에 호출 — 성스러운 검광 일격.',
+    eraFilter: ['ancient', 'present'],
   },
   {
     id: 'shadow_memory',
@@ -129,6 +130,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     fxKey: 'fx_void_oblivion',
     description: '공허 방랑자와 기억 파괴자가 적의 존재 자체를 흐릿하게 망각시킨다.',
     aoe: true,
+    eraFilter: ['ruined_future'],
   },
   {
     id: 'guardian_eclipse',
