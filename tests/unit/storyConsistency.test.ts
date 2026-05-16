@@ -2463,3 +2463,40 @@ describe('STORY-V69 — 250 가드 마디 — Triple name 시그니처 + 누적 
     expect(listTripleTechs().length).toBe(15);
   });
 });
+
+describe('STORY-V71 — 시대별 협공 가용 narrative cross-check', () => {
+  it('listTripleTechsByEra 각 시대 ≥ 5 Triple 가용 narrative (전투 합리)', async () => {
+    const { listTripleTechsByEra } = await import('../../shared/types/tripleTech');
+    for (const era of STORY_ERAS) {
+      const list = listTripleTechsByEra(era);
+      expect(list.length, `${era} Triple count`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it('listDualTechsByEra 각 시대 ≥ 5 Dual 가용 narrative', async () => {
+    const { listDualTechsByEra } = await import('../../shared/types/dualTech');
+    for (const era of STORY_ERAS) {
+      const list = listDualTechsByEra(era);
+      expect(list.length, `${era} Dual count`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it('present 시대 모든 협공 가장 많이 가용 narrative (중심 시대)', async () => {
+    const { listDualTechsByEra } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByEra } = await import('../../shared/types/tripleTech');
+    const presentTotal = listDualTechsByEra('present').length + listTripleTechsByEra('present').length;
+    const ancientTotal = listDualTechsByEra('ancient').length + listTripleTechsByEra('ancient').length;
+    const futureTotal = listDualTechsByEra('ruined_future').length + listTripleTechsByEra('ruined_future').length;
+    expect(presentTotal).toBeGreaterThanOrEqual(ancientTotal);
+    expect(presentTotal).toBeGreaterThanOrEqual(futureTotal);
+  });
+
+  it('aetherna_final Triple eraFilter = present + ruined_future (게임 정점은 현재 + 종점)', async () => {
+    const { listTripleTechsByEra } = await import('../../shared/types/tripleTech');
+    // ancient 시대에는 aetherna_final 가용 X (시간 통합 전 narrative)
+    expect(listTripleTechsByEra('ancient').find((tt) => tt.id === 'aetherna_final')).toBeUndefined();
+    // present + ruined_future 가용 (시대 통합 narrative)
+    expect(listTripleTechsByEra('present').find((tt) => tt.id === 'aetherna_final')).toBeDefined();
+    expect(listTripleTechsByEra('ruined_future').find((tt) => tt.id === 'aetherna_final')).toBeDefined();
+  });
+});
