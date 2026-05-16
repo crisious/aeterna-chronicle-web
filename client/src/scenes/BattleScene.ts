@@ -2114,7 +2114,18 @@ export class BattleScene extends Phaser.Scene {
       `🔁 3인 협공 선택: ${sel.name} (${this.tripleTechSelectedIndex + 1}/${this.lastTripleTechCandidates.length})`,
     );
     const txt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-    txt?.setText(`🌟 ${sel.name} (T)`);
+    const bg = this.tripleTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+    const aoePrefix = sel.aoe ? '💥 🌟' : '🌟';
+    txt?.setText(`${aoePrefix} ${sel.name} (T)`);
+    const tint = (() => {
+      switch (sel.element) {
+        case 'chrono': return 0x6fd3ff;
+        case 'dark': return 0xc8a2ff;
+        case 'holy': return 0xffd54a;
+        default: return 0xffd54a;
+      }
+    })();
+    bg?.setFillStyle(tint, 0.92);
   }
 
   /**
@@ -2236,7 +2247,7 @@ export class BattleScene extends Phaser.Scene {
           this.dualTechSelectedIndex = 0;
           this.dualTechButton?.setVisible(false);
         }
-        // CHRONO-S63/S65/S87: Triple Tech 후보 수신 + 버튼 가시화 + selectedIndex 재정렬
+        // CHRONO-S63/S65/S87/S91: Triple Tech 후보 수신 + 버튼 가시화 + element 색조 + AOE
         if (d.tripleTechCandidates && d.tripleTechCandidates.length > 0) {
           const tNames = d.tripleTechCandidates.map((c) => c.name).join(', ');
           this.battleUI?.addLog(`🌟 3인 협공 가능: ${tNames} ('T' 키)`);
@@ -2246,8 +2257,19 @@ export class BattleScene extends Phaser.Scene {
           }
           this.tripleTechButton?.setVisible(true);
           const tTxt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+          const tBg = this.tripleTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
           const tSel = d.tripleTechCandidates[this.tripleTechSelectedIndex] ?? d.tripleTechCandidates[0];
-          tTxt?.setText(`🌟 ${tSel.name} (T)`);
+          const aoePrefix = tSel.aoe ? '💥 🌟' : '🌟';
+          tTxt?.setText(`${aoePrefix} ${tSel.name} (T)`);
+          const tint = (() => {
+            switch (tSel.element) {
+              case 'chrono': return 0x6fd3ff;
+              case 'dark': return 0xc8a2ff;
+              case 'holy': return 0xffd54a;
+              default: return 0xffd54a;
+            }
+          })();
+          tBg?.setFillStyle(tint, 0.92);
         } else {
           this.lastTripleTechCandidates = [];
           this.tripleTechSelectedIndex = 0;
