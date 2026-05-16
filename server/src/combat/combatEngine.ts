@@ -41,6 +41,7 @@ import {
   type ChronoEraId,
 } from '../../../shared/types/chronoEraAtb';
 import { resolveDualTech, getDualTechById } from '../../../shared/types/dualTech';
+import { resolveTripleTech, getTripleTechById } from '../../../shared/types/tripleTech';
 
 // ─── 전투 상태 머신 ───────────────────────────────────────────
 
@@ -291,6 +292,12 @@ export class CombatEngine {
   } | null = null;
   // CHRONO-S26: 마지막 Dual Tech 발동 tick (연속 콤보 보너스 추적).
   private lastDualTechTick: number | null = null;
+  // CHRONO-S59: Triple Tech 예약.
+  private pendingTripleTech: {
+    actorIds: [string, string, string];
+    techId: string;
+    targetId: string;
+  } | null = null;
 
   // 서브시스템
   private cooldownManager = new SkillCooldownManager();
@@ -459,6 +466,30 @@ export class CombatEngine {
     return true;
   }
 
+  /**
+   * CHRONO-S59: Triple Tech 발동 예약. 3명 ready + 호환 클래스 + MP 검증.
+   */
+  submitTripleTech(
+    actorIds: [string, string, string],
+    techId: string,
+    targetId: string,
+  ): boolean {
+    if (this.state !== 'IN_PROGRESS') return false;
+    const [idA, idB, idC] = actorIds;
+    if (new Set(actorIds).size !== 3) return false;
+    const actors = actorIds.map((id) => this.participants.get(id));
+    if (actors.some((p) => !p || p.isMonster || !p.alive)) return false;
+    if (actors.some((p) => (p!.atbGauge ?? 0) < ATB_MAX)) return false;
+
+    const [a, b, c] = actors as [CombatParticipant, CombatParticipant, CombatParticipant];
+    const def = resolveTripleTech(a.classId, b.classId, c.classId);
+    if (!def || def.id !== techId) return false;
+    if (a.mp < def.mpCost || b.mp < def.mpCost || c.mp < def.mpCost) return false;
+
+    this.pendingTripleTech = { actorIds: [idA, idB, idC], techId, targetId };
+    return true;
+  }
+
   // ── 틱 처리 ─────────────────────────────────────────────
 
   processTick(): TickResult {
@@ -564,7 +595,14 @@ export class CombatEngine {
       }
     }
 
-    // 3.5 CHRONO-S15: Dual Tech 우선 발동 (ready 큐 처리 전).
+    // 3.4 CHRONO-S59: Triple Tech 최우선 발동 (Dual Tech 보다도 먼저).
+    if (this.pendingTripleTech) {
+      const tripleResult = this.tryExecuteTripleTech(this.pendingTripleTech);
+      if (tripleResult) actions.push(tripleResult);
+      this.pendingTripleTech = null;
+    }
+
+    // 3.5 CHRONO-S15: Dual Tech 발동 (ready 큐 처리 전).
     if (this.pendingDualTech) {
       const dualResult = this.tryExecuteDualTech(this.pendingDualTech);
       if (dualResult) actions.push(dualResult);
@@ -824,6 +862,83 @@ export class CombatEngine {
       targetName: def.aoe ? `${targets.length} 적` : target.name,
       damage: def.aoe ? totalDamage : result.damage,
       isCritical: result.isCritical,
+      skillId: def.id,
+    };
+  }
+
+  /**
+   * CHRONO-S59: Triple Tech 발동. 세 actor 평균 atk × damageMultiplier. AOE 면 모든 적, 단일이면 target 만.
+   * 보스 저항 + chain bonus 적용.
+   */
+  private tryExecuteTripleTech(req: {
+    actorIds: [string, string, string];
+    techId: string;
+    targetId: string;
+  }): ActionResult | null {
+    const actors = req.actorIds.map((id) => this.participants.get(id));
+    if (actors.some((p) => !p || !p.alive || p.atbGauge < ATB_MAX)) return null;
+    const [a, b, c] = actors as [CombatParticipant, CombatParticipant, CombatParticipant];
+    const target = this.participants.get(req.targetId);
+    if (!target || !target.alive) return null;
+    const def = getTripleTechById(req.techId);
+    if (!def) return null;
+    if (a.mp < def.mpCost || b.mp < def.mpCost || c.mp < def.mpCost) return null;
+
+    const avgAtk = (
+      getEffectiveAtk(a, a.atk) + getEffectiveAtk(b, b.atk) + getEffectiveAtk(c, c.atk)
+    ) / 3;
+    const isChain = this.lastDualTechTick !== null
+      && this.currentTick - this.lastDualTechTick <= 5;
+    const chainBonus = isChain ? 1.2 : 1.0;
+
+    const targets: CombatParticipant[] = def.aoe
+      ? this.getParticipants().filter((p) => p.team === 'monsters' && p.alive)
+      : [target];
+
+    let totalDamage = 0;
+    for (const t of targets) {
+      const tBossResist = t.isBoss ? Math.max(0.3, 0.6 - 0.05 * (t.dualTechHitsTaken ?? 0)) : 1.0;
+      const aoeFalloff = def.aoe && t.id !== target.id ? 0.8 : 1.0;
+      const tResult = calculateDamage({
+        type: 'physical',
+        attackStat: avgAtk,
+        defenseStat: getEffectiveDef(t, t.def),
+        skillMultiplier: def.damageMultiplier,
+        attackerElement: def.element as ElementType,
+        defenderElement: t.element,
+        critRate: (a.critRate + b.critRate + c.critRate) / 3,
+        critDamage: (a.critDamage + b.critDamage + c.critDamage) / 3,
+        armorPenetration: Math.max(a.armorPenetration, b.armorPenetration, c.armorPenetration),
+        armorPenetrationPercent: Math.max(a.armorPenetrationPercent, b.armorPenetrationPercent, c.armorPenetrationPercent),
+        bonusMultiplier: chainBonus * tBossResist * aoeFalloff,
+        levelDifference: Math.round((a.level + b.level + c.level) / 3) - t.level,
+      });
+      t.hp = Math.max(0, t.hp - tResult.damage);
+      if (t.isBoss) t.dualTechHitsTaken = (t.dualTechHitsTaken ?? 0) + 1;
+      if (t.hp <= 0) {
+        t.alive = false;
+        this.logger.logDeath(t.id, `${a.id}+${b.id}+${c.id}`);
+      }
+      this.logger.logDamage(`${a.id}+${b.id}+${c.id}`, t.id, tResult.damage, tResult.isCritical);
+      totalDamage += tResult.damage;
+    }
+
+    // MP 차감 + 게이지 0 + ready 큐 정리
+    for (const p of [a, b, c]) {
+      p.mp = Math.max(0, p.mp - def.mpCost);
+      p.atbGauge = 0;
+      this.readyAtTick.delete(p.id);
+      this.pendingActions.delete(p.id);
+    }
+    this.lastDualTechTick = this.currentTick;
+
+    return {
+      actorId: a.id,
+      actorName: `${a.name} × ${b.name} × ${c.name} (TRIPLE)${def.aoe ? ' (AOE)' : ''}${isChain ? ' (CHAIN)' : ''}`,
+      actionType: 'triple_tech',
+      targetId: target.id,
+      targetName: def.aoe ? `${targets.length} 적` : target.name,
+      damage: totalDamage,
       skillId: def.id,
     };
   }
