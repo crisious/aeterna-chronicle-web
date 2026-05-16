@@ -1070,3 +1070,55 @@ describe('STORY-V34 — Triple Tech damageMultiplier + element 분포 narrative'
     expect((elementCount.get('dark') ?? 0), 'dark Triple count').toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V35 — Dual Tech eraFilter 시대 narrative 정합성', () => {
+  it('chrono_blade (chrono element) eraFilter = ancient + present (붕괴 후 봉인)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('chrono_blade')!;
+    expect(dt.element).toBe('chrono');
+    expect(dt.eraFilter).toEqual(['ancient', 'present']);
+  });
+
+  it('memory_warp eraFilter = ancient + present (회상의 협공)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('memory_warp')!;
+    expect(dt.eraFilter).toEqual(['ancient', 'present']);
+  });
+
+  it('memory_break + void_oblivion eraFilter = ruined_future only (붕괴 시대 전용)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    expect(getDualTechById('memory_break')!.eraFilter).toEqual(['ruined_future']);
+    expect(getDualTechById('void_oblivion')!.eraFilter).toEqual(['ruined_future']);
+  });
+
+  it('listDualTechsByEra(ancient) 에 chrono 협공 모두 포함, ruined_future 협공 미포함', async () => {
+    const { listDualTechsByEra } = await import('../../shared/types/dualTech');
+    const ancientList = listDualTechsByEra('ancient');
+    const ancientIds = new Set(ancientList.map((dt) => dt.id));
+    expect(ancientIds.has('chrono_blade')).toBe(true);
+    expect(ancientIds.has('memory_warp')).toBe(true);
+    expect(ancientIds.has('memory_break')).toBe(false);
+    expect(ancientIds.has('void_oblivion')).toBe(false);
+  });
+
+  it('listDualTechsByEra(ruined_future) 에 chrono 협공 미포함, 붕괴 협공 포함', async () => {
+    const { listDualTechsByEra } = await import('../../shared/types/dualTech');
+    const futureList = listDualTechsByEra('ruined_future');
+    const futureIds = new Set(futureList.map((dt) => dt.id));
+    expect(futureIds.has('chrono_blade')).toBe(false);
+    expect(futureIds.has('memory_warp')).toBe(false);
+    expect(futureIds.has('memory_break')).toBe(true);
+    expect(futureIds.has('void_oblivion')).toBe(true);
+  });
+
+  it('listDualTechsByEra(present) 가 가장 많은 협공 narrative (현재가 균형)', async () => {
+    const { listDualTechsByEra } = await import('../../shared/types/dualTech');
+    const counts = {
+      ancient: listDualTechsByEra('ancient').length,
+      present: listDualTechsByEra('present').length,
+      ruined_future: listDualTechsByEra('ruined_future').length,
+    };
+    expect(counts.present, 'present count').toBeGreaterThanOrEqual(counts.ancient);
+    expect(counts.present).toBeGreaterThanOrEqual(counts.ruined_future);
+  });
+});
