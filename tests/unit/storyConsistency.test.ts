@@ -1356,3 +1356,42 @@ describe('STORY-V41 — Dual Tech damageMultiplier + AOE narrative 분포', () =
     expect(tripleAvg).toBeGreaterThan(dualAvg);
   });
 });
+
+describe('STORY-V42 — Triple Tech 클래스 페어 narrative 다양성', () => {
+  it('15 Triple 의 partnerClasses 3인 set 모두 unique narrative (중복 페어 없음)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const setKey = (tt: { partnerClasses: readonly string[] }) =>
+      [...tt.partnerClasses].sort().join('|');
+    const keys = listTripleTechs().map(setKey);
+    expect(new Set(keys).size, 'unique Triple class triples').toBe(keys.length);
+  });
+
+  it('15 Triple 모든 partnerClasses 정확히 3인 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.partnerClasses.length, `${tt.id} class count`).toBe(3);
+    }
+  });
+
+  it('각 클래스가 Triple 참여 ≤ 8회 narrative (단일 클래스 독점 금지)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const count = new Map<string, number>();
+    for (const tt of listTripleTechs()) {
+      for (const cls of tt.partnerClasses) {
+        count.set(cls, (count.get(cls) ?? 0) + 1);
+      }
+    }
+    for (const cls of STORY_CLASSES) {
+      const c = count.get(cls) ?? 0;
+      expect(c, `${cls} Triple 참여`).toBeLessThanOrEqual(8);
+    }
+  });
+
+  it('Triple partnerClasses 내 동일 클래스 중복 없음 narrative (3인 모두 다름)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      const set = new Set(tt.partnerClasses);
+      expect(set.size, `${tt.id} partnerClasses unique`).toBe(tt.partnerClasses.length);
+    }
+  });
+});
