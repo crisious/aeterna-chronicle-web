@@ -2541,3 +2541,61 @@ describe('STORY-V72 — monster id ↔ name narrative 1:1 매핑', () => {
     }
   });
 });
+
+describe('STORY-V73 — source id 도메인 cross-check narrative', () => {
+  it('Dual + Triple id 결합 36개 모두 unique narrative (Dual ↔ Triple id 충돌 없음)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const allIds = [
+      ...listDualTechs().map((dt) => dt.id),
+      ...listTripleTechs().map((tt) => tt.id),
+    ];
+    expect(allIds.length).toBe(36);
+    expect(new Set(allIds).size).toBe(36);
+  });
+
+  it('Field monster id 와 협공 id 도메인 독립성 narrative (monster ↔ tech 충돌 없음)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const techIds = new Set([
+      ...listDualTechs().map((dt) => dt.id),
+      ...listTripleTechs().map((tt) => tt.id),
+    ]);
+    const monsterIds = listAllFieldMonsterIds();
+    for (const mid of monsterIds) {
+      expect(techIds.has(mid), `monster id '${mid}' 가 tech id 와 충돌`).toBe(false);
+    }
+  });
+
+  it('zone id (7) + era id (3) 도 tech/monster id 와 충돌 없음 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const all = new Set([
+      ...listDualTechs().map((dt) => dt.id),
+      ...listTripleTechs().map((tt) => tt.id),
+      ...listAllFieldMonsterIds(),
+    ]);
+    for (const z of STORY_ZONES) {
+      expect(all.has(z), `zone '${z}' 가 다른 id 와 충돌`).toBe(false);
+    }
+    for (const era of STORY_ERAS) {
+      expect(all.has(era), `era '${era}' 가 다른 id 와 충돌`).toBe(false);
+    }
+  });
+
+  it('클래스 id (7) 도 tech/monster id 와 충돌 없음 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const all = new Set([
+      ...listDualTechs().map((dt) => dt.id),
+      ...listTripleTechs().map((tt) => tt.id),
+      ...listAllFieldMonsterIds(),
+    ]);
+    for (const cls of STORY_CLASSES) {
+      expect(all.has(cls), `class '${cls}' 가 다른 id 와 충돌`).toBe(false);
+    }
+  });
+});
