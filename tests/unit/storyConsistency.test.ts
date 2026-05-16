@@ -2898,3 +2898,47 @@ describe('STORY-V80 — chapter II+III 50 sprint 마디 종합 stress', () => {
     expect(listAoeDualTechs().length).toBe(3);
   });
 });
+
+describe('STORY-V81 — Triple/Dual 클래스 분포 균형 narrative', () => {
+  it('Triple 의 7 클래스 모두 참여 ≥ 2회 narrative (균등 참여)', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    for (const cls of STORY_CLASSES) {
+      const count = listTripleTechsByClass(cls).length;
+      expect(count, `${cls} Triple ≥ 2`).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('Dual 의 7 클래스 모두 참여 ≥ 4회 narrative (다양 협공)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    for (const cls of STORY_CLASSES) {
+      const count = listDualTechsByClass(cls).length;
+      expect(count, `${cls} Dual ≥ 4`).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it('Triple 가장 많이 참여 클래스 - 가장 적게 참여 클래스 차이 ≤ 6 narrative (균형)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const count = new Map<string, number>();
+    for (const tt of listTripleTechs()) {
+      for (const cls of tt.partnerClasses) {
+        count.set(cls, (count.get(cls) ?? 0) + 1);
+      }
+    }
+    const counts = Array.from(count.values());
+    const diff = Math.max(...counts) - Math.min(...counts);
+    expect(diff, 'Triple participation diff').toBeLessThanOrEqual(6);
+  });
+
+  it('Dual 가장 많이 참여 - 가장 적게 참여 차이 ≤ 6 narrative (균형)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const count = new Map<string, number>();
+    for (const dt of listDualTechs()) {
+      for (const cls of dt.partnerClasses) {
+        count.set(cls, (count.get(cls) ?? 0) + 1);
+      }
+    }
+    const counts = Array.from(count.values());
+    const diff = Math.max(...counts) - Math.min(...counts);
+    expect(diff, 'Dual participation diff').toBeLessThanOrEqual(6);
+  });
+});
