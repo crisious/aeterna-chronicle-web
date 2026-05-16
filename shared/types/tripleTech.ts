@@ -1,0 +1,76 @@
+// 크로노 트리거 Triple Tech (3인 협공) (CHRONO-S57)
+// 세 캐릭터가 동시에 ATB 100 도달 + 호환 3-클래스 조합일 때 발동.
+// 최강 시그니처 — 적은 종류, 강력한 데미지, 매우 높은 MP 비용.
+
+export interface TripleTechDef {
+  /** 협공 고유 ID (예: 'aetherna_final'). */
+  id: string;
+  /** 협공 이름 (한글). */
+  name: string;
+  /** 세 호환 클래스 (순서 무관). */
+  partnerClasses: [string, string, string];
+  /** 데미지 배율. 크로노 트리거 최강 협공은 3.0~3.8x. */
+  damageMultiplier: number;
+  /** 속성. */
+  element: 'neutral' | 'fire' | 'ice' | 'lightning' | 'wind' | 'earth' | 'holy' | 'dark' | 'chrono';
+  /** 협공 시 세 actor 의 MP 소비 (각자). */
+  mpCost: number;
+  /** 시각 효과 키. */
+  fxKey: string;
+  /** 설명. */
+  description: string;
+  /** 광역 여부 (대부분 true). */
+  aoe?: boolean;
+}
+
+const TRIPLE_TECHS: readonly TripleTechDef[] = [
+  {
+    id: 'aetherna_final',
+    name: '에테르나 파이널',
+    partnerClasses: ['ether_knight', 'time_knight', 'memory_weaver'],
+    damageMultiplier: 3.5,
+    element: 'chrono',
+    mpCost: 30,
+    fxKey: 'fx_aetherna_final',
+    description: '에테르나 크로니클의 최종 일격 — 에테르 검광 · 시간 정지 · 기억 직조가 동시에.',
+    aoe: true,
+  },
+] as const;
+
+const TRIPLE_KEY = (a: string, b: string, c: string): string => {
+  const sorted = [a, b, c].sort();
+  return `${sorted[0]}::${sorted[1]}::${sorted[2]}`;
+};
+
+const TRIPLE_INDEX = new Map<string, TripleTechDef>(
+  TRIPLE_TECHS.map((tt) => [
+    TRIPLE_KEY(tt.partnerClasses[0], tt.partnerClasses[1], tt.partnerClasses[2]),
+    tt,
+  ]),
+);
+
+/**
+ * 세 classId 조합이 협공 가능하면 TripleTechDef, 아니면 null.
+ * 순서 무관, 동일 클래스 셋 금지.
+ */
+export function resolveTripleTech(
+  classA: string,
+  classB: string,
+  classC: string,
+): TripleTechDef | null {
+  if (!classA || !classB || !classC) return null;
+  // 동일 클래스 검사 (3-set 에 중복 있으면 null)
+  const set = new Set([classA, classB, classC]);
+  if (set.size !== 3) return null;
+  return TRIPLE_INDEX.get(TRIPLE_KEY(classA, classB, classC)) ?? null;
+}
+
+/** 전체 협공 목록. */
+export function listTripleTechs(): readonly TripleTechDef[] {
+  return TRIPLE_TECHS;
+}
+
+/** 특정 ID 조회. */
+export function getTripleTechById(id: string): TripleTechDef | null {
+  return TRIPLE_TECHS.find((tt) => tt.id === id) ?? null;
+}
