@@ -23,6 +23,8 @@ import {
   rollFieldMonster,
   getBossSlot,
   listAllFieldMonsterIds,
+  getTotalFieldBosses,
+  listAllBossMonsterIds,
 } from '../../shared/types/chrono';
 
 describe('chrono.ts barrel (CHRONO-S122)', () => {
@@ -52,5 +54,13 @@ describe('chrono.ts barrel (CHRONO-S122)', () => {
     expect(listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
     expect(rollFieldMonster(e!, 0)).not.toBeNull();
     expect(getBossSlot(e!)?.monsterId).toBe('aetherna_collapse');
+  });
+
+  it('CHRONO-S137: 보스 헬퍼 barrel 접근 (getTotalFieldBosses + listAllBossMonsterIds)', () => {
+    expect(getTotalFieldBosses()).toBe(21);
+    const bossIds = listAllBossMonsterIds();
+    expect(bossIds.length).toBe(21);
+    expect(bossIds).toContain('aetherna_collapse');
+    expect(bossIds).toContain('plains_guardian');
   });
 });
