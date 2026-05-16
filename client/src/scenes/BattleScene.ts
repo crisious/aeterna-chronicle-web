@@ -1799,6 +1799,8 @@ export class BattleScene extends Phaser.Scene {
         characterId: this._initData.characterId ?? networkManager.userId ?? '',
         zoneId: this._initData.zoneId,
         monsterId: this._initData.monsterId,
+        // CHRONO-S8: 현재 시대 전달 → 서버가 ATB SpeedTier 매핑 자동 적용
+        eraId: this._initData.eraId,
       });
       this.serverCombatId = result.combatId;
       this.battleUI?.addLog(`[서버] 전투 ID: ${result.combatId}`);

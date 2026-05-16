@@ -73,6 +73,8 @@ export interface CombatStartRequest {
   zoneId?: string;
   dungeonId?: string;
   monsterId?: string;
+  /** CHRONO-S8: 현재 시대 (ancient/present/ruined_future) — 서버 ATB tier 적용 */
+  eraId?: string;
 }
 
 export interface CombatActionRequest {
