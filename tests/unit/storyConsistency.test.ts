@@ -3586,3 +3586,49 @@ describe('STORY-V98 — 350 가드 마디 narrative cohesion', () => {
     expect(totalEntity, '누적 entity').toBeGreaterThanOrEqual(128);
   });
 });
+
+describe('STORY-V99 — 70 sprint 진입 chronoEra bonusDrops 정확 값', () => {
+  it('ancient bonusDrops: ancient_relic_shard rare 3%', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    const drops = chronoEraBonusDrops('ancient');
+    const shard = drops.find((d) => d.itemId === 'ancient_relic_shard')!;
+    expect(shard.rarity).toBe('rare');
+    expect(shard.dropRate).toBe(3);
+  });
+
+  it('ruined_future bonusDrops: chrono_crystal epic 5% + voidshard rare 8%', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    const drops = chronoEraBonusDrops('ruined_future');
+    const crystal = drops.find((d) => d.itemId === 'chrono_crystal')!;
+    const voidshard = drops.find((d) => d.itemId === 'voidshard')!;
+    expect(crystal.rarity).toBe('epic');
+    expect(crystal.dropRate).toBe(5);
+    expect(voidshard.rarity).toBe('rare');
+    expect(voidshard.dropRate).toBe(8);
+  });
+
+  it('present bonusDrops 빈 narrative (현재 = 기본 시대)', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraBonusDrops('present').length).toBe(0);
+  });
+
+  it('모든 bonusDrops dropRate 0~100 범위 narrative', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      for (const drop of chronoEraBonusDrops(era)) {
+        expect(drop.dropRate, `${era} ${drop.itemId} dropRate`).toBeGreaterThanOrEqual(0);
+        expect(drop.dropRate).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  it('모든 bonusDrops minQuantity ≤ maxQuantity narrative', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      for (const drop of chronoEraBonusDrops(era)) {
+        expect(drop.minQuantity, `${era} ${drop.itemId} min ≤ max`).toBeLessThanOrEqual(drop.maxQuantity);
+        expect(drop.minQuantity).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+});
