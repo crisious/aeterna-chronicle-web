@@ -3268,3 +3268,32 @@ describe('STORY-V89 — 60 sprint 마디 진입 시그니처 element narrative',
     expect(tt.element).toBe('chrono');
   });
 });
+
+describe('STORY-V91 — Triple Tech mpCost ranking narrative', () => {
+  it('void_eternity mpCost = 35 (최강 Triple) narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const tt = listTripleTechs().find((t) => t.id === 'void_eternity')!;
+    expect(tt.mpCost).toBe(35);
+  });
+
+  it('aetherna_final mpCost = 30 (정점 협공, void_eternity 보다 낮음) narrative', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.mpCost).toBe(30);
+  });
+
+  it('Triple mpCost 분포 시그니처 28/29/30/31/32/35 narrative (이산 정합)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const costs = new Set(listTripleTechs().map((tt) => tt.mpCost));
+    for (const cost of costs) {
+      expect([28, 29, 30, 31, 32, 35]).toContain(cost);
+    }
+  });
+
+  it('Triple mpCost 평균 ≥ 30 narrative (3인 협공 비용 평균 높음)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const avg = listTripleTechs().reduce((s, tt) => s + tt.mpCost, 0) / 15;
+    expect(avg).toBeGreaterThanOrEqual(29);
+    expect(avg).toBeLessThanOrEqual(33);
+  });
+});
