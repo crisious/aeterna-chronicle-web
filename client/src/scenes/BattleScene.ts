@@ -2213,7 +2213,11 @@ export class BattleScene extends Phaser.Scene {
         // chain 만료 검사 (5 tick 지나면 reset)
         if (this.chainCount > 0 && turnNow > this.chainExpireTick) {
           this.chainCount = 0;
-          this.chainLabel?.setVisible(false);
+          this.chainLabel?.setVisible(false).setAlpha(1);
+        } else if (this.chainCount > 0 && this.chainLabel?.visible) {
+          // CHRONO-S84: 만료 임박 (2 tick 이내) 시 alpha 깜빡 시각 효과
+          const remaining = this.chainExpireTick - turnNow;
+          this.chainLabel.setAlpha(remaining <= 2 ? 0.6 : 1.0);
         }
         for (const act of d.actions ?? []) {
           if (act.actionType === 'dual_tech' || act.actionType === 'triple_tech') {
