@@ -1211,3 +1211,55 @@ describe('STORY-V37 — maxSpawn + monsterPool size narrative', () => {
     }
   });
 });
+
+describe('STORY-V39 — ChronoField API 행동 narrative 정합성', () => {
+  it('rollFieldMonster 결정론 (seed=0) — 동일 encounter 동일 결과 narrative', async () => {
+    const { resolveFieldEncounter, rollFieldMonster } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('aether_plains', 'present')!;
+    const a = rollFieldMonster(e, 0);
+    const b = rollFieldMonster(e, 0);
+    expect(a).not.toBeNull();
+    expect(b?.monsterId).toBe(a?.monsterId);
+  });
+
+  it('rollFieldMonster seed=0.99 (마지막 weight 구간) 결정론', async () => {
+    const { resolveFieldEncounter, rollFieldMonster } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('memory_forest', 'ancient')!;
+    const m = rollFieldMonster(e, 0.99);
+    expect(m).not.toBeNull();
+  });
+
+  it('getBossSlot 모든 21 encounter 모두 non-null narrative (보스 슬롯 100%)', async () => {
+    const { listFieldEncounters, getBossSlot } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(getBossSlot(e), `${e.zoneId}/${e.eraId} getBossSlot`).not.toBeNull();
+    }
+  });
+
+  it('listAllFieldMonsterIds + listAllBossMonsterIds 모두 unique narrative', async () => {
+    const { listAllFieldMonsterIds, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const all = listAllFieldMonsterIds();
+    const bosses = listAllBossMonsterIds();
+    expect(new Set(all).size).toBe(all.length);
+    expect(new Set(bosses).size).toBe(bosses.length);
+    // 모든 보스 id 는 전체 monster id 에 포함
+    for (const bid of bosses) {
+      expect(all, `boss ${bid} not in all`).toContain(bid);
+    }
+  });
+
+  it('getTotalFieldBosses = 21 narrative (zone × era cross-product)', async () => {
+    const { getTotalFieldBosses } = await import('../../shared/types/chronoField');
+    expect(getTotalFieldBosses()).toBe(21);
+  });
+
+  it('rollFieldMonster seed 범위 외 (-1, 2) 가드 — null 또는 fallback narrative', async () => {
+    const { resolveFieldEncounter, rollFieldMonster } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('aether_plains', 'present')!;
+    // 범위 밖 seed 일 때 마지막 slot fallback (mod 1) 또는 null 어느 쪽이든 안정 narrative
+    const r1 = rollFieldMonster(e, -1);
+    const r2 = rollFieldMonster(e, 2);
+    expect(r1 === null || (r1 && typeof r1.monsterId === 'string')).toBe(true);
+    expect(r2 === null || (r2 && typeof r2.monsterId === 'string')).toBe(true);
+  });
+});
