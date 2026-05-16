@@ -365,3 +365,29 @@ describe('STORY-V11 — Tech element 분포 narrative', () => {
     expect(tt?.eraFilter).toContain('ruined_future');
   });
 });
+
+describe('STORY-V12 — 협공 eraFilter narrative 일관성', () => {
+  it('chrono_blade (chrono dual) eraFilter ancient+present (붕괴미래 차단)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('chrono_blade');
+    expect(dt?.eraFilter).toEqual(['ancient', 'present']);
+  });
+
+  it('memory_warp (chrono dual) eraFilter ancient+present', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('memory_warp');
+    expect(dt?.eraFilter).toEqual(['ancient', 'present']);
+  });
+
+  it('memory_break (dark AOE dual) eraFilter ruined_future 전용', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('memory_break');
+    expect(dt?.eraFilter).toEqual(['ruined_future']);
+  });
+
+  it('guardian_pact (holy triple) ancient+present (붕괴미래 차단)', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const tt = getTripleTechById('guardian_oath');
+    expect(tt?.eraFilter).toEqual(['ancient', 'present']);
+  });
+});
