@@ -169,11 +169,12 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     zoneId: 'malatus_sanctuary',
     eraId: 'present',
     monsterPool: [
-      { monsterId: 'lost_acolyte', name: '잃어버린 사제', weight: 0.6 },
+      { monsterId: 'lost_acolyte', name: '잃어버린 사제', weight: 0.5 },
       { monsterId: 'sanctuary_guardian', name: '성소 수호자', weight: 0.4 },
+      { monsterId: 'broken_seal', name: '부서진 봉인', weight: 0.1, isBoss: true },
     ],
     maxSpawn: 3,
-    hasBossSlot: false,
+    hasBossSlot: true,
     ambientLine: '잊혀진 봉인이 깨어나는 성소',
   },
   {
@@ -193,11 +194,12 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     zoneId: 'crystal_cave',
     eraId: 'ancient',
     monsterPool: [
-      { monsterId: 'crystal_sprite', name: '결정 정령', weight: 0.5 },
-      { monsterId: 'ether_crystal_golem', name: '에테르 결정 골렘', weight: 0.5 },
+      { monsterId: 'crystal_sprite', name: '결정 정령', weight: 0.45 },
+      { monsterId: 'ether_crystal_golem', name: '에테르 결정 골렘', weight: 0.45 },
+      { monsterId: 'crystal_titan_ancient', name: '고대 결정 거인', weight: 0.1, isBoss: true },
     ],
     maxSpawn: 3,
-    hasBossSlot: false,
+    hasBossSlot: true,
     ambientLine: '에테르가 결정으로 응결된 동굴',
   },
   {

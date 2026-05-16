@@ -206,10 +206,14 @@ describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {
     expect(boss?.monsterId).toBe('aetherna_collapse');
   });
 
-  it('getBossSlot 보스 없는 encounter → null (crystal_cave ancient)', async () => {
-    const { resolveFieldEncounter, getBossSlot } = await import('../../shared/types/chronoField');
-    const e = resolveFieldEncounter('crystal_cave', 'ancient')!;
-    expect(getBossSlot(e)).toBeNull();
+  it('getBossSlot 보스 없는 fake encounter → null', async () => {
+    const { getBossSlot } = await import('../../shared/types/chronoField');
+    const fakeNoBoss = {
+      zoneId: 'fake', eraId: 'present' as const,
+      monsterPool: [{ monsterId: 'a', name: 'A', weight: 1.0 }],
+      maxSpawn: 1, hasBossSlot: false, ambientLine: '',
+    };
+    expect(getBossSlot(fakeNoBoss)).toBeNull();
   });
 
   it('listAllFieldMonsterIds ≥ 50 (52 unique IDs)', async () => {
