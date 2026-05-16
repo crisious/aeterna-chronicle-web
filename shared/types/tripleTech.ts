@@ -35,6 +35,28 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     description: '에테르나 크로니클의 최종 일격 — 에테르 검광 · 시간 정지 · 기억 직조가 동시에.',
     aoe: true,
   },
+  {
+    id: 'chrono_break',
+    name: '크로노 브레이크',
+    partnerClasses: ['time_knight', 'memory_weaver', 'shadow_weaver'],
+    damageMultiplier: 3.3,
+    element: 'chrono',
+    mpCost: 28,
+    fxKey: 'fx_chrono_break',
+    description: '시간 · 기억 · 그림자가 합쳐 시간선을 부숴 적의 과거를 지운다.',
+    aoe: true,
+  },
+  {
+    id: 'void_eternity',
+    name: '보이드 이터니티',
+    partnerClasses: ['void_wanderer', 'time_guardian', 'memory_breaker'],
+    damageMultiplier: 3.8,
+    element: 'dark',
+    mpCost: 35,
+    fxKey: 'fx_void_eternity',
+    description: '공허 방랑자 · 시간 수호자 · 기억 파괴자가 영원으로 흘려보낸다.',
+    aoe: true,
+  },
 ] as const;
 
 const TRIPLE_KEY = (a: string, b: string, c: string): string => {
