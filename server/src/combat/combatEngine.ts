@@ -948,6 +948,8 @@ export class CombatEngine {
     // CHRONO-S82: 통계 카운트
     this.dualTechFiredCount += 1;
     if (this.chainCount > this.maxChainReached) this.maxChainReached = this.chainCount;
+    // CHRONO-S90: CombatLogger 통계 통합 (replay 활용)
+    this.logger.recordTechStats('dual', this.chainCount);
 
     // CHRONO-S75: chain 4+ 시 발동 actor HP 5% 회복 (시너지 보상)
     if (this.chainCount >= 4) {
@@ -1049,6 +1051,8 @@ export class CombatEngine {
     // CHRONO-S82: Triple Tech 통계
     this.tripleTechFiredCount += 1;
     if (this.chainCount > this.maxChainReached) this.maxChainReached = this.chainCount;
+    // CHRONO-S90: CombatLogger 통계 통합
+    this.logger.recordTechStats('triple', this.chainCount);
 
     // CHRONO-S75: chain 4+ 시 발동 3 actor 모두 HP 5% 회복
     if (this.chainCount >= 4) {
