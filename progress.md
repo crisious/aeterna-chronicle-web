@@ -290,11 +290,15 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 누적 **137 sprint**, PR #11 141 commits.
 - **21 보스 unique id 정렬** + barrel 통합 접근.
 
-## TODO (CHRONO-ATB chapter XVIII 후보)
+## 2026-05-17 CHRONO-ATB chapter XVIII — bossOnlyMode + 140 sprint 마디 + 최종 보스 (3 sprint)
 
-- 라이브 Playwright 자동 QA (전체 시나리오)
-- 협공 통계 DB 영속화 (Prisma 모델)
+- **S139** chronoField bossOnlyMode 옵션 + rollFieldMonster 분기 / **S140** chronoBarrel 핵심 함수 일괄 검증 (140 sprint 마디) / **S141** chrono_spire/ruined_future bossOnlyMode=true (게임 최종 보스-only 필드).
+- 누적 **141 sprint**, PR #11 145 commits.
+
+## TODO (CHRONO-ATB chapter XIX 후보)
+
+- 라이브 Playwright 자동 QA
+- 협공 통계 DB 영속화
 - 시대 전환 시 GameScene 재 spawn
-- BattleScene 승리 시 monster sprite 제거 (visible 보존)
-- chronoField encounter 가 boss-only mode 옵션 (특수 boss-rush 필드)
+- BattleScene 승리 시 monster sprite 제거
 
