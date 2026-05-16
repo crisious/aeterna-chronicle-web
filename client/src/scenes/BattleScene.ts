@@ -1885,6 +1885,9 @@ export class BattleScene extends Phaser.Scene {
           fxKey,
           cand.name,
         );
+        // CHRONO-S33: 협공 SFX — magic cast + ult voice 조합으로 강조
+        playSfx(this, 'sfx_combat_magic_cast', 0.8);
+        playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.7);
       } else {
         this.battleUI?.addLog(`[협공] 발동 실패`);
       }
