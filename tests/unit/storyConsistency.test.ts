@@ -3632,3 +3632,53 @@ describe('STORY-V99 — 70 sprint 진입 chronoEra bonusDrops 정확 값', () =>
     }
   });
 });
+
+describe('STORY-V100 — 100 sprint 마디 (V1~V100 chapter I+II+III 종합)', () => {
+  it('V100 마디 narrative — 100 sprint 누적 + 355 가드 정점 도달', async () => {
+    // V1~V100 누적 narrative cohesion 종합 stress
+    const mod = await import('../../shared/types/chrono');
+
+    // 모든 source 정량 정점 cross-check
+    expect(mod.listDualTechs().length).toBe(21);
+    expect(mod.listTripleTechs().length).toBe(15);
+    expect(mod.listFieldEncounters().length).toBe(21);
+    expect(mod.listAllBossMonsterIds().length).toBe(21);
+    expect(mod.getTotalFieldBosses()).toBe(21);
+    expect(mod.listAoeDualTechs().length).toBe(3);
+
+    // 모든 시대 + 모든 zone × era resolved
+    let count = 0;
+    for (const zone of STORY_ZONES) {
+      for (const era of STORY_ERAS) {
+        const e = mod.resolveFieldEncounter(zone, era);
+        if (e && e.monsterPool.find((s) => s.isBoss)) count += 1;
+      }
+    }
+    expect(count).toBe(21);
+
+    // aetherna 시그니처 final cohesion
+    expect(mod.resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')?.id).toBe('aetherna_final');
+    expect(mod.listAllBossMonsterIds()).toContain('aetherna_collapse');
+    expect(mod.listAllBossMonsterIds()).toContain('aetherna_eidolon');
+  });
+
+  it('V100 마디 narrative — 시대 단조 + 시그니처 element + Triple > Dual', async () => {
+    const { chronoEraToSpeedTier, chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    // 시대 단조
+    expect(chronoEraToSpeedTier('ancient')).toBeLessThan(chronoEraToSpeedTier('ruined_future'));
+    expect(chronoEraToEnemyMultipliers('ancient').hp).toBeLessThan(chronoEraToEnemyMultipliers('ruined_future').hp);
+
+    // Triple > Dual damageMultiplier 평균
+    const dualAvg = listDualTechs().reduce((s, dt) => s + dt.damageMultiplier, 0) / 21;
+    const tripleAvg = listTripleTechs().reduce((s, tt) => s + tt.damageMultiplier, 0) / 15;
+    expect(tripleAvg).toBeGreaterThan(dualAvg);
+
+    // void_eternity 최강
+    const ve = listTripleTechs().find((tt) => tt.id === 'void_eternity')!;
+    const maxDamage = Math.max(...listTripleTechs().map((tt) => tt.damageMultiplier));
+    expect(ve.damageMultiplier).toBe(maxDamage);
+  });
+});

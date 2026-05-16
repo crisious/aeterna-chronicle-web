@@ -412,8 +412,18 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 - **V88** 시그니처 협공 description (aetherna_final 에테르나/최종, void_eternity 영원/공허, chrono_break 시간 + length 10~100)
 - **V89** 60 sprint 마디 시그니처 element narrative (chrono 시그니처 + dark 시그니처)
 - **V90** progress.md V86~V90 갱신 + 60 sprint 마디 기록
+- **V91** Triple mpCost ranking (void_eternity 35, aetherna_final 30, 분포 28/29/30/31/32/35)
+- **V92** zone-별 일반 monster id prefix 시그니처 (plains/forest/crystal/shadow/chrono)
+- **V93** malatus_sanctuary + forgotten_citadel prefix + 7 zone 일반 ≥2
+- **V94** monsterPool 시그니처 패턴 (보스 1+ 일반 2~5, weight 0.1~0.6, hasBossSlot)
+- **V95** ambient + description 문장 끝 narrative (자연 종결, 띄어쓰기 ≥3, 시작 정상)
+- **V96** Triple eraFilter 분포 (5 설정 + 10 미설정 + ruined_future-only ≥1 + ancient+present ≥2)
+- **V97** damageMultiplier 정밀 분포 (Dual 0.1 정밀, Triple 0.1 정밀, void_eternity > aetherna_final)
+- **V98** 350 가드 마디 — chronoEra cohesion (speedTier↔ATB + bonusDrops 시그니처 + runtime stress)
+- **V99** bonusDrops 정확 값 (ancient relic rare 3%, future chrono_crystal epic 5% + voidshard rare 8%)
+- **V100** 100 sprint 마디 — V1~V100 chapter I+II+III 종합 누적 357 가드 정점
 
-회귀: storyConsistency 321/321 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 357/357 + unit 전체 844+/844+ pass.
 
-**60 sprint 마디 + 321 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+160) = 누적 60 sprint, +229 가드 (92 → 321). aetherna 게임 narrative — 7 zone × 3 era × 21 보스 × 36 협공 × 50+ monster × 7 클래스 × 9 element × 6 tier × 시간선 cohesion 모두 회귀 가드 완성.
+**🎯 100 sprint 마디 + 357 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+196) = 누적 100 sprint, +265 가드 (92 → 357). aetherna 게임 narrative — 7 zone × 3 era × 21 보스 × 36 협공 × 50+ monster × 7 클래스 × 9 element × 6 tier × 시간선 cohesion + 정점 시그니처 + 시대 단조 + Triple>Dual+AOE + ratification 모두 회귀 가드 완성.
 
