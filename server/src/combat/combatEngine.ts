@@ -772,6 +772,8 @@ export class CombatEngine {
     let totalDamage = 0;
     for (const t of targets) {
       const tBossResist = computeBossResist(t);
+      // CHRONO-S56: AOE falloff — main target 100%, splash 80%
+      const aoeFalloff = def.aoe && t.id !== target.id ? 0.8 : 1.0;
       const tResult = def.aoe
         ? calculateDamage({
           type: 'physical',
@@ -784,7 +786,7 @@ export class CombatEngine {
           critDamage: (a.critDamage + b.critDamage) / 2,
           armorPenetration: Math.max(a.armorPenetration, b.armorPenetration),
           armorPenetrationPercent: Math.max(a.armorPenetrationPercent, b.armorPenetrationPercent),
-          bonusMultiplier: chainBonus * tBossResist,
+          bonusMultiplier: chainBonus * tBossResist * aoeFalloff,
           levelDifference: Math.round((a.level + b.level) / 2) - t.level,
         })
         : result;

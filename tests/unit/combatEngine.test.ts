@@ -621,6 +621,36 @@ describe('CombatEngine', () => {
     expect(bossAct.damage!).toBeLessThan(normalAct.damage!);
   });
 
+  // ── 9p2. AOE damage falloff (CHRONO-S56) ──
+
+  it('9p2. AOE main target deals more damage than splash targets (80% falloff)', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.9); // crit 회피 위해 높은 random
+    const mw = makeParticipant({ id: 'mw', classId: 'memory_weaver', spd: 500, mp: 999, maxMp: 999, atk: 100, critRate: 0 });
+    const mb = makeParticipant({ id: 'mb', classId: 'memory_breaker', spd: 500, mp: 999, maxMp: 999, atk: 100, critRate: 0 });
+    const m1 = makeMonster({ id: 'main', spd: 1, hp: 100000, maxHp: 100000, def: 0, level: 10 });
+    const m2 = makeMonster({ id: 'splash', spd: 1, hp: 100000, maxHp: 100000, def: 0, level: 10 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(mw);
+    e.addParticipant(mb);
+    e.addParticipant(m1);
+    e.addParticipant(m2);
+    e.start();
+    e.processTick();
+
+    e.submitDualTech('mw', 'mb', 'memory_break', 'main');
+    e.processTick();
+
+    const dmgMain = 100000 - e.getParticipant('main')!.hp;
+    const dmgSplash = 100000 - e.getParticipant('splash')!.hp;
+
+    // main 데미지 > splash 데미지 (80% falloff)
+    expect(dmgMain).toBeGreaterThan(dmgSplash);
+    // splash 가 main 의 약 80% 비율 (calculateDamage 변동 허용, 70~95% 범위)
+    expect(dmgSplash / dmgMain).toBeGreaterThan(0.7);
+    expect(dmgSplash / dmgMain).toBeLessThan(0.95);
+  });
+
   // ── 9p. AOE Dual Tech (CHRONO-S39) ──
 
   it('9p. AOE Dual Tech (memory_break) hits all alive monsters', () => {
