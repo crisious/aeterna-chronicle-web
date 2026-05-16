@@ -4193,3 +4193,37 @@ describe('STORY-V115 — chapter V 시작 — Triple name 카테고리 분포', 
     expect(shadowCat).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V116 — Dual Tech name 카테고리 분포 narrative', () => {
+  it('Dual name 시그니처 ≥ 6 카테고리 narrative (다양성)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const categories = new Set<string>();
+    for (const dt of listDualTechs()) {
+      if (dt.name.includes('크로노')) categories.add('chrono');
+      if (dt.name.includes('섀도우')) categories.add('shadow');
+      if (dt.name.includes('메모리')) categories.add('memory');
+      if (dt.name.includes('보이드')) categories.add('void');
+      if (dt.name.includes('가디언')) categories.add('guardian');
+      if (dt.name.includes('에테르')) categories.add('ether');
+      if (dt.name.includes('타임')) categories.add('time');
+    }
+    expect(categories.size, 'Dual name 카테고리').toBeGreaterThanOrEqual(6);
+  });
+
+  it('chrono_blade name = "크로노 블레이드" 정확 narrative', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('chrono_blade')!;
+    expect(dt.name).toBe('크로노 블레이드');
+  });
+
+  it('memory_break + time_overflow + void_oblivion AOE name 시그니처 narrative', async () => {
+    const { listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const names = listAoeDualTechs().map((dt) => dt.name).sort();
+    // AOE 3종 name 모두 unique + 시그니처
+    expect(names.length).toBe(3);
+    for (const name of names) {
+      expect(name.length).toBeGreaterThan(0);
+      expect(/[가-힣]/.test(name), `AOE name '${name}' 한글`).toBe(true);
+    }
+  });
+});
