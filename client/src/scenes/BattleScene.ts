@@ -418,12 +418,14 @@ export class BattleScene extends Phaser.Scene {
           console.warn('[BattleScene] 보스 진입 SFX 실패:', e);
         }
       }
-      // CHRONO-S116: bgmTrack 재생 시도 (자산 미존재 시 SoundManager 내부 safe fallback)
+      // CHRONO-S116/S143: bgmTrack 재생 시도 + 명시 fallback
       if (fieldEnc.bgmTrack && this.soundManager) {
         try {
           this.soundManager.playBgm(fieldEnc.bgmTrack, 1500);
+          this.battleUI?.addLog(`🎵 ${fieldEnc.bgmTrack}`);
         } catch (e) {
-          console.warn('[BattleScene] BGM 재생 실패:', fieldEnc.bgmTrack, e);
+          console.warn('[BattleScene] BGM 재생 실패 (자산 미존재 가능):', fieldEnc.bgmTrack, e);
+          this.battleUI?.addLog(`🔇 BGM 미존재: ${fieldEnc.bgmTrack}`);
         }
       }
     }
