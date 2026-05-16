@@ -26,6 +26,17 @@ import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
+import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
+
+// FF6 SPEED_TIER_SCALAR (atbTimeline 와 일치) — UI 표시 전용
+const TIER_LABEL: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
+  1: '×0.5',
+  2: '×0.7',
+  3: '×1.0',
+  4: '×1.3',
+  5: '×1.6',
+  6: '×2.0',
+};
 import { resolveZoneBackground } from '../data/zoneBackgrounds';
 import type { ATBMode } from '../../../shared/types/atb';
 
@@ -300,12 +311,14 @@ export class BattleScene extends Phaser.Scene {
     } catch (e) { console.warn('[Battle] bg error:', e); }
 
     const era = getChronoEra(this._initData.eraId ?? 'present');
+    const tier = chronoEraToSpeedTier(this._initData.eraId ?? 'present');
     this.add.rectangle(scW / 2, scH / 2, scW, scH, era.tintColor, 0.08).setDepth(1);
-    this.add.text(scW - 20, 12, `${era.label} / ${era.yearLabel}`, {
+    // CHRONO-S11: era 라벨 + ATB tier (시대 기반 ATB 속도 차별화 시각화)
+    this.add.text(scW - 20, 12, `${era.label} / ${era.yearLabel} · ATB ${TIER_LABEL[tier]}`, {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: `#${era.tintColor.toString(16).padStart(6, '0')}`,
-    }).setOrigin(1, 0).setDepth(250);
+    }).setOrigin(1, 0).setDepth(250).setName('eraTierLabel');
 
     // ── 매니저 초기화 (개별 try-catch) ────────────────────────
     try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
