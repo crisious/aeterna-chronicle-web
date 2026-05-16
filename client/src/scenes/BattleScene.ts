@@ -219,6 +219,15 @@ export class BattleScene extends Phaser.Scene {
     aoe?: boolean;
     mpCost?: number;
   }> = [];
+  // CHRONO-S63: Triple Tech 후보 (3-actor)
+  private lastTripleTechCandidates: Array<{
+    techId: string;
+    name: string;
+    actorIds: [string, string, string];
+    element?: string;
+    aoe?: boolean;
+    mpCost?: number;
+  }> = [];
   // CHRONO-S36: 다중 후보 중 선택 인덱스 (Shift+D 로 cycle)
   private dualTechSelectedIndex = 0;
   // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
@@ -424,6 +433,8 @@ export class BattleScene extends Phaser.Scene {
           this._triggerFirstDualTech();
         }
       });
+      // CHRONO-S63: 'T' 키 → 첫 Triple Tech 후보 발동
+      this.input.keyboard.on('keydown-T', () => this._triggerFirstTripleTech());
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -1968,6 +1979,58 @@ export class BattleScene extends Phaser.Scene {
   }
 
   /**
+   * CHRONO-S63: 'T' 키 → 첫 Triple Tech 후보 발동.
+   */
+  private async _triggerFirstTripleTech(): Promise<void> {
+    if (!this.serverCombatId) {
+      this.battleUI?.addLog('[3인 협공] 서버 전투 미연결');
+      return;
+    }
+    const cand = this.lastTripleTechCandidates[0];
+    if (!cand) {
+      this.battleUI?.addLog('[3인 협공] 발동 가능한 후보 없음 (3명 ATB 100 + 호환 클래스 필요)');
+      return;
+    }
+    const targetSprite = this.enemySprites.find((s) => s.unit.alive);
+    if (!targetSprite) {
+      this.battleUI?.addLog('[3인 협공] 살아있는 적이 없습니다');
+      return;
+    }
+    try {
+      const resp = await networkManager.combatTripleTech({
+        combatId: this.serverCombatId,
+        actorIds: cand.actorIds,
+        techId: cand.techId,
+        targetId: targetSprite.unit.id,
+      });
+      if (resp.success) {
+        this.battleUI?.addLog(`🌟 3인 협공 발동: ${cand.name}`);
+        // 모든 적에 강한 시각 효과 (Triple Tech 는 항상 AOE 풍)
+        for (const enemy of this.enemySprites) {
+          if (!enemy.unit.alive) continue;
+          this.effectManager?.spawnDualTechEffect(
+            enemy.sprite.x,
+            enemy.sprite.y,
+            `fx_triple_${cand.techId}`,
+            cand.name,
+          );
+        }
+        // SFX + 강한 카메라 shake
+        playSfx(this, 'sfx_combat_magic_cast', 1.0);
+        playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.9);
+        if (isScreenShakeEnabled()) {
+          this.cameras.main.shake(250, 0.015);
+        }
+      } else {
+        this.battleUI?.addLog('[3인 협공] 발동 실패');
+      }
+    } catch (err) {
+      console.warn('[BattleScene] 3인 협공 발동 실패:', err);
+      this.battleUI?.addLog('[3인 협공] 네트워크 오류');
+    }
+  }
+
+  /**
    * CHRONO-S36: Shift+D 로 협공 후보 cycle. 다음 인덱스로 회전 + 버튼 라벨 갱신.
    */
   private _cycleDualTechSelection(): void {
@@ -2022,6 +2085,15 @@ export class BattleScene extends Phaser.Scene {
           aoe?: boolean;
           mpCost?: number;
         }>;
+        // CHRONO-S63: Triple Tech 후보 (3-actor)
+        tripleTechCandidates?: Array<{
+          techId: string;
+          name: string;
+          actorIds: [string, string, string];
+          element?: string;
+          aoe?: boolean;
+          mpCost?: number;
+        }>;
         // CHRONO-S51: 보스 저항 단계 표시용 snapshot
         participants?: Array<{
           id: string;
@@ -2060,6 +2132,14 @@ export class BattleScene extends Phaser.Scene {
           this.lastDualTechCandidates = [];
           this.dualTechSelectedIndex = 0;
           this.dualTechButton?.setVisible(false);
+        }
+        // CHRONO-S63: Triple Tech 후보 수신
+        if (d.tripleTechCandidates && d.tripleTechCandidates.length > 0) {
+          const tNames = d.tripleTechCandidates.map((c) => c.name).join(', ');
+          this.battleUI?.addLog(`🌟 3인 협공 가능: ${tNames} ('T' 키)`);
+          this.lastTripleTechCandidates = d.tripleTechCandidates;
+        } else {
+          this.lastTripleTechCandidates = [];
         }
         // CHRONO-S51: 보스 협공 저항 단계 표시 (snapshot.dualTechHitsTaken 활용)
         for (const sp of d.participants ?? []) {
