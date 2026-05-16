@@ -4755,3 +4755,33 @@ describe('STORY-V131 — Triple Tech 시그니처 element 분포 정확', () => 
     expect(sum).toBe(15);
   });
 });
+
+describe('STORY-V132 — Dual Tech element 분포 정확 narrative', () => {
+  it('Dual chrono = 4 (시간선 협공)', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const chronos = listDualTechsByElement('chrono');
+    expect(chronos.length).toBe(4);
+  });
+
+  it('Dual dark = 11 (어둠 protagonist)', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const darks = listDualTechsByElement('dark');
+    expect(darks.length).toBe(11);
+  });
+
+  it('Dual holy = 6 (신성)', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const holys = listDualTechsByElement('holy');
+    expect(holys.length).toBe(6);
+  });
+
+  it('Dual element 합 = 21 (분포 완성)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const counts = new Map<string, number>();
+    for (const dt of listDualTechs()) {
+      counts.set(dt.element, (counts.get(dt.element) ?? 0) + 1);
+    }
+    const sum = Array.from(counts.values()).reduce((s, c) => s + c, 0);
+    expect(sum).toBe(21);
+  });
+});
