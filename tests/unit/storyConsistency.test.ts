@@ -167,3 +167,37 @@ describe('STORY-V3 — 7 클래스 narrative 정합성', () => {
     }
   });
 });
+
+describe('STORY-V4 — era 흐름 narrative + chrono_spire 시그니처', () => {
+  it('chrono_spire 3 시대 보스 시그니처: 에테르나 환영 → 시간 통치자 → 에테르나의 종말', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const ancient = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    const present = resolveFieldEncounter('chrono_spire', 'present')!;
+    const future = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+
+    expect(ancient.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나 환영');
+    expect(present.monsterPool.find((s) => s.isBoss)?.name).toBe('시간 통치자');
+    expect(future.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나의 종말');
+  });
+
+  it('각 era ambient line 이 시대 분위기 일치', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const a = resolveFieldEncounter('aether_plains', 'ancient')!;
+    const p = resolveFieldEncounter('aether_plains', 'present')!;
+    const f = resolveFieldEncounter('aether_plains', 'ruined_future')!;
+
+    // ancient: 고대/에테르/유적 분위기
+    expect(a.ambientLine).toMatch(/고대|에테르|평원/);
+    // present: 평화/평원 분위기
+    expect(p.ambientLine).toMatch(/평화|평원|에테르/);
+    // ruined_future: 붕괴/무너진/폐허 분위기
+    expect(f.ambientLine).toMatch(/무너진|붕괴|폐허|시간/);
+  });
+
+  it('chrono_spire/ruined_future 가 모든 시간선 종점 (bossOnlyMode + 종말)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(finalE.bossOnlyMode).toBe(true);
+    expect(finalE.ambientLine).toMatch(/세계|마지막|시간선|종말/);
+  });
+});
