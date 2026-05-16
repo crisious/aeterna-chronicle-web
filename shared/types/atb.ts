@@ -64,5 +64,7 @@ export interface ATBCommandInput {
     | { kind: 'item'; itemId: string; targetId: string }
     | { kind: 'defend' }
     | { kind: 'row'; row: 'front' | 'back' }
-    | { kind: 'flee' };
+    | { kind: 'flee' }
+    // CHRONO-S29: 2인 협공 — actorId 가 A 측, partnerActorId 가 B 측. techId 는 shared/types/dualTech.
+    | { kind: 'dual_tech'; partnerActorId: string; techId: string; targetId: string };
 }
