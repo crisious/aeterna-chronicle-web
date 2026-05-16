@@ -4785,3 +4785,34 @@ describe('STORY-V132 — Dual Tech element 분포 정확 narrative', () => {
     expect(sum).toBe(21);
   });
 });
+
+describe('STORY-V133 — monster passive 정확 narrative', () => {
+  it('chronoEraToMonsterPassives 모든 시대 정확 값 narrative', async () => {
+    const { chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToMonsterPassives('ancient').evasionAddPercent).toBe(5);
+    expect(chronoEraToMonsterPassives('ancient').hitChanceAddPercent).toBe(0);
+    expect(chronoEraToMonsterPassives('present').evasionAddPercent).toBe(0);
+    expect(chronoEraToMonsterPassives('present').hitChanceAddPercent).toBe(0);
+    expect(chronoEraToMonsterPassives('ruined_future').evasionAddPercent).toBe(0);
+    expect(chronoEraToMonsterPassives('ruined_future').hitChanceAddPercent).toBe(5);
+  });
+
+  it('passive 정합 narrative — ancient 회피만 + ruined_future 명중만 (대조 시그니처)', async () => {
+    const { chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToMonsterPassives('ancient');
+    const f = chronoEraToMonsterPassives('ruined_future');
+    expect(a.evasionAddPercent).toBeGreaterThan(a.hitChanceAddPercent);
+    expect(f.hitChanceAddPercent).toBeGreaterThan(f.evasionAddPercent);
+  });
+
+  it('passive 값 0~10% 범위 narrative (균형 보장)', async () => {
+    const { chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      const p = chronoEraToMonsterPassives(era);
+      expect(p.evasionAddPercent).toBeGreaterThanOrEqual(0);
+      expect(p.evasionAddPercent).toBeLessThanOrEqual(10);
+      expect(p.hitChanceAddPercent).toBeGreaterThanOrEqual(0);
+      expect(p.hitChanceAddPercent).toBeLessThanOrEqual(10);
+    }
+  });
+});
