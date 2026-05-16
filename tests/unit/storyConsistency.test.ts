@@ -975,3 +975,51 @@ describe('STORY-V32 — bgmTrack/ambientEffect narrative 정합성', () => {
     expect(e!.bgmTrack).toMatch(/(final_boss|chrono|aetherna)/);
   });
 });
+
+describe('STORY-V33 — chronoEraAtb passive/AI hints 시대 narrative', () => {
+  it('ancient evasionAddPercent > present (회상의 흐릿함 — 잡기 어려움)', async () => {
+    const { chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToMonsterPassives('ancient').evasionAddPercent).toBeGreaterThan(
+      chronoEraToMonsterPassives('present').evasionAddPercent,
+    );
+  });
+
+  it('ruined_future hitChanceAddPercent > present (붕괴는 더 예리)', async () => {
+    const { chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToMonsterPassives('ruined_future').hitChanceAddPercent).toBeGreaterThan(
+      chronoEraToMonsterPassives('present').hitChanceAddPercent,
+    );
+  });
+
+  it('ancient defensiveBias > ruined_future (회상=수비, 붕괴=공격)', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToAIHints('ancient').defensiveBias).toBeGreaterThan(
+      chronoEraToAIHints('ruined_future').defensiveBias,
+    );
+  });
+
+  it('ruined_future aoeBias > ancient (붕괴=광역, 회상=단일)', async () => {
+    const { chronoEraToAIHints } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToAIHints('ruined_future').aoeBias).toBeGreaterThan(
+      chronoEraToAIHints('ancient').aoeBias,
+    );
+  });
+
+  it('present 모든 hint 0 narrative (표준 baseline)', async () => {
+    const { chronoEraToAIHints, chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    const h = chronoEraToAIHints('present');
+    expect(h.defensiveBias).toBe(0);
+    expect(h.aoeBias).toBe(0);
+    expect(h.aggressiveBias).toBe(0);
+    const p = chronoEraToMonsterPassives('present');
+    expect(p.evasionAddPercent).toBe(0);
+    expect(p.hitChanceAddPercent).toBe(0);
+  });
+
+  it('bonusDrops: ancient + ruined_future 양 시대에 시그니처 drop 보유, present 없음', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraBonusDrops('ancient').length).toBeGreaterThanOrEqual(1);
+    expect(chronoEraBonusDrops('ruined_future').length).toBeGreaterThanOrEqual(1);
+    expect(chronoEraBonusDrops('present').length).toBe(0);
+  });
+});
