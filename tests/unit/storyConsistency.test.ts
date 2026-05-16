@@ -4906,3 +4906,40 @@ describe('STORY-V136 — Tech runtime 100% 무결성 stress', () => {
     }
   });
 });
+
+describe('STORY-V137 — chronoEra 종합 정확 값 stress', () => {
+  it('chronoEra 모든 함수 모든 시대 결정성 narrative', async () => {
+    const mod = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      const a = mod.chronoEraToSpeedTier(era);
+      const b = mod.chronoEraToSpeedTier(era);
+      expect(a).toBe(b);
+      const m1 = mod.chronoEraToEnemyMultipliers(era);
+      const m2 = mod.chronoEraToEnemyMultipliers(era);
+      expect(m1.hp).toBe(m2.hp);
+      const ai1 = mod.chronoEraToAIHints(era);
+      const ai2 = mod.chronoEraToAIHints(era);
+      expect(ai1.aoeBias).toBe(ai2.aoeBias);
+    }
+  });
+
+  it('chronoEra speedTier 정확 값 (ancient 2, present 3, ruined_future 4)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToSpeedTier('ancient')).toBe(2);
+    expect(chronoEraToSpeedTier('present')).toBe(3);
+    expect(chronoEraToSpeedTier('ruined_future')).toBe(4);
+  });
+
+  it('chronoEra 모든 API non-error 호출 narrative', async () => {
+    const mod = await import('../../shared/types/chronoEraAtb');
+    for (const era of STORY_ERAS) {
+      expect(() => mod.chronoEraToSpeedTier(era)).not.toThrow();
+      expect(() => mod.chronoEraToEnemyMultipliers(era)).not.toThrow();
+      expect(() => mod.chronoEraToAIHints(era)).not.toThrow();
+      expect(() => mod.chronoEraToMonsterPassives(era)).not.toThrow();
+      expect(() => mod.chronoEraBonusDrops(era)).not.toThrow();
+      expect(() => mod.decorateMonsterNameByEra('test', era)).not.toThrow();
+      expect(() => mod.isChronoEraId(era)).not.toThrow();
+    }
+  });
+});
