@@ -386,7 +386,7 @@ export class GameScene extends Phaser.Scene {
           spawns.forEach((slot, i) => {
             const baseLevel = slot.isBoss ? 30 : 10;
             this._spawnMonster(slot.monsterId, `${slot.name} Lv.${baseLevel}`,
-              900 + (i % 4) * 130, 450 + Math.floor(i / 4) * 130);
+              900 + (i % 4) * 130, 450 + Math.floor(i / 4) * 130, slot.isBoss === true);
           });
         } else {
           this.zoneInfo.monsters?.forEach((mon, i) => {
@@ -478,21 +478,38 @@ export class GameScene extends Phaser.Scene {
   private static readonly MONSTER_COLORS = [0xcc3333, 0xcc6633, 0x9933cc, 0x3366cc, 0x33cc66, 0xcc3399, 0x6633cc, 0x33cccc];
   private static readonly MONSTER_EMOJIS = ['💀', '🐺', '👻', '🕷', '🪨', '🐛', '🦇', '🔥'];
 
-  private _spawnMonster(id: string, name: string, x: number, y: number): void {
+  private _spawnMonster(id: string, name: string, x: number, y: number, isBoss = false): void {
     const battleSeed = buildChronoBattleSeed(this.currentZoneId, this.currentEraId, id, name);
     // 이름 해시 기반 결정적 색상 + 이모지
     const hash = battleSeed.monsterName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
     const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
 
-    const sprite = this.add.rectangle(x, y, 40, 40, color, 0.85)
+    // CHRONO-S125: 보스 sprite 시각 차별 (60×60 + gold stroke + BOSS 라벨)
+    const size = isBoss ? 60 : 40;
+    const sprite = this.add.rectangle(x, y, size, size, color, 0.85)
       .setInteractive({ useHandCursor: true });
+    if (isBoss) {
+      sprite.setStrokeStyle(3, 0xffd54a, 1);
+    }
 
     // 이모지 오버레이
-    const emojiText = this.add.text(x, y, emoji, { fontSize: '22px' }).setOrigin(0.5);
+    const emojiText = this.add.text(x, y, emoji, { fontSize: isBoss ? '32px' : '22px' }).setOrigin(0.5);
     sprite.once('destroy', () => emojiText.destroy());
 
-    const tag = this.add.text(x, y - 34, battleSeed.monsterName, {
+    // 보스 BOSS 라벨
+    if (isBoss) {
+      const bossLabel = this.add.text(x, y + size / 2 + 12, '⚔️ BOSS', {
+        fontSize: '11px',
+        color: '#ffd54a',
+        fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+        stroke: '#000000',
+        strokeThickness: 2,
+      }).setOrigin(0.5);
+      sprite.once('destroy', () => bossLabel.destroy());
+    }
+
+    const tag = this.add.text(x, y - size / 2 - 14, battleSeed.monsterName, {
       fontSize: '10px', color: `#${getChronoEra(this.currentEraId).tintColor.toString(16).padStart(6, '0')}`, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
