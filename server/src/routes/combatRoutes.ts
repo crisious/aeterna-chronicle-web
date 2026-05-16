@@ -29,6 +29,7 @@ import {
   chronoEraToEnemyMultipliers,
   decorateMonsterNameByEra,
   chronoEraBonusDrops,
+  chronoEraToMonsterPassives,
 } from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
@@ -312,6 +313,11 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
         ? chronoEraToEnemyMultipliers(validEra)
         : { hp: 1.0, attackSpeed: 1.0, reward: 1.0, levelOffset: 0 };
 
+      // CHRONO-S37: 시대별 monster 패시브 보너스 (evasion/hitChance).
+      const eraPassives = validEra
+        ? chronoEraToMonsterPassives(validEra)
+        : { evasionAddPercent: 0, hitChanceAddPercent: 0 };
+
       // P55-S1: 캐릭터별 장착 패시브 효과 병렬 resolve
       const passiveResolutions = await Promise.all(
         characters.map(async (c) => ({ id: c.id, result: await resolvePassiveModifiers(c.id) })),
@@ -390,6 +396,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
             level: Math.max(1, toFiniteNumber(m.level, 1) + enemyMult.levelOffset),
             hp,
             maxHp,
+            // CHRONO-S37: era 패시브
+            evasionAddPercent: eraPassives.evasionAddPercent,
+            hitChanceAddPercent: eraPassives.hitChanceAddPercent,
             mp: Math.max(0, toFiniteNumber(m.mp, 0)),
             maxMp: Math.max(0, toFiniteNumber(m.maxMp ?? m.mp, 0)),
             atk: Math.max(1, toFiniteNumber(m.attack, 10)),
@@ -437,6 +446,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
             maxHp: adjHp,
             mp: 0,
             maxMp: 0,
+            // CHRONO-S37: era 패시브 (ancient evasion / ruined_future hitChance)
+            evasionAddPercent: eraPassives.evasionAddPercent,
+            hitChanceAddPercent: eraPassives.hitChanceAddPercent,
             atk: m.attack,
             def: m.defense,
             matk: m.attack,

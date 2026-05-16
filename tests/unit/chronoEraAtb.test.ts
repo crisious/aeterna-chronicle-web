@@ -9,6 +9,7 @@ import {
   chronoEraToEnemyMultipliers,
   decorateMonsterNameByEra,
   chronoEraBonusDrops,
+  chronoEraToMonsterPassives,
 } from '../../shared/types/chronoEraAtb';
 
 describe('chronoEraToSpeedTier', () => {
@@ -107,6 +108,31 @@ describe('chronoEraBonusDrops (CHRONO-S30)', () => {
 
   it('미지의 era → 빈 배열 (안전 fallback)', () => {
     expect(chronoEraBonusDrops('chaos_age' as never)).toEqual([]);
+  });
+});
+
+describe('chronoEraToMonsterPassives (CHRONO-S37)', () => {
+  it('ancient → evasion +5%, hitChance 0', () => {
+    const p = chronoEraToMonsterPassives('ancient');
+    expect(p.evasionAddPercent).toBe(5);
+    expect(p.hitChanceAddPercent).toBe(0);
+  });
+
+  it('present → 0/0 baseline', () => {
+    expect(chronoEraToMonsterPassives('present')).toEqual({ evasionAddPercent: 0, hitChanceAddPercent: 0 });
+  });
+
+  it('ruined_future → hitChance +5%, evasion 0', () => {
+    const p = chronoEraToMonsterPassives('ruined_future');
+    expect(p.evasionAddPercent).toBe(0);
+    expect(p.hitChanceAddPercent).toBe(5);
+  });
+
+  it('unknown era → present fallback', () => {
+    expect(chronoEraToMonsterPassives('chaos_age' as never)).toEqual({
+      evasionAddPercent: 0,
+      hitChanceAddPercent: 0,
+    });
   });
 });
 

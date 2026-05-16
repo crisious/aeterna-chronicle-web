@@ -99,3 +99,24 @@ const ERA_BONUS_DROPS: Record<ChronoEraId, readonly EraDropEntry[]> = {
 export function chronoEraBonusDrops(eraId: ChronoEraId): readonly EraDropEntry[] {
   return ERA_BONUS_DROPS[eraId] ?? [];
 }
+
+/**
+ * CHRONO-S37: 시대별 monster 패시브 보너스.
+ * - ancient: 회피 +5% (회상의 흐릿함 — 잡기 어려움)
+ * - present: 0 (표준)
+ * - ruined_future: 명중 +5% (붕괴된 미래는 더 예리함)
+ */
+export interface ChronoMonsterPassives {
+  evasionAddPercent: number;
+  hitChanceAddPercent: number;
+}
+
+const ERA_MONSTER_PASSIVES: Record<ChronoEraId, ChronoMonsterPassives> = {
+  ancient: { evasionAddPercent: 5, hitChanceAddPercent: 0 },
+  present: { evasionAddPercent: 0, hitChanceAddPercent: 0 },
+  ruined_future: { evasionAddPercent: 0, hitChanceAddPercent: 5 },
+};
+
+export function chronoEraToMonsterPassives(eraId: ChronoEraId): ChronoMonsterPassives {
+  return ERA_MONSTER_PASSIVES[eraId] ?? ERA_MONSTER_PASSIVES.present;
+}
