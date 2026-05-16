@@ -5090,3 +5090,25 @@ describe('STORY-V142 — shadow_weaver 클래스 narrative final cohesion', () =
     expect(triples.length).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('STORY-V143 — time_knight 클래스 narrative final cohesion', () => {
+  it('time_knight 협공 모두 chrono/dark element narrative (시간 + 그림자)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('time_knight');
+    for (const dt of duals) {
+      expect(['chrono', 'dark', 'holy'], `time_knight Dual ${dt.id}`).toContain(dt.element);
+    }
+  });
+
+  it('time_knight + ether_knight = chrono_blade (시간선 시그니처)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('time_knight', 'ether_knight')!;
+    expect(dt.id).toBe('chrono_blade');
+  });
+
+  it('time_knight + memory_weaver = memory_warp (시간선 시그니처)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('time_knight', 'memory_weaver')!;
+    expect(dt.id).toBe('memory_warp');
+  });
+});
