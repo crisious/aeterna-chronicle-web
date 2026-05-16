@@ -175,6 +175,28 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     description: '그림자 · 수호자 결계 · 공허가 합쳐 시간선을 봉인 후 부쉰다.',
     aoe: true,
   },
+  {
+    id: 'ether_memory_void',
+    name: '에테르 메모리 보이드',
+    partnerClasses: ['ether_knight', 'memory_weaver', 'void_wanderer'],
+    damageMultiplier: 3.3,
+    element: 'holy',
+    mpCost: 29,
+    fxKey: 'fx_ether_memory_void',
+    description: '에테르 빛이 잊혀진 기억을 끌어내 공허를 정화.',
+    aoe: true,
+  },
+  {
+    id: 'shadow_guardian_break',
+    name: '섀도우 가디언 브레이크',
+    partnerClasses: ['shadow_weaver', 'time_guardian', 'memory_breaker'],
+    damageMultiplier: 3.6,
+    element: 'dark',
+    mpCost: 32,
+    fxKey: 'fx_shadow_guardian_break',
+    description: '그림자가 결계를 두르고 파괴자가 봉인을 부숴 데미지를 누적.',
+    aoe: true,
+  },
 ] as const;
 
 const TRIPLE_KEY = (a: string, b: string, c: string): string => {

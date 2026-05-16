@@ -39,20 +39,21 @@ describe('resolveTripleTech', () => {
 });
 
 describe('listTripleTechs / getTripleTechById', () => {
-  it('전체 목록 13종 (CHRONO-S76 확장)', () => {
+  it('전체 목록 15종 (CHRONO-S88 확장)', () => {
     const list = listTripleTechs();
-    expect(list.length).toBe(13);
+    expect(list.length).toBe(15);
     const ids = list.map((t) => t.id);
-    expect(new Set(ids).size).toBe(13);
+    expect(new Set(ids).size).toBe(15);
   });
 
-  it('getTripleTechById 13종 정상 조회', () => {
+  it('getTripleTechById 15종 정상 조회', () => {
     const ids = [
       'aetherna_final', 'chrono_break', 'void_eternity',
       'ether_dark_riff', 'guardian_oath',
       'time_void_break', 'shadow_chrono', 'memory_shatter_pact',
       'shadow_void_break', 'guardian_void_strike',
       'time_memory_guardian', 'ether_shadow_memory', 'void_guardian_shadow',
+      'ether_memory_void', 'shadow_guardian_break',
     ];
     for (const id of ids) {
       expect(getTripleTechById(id), `${id} 조회 실패`).not.toBeNull();
