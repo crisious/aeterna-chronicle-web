@@ -4725,3 +4725,33 @@ describe('STORY-V130 — chapter VI 시작 — 시간선 ↔ 클래스 element n
     expect(dt.element).toBe('dark');
   });
 });
+
+describe('STORY-V131 — Triple Tech 시그니처 element 분포 정확', () => {
+  it('Triple chrono = 4 (시간선 시그니처 정확)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const chronos = listTripleTechs().filter((tt) => tt.element === 'chrono');
+    expect(chronos.length).toBe(4);
+  });
+
+  it('Triple dark = 7 (어둠 정점 시그니처)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const darks = listTripleTechs().filter((tt) => tt.element === 'dark');
+    expect(darks.length).toBe(7);
+  });
+
+  it('Triple holy = 4 (신성 시그니처)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const holys = listTripleTechs().filter((tt) => tt.element === 'holy');
+    expect(holys.length).toBe(4);
+  });
+
+  it('Triple element 합 = 15 (분포 정확 완성)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const counts = new Map<string, number>();
+    for (const tt of listTripleTechs()) {
+      counts.set(tt.element, (counts.get(tt.element) ?? 0) + 1);
+    }
+    const sum = Array.from(counts.values()).reduce((s, c) => s + c, 0);
+    expect(sum).toBe(15);
+  });
+});
