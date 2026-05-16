@@ -3760,3 +3760,30 @@ describe('STORY-V102 — ChronoEraId narrative 완전성', () => {
     ]);
   });
 });
+
+describe('STORY-V103 — chronoField default fallback 결정성 narrative', () => {
+  it('resolveFieldEncounter 동일 zone/era 동일 결과 narrative (결정성)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const a1 = resolveFieldEncounter('aether_plains', 'ancient');
+    const a2 = resolveFieldEncounter('aether_plains', 'ancient');
+    expect(a1?.zoneId).toBe(a2?.zoneId);
+    expect(a1?.eraId).toBe(a2?.eraId);
+    expect(a1?.bgmTrack).toBe(a2?.bgmTrack);
+    expect(a1?.ambientLine).toBe(a2?.ambientLine);
+  });
+
+  it('listFieldEncounters 호출마다 동일 결과 narrative (immutable)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const a = listFieldEncounters();
+    const b = listFieldEncounters();
+    expect(a.length).toBe(b.length);
+    expect(a.length).toBe(21);
+  });
+
+  it('listAllBossMonsterIds 호출마다 동일 narrative (immutable)', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const a = listAllBossMonsterIds();
+    const b = listAllBossMonsterIds();
+    expect(a.sort()).toEqual(b.sort());
+  });
+});
