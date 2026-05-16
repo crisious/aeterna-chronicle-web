@@ -272,6 +272,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 4,
     hasBossSlot: true,
     ambientLine: '시간의 근원이 흐르는 첨탑',
+    bgmTrack: 'bgm_chrono_ancient',
+    ambientEffect: 'glow',
   },
   {
     zoneId: 'chrono_spire',
@@ -284,6 +286,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 5,
     hasBossSlot: true,
     ambientLine: '시간이 멈춘 듯한 최후의 첨탑',
+    bgmTrack: 'bgm_chrono_present',
+    ambientEffect: 'glow',
   },
   {
     zoneId: 'chrono_spire',
