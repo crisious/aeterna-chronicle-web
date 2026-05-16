@@ -3109,3 +3109,40 @@ describe('STORY-V84 — narrative type / runtime integrity', () => {
     expect(seen.size).toBe(21);
   });
 });
+
+describe('STORY-V86 — chronoEra 정확 값 narrative', () => {
+  it('ancient: hp=0.9, attackSpeed=0.95, reward=1.0, levelOffset=-2 (회상 narrative)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const m = chronoEraToEnemyMultipliers('ancient');
+    expect(m.hp).toBe(0.9);
+    expect(m.attackSpeed).toBe(0.95);
+    expect(m.reward).toBe(1.0);
+    expect(m.levelOffset).toBe(-2);
+  });
+
+  it('present: hp=1.0, attackSpeed=1.0, reward=1.0, levelOffset=0 (기준 narrative)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const m = chronoEraToEnemyMultipliers('present');
+    expect(m.hp).toBe(1.0);
+    expect(m.attackSpeed).toBe(1.0);
+    expect(m.reward).toBe(1.0);
+    expect(m.levelOffset).toBe(0);
+  });
+
+  it('ruined_future: hp=1.25, attackSpeed=1.15, reward=1.25, levelOffset=6 (붕괴 narrative)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const m = chronoEraToEnemyMultipliers('ruined_future');
+    expect(m.hp).toBe(1.25);
+    expect(m.attackSpeed).toBe(1.15);
+    expect(m.reward).toBe(1.25);
+    expect(m.levelOffset).toBe(6);
+  });
+
+  it('chronoEraToMonsterPassives 정확 값 narrative (ancient evasion +5, future hit +5)', async () => {
+    const { chronoEraToMonsterPassives } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToMonsterPassives('ancient').evasionAddPercent).toBe(5);
+    expect(chronoEraToMonsterPassives('ancient').hitChanceAddPercent).toBe(0);
+    expect(chronoEraToMonsterPassives('ruined_future').evasionAddPercent).toBe(0);
+    expect(chronoEraToMonsterPassives('ruined_future').hitChanceAddPercent).toBe(5);
+  });
+});
