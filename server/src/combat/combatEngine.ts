@@ -369,10 +369,13 @@ export class CombatEngine {
     // 몬스터 AI 설정
     if (p.isMonster) {
       // CHRONO-S53: era hint 로 AI 가중치 보정 (aggressiveBias → basicAttackMultiplier +bias)
+      // CHRONO-S55: defensiveBias > 0.2 면 basic 도 tactical tier 로 승급 (ancient 회상의 적 = 더 영리)
       const aiHints = this.config.eraId ? chronoEraToAIHints(this.config.eraId) : { defensiveBias: 0, aoeBias: 0, aggressiveBias: 0 };
+      const baseTier: 'boss' | 'tactical' | 'basic' = p.isBoss ? 'boss' : (p.level > 30 ? 'tactical' : 'basic');
+      const tier: 'boss' | 'tactical' | 'basic' = baseTier === 'basic' && aiHints.defensiveBias > 0.2 ? 'tactical' : baseTier;
       const aiConfig: MonsterAIConfig = {
         monsterId: p.id,
-        tier: p.isBoss ? 'boss' : (p.level > 30 ? 'tactical' : 'basic'),
+        tier,
         skills: [], // 실제로는 몬스터 데이터에서 로드
         basicAttackMultiplier: 1.0 + aiHints.aggressiveBias,
         aggroDecayRate: 5,
