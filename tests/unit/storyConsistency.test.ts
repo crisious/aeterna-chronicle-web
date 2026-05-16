@@ -4457,3 +4457,40 @@ describe('STORY-V123 — chronoEra AI hints 정확 값 narrative', () => {
     }
   });
 });
+
+describe('STORY-V124 — 시그니처 협공 narrative final cohesion', () => {
+  it('aetherna_final 시그니처 narrative — id+name+element+클래스 정확', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.id).toBe('aetherna_final');
+    expect(tt.name).toBe('에테르나 파이널');
+    expect(tt.element).toBe('chrono');
+    expect(tt.damageMultiplier).toBe(3.5);
+    expect(tt.mpCost).toBe(30);
+    expect((tt as { aoe?: boolean }).aoe).toBe(true);
+  });
+
+  it('void_eternity 시그니처 narrative — id+name+element+damageMultiplier 정확', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const tt = listTripleTechs().find((t) => t.id === 'void_eternity')!;
+    expect(tt.name).toBe('보이드 이터니티');
+    expect(tt.element).toBe('dark');
+    expect(tt.damageMultiplier).toBe(3.8);
+    expect(tt.mpCost).toBe(35);
+    expect((tt as { aoe?: boolean }).aoe).toBe(true);
+  });
+
+  it('chrono_break 시그니처 narrative — id+name+element 정확', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const tt = listTripleTechs().find((t) => t.id === 'chrono_break')!;
+    expect(tt.name).toBe('크로노 브레이크');
+    expect(tt.element).toBe('chrono');
+  });
+
+  it('guardian_oath 시그니처 narrative — id+name+element 정확 (holy 시그니처)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const tt = listTripleTechs().find((t) => t.id === 'guardian_oath')!;
+    expect(tt.name).toBe('가디언 오스');
+    expect(tt.element).toBe('holy');
+  });
+});
