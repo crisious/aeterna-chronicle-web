@@ -38,6 +38,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     mpCost: 12,
     fxKey: 'fx_chrono_blade',
     description: '시간 기사와 에테르 기사가 동시에 베어내는 시공간 균열 일격.',
+    eraFilter: ['ancient', 'present'],
   },
   {
     id: 'shadow_eclipse',
@@ -58,6 +59,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     mpCost: 18,
     fxKey: 'fx_memory_warp',
     description: '기억의 실로 시간을 끌어당겨 적의 행동 직전 상태로 데미지 누적.',
+    eraFilter: ['ancient', 'present'],
   },
   {
     id: 'chrono_sealing',
