@@ -3947,3 +3947,43 @@ describe('STORY-V108 — Dual eraFilter 정확 narrative 시그니처', () => {
     expect(withoutFilter.length, '미설정 Dual count').toBeGreaterThanOrEqual(withFilter.length);
   });
 });
+
+describe('STORY-V109 — 80 sprint 진입 narrative source stress', () => {
+  it('80 sprint stress — 모든 chronoEra API 정합 narrative', async () => {
+    const { chronoEraToSpeedTier, chronoEraToEnemyMultipliers, chronoEraToAIHints, chronoEraToMonsterPassives, chronoEraBonusDrops, isChronoEraId, decorateMonsterNameByEra } = await import('../../shared/types/chronoEraAtb');
+
+    for (const era of STORY_ERAS) {
+      // 모든 API 결과 정의됨
+      expect(chronoEraToSpeedTier(era)).toBeGreaterThanOrEqual(1);
+      expect(chronoEraToEnemyMultipliers(era)).toBeDefined();
+      expect(chronoEraToAIHints(era)).toBeDefined();
+      expect(chronoEraToMonsterPassives(era)).toBeDefined();
+      expect(Array.isArray(chronoEraBonusDrops(era))).toBe(true);
+      expect(isChronoEraId(era)).toBe(true);
+      expect(typeof decorateMonsterNameByEra('test', era)).toBe('string');
+    }
+  });
+
+  it('80 sprint stress — Tech resolve symmetry (Dual reverse + Triple 6 순열)', async () => {
+    const { listDualTechs, resolveDualTech } = await import('../../shared/types/dualTech');
+    const { listTripleTechs, resolveTripleTech } = await import('../../shared/types/tripleTech');
+
+    // 모든 Dual reverse 동일
+    for (const dt of listDualTechs()) {
+      const [a, b] = dt.partnerClasses;
+      const reverseResolved = resolveDualTech(b, a);
+      expect(reverseResolved?.id).toBe(dt.id);
+    }
+
+    // 모든 Triple 6 순열 동일
+    for (const tt of listTripleTechs()) {
+      const [a, b, c] = tt.partnerClasses;
+      const permutations: Array<[string, string, string]> = [
+        [a, b, c], [a, c, b], [b, a, c], [b, c, a], [c, a, b], [c, b, a],
+      ];
+      for (const [x, y, z] of permutations) {
+        expect(resolveTripleTech(x, y, z)?.id).toBe(tt.id);
+      }
+    }
+  });
+});
