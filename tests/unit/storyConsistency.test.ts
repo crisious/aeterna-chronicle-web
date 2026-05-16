@@ -391,3 +391,40 @@ describe('STORY-V12 — 협공 eraFilter narrative 일관성', () => {
     expect(tt?.eraFilter).toEqual(['ancient', 'present']);
   });
 });
+
+describe('STORY-V13 — Tech fxKey narrative 정합', () => {
+  it('Dual Tech 36 fxKey 모두 fx_ prefix', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.fxKey, `Dual ${dt.id} fxKey`).toMatch(/^fx_/);
+    }
+  });
+
+  it('Triple Tech 모든 fxKey fx_ prefix', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.fxKey, `Triple ${tt.id} fxKey`).toMatch(/^fx_/);
+    }
+  });
+
+  it('Dual + Triple fxKey 모두 unique', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const all = [
+      ...listDualTechs().map((d) => d.fxKey),
+      ...listTripleTechs().map((t) => t.fxKey),
+    ];
+    expect(new Set(all).size).toBe(all.length); // 36 unique
+  });
+
+  it('fxKey 가 협공 id 와 통상 일치 (fx_{id} 패턴)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.fxKey, `Dual ${dt.id}`).toBe(`fx_${dt.id}`);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(tt.fxKey, `Triple ${tt.id}`).toBe(`fx_${tt.id}`);
+    }
+  });
+});
