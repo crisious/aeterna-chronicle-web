@@ -8,6 +8,7 @@ import {
   isChronoEraId,
   chronoEraToEnemyMultipliers,
   decorateMonsterNameByEra,
+  chronoEraBonusDrops,
 } from '../../shared/types/chronoEraAtb';
 
 describe('chronoEraToSpeedTier', () => {
@@ -81,6 +82,31 @@ describe('decorateMonsterNameByEra (CHRONO-S21)', () => {
   it('빈 문자열도 안전 처리', () => {
     expect(decorateMonsterNameByEra('', 'present')).toBe('');
     expect(decorateMonsterNameByEra('', 'ancient')).toBe('[고대] ');
+  });
+});
+
+describe('chronoEraBonusDrops (CHRONO-S30)', () => {
+  it('ancient → ancient_relic_shard 1종', () => {
+    const drops = chronoEraBonusDrops('ancient');
+    expect(drops).toHaveLength(1);
+    expect(drops[0].itemId).toBe('ancient_relic_shard');
+    expect(drops[0].rarity).toBe('rare');
+  });
+
+  it('present → 빈 배열 (시대 전용 보너스 없음)', () => {
+    expect(chronoEraBonusDrops('present')).toEqual([]);
+  });
+
+  it('ruined_future → chrono_crystal(epic) + voidshard(rare)', () => {
+    const drops = chronoEraBonusDrops('ruined_future');
+    expect(drops).toHaveLength(2);
+    const ids = drops.map((d) => d.itemId);
+    expect(ids).toContain('chrono_crystal');
+    expect(ids).toContain('voidshard');
+  });
+
+  it('미지의 era → 빈 배열 (안전 fallback)', () => {
+    expect(chronoEraBonusDrops('chaos_age' as never)).toEqual([]);
   });
 });
 

@@ -28,6 +28,7 @@ import {
   isChronoEraId,
   chronoEraToEnemyMultipliers,
   decorateMonsterNameByEra,
+  chronoEraBonusDrops,
 } from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
@@ -453,7 +454,11 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
             armorPenetrationPercent: 0,
             baseExp: adjExp,
             baseGold: adjGold,
-            dropTable: (m.dropTable as unknown as DropEntry[]) ?? [],
+            // CHRONO-S30: era bonus rare drops append (시대 전용 아이템)
+            dropTable: [
+              ...((m.dropTable as unknown as DropEntry[]) ?? []),
+              ...(validEra ? chronoEraBonusDrops(validEra).map((d) => ({ ...d })) : []),
+            ],
           });
         }
       }
