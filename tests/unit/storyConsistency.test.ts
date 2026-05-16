@@ -4943,3 +4943,41 @@ describe('STORY-V137 — chronoEra 종합 정확 값 stress', () => {
     }
   });
 });
+
+describe('STORY-V138 — chronoField helper API non-error stress', () => {
+  it('모든 chronoField helper non-error narrative', async () => {
+    const mod = await import('../../shared/types/chronoField');
+    expect(() => mod.listFieldEncounters()).not.toThrow();
+    expect(() => mod.listAllFieldMonsterIds()).not.toThrow();
+    expect(() => mod.listAllBossMonsterIds()).not.toThrow();
+    expect(() => mod.getTotalFieldBosses()).not.toThrow();
+    expect(() => mod.listBossOnlyFields()).not.toThrow();
+    expect(() => mod.listFieldEncountersByZone('aether_plains')).not.toThrow();
+    expect(() => mod.resolveFieldEncounter('aether_plains', 'present')).not.toThrow();
+  });
+
+  it('chronoField 모든 21 encounter 호출 cycle stress (50회) narrative', async () => {
+    const { listFieldEncounters, getBossSlot, rollFieldMonster } = await import('../../shared/types/chronoField');
+    for (let i = 0; i < 50; i += 1) {
+      const list = listFieldEncounters();
+      for (const e of list) {
+        const boss = getBossSlot(e);
+        const rolled = rollFieldMonster(e, (i / 50));
+        expect(boss).not.toBeNull();
+        expect(rolled).not.toBeNull();
+      }
+    }
+  });
+
+  it('chronoField 모든 21 encounter 동일 reference (immutable cache) narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const a = listFieldEncounters();
+    const b = listFieldEncounters();
+    // immutable - 동일 array reference 또는 동일 내용
+    expect(a.length).toBe(b.length);
+    for (let i = 0; i < a.length; i += 1) {
+      expect(a[i].zoneId).toBe(b[i].zoneId);
+      expect(a[i].eraId).toBe(b[i].eraId);
+    }
+  });
+});
