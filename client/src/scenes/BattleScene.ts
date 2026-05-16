@@ -2346,6 +2346,10 @@ export class BattleScene extends Phaser.Scene {
         if (result.victory) {
           this.phase = 'victory';
           this.battleUI?.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
+          // CHRONO-S94: chain 보너스 적용 시 별도 강조 로그
+          if (result.chainBonusApplied) {
+            this.battleUI?.addLog('🔥 CHAIN 보너스 +20% 적용!');
+          }
           if (result.levelUp) {
             this.battleUI?.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`);
             playSfx(this, 'sfx_ui_level_up', 0.8);

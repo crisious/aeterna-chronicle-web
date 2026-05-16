@@ -112,6 +112,8 @@ export interface CombatResult {
   goldGained: number;
   loot: Array<{ itemId: string; name: string; quantity: number }>;
   levelUp?: { newLevel: number; statGains: Record<string, number> };
+  /** CHRONO-S94: chain 4+ 보너스 +20% 적용 여부 */
+  chainBonusApplied?: boolean;
 }
 
 // ── 퀘스트 타입 ───────────────────────────────────────────────
