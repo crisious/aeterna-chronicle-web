@@ -1860,6 +1860,14 @@ export class BattleScene extends Phaser.Scene {
       });
       if (resp.success) {
         this.battleUI?.addLog(`✨ 협공 발동: ${cand.name}`);
+        // CHRONO-S27: target 위치에 시각 효과 재생
+        const fxKey = `fx_${cand.techId}`;
+        this.effectManager?.spawnDualTechEffect(
+          targetSprite.sprite.x,
+          targetSprite.sprite.y,
+          fxKey,
+          cand.name,
+        );
       } else {
         this.battleUI?.addLog(`[협공] 발동 실패`);
       }
