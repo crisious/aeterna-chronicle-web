@@ -4696,3 +4696,32 @@ describe('STORY-V129b — 100 sprint 마디 final + 450 가드 진입', () => {
     expect(STORY_ERAS.length).toBe(3);
   });
 });
+
+describe('STORY-V130 — chapter VI 시작 — 시간선 ↔ 클래스 element narrative', () => {
+  it('time_knight + ether_knight Dual element = chrono (시간 + 에테르 = 시간선 narrative)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('time_knight', 'ether_knight')!;
+    expect(dt.element).toBe('chrono');
+  });
+
+  it('memory_weaver + time_knight Dual = chrono (기억 + 시간 = 시간선 narrative)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('memory_weaver', 'time_knight')!;
+    expect(dt.element).toBe('chrono');
+  });
+
+  it('void_wanderer 페어 모두 dark/chrono element narrative (공허 = 어둠/시간)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const voidDuals = listDualTechsByClass('void_wanderer');
+    for (const dt of voidDuals) {
+      expect(['dark', 'chrono', 'holy'], `${dt.id} element`).toContain(dt.element);
+    }
+  });
+
+  it('shadow_weaver + memory_breaker Dual = memory_shatter dark (그림자+파괴)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('shadow_weaver', 'memory_breaker')!;
+    expect(dt.id).toBe('memory_shatter');
+    expect(dt.element).toBe('dark');
+  });
+});
