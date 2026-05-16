@@ -210,8 +210,15 @@ export class BattleScene extends Phaser.Scene {
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
   private serverCombatId: string | null = null;
-  // CHRONO-S23: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
-  private lastDualTechCandidates: Array<{ techId: string; name: string; actorIds: [string, string] }> = [];
+  // CHRONO-S23/S45: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
+  private lastDualTechCandidates: Array<{
+    techId: string;
+    name: string;
+    actorIds: [string, string];
+    element?: string;
+    aoe?: boolean;
+    mpCost?: number;
+  }> = [];
   // CHRONO-S36: 다중 후보 중 선택 인덱스 (Shift+D 로 cycle)
   private dualTechSelectedIndex = 0;
   // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
@@ -1938,7 +1945,18 @@ export class BattleScene extends Phaser.Scene {
       `🔁 협공 선택: ${sel.name} (${this.dualTechSelectedIndex + 1}/${this.lastDualTechCandidates.length})`,
     );
     const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-    txt?.setText(`✨ ${sel.name} (D)`);
+    const bg = this.dualTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+    const aoePrefix = sel.aoe ? '💥 ' : '✨ ';
+    txt?.setText(`${aoePrefix}${sel.name} (D)`);
+    const tint = (() => {
+      switch (sel.element) {
+        case 'chrono': return 0x6fd3ff;
+        case 'dark': return 0xc8a2ff;
+        case 'holy': return 0xffd54a;
+        default: return 0x6fd3ff;
+      }
+    })();
+    bg?.setFillStyle(tint, 0.85);
   }
 
   private _shouldUseServerCombat(): boolean {
@@ -1959,8 +1977,15 @@ export class BattleScene extends Phaser.Scene {
         turn?: number;
         tick?: number;
         actions: Array<{ actionType: string; actorName?: string; targetName?: string; damage?: number }>;
-        // CHRONO-S23: server TickResult.dualTechCandidates 노출
-        dualTechCandidates?: Array<{ techId: string; name: string; actorIds: [string, string] }>;
+        // CHRONO-S23/S45: server TickResult.dualTechCandidates 노출 (element/aoe/mpCost 포함)
+        dualTechCandidates?: Array<{
+          techId: string;
+          name: string;
+          actorIds: [string, string];
+          element?: string;
+          aoe?: boolean;
+          mpCost?: number;
+        }>;
       };
       if (d.combatId === this.serverCombatId) {
         const turn = d.turn ?? d.tick ?? 0;
@@ -1973,11 +1998,22 @@ export class BattleScene extends Phaser.Scene {
           if (this.dualTechSelectedIndex >= d.dualTechCandidates.length) {
             this.dualTechSelectedIndex = 0;
           }
-          // CHRONO-S31: 후보 있으면 버튼 visible + 선택된 후보 이름 표시
+          // CHRONO-S31/S46: 후보 있으면 버튼 visible + element 색조 + AOE 아이콘
           this.dualTechButton?.setVisible(true);
           const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+          const bg = this.dualTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
           const sel = d.dualTechCandidates[this.dualTechSelectedIndex] ?? d.dualTechCandidates[0];
-          txt?.setText(`✨ ${sel.name} (D)`);
+          const aoePrefix = sel.aoe ? '💥 ' : '✨ ';
+          txt?.setText(`${aoePrefix}${sel.name} (D)`);
+          const tint = (() => {
+            switch (sel.element) {
+              case 'chrono': return 0x6fd3ff;
+              case 'dark': return 0xc8a2ff;
+              case 'holy': return 0xffd54a;
+              default: return 0x6fd3ff;
+            }
+          })();
+          bg?.setFillStyle(tint, 0.85);
         } else {
           this.lastDualTechCandidates = [];
           this.dualTechSelectedIndex = 0;
