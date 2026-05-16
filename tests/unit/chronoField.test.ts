@@ -189,6 +189,12 @@ describe('FieldEncounter bgmTrack + ambientEffect (CHRONO-S111)', () => {
     const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
     expect(e?.ambientEffect).toBe('boss_room');
   });
+
+  it('CHRONO-S119: forgotten_citadel/ruined_future ambientEffect boss_room', () => {
+    const e = resolveFieldEncounter('forgotten_citadel', 'ruined_future');
+    expect(e?.ambientEffect).toBe('boss_room');
+    expect(e?.bgmTrack).toBe('bgm_void_citadel');
+  });
 });
 
 describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {

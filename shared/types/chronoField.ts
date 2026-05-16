@@ -257,6 +257,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 5,
     hasBossSlot: true,
     ambientLine: '존재 자체가 흐려진 영원의 성채',
+    bgmTrack: 'bgm_void_citadel',
+    ambientEffect: 'boss_room',
   },
   // ── 시간의 첨탑 (최종 지역) ──
   {
