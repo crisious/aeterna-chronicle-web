@@ -4317,3 +4317,32 @@ describe('STORY-V118 — 클래스별 element 분포 narrative', () => {
     expect(elements.size).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V119 — 클래스 narrative 시그니처 종합', () => {
+  it('7 클래스 narrative id snake_case + 시그니처 prefix', async () => {
+    for (const cls of STORY_CLASSES) {
+      expect(cls.match(/^[a-z][a-z0-9_]*$/), `${cls} snake_case`).not.toBeNull();
+    }
+  });
+
+  it('7 클래스 narrative 시그니처 — 4 카테고리: knight/weaver/guardian/wanderer/breaker', () => {
+    const categories = new Set<string>();
+    for (const cls of STORY_CLASSES) {
+      if (cls.includes('knight')) categories.add('knight');
+      if (cls.includes('weaver')) categories.add('weaver');
+      if (cls.includes('guardian')) categories.add('guardian');
+      if (cls.includes('wanderer')) categories.add('wanderer');
+      if (cls.includes('breaker')) categories.add('breaker');
+    }
+    expect(categories.size).toBeGreaterThanOrEqual(4);
+  });
+
+  it('각 클래스 Dual + Triple 페어 총 ≥ 6 narrative (충분 협공)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    for (const cls of STORY_CLASSES) {
+      const total = listDualTechsByClass(cls).length + listTripleTechsByClass(cls).length;
+      expect(total, `${cls} 총 협공`).toBeGreaterThanOrEqual(6);
+    }
+  });
+});
