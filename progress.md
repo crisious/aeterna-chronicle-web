@@ -272,11 +272,17 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 검증: chronoField 31/31 + chronoBarrel 4/4 + techCatalog 9/9.
 - 누적 **123 sprint**, PR #11 126 commits.
 
-## TODO (CHRONO-ATB chapter XV 후보)
+## 2026-05-16 CHRONO-ATB chapter XV — 보스 visible 진입 + 카메라/SFX 강화 (5 sprint)
 
-- BattleScene 진입 시 GameScene 의 encounter slot 정보 전달 (현재 zoneInfo monsters 기본 fallback)
-- 보스 monster sprite 차별화 (visible 시 별도 마커 — gold ring 등)
-- 라이브 Playwright 자동 QA
+- **S125** GameScene 보스 sprite 60×60 + gold ring + BOSS 라벨 / **S126** 보스 visible 진입 시 enemyHp ×2.5 + reward ×1.5 + isBossField 전달 / **S127** BattleScene isBossField boss_room ambient 강제 / **S128** 보스 진입 카메라 zoom (1.0→1.05 400ms) / **S129** 보스 진입 SFX (magic cast + voice).
+- 130 sprint 마디 도달.
+- 누적 **130 sprint**, PR #11 134 commits.
+
+## TODO (CHRONO-ATB chapter XVI 후보)
+
+- 라이브 Playwright 자동 QA (전체 시나리오 — era 전환 → visible spawn → 보스 진입)
 - 협공 통계 DB 영속화 (Prisma 모델)
 - 시대 전환 시 GameScene 재 spawn (현재 1회 init)
+- BattleScene 승리 시 monster sprite 제거 (visible 보존)
+- chronoField 추가 보스 (cross-product 보강)
 
