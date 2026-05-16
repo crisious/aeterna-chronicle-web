@@ -3183,3 +3183,39 @@ describe('STORY-V87 — 클래스 페어 ↔ element narrative', () => {
     expect(elements.size, 'ether_knight 협공 element 다양성').toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V88 — 시그니처 협공 description narrative 검증', () => {
+  it('aetherna_final description "에테르나" 또는 "최종" 키워드 narrative (게임 정점 시그니처)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.description.includes('에테르나') || tt.description.includes('최종')).toBe(true);
+  });
+
+  it('void_eternity description "영원" 또는 "공허" 키워드 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const tt = listTripleTechs().find((t) => t.id === 'void_eternity')!;
+    expect(tt.description.includes('영원') || tt.description.includes('공허')).toBe(true);
+  });
+
+  it('chrono_break description "시간" 키워드 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const tt = listTripleTechs().find((t) => t.id === 'chrono_break')!;
+    expect(tt.description.includes('시간')).toBe(true);
+  });
+
+  it('15 Triple description 모두 length 10~100 narrative (의미 있는 설명)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.description.length, `${tt.id} description length`).toBeGreaterThanOrEqual(10);
+      expect(tt.description.length).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('21 Dual description 모두 length ≥ 4 narrative + 한글 포함', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.description.length, `${dt.id} description`).toBeGreaterThanOrEqual(4);
+      expect(/[가-힣]/.test(dt.description), `${dt.id} 한글`).toBe(true);
+    }
+  });
+});
