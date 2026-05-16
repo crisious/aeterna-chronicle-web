@@ -121,3 +121,49 @@ describe('STORY-V2 — 21 보스 unique 시대 분포', () => {
     }
   });
 });
+
+const STORY_CLASSES = [
+  'ether_knight',
+  'time_knight',
+  'shadow_weaver',
+  'memory_weaver',
+  'time_guardian',
+  'void_wanderer',
+  'memory_breaker',
+];
+
+describe('STORY-V3 — 7 클래스 narrative 정합성', () => {
+  it('Dual Tech (21) partnerClasses 가 narrative 7 클래스만 참조', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      for (const cls of dt.partnerClasses) {
+        expect(STORY_CLASSES, `Dual ${dt.id} 비-narrative 클래스: ${cls}`).toContain(cls);
+      }
+    }
+  });
+
+  it('Triple Tech (15) partnerClasses 가 narrative 7 클래스만 참조', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      for (const cls of tt.partnerClasses) {
+        expect(STORY_CLASSES, `Triple ${tt.id} 비-narrative 클래스: ${cls}`).toContain(cls);
+      }
+    }
+  });
+
+  it('각 narrative 클래스 마다 Dual Tech 페어 ≥ 1', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    for (const cls of STORY_CLASSES) {
+      const techs = listDualTechsByClass(cls);
+      expect(techs.length, `${cls} Dual 페어`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('각 narrative 클래스 마다 Triple Tech 페어 ≥ 1', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    for (const cls of STORY_CLASSES) {
+      const techs = listTripleTechsByClass(cls);
+      expect(techs.length, `${cls} Triple 페어`).toBeGreaterThanOrEqual(1);
+    }
+  });
+});
