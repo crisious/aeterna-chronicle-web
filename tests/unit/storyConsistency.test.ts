@@ -1395,3 +1395,41 @@ describe('STORY-V42 — Triple Tech 클래스 페어 narrative 다양성', () =>
     }
   });
 });
+
+describe('STORY-V43 — Dual Tech 클래스 페어 narrative 다양성', () => {
+  it('21 Dual partnerClasses 2인 set 모두 unique narrative (중복 페어 없음)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const setKey = (dt: { partnerClasses: readonly string[] }) =>
+      [...dt.partnerClasses].sort().join('|');
+    const keys = listDualTechs().map(setKey);
+    expect(new Set(keys).size, 'unique Dual class pairs').toBe(keys.length);
+  });
+
+  it('21 Dual 모든 partnerClasses 정확히 2인 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.partnerClasses.length, `${dt.id} class count`).toBe(2);
+    }
+  });
+
+  it('각 클래스 Dual 참여 ≤ 8회 narrative (단일 클래스 독점 금지)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const count = new Map<string, number>();
+    for (const dt of listDualTechs()) {
+      for (const cls of dt.partnerClasses) {
+        count.set(cls, (count.get(cls) ?? 0) + 1);
+      }
+    }
+    for (const cls of STORY_CLASSES) {
+      const c = count.get(cls) ?? 0;
+      expect(c, `${cls} Dual 참여`).toBeLessThanOrEqual(8);
+    }
+  });
+
+  it('Dual partnerClasses 2인 모두 다름 narrative (자기 협공 금지)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.partnerClasses[0]).not.toBe(dt.partnerClasses[1]);
+    }
+  });
+});
