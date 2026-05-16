@@ -2170,3 +2170,45 @@ describe('STORY-V62 — 한글 narrative quality 통합', () => {
     }
   });
 });
+
+describe('STORY-V63 — 시간선 narrative cohesion (chrono_archon + 시간 시그니처)', () => {
+  it('chrono_archon (시간 통치자, present 보스) 시그니처 narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'present')!;
+    const boss = e.monsterPool.find((s) => s.isBoss)!;
+    expect(boss.monsterId).toBe('chrono_archon');
+    expect(boss.name).toBe('시간 통치자');
+  });
+
+  it('chrono_spire 3 era 모든 보스 weight 시그니처 (0.2 / 0.2 / 0.4 — 종점 가장 강력)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const aWeight = resolveFieldEncounter('chrono_spire', 'ancient')!.monsterPool.find((s) => s.isBoss)!.weight;
+    const pWeight = resolveFieldEncounter('chrono_spire', 'present')!.monsterPool.find((s) => s.isBoss)!.weight;
+    const fWeight = resolveFieldEncounter('chrono_spire', 'ruined_future')!.monsterPool.find((s) => s.isBoss)!.weight;
+    expect(aWeight).toBe(0.2);
+    expect(pWeight).toBe(0.2);
+    expect(fWeight).toBe(0.4);
+  });
+
+  it('"시간" 키워드 narrative 분포 — chrono_archon + chrono_shard_titan + time_devourer 등 ≥ 3 보스', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    let timeBossCount = 0;
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      if (boss.name.includes('시간') || boss.monsterId.includes('chrono_') || boss.monsterId.includes('time_')) {
+        timeBossCount += 1;
+      }
+    }
+    expect(timeBossCount, '"시간" 시그니처 보스 count').toBeGreaterThanOrEqual(3);
+  });
+
+  it('Triple chrono element ≥ 2 + chrono_break + aetherna_final 모두 chrono narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const chronos = listTripleTechs().filter((tt) => tt.element === 'chrono');
+    expect(chronos.length).toBeGreaterThanOrEqual(2);
+    const ids = new Set(chronos.map((tt) => tt.id));
+    expect(ids.has('chrono_break')).toBe(true);
+    expect(ids.has('aetherna_final')).toBe(true);
+  });
+});
