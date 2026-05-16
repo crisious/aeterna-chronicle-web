@@ -517,3 +517,31 @@ describe('STORY-V16 — 협공 mpCost narrative 균형', () => {
     expect(tripleAvg).toBeGreaterThan(dualAvg);
   });
 });
+
+describe('STORY-V17 — 협공 partnerClasses 순열 narrative 안정성', () => {
+  it('Dual Tech 모든 페어 reverse 순서도 같은 결과', async () => {
+    const { listDualTechs, resolveDualTech } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      const [a, b] = dt.partnerClasses;
+      const forward = resolveDualTech(a, b);
+      const reverse = resolveDualTech(b, a);
+      expect(forward?.id).toBe(dt.id);
+      expect(reverse?.id).toBe(dt.id);
+    }
+  });
+
+  it('Triple Tech 모든 트리플 6 순열 (3!) 모두 같은 결과', async () => {
+    const { listTripleTechs, resolveTripleTech } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      const [a, b, c] = tt.partnerClasses;
+      const perms = [
+        [a, b, c], [a, c, b], [b, a, c],
+        [b, c, a], [c, a, b], [c, b, a],
+      ];
+      for (const [x, y, z] of perms) {
+        const r = resolveTripleTech(x, y, z);
+        expect(r?.id, `Triple ${tt.id} perm [${x},${y},${z}]`).toBe(tt.id);
+      }
+    }
+  });
+});
