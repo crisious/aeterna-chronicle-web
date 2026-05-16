@@ -1823,3 +1823,46 @@ describe('STORY-V53 — chronoField API 비정상 입력 narrative 안정성', (
     expect(getBossSlot(fakeNoBoss as never)).toBeNull();
   });
 });
+
+describe('STORY-V54 — Tech resolve 클래스 순열 narrative 안정성', () => {
+  it('resolveDualTech: 클래스 2인 순서 reverse 동일 결과 narrative', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const a = resolveDualTech('time_knight', 'ether_knight');
+    const b = resolveDualTech('ether_knight', 'time_knight');
+    expect(a?.id).toBe('chrono_blade');
+    expect(b?.id).toBe(a?.id);
+  });
+
+  it('resolveTripleTech: 클래스 3인 모든 6 순열 동일 결과 narrative', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const target = 'aetherna_final';
+    const trios: [string, string, string][] = [
+      ['ether_knight', 'time_knight', 'memory_weaver'],
+      ['ether_knight', 'memory_weaver', 'time_knight'],
+      ['time_knight', 'ether_knight', 'memory_weaver'],
+      ['time_knight', 'memory_weaver', 'ether_knight'],
+      ['memory_weaver', 'ether_knight', 'time_knight'],
+      ['memory_weaver', 'time_knight', 'ether_knight'],
+    ];
+    for (const t of trios) {
+      expect(resolveTripleTech(t[0], t[1], t[2])?.id, `perm ${t.join(',')}`).toBe(target);
+    }
+  });
+
+  it('resolveDualTech: 동일 클래스 2명 → null narrative (자기 협공 금지)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    expect(resolveDualTech('ether_knight', 'ether_knight')).toBeNull();
+  });
+
+  it('resolveDualTech: unknown 클래스 → null narrative (안전 가드)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    expect(resolveDualTech('UNKNOWN_A', 'UNKNOWN_B')).toBeNull();
+    expect(resolveDualTech('ether_knight', 'UNKNOWN_B')).toBeNull();
+  });
+
+  it('resolveTripleTech: unknown 클래스 → null narrative (안전 가드)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    expect(resolveTripleTech('UNKNOWN_A', 'UNKNOWN_B', 'UNKNOWN_C')).toBeNull();
+    expect(resolveTripleTech('ether_knight', 'time_knight', 'UNKNOWN_C')).toBeNull();
+  });
+});
