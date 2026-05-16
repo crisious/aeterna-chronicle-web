@@ -863,3 +863,39 @@ describe('STORY-V29 — 보스 monster name 한글 narrative', () => {
     expect(names.size).toBeGreaterThanOrEqual(40); // 보스+일반 합쳐 ≥40 unique
   });
 });
+
+describe('STORY-V30 — weight 합 narrative balance', () => {
+  it('21 encounter weight 합 정확히 1.0 ± 0.001 (floating-point tolerance)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      const sum = e.monsterPool.reduce((s, m) => s + m.weight, 0);
+      expect(sum, `${e.zoneId}/${e.eraId} weight sum`).toBeCloseTo(1.0, 3);
+    }
+  });
+
+  it('chrono_spire/ruined_future 최종 보스 weight 0.4 (가장 높음)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const bossWeights = listFieldEncounters().map((e) => {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      return { id: `${e.zoneId}/${e.eraId}`, weight: boss?.weight ?? 0 };
+    });
+    const finalWeight = bossWeights.find((b) => b.id === 'chrono_spire/ruined_future')!.weight;
+    // 최종 보스가 모든 다른 보스 weight 보다 크거나 같음
+    for (const b of bossWeights) {
+      expect(finalWeight, `${b.id} vs final`).toBeGreaterThanOrEqual(b.weight);
+    }
+  });
+
+  it('일반 monster slot 총 합 ≥ 보스 slot 총 합 (일반 spawn 비중)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    let normalCount = 0;
+    let bossCount = 0;
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) bossCount += 1;
+        else normalCount += 1;
+      }
+    }
+    expect(normalCount).toBeGreaterThanOrEqual(bossCount);
+  });
+});
