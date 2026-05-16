@@ -383,22 +383,23 @@ export class BattleScene extends Phaser.Scene {
         strokeThickness: 2,
       }).setOrigin(0, 0).setDepth(250).setName('fieldAmbientLine');
 
-      // CHRONO-S113/S118: ambientEffect 약한 색조 overlay (분위기 시각화)
+      // CHRONO-S113/S118/S127: ambientEffect 약한 색조 overlay
+      // S127: isBossField 시 boss_room 강제 (visible 보스 진입)
       const effectTint: Record<string, number | null> = {
         mist: 0xeeeeee,
         dust: 0xb38b6a,
         glow: 0xffd54a,
         void: 0x6633aa,
-        boss_room: 0xff3333, // 강렬한 빨간 — 최종 보스 분위기
+        boss_room: 0xff3333,
         none: null,
       };
-      const tint = effectTint[fieldEnc.ambientEffect ?? 'none'];
+      const effectKind = this._initData.isBossField ? 'boss_room' : (fieldEnc.ambientEffect ?? 'none');
+      const tint = effectTint[effectKind];
       if (tint !== null && tint !== undefined) {
-        // boss_room 은 더 진한 alpha
-        const alpha = fieldEnc.ambientEffect === 'boss_room' ? 0.12 : 0.06;
+        const alpha = effectKind === 'boss_room' ? 0.12 : 0.06;
         this.add.rectangle(scW / 2, scH / 2, scW, scH, tint, alpha)
           .setDepth(2)
-          .setName(`fieldAmbientOverlay_${fieldEnc.ambientEffect}`);
+          .setName(`fieldAmbientOverlay_${effectKind}`);
       }
       // CHRONO-S116: bgmTrack 재생 시도 (자산 미존재 시 SoundManager 내부 safe fallback)
       if (fieldEnc.bgmTrack && this.soundManager) {
