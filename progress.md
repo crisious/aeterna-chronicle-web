@@ -441,8 +441,12 @@ V100 이후 chapter IV — runtime 결정성 + 시그니처 cross-check 확장.
 - **V108** Dual eraFilter 정확 (chrono Dual 붕괴 차단, memory_break/void_oblivion ruined_future-only)
 - **V109** 80 sprint stress (모든 chronoEra API 정합 + Tech resolve symmetry)
 - **V110** progress.md V106~V110 갱신 + 80 sprint 마디 기록
+- **V111** listAllFieldMonsterIds 정합 (보스+일반 + snake_case + count unique)
+- **V112** 추가 monster name 시그니처 (chrono_archon/aetherna_eidolon/collapse + chrono_spire 일반)
+- **V113** 🎯 400 가드 마디 — narrative 정점 cohesion (보스 weight 합 + Tech/Field runtime sweep + aetherna final + entity 78)
+- **V114** progress.md V111~V114 갱신 + 400 가드 마디 기록
 
-회귀: storyConsistency 384/384 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 400/400 + unit 전체 844+/844+ pass.
 
-**80 sprint 마디 + 384 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+31) = 누적 80 sprint, +292 가드 (92 → 384).
+**🎯 400 가드 마디 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) = 누적 84 sprint, +308 가드 (92 → 400). aetherna 게임 narrative cohesion 정점 + Field 21 + Dual 21 + Triple 15 + 보스 21 = 78 entity + 50+ monster + 7×3×7 cross-product 모든 회귀 가드 land.
 
