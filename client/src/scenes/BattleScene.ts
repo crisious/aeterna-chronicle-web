@@ -198,6 +198,8 @@ export class BattleScene extends Phaser.Scene {
   private serverCombatId: string | null = null;
   // CHRONO-S23: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
   private lastDualTechCandidates: Array<{ techId: string; name: string; actorIds: [string, string] }> = [];
+  // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
+  private dualTechButton: Phaser.GameObjects.Container | null = null;
 
   // Auto-battle & speed control
   private autoMode = false;
@@ -325,6 +327,21 @@ export class BattleScene extends Phaser.Scene {
       fontFamily: FONT_FAMILY,
       color: `#${era.tintColor.toString(16).padStart(6, '0')}`,
     }).setOrigin(1, 0).setDepth(250).setName('eraTierLabel');
+
+    // CHRONO-S31: 협공 발동 버튼 (우하단, 후보 있을 때만 표시)
+    const btnContainer = this.add.container(scW - 90, scH - 50);
+    const btnBg = this.add.rectangle(0, 0, 160, 36, 0x6fd3ff, 0.85)
+      .setStrokeStyle(2, 0xffffff)
+      .setInteractive({ useHandCursor: true });
+    const btnText = this.add.text(0, 0, '✨ 협공 (D)', {
+      fontSize: '14px',
+      fontFamily: FONT_FAMILY,
+      color: '#1a0033',
+    }).setOrigin(0.5);
+    btnContainer.add([btnBg, btnText]);
+    btnContainer.setDepth(260).setVisible(false).setName('dualTechButton');
+    btnBg.on('pointerdown', () => this._triggerFirstDualTech());
+    this.dualTechButton = btnContainer;
 
     // ── 매니저 초기화 (개별 try-catch) ────────────────────────
     try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
@@ -1905,8 +1922,13 @@ export class BattleScene extends Phaser.Scene {
           const names = d.dualTechCandidates.map((c) => c.name).join(', ');
           this.battleUI?.addLog(`✨ 협공 가능: ${names}`);
           this.lastDualTechCandidates = d.dualTechCandidates;
+          // CHRONO-S31: 후보 있으면 버튼 visible + 첫 후보 이름 표시
+          this.dualTechButton?.setVisible(true);
+          const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+          txt?.setText(`✨ ${d.dualTechCandidates[0].name} (D)`);
         } else {
           this.lastDualTechCandidates = [];
+          this.dualTechButton?.setVisible(false);
         }
         // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
         for (const act of d.actions ?? []) {
