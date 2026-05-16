@@ -545,3 +545,41 @@ describe('STORY-V17 — 협공 partnerClasses 순열 narrative 안정성', () =>
     }
   });
 });
+
+describe('STORY-V18 — 시대 진행 어려움 단조 narrative', () => {
+  it('enemyHp ancient(0.9) ≤ present(1.0) ≤ ruined_future(1.25)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToEnemyMultipliers('ancient').hp;
+    const p = chronoEraToEnemyMultipliers('present').hp;
+    const f = chronoEraToEnemyMultipliers('ruined_future').hp;
+    expect(a).toBeLessThanOrEqual(p);
+    expect(p).toBeLessThanOrEqual(f);
+  });
+
+  it('level offset ancient(-2) → present(0) → ruined_future(+6) 단조 증가', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToEnemyMultipliers('ancient').levelOffset;
+    const p = chronoEraToEnemyMultipliers('present').levelOffset;
+    const f = chronoEraToEnemyMultipliers('ruined_future').levelOffset;
+    expect(a).toBeLessThan(p);
+    expect(p).toBeLessThan(f);
+  });
+
+  it('reward 단조 ancient(1.0) ≤ present(1.0) ≤ ruined_future(1.25)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToEnemyMultipliers('ancient').reward;
+    const p = chronoEraToEnemyMultipliers('present').reward;
+    const f = chronoEraToEnemyMultipliers('ruined_future').reward;
+    expect(a).toBeLessThanOrEqual(p);
+    expect(p).toBeLessThanOrEqual(f);
+  });
+
+  it('attackSpeed 단조 ancient(0.95) ≤ present(1.0) ≤ ruined_future(1.15)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToEnemyMultipliers('ancient').attackSpeed;
+    const p = chronoEraToEnemyMultipliers('present').attackSpeed;
+    const f = chronoEraToEnemyMultipliers('ruined_future').attackSpeed;
+    expect(a).toBeLessThanOrEqual(p);
+    expect(p).toBeLessThanOrEqual(f);
+  });
+});
