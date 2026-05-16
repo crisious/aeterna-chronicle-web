@@ -2306,11 +2306,11 @@ export class BattleScene extends Phaser.Scene {
         for (const act of d.actions ?? []) {
           if (act.actionType === 'dual_tech' || act.actionType === 'triple_tech') {
             const isChain = act.actorName?.includes('(CHAIN)');
+            const prevChain = this.chainCount;
             if (isChain) {
               this.chainCount += 1;
               this.battleUI?.addLog(`🔥 CHAIN ×${this.chainCount}! (${act.damage ?? 0})`);
             } else {
-              // 첫 발동 — chain count 1로 시작
               this.chainCount = 1;
             }
             this.chainExpireTick = turnNow + 5;
@@ -2322,6 +2322,14 @@ export class BattleScene extends Phaser.Scene {
               .setStroke('#000000', isMax ? 4 : 2)
               .setFontSize(isMax ? 18 : 14)
               .setVisible(true);
+            // CHRONO-S100: chain 막 4 통과 (prev<4 && 현재>=4) 도달 시 알림 효과
+            if (prevChain < 4 && this.chainCount >= 4) {
+              playSfx(this, 'sfx_ui_level_up', 0.9);
+              if (isScreenShakeEnabled()) {
+                this.cameras.main.shake(200, 0.012);
+              }
+              this.battleUI?.addLog('💥 CHAIN MAX 도달! 다음 협공 +50% 데미지');
+            }
             if (act.actorName?.includes('(AOE)')) {
               this.battleUI?.addLog(`💥 광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
               const aoeName = (act.actorName ?? '').split(' (')[0];
