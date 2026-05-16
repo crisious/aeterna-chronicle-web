@@ -4816,3 +4816,46 @@ describe('STORY-V133 — monster passive 정확 narrative', () => {
     }
   });
 });
+
+describe('STORY-V135 — 21 encounter 100% 무결성 stress', () => {
+  it('21 encounter 모든 필드 정의 + 타입 valid narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    for (const zone of STORY_ZONES) {
+      for (const era of STORY_ERAS) {
+        const e = resolveFieldEncounter(zone, era)!;
+        // 모든 필드 정의
+        expect(typeof e.zoneId).toBe('string');
+        expect(typeof e.eraId).toBe('string');
+        expect(Array.isArray(e.monsterPool)).toBe(true);
+        expect(typeof e.maxSpawn).toBe('number');
+        expect(typeof e.hasBossSlot).toBe('boolean');
+        expect(typeof e.ambientLine).toBe('string');
+        expect(typeof e.bgmTrack).toBe('string');
+        expect(typeof e.ambientEffect).toBe('string');
+      }
+    }
+  });
+
+  it('21 encounter monsterPool 각 slot 무결성', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expect(typeof slot.monsterId).toBe('string');
+        expect(typeof slot.name).toBe('string');
+        expect(typeof slot.weight).toBe('number');
+        expect(Number.isFinite(slot.weight)).toBe(true);
+      }
+    }
+  });
+
+  it('21 encounter 보스 1개 + weight 0.1~0.4 + isBoss true narrative', async () => {
+    const { listFieldEncounters, getBossSlot } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      const boss = getBossSlot(e);
+      expect(boss).not.toBeNull();
+      expect(boss!.weight).toBeGreaterThanOrEqual(0.1);
+      expect(boss!.weight).toBeLessThanOrEqual(0.4);
+      expect(boss!.isBoss).toBe(true);
+    }
+  });
+});
