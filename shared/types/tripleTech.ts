@@ -112,6 +112,28 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     description: '직조 · 그림자 · 파괴 — 기억을 부수고 흩어 흔적 자체를 지운다.',
     aoe: true,
   },
+  {
+    id: 'shadow_void_break',
+    name: '섀도우 보이드 브레이크',
+    partnerClasses: ['shadow_weaver', 'void_wanderer', 'memory_breaker'],
+    damageMultiplier: 3.4,
+    element: 'dark',
+    mpCost: 30,
+    fxKey: 'fx_shadow_void_break',
+    description: '그림자가 공허로 흘러들고 파괴가 적의 핵심을 베어낸다.',
+    aoe: true,
+  },
+  {
+    id: 'guardian_void_strike',
+    name: '가디언 보이드 스트라이크',
+    partnerClasses: ['ether_knight', 'time_guardian', 'void_wanderer'],
+    damageMultiplier: 3.3,
+    element: 'holy',
+    mpCost: 29,
+    fxKey: 'fx_guardian_void_strike',
+    description: '에테르 검광이 시간 결계에 공허의 균열을 박는다.',
+    aoe: true,
+  },
 ] as const;
 
 const TRIPLE_KEY = (a: string, b: string, c: string): string => {

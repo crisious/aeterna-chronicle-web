@@ -27,8 +27,8 @@ describe('resolveTripleTech', () => {
     expect(resolveTripleTech('ether_knight', 'ether_knight', 'ether_knight')).toBeNull();
   });
 
-  it('미정의 조합 → null', () => {
-    expect(resolveTripleTech('shadow_weaver', 'memory_breaker', 'void_wanderer')).toBeNull();
+  it('미정의 조합 → null (e+t+s 페어는 아직 매핑 없음)', () => {
+    expect(resolveTripleTech('ether_knight', 'time_knight', 'shadow_weaver')).toBeNull();
   });
 
   it('빈 문자열 → null', () => {
@@ -37,18 +37,19 @@ describe('resolveTripleTech', () => {
 });
 
 describe('listTripleTechs / getTripleTechById', () => {
-  it('전체 목록 8종 (CHRONO-S71 확장)', () => {
+  it('전체 목록 10종 (CHRONO-S72 마디)', () => {
     const list = listTripleTechs();
-    expect(list.length).toBe(8);
+    expect(list.length).toBe(10);
     const ids = list.map((t) => t.id);
-    expect(new Set(ids).size).toBe(8);
+    expect(new Set(ids).size).toBe(10);
   });
 
-  it('getTripleTechById 8종 정상 조회', () => {
+  it('getTripleTechById 10종 정상 조회', () => {
     const ids = [
       'aetherna_final', 'chrono_break', 'void_eternity',
       'ether_dark_riff', 'guardian_oath',
       'time_void_break', 'shadow_chrono', 'memory_shatter_pact',
+      'shadow_void_break', 'guardian_void_strike',
     ];
     for (const id of ids) {
       expect(getTripleTechById(id), `${id} 조회 실패`).not.toBeNull();
@@ -86,6 +87,15 @@ describe('resolveTripleTech — CHRONO-S71 추가 3종', () => {
   });
   it('memory_weaver + shadow_weaver + memory_breaker → memory_shatter_pact', () => {
     expect(resolveTripleTech('memory_weaver', 'shadow_weaver', 'memory_breaker')?.id).toBe('memory_shatter_pact');
+  });
+});
+
+describe('resolveTripleTech — CHRONO-S72 추가 2종', () => {
+  it('shadow_weaver + void_wanderer + memory_breaker → shadow_void_break', () => {
+    expect(resolveTripleTech('shadow_weaver', 'void_wanderer', 'memory_breaker')?.id).toBe('shadow_void_break');
+  });
+  it('ether_knight + time_guardian + void_wanderer → guardian_void_strike', () => {
+    expect(resolveTripleTech('ether_knight', 'time_guardian', 'void_wanderer')?.id).toBe('guardian_void_strike');
   });
 });
 
