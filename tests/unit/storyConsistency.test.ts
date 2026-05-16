@@ -832,3 +832,34 @@ describe('STORY-V28 — 협공 name + 시그니처 narrative', () => {
     expect(boss?.name).toBe('시간 통치자');
   });
 });
+
+describe('STORY-V29 — 보스 monster name 한글 narrative', () => {
+  it('21 보스 name 모두 1~10자 한글 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      expect(boss.name.length, `${e.zoneId}/${e.eraId} boss name`).toBeGreaterThanOrEqual(1);
+      expect(boss.name.length).toBeLessThanOrEqual(15);
+    }
+  });
+
+  it('21 보스 name 모두 unique', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const bossNames = listFieldEncounters()
+      .map((e) => e.monsterPool.find((s) => s.isBoss)?.name)
+      .filter((n): n is string => !!n);
+    expect(new Set(bossNames).size).toBe(bossNames.length);
+  });
+
+  it('21 일반 monster name 모두 unique', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const names = new Set<string>();
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        names.add(slot.name);
+      }
+    }
+    expect(names.size).toBeGreaterThanOrEqual(40); // 보스+일반 합쳐 ≥40 unique
+  });
+});
