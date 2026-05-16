@@ -153,12 +153,29 @@ II 챕터 Dual Tech 데이터/실행 위에 server↔클라 wire 완성 + 추가
 - 검증: 104 files / 1275 tests pass (chapter II 1263 → +12 신규 회귀 가드). server+client typecheck 0 errors.
 - PR #11 누적 21+ commit.
 
-## TODO (CHRONO-ATB chapter IV 후보)
+## 2026-05-16 CHRONO-ATB chapter IV — Dual Tech 사용자 진입점 + 정체성 보강 (8 sprint, 회귀 0)
 
-- BattleScene UI 발동 버튼 / 단축키 'D' → combatDualTech 호출 (lastDualTechCandidates 사용)
-- EffectManager 가 fxKey ('fx_chrono_blade' 등) 매핑 → 협공 시각 효과 재생
-- 시대별 monster dropTable rare 슬롯 추가 (ruined_future 드롭률 +)
-- ATBCommandInput protocol 의 dual_tech kind 분기 (현재 separate event)
-- Dual Tech 콤보 효과 — 연속 발동 시 보너스 (FF6 chain)
-- 라이브 Playwright 자동 QA: era 전환 → 전투 → Dual Tech 후보 표시 검증
+III 챕터 후보 노출 후, 실제 user-facing 발동 흐름 + 시각 피드백 + 시대 정체성 추가.
+
+- **S24 — progress III docs** (`14e4484`): S17~S23 chapter III 정리.
+- **S25 — 'D' 단축키 발동** (`6187a10`): BattleScene keydown-D → _triggerFirstDualTech (lastDualTechCandidates[0] + 첫 alive 적). 미연결/후보 없음/적 사망 케이스별 로그.
+- **S26 — chain combo bonus** (`2b10657`): 5 tick 이내 연속 협공 시 1.2× 데미지. ActionResult.actorName '(CHAIN)' 표시. server 측 lastDualTechTick 추적.
+- **S27 — EffectManager.spawnDualTechEffect** (`603a6e7`): fxKey → 색조 매핑 (chrono cyan / dark·shadow purple / ether·holy gold). 발동 시 magic hit 3중첩 + '✨ {techName}' 강조 텍스트.
+- **S28 — chain combo indicator** (`5c55e40`): combat:tick action.actorName '(CHAIN)' 검출 → '🔥 CHAIN COMBO! +20% 데미지' 로그.
+- **S29 — ATB protocol dual_tech kind** (`5d1fc18`): ATBCommandInput.command union 에 'dual_tech' (partnerActorId, techId, targetId) 추가. SSOT 일관성.
+- **S30 — 시대별 dropTable rare** (`d82ab65`): chronoEraBonusDrops — ancient(ancient_relic_shard rare 3%), ruined_future(chrono_crystal epic 5% + voidshard rare 8%). /combat/start DB monster dropTable append.
+- **S31 — Dual Tech 버튼 UI** (`6fcd0d8`): BattleScene 우하단 클릭 가능 버튼. setName('dualTechButton'), 후보 ≥1 시 visible + 첫 이름 표시. D 단축키 대체 진입점.
+
+- 검증: 104 files / 1282 tests pass (chapter III 1275 → +7 신규 회귀 가드). server+client typecheck 0 errors.
+- 누적 sprint: chapter I (9) + II (7) + III (7) + IV (8) = **31 sprint**, PR #11 commits 29개.
+
+## TODO (CHRONO-ATB chapter V 후보)
+
+- 라이브 Playwright 자동 QA: WorldScene Q/E 전환 → BattleScene 진입 → era 라벨 표시 → ATB 100 → 협공 버튼 표시 → D 키 → 데미지 + chain combo 검증
+- Dual Tech +9 추가 (cross-product 전체 36 페어 중 핵심 18 페어 커버)
+- 보스 monster Dual Tech 면역 또는 약화 (밸런스)
+- monster 시대별 특수 능력 (ruined_future = 광역 마법, ancient = 회피 보너스)
+- BattleScene 가 다중 후보 표시 (현재 첫 번째만) + 선택 sub-menu
+- combat:tick 이벤트가 BattleScene serverCombatId 일치 시에만 처리 (현재 일치하지만 명시화 보강)
+- Dual Tech 후보 표시 + 발동 사운드 효과 (SoundManager 연동)
 
