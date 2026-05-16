@@ -3505,3 +3505,41 @@ describe('STORY-V96 — 협공 시대 가용 narrative 확장', () => {
     expect(preFinal.length, 'ancient+present-only Triple').toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V97 — damageMultiplier 정밀 분포 narrative', () => {
+  it('Dual damageMultiplier 모두 0.1 정밀도 (2.0/2.1/2.2/2.3/2.4/2.5)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const allowedDuals = [2.0, 2.1, 2.2, 2.3, 2.4, 2.5];
+    for (const dt of listDualTechs()) {
+      const matched = allowedDuals.some((v) => Math.abs(dt.damageMultiplier - v) < 1e-9);
+      expect(matched, `${dt.id} damage ${dt.damageMultiplier}`).toBe(true);
+    }
+  });
+
+  it('Triple damageMultiplier 모두 0.1 정밀도 (3.0~3.8)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      const multiplied = Math.round(tt.damageMultiplier * 10);
+      expect(Math.abs(multiplied / 10 - tt.damageMultiplier), `${tt.id} precision`).toBeLessThan(1e-9);
+    }
+  });
+
+  it('Triple damageMultiplier 분포: void_eternity (3.8) 가장 강력, aetherna_final (3.5) 중간 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const ve = listTripleTechs().find((tt) => tt.id === 'void_eternity')!;
+    const af = listTripleTechs().find((tt) => tt.id === 'aetherna_final')!;
+    expect(ve.damageMultiplier).toBe(3.8);
+    expect(af.damageMultiplier).toBe(3.5);
+    expect(ve.damageMultiplier).toBeGreaterThan(af.damageMultiplier);
+  });
+
+  it('Dual damageMultiplier 분포: chrono_blade (2.2) + ether_recall (2.1) 시작 협공 narrative', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const cb = getDualTechById('chrono_blade')!;
+    const er = getDualTechById('ether_recall')!;
+    expect(cb.damageMultiplier).toBeGreaterThanOrEqual(2.0);
+    expect(cb.damageMultiplier).toBeLessThanOrEqual(2.5);
+    expect(er.damageMultiplier).toBeGreaterThanOrEqual(2.0);
+    expect(er.damageMultiplier).toBeLessThanOrEqual(2.5);
+  });
+});
