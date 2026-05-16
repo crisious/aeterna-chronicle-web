@@ -2433,3 +2433,33 @@ describe('STORY-V68 — Tech description + name 풍부도 narrative', () => {
     expect(matchCount, 'Dual name 시그니처 키워드').toBeGreaterThanOrEqual(15);
   });
 });
+
+describe('STORY-V69 — 250 가드 마디 — Triple name 시그니처 + 누적 cohesion', () => {
+  it('Triple name 시그니처 키워드 — aetherna/크로노/보이드/가디언/섀도우/이터니티/오스/브레이크', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const sigKeywords = ['에테르나', '크로노', '보이드', '가디언', '섀도우', '이터니티', '오스', '브레이크', '메모리', '에테르', '타임'];
+    let matchCount = 0;
+    for (const tt of listTripleTechs()) {
+      if (sigKeywords.some((k) => tt.name.includes(k))) matchCount += 1;
+    }
+    expect(matchCount, 'Triple name 시그니처 키워드 match').toBeGreaterThanOrEqual(13);
+  });
+
+  it('aetherna_final name "에테르나 파이널" 정확 (정점 narrative)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.name).toBe('에테르나 파이널');
+  });
+
+  it('250 가드 마디 — STORY 정합성 누적 정점 cross-check', async () => {
+    const { listFieldEncounters, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    // 누적 narrative entity (V60 정점 정합)
+    expect(listFieldEncounters().length).toBe(21);
+    expect(listAllBossMonsterIds().length).toBe(21);
+    expect(listDualTechs().length).toBe(21);
+    expect(listTripleTechs().length).toBe(15);
+  });
+});
