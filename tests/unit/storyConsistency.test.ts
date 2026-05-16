@@ -4574,3 +4574,37 @@ describe('STORY-V126 — 시그니처 보스 narrative final cohesion', () => {
     expect(bosses).toContain('aetherna_collapse');
   });
 });
+
+describe('STORY-V127 — Field encounter cross-cohesion narrative', () => {
+  it('21 encounter (zone+era) 정확 narrative — 모든 zone × era 매핑', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const all = listFieldEncounters();
+    expect(all.length).toBe(21);
+
+    const seenCombos = new Set<string>();
+    for (const e of all) {
+      const combo = `${e.zoneId}:${e.eraId}`;
+      expect(seenCombos.has(combo), `duplicate ${combo}`).toBe(false);
+      seenCombos.add(combo);
+    }
+    expect(seenCombos.size).toBe(21);
+  });
+
+  it('21 encounter 모두 정의 — STORY_ZONES × STORY_ERAS 100% 매칭 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const all = listFieldEncounters();
+    const validZones = new Set(STORY_ZONES);
+    const validEras = new Set(STORY_ERAS);
+    for (const e of all) {
+      expect(validZones.has(e.zoneId), `${e.zoneId} valid zone`).toBe(true);
+      expect(validEras.has(e.eraId as 'ancient' | 'present' | 'ruined_future'), `${e.eraId} valid era`).toBe(true);
+    }
+  });
+
+  it('21 encounter 보스 21명 모두 unique narrative (각 cross-product 1 보스)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const bossIds = listFieldEncounters().map((e) => e.monsterPool.find((s) => s.isBoss)?.monsterId).filter(Boolean);
+    expect(bossIds.length).toBe(21);
+    expect(new Set(bossIds).size).toBe(21);
+  });
+});
