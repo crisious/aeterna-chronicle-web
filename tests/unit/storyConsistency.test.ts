@@ -1433,3 +1433,45 @@ describe('STORY-V43 — Dual Tech 클래스 페어 narrative 다양성', () => {
     }
   });
 });
+
+describe('STORY-V44 — chronoEra 진행 순서 + timeline narrative', () => {
+  it('isChronoEraId 3 시대 유효 + 외부 값 거부 narrative', async () => {
+    const { isChronoEraId } = await import('../../shared/types/chronoEraAtb');
+    expect(isChronoEraId('ancient')).toBe(true);
+    expect(isChronoEraId('present')).toBe(true);
+    expect(isChronoEraId('ruined_future')).toBe(true);
+    expect(isChronoEraId('future')).toBe(false);
+    expect(isChronoEraId('')).toBe(false);
+    expect(isChronoEraId(null)).toBe(false);
+    expect(isChronoEraId(123)).toBe(false);
+  });
+
+  it('chronoEraToSpeedTier 단조 증가 narrative (ancient 2 < present 3 < future 4)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToSpeedTier('ancient')).toBe(2);
+    expect(chronoEraToSpeedTier('present')).toBe(3);
+    expect(chronoEraToSpeedTier('ruined_future')).toBe(4);
+  });
+
+  it('chronoEraToEnemyMultipliers 단조 narrative (hp/level/reward/attackSpeed 모두 증가)', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    const a = chronoEraToEnemyMultipliers('ancient');
+    const p = chronoEraToEnemyMultipliers('present');
+    const f = chronoEraToEnemyMultipliers('ruined_future');
+    expect(a.hp).toBeLessThanOrEqual(p.hp);
+    expect(p.hp).toBeLessThanOrEqual(f.hp);
+    expect(a.levelOffset).toBeLessThan(p.levelOffset);
+    expect(p.levelOffset).toBeLessThan(f.levelOffset);
+    expect(a.reward).toBeLessThanOrEqual(p.reward);
+    expect(p.reward).toBeLessThanOrEqual(f.reward);
+    expect(a.attackSpeed).toBeLessThanOrEqual(p.attackSpeed);
+    expect(p.attackSpeed).toBeLessThanOrEqual(f.attackSpeed);
+  });
+
+  it('decorateMonsterNameByEra 시그니처 prefix narrative (ancient [고대], future [붕괴])', async () => {
+    const { decorateMonsterNameByEra } = await import('../../shared/types/chronoEraAtb');
+    expect(decorateMonsterNameByEra('망령', 'ancient')).toBe('[고대] 망령');
+    expect(decorateMonsterNameByEra('망령', 'ruined_future')).toBe('[붕괴] 망령');
+    expect(decorateMonsterNameByEra('망령', 'present')).toBe('망령');
+  });
+});
