@@ -3543,3 +3543,46 @@ describe('STORY-V97 — damageMultiplier 정밀 분포 narrative', () => {
     expect(er.damageMultiplier).toBeLessThanOrEqual(2.5);
   });
 });
+
+describe('STORY-V98 — 350 가드 마디 narrative cohesion', () => {
+  it('chronoEra speedTier ↔ ATBSpeedTier 호환 narrative 정합', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    const tiers = STORY_ERAS.map((era) => chronoEraToSpeedTier(era));
+    // ATBSpeedTier 1~6 union
+    for (const t of tiers) {
+      expect([1, 2, 3, 4, 5, 6]).toContain(t);
+    }
+    // 3 시대 unique
+    expect(new Set(tiers).size).toBe(3);
+  });
+
+  it('chronoEra bonusDrops ↔ narrative 시그니처 분포 (relic/chrono_crystal/voidshard)', async () => {
+    const { chronoEraBonusDrops } = await import('../../shared/types/chronoEraAtb');
+    const ancientDrops = chronoEraBonusDrops('ancient').map((d) => d.itemId);
+    const futureDrops = chronoEraBonusDrops('ruined_future').map((d) => d.itemId);
+    expect(ancientDrops.some((id) => id.includes('relic'))).toBe(true);
+    expect(futureDrops.some((id) => id.includes('chrono') || id.includes('void'))).toBe(true);
+  });
+
+  it('chronoField runtime: 모든 21 encounter resolved ok narrative (stress)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    let ok = 0;
+    for (const zone of STORY_ZONES) {
+      for (const era of STORY_ERAS) {
+        const e = resolveFieldEncounter(zone, era);
+        if (e) ok += 1;
+      }
+    }
+    expect(ok).toBe(21);
+  });
+
+  it('350 가드 마디 narrative — 누적 chapter I+II+III cohesion 정점', async () => {
+    // 본 가드 자체가 350번째 가드 — narrative 누적 +254 가드 달성
+    const { listAllBossMonsterIds, listAllFieldMonsterIds, getTotalFieldBosses } = await import('../../shared/types/chronoField');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    const totalEntity = listAllBossMonsterIds().length + listAllFieldMonsterIds().length + listDualTechs().length + listTripleTechs().length + getTotalFieldBosses();
+    expect(totalEntity, '누적 entity').toBeGreaterThanOrEqual(128);
+  });
+});
