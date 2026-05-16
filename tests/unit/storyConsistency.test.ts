@@ -3219,3 +3219,52 @@ describe('STORY-V88 — 시그니처 협공 description narrative 검증', () =>
     }
   });
 });
+
+describe('STORY-V89 — 60 sprint 마디 진입 시그니처 element narrative', () => {
+  it('Triple chrono element 협공 모두 시그니처 narrative 키워드 ("크로노"/"타임"/"에테르나")', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const chronoTriples = listTripleTechs().filter((tt) => tt.element === 'chrono');
+    for (const tt of chronoTriples) {
+      const hasSig = tt.name.includes('크로노') || tt.name.includes('타임') || tt.name.includes('에테르나');
+      expect(hasSig, `chrono Triple ${tt.id} '${tt.name}' 시그니처`).toBe(true);
+    }
+  });
+
+  it('Triple dark element 협공 모두 시그니처 키워드 ("보이드"/"섀도우"/"이터니티"/"메모리"/"브레이크")', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const darkTriples = listTripleTechs().filter((tt) => tt.element === 'dark');
+    for (const tt of darkTriples) {
+      const hasSig = ['보이드', '섀도우', '이터니티', '메모리', '브레이크', '에테르', '다크', '리프', '가디언'].some((k) => tt.name.includes(k));
+      expect(hasSig, `dark Triple ${tt.id} '${tt.name}' 시그니처`).toBe(true);
+    }
+  });
+
+  it('60 sprint 마디 — Dual + Triple + Field cohesion 정점', async () => {
+    const { listDualTechs, listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listFieldEncounters, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+
+    // V30~V89 누적 정량
+    expect(listDualTechs().length).toBe(21);
+    expect(listTripleTechs().length).toBe(15);
+    expect(listFieldEncounters().length).toBe(21);
+    expect(listAllBossMonsterIds().length).toBe(21);
+    expect(listAoeDualTechs().length).toBe(3);
+
+    // 모든 Triple aoe
+    for (const tt of listTripleTechs()) {
+      expect((tt as { aoe?: boolean }).aoe, `${tt.id} aoe`).toBe(true);
+    }
+  });
+
+  it('60 sprint 마디 — aetherna 시그니처 모든 source narrative 일관성', async () => {
+    const mod = await import('../../shared/types/chrono');
+    const final = mod.resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(final.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나의 종말');
+    const ancient = mod.resolveFieldEncounter('chrono_spire', 'ancient')!;
+    expect(ancient.monsterPool.find((s) => s.isBoss)?.name).toBe('에테르나 환영');
+    const tt = mod.resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.name).toBe('에테르나 파이널');
+    expect(tt.element).toBe('chrono');
+  });
+});
