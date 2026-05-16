@@ -519,9 +519,11 @@ export class GameScene extends Phaser.Scene {
         eraId: this.currentEraId,
         monsterId: id,
         monsterName: battleSeed.monsterName,
-        enemyHpMultiplier: battleSeed.enemyHpMultiplier,
-        enemyAttackSpeedMultiplier: battleSeed.enemyAttackSpeedMultiplier,
-        rewardMultiplier: battleSeed.rewardMultiplier,
+        // CHRONO-S126: 보스 spawn 시 데미지 배율 강화 (1.5x — 보스 분위기)
+        enemyHpMultiplier: battleSeed.enemyHpMultiplier * (isBoss ? 2.5 : 1),
+        enemyAttackSpeedMultiplier: battleSeed.enemyAttackSpeedMultiplier * (isBoss ? 1.2 : 1),
+        rewardMultiplier: battleSeed.rewardMultiplier * (isBoss ? 1.5 : 1),
+        isBossField: isBoss,
       });
     });
 

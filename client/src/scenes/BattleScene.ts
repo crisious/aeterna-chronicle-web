@@ -77,6 +77,8 @@ export interface BattleSceneData {
   enemyHpMultiplier?: number;
   enemyAttackSpeedMultiplier?: number;
   rewardMultiplier?: number;
+  /** CHRONO-S126: GameScene 에서 보스 sprite 클릭 시 true. boss_room 분위기 강제. */
+  isBossField?: boolean;
   offlineQa?: boolean;
   /** 전투 종료 후 복귀할 씬 (없으면 GameScene) */
   returnScene?: string;
