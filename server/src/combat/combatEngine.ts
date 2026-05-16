@@ -735,12 +735,38 @@ export class CombatEngine {
       levelDifference: Math.round((a.level + b.level) / 2) - target.level,
     });
 
-    target.hp = Math.max(0, target.hp - result.damage);
-    if (target.hp <= 0) {
-      target.alive = false;
-      this.logger.logDeath(target.id, `${a.id}+${b.id}`);
+    // CHRONO-S39: aoe 협공 — alive monster 전체에 데미지 적용 (보스는 0.6× 유지)
+    const targets: CombatParticipant[] = def.aoe
+      ? this.getParticipants().filter((p) => p.team === 'monsters' && p.alive)
+      : [target];
+
+    let totalDamage = 0;
+    for (const t of targets) {
+      const tBossResist = t.isBoss ? 0.6 : 1.0;
+      const tResult = def.aoe
+        ? calculateDamage({
+          type: 'physical',
+          attackStat: avgAtk,
+          defenseStat: getEffectiveDef(t, t.def),
+          skillMultiplier: def.damageMultiplier,
+          attackerElement: def.element as ElementType,
+          defenderElement: t.element,
+          critRate: (a.critRate + b.critRate) / 2,
+          critDamage: (a.critDamage + b.critDamage) / 2,
+          armorPenetration: Math.max(a.armorPenetration, b.armorPenetration),
+          armorPenetrationPercent: Math.max(a.armorPenetrationPercent, b.armorPenetrationPercent),
+          bonusMultiplier: chainBonus * tBossResist,
+          levelDifference: Math.round((a.level + b.level) / 2) - t.level,
+        })
+        : result;
+      t.hp = Math.max(0, t.hp - tResult.damage);
+      if (t.hp <= 0) {
+        t.alive = false;
+        this.logger.logDeath(t.id, `${a.id}+${b.id}`);
+      }
+      this.logger.logDamage(`${a.id}+${b.id}`, t.id, tResult.damage, tResult.isCritical);
+      totalDamage += tResult.damage;
     }
-    this.logger.logDamage(`${a.id}+${b.id}`, target.id, result.damage, result.isCritical);
 
     // MP 차감 + 게이지 소비 + ready 큐 제거
     a.mp = Math.max(0, a.mp - def.mpCost);
@@ -757,11 +783,11 @@ export class CombatEngine {
 
     return {
       actorId: a.id,
-      actorName: `${a.name} × ${b.name}${isChain ? ' (CHAIN)' : ''}${target.isBoss ? ' (BOSS RESIST)' : ''}`,
+      actorName: `${a.name} × ${b.name}${isChain ? ' (CHAIN)' : ''}${target.isBoss && !def.aoe ? ' (BOSS RESIST)' : ''}${def.aoe ? ' (AOE)' : ''}`,
       actionType: 'dual_tech',
       targetId: target.id,
-      targetName: target.name,
-      damage: result.damage,
+      targetName: def.aoe ? `${targets.length} 적` : target.name,
+      damage: def.aoe ? totalDamage : result.damage,
       isCritical: result.isCritical,
       skillId: def.id,
     };

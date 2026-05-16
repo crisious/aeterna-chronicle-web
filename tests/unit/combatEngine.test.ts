@@ -617,6 +617,37 @@ describe('CombatEngine', () => {
     expect(bossAct.damage!).toBeLessThan(normalAct.damage!);
   });
 
+  // ── 9p. AOE Dual Tech (CHRONO-S39) ──
+
+  it('9p. AOE Dual Tech (memory_break) hits all alive monsters', () => {
+    const mw = makeParticipant({ id: 'mw', classId: 'memory_weaver', spd: 500, mp: 999, maxMp: 999, atk: 100 });
+    const mb = makeParticipant({ id: 'mb', classId: 'memory_breaker', spd: 500, mp: 999, maxMp: 999, atk: 100 });
+    const m1 = makeMonster({ id: 'm1', spd: 1, hp: 1000, maxHp: 1000, def: 0 });
+    const m2 = makeMonster({ id: 'm2', spd: 1, hp: 1000, maxHp: 1000, def: 0 });
+    const m3 = makeMonster({ id: 'm3', spd: 1, hp: 1000, maxHp: 1000, def: 0 });
+
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(mw);
+    e.addParticipant(mb);
+    e.addParticipant(m1);
+    e.addParticipant(m2);
+    e.addParticipant(m3);
+    e.start();
+    e.processTick();
+
+    e.submitDualTech('mw', 'mb', 'memory_break', 'm1');
+    const result = e.processTick();
+    const dualAct = result.actions.find(a => a.actionType === 'dual_tech');
+    expect(dualAct).toBeDefined();
+    expect(dualAct?.actorName).toContain('(AOE)');
+    expect(dualAct?.targetName).toContain('적');
+
+    // 모든 monster 가 데미지 입음
+    expect(e.getParticipant('m1')!.hp).toBeLessThan(1000);
+    expect(e.getParticipant('m2')!.hp).toBeLessThan(1000);
+    expect(e.getParticipant('m3')!.hp).toBeLessThan(1000);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {

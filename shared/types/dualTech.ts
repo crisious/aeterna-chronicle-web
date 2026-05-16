@@ -19,6 +19,8 @@ export interface DualTechDef {
   fxKey: string;
   /** 설명 (UI 노출). */
   description: string;
+  /** CHRONO-S39: 광역 협공 여부 (true 면 alive monster 전체 타격). 미설정 시 단일 target. */
+  aoe?: boolean;
 }
 
 const DUAL_TECHS: readonly DualTechDef[] = [
@@ -121,6 +123,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     mpCost: 24,
     fxKey: 'fx_void_oblivion',
     description: '공허 방랑자와 기억 파괴자가 적의 존재 자체를 흐릿하게 망각시킨다.',
+    aoe: true,
   },
   {
     id: 'guardian_eclipse',
@@ -171,6 +174,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     mpCost: 22,
     fxKey: 'fx_time_overflow',
     description: '시간 기사와 수호자가 동일 시간선을 중첩 — 다중 시간 일격.',
+    aoe: true,
   },
   {
     id: 'time_break',
@@ -201,6 +205,7 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     mpCost: 23,
     fxKey: 'fx_memory_break',
     description: '직조와 파괴가 동시에 — 적의 자아 자체가 산산조각.',
+    aoe: true,
   },
 ] as const;
 
