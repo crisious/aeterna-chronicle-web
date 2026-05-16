@@ -24,6 +24,7 @@ import { prisma } from '../db';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 import { resolvePassiveModifiers } from '../skill/passiveResolver';
 import { initCombatSkillsFromDb } from '../combat/skillAdapter';
+import { isChronoEraId } from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
 const CLASS_BASE_COMBAT_STATS: Record<string, {
@@ -243,6 +244,8 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     party?: LegacyCombatantInput[];
     monsters?: LegacyCombatantInput[];
     autoMode?: boolean;
+    /** CHRONO-S7: 시대 기반 ATB SpeedTier 적용 (ancient/present/ruined_future) */
+    eraId?: string;
   }
 
   const toFiniteNumber = (value: number | undefined, fallback: number): number => (
@@ -259,7 +262,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
 
-    const { partyCharacterIds, monsterIds, party, monsters, autoMode } = request.body;
+    const { partyCharacterIds, monsterIds, party, monsters, autoMode, eraId } = request.body;
     const legacyPayload = Array.isArray(party) || Array.isArray(monsters);
     const effectivePartyCharacterIds = partyCharacterIds?.length
       ? partyCharacterIds
@@ -293,7 +296,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       // P56-S2: DB 스킬 cache lazy init — 첫 /combat/start 직전 한 번. 이후 호출은 즉시 resolve.
       await initCombatSkillsFromDb();
 
-      const engine = combatInstanceManager.create({ autoMode: autoMode ?? false });
+      // CHRONO-S7: 유효한 eraId 면 시대→tier 매핑 적용. 미지정/무효 시 표준 tier 3.
+      const engine = isChronoEraId(eraId)
+        ? combatInstanceManager.createFromEra(eraId, { autoMode: autoMode ?? false })
+        : combatInstanceManager.create({ autoMode: autoMode ?? false });
 
       // P55-S1: 캐릭터별 장착 패시브 효과 병렬 resolve
       const passiveResolutions = await Promise.all(

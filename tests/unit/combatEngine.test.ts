@@ -12,7 +12,11 @@ vi.mock('../../server/src/db', () => ({
   },
 }));
 
-import { CombatEngine, type CombatParticipant } from '../../server/src/combat/combatEngine';
+import {
+  CombatEngine,
+  CombatInstanceManager,
+  type CombatParticipant,
+} from '../../server/src/combat/combatEngine';
 
 // ── Helpers ──
 
@@ -349,6 +353,34 @@ describe('CombatEngine', () => {
     expect(actorOrder).toContain('p2');
     // monster는 1 tick 만에 도달 못 함 (spd=1 → 0.5/tick)
     expect(actorOrder).not.toContain('m1');
+  });
+
+  // ── 9d. CombatInstanceManager.createFromEra applies tier (CHRONO-S6/S7) ──
+
+  it('9d. createFromEra propagates era→speedTier to engine config', () => {
+    const mgr = new CombatInstanceManager();
+    const engineAncient = mgr.createFromEra('ancient');
+    const enginePresent = mgr.createFromEra('present');
+    const engineFuture = mgr.createFromEra('ruined_future');
+
+    // speedTier 적용 후 같은 spd 라도 충전 속도 차별화 확인.
+    // 1 tick 동안 spd=50 게이지 변화: tier 2=0.7x → 17.5, tier 3=1.0x → 25, tier 4=1.3x → 32.5
+    const setup = (e: CombatEngine) => {
+      e.addParticipant(makeParticipant({ id: 'p', spd: 50 }));
+      e.addParticipant(makeMonster({ id: 'm', spd: 50 }));
+      e.start();
+      e.processTick();
+    };
+    setup(engineAncient);
+    setup(enginePresent);
+    setup(engineFuture);
+
+    const gaugeAncient = engineAncient.getParticipant('p')!.atbGauge;
+    const gaugePresent = enginePresent.getParticipant('p')!.atbGauge;
+    const gaugeFuture = engineFuture.getParticipant('p')!.atbGauge;
+
+    expect(gaugeAncient).toBeLessThan(gaugePresent);
+    expect(gaugePresent).toBeLessThan(gaugeFuture);
   });
 
   // ── 10. Snapshot returns correct structure ──
