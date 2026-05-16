@@ -487,3 +487,33 @@ describe('STORY-V15 — 보스 monster id naming 패턴', () => {
     }
   });
 });
+
+describe('STORY-V16 — 협공 mpCost narrative 균형', () => {
+  it('Dual Tech mpCost 12 이상 (협공 비용 충분)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.mpCost, `Dual ${dt.id} mpCost`).toBeGreaterThanOrEqual(12);
+    }
+  });
+
+  it('Triple Tech mpCost 28 이상 (3인 협공 더 비쌈)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.mpCost, `Triple ${tt.id} mpCost`).toBeGreaterThanOrEqual(28);
+    }
+  });
+
+  it('void_eternity 최강 (3.8×) → mpCost 도 최고 (≥30)', async () => {
+    const { getTripleTechById } = await import('../../shared/types/tripleTech');
+    const tt = getTripleTechById('void_eternity')!;
+    expect(tt.mpCost).toBeGreaterThanOrEqual(30);
+  });
+
+  it('Triple mpCost 평균 > Dual mpCost 평균 (3인 협공 비용 우위)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const dualAvg = listDualTechs().reduce((s, d) => s + d.mpCost, 0) / listDualTechs().length;
+    const tripleAvg = listTripleTechs().reduce((s, t) => s + t.mpCost, 0) / listTripleTechs().length;
+    expect(tripleAvg).toBeGreaterThan(dualAvg);
+  });
+});
