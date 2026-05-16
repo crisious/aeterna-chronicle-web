@@ -2266,3 +2266,53 @@ describe('STORY-V64 — 7 zone narrative 시그니처 종합', () => {
     expect(bossIds).toContain('aetherna_collapse');
   });
 });
+
+describe('STORY-V65 — 클래스별 시그니처 협공 narrative', () => {
+  it('ether_knight 시그니처: chrono_blade + ether_recall + aetherna_final', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const dualIds = listDualTechsByClass('ether_knight').map((dt) => dt.id);
+    const tripleIds = listTripleTechsByClass('ether_knight').map((tt) => tt.id);
+    expect(dualIds).toContain('chrono_blade');
+    expect(dualIds).toContain('ether_recall');
+    expect(tripleIds).toContain('aetherna_final');
+  });
+
+  it('time_knight 시그니처: chrono_blade + memory_warp + chrono_break + aetherna_final', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const dualIds = listDualTechsByClass('time_knight').map((dt) => dt.id);
+    const tripleIds = listTripleTechsByClass('time_knight').map((tt) => tt.id);
+    expect(dualIds).toContain('chrono_blade');
+    expect(dualIds).toContain('memory_warp');
+    expect(tripleIds).toContain('aetherna_final');
+  });
+
+  it('memory_weaver 시그니처: memory_warp + ether_recall + aetherna_final', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const dualIds = listDualTechsByClass('memory_weaver').map((dt) => dt.id);
+    const tripleIds = listTripleTechsByClass('memory_weaver').map((tt) => tt.id);
+    expect(dualIds).toContain('memory_warp');
+    expect(dualIds).toContain('ether_recall');
+    expect(tripleIds).toContain('aetherna_final');
+  });
+
+  it('void_wanderer 시그니처: void_pierce + memory_void + void_oblivion + void_eternity', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const dualIds = listDualTechsByClass('void_wanderer').map((dt) => dt.id);
+    const tripleIds = listTripleTechsByClass('void_wanderer').map((tt) => tt.id);
+    expect(dualIds).toContain('void_pierce');
+    expect(dualIds).toContain('void_oblivion');
+    expect(tripleIds).toContain('void_eternity');
+  });
+
+  it('memory_breaker 시그니처: memory_shatter + void_oblivion + memory_break', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const dualIds = listDualTechsByClass('memory_breaker').map((dt) => dt.id);
+    expect(dualIds).toContain('memory_shatter');
+    expect(dualIds).toContain('void_oblivion');
+    expect(dualIds).toContain('memory_break');
+  });
+});
