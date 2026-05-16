@@ -1518,3 +1518,48 @@ describe('STORY-V45 — chrono barrel narrative integration', () => {
     expect(listFieldEncounters().length).toBe(21);
   });
 });
+
+describe('STORY-V46 — 시대별 monster id 시그니처 narrative', () => {
+  const FUTURE_PREFIXES = ['corrupted_', 'broken_', 'rotting_', 'forsaken_', 'lost_', 'oblivion_', 'ruined_', 'collapsed_'];
+
+  it('ancient encounter monsterPool 에 future 시그니처 prefix monster id 없음', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'ancient') continue;
+      for (const slot of e.monsterPool) {
+        for (const pfx of FUTURE_PREFIXES) {
+          expect(slot.monsterId.startsWith(pfx), `ancient ${e.zoneId}: ${slot.monsterId} has future prefix '${pfx}'`).toBe(false);
+        }
+      }
+    }
+  });
+
+  it('ruined_future encounter monsterPool 에 future 시그니처 monster ≥ 1 (분위기 narrative)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    let totalFutureSigCount = 0;
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'ruined_future') continue;
+      for (const slot of e.monsterPool) {
+        if (FUTURE_PREFIXES.some((pfx) => slot.monsterId.startsWith(pfx))) {
+          totalFutureSigCount += 1;
+        }
+      }
+    }
+    expect(totalFutureSigCount, 'future signature monster count').toBeGreaterThanOrEqual(5);
+  });
+
+  it('각 시대 monster name 시그니처 키워드 (ancient 평원/숲/결정, future 붕괴/부서진/잃어버린)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const futureNameKeywords = ['붕괴', '부서진', '잃어버린', '폐허', '망각', '부패', '버려진', '영원', '종말', '파편'];
+    let futureNameMatchCount = 0;
+    for (const e of listFieldEncounters()) {
+      if (e.eraId !== 'ruined_future') continue;
+      for (const slot of e.monsterPool) {
+        if (futureNameKeywords.some((k) => slot.name.includes(k))) {
+          futureNameMatchCount += 1;
+        }
+      }
+    }
+    expect(futureNameMatchCount, 'future name keyword match').toBeGreaterThanOrEqual(7);
+  });
+});
