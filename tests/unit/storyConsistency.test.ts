@@ -270,3 +270,32 @@ describe('STORY-V7 — 시대별 monster 분포 narrative', () => {
     }
   });
 });
+
+describe('STORY-V8 — zone-별 ambient line 시대 차별성', () => {
+  it('같은 zone 의 3 era ambient line 이 모두 다름 (시대 분위기 차별)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    for (const zone of STORY_ZONES) {
+      const ancient = resolveFieldEncounter(zone, 'ancient')!.ambientLine;
+      const present = resolveFieldEncounter(zone, 'present')!.ambientLine;
+      const future = resolveFieldEncounter(zone, 'ruined_future')!.ambientLine;
+      // 3 시대 ambient 가 모두 unique (narrative 시대 분위기 차별성)
+      const set = new Set([ancient, present, future]);
+      expect(set.size, `${zone} ambient line 차별성`).toBe(3);
+    }
+  });
+
+  it('전체 21 ambient line 중복 ≤ 0 (모두 unique)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const lines = listFieldEncounters().map((e) => e.ambientLine);
+    expect(new Set(lines).size).toBe(21);
+  });
+
+  it('ruined_future ambient line 키워드 — 무너진/붕괴/잘못된/잊혀진/타락 등', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const futureKeywords = ['무너진', '붕괴', '잘못된', '잊혀진', '타락', '존재', '시간이', '폐허', '폭주', '깨진', '시간선', '그림자가', '세계', '산산조각', '썩어가는'];
+    for (const e of listFieldEncounters().filter((x) => x.eraId === 'ruined_future')) {
+      const found = futureKeywords.some((k) => e.ambientLine.includes(k));
+      expect(found, `${e.zoneId}/ruined_future ambient: ${e.ambientLine}`).toBe(true);
+    }
+  });
+});
