@@ -3787,3 +3787,51 @@ describe('STORY-V103 — chronoField default fallback 결정성 narrative', () =
     expect(a.sort()).toEqual(b.sort());
   });
 });
+
+describe('STORY-V104 — chrono barrel 단일 진입점 stress', () => {
+  it('chrono barrel 함수 모두 callable + return type narrative', async () => {
+    const mod = await import('../../shared/types/chrono');
+
+    // chronoEraAtb 시그니처
+    expect(typeof mod.chronoEraToSpeedTier('ancient')).toBe('number');
+    expect(typeof mod.isChronoEraId('ancient')).toBe('boolean');
+    expect(typeof mod.decorateMonsterNameByEra('test', 'ancient')).toBe('string');
+
+    // dualTech
+    expect(Array.isArray(mod.listDualTechs())).toBe(true);
+    expect(Array.isArray(mod.listAoeDualTechs())).toBe(true);
+
+    // tripleTech
+    expect(Array.isArray(mod.listTripleTechs())).toBe(true);
+
+    // chronoField
+    expect(Array.isArray(mod.listFieldEncounters())).toBe(true);
+    expect(typeof mod.getTotalFieldBosses()).toBe('number');
+  });
+
+  it('chrono barrel runtime stress — 100회 호출 결정성', async () => {
+    const mod = await import('../../shared/types/chrono');
+    const firstCall = mod.listAllBossMonsterIds().sort().join(',');
+    for (let i = 0; i < 100; i += 1) {
+      const call = mod.listAllBossMonsterIds().sort().join(',');
+      expect(call, `call ${i}`).toBe(firstCall);
+    }
+  });
+
+  it('chrono barrel zone × era × class cross-product narrative (7 × 3 × 7 = 147 정점)', async () => {
+    const mod = await import('../../shared/types/chrono');
+    let ok = 0;
+    for (const zone of STORY_ZONES) {
+      for (const era of STORY_ERAS) {
+        const e = mod.resolveFieldEncounter(zone, era);
+        if (e) ok += 1;
+      }
+    }
+    expect(ok).toBe(21);
+    // 7 클래스 모두 Dual + Triple 페어 보유
+    for (const cls of STORY_CLASSES) {
+      expect(mod.listDualTechsByClass(cls).length).toBeGreaterThanOrEqual(1);
+      expect(mod.listTripleTechsByClass(cls).length).toBeGreaterThanOrEqual(1);
+    }
+  });
+});
