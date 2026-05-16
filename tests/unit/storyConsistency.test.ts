@@ -2316,3 +2316,35 @@ describe('STORY-V65 — 클래스별 시그니처 협공 narrative', () => {
     expect(dualIds).toContain('memory_break');
   });
 });
+
+describe('STORY-V66 — shadow_weaver + time_guardian 시그니처 협공', () => {
+  it('shadow_weaver 시그니처: shadow_eclipse + chrono_sealing + shadow_memory + memory_shatter', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const dualIds = listDualTechsByClass('shadow_weaver').map((dt) => dt.id);
+    expect(dualIds).toContain('shadow_eclipse');
+    expect(dualIds).toContain('chrono_sealing');
+    expect(dualIds).toContain('shadow_memory');
+    expect(dualIds).toContain('memory_shatter');
+  });
+
+  it('time_guardian 시그니처: guardian_pact + guardian_eclipse + guardian_void + guardian_break', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const dualIds = listDualTechsByClass('time_guardian').map((dt) => dt.id);
+    expect(dualIds).toContain('guardian_pact');
+    expect(dualIds).toContain('guardian_eclipse');
+  });
+
+  it('shadow_weaver Triple 시그니처: shadow_chrono + shadow_void_break + ether_shadow_memory', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const ids = listTripleTechsByClass('shadow_weaver').map((tt) => tt.id);
+    expect(ids).toContain('shadow_chrono');
+    expect(ids.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('time_guardian Triple 시그니처: guardian_oath + guardian_void_strike', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    const ids = listTripleTechsByClass('time_guardian').map((tt) => tt.id);
+    expect(ids).toContain('guardian_oath');
+    expect(ids.length).toBeGreaterThanOrEqual(2);
+  });
+});
