@@ -3297,3 +3297,80 @@ describe('STORY-V91 — Triple Tech mpCost ranking narrative', () => {
     expect(avg).toBeLessThanOrEqual(33);
   });
 });
+
+describe('STORY-V92 — zone-별 일반 monster id prefix 시그니처', () => {
+  it('aether_plains zone 일반 monster ≥ 1 plains_/ancient_/ether_ prefix narrative', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('aether_plains');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('plains_') || slot.monsterId.startsWith('ancient_') || slot.monsterId.startsWith('ether_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('memory_forest zone 일반 monster ≥ 1 forest_/memory_ prefix narrative', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('memory_forest');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('forest_') || slot.monsterId.startsWith('memory_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('crystal_cave zone 일반 monster ≥ 1 crystal_/cave_/ether_ prefix narrative', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('crystal_cave');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('crystal_') || slot.monsterId.startsWith('cave_') || slot.monsterId.startsWith('ether_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shadow_gorge zone 일반 monster ≥ 1 shadow_/gorge_/dusk_ prefix narrative', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('shadow_gorge');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('shadow_') || slot.monsterId.startsWith('gorge_') || slot.monsterId.startsWith('dusk_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('chrono_spire zone 일반 monster ≥ 1 chrono_/time_/aetherna_ prefix narrative (정점 zone)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('chrono_spire');
+    let count = 0;
+    for (const e of list) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        if (slot.monsterId.startsWith('chrono_') || slot.monsterId.startsWith('time_') || slot.monsterId.startsWith('aetherna_')) {
+          count += 1;
+        }
+      }
+    }
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+});
