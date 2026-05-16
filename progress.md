@@ -450,3 +450,18 @@ V100 이후 chapter IV — runtime 결정성 + 시그니처 cross-check 확장.
 
 **🎯 400 가드 마디 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) = 누적 84 sprint, +308 가드 (92 → 400). aetherna 게임 narrative cohesion 정점 + Field 21 + Dual 21 + Triple 15 + 보스 21 = 78 entity + 50+ monster + 7×3×7 cross-product 모든 회귀 가드 land.
 
+## 2026-05-17 STORY 정합성 chapter V — Tech name 분포 + 클래스 시그니처 종합 (6 sprint, +16 가드)
+
+V115 부터 chapter V — Tech 종합 cohesion + 클래스 narrative 시그니처 정합.
+
+- **V115** chapter V 시작 — Triple name 카테고리 분포 (≥4 + aetherna=1 + void/shadow ≥2)
+- **V116** Dual name 카테고리 분포 (≥6 카테고리 + 크로노 블레이드 + AOE 한글)
+- **V117** 보스 name 카테고리 분포 (≥6 + 시대당 ≥4 + 시그니처 ≥18)
+- **V118** 클래스별 element 분포 (각 1~4 + void→dark + guardian→holy + ether 다양)
+- **V119** 클래스 narrative 시그니처 종합 (snake_case + 4 카테고리 + 총 협공 ≥6)
+- **V120** progress.md V115~V120 갱신 + 90 sprint 마디 기록
+
+회귀: storyConsistency 416/416 + unit 전체 844+/844+ pass.
+
+**90 sprint 마디 + 416 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+16) = 누적 90 sprint, +324 가드 (92 → 416).
+
