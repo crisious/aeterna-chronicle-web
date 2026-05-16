@@ -402,8 +402,13 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 - **V78** bossOnlyMode encounter cohesion (chrono_spire/ruined_future + bgm_final_boss + aetherna_collapse)
 - **V79** era default fallback (모든 era bgm/ambientEffect fallback)
 - **V80** chapter II+III 50 sprint 마디 — 모든 source cohesion + aetherna 4중 + Triple>Dual+AOE
+- **V81** Triple/Dual 클래스 분포 균형 (각 클래스 Triple ≥2, Dual ≥4, diff ≤6)
+- **V82** monster pool diversity (size 2~6, 평균 ≥3, 시대당 unique ≥14)
+- **V83** 300 가드 마디 — 누적 종합 cohesion (정량 + unique + aetherna 4중 + 시대 ↔ tier)
+- **V84** narrative type / runtime integrity (barrel 26 함수 + bgm fallback + unique encounter)
+- **V85** progress.md V81~V85 갱신 + 300 가드 마디 기록
 
-회귀: storyConsistency 288/288 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 303/303 + unit 전체 844+/844+ pass.
 
-**50 sprint 마디 + 288 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+127) = 누적 50 sprint, +196 가드 (92 → 288). 게임 narrative source 무결성 + 안정성 + cohesion + quality + cross-check 모두 회귀 가드 land.
+**55 sprint 마디 + 303 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+142) = 누적 55 sprint, +211 가드 (92 → 303). 게임 narrative source 무결성 + 안정성 + cohesion + quality + cross-check + type integrity + class balance 모두 회귀 가드 land.
 
