@@ -642,3 +642,33 @@ describe('STORY-V20 — era bonus drops narrative', () => {
     expect(chronoEraBonusDrops('ruined_future').length).toBeGreaterThanOrEqual(chronoEraBonusDrops('ancient').length);
   });
 });
+
+describe('STORY-V21 — era별 협공 가용성', () => {
+  it('각 시대마다 Dual Tech ≥ 3 가능 (협공 다양성)', async () => {
+    const { listDualTechsByEra } = await import('../../shared/types/dualTech');
+    for (const era of STORY_ERAS) {
+      const techs = listDualTechsByEra(era);
+      expect(techs.length, `${era} Dual Tech 가용`).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('각 시대마다 Triple Tech ≥ 1 가능', async () => {
+    const { listTripleTechsByEra } = await import('../../shared/types/tripleTech');
+    for (const era of STORY_ERAS) {
+      const techs = listTripleTechsByEra(era);
+      expect(techs.length, `${era} Triple Tech 가용`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('ruined_future 전용 협공 (다른 era 제외) ≥ 1 (시대 시그니처)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const futureOnlyDual = listDualTechs().filter((d) =>
+      d.eraFilter !== undefined && d.eraFilter.length === 1 && d.eraFilter[0] === 'ruined_future'
+    );
+    const futureOnlyTriple = listTripleTechs().filter((t) =>
+      t.eraFilter !== undefined && t.eraFilter.length === 1 && t.eraFilter[0] === 'ruined_future'
+    );
+    expect(futureOnlyDual.length + futureOnlyTriple.length).toBeGreaterThanOrEqual(1);
+  });
+});
