@@ -2942,3 +2942,35 @@ describe('STORY-V81 — Triple/Dual 클래스 분포 균형 narrative', () => {
     expect(diff, 'Dual participation diff').toBeLessThanOrEqual(6);
   });
 });
+
+describe('STORY-V82 — monster pool diversity narrative', () => {
+  it('일반 encounter monster pool size 합리 (2~6 slot) narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.bossOnlyMode) continue;
+      expect(e.monsterPool.length, `${e.zoneId}/${e.eraId} pool size`).toBeGreaterThanOrEqual(2);
+      expect(e.monsterPool.length).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it('전체 21 encounter monster 평균 ≥ 3 slot narrative (충분한 다양성)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const totalSlots = listFieldEncounters().reduce((s, e) => s + e.monsterPool.length, 0);
+    const avg = totalSlots / 21;
+    expect(avg, 'avg monster slots per encounter').toBeGreaterThanOrEqual(3);
+  });
+
+  it('시대별 일반 monster 다양성 — 각 시대 ≥ 14 unique 일반 monster narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const era of STORY_ERAS) {
+      const ids = new Set<string>();
+      for (const e of listFieldEncounters()) {
+        if (e.eraId !== era) continue;
+        for (const slot of e.monsterPool) {
+          if (!slot.isBoss) ids.add(slot.monsterId);
+        }
+      }
+      expect(ids.size, `${era} unique 일반 monster`).toBeGreaterThanOrEqual(14);
+    }
+  });
+});
