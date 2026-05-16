@@ -2212,3 +2212,57 @@ describe('STORY-V63 — 시간선 narrative cohesion (chrono_archon + 시간 시
     expect(ids.has('aetherna_final')).toBe(true);
   });
 });
+
+describe('STORY-V64 — 7 zone narrative 시그니처 종합', () => {
+  it('aether_plains: 평원 시그니처 (plains_guardian + plains_*)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('aether_plains');
+    const allIds = list.flatMap((e) => e.monsterPool.map((s) => s.monsterId));
+    expect(allIds.some((id) => id.includes('plains_'))).toBe(true);
+    expect(allIds.some((id) => id === 'plains_guardian')).toBe(true);
+  });
+
+  it('memory_forest: 숲 시그니처 (forest_guardian + forest_*)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('memory_forest');
+    const allIds = list.flatMap((e) => e.monsterPool.map((s) => s.monsterId));
+    expect(allIds.some((id) => id.includes('forest_'))).toBe(true);
+  });
+
+  it('malatus_sanctuary: 말라투스 시그니처 (malatus_avatar + fallen_malatus)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('malatus_sanctuary');
+    const allIds = list.flatMap((e) => e.monsterPool.map((s) => s.monsterId));
+    expect(allIds.some((id) => id.includes('malatus_') || id.includes('_malatus'))).toBe(true);
+  });
+
+  it('shadow_gorge: 그림자 시그니처 (shadow_lord/shadow_eternity)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('shadow_gorge');
+    const allIds = list.flatMap((e) => e.monsterPool.map((s) => s.monsterId));
+    expect(allIds.some((id) => id.includes('shadow_'))).toBe(true);
+  });
+
+  it('crystal_cave: 결정 시그니처 (crystal_guardian + crystal_*)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('crystal_cave');
+    const allIds = list.flatMap((e) => e.monsterPool.map((s) => s.monsterId));
+    expect(allIds.some((id) => id.includes('crystal_'))).toBe(true);
+  });
+
+  it('forgotten_citadel: 성채 시그니처 (citadel_lord + citadel_*)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('forgotten_citadel');
+    const allIds = list.flatMap((e) => e.monsterPool.map((s) => s.monsterId));
+    expect(allIds.some((id) => id.includes('citadel_'))).toBe(true);
+  });
+
+  it('chrono_spire: chrono/aetherna 시그니처 (aetherna_eidolon + chrono_archon + aetherna_collapse)', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('chrono_spire');
+    const bossIds = list.map((e) => e.monsterPool.find((s) => s.isBoss)?.monsterId);
+    expect(bossIds).toContain('aetherna_eidolon');
+    expect(bossIds).toContain('chrono_archon');
+    expect(bossIds).toContain('aetherna_collapse');
+  });
+});
