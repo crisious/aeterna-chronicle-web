@@ -27,3 +27,27 @@ const VALID_ERAS: ReadonlySet<ChronoEraId> = new Set<ChronoEraId>([
 export function isChronoEraId(value: unknown): value is ChronoEraId {
   return typeof value === 'string' && VALID_ERAS.has(value as ChronoEraId);
 }
+
+/**
+ * CHRONO-S12: 시대별 monster 스탯 보정.
+ * 클라 ChronoTimeline.CHRONO_ERAS 와 동일 값(SSOT 일관성).
+ * - ancient: 약화된 회상 (0.9x HP, 0.95x 공격속도, 보상 1.0x)
+ * - present: 표준
+ * - ruined_future: 강화된 미래 (1.25x HP, 1.15x 공격속도, 보상 1.25x)
+ */
+export interface ChronoEnemyMultipliers {
+  hp: number;
+  attackSpeed: number;
+  reward: number;
+  levelOffset: number;
+}
+
+const ERA_TO_ENEMY_MULT: Record<ChronoEraId, ChronoEnemyMultipliers> = {
+  ancient: { hp: 0.9, attackSpeed: 0.95, reward: 1.0, levelOffset: -2 },
+  present: { hp: 1.0, attackSpeed: 1.0, reward: 1.0, levelOffset: 0 },
+  ruined_future: { hp: 1.25, attackSpeed: 1.15, reward: 1.25, levelOffset: 6 },
+};
+
+export function chronoEraToEnemyMultipliers(eraId: ChronoEraId): ChronoEnemyMultipliers {
+  return ERA_TO_ENEMY_MULT[eraId] ?? ERA_TO_ENEMY_MULT.present;
+}

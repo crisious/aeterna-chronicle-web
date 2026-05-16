@@ -24,7 +24,10 @@ import { prisma } from '../db';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 import { resolvePassiveModifiers } from '../skill/passiveResolver';
 import { initCombatSkillsFromDb } from '../combat/skillAdapter';
-import { isChronoEraId } from '../../../shared/types/chronoEraAtb';
+import {
+  isChronoEraId,
+  chronoEraToEnemyMultipliers,
+} from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
 const CLASS_BASE_COMBAT_STATS: Record<string, {
@@ -297,9 +300,15 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       await initCombatSkillsFromDb();
 
       // CHRONO-S7: 유효한 eraId 면 시대→tier 매핑 적용. 미지정/무효 시 표준 tier 3.
-      const engine = isChronoEraId(eraId)
-        ? combatInstanceManager.createFromEra(eraId, { autoMode: autoMode ?? false })
+      const validEra = isChronoEraId(eraId) ? eraId : null;
+      const engine = validEra
+        ? combatInstanceManager.createFromEra(validEra, { autoMode: autoMode ?? false })
         : combatInstanceManager.create({ autoMode: autoMode ?? false });
+
+      // CHRONO-S12: monster 스탯 보정 multiplier (HP/spd/reward/levelOffset).
+      const enemyMult = validEra
+        ? chronoEraToEnemyMultipliers(validEra)
+        : { hp: 1.0, attackSpeed: 1.0, reward: 1.0, levelOffset: 0 };
 
       // P55-S1: 캐릭터별 장착 패시브 효과 병렬 resolve
       const passiveResolutions = await Promise.all(
@@ -367,13 +376,17 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
 
       if (legacyPayload) {
         for (const m of monsters ?? []) {
-          const maxHp = Math.max(1, toFiniteNumber(m.maxHp ?? m.hp, 100));
+          const rawMaxHp = Math.max(1, toFiniteNumber(m.maxHp ?? m.hp, 100));
+          // CHRONO-S12: era multiplier 적용
+          const maxHp = Math.max(1, Math.round(rawMaxHp * enemyMult.hp));
+          const hp = Math.max(1, Math.min(Math.round(toFiniteNumber(m.hp, rawMaxHp) * enemyMult.hp), maxHp));
+          const spd = Math.max(1, Math.round(toFiniteNumber(m.speed, 10) * enemyMult.attackSpeed));
           engine.addParticipant({
             id: m.id,
             name: m.name ?? m.id,
             classId: m.classId ?? 'normal',
-            level: Math.max(1, toFiniteNumber(m.level, 1)),
-            hp: Math.max(1, Math.min(toFiniteNumber(m.hp, maxHp), maxHp)),
+            level: Math.max(1, toFiniteNumber(m.level, 1) + enemyMult.levelOffset),
+            hp,
             maxHp,
             mp: Math.max(0, toFiniteNumber(m.mp, 0)),
             maxMp: Math.max(0, toFiniteNumber(m.maxMp ?? m.mp, 0)),
@@ -381,7 +394,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
             def: Math.max(0, toFiniteNumber(m.defense, 0)),
             matk: Math.max(1, toFiniteNumber(m.attack, 10)),
             mdef: Math.max(0, toFiniteNumber(m.defense, 0)),
-            spd: Math.max(1, toFiniteNumber(m.speed, 10)),
+            spd,
             critRate: 0.05,
             critDamage: 1.5,
             isMonster: true,
@@ -407,20 +420,26 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
         }
 
         for (const m of dbMonsters) {
+          // CHRONO-S12: era multiplier 적용 — HP/spd/level/reward 보정
+          const adjHp = Math.max(1, Math.round(m.hp * enemyMult.hp));
+          const adjSpd = Math.max(1, Math.round(m.speed * enemyMult.attackSpeed));
+          const adjLevel = Math.max(1, m.level + enemyMult.levelOffset);
+          const adjExp = Math.max(0, Math.round(m.expReward * enemyMult.reward));
+          const adjGold = Math.max(0, Math.round(m.goldReward * enemyMult.reward));
           engine.addParticipant({
             id: m.id,
             name: m.name,
             classId: m.type,
-            level: m.level,
-            hp: m.hp,
-            maxHp: m.hp,
+            level: adjLevel,
+            hp: adjHp,
+            maxHp: adjHp,
             mp: 0,
             maxMp: 0,
             atk: m.attack,
             def: m.defense,
             matk: m.attack,
             mdef: m.defense,
-            spd: m.speed,
+            spd: adjSpd,
             critRate: 0.05,
             critDamage: 1.5,
             isMonster: true,
@@ -431,8 +450,8 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
             element: (m.element ?? 'neutral') as ElementType,
             armorPenetration: 0,
             armorPenetrationPercent: 0,
-            baseExp: m.expReward,
-            baseGold: m.goldReward,
+            baseExp: adjExp,
+            baseGold: adjGold,
             dropTable: (m.dropTable as unknown as DropEntry[]) ?? [],
           });
         }

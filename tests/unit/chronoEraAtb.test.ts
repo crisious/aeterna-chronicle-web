@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import {
   chronoEraToSpeedTier,
   isChronoEraId,
+  chronoEraToEnemyMultipliers,
 } from '../../shared/types/chronoEraAtb';
 
 describe('chronoEraToSpeedTier', () => {
@@ -23,6 +24,37 @@ describe('chronoEraToSpeedTier', () => {
 
   it('unknown era → fallback tier 3 (안전 디폴트)', () => {
     expect(chronoEraToSpeedTier('chaos_age' as never)).toBe(3);
+  });
+});
+
+describe('chronoEraToEnemyMultipliers (CHRONO-S12)', () => {
+  it('ancient → 0.9x HP, 0.95x spd, -2 level', () => {
+    const m = chronoEraToEnemyMultipliers('ancient');
+    expect(m.hp).toBe(0.9);
+    expect(m.attackSpeed).toBe(0.95);
+    expect(m.reward).toBe(1.0);
+    expect(m.levelOffset).toBe(-2);
+  });
+
+  it('present → 1.0x baseline', () => {
+    const m = chronoEraToEnemyMultipliers('present');
+    expect(m.hp).toBe(1.0);
+    expect(m.attackSpeed).toBe(1.0);
+    expect(m.reward).toBe(1.0);
+    expect(m.levelOffset).toBe(0);
+  });
+
+  it('ruined_future → 1.25x HP, 1.15x spd, +6 level, 1.25x reward', () => {
+    const m = chronoEraToEnemyMultipliers('ruined_future');
+    expect(m.hp).toBe(1.25);
+    expect(m.attackSpeed).toBe(1.15);
+    expect(m.reward).toBe(1.25);
+    expect(m.levelOffset).toBe(6);
+  });
+
+  it('unknown era → present fallback', () => {
+    const m = chronoEraToEnemyMultipliers('chaos_age' as never);
+    expect(m).toEqual({ hp: 1.0, attackSpeed: 1.0, reward: 1.0, levelOffset: 0 });
   });
 });
 
