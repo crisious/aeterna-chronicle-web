@@ -1746,3 +1746,41 @@ describe('STORY-V51 — 보스 weight 시대별 narrative 분포 (chapter III)',
     expect(p).toBeLessThan(f);
   });
 });
+
+describe('STORY-V52 — 일반 monster weight 분포 narrative', () => {
+  it('일반 monster weight 0.3~0.6 범위 narrative (출현 비중 합리)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        expect(slot.weight, `${e.zoneId}/${e.eraId} normal ${slot.monsterId} weight`).toBeGreaterThanOrEqual(0.3);
+        expect(slot.weight).toBeLessThanOrEqual(0.6);
+      }
+    }
+  });
+
+  it('각 일반 encounter 내 일반 monster weight 평균 > 보스 weight narrative (일반 우세 spawn)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.bossOnlyMode) continue;
+      const normals = e.monsterPool.filter((s) => !s.isBoss);
+      const bosses = e.monsterPool.filter((s) => s.isBoss);
+      if (normals.length === 0 || bosses.length === 0) continue;
+      const normalAvg = normals.reduce((s, m) => s + m.weight, 0) / normals.length;
+      const bossAvg = bosses.reduce((s, m) => s + m.weight, 0) / bosses.length;
+      expect(normalAvg, `${e.zoneId}/${e.eraId} normal avg vs boss`).toBeGreaterThan(bossAvg);
+    }
+  });
+
+  it('일반 monster weight 분포 다양성 narrative (≥ 3 distinct weight values)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const weights = new Set<number>();
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        if (slot.isBoss) continue;
+        weights.add(slot.weight);
+      }
+    }
+    expect(weights.size, 'distinct normal weight values').toBeGreaterThanOrEqual(3);
+  });
+});
