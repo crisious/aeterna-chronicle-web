@@ -99,11 +99,11 @@ describe('resolveDualTech — CHRONO-S20 추가 6종', () => {
     expect(resolveDualTech('memory_breaker', 'shadow_weaver')?.id).toBe('memory_shatter');
   });
 
-  it('전체 목록 12종 모두 unique id (CHRONO-S35 확장)', () => {
+  it('전체 목록 18종 모두 unique id (CHRONO-S38 확장)', () => {
     const list = listDualTechs();
-    expect(list).toHaveLength(12);
+    expect(list).toHaveLength(18);
     const ids = list.map(dt => dt.id);
-    expect(new Set(ids).size).toBe(12);
+    expect(new Set(ids).size).toBe(18);
   });
 });
 
@@ -118,5 +118,26 @@ describe('resolveDualTech — CHRONO-S35 추가 3종', () => {
 
   it('memory_weaver + void_wanderer → memory_void', () => {
     expect(resolveDualTech('memory_weaver', 'void_wanderer')?.id).toBe('memory_void');
+  });
+});
+
+describe('resolveDualTech — CHRONO-S38 추가 6종', () => {
+  it('ether_knight + memory_breaker → ether_break', () => {
+    expect(resolveDualTech('ether_knight', 'memory_breaker')?.id).toBe('ether_break');
+  });
+  it('ether_knight + void_wanderer → ether_void', () => {
+    expect(resolveDualTech('ether_knight', 'void_wanderer')?.id).toBe('ether_void');
+  });
+  it('time_knight + time_guardian → time_overflow', () => {
+    expect(resolveDualTech('time_knight', 'time_guardian')?.id).toBe('time_overflow');
+  });
+  it('time_knight + memory_breaker → time_break', () => {
+    expect(resolveDualTech('time_knight', 'memory_breaker')?.id).toBe('time_break');
+  });
+  it('shadow_weaver + void_wanderer → shadow_void', () => {
+    expect(resolveDualTech('shadow_weaver', 'void_wanderer')?.id).toBe('shadow_void');
+  });
+  it('memory_weaver + memory_breaker → memory_break', () => {
+    expect(resolveDualTech('memory_weaver', 'memory_breaker')?.id).toBe('memory_break');
   });
 });
