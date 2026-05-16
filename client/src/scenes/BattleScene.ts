@@ -401,7 +401,7 @@ export class BattleScene extends Phaser.Scene {
           .setDepth(2)
           .setName(`fieldAmbientOverlay_${effectKind}`);
       }
-      // CHRONO-S128: 보스 진입 시 카메라 진입 zoom (1.0 → 1.05, 400ms ease)
+      // CHRONO-S128/S129: 보스 진입 시 카메라 진입 zoom + SFX
       if (this._initData.isBossField) {
         this.cameras.main.setZoom(1.0);
         this.tweens.add({
@@ -410,6 +410,13 @@ export class BattleScene extends Phaser.Scene {
           duration: 400,
           ease: 'Power2',
         });
+        // 보스 진입 SFX (자산 미존재 시 SoundManager fallback)
+        try {
+          playSfx(this, 'sfx_combat_magic_cast', 0.9);
+          playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.9);
+        } catch (e) {
+          console.warn('[BattleScene] 보스 진입 SFX 실패:', e);
+        }
       }
       // CHRONO-S116: bgmTrack 재생 시도 (자산 미존재 시 SoundManager 내부 safe fallback)
       if (fieldEnc.bgmTrack && this.soundManager) {
