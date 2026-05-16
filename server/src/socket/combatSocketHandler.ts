@@ -64,6 +64,14 @@ interface CombatDualTechPayload {
   targetId: string;
 }
 
+// CHRONO-S64: 3인 협공 페이로드
+interface CombatTripleTechPayload {
+  combatId: string;
+  actorIds: [string, string, string];
+  techId: string;
+  targetId: string;
+}
+
 interface CombatQueryPayload {
   combatId: string;
   participantId?: string;
@@ -274,6 +282,32 @@ export function setupCombatSocketHandler(io: Server): void {
       callback?.({
         success: accepted,
         error: accepted ? undefined : '협공 발동 불가 (ATB/클래스/MP/techId 검증 실패).',
+      });
+    });
+
+    // ── combat:triple_tech — 3인 협공 (CHRONO-S64) ─────────
+    socket.on('combat:triple_tech', (payload: CombatTripleTechPayload, callback?: (resp: any) => void) => {
+      const engine = combatInstanceManager.get(payload.combatId);
+      if (!engine) {
+        callback?.({ success: false, error: '전투를 찾을 수 없습니다.' });
+        return;
+      }
+
+      // 3-actor 모두 socket 권한 검증
+      const allOk = payload.actorIds.every((aid) =>
+        combatReconnectManager.canControl(payload.combatId, aid, socket.id),
+      );
+      if (!allOk) {
+        const err = { success: false, error: '3인 협공 발동 권한 부족 (한 명 이상 미허용).' };
+        callback?.(err);
+        socket.emit('combat:error', err);
+        return;
+      }
+
+      const accepted = engine.submitTripleTech(payload.actorIds, payload.techId, payload.targetId);
+      callback?.({
+        success: accepted,
+        error: accepted ? undefined : '3인 협공 발동 불가 (ATB/클래스/MP/techId 검증 실패).',
       });
     });
 
