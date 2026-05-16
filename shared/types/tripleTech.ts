@@ -206,3 +206,20 @@ export function listTripleTechs(): readonly TripleTechDef[] {
 export function getTripleTechById(id: string): TripleTechDef | null {
   return TRIPLE_TECHS.find((tt) => tt.id === id) ?? null;
 }
+
+/**
+ * CHRONO-S77: 특정 클래스가 참여 가능한 모든 3인 협공 (UI 캐릭터 패널/Wiki).
+ */
+export function listTripleTechsByClass(classId: string): readonly TripleTechDef[] {
+  if (!classId) return [];
+  return TRIPLE_TECHS.filter((tt) => tt.partnerClasses.includes(classId));
+}
+
+/**
+ * CHRONO-S77: 속성별 3인 협공 (UI 그룹화).
+ */
+export function listTripleTechsByElement(
+  element: TripleTechDef['element'],
+): readonly TripleTechDef[] {
+  return TRIPLE_TECHS.filter((tt) => tt.element === element);
+}

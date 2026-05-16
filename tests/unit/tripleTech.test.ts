@@ -6,6 +6,8 @@ import {
   resolveTripleTech,
   listTripleTechs,
   getTripleTechById,
+  listTripleTechsByClass,
+  listTripleTechsByElement,
 } from '../../shared/types/tripleTech';
 
 describe('resolveTripleTech', () => {
@@ -119,5 +121,36 @@ describe('resolveTripleTech — CHRONO-S58 추가 2종', () => {
 
   it('void_wanderer + time_guardian + memory_breaker → void_eternity', () => {
     expect(resolveTripleTech('void_wanderer', 'time_guardian', 'memory_breaker')?.id).toBe('void_eternity');
+  });
+});
+
+describe('listTripleTechsByClass / listTripleTechsByElement (CHRONO-S77)', () => {
+  it('listTripleTechsByClass(ether_knight) → ether_knight 포함 트리플들', () => {
+    const list = listTripleTechsByClass('ether_knight');
+    expect(list.length).toBeGreaterThanOrEqual(2);
+    for (const tt of list) {
+      expect(tt.partnerClasses).toContain('ether_knight');
+    }
+  });
+
+  it('listTripleTechsByClass(unknown) → 빈 배열', () => {
+    expect(listTripleTechsByClass('nonexistent')).toHaveLength(0);
+    expect(listTripleTechsByClass('')).toHaveLength(0);
+  });
+
+  it('listTripleTechsByElement(chrono) → chrono 트리플만', () => {
+    const list = listTripleTechsByElement('chrono');
+    expect(list.length).toBeGreaterThanOrEqual(2);
+    for (const tt of list) {
+      expect(tt.element).toBe('chrono');
+    }
+  });
+
+  it('listTripleTechsByElement(dark) → dark 트리플만', () => {
+    const list = listTripleTechsByElement('dark');
+    expect(list.length).toBeGreaterThanOrEqual(3);
+    for (const tt of list) {
+      expect(tt.element).toBe('dark');
+    }
   });
 });
