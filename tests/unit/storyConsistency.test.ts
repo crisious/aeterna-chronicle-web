@@ -3420,3 +3420,35 @@ describe('STORY-V93 — malatus_sanctuary + forgotten_citadel prefix', () => {
     }
   });
 });
+
+describe('STORY-V94 — monsterPool 시그니처 패턴 narrative', () => {
+  it('각 일반 encounter 보스 1개 + 일반 2~5 narrative (전투 구성 합리)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.bossOnlyMode) continue;
+      const bossCount = e.monsterPool.filter((s) => s.isBoss).length;
+      const normalCount = e.monsterPool.filter((s) => !s.isBoss).length;
+      expect(bossCount, `${e.zoneId}/${e.eraId} boss count`).toBe(1);
+      expect(normalCount, `${e.zoneId}/${e.eraId} normal count`).toBeGreaterThanOrEqual(2);
+      expect(normalCount).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('각 encounter weight 0.1 보스 + 0.5/0.4 일반 narrative 분포 패턴', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      if (e.bossOnlyMode) continue;
+      const allowed = [0.1, 0.2, 0.3, 0.35, 0.4, 0.45, 0.5];
+      for (const slot of e.monsterPool) {
+        expect(allowed.includes(slot.weight) || (slot.weight >= 0.1 && slot.weight <= 0.6), `${slot.monsterId} weight ${slot.weight}`).toBe(true);
+      }
+    }
+  });
+
+  it('21 encounter 모두 hasBossSlot=true narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(e.hasBossSlot, `${e.zoneId}/${e.eraId} hasBossSlot`).toBe(true);
+    }
+  });
+});
