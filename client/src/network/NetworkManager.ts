@@ -524,6 +524,16 @@ class NetworkManager {
     return this.post<{ success: boolean }>('/combat/dual_tech', req);
   }
 
+  // CHRONO-S62: 3인 협공 (Triple Tech)
+  async combatTripleTech(req: {
+    combatId: string;
+    actorIds: [string, string, string];
+    techId: string;
+    targetId: string;
+  }): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>('/combat/triple_tech', req);
+  }
+
   async combatTick(combatId: string): Promise<CombatState> {
     return this.post<CombatState>(`/combat/${combatId}/tick`, { combatId });
   }

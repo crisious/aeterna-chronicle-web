@@ -556,6 +556,43 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     return { success: true };
   });
 
+  // ── POST /combat/triple_tech (CHRONO-S62) ──────────────────
+  // 크로노 트리거 3인 협공 예약.
+  interface CombatTripleTechBody {
+    combatId: string;
+    actorIds: [string, string, string];
+    techId: string;
+    targetId: string;
+  }
+
+  fastify.post('/combat/triple_tech', async (
+    request: FastifyRequest<{ Body: CombatTripleTechBody }>,
+    reply: FastifyReply,
+  ) => {
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+
+    const { combatId, actorIds, techId, targetId } = request.body;
+    if (!combatId || !Array.isArray(actorIds) || actorIds.length !== 3 || !techId || !targetId) {
+      return reply.status(400).send({ error: '필수 파라미터 누락 (actorIds 3개 필요)' });
+    }
+
+    const engine = combatInstanceManager.get(combatId);
+    if (!engine) {
+      return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+
+    const accepted = engine.submitTripleTech(actorIds, techId, targetId);
+    if (!accepted) {
+      return reply.status(400).send({
+        error: '3인 협공 발동 불가 (ATB/클래스/MP 또는 협공 ID 검증 실패)',
+      });
+    }
+    return { success: true };
+  });
+
   // ── POST /combat/:combatId/tick ───────────────────────────
   // 수동 틱 진행 (REST 기반 턴 진행)
   interface CombatIdParams {
