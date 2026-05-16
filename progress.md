@@ -334,3 +334,23 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 
 게임 narrative — 7 zone × 3 era × 21 보스 × 36 협공 × 50+ monster × 7 클래스 × aetherna 정점 모두 cross-check 완성. 회귀: storyConsistency 79/79 + 전체 1478 tests pass.
 
+## 2026-05-17 STORY 정합성 chapter II — 추가 narrative 가드 누적 (13 sprint, +51 가드)
+
+V25 이후 narrative source 변화 보장을 위한 추가 가드 누적.
+
+- **V26** 클래스 협공 density (각 narrative 클래스 Dual ≥6 + Triple ≥2)
+- **V27** Dual/Triple description quality (length ≥4, 한글 narrative)
+- **V28** 일반 monster name 1~15자 + chrono_archon 시그니처
+- **V29** 보스 monster name 1~15자 + unique + 일반 monster name unique (≥40)
+- **V30** weight 합 정확히 1.0 ± 0.001 + 최종 보스 weight 최강 + 일반 ≥ 보스 비중
+- **V31** 보스 id 시그니처 suffix (guardian/lord/titan/archon/overlord/eternity/phantom/wraith/seal/golem/eidolon/collapse/devourer/avatar/remnant/malatus) + snake_case
+- **V32** bgmTrack "bgm_" prefix + ambientEffect known pool + 보스 only=boss_room + chrono_spire 시그니처
+- **V33** chronoEraAtb passive (ancient 회피+ / future 명중+) + AI hints (defensive/aoe/aggressive) + present baseline 0 + bonusDrops
+- **V34** Triple Tech damageMultiplier ≥3.0 + void_eternity 최강(3.8) + aetherna_final chrono + mpCost ≥28 + 모두 aoe + chrono/dark ≥2
+- **V35** Dual Tech eraFilter (chrono_blade/memory_warp ancient+present, memory_break/void_oblivion ruined_future-only)
+- **V36** ambientLine 21 unique + length 8~80 + 한글 + ancient/future 분위기 키워드 ≥4
+- **V37** maxSpawn 1~6 + 일반 ≥3 + bossOnlyMode 보스 1개 + monsterPool size ≥2
+- **V38** progress.md V26~V38 누적 갱신
+
+회귀: storyConsistency 130/130 pass.
+
