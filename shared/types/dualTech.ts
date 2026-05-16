@@ -112,6 +112,36 @@ const DUAL_TECHS: readonly DualTechDef[] = [
     fxKey: 'fx_memory_shatter',
     description: '기억 파괴자가 적 기억을 부수고 그림자 직조사가 단편을 무기로.',
   },
+  {
+    id: 'void_oblivion',
+    name: '보이드 오블리비온',
+    partnerClasses: ['void_wanderer', 'memory_breaker'],
+    damageMultiplier: 2.5,
+    element: 'dark',
+    mpCost: 24,
+    fxKey: 'fx_void_oblivion',
+    description: '공허 방랑자와 기억 파괴자가 적의 존재 자체를 흐릿하게 망각시킨다.',
+  },
+  {
+    id: 'guardian_eclipse',
+    name: '가디언 이클립스',
+    partnerClasses: ['time_guardian', 'shadow_weaver'],
+    damageMultiplier: 2.1,
+    element: 'dark',
+    mpCost: 18,
+    fxKey: 'fx_guardian_eclipse',
+    description: '시간 수호자가 광원을 정지시키고 그림자 직조사가 어둠을 폭발시킨다.',
+  },
+  {
+    id: 'memory_void',
+    name: '메모리 보이드',
+    partnerClasses: ['memory_weaver', 'void_wanderer'],
+    damageMultiplier: 2.3,
+    element: 'dark',
+    mpCost: 19,
+    fxKey: 'fx_memory_void',
+    description: '기억 직조사가 적의 의지를 풀어내고 공허로 흩뿌린다.',
+  },
 ] as const;
 
 const PAIR_KEY = (a: string, b: string): string => {

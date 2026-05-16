@@ -99,10 +99,24 @@ describe('resolveDualTech — CHRONO-S20 추가 6종', () => {
     expect(resolveDualTech('memory_breaker', 'shadow_weaver')?.id).toBe('memory_shatter');
   });
 
-  it('전체 목록 9종 모두 unique id', () => {
+  it('전체 목록 12종 모두 unique id (CHRONO-S35 확장)', () => {
     const list = listDualTechs();
-    expect(list).toHaveLength(9);
+    expect(list).toHaveLength(12);
     const ids = list.map(dt => dt.id);
-    expect(new Set(ids).size).toBe(9);
+    expect(new Set(ids).size).toBe(12);
+  });
+});
+
+describe('resolveDualTech — CHRONO-S35 추가 3종', () => {
+  it('void_wanderer + memory_breaker → void_oblivion', () => {
+    expect(resolveDualTech('void_wanderer', 'memory_breaker')?.id).toBe('void_oblivion');
+  });
+
+  it('time_guardian + shadow_weaver → guardian_eclipse', () => {
+    expect(resolveDualTech('time_guardian', 'shadow_weaver')?.id).toBe('guardian_eclipse');
+  });
+
+  it('memory_weaver + void_wanderer → memory_void', () => {
+    expect(resolveDualTech('memory_weaver', 'void_wanderer')?.id).toBe('memory_void');
   });
 });
