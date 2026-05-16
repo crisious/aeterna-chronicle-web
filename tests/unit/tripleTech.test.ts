@@ -37,19 +37,20 @@ describe('resolveTripleTech', () => {
 });
 
 describe('listTripleTechs / getTripleTechById', () => {
-  it('전체 목록 10종 (CHRONO-S72 마디)', () => {
+  it('전체 목록 13종 (CHRONO-S76 확장)', () => {
     const list = listTripleTechs();
-    expect(list.length).toBe(10);
+    expect(list.length).toBe(13);
     const ids = list.map((t) => t.id);
-    expect(new Set(ids).size).toBe(10);
+    expect(new Set(ids).size).toBe(13);
   });
 
-  it('getTripleTechById 10종 정상 조회', () => {
+  it('getTripleTechById 13종 정상 조회', () => {
     const ids = [
       'aetherna_final', 'chrono_break', 'void_eternity',
       'ether_dark_riff', 'guardian_oath',
       'time_void_break', 'shadow_chrono', 'memory_shatter_pact',
       'shadow_void_break', 'guardian_void_strike',
+      'time_memory_guardian', 'ether_shadow_memory', 'void_guardian_shadow',
     ];
     for (const id of ids) {
       expect(getTripleTechById(id), `${id} 조회 실패`).not.toBeNull();
@@ -96,6 +97,18 @@ describe('resolveTripleTech — CHRONO-S72 추가 2종', () => {
   });
   it('ether_knight + time_guardian + void_wanderer → guardian_void_strike', () => {
     expect(resolveTripleTech('ether_knight', 'time_guardian', 'void_wanderer')?.id).toBe('guardian_void_strike');
+  });
+});
+
+describe('resolveTripleTech — CHRONO-S76 추가 3종', () => {
+  it('time_knight + memory_weaver + time_guardian → time_memory_guardian', () => {
+    expect(resolveTripleTech('time_knight', 'memory_weaver', 'time_guardian')?.id).toBe('time_memory_guardian');
+  });
+  it('ether_knight + shadow_weaver + memory_weaver → ether_shadow_memory', () => {
+    expect(resolveTripleTech('ether_knight', 'shadow_weaver', 'memory_weaver')?.id).toBe('ether_shadow_memory');
+  });
+  it('shadow_weaver + time_guardian + void_wanderer → void_guardian_shadow', () => {
+    expect(resolveTripleTech('shadow_weaver', 'time_guardian', 'void_wanderer')?.id).toBe('void_guardian_shadow');
   });
 });
 
