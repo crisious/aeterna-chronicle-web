@@ -463,3 +463,27 @@ describe('STORY-V14 — Chapter 진행 narrative 순서 (1~5)', () => {
     expect(startBoss.weight).toBe(0.1); // 시작 보스 낮은 weight (희귀 조우)
   });
 });
+
+describe('STORY-V15 — 보스 monster id naming 패턴', () => {
+  it('21 보스 monster id snake_case 패턴 (소문자 + 숫자 + 밑줄)', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const pattern = /^[a-z][a-z0-9_]*$/;
+    for (const id of listAllBossMonsterIds()) {
+      expect(pattern.test(id), `boss id '${id}' 패턴 위반`).toBe(true);
+    }
+  });
+
+  it('21 보스 id 충돌 없음 (시대간 unique)', async () => {
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const ids = listAllBossMonsterIds();
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('전체 52+ monster id 모두 snake_case', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const pattern = /^[a-z][a-z0-9_]*$/;
+    for (const id of listAllFieldMonsterIds()) {
+      expect(pattern.test(id), `monster id '${id}' 패턴 위반`).toBe(true);
+    }
+  });
+});
