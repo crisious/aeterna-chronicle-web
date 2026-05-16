@@ -3146,3 +3146,40 @@ describe('STORY-V86 — chronoEra 정확 값 narrative', () => {
     expect(chronoEraToMonsterPassives('ruined_future').hitChanceAddPercent).toBe(5);
   });
 });
+
+describe('STORY-V87 — 클래스 페어 ↔ element narrative', () => {
+  it('void_wanderer 협공은 대부분 dark element narrative (공허=암흑)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const voidDuals = listDualTechsByClass('void_wanderer');
+    const darkCount = voidDuals.filter((dt) => dt.element === 'dark').length;
+    expect(darkCount, 'void_wanderer dark 협공 count').toBeGreaterThanOrEqual(2);
+  });
+
+  it('time_guardian 협공은 holy 또는 dark element narrative (수호=신성)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const guardDuals = listDualTechsByClass('time_guardian');
+    const holyCount = guardDuals.filter((dt) => dt.element === 'holy').length;
+    expect(holyCount, 'time_guardian holy 협공 count').toBeGreaterThanOrEqual(1);
+  });
+
+  it('time_knight + ether_knight 페어 = chrono_blade (chrono element narrative)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('time_knight', 'ether_knight')!;
+    expect(dt.id).toBe('chrono_blade');
+    expect(dt.element).toBe('chrono');
+  });
+
+  it('memory_breaker + shadow_weaver 페어 = memory_shatter (dark element narrative)', async () => {
+    const { resolveDualTech } = await import('../../shared/types/dualTech');
+    const dt = resolveDualTech('memory_breaker', 'shadow_weaver')!;
+    expect(dt.id).toBe('memory_shatter');
+    expect(dt.element).toBe('dark');
+  });
+
+  it('ether_knight 단독 협공 element 다양성 ≥ 2 (단일 element 독점 없음)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const etherDuals = listDualTechsByClass('ether_knight');
+    const elements = new Set(etherDuals.map((dt) => dt.element));
+    expect(elements.size, 'ether_knight 협공 element 다양성').toBeGreaterThanOrEqual(2);
+  });
+});
