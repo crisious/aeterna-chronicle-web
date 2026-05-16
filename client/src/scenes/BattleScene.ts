@@ -1922,6 +1922,11 @@ export class BattleScene extends Phaser.Scene {
           : 'sfx_combat_magic_cast';
         playSfx(this, sfxKey, 0.8);
         playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.7);
+        // CHRONO-S49: 카메라 shake — AOE 강 (180ms, 0.01), 단일 약 (120ms, 0.006)
+        if (isScreenShakeEnabled()) {
+          const aoe = def?.aoe ?? false;
+          this.cameras.main.shake(aoe ? 180 : 120, aoe ? 0.01 : 0.006);
+        }
       } else {
         this.battleUI?.addLog(`[협공] 발동 실패`);
       }
