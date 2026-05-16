@@ -2677,3 +2677,45 @@ describe('STORY-V75 — aetherna 게임명 narrative 등장 빈도', () => {
     expect(aethernaBosses.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V76 — ambient line 시대 키워드 분포 narrative', () => {
+  it('present 시대 7 ambient line 평화 분위기 키워드 ≥ 3 (균형 narrative)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const presentLines = listFieldEncounters().filter((e) => e.eraId === 'present').map((e) => e.ambientLine);
+    const presentKeywords = ['평화', '균형', '평원', '에테르', '숲', '결정', '성소', '협곡', '동굴', '성채', '첨탑', '현재', '시간', '도시'];
+    let count = 0;
+    for (const line of presentLines) {
+      if (presentKeywords.some((k) => line.includes(k))) count += 1;
+    }
+    expect(count, 'present ambient keyword count').toBeGreaterThanOrEqual(3);
+  });
+
+  it('21 ambient line 모두 비빈 + length ≥ 8 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(e.ambientLine.length, `${e.zoneId}/${e.eraId} length`).toBeGreaterThanOrEqual(8);
+    }
+  });
+
+  it('chrono_spire 3 era ambient line 시간/종점 narrative 키워드', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const lines = listFieldEncountersByZone('chrono_spire').map((e) => e.ambientLine);
+    const keywords = ['시간', '시계', '첨탑', '종말', '세계', '에테르나', '마지막', '시간선', '시대'];
+    let matchCount = 0;
+    for (const line of lines) {
+      if (keywords.some((k) => line.includes(k))) matchCount += 1;
+    }
+    expect(matchCount, 'chrono_spire ambient keyword').toBeGreaterThanOrEqual(2);
+  });
+
+  it('aether_plains 3 era ambient line 평원/에테르 narrative 키워드', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const lines = listFieldEncountersByZone('aether_plains').map((e) => e.ambientLine);
+    const keywords = ['평원', '에테르', '고대', '평화', '잔영', '바람'];
+    let matchCount = 0;
+    for (const line of lines) {
+      if (keywords.some((k) => line.includes(k))) matchCount += 1;
+    }
+    expect(matchCount, 'aether_plains ambient keyword').toBeGreaterThanOrEqual(2);
+  });
+});
