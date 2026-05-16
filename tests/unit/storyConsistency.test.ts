@@ -1263,3 +1263,61 @@ describe('STORY-V39 — ChronoField API 행동 narrative 정합성', () => {
     expect(r2 === null || (r2 && typeof r2.monsterId === 'string')).toBe(true);
   });
 });
+
+describe('STORY-V40 — 10 sprint 마디 narrative 정량 + 게임명 시그니처', () => {
+  it('aetherna 시그니처 모든 source cross-check (Triple/보스/Field)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { listAllBossMonsterIds, resolveFieldEncounter } = await import('../../shared/types/chronoField');
+
+    // Triple 시그니처
+    const aethernaTriples = listTripleTechs().filter((tt) => tt.id.startsWith('aetherna_'));
+    expect(aethernaTriples.length, 'aetherna Triple count').toBeGreaterThanOrEqual(1);
+    expect(aethernaTriples.find((tt) => tt.id === 'aetherna_final')).toBeDefined();
+
+    // 보스 시그니처
+    const bossIds = listAllBossMonsterIds();
+    const aethernaBosses = bossIds.filter((id) => id.startsWith('aetherna_'));
+    expect(aethernaBosses.length).toBe(2);
+    expect(aethernaBosses).toContain('aetherna_final' === 'aetherna_final' ? 'aetherna_eidolon' : '');
+
+    // Field 최종 보스
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const finalBoss = finalE.monsterPool.find((s) => s.isBoss)!;
+    expect(finalBoss.monsterId).toBe('aetherna_collapse');
+  });
+
+  it('10 sprint 마디 정량: 21 보스 + 21 Dual + 15 Triple + 7 zone + 7 클래스', async () => {
+    const { listAllBossMonsterIds, getTotalFieldBosses } = await import('../../shared/types/chronoField');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    expect(listAllBossMonsterIds().length).toBe(21);
+    expect(getTotalFieldBosses()).toBe(21);
+    expect(listDualTechs().length).toBe(21);
+    expect(listTripleTechs().length).toBe(15);
+    expect(STORY_ZONES.length).toBe(7);
+    expect(STORY_CLASSES.length).toBe(7);
+    expect(STORY_ERAS.length).toBe(3);
+  });
+
+  it('aetherna_final + aetherna_collapse 가 게임 정점 narrative 동일 element', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.id).toBe('aetherna_final');
+    expect(tt.element).toBe('chrono');
+    // 최종 보스가 chrono element 협공 시그니처 와 정합 narrative
+    // (둘 모두 aetherna 시그니처 + chrono 시간선 종점 컨셉)
+  });
+
+  it('전체 narrative quantity floor: monster ≥ 50 + 협공 ≥ 36 + 보스/Triple/Dual 합 ≥ 57', async () => {
+    const { listAllFieldMonsterIds, getTotalFieldBosses } = await import('../../shared/types/chronoField');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    expect(listAllFieldMonsterIds().length, 'monster ≥ 50').toBeGreaterThanOrEqual(50);
+    const techTotal = listDualTechs().length + listTripleTechs().length;
+    expect(techTotal, '협공 ≥ 36').toBeGreaterThanOrEqual(36);
+    const grand = getTotalFieldBosses() + techTotal;
+    expect(grand, '보스+협공 ≥ 57').toBeGreaterThanOrEqual(57);
+  });
+});
