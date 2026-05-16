@@ -3835,3 +3835,38 @@ describe('STORY-V104 — chrono barrel 단일 진입점 stress', () => {
     }
   });
 });
+
+describe('STORY-V106 — rollFieldMonster 분포 stress narrative', () => {
+  it('rollFieldMonster 100 seed sampling 모두 valid monster id narrative', async () => {
+    const { resolveFieldEncounter, rollFieldMonster } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('aether_plains', 'present')!;
+    const validIds = new Set(e.monsterPool.map((s) => s.monsterId));
+    for (let i = 0; i < 100; i += 1) {
+      const seed = i / 100;
+      const m = rollFieldMonster(e, seed);
+      expect(m).not.toBeNull();
+      expect(validIds.has(m!.monsterId), `seed ${seed}`).toBe(true);
+    }
+  });
+
+  it('rollFieldMonster 분포 다양성 — seed 0~1 sweep 시 ≥ 2 unique monster narrative', async () => {
+    const { resolveFieldEncounter, rollFieldMonster } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('aether_plains', 'present')!;
+    const seen = new Set<string>();
+    for (let i = 0; i < 50; i += 1) {
+      const seed = i / 50;
+      const m = rollFieldMonster(e, seed);
+      if (m) seen.add(m.monsterId);
+    }
+    expect(seen.size, 'unique monsters across seeds').toBeGreaterThanOrEqual(2);
+  });
+
+  it('rollFieldMonster seed=0 (첫 slot) + seed=0.99 (마지막 slot) narrative', async () => {
+    const { resolveFieldEncounter, rollFieldMonster } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('memory_forest', 'present')!;
+    const m0 = rollFieldMonster(e, 0);
+    const m99 = rollFieldMonster(e, 0.99);
+    expect(m0).not.toBeNull();
+    expect(m99).not.toBeNull();
+  });
+});
