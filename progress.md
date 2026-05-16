@@ -302,3 +302,16 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 시대 전환 시 GameScene 재 spawn
 - BattleScene 승리 시 monster sprite 제거
 
+## 2026-05-17 STORY 정합성 검증 chapter — 플레이 스토리 cross-check (6 sprint)
+
+전체 narrative source cross-check + 회귀 가드 (21 test).
+
+- **V1** GameScene ZONE_CHAPTER_MAP 에 crystal_cave 누락 발견 + 추가 (Chapter 3.5)
+- **V2** 7 zone × 3 era 정합성 (chronoField encounter cross-product) + 시대 분위기 키워드 (ancient/ruined_future 보스 이름) + chrono_spire/ruined_future 최종 보스 정합 + 21 unique 시대 보스 분포 — 'citadel_lord' → '고대 성채 영주' 강화
+- **V3** 7 narrative 클래스 cross-check (Dual 21 + Triple 15 partnerClasses) + 각 클래스 ≥1 페어
+- **V4** chrono_spire 시그니처 보스 시간선 (에테르나 환영 → 시간 통치자 → 에테르나의 종말) + ambient line era 키워드
+- **V5** 협공 시그니처 (aetherna_final/chrono_blade/void_eternity) + aetherna prefix 정합
+- **V6** 전체 회귀: 109 files / 1421 tests pass.
+
+게임 narrative 일관성 검증 — 7 zone / 3 era / 21 보스 / 36 협공 / 게임 최종 aetherna 정점 모두 cross-check.
+
