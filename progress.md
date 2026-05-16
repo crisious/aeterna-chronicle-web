@@ -351,6 +351,15 @@ V25 이후 narrative source 변화 보장을 위한 추가 가드 누적.
 - **V36** ambientLine 21 unique + length 8~80 + 한글 + ancient/future 분위기 키워드 ≥4
 - **V37** maxSpawn 1~6 + 일반 ≥3 + bossOnlyMode 보스 1개 + monsterPool size ≥2
 - **V38** progress.md V26~V38 누적 갱신
+- **V39** ChronoField API 행동 (rollFieldMonster 결정론 + getBossSlot 21/21 + 안정성)
+- **V40** 10 sprint 마디 + aetherna 시그니처 모든 source cross-check
+- **V41** Dual Tech damageMultiplier 2.0~2.5 + AOE 3종 정확 + Triple > Dual 평균
+- **V42** Triple Tech 페어 다양성 (3인 unique + 클래스 ≤8회)
+- **V43** Dual Tech 페어 다양성 (2인 unique + 자기 협공 금지)
+- **V44** chronoEra 진행 순서 + speedTier/단조 + decorateMonsterName 시그니처
+- **V45** chrono barrel 단일 진입점 narrative integration cross-check
+- **V46** 시대별 monster id 시그니처 (ancient 무-future-prefix + future ≥5)
+- **V47** 전체 vitest 회귀 마디 (unit 50 파일/844 tests pass)
 
-회귀: storyConsistency 130/130 pass.
+회귀: storyConsistency 162/162 + unit 전체 844/844 pass.
 
