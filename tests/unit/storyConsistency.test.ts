@@ -2599,3 +2599,42 @@ describe('STORY-V73 — source id 도메인 cross-check narrative', () => {
     }
   });
 });
+
+describe('STORY-V74 — fxKey 패턴 정합성 narrative', () => {
+  it('21 Dual fxKey 모두 "fx_" + id 패턴 narrative (fx_{id})', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.fxKey, `Dual ${dt.id} fxKey`).toBe(`fx_${dt.id}`);
+    }
+  });
+
+  it('15 Triple fxKey 모두 "fx_" + id 패턴 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.fxKey, `Triple ${tt.id} fxKey`).toBe(`fx_${tt.id}`);
+    }
+  });
+
+  it('36 협공 fxKey 모두 unique narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const fxKeys = [
+      ...listDualTechs().map((dt) => dt.fxKey),
+      ...listTripleTechs().map((tt) => tt.fxKey),
+    ];
+    expect(new Set(fxKeys).size).toBe(36);
+  });
+
+  it('fxKey 모두 snake_case + "fx_" prefix narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.fxKey.startsWith('fx_')).toBe(true);
+      expect(dt.fxKey).toMatch(/^fx_[a-z][a-z0-9_]*$/);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(tt.fxKey.startsWith('fx_')).toBe(true);
+      expect(tt.fxKey).toMatch(/^fx_[a-z][a-z0-9_]*$/);
+    }
+  });
+});
