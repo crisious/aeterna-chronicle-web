@@ -4227,3 +4227,59 @@ describe('STORY-V116 — Dual Tech name 카테고리 분포 narrative', () => {
     }
   });
 });
+
+describe('STORY-V117 — 보스 name 카테고리 narrative 분포', () => {
+  it('21 보스 name 시그니처 카테고리 ≥ 6 narrative (다양성)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const categories = new Set<string>();
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      if (boss.name.includes('수호')) categories.add('수호');
+      if (boss.name.includes('군주')) categories.add('군주');
+      if (boss.name.includes('영주')) categories.add('영주');
+      if (boss.name.includes('가디언')) categories.add('가디언');
+      if (boss.name.includes('통치자')) categories.add('통치자');
+      if (boss.name.includes('환영')) categories.add('환영');
+      if (boss.name.includes('거인')) categories.add('거인');
+      if (boss.name.includes('종말')) categories.add('종말');
+      if (boss.name.includes('포식자')) categories.add('포식자');
+      if (boss.name.includes('말라투스')) categories.add('말라투스');
+      if (boss.name.includes('영원')) categories.add('영원');
+      if (boss.name.includes('파편')) categories.add('파편');
+      if (boss.name.includes('봉인')) categories.add('봉인');
+      if (boss.name.includes('황혼')) categories.add('황혼');
+    }
+    expect(categories.size, '보스 name 카테고리 다양성').toBeGreaterThanOrEqual(6);
+  });
+
+  it('시대별 보스 name 키워드 분포 narrative — 각 시대 ≥ 4 카테고리', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const era of STORY_ERAS) {
+      const categories = new Set<string>();
+      for (const e of listFieldEncounters()) {
+        if (e.eraId !== era) continue;
+        const boss = e.monsterPool.find((s) => s.isBoss);
+        if (!boss) continue;
+        // 키워드 추출
+        const keywords = ['수호', '군주', '영주', '가디언', '통치자', '환영', '거인', '종말', '포식자', '말라투스', '영원', '파편', '봉인', '황혼', '잔영', '화신', '파수꾼'];
+        for (const k of keywords) {
+          if (boss.name.includes(k)) categories.add(k);
+        }
+      }
+      expect(categories.size, `${era} 보스 카테고리`).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it('aetherna 보스 (2개) 외 모든 보스 name 도 시그니처 키워드 ≥ 18', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const keywords = ['수호', '군주', '영주', '가디언', '통치자', '환영', '거인', '종말', '포식자', '말라투스', '영원', '파편', '봉인', '황혼', '잔영', '화신', '파수꾼'];
+    let count = 0;
+    for (const e of listFieldEncounters()) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      if (keywords.some((k) => boss.name.includes(k))) count += 1;
+    }
+    expect(count).toBeGreaterThanOrEqual(18);
+  });
+});
