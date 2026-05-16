@@ -1976,10 +1976,17 @@ export class BattleScene extends Phaser.Scene {
    * CHRONO-S51: 보스 sprite 위에 협공 저항 단계 텍스트 부착/갱신.
    * sprite 데이터에 캐싱하여 중복 생성 방지.
    */
-  private _updateBossResistLabel(enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle }, hits: number): void {
+  private _updateBossResistLabel(
+    enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
+    dualHits: number,
+    tripleHits: number,
+  ): void {
     const cacheKey = '__bossResistText';
     const existing = (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey];
-    const label = `🛡 협공 저항 +${(hits * 5)}%`;
+    const parts: string[] = [];
+    if (dualHits > 0) parts.push(`Dual +${dualHits * 5}%`);
+    if (tripleHits > 0) parts.push(`Triple +${tripleHits * 10}%`);
+    const label = `🛡 ${parts.join(' / ')}`;
     if (existing) {
       existing.setText(label);
       existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
@@ -2162,14 +2169,15 @@ export class BattleScene extends Phaser.Scene {
           this.lastTripleTechCandidates = [];
           this.tripleTechButton?.setVisible(false);
         }
-        // CHRONO-S51: 보스 협공 저항 단계 표시 (snapshot.dualTechHitsTaken 활용)
+        // CHRONO-S51/S67: 보스 협공 저항 단계 표시 (dualTechHitsTaken + tripleTechHitsTaken)
         for (const sp of d.participants ?? []) {
           if (sp.team !== 'monsters') continue;
-          const hits = sp.dualTechHitsTaken ?? 0;
-          if (hits <= 0) continue;
+          const dHits = sp.dualTechHitsTaken ?? 0;
+          const tHits = (sp as { tripleTechHitsTaken?: number }).tripleTechHitsTaken ?? 0;
+          if (dHits <= 0 && tHits <= 0) continue;
           const enemy = this.enemySprites.find((es) => es.unit.id === sp.id);
           if (!enemy) continue;
-          this._updateBossResistLabel(enemy, hits);
+          this._updateBossResistLabel(enemy, dHits, tHits);
         }
 
         // CHRONO-S28: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
