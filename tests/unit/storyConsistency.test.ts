@@ -2008,3 +2008,33 @@ describe('STORY-V58 — ATBSpeedTier ↔ chronoEra narrative cross-check', () =>
     expect(chronoEraToSpeedTier('ancient')).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('STORY-V59 — 시그니처 Tech mpCost + narrative', () => {
+  it('aetherna_final mpCost ≥ 30 (게임 정점 협공 narrative 비용)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.id).toBe('aetherna_final');
+    expect(tt.mpCost).toBeGreaterThanOrEqual(30);
+  });
+
+  it('void_eternity mpCost = 최대 mpCost (최강 협공 narrative)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const maxMp = Math.max(...listTripleTechs().map((tt) => tt.mpCost));
+    const voidEternity = listTripleTechs().find((tt) => tt.id === 'void_eternity')!;
+    expect(voidEternity.mpCost).toBe(maxMp);
+  });
+
+  it('chrono_blade (첫 Dual narrative) mpCost ≥ 12 (Dual 최소 cost 보장)', async () => {
+    const { getDualTechById } = await import('../../shared/types/dualTech');
+    const dt = getDualTechById('chrono_blade')!;
+    expect(dt.mpCost).toBeGreaterThanOrEqual(12);
+  });
+
+  it('Dual mpCost 모두 12~30 범위 narrative (Triple 28~40 보다 낮음)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.mpCost, `${dt.id} Dual mpCost`).toBeGreaterThanOrEqual(12);
+      expect(dt.mpCost).toBeLessThanOrEqual(30);
+    }
+  });
+});
