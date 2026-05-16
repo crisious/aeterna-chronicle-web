@@ -2795,3 +2795,52 @@ describe('STORY-V78 — bossOnlyMode encounter narrative cohesion', () => {
     }
   });
 });
+
+describe('STORY-V79 — era default fallback narrative cross-check', () => {
+  it('resolveFieldEncounter 모든 era 기본 bgm fallback narrative 적용', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    for (const era of STORY_ERAS) {
+      for (const zone of STORY_ZONES) {
+        const e = resolveFieldEncounter(zone, era);
+        expect(e?.bgmTrack, `${zone}/${era} bgmTrack`).toBeDefined();
+        expect(typeof e?.bgmTrack).toBe('string');
+        expect(e!.bgmTrack.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('resolveFieldEncounter 모든 era 기본 ambientEffect fallback narrative 적용', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    for (const era of STORY_ERAS) {
+      for (const zone of STORY_ZONES) {
+        const e = resolveFieldEncounter(zone, era);
+        expect(e?.ambientEffect, `${zone}/${era} ambientEffect`).toBeDefined();
+      }
+    }
+  });
+
+  it('ancient era default bgm "bgm_ancient_field" 시그니처', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    // bgm 미지정 encounter 가 있다면 ancient 기본값 사용
+    let ancientFieldCount = 0;
+    for (const zone of STORY_ZONES) {
+      const e = resolveFieldEncounter(zone, 'ancient')!;
+      if (e.bgmTrack === 'bgm_ancient_field' || e.bgmTrack === 'bgm_chrono_ancient') {
+        ancientFieldCount += 1;
+      }
+    }
+    expect(ancientFieldCount, 'ancient default bgm usage').toBeGreaterThanOrEqual(1);
+  });
+
+  it('ruined_future era default bgm 시그니처 narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    let futureFieldCount = 0;
+    for (const zone of STORY_ZONES) {
+      const e = resolveFieldEncounter(zone, 'ruined_future')!;
+      if (e.bgmTrack === 'bgm_ruined_future' || e.bgmTrack === 'bgm_final_boss' || e.bgmTrack === 'bgm_void_citadel') {
+        futureFieldCount += 1;
+      }
+    }
+    expect(futureFieldCount, 'future bgm usage').toBeGreaterThanOrEqual(1);
+  });
+});
