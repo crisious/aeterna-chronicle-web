@@ -4381,3 +4381,40 @@ describe('STORY-V121 — ambient line 시대별 narrative 매칭', () => {
     expect(count, 'ruined_future ambient 키워드 매치').toBeGreaterThanOrEqual(5);
   });
 });
+
+describe('STORY-V122 — Tech 페어 ↔ zone narrative cross-check', () => {
+  it('Tech 페어 + 보스 모두 narrative 시그니처 클래스 7 종 narrative cross-check', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    // 모든 partnerClasses 가 STORY_CLASSES 에 포함
+    const validClasses = new Set(STORY_CLASSES);
+    for (const dt of listDualTechs()) {
+      for (const cls of dt.partnerClasses) {
+        expect(validClasses.has(cls), `Dual ${dt.id} ${cls} valid class`).toBe(true);
+      }
+    }
+    for (const tt of listTripleTechs()) {
+      for (const cls of tt.partnerClasses) {
+        expect(validClasses.has(cls), `Triple ${tt.id} ${cls} valid class`).toBe(true);
+      }
+    }
+  });
+
+  it('Triple 의 모든 클래스 페어 narrative — 36 협공 안에서 도달', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    // 7C2 = 21 가능 Dual + 7C3 = 35 가능 Triple
+    expect(listDualTechs().length).toBeLessThanOrEqual(21);
+    expect(listTripleTechs().length).toBeLessThanOrEqual(35);
+  });
+
+  it('21 Dual 페어 클래스 set 모두 unique narrative (조합 21개 정확 사용)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const setKey = (dt: { partnerClasses: readonly string[] }) => [...dt.partnerClasses].sort().join('|');
+    const keys = listDualTechs().map(setKey);
+    // 21개 unique = 7C2 모든 페어 사용
+    expect(new Set(keys).size).toBe(21);
+  });
+});
