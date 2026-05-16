@@ -938,3 +938,40 @@ describe('STORY-V31 — 보스 id 시그니처 suffix narrative', () => {
     expect(aetherna).toContain('aetherna_collapse');
   });
 });
+
+describe('STORY-V32 — bgmTrack/ambientEffect narrative 정합성', () => {
+  it('21 encounter bgmTrack 모두 "bgm_" prefix narrative (resolved with era fallback)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    for (const zone of STORY_ZONES) {
+      for (const era of STORY_ERAS) {
+        const e = resolveFieldEncounter(zone, era)!;
+        expect(e.bgmTrack, `${zone}/${era} bgmTrack`).toMatch(/^bgm_/);
+      }
+    }
+  });
+
+  it('21 encounter ambientEffect 모두 known pool narrative (resolved)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const POOL = new Set(['glow', 'mist', 'void', 'boss_room', 'dust', 'none']);
+    for (const zone of STORY_ZONES) {
+      for (const era of STORY_ERAS) {
+        const e = resolveFieldEncounter(zone, era)!;
+        expect(POOL.has(e.ambientEffect!), `${zone}/${era} effect '${e.ambientEffect}'`).toBe(true);
+      }
+    }
+  });
+
+  it('보스 only encounter 는 ambientEffect=boss_room narrative 우선 적용', async () => {
+    const { listBossOnlyFields } = await import('../../shared/types/chronoField');
+    for (const e of listBossOnlyFields()) {
+      expect(e.ambientEffect, `${e.zoneId}/${e.eraId} boss-only effect`).toBe('boss_room');
+    }
+  });
+
+  it('chrono_spire/ruined_future 최종 보스 bgmTrack 시그니처 (final_boss 또는 chrono)', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
+    expect(e).not.toBeNull();
+    expect(e!.bgmTrack).toMatch(/(final_boss|chrono|aetherna)/);
+  });
+});
