@@ -239,3 +239,34 @@ describe('STORY-V5 — 협공 narrative 시그니처', () => {
     expect(boss.monsterId.startsWith('aetherna')).toBe(true);
   });
 });
+
+describe('STORY-V7 — 시대별 monster 분포 narrative', () => {
+  it('각 시대 unique monster id 7 이상 (다양성)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const era of STORY_ERAS) {
+      const eraMonsters = new Set<string>();
+      for (const e of listFieldEncounters().filter((x) => x.eraId === era)) {
+        for (const slot of e.monsterPool) {
+          eraMonsters.add(slot.monsterId);
+        }
+      }
+      expect(eraMonsters.size, `${era} 시대 monster 다양성`).toBeGreaterThanOrEqual(7);
+    }
+  });
+
+  it('전체 unique monster id ≥ 50', async () => {
+    const { listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    expect(listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
+  });
+
+  it('각 시대 보스 monster id 시대 prefix 또는 키워드 매치 (narrative 깊이)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const ancientKeywords = ['ancient', 'sanctuary', 'sprite', 'mist', 'dryad', 'wisp', 'crystal', 'shadow', 'memory', 'dusk', 'ether', 'silvanhome', 'malatus', 'citadel', 'chrono', 'warden', 'seraph', 'eidolon', 'plains', 'forest', 'guardian', 'phantom', 'titan'];
+    for (const e of listFieldEncounters().filter((x) => x.eraId === 'ancient')) {
+      const boss = e.monsterPool.find((s) => s.isBoss);
+      if (!boss) continue;
+      const found = ancientKeywords.some((k) => boss.monsterId.includes(k));
+      expect(found, `ancient boss '${boss.monsterId}' narrative 키워드 부재`).toBe(true);
+    }
+  });
+});
