@@ -398,6 +398,26 @@ export class WorldScene extends Phaser.Scene {
     });
     panel.add(eraInfo);
 
+    // CHRONO-S108: 시대별 필드 encounter 정보 추가 (server fetch — async, fire-and-forget)
+    const encounterLine = this.add.text(-152, 22, '필드 정보 로딩…', {
+      fontSize: '11px',
+      color: '#ffd54a',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      wordWrap: { width: 390 },
+    }).setName('zoneEncounterLine');
+    panel.add(encounterLine);
+
+    void networkManager.fetchZoneEncounter(zone.id, this.currentEraId).then((resp) => {
+      if (!resp.ok || !resp.encounter) {
+        encounterLine.setText('필드 데이터 미정의');
+        return;
+      }
+      const enc = resp.encounter;
+      const monsters = enc.monsterPool.map((s) => s.name).join(', ');
+      const bossTag = enc.hasBossSlot ? ' ⚔️ 보스 등장 가능' : '';
+      encounterLine.setText(`🛡 ${enc.ambientLine} — ${monsters} (최대 ${enc.maxSpawn}체)${bossTag}`);
+    }).catch(() => encounterLine.setText('필드 데이터 미정의'));
+
     const enterBtn = this.add.text(288, 30, '[ 시간 이동 ]', {
       fontSize: '15px',
       color: '#88ff88',
