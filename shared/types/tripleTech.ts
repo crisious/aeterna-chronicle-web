@@ -51,6 +51,7 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     fxKey: 'fx_chrono_break',
     description: '시간 · 기억 · 그림자가 합쳐 시간선을 부숴 적의 과거를 지운다.',
     aoe: true,
+    eraFilter: ['ancient', 'present'],
   },
   {
     id: 'void_eternity',
@@ -108,6 +109,7 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     fxKey: 'fx_shadow_chrono',
     description: '그림자 · 시간 · 공허가 어둠의 시간선으로 적을 끌어들인다.',
     aoe: true,
+    eraFilter: ['present', 'ruined_future'],
   },
   {
     id: 'memory_shatter_pact',
