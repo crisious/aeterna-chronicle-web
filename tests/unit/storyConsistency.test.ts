@@ -2383,3 +2383,53 @@ describe('STORY-V67 — 협공 element 다양성 narrative 종합', () => {
     expect(dualHoly.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V68 — Tech description + name 풍부도 narrative', () => {
+  it('21 Dual + 15 Triple description 모두 length ≥ 4 narrative (의미 있는 설명)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      if (typeof dt.description === 'string') {
+        expect(dt.description.length, `Dual ${dt.id} description`).toBeGreaterThanOrEqual(4);
+      }
+    }
+    for (const tt of listTripleTechs()) {
+      if (typeof tt.description === 'string') {
+        expect(tt.description.length, `Triple ${tt.id} description`).toBeGreaterThanOrEqual(4);
+      }
+    }
+  });
+
+  it('21 Dual + 15 Triple name 모두 length 2~30 narrative', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const dt of listDualTechs()) {
+      expect(dt.name.length, `Dual ${dt.id} name`).toBeGreaterThanOrEqual(2);
+      expect(dt.name.length).toBeLessThanOrEqual(30);
+    }
+    for (const tt of listTripleTechs()) {
+      expect(tt.name.length, `Triple ${tt.id} name`).toBeGreaterThanOrEqual(2);
+      expect(tt.name.length).toBeLessThanOrEqual(30);
+    }
+  });
+
+  it('36 협공 name unique narrative (재사용 없음)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const names = [
+      ...listDualTechs().map((dt) => dt.name),
+      ...listTripleTechs().map((tt) => tt.name),
+    ];
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  it('Dual Tech name 한글 narrative + 시그니처 키워드 (블레이드/이클립스/워프/봉인/리콜/팩트/피어스 등)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const sigKeywords = ['블레이드', '이클립스', '워프', '봉인', '리콜', '팩트', '피어스', '셰터', '오블리비온', '브레이크', '오버플로우', '메모리', '보이드', '가디언'];
+    let matchCount = 0;
+    for (const dt of listDualTechs()) {
+      if (sigKeywords.some((k) => dt.name.includes(k))) matchCount += 1;
+    }
+    expect(matchCount, 'Dual name 시그니처 키워드').toBeGreaterThanOrEqual(15);
+  });
+});
