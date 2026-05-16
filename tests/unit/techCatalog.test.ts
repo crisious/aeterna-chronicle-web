@@ -68,6 +68,19 @@ describe('Field encounter catalog 총합 (CHRONO-S121)', () => {
     expect(bossSlotCount).toBeGreaterThanOrEqual(14);
   });
 
+  it('CHRONO-S134: 모든 21 encounter 가 hasBossSlot=true (cross-product 완성)', () => {
+    for (const e of listFieldEncounters()) {
+      expect(e.hasBossSlot, `${e.zoneId}/${e.eraId} hasBossSlot`).toBe(true);
+    }
+  });
+
+  it('CHRONO-S134: 모든 21 encounter 가 isBoss=true 슬롯 1개 이상 보유', () => {
+    for (const e of listFieldEncounters()) {
+      const bossCount = e.monsterPool.filter((s) => s.isBoss).length;
+      expect(bossCount, `${e.zoneId}/${e.eraId} boss count`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
   it('chrono_spire/ruined_future 보스 weight 가장 강력 (0.4)', () => {
     const finalE = listFieldEncounters().find(
       (e) => e.zoneId === 'chrono_spire' && e.eraId === 'ruined_future',
