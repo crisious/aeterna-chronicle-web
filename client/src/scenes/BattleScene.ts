@@ -196,6 +196,8 @@ export class BattleScene extends Phaser.Scene {
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
   private serverCombatId: string | null = null;
+  // CHRONO-S23: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
+  private lastDualTechCandidates: Array<{ techId: string; name: string; actorIds: [string, string] }> = [];
 
   // Auto-battle & speed control
   private autoMode = false;
@@ -1839,9 +1841,24 @@ export class BattleScene extends Phaser.Scene {
     }
 
     const unsub1 = networkManager.on('combat:tick', (data) => {
-      const d = data as { combatId: string; turn: number; actions: unknown[] };
+      const d = data as {
+        combatId: string;
+        turn?: number;
+        tick?: number;
+        actions: unknown[];
+        // CHRONO-S23: server TickResult.dualTechCandidates 노출
+        dualTechCandidates?: Array<{ techId: string; name: string; actorIds: [string, string] }>;
+      };
       if (d.combatId === this.serverCombatId) {
-        this.battleUI?.addLog(`[서버] 턴 ${d.turn}`);
+        const turn = d.turn ?? d.tick ?? 0;
+        this.battleUI?.addLog(`[서버] 턴 ${turn}`);
+        if (d.dualTechCandidates && d.dualTechCandidates.length > 0) {
+          const names = d.dualTechCandidates.map((c) => c.name).join(', ');
+          this.battleUI?.addLog(`✨ 협공 가능: ${names}`);
+          this.lastDualTechCandidates = d.dualTechCandidates;
+        } else {
+          this.lastDualTechCandidates = [];
+        }
       }
     });
 
