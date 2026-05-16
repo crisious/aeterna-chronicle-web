@@ -302,20 +302,35 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 시대 전환 시 GameScene 재 spawn
 - BattleScene 승리 시 monster sprite 제거
 
-## 2026-05-17 STORY 정합성 검증 chapter — 플레이 스토리 cross-check (10 sprint, 30 가드)
+## 2026-05-17 STORY 정합성 검증 chapter — 플레이 스토리 cross-check (25 sprint, 79 가드)
 
 전체 narrative source cross-check + 회귀 가드.
 
-- **V1** GameScene ZONE_CHAPTER_MAP 에 crystal_cave 누락 발견 + 추가 (Chapter 3.5)
-- **V2** 7 zone × 3 era 정합성 + 시대 분위기 키워드 + 최종 보스 정합 — 'citadel_lord' → '고대 성채 영주' 강화
-- **V3** 7 narrative 클래스 cross-check (Dual 21 + Triple 15 partnerClasses) + 각 클래스 ≥1 페어
+- **V1** GameScene ZONE_CHAPTER_MAP 에 crystal_cave 누락 추가 (Chapter 3.5)
+- **V2** 7 zone × 3 era cross-product + 시대 분위기 키워드 — 'citadel_lord' → '고대 성채 영주' 강화
+- **V3** 7 narrative 클래스 cross-check (Dual 21 + Triple 15 partnerClasses + 각 클래스 ≥1 페어)
 - **V4** chrono_spire 시그니처 보스 시간선 + ambient line era 키워드
-- **V5** 협공 시그니처 (aetherna_final/chrono_blade/void_eternity) + aetherna prefix 정합
-- **V6** 전체 회귀: 109 files / 1421 tests pass
-- **V7** 시대별 monster 분포 다양성 (≥7 unique per era) + ancient 보스 narrative 키워드
-- **V8** zone-별 ambient line 시대 차별성 + 21 unique + ruined_future 키워드
-- **V9** ChronoTimeline ↔ chronoEraAtb cross-check (hp/attackSpeed/levelOffset/speedTier 단조 증가/prefix)
-- **V10** progress.md 최종 마무리 + storyConsistency 30/30 + 전체 1427 tests pass
+- **V5** 협공 시그니처 (aetherna_final/chrono_blade/void_eternity) + aetherna prefix
+- **V6** 전체 회귀 1421 tests
+- **V7** 시대별 monster ≥7 unique + ancient 보스 narrative 키워드
+- **V8** zone-별 ambient line 차별성 + 21 unique + ruined_future 키워드
+- **V9** ChronoTimeline ↔ chronoEraAtb cross-check (hp/attackSpeed/levelOffset/speedTier)
+- **V10** progress.md 마무리
+- **V11** Tech element 분포 (Dual/Triple chrono/dark/holy 각 ≥1)
+- **V12** 협공 eraFilter narrative 일관성 (chrono→ancient/present, dark AOE→ruined_future)
+- **V13** fxKey 정합 (fx_{id} 패턴 36 unique)
+- **V14** Chapter 1~5 진행 순서 (시작 보스 weight 0.1 ↔ 종점 0.4)
+- **V15** 보스/monster id snake_case 패턴 + unique
+- **V16** 협공 mpCost balance (Dual ≥12, Triple ≥28, void_eternity ≥30, Triple > Dual avg)
+- **V17** partnerClasses 순열 안정성 (Dual reverse + Triple 6!)
+- **V18** 시대 진행 어려움 단조 (hp/level/reward/attackSpeed)
+- **V19** AI hint 시대 narrative (ancient defensive / present 균형 / ruined_future aoe+aggressive)
+- **V20** era bonus drops narrative (ancient relic / ruined_future chrono+void / present 빈)
+- **V21** era별 협공 가용성 (시대당 Dual ≥3 + Triple ≥1 + ruined_future 전용 ≥1)
+- **V22** AOE Tech narrative (Dual AOE 3종 정확 + Triple 모두 광역)
+- **V23** ambientLine 길이 + aetherna 시그니처
+- **V24** 정량 정점 (36 협공 + 21 보스 + 50+ monster + 7/3/7 source)
+- **V25** progress.md 최종 25 sprint 정량 갱신
 
-게임 narrative 일관성 — 7 zone / 3 era / 21 보스 / 36 협공 / 52 unique monster / aetherna 정점 모두 cross-check 완성.
+게임 narrative — 7 zone × 3 era × 21 보스 × 36 협공 × 50+ monster × 7 클래스 × aetherna 정점 모두 cross-check 완성. 회귀: storyConsistency 79/79 + 전체 1478 tests pass.
 
