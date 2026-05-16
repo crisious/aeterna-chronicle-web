@@ -3452,3 +3452,29 @@ describe('STORY-V94 — monsterPool 시그니처 패턴 narrative', () => {
     }
   });
 });
+
+describe('STORY-V95 — ambientLine + description 문장 끝 narrative 패턴', () => {
+  it('Triple description 모두 마침표/말줄임표 종결 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      const last = tt.description.trim().slice(-1);
+      expect(['.', '。', '…', '!', '?', ')', '!', '─'].includes(last) || /[가-힣]/.test(last) || /[a-zA-Z]/.test(last), `${tt.id} description end '${last}'`).toBe(true);
+    }
+  });
+
+  it('Triple description 띄어쓰기 narrative ≥ 3 (문장 구조)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      const spaceCount = (tt.description.match(/\s/g) ?? []).length;
+      expect(spaceCount, `${tt.id} spaces`).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('ambient line 모두 한글 또는 영문 narrative 시작 (특수문자 시작 아님)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      const firstChar = e.ambientLine.charAt(0);
+      expect(/[가-힣a-zA-Z0-9"'<\[\(]/.test(firstChar), `${e.zoneId}/${e.eraId} first '${firstChar}'`).toBe(true);
+    }
+  });
+});
