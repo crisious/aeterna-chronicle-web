@@ -139,6 +139,78 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     hasBossSlot: true,
     ambientLine: '그림자가 모든 빛을 잡아먹은 협곡',
   },
+  // ── 말라투스 성소 ──
+  {
+    zoneId: 'malatus_sanctuary',
+    eraId: 'ancient',
+    monsterPool: [
+      { monsterId: 'sanctuary_acolyte', name: '성소 사제', weight: 0.5 },
+      { monsterId: 'silvanhome_warden', name: '실반헤임 경비병', weight: 0.4 },
+      { monsterId: 'malatus_avatar', name: '말라투스 화신', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 3,
+    hasBossSlot: true,
+    ambientLine: '봉인된 신성이 살아있는 성소',
+  },
+  {
+    zoneId: 'malatus_sanctuary',
+    eraId: 'present',
+    monsterPool: [
+      { monsterId: 'lost_acolyte', name: '잃어버린 사제', weight: 0.6 },
+      { monsterId: 'sanctuary_guardian', name: '성소 수호자', weight: 0.4 },
+    ],
+    maxSpawn: 3,
+    hasBossSlot: false,
+    ambientLine: '잊혀진 봉인이 깨어나는 성소',
+  },
+  {
+    zoneId: 'malatus_sanctuary',
+    eraId: 'ruined_future',
+    monsterPool: [
+      { monsterId: 'corrupted_acolyte', name: '부패된 사제', weight: 0.5 },
+      { monsterId: 'broken_warden', name: '부서진 경비병', weight: 0.4 },
+      { monsterId: 'fallen_malatus', name: '타락한 말라투스', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '신성이 무너진 성소의 잔해',
+  },
+  // ── 결정 동굴 ──
+  {
+    zoneId: 'crystal_cave',
+    eraId: 'ancient',
+    monsterPool: [
+      { monsterId: 'crystal_sprite', name: '결정 정령', weight: 0.5 },
+      { monsterId: 'ether_crystal_golem', name: '에테르 결정 골렘', weight: 0.5 },
+    ],
+    maxSpawn: 3,
+    hasBossSlot: false,
+    ambientLine: '에테르가 결정으로 응결된 동굴',
+  },
+  {
+    zoneId: 'crystal_cave',
+    eraId: 'present',
+    monsterPool: [
+      { monsterId: 'cave_bat', name: '동굴 박쥐', weight: 0.5 },
+      { monsterId: 'crystal_lurker', name: '결정 잠복자', weight: 0.4 },
+      { monsterId: 'crystal_guardian', name: '결정의 수호자', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '깊은 어둠 속의 결정 광맥',
+  },
+  {
+    zoneId: 'crystal_cave',
+    eraId: 'ruined_future',
+    monsterPool: [
+      { monsterId: 'shattered_crystal', name: '깨진 결정체', weight: 0.5 },
+      { monsterId: 'void_lurker', name: '공허 잠복자', weight: 0.4 },
+      { monsterId: 'chrono_shard_titan', name: '시간 파편 거인', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '시간 결정이 산산조각난 동굴',
+  },
 ] as const;
 
 const ENCOUNTER_KEY = (zoneId: string, eraId: ChronoEraId): string => `${zoneId}::${eraId}`;

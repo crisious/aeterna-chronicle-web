@@ -57,8 +57,8 @@ describe('listFieldEncountersByZone', () => {
 });
 
 describe('listFieldEncounters', () => {
-  it('전체 목록 9 (3 zone × 3 era)', () => {
-    expect(listFieldEncounters().length).toBe(9);
+  it('전체 목록 15 (5 zone × 3 era — CHRONO-S104)', () => {
+    expect(listFieldEncounters().length).toBe(15);
   });
 
   it('모든 encounter 의 weight 합 = 1.0 (±0.01)', () => {
@@ -70,7 +70,7 @@ describe('listFieldEncounters', () => {
   });
 
   it('각 zone 마다 3 era 모두 정의됨', () => {
-    const zones = ['aether_plains', 'memory_forest', 'shadow_gorge'];
+    const zones = ['aether_plains', 'memory_forest', 'shadow_gorge', 'malatus_sanctuary', 'crystal_cave'];
     for (const zone of zones) {
       const list = listFieldEncountersByZone(zone);
       expect(list.length, `${zone} era count`).toBe(3);
