@@ -206,9 +206,9 @@ describe('getBossSlot + listAllFieldMonsterIds (CHRONO-S115)', () => {
     expect(boss?.monsterId).toBe('aetherna_collapse');
   });
 
-  it('getBossSlot 보스 없는 encounter → null (memory_forest present)', async () => {
+  it('getBossSlot 보스 없는 encounter → null (crystal_cave ancient)', async () => {
     const { resolveFieldEncounter, getBossSlot } = await import('../../shared/types/chronoField');
-    const e = resolveFieldEncounter('memory_forest', 'present')!;
+    const e = resolveFieldEncounter('crystal_cave', 'ancient')!;
     expect(getBossSlot(e)).toBeNull();
   });
 

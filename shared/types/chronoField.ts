@@ -95,11 +95,12 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     zoneId: 'memory_forest',
     eraId: 'present',
     monsterPool: [
-      { monsterId: 'forest_wolf', name: '숲 늑대', weight: 0.5 },
-      { monsterId: 'wisp', name: '도깨비불', weight: 0.5 },
+      { monsterId: 'forest_wolf', name: '숲 늑대', weight: 0.45 },
+      { monsterId: 'wisp', name: '도깨비불', weight: 0.45 },
+      { monsterId: 'forest_remnant', name: '숲의 잔영', weight: 0.1, isBoss: true },
     ],
     maxSpawn: 3,
-    hasBossSlot: false,
+    hasBossSlot: true,
     ambientLine: '안개 자욱한 기억의 숲',
   },
   {
@@ -119,11 +120,12 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     zoneId: 'shadow_gorge',
     eraId: 'ancient',
     monsterPool: [
-      { monsterId: 'shadow_imp', name: '그림자 임프', weight: 0.6 },
+      { monsterId: 'shadow_imp', name: '그림자 임프', weight: 0.5 },
       { monsterId: 'dusk_serpent', name: '황혼 뱀', weight: 0.4 },
+      { monsterId: 'dusk_phantom', name: '황혼 환영', weight: 0.1, isBoss: true },
     ],
     maxSpawn: 3,
-    hasBossSlot: false,
+    hasBossSlot: true,
     ambientLine: '황혼이 영원한 협곡',
   },
   {
