@@ -299,3 +299,39 @@ describe('STORY-V8 — zone-별 ambient line 시대 차별성', () => {
     }
   });
 });
+
+describe('STORY-V9 — ChronoTimeline ↔ chronoEraAtb 데이터 cross-check', () => {
+  it('chronoEraToEnemyMultipliers 가 ChronoTimeline CHRONO_ERAS 와 일치', async () => {
+    const { chronoEraToEnemyMultipliers } = await import('../../shared/types/chronoEraAtb');
+    // ancient
+    const a = chronoEraToEnemyMultipliers('ancient');
+    expect(a.hp).toBe(0.9);
+    expect(a.attackSpeed).toBe(0.95);
+    expect(a.reward).toBe(1.0);
+    expect(a.levelOffset).toBe(-2);
+    // present
+    const p = chronoEraToEnemyMultipliers('present');
+    expect(p.hp).toBe(1.0);
+    expect(p.attackSpeed).toBe(1.0);
+    expect(p.levelOffset).toBe(0);
+    // ruined_future (가장 강한 시대)
+    const f = chronoEraToEnemyMultipliers('ruined_future');
+    expect(f.hp).toBe(1.25);
+    expect(f.attackSpeed).toBe(1.15);
+    expect(f.reward).toBe(1.25);
+    expect(f.levelOffset).toBe(6);
+  });
+
+  it('chronoEraToSpeedTier ancient<present<ruined_future (시대 긴장감 narrative)', async () => {
+    const { chronoEraToSpeedTier } = await import('../../shared/types/chronoEraAtb');
+    expect(chronoEraToSpeedTier('ancient')).toBeLessThan(chronoEraToSpeedTier('present'));
+    expect(chronoEraToSpeedTier('present')).toBeLessThan(chronoEraToSpeedTier('ruined_future'));
+  });
+
+  it('decorateMonsterNameByEra prefix narrative 정합', async () => {
+    const { decorateMonsterNameByEra } = await import('../../shared/types/chronoEraAtb');
+    expect(decorateMonsterNameByEra('망령', 'ancient')).toContain('[고대]');
+    expect(decorateMonsterNameByEra('망령', 'present')).toBe('망령');
+    expect(decorateMonsterNameByEra('망령', 'ruined_future')).toContain('[붕괴]');
+  });
+});
