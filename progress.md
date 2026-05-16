@@ -232,12 +232,16 @@ S61 progress · S62 REST · S63 'T' 단축키 · S64 WS · S65 버튼 · S66 보
 - 검증: combatEngine 31/31 + tripleTech 25/25 + dualTech 35/35.
 - 누적 **77 sprint**, PR #11 76 commits.
 
-## TODO (CHRONO-ATB chapter X 후보)
+## 2026-05-16 CHRONO-ATB chapter X — 시대 필터 통일 + 면역 + 통계 + cycle + 15종 (10 sprint)
+
+- **S79** docs IX / **S80** Dual eraFilter 통일 / **S81** dualTechImmune flag / **S82** combatStats 카운터 / **S83** 종료 시 통계 보고 / **S84** chain decay 깜빡 / **S85** eraFilter 확장 (ether_recall/void_oblivion/guardian_oath) / **S86** Snapshot dualTechImmune + 클라 면역 라벨 / **S87** Triple cycle (Shift+T) / **S88** Triple Tech 15종.
+- 검증: combatEngine 33/33 + tripleTech 25/25 + dualTech 35/35.
+- 누적 **88 sprint**, PR #11 87 commits.
+
+## TODO (CHRONO-ATB chapter XI 후보)
 
 - 라이브 Playwright 자동 QA: 전체 시나리오
-- 협공 사용 통계 누적 DB 저장
-- Dual Tech eraFilter 통일
-- 보스 전용 협공 면역 키워드
-- 협공 chain decay 시각 효과
-- BattleScene 다중 후보 sub-menu
+- 협공 사용 통계 누적 DB 저장 (Prisma 모델)
+- CombatLogger 통계 통합 (replay 데이터)
+- 다중 후보 동시 표시 sub-menu UI
 
