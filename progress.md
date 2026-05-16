@@ -489,8 +489,13 @@ V129 이후 chapter VI — element 분포 정확 + 시간선 narrative 정합.
 - **V138** chronoField helper API non-error stress (전 helper + 50회 cycle + immutable)
 - **V139** description quality 강화 (Triple marker ≥8 + 한글 ≥5 + Dual 한글 ≥3)
 - **V140** progress.md V135~V140 갱신 + 110 sprint 마디 기록
+- **V141** 시간선 narrative final cross-cohesion (chrono Triple/Dual 시그니처 + aetherna 5중)
+- **V142** shadow_weaver 클래스 cohesion (Dual ≥5 + 모두 dark + Triple ≥3)
+- **V143** time_knight 클래스 cohesion (chrono/dark element + chrono_blade + memory_warp)
+- **V144** 7 클래스 cohesion 종합 (void Triple ≥2, ether/memory ≥4, breaker/guardian ≥4)
+- **V145** 🎯 500 가드 마디 도달 — chapter I~VI cohesion final completed
 
-회귀: storyConsistency 480/480 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 500/500 + unit 전체 844+/844+ pass.
 
-**110 sprint 마디 + 480 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) + VI (+30) = 누적 110 sprint, +388 가드 (92 → 480).
+**🎯🎯🎯 500 가드 마디 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) + VI (+66) = 누적 116 sprint, +408 가드 (92 → 500). aetherna 게임 narrative cohesion final completed.
 
