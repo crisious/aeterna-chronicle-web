@@ -67,6 +67,78 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     hasBossSlot: true,
     ambientLine: '시간이 무너진 폐허',
   },
+  // ── 기억의 숲 ──
+  {
+    zoneId: 'memory_forest',
+    eraId: 'ancient',
+    monsterPool: [
+      { monsterId: 'ancient_dryad', name: '고대 정령목', weight: 0.5 },
+      { monsterId: 'memory_wisp', name: '기억의 도깨비불', weight: 0.4 },
+      { monsterId: 'forest_guardian', name: '숲의 수호자', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 3,
+    hasBossSlot: true,
+    ambientLine: '잊혀진 정령의 숨결이 떠도는 숲',
+  },
+  {
+    zoneId: 'memory_forest',
+    eraId: 'present',
+    monsterPool: [
+      { monsterId: 'forest_wolf', name: '숲 늑대', weight: 0.5 },
+      { monsterId: 'wisp', name: '도깨비불', weight: 0.5 },
+    ],
+    maxSpawn: 3,
+    hasBossSlot: false,
+    ambientLine: '안개 자욱한 기억의 숲',
+  },
+  {
+    zoneId: 'memory_forest',
+    eraId: 'ruined_future',
+    monsterPool: [
+      { monsterId: 'rotting_dryad', name: '부패된 정령목', weight: 0.5 },
+      { monsterId: 'lost_wraith', name: '잃어버린 망령', weight: 0.4 },
+      { monsterId: 'forsaken_guardian', name: '버려진 수호자', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '잊혀진 모든 것이 썩어가는 숲',
+  },
+  // ── 그림자 협곡 ──
+  {
+    zoneId: 'shadow_gorge',
+    eraId: 'ancient',
+    monsterPool: [
+      { monsterId: 'shadow_imp', name: '그림자 임프', weight: 0.6 },
+      { monsterId: 'dusk_serpent', name: '황혼 뱀', weight: 0.4 },
+    ],
+    maxSpawn: 3,
+    hasBossSlot: false,
+    ambientLine: '황혼이 영원한 협곡',
+  },
+  {
+    zoneId: 'shadow_gorge',
+    eraId: 'present',
+    monsterPool: [
+      { monsterId: 'shadow_weaver_apprentice', name: '그림자 직조 견습', weight: 0.5 },
+      { monsterId: 'gorge_serpent', name: '협곡 뱀', weight: 0.4 },
+      { monsterId: 'shadow_lord', name: '그림자 군주', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '그림자 세력의 본거지',
+  },
+  {
+    zoneId: 'shadow_gorge',
+    eraId: 'ruined_future',
+    monsterPool: [
+      { monsterId: 'shadow_overflow', name: '그림자 폭주', weight: 0.5 },
+      { monsterId: 'void_serpent', name: '공허 뱀', weight: 0.4 },
+      { monsterId: 'shadow_eternity', name: '영원의 그림자', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '그림자가 모든 빛을 잡아먹은 협곡',
+  },
 ] as const;
 
 const ENCOUNTER_KEY = (zoneId: string, eraId: ChronoEraId): string => `${zoneId}::${eraId}`;

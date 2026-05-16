@@ -55,8 +55,8 @@ describe('listFieldEncountersByZone', () => {
 });
 
 describe('listFieldEncounters', () => {
-  it('전체 목록 ≥ 3', () => {
-    expect(listFieldEncounters().length).toBeGreaterThanOrEqual(3);
+  it('전체 목록 9 (3 zone × 3 era)', () => {
+    expect(listFieldEncounters().length).toBe(9);
   });
 
   it('모든 encounter 의 weight 합 = 1.0 (±0.01)', () => {
@@ -65,5 +65,27 @@ describe('listFieldEncounters', () => {
       expect(sum, `${e.zoneId}/${e.eraId} weight sum`).toBeGreaterThan(0.99);
       expect(sum).toBeLessThan(1.01);
     }
+  });
+
+  it('각 zone 마다 3 era 모두 정의됨', () => {
+    const zones = ['aether_plains', 'memory_forest', 'shadow_gorge'];
+    for (const zone of zones) {
+      const list = listFieldEncountersByZone(zone);
+      expect(list.length, `${zone} era count`).toBe(3);
+    }
+  });
+});
+
+describe('resolveFieldEncounter — 추가 zone (CHRONO-S102)', () => {
+  it('memory_forest + ancient → 숲의 수호자 보스', () => {
+    const e = resolveFieldEncounter('memory_forest', 'ancient');
+    expect(e?.hasBossSlot).toBe(true);
+    expect(e!.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('forest_guardian');
+  });
+
+  it('shadow_gorge + ruined_future → shadow_eternity 보스', () => {
+    const e = resolveFieldEncounter('shadow_gorge', 'ruined_future');
+    expect(e?.maxSpawn).toBe(4);
+    expect(e!.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('shadow_eternity');
   });
 });
