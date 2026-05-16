@@ -2348,3 +2348,38 @@ describe('STORY-V66 — shadow_weaver + time_guardian 시그니처 협공', () =
     expect(ids.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('STORY-V67 — 협공 element 다양성 narrative 종합', () => {
+  it('전체 협공 36개의 element 분포 ≥ 3 distinct (다양성 보장)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const elements = new Set<string>();
+    listDualTechs().forEach((dt) => elements.add(dt.element));
+    listTripleTechs().forEach((tt) => elements.add(tt.element));
+    expect(elements.size, '협공 element distinct').toBeGreaterThanOrEqual(3);
+  });
+
+  it('chrono element 협공: Dual ≥ 3 + Triple ≥ 2 (시간 시그니처 narrative)', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const dualChrono = listDualTechsByElement('chrono');
+    const tripleChrono = listTripleTechs().filter((tt) => tt.element === 'chrono');
+    expect(dualChrono.length).toBeGreaterThanOrEqual(3);
+    expect(tripleChrono.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('dark element 협공: Dual ≥ 5 + Triple ≥ 2 (그림자/공허 narrative)', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const dualDark = listDualTechsByElement('dark');
+    const tripleDark = listTripleTechs().filter((tt) => tt.element === 'dark');
+    expect(dualDark.length).toBeGreaterThanOrEqual(5);
+    expect(tripleDark.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('holy element 협공: Dual ≥ 2 (수호/팩트 narrative)', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const dualHoly = listDualTechsByElement('holy');
+    expect(dualHoly.length).toBeGreaterThanOrEqual(2);
+  });
+});
