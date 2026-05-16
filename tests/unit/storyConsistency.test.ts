@@ -1122,3 +1122,50 @@ describe('STORY-V35 — Dual Tech eraFilter 시대 narrative 정합성', () => {
     expect(counts.present).toBeGreaterThanOrEqual(counts.ruined_future);
   });
 });
+
+describe('STORY-V36 — ambientLine 21개 narrative 다양성', () => {
+  it('21 encounter ambientLine 모두 unique narrative (동일 line 재사용 없음)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const lines = listFieldEncounters().map((e) => e.ambientLine);
+    expect(lines.length).toBe(21);
+    expect(new Set(lines).size, 'unique ambient lines').toBe(21);
+  });
+
+  it('21 encounter ambientLine 모두 length 8~80 narrative (의미 있는 표현)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(e.ambientLine.length, `${e.zoneId}/${e.eraId} line length`).toBeGreaterThanOrEqual(8);
+      expect(e.ambientLine.length).toBeLessThanOrEqual(80);
+    }
+  });
+
+  it('21 encounter ambientLine 모두 한글 narrative 포함', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const koreanRegex = /[가-힣]/;
+    for (const e of listFieldEncounters()) {
+      expect(koreanRegex.test(e.ambientLine), `${e.zoneId}/${e.eraId} 한글 없음`).toBe(true);
+    }
+  });
+
+  it('ancient ambientLine 7개 중 ≥ 4개 고대 분위기 키워드 (고대/유적/봉인/평원 등)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const ancientLines = listFieldEncounters().filter((e) => e.eraId === 'ancient').map((e) => e.ambientLine);
+    const ancientKeywords = ['고대', '유적', '봉인', '에테르', '평원', '숲', '결정', '말라투스', '환영', '시간', '거인', '황혼', '수호', '신비', '평화'];
+    let matchCount = 0;
+    for (const line of ancientLines) {
+      if (ancientKeywords.some((k) => line.includes(k))) matchCount += 1;
+    }
+    expect(matchCount, `ancient ambient keyword match count`).toBeGreaterThanOrEqual(4);
+  });
+
+  it('ruined_future ambientLine 7개 중 ≥ 4개 붕괴 분위기 키워드', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const futureLines = listFieldEncounters().filter((e) => e.eraId === 'ruined_future').map((e) => e.ambientLine);
+    const futureKeywords = ['붕괴', '무너진', '폐허', '버려진', '망각', '공허', '타락', '시간', '종말', '파편', '부서진', '썩', '산산조각', '잃어버린', '죽은'];
+    let matchCount = 0;
+    for (const line of futureLines) {
+      if (futureKeywords.some((k) => line.includes(k))) matchCount += 1;
+    }
+    expect(matchCount, `future ambient keyword match count`).toBeGreaterThanOrEqual(4);
+  });
+});
