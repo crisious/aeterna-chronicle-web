@@ -1563,3 +1563,37 @@ describe('STORY-V46 — 시대별 monster id 시그니처 narrative', () => {
     expect(futureNameMatchCount, 'future name keyword match').toBeGreaterThanOrEqual(7);
   });
 });
+
+describe('STORY-V48 — 협공 mpCost ↔ damageMultiplier 상관 narrative', () => {
+  it('Triple Tech: 최강 (void_eternity 3.8×) mpCost ≥ 최약 (3.0~3.2 다음) narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const sorted = [...listTripleTechs()].sort((a, b) => b.damageMultiplier - a.damageMultiplier);
+    const strongest = sorted[0];
+    const weakest = sorted[sorted.length - 1];
+    expect(strongest.mpCost, `strongest ${strongest.id} mpCost vs weakest ${weakest.id}`).toBeGreaterThanOrEqual(weakest.mpCost);
+  });
+
+  it('Dual Tech: AOE 협공 (2.5×) mpCost ≥ 일반 협공 평균 narrative', async () => {
+    const { listDualTechs, listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const aoeAvg = listAoeDualTechs().reduce((s, dt) => s + dt.mpCost, 0) / 3;
+    const all = listDualTechs();
+    const allAvg = all.reduce((s, dt) => s + dt.mpCost, 0) / all.length;
+    expect(aoeAvg, 'AOE avg mpCost vs all avg').toBeGreaterThanOrEqual(allAvg);
+  });
+
+  it('Triple 평균 mpCost > Dual 평균 mpCost narrative (3인 협공 코스트 ↑)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const dualAvg = listDualTechs().reduce((s, dt) => s + dt.mpCost, 0) / 21;
+    const tripleAvg = listTripleTechs().reduce((s, tt) => s + tt.mpCost, 0) / 15;
+    expect(tripleAvg).toBeGreaterThan(dualAvg);
+  });
+
+  it('Triple Tech 모두 mpCost 28~40 범위 narrative (전투 균형)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    for (const tt of listTripleTechs()) {
+      expect(tt.mpCost, `${tt.id} mpCost`).toBeGreaterThanOrEqual(28);
+      expect(tt.mpCost).toBeLessThanOrEqual(40);
+    }
+  });
+});
