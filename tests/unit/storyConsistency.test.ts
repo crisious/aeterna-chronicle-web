@@ -5112,3 +5112,25 @@ describe('STORY-V143 — time_knight 클래스 narrative final cohesion', () => 
     expect(dt.id).toBe('memory_warp');
   });
 });
+
+describe('STORY-V144 — 7 클래스 narrative cohesion 종합 cross-check', () => {
+  it('void_wanderer Triple ≥ 2 + ether/memory_weaver Triple ≥ 4 narrative', async () => {
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    expect(listTripleTechsByClass('void_wanderer').length).toBeGreaterThanOrEqual(2);
+    expect(listTripleTechsByClass('ether_knight').length).toBeGreaterThanOrEqual(4);
+    expect(listTripleTechsByClass('memory_weaver').length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('memory_breaker Dual ≥ 4 (파괴 시그니처)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const duals = listDualTechsByClass('memory_breaker');
+    expect(duals.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('time_guardian Dual ≥ 4 + Triple ≥ 2 (수호 시그니처)', async () => {
+    const { listDualTechsByClass } = await import('../../shared/types/dualTech');
+    const { listTripleTechsByClass } = await import('../../shared/types/tripleTech');
+    expect(listDualTechsByClass('time_guardian').length).toBeGreaterThanOrEqual(4);
+    expect(listTripleTechsByClass('time_guardian').length).toBeGreaterThanOrEqual(2);
+  });
+});
