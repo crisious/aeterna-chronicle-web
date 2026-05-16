@@ -21,6 +21,11 @@ export interface TripleTechDef {
   description: string;
   /** 광역 여부 (대부분 true). */
   aoe?: boolean;
+  /**
+   * CHRONO-S78: 특정 시대에서만 발동 가능 (UI 후보 노출 제한).
+   * 미설정 시 모든 시대 가능. 예: ['ruined_future'].
+   */
+  eraFilter?: readonly ('ancient' | 'present' | 'ruined_future')[];
 }
 
 const TRIPLE_TECHS: readonly TripleTechDef[] = [
@@ -34,6 +39,7 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     fxKey: 'fx_aetherna_final',
     description: '에테르나 크로니클의 최종 일격 — 에테르 검광 · 시간 정지 · 기억 직조가 동시에.',
     aoe: true,
+    eraFilter: ['present', 'ruined_future'],
   },
   {
     id: 'chrono_break',
@@ -56,6 +62,7 @@ const TRIPLE_TECHS: readonly TripleTechDef[] = [
     fxKey: 'fx_void_eternity',
     description: '공허 방랑자 · 시간 수호자 · 기억 파괴자가 영원으로 흘려보낸다.',
     aoe: true,
+    eraFilter: ['ruined_future'],
   },
   {
     id: 'ether_dark_riff',

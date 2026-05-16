@@ -796,6 +796,10 @@ export class CombatEngine {
           const c = readyParty[k];
           const def = resolveTripleTech(a.classId, b.classId, c.classId);
           if (!def) continue;
+          // CHRONO-S78: era 필터 적용 — eraFilter 가 있고 현재 era 가 포함 안 되면 후보 제외
+          if (def.eraFilter && this.config.eraId && !def.eraFilter.includes(this.config.eraId)) {
+            continue;
+          }
           const ids: [string, string, string] = [a.id, b.id, c.id].sort() as [string, string, string];
           const key = `${def.id}::${ids[0]}::${ids[1]}::${ids[2]}`;
           if (seen.has(key)) continue;
