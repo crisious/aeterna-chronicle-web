@@ -449,6 +449,10 @@ describe('CombatEngine', () => {
     expect(cands[0].techId).toBe('chrono_blade');
     expect(cands[0].name).toBe('크로노 블레이드');
     expect(cands[0].actorIds.sort()).toEqual(['ek', 'tk']);
+    // CHRONO-S45: element + aoe + mpCost 노출
+    expect(cands[0].element).toBe('chrono');
+    expect(cands[0].aoe).toBe(false);
+    expect(cands[0].mpCost).toBe(12);
   });
 
   it('9i. no candidate when only one party member ready', () => {

@@ -165,6 +165,12 @@ export interface DualTechCandidate {
   name: string;
   /** 협공 두 actor (party member id). 정렬됨. */
   actorIds: [string, string];
+  /** CHRONO-S45: 속성 (UI 색상/SFX 선택 hint). */
+  element: string;
+  /** CHRONO-S45: 광역 협공 여부 (UI 표시). */
+  aoe: boolean;
+  /** CHRONO-S45: MP 비용 (양쪽 각자). UI 가 부족 시 disable 가능. */
+  mpCost: number;
 }
 
 export interface TickResult {
@@ -828,7 +834,14 @@ export class CombatEngine {
         const key = `${def.id}::${ids[0]}::${ids[1]}`;
         if (seen.has(key)) continue;
         seen.add(key);
-        out.push({ techId: def.id, name: def.name, actorIds: ids });
+        out.push({
+          techId: def.id,
+          name: def.name,
+          actorIds: ids,
+          element: def.element,
+          aoe: def.aoe ?? false,
+          mpCost: def.mpCost,
+        });
       }
     }
     return out;
