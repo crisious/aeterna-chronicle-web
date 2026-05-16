@@ -5010,3 +5010,61 @@ describe('STORY-V139 — Dual/Triple description quality 강화 narrative', () =
     }
   });
 });
+
+describe('STORY-V141 — 시간선 narrative final cross-cohesion', () => {
+  it('chrono element 협공 모든 시간선 시그니처 narrative cross-check', async () => {
+    const { listDualTechsByElement } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const dualChrono = listDualTechsByElement('chrono');
+    const tripleChrono = listTripleTechs().filter((tt) => tt.element === 'chrono');
+
+    // 모든 chrono Dual 이름에 chrono/time/memory 시그니처
+    for (const dt of dualChrono) {
+      const hasSig = ['크로노', '타임', '메모리'].some((k) => dt.name.includes(k));
+      expect(hasSig, `chrono Dual ${dt.id} '${dt.name}' 시그니처`).toBe(true);
+    }
+
+    // 모든 chrono Triple 이름에 시간선 시그니처
+    for (const tt of tripleChrono) {
+      const hasSig = ['크로노', '타임', '메모리', '에테르나'].some((k) => tt.name.includes(k));
+      expect(hasSig, `chrono Triple ${tt.id} '${tt.name}' 시그니처`).toBe(true);
+    }
+  });
+
+  it('aetherna 시그니처 5중 cross-cohesion final narrative (V141)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const { resolveFieldEncounter, listAllBossMonsterIds, listBossOnlyFields } = await import('../../shared/types/chronoField');
+
+    // 1) Triple aetherna_final
+    const tt = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.id).toBe('aetherna_final');
+    expect(tt.element).toBe('chrono');
+
+    // 2) 보스 aetherna_collapse
+    const final = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(final.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_collapse');
+
+    // 3) 보스 aetherna_eidolon
+    const ancient = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    expect(ancient.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_eidolon');
+
+    // 4) listAllBossMonsterIds 에 모두 포함
+    const bosses = listAllBossMonsterIds();
+    expect(bosses).toContain('aetherna_collapse');
+    expect(bosses).toContain('aetherna_eidolon');
+
+    // 5) listBossOnlyFields = chrono_spire/ruined_future 만
+    const onlys = listBossOnlyFields();
+    expect(onlys.length).toBe(1);
+    expect(onlys[0].zoneId).toBe('chrono_spire');
+    expect(onlys[0].eraId).toBe('ruined_future');
+  });
+
+  it('시간선 cohesion final — chrono_spire 3 era 보스 시그니처 + bgm 시그니처', async () => {
+    const { listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    const list = listFieldEncountersByZone('chrono_spire');
+    expect(list.length).toBe(3);
+    const futureBgm = list.find((e) => e.eraId === 'ruined_future')?.bgmTrack;
+    expect(futureBgm).toBe('bgm_final_boss');
+  });
+});
