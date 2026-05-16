@@ -63,4 +63,15 @@ describe('chrono.ts barrel (CHRONO-S122)', () => {
     expect(bossIds).toContain('aetherna_collapse');
     expect(bossIds).toContain('plains_guardian');
   });
+
+  it('CHRONO-S140: 140 sprint 마디 — 핵심 chrono 헬퍼 모두 barrel 통과', () => {
+    // 모든 chronoField public API 가 barrel 에서 호출 가능한 것을 일괄 검증
+    expect(typeof resolveFieldEncounter).toBe('function');
+    expect(typeof listFieldEncounters).toBe('function');
+    expect(typeof rollFieldMonster).toBe('function');
+    expect(typeof getBossSlot).toBe('function');
+    expect(typeof listAllFieldMonsterIds).toBe('function');
+    expect(typeof getTotalFieldBosses).toBe('function');
+    expect(typeof listAllBossMonsterIds).toBe('function');
+  });
 });
