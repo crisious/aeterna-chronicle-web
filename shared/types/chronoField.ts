@@ -28,6 +28,10 @@ export interface FieldEncounterDef {
   hasBossSlot: boolean;
   /** 필드 분위기 ambient line (UI hint). */
   ambientLine: string;
+  /** CHRONO-S111: BGM 트랙 키 (SoundManager 매핑). 미설정 시 default. */
+  bgmTrack?: string;
+  /** CHRONO-S111: 필드 환경 효과 ('mist' | 'dust' | 'glow' | 'void' 등). */
+  ambientEffect?: 'mist' | 'dust' | 'glow' | 'void' | 'none';
 }
 
 const ENCOUNTERS: readonly FieldEncounterDef[] = [
@@ -43,6 +47,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 3,
     hasBossSlot: true,
     ambientLine: '고대의 에테르가 떠도는 평원',
+    bgmTrack: 'bgm_ancient_field',
+    ambientEffect: 'mist',
   },
   {
     zoneId: 'aether_plains',
@@ -54,6 +60,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 3,
     hasBossSlot: false,
     ambientLine: '평화로운 에테르 평원',
+    bgmTrack: 'bgm_field_calm',
+    ambientEffect: 'glow',
   },
   {
     zoneId: 'aether_plains',
@@ -66,6 +74,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 4,
     hasBossSlot: true,
     ambientLine: '시간이 무너진 폐허',
+    bgmTrack: 'bgm_ruined_future',
+    ambientEffect: 'void',
   },
   // ── 기억의 숲 ──
   {
@@ -284,6 +294,8 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     maxSpawn: 5,
     hasBossSlot: true,
     ambientLine: '세계가 무너지는 마지막 시간선',
+    bgmTrack: 'bgm_final_boss',
+    ambientEffect: 'void',
   },
 ] as const;
 

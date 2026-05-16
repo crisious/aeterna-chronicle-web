@@ -144,3 +144,32 @@ describe('rollFieldEncounterSpawns (CHRONO-S103)', () => {
     expect(rollFieldEncounterSpawns(fakeEmpty, () => 0.5)).toHaveLength(0);
   });
 });
+
+describe('FieldEncounter bgmTrack + ambientEffect (CHRONO-S111)', () => {
+  it('aether_plains/ancient → mist effect + bgm_ancient_field', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ancient');
+    expect(e?.bgmTrack).toBe('bgm_ancient_field');
+    expect(e?.ambientEffect).toBe('mist');
+  });
+
+  it('aether_plains/present → glow effect', () => {
+    const e = resolveFieldEncounter('aether_plains', 'present');
+    expect(e?.ambientEffect).toBe('glow');
+  });
+
+  it('aether_plains/ruined_future → void effect', () => {
+    const e = resolveFieldEncounter('aether_plains', 'ruined_future');
+    expect(e?.ambientEffect).toBe('void');
+  });
+
+  it('chrono_spire/ruined_future → bgm_final_boss (게임 마지막)', () => {
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future');
+    expect(e?.bgmTrack).toBe('bgm_final_boss');
+  });
+
+  it('BGM 미설정 encounter 도 안전 (undefined fallback)', () => {
+    const e = resolveFieldEncounter('memory_forest', 'present');
+    // bgmTrack 미설정 → undefined, 호출자 fallback 처리
+    expect(typeof e?.bgmTrack).toBe('undefined');
+  });
+});
