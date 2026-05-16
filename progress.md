@@ -436,8 +436,13 @@ V100 이후 chapter IV — runtime 결정성 + 시그니처 cross-check 확장.
 - **V103** chronoField 결정성 (resolveFieldEncounter immutable + listFieldEncounters 동일)
 - **V104** chrono barrel 단일 진입점 stress (callable + return type + 100회 호출 결정성)
 - **V105** progress.md V101~V105 갱신 + 75 sprint 마디 기록
+- **V106** rollFieldMonster 분포 stress (100 seed valid + ≥2 unique + seed 0/0.99)
+- **V107** Triple eraFilter 정확 (void_eternity = ruined_future, aetherna_final = present+ruined_future)
+- **V108** Dual eraFilter 정확 (chrono Dual 붕괴 차단, memory_break/void_oblivion ruined_future-only)
+- **V109** 80 sprint stress (모든 chronoEra API 정합 + Tech resolve symmetry)
+- **V110** progress.md V106~V110 갱신 + 80 sprint 마디 기록
 
-회귀: storyConsistency 371/371 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 384/384 + unit 전체 844+/844+ pass.
 
-**75 sprint 마디 + 371 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+18) = 누적 75 sprint, +279 가드 (92 → 371).
+**80 sprint 마디 + 384 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+31) = 누적 80 sprint, +292 가드 (92 → 384).
 
