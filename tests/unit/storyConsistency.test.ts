@@ -1866,3 +1866,58 @@ describe('STORY-V54 — Tech resolve 클래스 순열 narrative 안정성', () =
     expect(resolveTripleTech('ether_knight', 'time_knight', 'UNKNOWN_C')).toBeNull();
   });
 });
+
+describe('STORY-V55 — FieldMonsterSlot 구조 무결성 narrative', () => {
+  it('모든 slot monsterId 문자열 + 비빈 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expect(typeof slot.monsterId).toBe('string');
+        expect(slot.monsterId.length, `${e.zoneId}/${e.eraId} ${slot.monsterId} id`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('모든 slot name 문자열 + 비빈 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expect(typeof slot.name).toBe('string');
+        expect(slot.name.length, `${e.zoneId}/${e.eraId} ${slot.monsterId} name`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('모든 slot weight 숫자 + 양수 + ≤ 1.0 narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expect(typeof slot.weight).toBe('number');
+        expect(Number.isFinite(slot.weight), `${slot.monsterId} weight finite`).toBe(true);
+        expect(slot.weight, `${slot.monsterId} weight > 0`).toBeGreaterThan(0);
+        expect(slot.weight, `${slot.monsterId} weight ≤ 1`).toBeLessThanOrEqual(1.0);
+      }
+    }
+  });
+
+  it('isBoss 필드 boolean 또는 undefined narrative (선택 필드)', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      for (const slot of e.monsterPool) {
+        expect(['boolean', 'undefined']).toContain(typeof slot.isBoss);
+      }
+    }
+  });
+
+  it('21 encounter 모든 필수 필드 (zoneId/eraId/monsterPool/maxSpawn/hasBossSlot/ambientLine) 존재', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    for (const e of listFieldEncounters()) {
+      expect(typeof e.zoneId).toBe('string');
+      expect(typeof e.eraId).toBe('string');
+      expect(Array.isArray(e.monsterPool)).toBe(true);
+      expect(typeof e.maxSpawn).toBe('number');
+      expect(typeof e.hasBossSlot).toBe('boolean');
+      expect(typeof e.ambientLine).toBe('string');
+    }
+  });
+});
