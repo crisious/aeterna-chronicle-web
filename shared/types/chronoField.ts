@@ -211,6 +211,80 @@ const ENCOUNTERS: readonly FieldEncounterDef[] = [
     hasBossSlot: true,
     ambientLine: '시간 결정이 산산조각난 동굴',
   },
+  // ── 잊혀진 성채 ──
+  {
+    zoneId: 'forgotten_citadel',
+    eraId: 'ancient',
+    monsterPool: [
+      { monsterId: 'citadel_knight', name: '성채 기사', weight: 0.5 },
+      { monsterId: 'ether_archer', name: '에테르 궁수', weight: 0.4 },
+      { monsterId: 'citadel_lord', name: '성채 영주', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '에테르 문명의 영광이 살아있는 성채',
+  },
+  {
+    zoneId: 'forgotten_citadel',
+    eraId: 'present',
+    monsterPool: [
+      { monsterId: 'undead_knight', name: '죽은 기사', weight: 0.5 },
+      { monsterId: 'ruined_archer', name: '폐허의 궁수', weight: 0.4 },
+      { monsterId: 'wraith_lord', name: '망령의 영주', weight: 0.1, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '문명이 잊혀진 폐허 성채',
+  },
+  {
+    zoneId: 'forgotten_citadel',
+    eraId: 'ruined_future',
+    monsterPool: [
+      { monsterId: 'void_knight', name: '공허 기사', weight: 0.4 },
+      { monsterId: 'shadow_archer', name: '그림자 궁수', weight: 0.4 },
+      { monsterId: 'oblivion_overlord', name: '망각의 군주', weight: 0.2, isBoss: true },
+    ],
+    maxSpawn: 5,
+    hasBossSlot: true,
+    ambientLine: '존재 자체가 흐려진 영원의 성채',
+  },
+  // ── 시간의 첨탑 (최종 지역) ──
+  {
+    zoneId: 'chrono_spire',
+    eraId: 'ancient',
+    monsterPool: [
+      { monsterId: 'chrono_warden', name: '시간 파수꾼', weight: 0.4 },
+      { monsterId: 'ether_seraph', name: '에테르 세라프', weight: 0.4 },
+      { monsterId: 'aetherna_eidolon', name: '에테르나 환영', weight: 0.2, isBoss: true },
+    ],
+    maxSpawn: 4,
+    hasBossSlot: true,
+    ambientLine: '시간의 근원이 흐르는 첨탑',
+  },
+  {
+    zoneId: 'chrono_spire',
+    eraId: 'present',
+    monsterPool: [
+      { monsterId: 'chrono_guard', name: '시간 수비병', weight: 0.4 },
+      { monsterId: 'sky_seraph', name: '하늘 세라프', weight: 0.4 },
+      { monsterId: 'chrono_archon', name: '시간 통치자', weight: 0.2, isBoss: true },
+    ],
+    maxSpawn: 5,
+    hasBossSlot: true,
+    ambientLine: '시간이 멈춘 듯한 최후의 첨탑',
+  },
+  {
+    zoneId: 'chrono_spire',
+    eraId: 'ruined_future',
+    monsterPool: [
+      { monsterId: 'collapsed_warden', name: '붕괴 파수꾼', weight: 0.3 },
+      { monsterId: 'void_seraph', name: '공허 세라프', weight: 0.3 },
+      { monsterId: 'aetherna_collapse', name: '에테르나의 종말', weight: 0.4, isBoss: true },
+    ],
+    maxSpawn: 5,
+    hasBossSlot: true,
+    ambientLine: '세계가 무너지는 마지막 시간선',
+  },
 ] as const;
 
 const ENCOUNTER_KEY = (zoneId: string, eraId: ChronoEraId): string => `${zoneId}::${eraId}`;
