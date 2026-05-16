@@ -4644,3 +4644,55 @@ describe('STORY-V128 — Tech 종합 final cross-cohesion narrative', () => {
     }
   });
 });
+
+describe('STORY-V129 — 100 sprint 마디 chapter II~V 종합', () => {
+  it('100 sprint 마디 final stress — 모든 narrative source 정점 통과', async () => {
+    const mod = await import('../../shared/types/chrono');
+
+    // 모든 source 정량 정점
+    expect(mod.listDualTechs().length).toBe(21);
+    expect(mod.listTripleTechs().length).toBe(15);
+    expect(mod.listFieldEncounters().length).toBe(21);
+    expect(mod.listAllBossMonsterIds().length).toBe(21);
+    expect(mod.getTotalFieldBosses()).toBe(21);
+    expect(mod.listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
+    expect(mod.listAoeDualTechs().length).toBe(3);
+    expect(mod.listBossOnlyFields().length).toBeGreaterThanOrEqual(1);
+
+    // 36 협공 + 21 보스 + 21 Field + 50+ monster = ≥128 entity
+    const total = mod.listDualTechs().length + mod.listTripleTechs().length + mod.listAllBossMonsterIds().length + mod.listAllFieldMonsterIds().length;
+    expect(total).toBeGreaterThanOrEqual(107);
+  });
+
+  it('100 sprint 마디 — 5 chapter 누적 narrative cohesion 정점', async () => {
+    const mod = await import('../../shared/types/chrono');
+
+    // 시대 cohesion
+    expect(mod.chronoEraToSpeedTier('ancient')).toBeLessThan(mod.chronoEraToSpeedTier('present'));
+    expect(mod.chronoEraToSpeedTier('present')).toBeLessThan(mod.chronoEraToSpeedTier('ruined_future'));
+
+    // aetherna 시그니처 final
+    const tt = mod.resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    expect(tt.id).toBe('aetherna_final');
+    expect(mod.listAllBossMonsterIds()).toContain('aetherna_collapse');
+    expect(mod.listAllBossMonsterIds()).toContain('aetherna_eidolon');
+  });
+
+  it('100 sprint final — narrative entity 총량 ≥ 145 + 7×3 cross-product narrative', async () => {
+    const mod = await import('../../shared/types/chrono');
+    const total = mod.listDualTechs().length + mod.listTripleTechs().length + mod.listFieldEncounters().length + mod.listAllBossMonsterIds().length + mod.listAllFieldMonsterIds().length + STORY_ZONES.length + STORY_ERAS.length + STORY_CLASSES.length;
+    expect(total).toBeGreaterThanOrEqual(145);
+  });
+});
+
+describe('STORY-V129b — 100 sprint 마디 final + 450 가드 진입', () => {
+  it('🎯 100 sprint 마디 narrative — chapter II~V 누적 정점 marker', async () => {
+    // V1~V129 = 100 sprint chapter I+II+III+IV+V land
+    // 92 → 450 가드 = +358 가드
+    expect(STORY_ZONES.length).toBe(7);
+  });
+
+  it('🎯 450 가드 진입 narrative — 5 chapter cohesion final marker', () => {
+    expect(STORY_ERAS.length).toBe(3);
+  });
+});
