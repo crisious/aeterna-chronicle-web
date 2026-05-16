@@ -500,6 +500,44 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     return { success: accepted };
   });
 
+  // ── POST /combat/dual_tech (CHRONO-S19) ────────────────────
+  // 크로노 트리거 2인 협공 예약. 다음 tick 직전에 실행됨.
+  interface CombatDualTechBody {
+    combatId: string;
+    actorIdA: string;
+    actorIdB: string;
+    techId: string;
+    targetId: string;
+  }
+
+  fastify.post('/combat/dual_tech', async (
+    request: FastifyRequest<{ Body: CombatDualTechBody }>,
+    reply: FastifyReply,
+  ) => {
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+
+    const { combatId, actorIdA, actorIdB, techId, targetId } = request.body;
+    if (!combatId || !actorIdA || !actorIdB || !techId || !targetId) {
+      return reply.status(400).send({ error: '필수 파라미터 누락' });
+    }
+
+    const engine = combatInstanceManager.get(combatId);
+    if (!engine) {
+      return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+
+    const accepted = engine.submitDualTech(actorIdA, actorIdB, techId, targetId);
+    if (!accepted) {
+      return reply.status(400).send({
+        error: '협공 발동 불가 (ATB/클래스/MP 또는 협공 ID 검증 실패)',
+      });
+    }
+    return { success: true };
+  });
+
   // ── POST /combat/:combatId/tick ───────────────────────────
   // 수동 틱 진행 (REST 기반 턴 진행)
   interface CombatIdParams {
