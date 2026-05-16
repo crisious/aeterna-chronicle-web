@@ -25,6 +25,7 @@ import {
   listAllFieldMonsterIds,
   getTotalFieldBosses,
   listAllBossMonsterIds,
+  listBossOnlyFields,
 } from '../../shared/types/chrono';
 
 describe('chrono.ts barrel (CHRONO-S122)', () => {
@@ -73,5 +74,11 @@ describe('chrono.ts barrel (CHRONO-S122)', () => {
     expect(typeof listAllFieldMonsterIds).toBe('function');
     expect(typeof getTotalFieldBosses).toBe('function');
     expect(typeof listAllBossMonsterIds).toBe('function');
+  });
+
+  it('CHRONO-S146: listBossOnlyFields barrel 접근', () => {
+    const list = listBossOnlyFields();
+    expect(list.length).toBeGreaterThanOrEqual(1);
+    expect(list.find((e) => e.zoneId === 'chrono_spire' && e.eraId === 'ruined_future')).toBeDefined();
   });
 });
