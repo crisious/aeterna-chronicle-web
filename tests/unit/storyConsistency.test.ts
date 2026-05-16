@@ -4160,3 +4160,36 @@ describe('STORY-V113c — 400 가드 누적 정점', () => {
     expect(listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
   });
 });
+
+describe('STORY-V115 — chapter V 시작 — Triple name 카테고리 분포', () => {
+  it('Triple name 시그니처 카테고리 분포 ≥ 4 narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const all = listTripleTechs();
+    // 시그니처 카테고리 분류
+    const categories = new Map<string, number>();
+    for (const tt of all) {
+      if (tt.name.includes('에테르나')) categories.set('aetherna', (categories.get('aetherna') ?? 0) + 1);
+      else if (tt.name.includes('보이드')) categories.set('void', (categories.get('void') ?? 0) + 1);
+      else if (tt.name.includes('크로노') || tt.name.includes('타임')) categories.set('chrono', (categories.get('chrono') ?? 0) + 1);
+      else if (tt.name.includes('가디언')) categories.set('guardian', (categories.get('guardian') ?? 0) + 1);
+      else if (tt.name.includes('섀도우')) categories.set('shadow', (categories.get('shadow') ?? 0) + 1);
+      else categories.set('other', (categories.get('other') ?? 0) + 1);
+    }
+    expect(categories.size, 'Triple name 시그니처 카테고리').toBeGreaterThanOrEqual(4);
+  });
+
+  it('aetherna Triple 카테고리 = 1 (정점 유일) narrative', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const aetherna = listTripleTechs().filter((tt) => tt.name.includes('에테르나'));
+    expect(aetherna.length).toBe(1);
+    expect(aetherna[0].id).toBe('aetherna_final');
+  });
+
+  it('void/shadow Triple 카테고리 narrative ≥ 2 each (어둠 시그니처 분포)', async () => {
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const voidCat = listTripleTechs().filter((tt) => tt.name.includes('보이드')).length;
+    const shadowCat = listTripleTechs().filter((tt) => tt.name.includes('섀도우')).length;
+    expect(voidCat).toBeGreaterThanOrEqual(2);
+    expect(shadowCat).toBeGreaterThanOrEqual(2);
+  });
+});
