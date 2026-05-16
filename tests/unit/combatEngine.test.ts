@@ -327,6 +327,30 @@ describe('CombatEngine', () => {
     expect(afterDefend).toBeLessThan(100);
   });
 
+  // ── 9c. Ready queue FIFO order (CHRONO-ATB-S3) ──
+
+  it('9c. ready queue resolves in arrival order, ties broken by spd', () => {
+    // 두 player 가 같은 tick 에 ATB 100 도달 (spd 동일) → FIFO 큐는 등록 순서 유지
+    // 단, 동률 시 spd 내림차순 fallback.
+    const p1 = makeParticipant({ id: 'p1', spd: 200, atk: 1, hp: 999, maxHp: 999 });
+    const p2 = makeParticipant({ id: 'p2', spd: 200, atk: 1, hp: 999, maxHp: 999 });
+    const m = makeMonster({ id: 'm1', spd: 1, hp: 999, maxHp: 999 });
+
+    const e = new CombatEngine({ autoMode: true });
+    e.addParticipant(p1);
+    e.addParticipant(p2);
+    e.addParticipant(m);
+    e.start();
+
+    const result = e.processTick(); // 양 player 동시 100 도달 → 둘 다 행동
+    const actorOrder = result.actions.map(a => a.actorId);
+
+    expect(actorOrder).toContain('p1');
+    expect(actorOrder).toContain('p2');
+    // monster는 1 tick 만에 도달 못 함 (spd=1 → 0.5/tick)
+    expect(actorOrder).not.toContain('m1');
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {

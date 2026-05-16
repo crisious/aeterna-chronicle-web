@@ -241,6 +241,9 @@ export class CombatEngine {
   private participants = new Map<string, CombatParticipant>();
   private pendingActions = new Map<string, PlayerAction>();
   private currentTick = 0;
+  // ATB ready 큐 도달 순서 — SSOT atbTimeline.readyAtTick 패턴 (FF6 FIFO)
+  private readyAtTick = new Map<string, number>();
+  private readyOrderCounter = 0;
 
   // 서브시스템
   private cooldownManager = new SkillCooldownManager();
@@ -385,8 +388,14 @@ export class CombatEngine {
       if (p.alive) continue;
       if (tryAutoResurrect(p, this.currentTick)) {
         p.atbGauge = 0;
+        this.readyAtTick.delete(p.id);
         this.logger.logHeal(p.id, p.id, p.hp, 'auto_resurrect');
       }
+    }
+
+    // 0b. 사망한 actor 는 ready 큐에서 제거 (stale 순번 정리)
+    for (const p of this.participants.values()) {
+      if (!p.alive) this.readyAtTick.delete(p.id);
     }
 
     // 1. ATB 게이지 충전 — SSOT computeChargeDelta(FF6 레퍼런스) 사용
@@ -395,6 +404,7 @@ export class CombatEngine {
     if (!atbHalt) {
       for (const p of this.participants.values()) {
         if (!p.alive) continue;
+        const before = p.atbGauge;
         const delta = computeChargeDelta(
           p.spd,
           1,
@@ -402,6 +412,10 @@ export class CombatEngine {
           this.config.tickIntervalMs,
         );
         p.atbGauge = Math.min(ATB_MAX, p.atbGauge + delta);
+        // ready 도달 순간 도달 순서 부여 (FF6 FIFO 큐)
+        if (before < ATB_MAX && p.atbGauge >= ATB_MAX && !this.readyAtTick.has(p.id)) {
+          this.readyAtTick.set(p.id, this.readyOrderCounter++);
+        }
       }
     }
 
@@ -460,10 +474,16 @@ export class CombatEngine {
       }
     }
 
-    // 4. 행동 가능한 참가자 처리 (SPD 순)
+    // 4. 행동 가능한 참가자 처리 (readyAtTick FIFO 우선, 동률 시 SPD 내림차순)
+    // FF6: ATB 100 도달 순서대로 행동 큐. 같은 tick에 동시 도달 시 빠른 spd 가 먼저.
     const readyParticipants = this.getParticipants()
-      .filter(p => p.alive && p.atbGauge >= 100)
-      .sort((a, b) => b.spd - a.spd);
+      .filter(p => p.alive && p.atbGauge >= ATB_MAX)
+      .sort((a, b) => {
+        const ra = this.readyAtTick.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+        const rb = this.readyAtTick.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+        if (ra !== rb) return ra - rb;
+        return b.spd - a.spd;
+      });
 
     for (const actor of readyParticipants) {
       if (!actor.alive) continue;
@@ -517,6 +537,8 @@ export class CombatEngine {
 
       // ATB 소비 — SSOT consumeGauge 패턴 (FF6 Defend 시 반틱 유지)
       actor.atbGauge = action.type === 'defend' ? ATB_MAX / 2 : 0;
+      // 행동 완료 → ready 큐에서 제외 (다음 도달 시 새 순번 부여)
+      this.readyAtTick.delete(actor.id);
     }
 
     // 5. 보스 페이즈 + 분노 체크
