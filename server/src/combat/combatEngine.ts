@@ -249,6 +249,8 @@ export class CombatEngine {
   // ATB ready 큐 도달 순서 — SSOT atbTimeline.readyAtTick 패턴 (FF6 FIFO)
   private readyAtTick = new Map<string, number>();
   private readyOrderCounter = 0;
+  // CHRONO-S9: flee 성공 시 winner 결정용 (alive 기반 checkWinCondition 우회).
+  private fleeWinner: 'party' | 'monsters' | 'draw' | null = null;
 
   // 서브시스템
   private cooldownManager = new SkillCooldownManager();
@@ -587,25 +589,31 @@ export class CombatEngine {
 
     // 7. 승패 판정 — 부활 예약된 사망자도 "alive=false" 로 카운트되어 KO 인정.
     //    승패 직후 그 다음 tick 에서 부활하면 전투 재개됨. (즉시 패배 방지하려면 별도 체크 필요)
-    const combatEnded = this.checkWinCondition();
+    const combatEnded = this.checkWinCondition() || this.fleeWinner !== null;
     let winner: 'party' | 'monsters' | 'draw' | undefined;
     let rewards: RewardResult | undefined;
     let levelUps: LevelUpResult[] | undefined;
 
     if (combatEnded || this.currentTick >= this.config.maxTicks) {
-      const aliveParty = this.getAliveByTeam('party');
-      const aliveMonsters = this.getAliveByTeam('monsters');
-
-      if (aliveParty.length > 0 && aliveMonsters.length === 0) {
-        winner = 'party';
-        // 보상 계산
-        const result = this.calculateCombatRewards();
-        rewards = result.rewards;
-        levelUps = result.levelUps;
-      } else if (aliveMonsters.length > 0 && aliveParty.length === 0) {
-        winner = 'monsters';
+      // CHRONO-S9: flee 성공 시 alive 와 무관하게 draw 강제
+      if (this.fleeWinner !== null) {
+        winner = this.fleeWinner;
+        this.fleeWinner = null;
       } else {
-        winner = 'draw';
+        const aliveParty = this.getAliveByTeam('party');
+        const aliveMonsters = this.getAliveByTeam('monsters');
+
+        if (aliveParty.length > 0 && aliveMonsters.length === 0) {
+          winner = 'party';
+          // 보상 계산
+          const result = this.calculateCombatRewards();
+          rewards = result.rewards;
+          levelUps = result.levelUps;
+        } else if (aliveMonsters.length > 0 && aliveParty.length === 0) {
+          winner = 'monsters';
+        } else {
+          winner = 'draw';
+        }
       }
 
       this.state = 'COMPLETED';
@@ -638,10 +646,45 @@ export class CombatEngine {
       case 'defend':
         return this.executeDefend(actor);
       case 'flee':
-        return null; // 도주 로직 (추후)
+        return this.executeFlee(actor);
       default:
         return null;
     }
+  }
+
+  /**
+   * CHRONO-S9: 도주 (FF6 패턴).
+   * 성공률 = clamp(0.3 + (avgPartySpd - avgMonsterSpd)/200, 0, 0.95).
+   * 보스 존재 시 강제 실패 (FF6 보스 도주 불가).
+   * 성공 시 state='COMPLETED' winner='draw'; 실패 시 missed=true 로그.
+   */
+  private executeFlee(actor: CombatParticipant): ActionResult {
+    const aliveMonsters = this.getAliveByTeam('monsters');
+    const aliveParty = this.getAliveByTeam('party');
+    const hasBoss = aliveMonsters.some(m => m.isBoss);
+
+    const avgSpd = (list: CombatParticipant[]): number =>
+      list.length === 0 ? 0 : list.reduce((s, p) => s + p.spd, 0) / list.length;
+
+    const partySpd = avgSpd(aliveParty);
+    const monsterSpd = avgSpd(aliveMonsters);
+    const baseRate = hasBoss
+      ? 0
+      : Math.max(0, Math.min(0.95, 0.3 + (partySpd - monsterSpd) / 200));
+
+    const success = !hasBoss && Math.random() < baseRate;
+    if (success) {
+      this.fleeWinner = 'draw';
+      this.state = 'COMPLETED';
+    }
+    return {
+      actorId: actor.id,
+      actorName: actor.name,
+      actionType: 'flee',
+      targetId: actor.id,
+      targetName: actor.name,
+      missed: !success,
+    };
   }
 
   private executeAttack(actor: CombatParticipant, target: CombatParticipant | null | undefined): ActionResult | null {

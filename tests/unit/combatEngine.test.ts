@@ -383,6 +383,53 @@ describe('CombatEngine', () => {
     expect(gaugePresent).toBeLessThan(gaugeFuture);
   });
 
+  // ── 9e/f/g. Flee 도주 (CHRONO-S9) ──
+
+  it('9e. flee succeeds when party spd > monster spd (Math.random=0.5 ≤ rate)', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(makeParticipant({ spd: 200 })); // partySpd 200
+    e.addParticipant(makeMonster({ spd: 1, hp: 9999, maxHp: 9999 }));
+    e.start();
+    e.processTick(); // player ATB 100 도달
+    e.submitAction({ type: 'flee', actorId: 'player1' });
+    const result = e.processTick();
+    expect(result.combatEnded).toBe(true);
+    expect(result.winner).toBe('draw');
+  });
+
+  it('9f. flee fails when party spd << monster spd', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.99); // 거의 무조건 실패
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(makeParticipant({ id: 'p', spd: 60 }));
+    e.addParticipant(makeMonster({ id: 'm', spd: 200, hp: 9999, maxHp: 9999 }));
+    e.start();
+    // ATB 100 도달 위해 충분히 tick
+    for (let i = 0; i < 10; i++) {
+      if (e.getParticipant('p')!.atbGauge >= 100) break;
+      e.processTick();
+    }
+    e.submitAction({ type: 'flee', actorId: 'p' });
+    const result = e.processTick();
+    const fleeAct = result.actions.find(a => a.actionType === 'flee');
+    expect(fleeAct?.missed).toBe(true);
+    expect(result.combatEnded).toBe(false);
+  });
+
+  it('9g. flee blocked when boss present (FF6 보스 도주 불가)', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.01); // 매우 낮은 random — 그래도 보스면 실패
+    const e = new CombatEngine({ autoMode: false });
+    e.addParticipant(makeParticipant({ id: 'p', spd: 999 }));
+    e.addParticipant(makeMonster({ id: 'b', spd: 1, isBoss: true, hp: 9999, maxHp: 9999 }));
+    e.start();
+    e.processTick(); // player 100 도달
+    e.submitAction({ type: 'flee', actorId: 'p' });
+    const result = e.processTick();
+    const fleeAct = result.actions.find(a => a.actionType === 'flee');
+    expect(fleeAct?.missed).toBe(true);
+    expect(result.combatEnded).toBe(false);
+  });
+
   // ── 10. Snapshot returns correct structure ──
 
   it('10. getSnapshot returns participant state with correct fields', () => {
