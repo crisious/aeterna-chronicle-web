@@ -2090,3 +2090,37 @@ describe('STORY-V60 — 30 sprint 마디 narrative 누적 stress', () => {
     expect(total, 'narrative total entity count').toBeGreaterThanOrEqual(145);
   });
 });
+
+describe('STORY-V61 — encounter id 시그니처 + chrono_spire 정점', () => {
+  it('21 encounter (zone+era) 모두 unique combination narrative', async () => {
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const keys = listFieldEncounters().map((e) => `${e.zoneId}:${e.eraId}`);
+    expect(new Set(keys).size).toBe(21);
+  });
+
+  it('chrono_spire 3 era 모두 보스 시그니처 (eidolon/archon/collapse) narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const a = resolveFieldEncounter('chrono_spire', 'ancient')!;
+    const p = resolveFieldEncounter('chrono_spire', 'present')!;
+    const f = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(a.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_eidolon');
+    expect(p.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('chrono_archon');
+    expect(f.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_collapse');
+  });
+
+  it('chrono_spire/ruined_future bossOnlyMode + bgm 시그니처 narrative', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(e.bossOnlyMode).toBe(true);
+    expect(e.bgmTrack).toBe('bgm_final_boss');
+    expect(e.ambientEffect).toBe('boss_room');
+  });
+
+  it('aether_plains/ancient (게임 시작 narrative) 분위기 키워드', async () => {
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const e = resolveFieldEncounter('aether_plains', 'ancient')!;
+    expect(e.ambientLine).toMatch(/평원|고대|에테르/);
+    const boss = e.monsterPool.find((s) => s.isBoss);
+    expect(boss).toBeDefined();
+  });
+});
