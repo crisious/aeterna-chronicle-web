@@ -474,3 +474,17 @@ V115 부터 chapter V — Tech 종합 cohesion + 클래스 narrative 시그니�
 
 **🎯 100 sprint 마디 + 450 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) = 누적 100 sprint, +358 가드 (92 → 450). aetherna 게임 narrative cohesion final + 5 chapter 누적 완성.
 
+## 2026-05-17 STORY 정합성 chapter VI — 시간선 + element 분포 정확 (5 sprint, +15 가드)
+
+V129 이후 chapter VI — element 분포 정확 + 시간선 narrative 정합.
+
+- **V130** chapter VI 시작 — 시간선 ↔ 클래스 element narrative (chrono 페어 + dark 페어 정확)
+- **V131** Triple element 분포 정확 (chrono 4 + dark 7 + holy 4 = 15)
+- **V132** Dual element 분포 정확 (chrono 4 + dark 11 + holy 6 = 21)
+- **V133** monster passive 정확 (ancient 회피 5%, future 명중 5%, present 0% baseline)
+- **V134** progress.md V130~V134 갱신
+
+회귀: storyConsistency 465/465 + unit 전체 844+/844+ pass.
+
+**105 sprint 마디 + 465 가드 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) + VI (+15) = 누적 105 sprint, +373 가드 (92 → 465).
+
