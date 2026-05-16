@@ -379,8 +379,11 @@ V51 부터 chapter III — narrative 데이터 구조 무결성 + API 안정성 
 - **V55** FieldMonsterSlot 구조 무결성 (id/name/weight/isBoss 타입 + encounter 필수 필드)
 - **V56** Dual/Triple Tech 구조 무결성 (id snake_case + element KNOWN + 숫자 finite + partner length)
 - **V57** progress.md 200 가드 마디 기록 + chapter III 정량
+- **V58** ATBSpeedTier ↔ chronoEra cross-check (1~6 범위 + unique + 단조)
+- **V59** 시그니처 Tech mpCost (aetherna_final ≥30 + void_eternity = max + Dual 12~30)
+- **V60** 30 sprint 마디 — 전체 narrative source 동시 cross-check + 5중 aetherna + entity ≥145
 
-회귀: storyConsistency 200/200 + unit 전체 844+/844+ pass.
+회귀: storyConsistency 211/211 + unit 전체 844+/844+ pass.
 
-**200 가드 마디 도달** — STORY 정합성 chapter I (V1~V25 79 가드) + chapter II (V26~V50 +82 가드) + chapter III (V51~V57 +26 가드) = 누적 27 sprint, +108 가드 (92 → 200). 게임 narrative source 무결성 + 안정성 + cohesion 모두 회귀 가드 확보.
+**30 sprint 마디 + 211 가드 도달** — chapter I (79) + chapter II (+82) + chapter III (+50) = 누적 30 sprint, +119 가드 (92 → 211).
 

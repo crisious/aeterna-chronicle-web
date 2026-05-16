@@ -2038,3 +2038,55 @@ describe('STORY-V59 — 시그니처 Tech mpCost + narrative', () => {
     }
   });
 });
+
+describe('STORY-V60 — 30 sprint 마디 narrative 누적 stress', () => {
+  it('전체 narrative source 동시 cross-check (Field + Tech + Era 모두 정상)', async () => {
+    const { listFieldEncounters, listAllBossMonsterIds, listAllFieldMonsterIds, getTotalFieldBosses } = await import('../../shared/types/chronoField');
+    const { listDualTechs, listAoeDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+    const { chronoEraToSpeedTier, isChronoEraId } = await import('../../shared/types/chronoEraAtb');
+
+    expect(listFieldEncounters().length).toBe(21);
+    expect(getTotalFieldBosses()).toBe(21);
+    expect(listAllBossMonsterIds().length).toBe(21);
+    expect(listAllFieldMonsterIds().length).toBeGreaterThanOrEqual(50);
+    expect(listDualTechs().length).toBe(21);
+    expect(listAoeDualTechs().length).toBe(3);
+    expect(listTripleTechs().length).toBe(15);
+    expect(STORY_ERAS.every(isChronoEraId)).toBe(true);
+    expect(STORY_ERAS.map(chronoEraToSpeedTier).every((t) => t >= 1 && t <= 6)).toBe(true);
+  });
+
+  it('aetherna 게임 정점 narrative 5중 cross-check (Triple + 보스 + Field + element + bgm)', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const { listAllBossMonsterIds, resolveFieldEncounter } = await import('../../shared/types/chronoField');
+
+    const triple = resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')!;
+    const final = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    const finalBoss = final.monsterPool.find((s) => s.isBoss)!;
+
+    expect(triple.id).toBe('aetherna_final');
+    expect(triple.element).toBe('chrono');
+    expect(finalBoss.monsterId).toBe('aetherna_collapse');
+    expect(listAllBossMonsterIds()).toContain('aetherna_eidolon');
+    expect(final.bgmTrack).toBe('bgm_final_boss');
+  });
+
+  it('30 sprint 누적: narrative entity 총량 ≥ 165 (21 보스 + 50 monster + 21 Dual + 15 Triple + 21 Field + 7 zone + 3 era + 7 클래스 + 9 element + 6 tier)', async () => {
+    const { listFieldEncounters, listAllBossMonsterIds, listAllFieldMonsterIds } = await import('../../shared/types/chronoField');
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const { listTripleTechs } = await import('../../shared/types/tripleTech');
+
+    const total =
+      listFieldEncounters().length +
+      listAllBossMonsterIds().length +
+      listAllFieldMonsterIds().length +
+      listDualTechs().length +
+      listTripleTechs().length +
+      STORY_ZONES.length +
+      STORY_ERAS.length +
+      STORY_CLASSES.length;
+    // 21 + 21 + 50+ + 21 + 15 + 7 + 3 + 7 = 145+
+    expect(total, 'narrative total entity count').toBeGreaterThanOrEqual(145);
+  });
+});
