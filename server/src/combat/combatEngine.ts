@@ -311,6 +311,8 @@ export class CombatEngine {
   } | null = null;
   // CHRONO-S26: 마지막 Dual Tech 발동 tick (연속 콤보 보너스 추적).
   private lastDualTechTick: number | null = null;
+  // CHRONO-S73: 연속 chain 카운트 (4+ 도달 시 1.5x 보너스).
+  private chainCount = 0;
   // CHRONO-S59: Triple Tech 예약.
   private pendingTripleTech: {
     actorIds: [string, string, string];
@@ -833,10 +835,13 @@ export class CombatEngine {
     if (a.mp < def.mpCost || b.mp < def.mpCost) return null;
 
     const avgAtk = (getEffectiveAtk(a, a.atk) + getEffectiveAtk(b, b.atk)) / 2;
-    // CHRONO-S26: 연속 콤보 보너스 — 직전 5 tick 이내 Dual Tech 발동 이력 시 1.2x
+    // CHRONO-S26/S73: 연속 콤보 보너스 — 5 tick 이내 이력 시 chainCount 단계 보너스
     const isChain = this.lastDualTechTick !== null
       && this.currentTick - this.lastDualTechTick <= 5;
-    const chainBonus = isChain ? 1.2 : 1.0;
+    // chain 진행 — 연속이면 +1, 끊김 또는 첫 발동이면 1로 reset
+    this.chainCount = isChain ? this.chainCount + 1 : 1;
+    // 1=1.0 (보너스 X), 2~3=1.2, 4+=1.5
+    const chainBonus = this.chainCount >= 4 ? 1.5 : this.chainCount >= 2 ? 1.2 : 1.0;
     // CHRONO-S34/S43: 보스 target Dual Tech 저항 — base 0.6x, 누적 보스에 -0.05/hit (최저 0.3)
     const computeBossResist = (p: CombatParticipant): number => {
       if (!p.isBoss) return 1.0;
@@ -947,7 +952,9 @@ export class CombatEngine {
     ) / 3;
     const isChain = this.lastDualTechTick !== null
       && this.currentTick - this.lastDualTechTick <= 5;
-    const chainBonus = isChain ? 1.2 : 1.0;
+    // CHRONO-S73: chain 진행 (Triple Tech 도 동일 카운터 공유)
+    this.chainCount = isChain ? this.chainCount + 1 : 1;
+    const chainBonus = this.chainCount >= 4 ? 1.5 : this.chainCount >= 2 ? 1.2 : 1.0;
 
     const targets: CombatParticipant[] = def.aoe
       ? this.getParticipants().filter((p) => p.team === 'monsters' && p.alive)
