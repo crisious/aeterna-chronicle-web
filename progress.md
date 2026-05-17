@@ -529,8 +529,21 @@ V129 이후 chapter VI — element 분포 정확 + 시간선 narrative 정합.
   - 보상 카테고리 (exp 필수 + 메인 item ≥5 + title MQ_CH15+ANNIVERSARY + 이벤트 item ≥4)
   - objective type 분포 (≥4 distinct + kill/collect/explore ≥5 + craft/talk ≥2)
 - **QA-7** 전체 단위 회귀 (53 파일 / 1258 tests pass) + progress.md QUEST 섹션 추가
+- **QA-8** 플레이 가능 시나리오 (19 가드, S19~S24)
+  - lv1 신규: MQ_CH01 + 4계절+기념일 이벤트 + 일일 즉시 가능 + MQ_CH15 잠금
+  - lv30 중급: 메인 9 완료 + MQ_CH10 lv 부족 잠금 + 일일 15 + 서브 ≥10
+  - lv60 고급: 모든 메인/일일/주간/서브 ≥19 가능
+  - 메인 체인 락 (시작 잠금 + step-by-step unlock + 15 step 완주)
+  - 서브 체인 (SQ_FA_02 ← SQ_FA_01)
+  - 게임 종료 long-tail (repeatable = daily 15 + weekly 5 = 20)
+- **QA-9** npc/target ID naming 일관성 (12 가드, S25~S28)
+  - objectives target naming (talk npc_, explore zone_, kill mob_/boss_, craft/collect snake_case)
+  - npcId 도메인 (npc_ prefix + 비빈 + snake_case)
+  - reward itemId (item_/recipe_ prefix + unique per quest)
+  - chapter 시그니처 (1~3 lv≤6, 14~15 lv≥55, ch6 첫 보스)
+- **QA-10** progress.md QUEST-QA chapter 누적 갱신 + 1289 tests final
 
-회귀: questCatalog 36/36 + questEngine 20/20 + questRoutes 14/14 + questReset 16/16 + quest-flow 통합 8/8 + unit 전체 1258/1258 pass.
+회귀: questCatalog 36 + questEngine 20 + questRoutes 14 + questReset 16 + questPlayability 19 + questIdConsistency 12 + quest-flow 통합 8 + unit 전체 55 파일 / **1289 tests** pass.
 
-**🎯 QUEST-QA chapter 완성** — 60 퀘스트 카탈로그 + 비즈니스 로직 + 라우트 + 초기화 + 보상 narrative 모든 회귀 가드 land. 게임 퀘스트 플레이 가능 (수주→진행→완료→보상→포기→prerequisite chain) 흐름 검증 완료.
+**🎯 QUEST-QA chapter 완성 — 10 sprint, +107 가드** — 60 퀘스트 (main 15 + sub 20 + daily 15 + weekly 5 + event 5) 의 카탈로그 정합성 + 비즈니스 로직 + 라우트 매핑 + 초기화 + 보상 분포 + objective 분포 + 플레이 시나리오 (신규/중급/고급/종료) + 메인/서브 체인 락 + ID naming 일관성 모든 회귀 가드 land 완성. 게임 퀘스트 플레이 가능 (수주→진행→완료→보상→포기→prerequisite chain → repeatable long-tail) 모든 시나리오 검증 완료.
 
