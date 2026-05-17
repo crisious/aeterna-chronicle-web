@@ -308,3 +308,88 @@ describe('SKILL-QA-S9 — tier 분포 narrative (1/2/3/4)', () => {
     }
   });
 });
+
+describe('SKILL-QA-S10 — 스킬 트리 lv 진행 narrative', () => {
+  it('각 클래스 최저 requiredLevel = 1 (시작 스킬 narrative)', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const minLv = Math.min(
+        ...ALL_SKILLS.filter((s) => s.class === cls).map((s) => s.requiredLevel),
+      );
+      expect(minLv, `${cls} min lv`).toBe(1);
+    }
+  });
+
+  it('각 클래스 최고 requiredLevel ≥ 80 (종반 도달 narrative)', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const maxLv = Math.max(
+        ...ALL_SKILLS.filter((s) => s.class === cls).map((s) => s.requiredLevel),
+      );
+      expect(maxLv, `${cls} max lv`).toBeGreaterThanOrEqual(80);
+    }
+  });
+
+  it('각 클래스 lv 1~30 (초반 진입) 스킬 ≥ 5', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const earlySkills = ALL_SKILLS.filter(
+        (s) => s.class === cls && s.requiredLevel <= 30,
+      );
+      expect(earlySkills.length, `${cls} early count`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it('각 클래스 lv 60+ (종반) 스킬 ≥ 5', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const lateSkills = ALL_SKILLS.filter(
+        (s) => s.class === cls && s.requiredLevel >= 60,
+      );
+      expect(lateSkills.length, `${cls} late count`).toBeGreaterThanOrEqual(5);
+    }
+  });
+});
+
+describe('SKILL-QA-S11 — 클래스 시그니처 키워드 narrative', () => {
+  const SIGNATURE_KEYWORDS: Record<string, string[]> = {
+    ether_knight: ['에테르', '검', '기사', '보호', '신성', '광선'],
+    memory_weaver: ['기억', '회상', '시간', '망각', '직조'],
+    shadow_weaver: ['그림자', '암흑', '어둠', '직조', '저주', '그늘'],
+    memory_breaker: ['파괴', '균열', '폭발', '베기', '관통', '깨'],
+    time_guardian: ['시간', '수호', '보호', '방어', '봉인', '제어'],
+    void_wanderer: ['공허', '차원', '허공', '공간', '방랑', '소멸'],
+  };
+
+  it('각 클래스 30 스킬 중 시그니처 키워드 매치 ≥ 5 narrative', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const keywords = SIGNATURE_KEYWORDS[cls] ?? [];
+      const skills = ALL_SKILLS.filter((s) => s.class === cls);
+      let matchCount = 0;
+      for (const s of skills) {
+        if (keywords.some((k) => s.name.includes(k) || s.description.includes(k))) {
+          matchCount += 1;
+        }
+      }
+      expect(matchCount, `${cls} 시그니처 매치`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it('shadow_weaver 스킬 name 에 "그림자/암흑/어둠" 키워드 ≥ 5', () => {
+    const sw = ALL_SKILLS.filter((s) => s.class === 'shadow_weaver');
+    let matchCount = 0;
+    for (const s of sw) {
+      if (s.name.includes('그림자') || s.name.includes('암흑') || s.name.includes('어둠')) {
+        matchCount += 1;
+      }
+    }
+    expect(matchCount).toBeGreaterThanOrEqual(5);
+  });
+
+  it('void_wanderer 스킬 name 에 "공허/차원/허공" 키워드 ≥ 5', () => {
+    const vw = ALL_SKILLS.filter((s) => s.class === 'void_wanderer');
+    let matchCount = 0;
+    for (const s of vw) {
+      if (s.name.includes('공허') || s.name.includes('차원') || s.name.includes('허공') || s.name.includes('공간')) {
+        matchCount += 1;
+      }
+    }
+    expect(matchCount).toBeGreaterThanOrEqual(5);
+  });
+});
