@@ -393,3 +393,53 @@ describe('SKILL-QA-S11 — 클래스 시그니처 키워드 narrative', () => {
     expect(matchCount).toBeGreaterThanOrEqual(5);
   });
 });
+
+describe('SKILL-QA-S12 — SKILL ↔ STORY 클래스 cross-domain narrative', () => {
+  // STORY 7 클래스
+  const STORY_CLASSES = [
+    'ether_knight', 'time_knight', 'shadow_weaver', 'memory_weaver',
+    'time_guardian', 'void_wanderer', 'memory_breaker',
+  ];
+
+  it('SKILL 6 클래스 모두 STORY_CLASSES 에 포함', () => {
+    const storySet = new Set(STORY_CLASSES);
+    for (const cls of SUPPORTED_CLASSES) {
+      expect(storySet.has(cls), `SKILL class '${cls}' in STORY`).toBe(true);
+    }
+  });
+
+  it('SKILL 미정의 클래스 = time_knight (STORY 7개 - SKILL 6개)', () => {
+    const skillSet = new Set(SUPPORTED_CLASSES);
+    const missing = STORY_CLASSES.filter((c) => !skillSet.has(c));
+    expect(missing.length).toBe(1);
+    expect(missing[0]).toBe('time_knight');
+  });
+
+  it('SKILL ↔ STORY Tech (Dual) 클래스 partnerClasses cohesion', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const allDualClasses = new Set<string>();
+    for (const dt of listDualTechs()) {
+      for (const cls of dt.partnerClasses) allDualClasses.add(cls);
+    }
+    // SKILL 모든 클래스는 Dual Tech 에 등장
+    for (const cls of SUPPORTED_CLASSES) {
+      expect(allDualClasses.has(cls), `SKILL ${cls} in Dual Tech`).toBe(true);
+    }
+  });
+
+  it('SKILL element 와 STORY element 도메인 중첩 (cohesion)', async () => {
+    const { listDualTechs } = await import('../../shared/types/dualTech');
+    const dualElements = new Set(listDualTechs().map((dt) => dt.element));
+    // STORY chrono ↔ SKILL time (시간선 narrative)
+    // STORY dark ↔ SKILL dark (그림자/어둠)
+    // STORY holy ↔ SKILL aether/light
+    expect(dualElements.has('chrono'), 'STORY chrono element').toBe(true);
+    expect(dualElements.has('dark'), 'STORY dark element').toBe(true);
+    expect(dualElements.has('holy'), 'STORY holy element').toBe(true);
+
+    const skillElements = new Set(ALL_SKILLS.map((s) => s.element));
+    expect(skillElements.has('time'), 'SKILL time element (~STORY chrono)').toBe(true);
+    expect(skillElements.has('dark'), 'SKILL dark element').toBe(true);
+    expect(skillElements.has('aether'), 'SKILL aether element (~STORY holy)').toBe(true);
+  });
+});
