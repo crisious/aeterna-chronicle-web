@@ -499,3 +499,38 @@ V129 이후 chapter VI — element 분포 정확 + 시간선 narrative 정합.
 
 **🎯🎯🎯 500 가드 마디 도달** — chapter I (79) + II (+82) + III (+196) + IV (+43) + V (+34) + VI (+66) = 누적 116 sprint, +408 가드 (92 → 500). aetherna 게임 narrative cohesion final completed.
 
+## 2026-05-17 QUEST-QA chapter — 퀘스트 플레이 가능 여부 QA (7 sprint, +76 가드)
+
+사용자 명시 요청 "퀘스트 플레이 가능 여부 체크 qa 진행" — 60 퀘스트 (main 15 + sub 20 + daily 15 + weekly 5 + event 5) 데이터 정합성 + 비즈니스 로직 + 라우트 + 초기화 + 보상 분포 + objective 분포 회귀 가드.
+
+- **QA-1** questEngine 단위 회귀 (10/10 pass 확인)
+- **QA-2** questCatalog 60 퀘스트 정합성 (S1~S10, 36 가드)
+  - 정량 (15+20+15+5+5=60) + code unique + prefix (MQ/SQ/DQ/WQ/EQ)
+  - name 한글 + description ≥10 + type 유효
+  - 메인 chapter 1~15 단조 + MQ_CH15 = lv60
+  - objective 무결성 (type/count/target/description)
+  - rewards 무결성 (type/amount/item itemId/exp 단조)
+  - prerequisite 그래프 (메인 체인 + dangling 없음 + self-loop 없음)
+  - isRepeatable + timeLimit (main/sub false, daily 86400, weekly 604800, event 정의)
+  - 시그니처 (MQ_CH01 기억 + MQ_CH15 에테르나 + 4계절+기념일)
+  - npcId narrative (npc_ prefix + sub ≥5)
+- **QA-3** questEngine 확장 (+10 가드, S11)
+  - 음수 amount cap + completed 재진행 무효 + 잘못된 index 무시
+  - 선행 충족 시 수주 + 보상 배율 5 type 정확 + main>daily/event>sub
+  - boundary (target 도달, amount=0) + 모두 완료 시 complete
+- **QA-4** quest-flow 통합 회귀 (8/8 pass, mock fastify 라우트)
+- **QA-5** questRoutes 에러 매핑 + payload + pagination (14 가드, S11~S13)
+  - QuestError → HTTP status 매핑 (404/409/403/400)
+  - payload 필수 필드 (accept/progress/complete)
+  - pagination (page≥1, limit≤100 DoS 방어, NaN fallback)
+- **QA-6** 초기화 + 보상 + objective 분포 (16 가드, S14~S18)
+  - 일일/주간 초기화 (완료/실패 대상 + in_progress 보존 + type 격리)
+  - timeLimit 정확 (daily 86400, weekly 604800, event ≥604800, main/sub 없음)
+  - 보상 카테고리 (exp 필수 + 메인 item ≥5 + title MQ_CH15+ANNIVERSARY + 이벤트 item ≥4)
+  - objective type 분포 (≥4 distinct + kill/collect/explore ≥5 + craft/talk ≥2)
+- **QA-7** 전체 단위 회귀 (53 파일 / 1258 tests pass) + progress.md QUEST 섹션 추가
+
+회귀: questCatalog 36/36 + questEngine 20/20 + questRoutes 14/14 + questReset 16/16 + quest-flow 통합 8/8 + unit 전체 1258/1258 pass.
+
+**🎯 QUEST-QA chapter 완성** — 60 퀘스트 카탈로그 + 비즈니스 로직 + 라우트 + 초기화 + 보상 narrative 모든 회귀 가드 land. 게임 퀘스트 플레이 가능 (수주→진행→완료→보상→포기→prerequisite chain) 흐름 검증 완료.
+
