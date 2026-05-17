@@ -1182,12 +1182,14 @@ const MEMORY_BREAKER_SKILLS: SkillSeed[] = [
 //  시드 실행 함수
 // ═══════════════════════════════════════════════════════════════
 
-const ALL_SKILLS: SkillSeed[] = [
+export const ALL_SKILLS: SkillSeed[] = [
   ...ETHER_KNIGHT_SKILLS,
   ...MEMORY_WEAVER_SKILLS,
   ...SHADOW_WEAVER_SKILLS,
   ...MEMORY_BREAKER_SKILLS,
 ];
+
+export type { SkillSeed };
 
 /** 스킬 시드 실행 (upsert — 중복 실행 안전) */
 export async function seedSkills(): Promise<{ created: number; updated: number }> {
@@ -1823,6 +1825,14 @@ const VOID_WANDERER_SKILLS: SkillSeed[] = [
 ];
 
 ALL_SKILLS.push(...VOID_WANDERER_SKILLS);
+
+export const SKILL_SEED_GROUPS = {
+  ether_knight: ETHER_KNIGHT_SKILLS,
+  memory_weaver: MEMORY_WEAVER_SKILLS,
+  shadow_weaver: SHADOW_WEAVER_SKILLS,
+  memory_breaker: MEMORY_BREAKER_SKILLS,
+  void_wanderer: VOID_WANDERER_SKILLS,
+} as const;
 
 /** 검증: 스킬 수 확인 */
 export function getSkillSeedCount(): { total: number; byClass: Record<string, number> } {
