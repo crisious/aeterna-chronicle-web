@@ -547,3 +547,29 @@ V129 이후 chapter VI — element 분포 정확 + 시간선 narrative 정합.
 
 **🎯 QUEST-QA chapter 완성 — 10 sprint, +107 가드** — 60 퀘스트 (main 15 + sub 20 + daily 15 + weekly 5 + event 5) 의 카탈로그 정합성 + 비즈니스 로직 + 라우트 매핑 + 초기화 + 보상 분포 + objective 분포 + 플레이 시나리오 (신규/중급/고급/종료) + 메인/서브 체인 락 + ID naming 일관성 모든 회귀 가드 land 완성. 게임 퀘스트 플레이 가능 (수주→진행→완료→보상→포기→prerequisite chain → repeatable long-tail) 모든 시나리오 검증 완료.
 
+## 2026-05-17 SKILL-QA chapter — 180 스킬 카탈로그 정합성 (5 sprint, +37 가드)
+
+자동 sprint 진행: 6 클래스 (ether_knight + memory_weaver + shadow_weaver + memory_breaker + time_guardian + void_wanderer) × 30 스킬 = 180 스킬 카탈로그.
+
+- **QA-1** skillEngine + skillAdapter + skillBranches 단위 회귀 (10/31/14 pass)
+- **QA-2** skillCatalog (28 가드, S1~S7)
+  - 정량 (180 = 6 클래스 × 30)
+  - code unique + prefix (ek_/mw_/sw_/mb_/tg_/vw_) + name 한글 + description ≥10
+  - class/type/targetType 유효 + tier 1~4 + requiredLevel 1~100
+  - tier 1 lv ≤20, tier 4 lv ≥60
+  - damage/mpCost/cooldown/damageScale ≥0 + finite
+  - maxLevel 3/5 (ultimate=3) + levelScaling length 정합 + level 단조
+  - prerequisites 그래프 (dangling/self-loop/cross-class 없음, tier 1 root)
+- **QA-3** element 분포 + tier 시그니처 (9 가드, S8~S9)
+  - element 모두 KNOWN (aether/dark/light/neutral/time 등)
+  - ether_knight aether ≥8 / memory_weaver time ≥5 / shadow_weaver dark ≥10 / memory_breaker dark ≥10
+  - 각 클래스 element 다양성 ≥2 + tier 1~4 모두 + tier 4 ≥5 + ultimate ≥1
+- **QA-4** skillAdapter (31) + skillBranches (14) 회귀 0
+- **QA-5** progress.md SKILL chapter 추가 + 전체 회귀
+
+회귀: skillEngine 10 + skillCatalog 37 + skillAdapter 31 + skillBranches 14 + unit 전체 1300+ tests pass.
+
+skillSeeds.ts ALL_SKILLS / SKILL_SEED_GROUPS export 추가.
+
+**🎯 SKILL-QA chapter 완성 — 5 sprint, +37 가드** — 180 스킬 카탈로그 + 클래스 시그니처 + tier 진행 + element 분포 + prereq 그래프 모든 회귀 가드 land.
+
