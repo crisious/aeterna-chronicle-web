@@ -241,3 +241,70 @@ describe('SKILL-QA-S7 — prerequisites 그래프 무결성', () => {
     }
   });
 });
+
+describe('SKILL-QA-S8 — element 분포 + 클래스 시그니처 narrative', () => {
+  const KNOWN_ELEMENTS = new Set([
+    'aether', 'dark', 'light', 'neutral', 'time',
+    'fire', 'ice', 'lightning', 'earth', 'wind', 'holy',
+  ]);
+
+  it('모든 element 값 KNOWN_ELEMENTS', () => {
+    for (const s of ALL_SKILLS) {
+      expect(KNOWN_ELEMENTS.has(s.element), `${s.code} element '${s.element}'`).toBe(true);
+    }
+  });
+
+  it('ether_knight 30 스킬 중 aether element ≥ 10 (시그니처 narrative)', () => {
+    const ek = ALL_SKILLS.filter((s) => s.class === 'ether_knight' && s.element === 'aether');
+    expect(ek.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('memory_weaver 30 스킬 중 time/dark element 분포', () => {
+    const mw = ALL_SKILLS.filter((s) => s.class === 'memory_weaver');
+    const timeCount = mw.filter((s) => s.element === 'time').length;
+    expect(timeCount, 'memory_weaver time element').toBeGreaterThanOrEqual(5);
+  });
+
+  it('shadow_weaver 30 스킬 중 dark element ≥ 15 (시그니처)', () => {
+    const sw = ALL_SKILLS.filter((s) => s.class === 'shadow_weaver' && s.element === 'dark');
+    expect(sw.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('memory_breaker 30 스킬 중 dark element ≥ 10 (파괴 시그니처)', () => {
+    const mb = ALL_SKILLS.filter((s) => s.class === 'memory_breaker' && s.element === 'dark');
+    expect(mb.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('각 클래스 element 다양성 ≥ 2 distinct (단일 element 독점 방지)', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const elems = new Set(ALL_SKILLS.filter((s) => s.class === cls).map((s) => s.element));
+      expect(elems.size, `${cls} elements`).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
+
+describe('SKILL-QA-S9 — tier 분포 narrative (1/2/3/4)', () => {
+  it('각 클래스 tier 1~4 모두 보유 (스킬 트리 완전성)', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const tiers = new Set(ALL_SKILLS.filter((s) => s.class === cls).map((s) => s.tier));
+      expect(tiers.has(1), `${cls} tier1`).toBe(true);
+      expect(tiers.has(2), `${cls} tier2`).toBe(true);
+      expect(tiers.has(3), `${cls} tier3`).toBe(true);
+      expect(tiers.has(4), `${cls} tier4`).toBe(true);
+    }
+  });
+
+  it('각 클래스 tier 4 스킬 ≥ 5 (종반 narrative)', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const tier4 = ALL_SKILLS.filter((s) => s.class === cls && s.tier === 4);
+      expect(tier4.length, `${cls} tier4 count`).toBeGreaterThanOrEqual(5);
+    }
+  });
+
+  it('각 클래스 ultimate type 스킬 ≥ 1 (궁극기 narrative)', () => {
+    for (const cls of SUPPORTED_CLASSES) {
+      const ults = ALL_SKILLS.filter((s) => s.class === cls && s.type === 'ultimate');
+      expect(ults.length, `${cls} ultimate count`).toBeGreaterThanOrEqual(1);
+    }
+  });
+});
