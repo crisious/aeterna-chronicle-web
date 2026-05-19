@@ -573,3 +573,50 @@ skillSeeds.ts ALL_SKILLS / SKILL_SEED_GROUPS export 추가.
 
 **🎯 SKILL-QA chapter 완성 — 5 sprint, +37 가드** — 180 스킬 카탈로그 + 클래스 시그니처 + tier 진행 + element 분포 + prereq 그래프 모든 회귀 가드 land.
 
+## 2026-05-18 OBS chapter — Obsidian 시나리오 ↔ 게임 코드 연결 분석 + 회귀 가드 (1 sprint, +23 가드)
+
+사용자 명시 'Obsidian 시나리오 문서와 게임 내 시나리오 스토리 및 퀘스트 연결 상태 체크'.
+
+분석 보고서 `docs/obsidian-game-mapping-2026-05-18.md`:
+- Obsidian 5 Act / 8 챕터 vs 게임 15 메인 퀘스트 (1:1 매핑 불가)
+- Zone ~30% 일치 (실반헤임/아르겐티움/망각의 고원 부분 일치)
+- NPC ~17% 일치 (베르나르도 정확 + 누아리엘 위치 불일치)
+- 보스 ~30% 일치 (말라투스/베르나르도/레테↔aetherna_collapse)
+- MQ ~47% narrative 일치
+- **전체 ~30~40% narrative 연결**
+
+회귀 가드 (`obsidianGameMapping.test.ts`, 23 가드, OBS-S1~S7):
+- 베르나르도 체인 + 말라투스 narrative + 레테↔aetherna_collapse
+- 챕터 부분 일치 (시간균열/숲/크로노/기억)
+- 누아리엘 위치 불일치 표식 + Obsidian 미정의 게임 zone (aether_plains/shadow_gorge/crystal_cave)
+- Obsidian SSOT 파일 존재 (master + 챕터 1~5 + 인덱스)
+
+## 2026-05-19 SCENARIO-SYNC chapter — Obsidian narrative SSOT 통합 (4 sprint, +73 가드)
+
+사용자 명시 '동기화 작업 진행' — 어제 분석 ~30~40% 일치 상태를 SSOT 모듈로 통합 + 회귀 가드 land.
+
+- **SYNC-1** `shared/types/scenarioRegistry.ts` 신규 SSOT 모듈 (~370 라인)
+  - SCENARIO_COMPANIONS (6 동료): 세라핀/크리오/이그나/벤자민(↔npc_bernardo+boss_bernardo_corrupted)/레이나/우르그롬
+  - SCENARIO_ZONES (9 zone): 에레보스/칸텔라/실반헤임(↔memory_forest)/말라투스(↔malatus_sanctuary)/솔라리스/아르겐티움(↔chrono_spire)/팔라티노/망각의고원(↔forgotten_citadel)/황금에테르탑
+  - SCENARIO_BOSSES (9 보스): 기억골렘/말라투스(3페이즈)/타락말라투스/라와르/케인/타락베르나르도/시간감시자/톱니수호자/레테(5페이즈, ↔boss_oblivion_lord+aetherna_collapse)
+  - SCENARIO_CHAPTERS (5): Ch1~Ch5 각각 게임 MQ 매핑 (Ch4→MQ_CH04+08+12, Ch5→MQ_CH13+14+15)
+  - SCENARIO_ENDINGS (5): A(4파편+전원), B(3파편), C(0파편), D(신화), FAIL
+  - SCENARIO_FRAGMENTS (4): 신성 기억 파편 (Ch1~Ch4 zone 별 1개)
+  - SCENARIO_DEITIES (12): 창세 11신 + 레테 배제 narrative
+  - helpers: getCompanion/Zone/Boss/Fragment/DeityByObsidianId, listSynced*, listCreation/ExcludedDeities, list*ByChapter, evaluateLoyalty, evaluateEnding
+- **SYNC-2** `tests/unit/scenarioRegistry.test.ts` 회귀 가드 43 가드 (S1~S8)
+  - S1 6 동료, S2 9 zone, S3 9 보스, S4 5 chapter, S5 5 엔딩, S6 게임 cross-check, S7 listSynced, S8 미동기화 표식
+- **SYNC-3** 신성 기억 파편 + 12 신화 신 + 신뢰도/엔딩 판정 (+27 가드, S9~S13)
+  - S9 4 파편 (chapter 1~4 + zone 매핑 + sealer)
+  - S10 12 신 (창세 11 + 레테 배제 + 도메인 unique)
+  - S11 신뢰도 평가 (이탈 임계값)
+  - S12 엔딩 판정 (파편+동료 → A/B/C/FAIL)
+  - S13 4 파편 ↔ 엔딩 A minFragments cohesion
+- **SYNC-4** chrono.ts barrel 통합 (+3 가드, S14) + progress.md 갱신
+  - chrono.ts 에서 scenarioRegistry 모든 API 접근
+  - aetherna 시그니처 + 레테 narrative cross-domain 동시 접근
+
+회귀: scenarioRegistry 73/73 + unit 전체 1443 tests pass.
+
+**🎯 SCENARIO-SYNC chapter 완성 — 4 sprint, +73 가드** — Obsidian 시나리오 narrative 핵심 entity (동료 6 + zone 9 + 보스 9 + chapter 5 + 엔딩 5 + 파편 4 + 신 12) 단일 SSOT 통합. 게임 코드 매핑 ~30% (15 entity sync) + 미동기화 표식 ~70% (장기 sync TODO 추적). 향후 게임 데이터 확장 시 scenarioRegistry SSOT 참조 + 회귀 가드로 narrative 무결성 보호.
+

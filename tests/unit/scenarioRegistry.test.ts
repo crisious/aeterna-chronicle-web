@@ -520,3 +520,34 @@ describe('SYNC-S13 — 4 파편 ↔ 엔딩 narrative cohesion', () => {
     expect(fragmentChapters).toEqual(chapterNums);
   });
 });
+
+describe('SYNC-S14 — chrono.ts barrel scenarioRegistry 통합', () => {
+  it('chrono barrel 에서 scenarioRegistry 핵심 API 접근 가능', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(Array.isArray(mod.SCENARIO_COMPANIONS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_ZONES)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_BOSSES)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_CHAPTERS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_ENDINGS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_FRAGMENTS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_DEITIES)).toBe(true);
+  });
+
+  it('chrono barrel 에서 helper 함수 호출 가능', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(typeof mod.getCompanionByObsidianId).toBe('function');
+    expect(typeof mod.getZoneByObsidianId).toBe('function');
+    expect(typeof mod.getBossByObsidianId).toBe('function');
+    expect(typeof mod.evaluateLoyalty).toBe('function');
+    expect(typeof mod.evaluateEnding).toBe('function');
+  });
+
+  it('chrono barrel 통합 cross-check: aetherna 시그니처 + 레테 narrative 동시 접근', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // chronoField aetherna_collapse
+    expect(mod.listAllBossMonsterIds()).toContain('aetherna_collapse');
+    // scenarioRegistry 레테 → aetherna_collapse 매핑
+    const lethe = mod.getBossByObsidianId('lethe');
+    expect(lethe?.gameChronoBossId).toBe('aetherna_collapse');
+  });
+});
