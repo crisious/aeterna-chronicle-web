@@ -344,3 +344,179 @@ describe('SYNC-S8 — 미동기화 항목 표식 (장기 작업 추적)', () => 
     expect(unsynced.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-3 — 신성 기억 파편 + 신화 신 + 신뢰도 + 엔딩 판정 가드
+// ════════════════════════════════════════════════════════════════
+
+import {
+  SCENARIO_FRAGMENTS,
+  SCENARIO_DEITIES,
+  evaluateLoyalty,
+  evaluateEnding,
+  getFragmentByObsidianId,
+  getDeityByObsidianId,
+  listCreationDeities,
+  listExcludedDeities,
+} from '../../shared/types/scenarioRegistry';
+
+describe('SYNC-S9 — SCENARIO_FRAGMENTS 4 신성 기억 파편', () => {
+  it('SCENARIO_FRAGMENTS = 4 (Ch1~Ch4 각 1개)', () => {
+    expect(SCENARIO_FRAGMENTS.length).toBe(4);
+  });
+
+  it('각 chapter 1~4 정확히 1 파편 보유', () => {
+    const chapters = SCENARIO_FRAGMENTS.map((f) => f.chapter).sort();
+    expect(chapters).toEqual([1, 2, 3, 4]);
+  });
+
+  it('각 파편 zone 매핑 narrative (에레보스/실반헤임/솔라리스/아르겐티움)', () => {
+    const zonesByChapter = new Map<number, string>();
+    for (const f of SCENARIO_FRAGMENTS) zonesByChapter.set(f.chapter, f.zoneObsidianId);
+    expect(zonesByChapter.get(1)).toBe('erebos');
+    expect(zonesByChapter.get(2)).toBe('silvanheim');
+    expect(zonesByChapter.get(3)).toBe('solaris');
+    expect(zonesByChapter.get(4)).toBe('argentium');
+  });
+
+  it('각 파편 zone 이 SCENARIO_ZONES 에 정의 (dangling 없음)', () => {
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const f of SCENARIO_FRAGMENTS) {
+      expect(zoneIds.has(f.zoneObsidianId), `${f.obsidianId} zone`).toBe(true);
+    }
+  });
+
+  it('카일 봉인 파편 = Ch1 (에레보스) — 전생 봉인 narrative', () => {
+    const f = getFragmentByObsidianId('fragment_erebos');
+    expect(f).toBeDefined();
+    expect(f!.sealer).toContain('카일');
+  });
+
+  it('라와르 봉인 파편 = Ch3 (솔라리스) — 솔리안 왕 봉인', () => {
+    const f = getFragmentByObsidianId('fragment_solaris');
+    expect(f).toBeDefined();
+    expect(f!.sealer).toContain('라와르');
+  });
+});
+
+describe('SYNC-S10 — SCENARIO_DEITIES 12 신화 신', () => {
+  it('SCENARIO_DEITIES = 12 (창세 11신 + 레테 배제)', () => {
+    expect(SCENARIO_DEITIES.length).toBe(12);
+  });
+
+  it('창세 11신 (inCreation=true) = 11', () => {
+    expect(listCreationDeities().length).toBe(11);
+  });
+
+  it('레테 배제 (inCreation=false) = 1 — 망각의 신 narrative', () => {
+    const excluded = listExcludedDeities();
+    expect(excluded.length).toBe(1);
+    expect(excluded[0].obsidianId).toBe('lethe');
+    expect(excluded[0].domain).toBe('망각');
+  });
+
+  it('12 신 obsidianId 모두 unique snake_case', () => {
+    const ids = SCENARIO_DEITIES.map((d) => d.obsidianId);
+    expect(new Set(ids).size).toBe(12);
+    for (const id of ids) {
+      expect(id.match(/^[a-z][a-z0-9_]*$/)).not.toBeNull();
+    }
+  });
+
+  it('12 신 한글 name + 한글 domain narrative', () => {
+    const korean = /[가-힣]/;
+    for (const d of SCENARIO_DEITIES) {
+      expect(korean.test(d.name), `${d.obsidianId} 한글 name`).toBe(true);
+      expect(korean.test(d.domain), `${d.obsidianId} 한글 domain`).toBe(true);
+    }
+  });
+
+  it('크로나이 (시간) 신 정의 — 게임 chrono_spire 시그니처 narrative', () => {
+    const d = getDeityByObsidianId('chronai');
+    expect(d).toBeDefined();
+    expect(d!.domain).toBe('시간');
+  });
+
+  it('12 신 domain 모두 unique (관장 영역 중첩 없음)', () => {
+    const domains = SCENARIO_DEITIES.map((d) => d.domain);
+    expect(new Set(domains).size).toBe(12);
+  });
+});
+
+describe('SYNC-S11 — 신뢰도 평가 evaluateLoyalty', () => {
+  it('세라핀 신뢰도 50 (threshold) → 이탈 안 함', () => {
+    const r = evaluateLoyalty('seraphine', 50);
+    expect(r.hasLeft).toBe(false);
+  });
+
+  it('세라핀 신뢰도 49 (threshold 미만) → 이탈', () => {
+    const r = evaluateLoyalty('seraphine', 49);
+    expect(r.hasLeft).toBe(true);
+  });
+
+  it('이그나 신뢰도 20 (threshold) → 이탈 안 함', () => {
+    const r = evaluateLoyalty('ignara', 20);
+    expect(r.hasLeft).toBe(false);
+  });
+
+  it('이그나 신뢰도 19 → 이탈 (Ch4 합류 실패)', () => {
+    const r = evaluateLoyalty('ignara', 19);
+    expect(r.hasLeft).toBe(true);
+  });
+
+  it('unknown 동료 → hasLeft=false (안전 가드)', () => {
+    const r = evaluateLoyalty('unknown_companion', 0);
+    expect(r.hasLeft).toBe(false);
+  });
+});
+
+describe('SYNC-S12 — 엔딩 판정 evaluateEnding', () => {
+  it('파편 4 + 전원 생존 → 엔딩 A (수호자)', () => {
+    const r = evaluateEnding(4, true);
+    expect(r.achievableEnding).toBe('A');
+  });
+
+  it('파편 4 + 동료 일부 이탈 → 엔딩 B (전원 조건 미달)', () => {
+    const r = evaluateEnding(4, false);
+    expect(r.achievableEnding).toBe('B');
+  });
+
+  it('파편 3 + 전원 생존 → 엔딩 B (증언)', () => {
+    const r = evaluateEnding(3, true);
+    expect(r.achievableEnding).toBe('B');
+  });
+
+  it('파편 3 + 동료 이탈 → 엔딩 B', () => {
+    const r = evaluateEnding(3, false);
+    expect(r.achievableEnding).toBe('B');
+  });
+
+  it('파편 2 → 엔딩 C (수용)', () => {
+    const r = evaluateEnding(2, true);
+    expect(r.achievableEnding).toBe('C');
+  });
+
+  it('파편 0 → 엔딩 C (망각)', () => {
+    const r = evaluateEnding(0, false);
+    expect(r.achievableEnding).toBe('C');
+  });
+
+  it('판정 결과 fragmentsCollected + allCompanionsAlive 보존', () => {
+    const r = evaluateEnding(3, true);
+    expect(r.fragmentsCollected).toBe(3);
+    expect(r.allCompanionsAlive).toBe(true);
+  });
+});
+
+describe('SYNC-S13 — 4 파편 ↔ 엔딩 narrative cohesion', () => {
+  it('SCENARIO_FRAGMENTS 총 4 = 엔딩 A minFragments', () => {
+    const endingA = SCENARIO_ENDINGS.find((e) => e.code === 'A')!;
+    expect(SCENARIO_FRAGMENTS.length).toBe(endingA.minFragments);
+  });
+
+  it('SCENARIO_FRAGMENTS 4 chapter 모두 SCENARIO_CHAPTERS 1~4 정확 매칭', () => {
+    const fragmentChapters = SCENARIO_FRAGMENTS.map((f) => f.chapter).sort();
+    const chapterNums = SCENARIO_CHAPTERS.filter((c) => c.chapter <= 4).map((c) => c.chapter).sort();
+    expect(fragmentChapters).toEqual(chapterNums);
+  });
+});

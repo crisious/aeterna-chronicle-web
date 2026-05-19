@@ -378,3 +378,166 @@ export function listSyncedZones(): readonly ScenarioZone[] {
 export function listSyncedBosses(): readonly ScenarioBoss[] {
   return SCENARIO_BOSSES.filter((b) => b.gameChronoBossId || b.gameQuestBossId);
 }
+
+// ════════════════════════════════════════════════════════════════
+// 신성 기억 파편 (Sacred Memory Fragments) — Ch1~Ch4 각 1개
+// ════════════════════════════════════════════════════════════════
+
+export interface ScenarioFragment {
+  obsidianId: string;
+  name: string;
+  /** 봉인된 챕터 (Ch1~Ch4 각 1개) */
+  chapter: number;
+  /** 봉인 위치 (Obsidian zone obsidianId 참조) */
+  zoneObsidianId: string;
+  /** 200년 전 봉인한 12인 중 누구 */
+  sealer: string;
+}
+
+export const SCENARIO_FRAGMENTS: readonly ScenarioFragment[] = [
+  {
+    obsidianId: 'fragment_erebos',
+    name: '에레보스 파편 (대망각 진원지의 기억)',
+    chapter: 1,
+    zoneObsidianId: 'erebos',
+    sealer: '카일 (주인공의 전생)',
+  },
+  {
+    obsidianId: 'fragment_silvanheim',
+    name: '실반헤임 파편 (말라투스의 기억)',
+    chapter: 2,
+    zoneObsidianId: 'silvanheim',
+    sealer: '세라핀의 먼 선조 (엘파리스 기억 수호자)',
+  },
+  {
+    obsidianId: 'fragment_solaris',
+    name: '솔라리스 파편 (라와르 왕의 기억)',
+    chapter: 3,
+    zoneObsidianId: 'solaris',
+    sealer: '라와르 (솔리안의 마지막 왕)',
+  },
+  {
+    obsidianId: 'fragment_argentium',
+    name: '아르겐티움 파편 (제국 황궁 지하)',
+    chapter: 4,
+    zoneObsidianId: 'argentium',
+    sealer: '12인 중 1명 (이름 미공개)',
+  },
+];
+
+// ════════════════════════════════════════════════════════════════
+// 12 신화 신 (창세 11신 + 레테 배제)
+// ════════════════════════════════════════════════════════════════
+
+export interface ScenarioDeity {
+  obsidianId: string;
+  name: string;
+  /** 관장 영역 */
+  domain: string;
+  /** 창세 11신에 포함되었는지 (false = 레테 배제) */
+  inCreation: boolean;
+}
+
+export const SCENARIO_DEITIES: readonly ScenarioDeity[] = [
+  { obsidianId: 'fabius',     name: '파비우스',   domain: '운명', inCreation: true },
+  { obsidianId: 'chronai',    name: '크로나이',   domain: '시간', inCreation: true },
+  { obsidianId: 'verda',      name: '베르다',     domain: '생명', inCreation: true },
+  { obsidianId: 'ignarus',    name: '이그나루스', domain: '불꽃', inCreation: true },
+  { obsidianId: 'akius',      name: '아키우스',   domain: '빛',   inCreation: true },
+  { obsidianId: 'salome',     name: '살로메',     domain: '죽음', inCreation: true },
+  { obsidianId: 'martius',    name: '마르티우스', domain: '전쟁', inCreation: true },
+  { obsidianId: 'neptilus',   name: '넵틸루스',   domain: '바다', inCreation: true },
+  { obsidianId: 'terus',      name: '테루스',     domain: '대지', inCreation: true },
+  { obsidianId: 'aerus',      name: '아에루스',   domain: '바람', inCreation: true },
+  { obsidianId: 'oneiros',    name: '오네이로스', domain: '꿈',   inCreation: true },
+  { obsidianId: 'lethe',      name: '레테',       domain: '망각', inCreation: false },
+];
+
+// ════════════════════════════════════════════════════════════════
+// 신뢰도 시스템 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface LoyaltyEvaluation {
+  companionObsidianId: string;
+  currentLoyalty: number;
+  /** 이탈 여부 (threshold 미만 시 true) */
+  hasLeft: boolean;
+}
+
+/** 동료의 현재 신뢰도를 평가하여 이탈 여부 판정 */
+export function evaluateLoyalty(
+  companionObsidianId: string,
+  currentLoyalty: number,
+): LoyaltyEvaluation {
+  const companion = getCompanionByObsidianId(companionObsidianId);
+  if (!companion) {
+    return { companionObsidianId, currentLoyalty, hasLeft: false };
+  }
+  const hasLeft = currentLoyalty < companion.loyaltyThreshold;
+  return { companionObsidianId, currentLoyalty, hasLeft };
+}
+
+// ════════════════════════════════════════════════════════════════
+// 엔딩 판정 helper — 파편 수집 + 동료 생존
+// ════════════════════════════════════════════════════════════════
+
+export interface EndingEvaluation {
+  fragmentsCollected: number;
+  allCompanionsAlive: boolean;
+  /** 달성 가능한 엔딩 (A 가장 좋고 FAIL 패배) */
+  achievableEnding: ScenarioEndingCode;
+}
+
+/**
+ * 신성 기억 파편 수집량 + 동료 생존 상태로 달성 가능한 엔딩 산출.
+ * 엔딩 D (신화 시대 회귀) 는 별도 신화 조건이라 본 함수에서 제외.
+ */
+export function evaluateEnding(
+  fragmentsCollected: number,
+  allCompanionsAlive: boolean,
+): EndingEvaluation {
+  // 파편 0 + 동료 이탈 → C (수용)
+  // 파편 1~2 → C (수용)
+  // 파편 3 → B (증언)
+  // 파편 4 + 전원 생존 → A (수호)
+  // 파편 4 + 동료 일부 이탈 → B (전원 조건 미달)
+  let achievableEnding: ScenarioEndingCode = 'FAIL';
+
+  if (fragmentsCollected >= 4 && allCompanionsAlive) {
+    achievableEnding = 'A';
+  } else if (fragmentsCollected >= 3) {
+    achievableEnding = 'B';
+  } else {
+    achievableEnding = 'C';
+  }
+
+  return {
+    fragmentsCollected,
+    allCompanionsAlive,
+    achievableEnding,
+  };
+}
+
+// ════════════════════════════════════════════════════════════════
+// 추가 헬퍼 — 정량 sanity
+// ════════════════════════════════════════════════════════════════
+
+export function getFragmentByObsidianId(
+  obsidianId: string,
+): ScenarioFragment | undefined {
+  return SCENARIO_FRAGMENTS.find((f) => f.obsidianId === obsidianId);
+}
+
+export function getDeityByObsidianId(
+  obsidianId: string,
+): ScenarioDeity | undefined {
+  return SCENARIO_DEITIES.find((d) => d.obsidianId === obsidianId);
+}
+
+export function listCreationDeities(): readonly ScenarioDeity[] {
+  return SCENARIO_DEITIES.filter((d) => d.inCreation);
+}
+
+export function listExcludedDeities(): readonly ScenarioDeity[] {
+  return SCENARIO_DEITIES.filter((d) => !d.inCreation);
+}
