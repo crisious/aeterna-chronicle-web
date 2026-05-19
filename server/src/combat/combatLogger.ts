@@ -57,6 +57,10 @@ export interface CombatStatistics {
   participants: ParticipantStats[];
   /** 승리 팀 */
   winnerTeam: 'party' | 'monsters' | 'draw';
+  /** CHRONO-S90: 협공 발동 통계 */
+  dualTechFired?: number;
+  tripleTechFired?: number;
+  maxChainReached?: number;
 }
 
 export interface ParticipantStats {
@@ -118,9 +122,23 @@ export class CombatLogger {
     deathTick?: number;
   }>();
 
+  // CHRONO-S90: 협공 발동 누적 통계
+  private dualTechFired = 0;
+  private tripleTechFired = 0;
+  private maxChainReached = 0;
+
   constructor(combatId: string) {
     this.combatId = combatId;
     this.startTime = Date.now();
+  }
+
+  /**
+   * CHRONO-S90: combatEngine 발동 시 호출해 카운트 갱신.
+   */
+  recordTechStats(kind: 'dual' | 'triple', currentChain: number): void {
+    if (kind === 'dual') this.dualTechFired += 1;
+    if (kind === 'triple') this.tripleTechFired += 1;
+    if (currentChain > this.maxChainReached) this.maxChainReached = currentChain;
   }
 
   // ── 참가자 등록 ─────────────────────────────────────────
@@ -300,6 +318,10 @@ export class CombatLogger {
       totalTicks: this.currentTick,
       participants,
       winnerTeam,
+      // CHRONO-S90: 협공 통계 포함
+      dualTechFired: this.dualTechFired,
+      tripleTechFired: this.tripleTechFired,
+      maxChainReached: this.maxChainReached,
     };
   }
 

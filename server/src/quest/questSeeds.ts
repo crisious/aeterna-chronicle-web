@@ -516,13 +516,23 @@ const EVENT_QUESTS: QuestSeedData[] = [
 ];
 
 // ─── 전체 시드 ──────────────────────────────────────────────────
-const ALL_QUEST_SEEDS: QuestSeedData[] = [
+export const ALL_QUEST_SEEDS: QuestSeedData[] = [
   ...MAIN_QUESTS,
   ...SUB_QUESTS,
   ...DAILY_QUESTS,
   ...WEEKLY_QUESTS,
   ...EVENT_QUESTS,
 ];
+
+export const QUEST_SEED_GROUPS = {
+  main: MAIN_QUESTS,
+  sub: SUB_QUESTS,
+  daily: DAILY_QUESTS,
+  weekly: WEEKLY_QUESTS,
+  event: EVENT_QUESTS,
+} as const;
+
+export type { QuestSeedData };
 
 /**
  * 퀘스트 시드 실행 — upsert로 중복 방지

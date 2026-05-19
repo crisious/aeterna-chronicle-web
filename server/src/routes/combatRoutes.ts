@@ -24,6 +24,13 @@ import { prisma } from '../db';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 import { resolvePassiveModifiers } from '../skill/passiveResolver';
 import { initCombatSkillsFromDb } from '../combat/skillAdapter';
+import {
+  isChronoEraId,
+  chronoEraToEnemyMultipliers,
+  decorateMonsterNameByEra,
+  chronoEraBonusDrops,
+  chronoEraToMonsterPassives,
+} from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
 const CLASS_BASE_COMBAT_STATS: Record<string, {
@@ -243,6 +250,8 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     party?: LegacyCombatantInput[];
     monsters?: LegacyCombatantInput[];
     autoMode?: boolean;
+    /** CHRONO-S7: 시대 기반 ATB SpeedTier 적용 (ancient/present/ruined_future) */
+    eraId?: string;
   }
 
   const toFiniteNumber = (value: number | undefined, fallback: number): number => (
@@ -259,7 +268,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
 
-    const { partyCharacterIds, monsterIds, party, monsters, autoMode } = request.body;
+    const { partyCharacterIds, monsterIds, party, monsters, autoMode, eraId } = request.body;
     const legacyPayload = Array.isArray(party) || Array.isArray(monsters);
     const effectivePartyCharacterIds = partyCharacterIds?.length
       ? partyCharacterIds
@@ -293,7 +302,21 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       // P56-S2: DB 스킬 cache lazy init — 첫 /combat/start 직전 한 번. 이후 호출은 즉시 resolve.
       await initCombatSkillsFromDb();
 
-      const engine = combatInstanceManager.create({ autoMode: autoMode ?? false });
+      // CHRONO-S7: 유효한 eraId 면 시대→tier 매핑 적용. 미지정/무효 시 표준 tier 3.
+      const validEra = isChronoEraId(eraId) ? eraId : null;
+      const engine = validEra
+        ? combatInstanceManager.createFromEra(validEra, { autoMode: autoMode ?? false })
+        : combatInstanceManager.create({ autoMode: autoMode ?? false });
+
+      // CHRONO-S12: monster 스탯 보정 multiplier (HP/spd/reward/levelOffset).
+      const enemyMult = validEra
+        ? chronoEraToEnemyMultipliers(validEra)
+        : { hp: 1.0, attackSpeed: 1.0, reward: 1.0, levelOffset: 0 };
+
+      // CHRONO-S37: 시대별 monster 패시브 보너스 (evasion/hitChance).
+      const eraPassives = validEra
+        ? chronoEraToMonsterPassives(validEra)
+        : { evasionAddPercent: 0, hitChanceAddPercent: 0 };
 
       // P55-S1: 캐릭터별 장착 패시브 효과 병렬 resolve
       const passiveResolutions = await Promise.all(
@@ -361,21 +384,28 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
 
       if (legacyPayload) {
         for (const m of monsters ?? []) {
-          const maxHp = Math.max(1, toFiniteNumber(m.maxHp ?? m.hp, 100));
+          const rawMaxHp = Math.max(1, toFiniteNumber(m.maxHp ?? m.hp, 100));
+          // CHRONO-S12: era multiplier 적용
+          const maxHp = Math.max(1, Math.round(rawMaxHp * enemyMult.hp));
+          const hp = Math.max(1, Math.min(Math.round(toFiniteNumber(m.hp, rawMaxHp) * enemyMult.hp), maxHp));
+          const spd = Math.max(1, Math.round(toFiniteNumber(m.speed, 10) * enemyMult.attackSpeed));
           engine.addParticipant({
             id: m.id,
-            name: m.name ?? m.id,
+            name: validEra ? decorateMonsterNameByEra(m.name ?? m.id, validEra) : (m.name ?? m.id),
             classId: m.classId ?? 'normal',
-            level: Math.max(1, toFiniteNumber(m.level, 1)),
-            hp: Math.max(1, Math.min(toFiniteNumber(m.hp, maxHp), maxHp)),
+            level: Math.max(1, toFiniteNumber(m.level, 1) + enemyMult.levelOffset),
+            hp,
             maxHp,
+            // CHRONO-S37: era 패시브
+            evasionAddPercent: eraPassives.evasionAddPercent,
+            hitChanceAddPercent: eraPassives.hitChanceAddPercent,
             mp: Math.max(0, toFiniteNumber(m.mp, 0)),
             maxMp: Math.max(0, toFiniteNumber(m.maxMp ?? m.mp, 0)),
             atk: Math.max(1, toFiniteNumber(m.attack, 10)),
             def: Math.max(0, toFiniteNumber(m.defense, 0)),
             matk: Math.max(1, toFiniteNumber(m.attack, 10)),
             mdef: Math.max(0, toFiniteNumber(m.defense, 0)),
-            spd: Math.max(1, toFiniteNumber(m.speed, 10)),
+            spd,
             critRate: 0.05,
             critDamage: 1.5,
             isMonster: true,
@@ -401,20 +431,29 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
         }
 
         for (const m of dbMonsters) {
+          // CHRONO-S12: era multiplier 적용 — HP/spd/level/reward 보정
+          const adjHp = Math.max(1, Math.round(m.hp * enemyMult.hp));
+          const adjSpd = Math.max(1, Math.round(m.speed * enemyMult.attackSpeed));
+          const adjLevel = Math.max(1, m.level + enemyMult.levelOffset);
+          const adjExp = Math.max(0, Math.round(m.expReward * enemyMult.reward));
+          const adjGold = Math.max(0, Math.round(m.goldReward * enemyMult.reward));
           engine.addParticipant({
             id: m.id,
-            name: m.name,
+            name: validEra ? decorateMonsterNameByEra(m.name, validEra) : m.name,
             classId: m.type,
-            level: m.level,
-            hp: m.hp,
-            maxHp: m.hp,
+            level: adjLevel,
+            hp: adjHp,
+            maxHp: adjHp,
             mp: 0,
             maxMp: 0,
+            // CHRONO-S37: era 패시브 (ancient evasion / ruined_future hitChance)
+            evasionAddPercent: eraPassives.evasionAddPercent,
+            hitChanceAddPercent: eraPassives.hitChanceAddPercent,
             atk: m.attack,
             def: m.defense,
             matk: m.attack,
             mdef: m.defense,
-            spd: m.speed,
+            spd: adjSpd,
             critRate: 0.05,
             critDamage: 1.5,
             isMonster: true,
@@ -425,9 +464,13 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
             element: (m.element ?? 'neutral') as ElementType,
             armorPenetration: 0,
             armorPenetrationPercent: 0,
-            baseExp: m.expReward,
-            baseGold: m.goldReward,
-            dropTable: (m.dropTable as unknown as DropEntry[]) ?? [],
+            baseExp: adjExp,
+            baseGold: adjGold,
+            // CHRONO-S30: era bonus rare drops append (시대 전용 아이템)
+            dropTable: [
+              ...((m.dropTable as unknown as DropEntry[]) ?? []),
+              ...(validEra ? chronoEraBonusDrops(validEra).map((d) => ({ ...d })) : []),
+            ],
           });
         }
       }
@@ -473,6 +516,81 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
 
     const accepted = engine.submitAction(action);
     return { success: accepted };
+  });
+
+  // ── POST /combat/dual_tech (CHRONO-S19) ────────────────────
+  // 크로노 트리거 2인 협공 예약. 다음 tick 직전에 실행됨.
+  interface CombatDualTechBody {
+    combatId: string;
+    actorIdA: string;
+    actorIdB: string;
+    techId: string;
+    targetId: string;
+  }
+
+  fastify.post('/combat/dual_tech', async (
+    request: FastifyRequest<{ Body: CombatDualTechBody }>,
+    reply: FastifyReply,
+  ) => {
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+
+    const { combatId, actorIdA, actorIdB, techId, targetId } = request.body;
+    if (!combatId || !actorIdA || !actorIdB || !techId || !targetId) {
+      return reply.status(400).send({ error: '필수 파라미터 누락' });
+    }
+
+    const engine = combatInstanceManager.get(combatId);
+    if (!engine) {
+      return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+
+    const accepted = engine.submitDualTech(actorIdA, actorIdB, techId, targetId);
+    if (!accepted) {
+      return reply.status(400).send({
+        error: '협공 발동 불가 (ATB/클래스/MP 또는 협공 ID 검증 실패)',
+      });
+    }
+    return { success: true };
+  });
+
+  // ── POST /combat/triple_tech (CHRONO-S62) ──────────────────
+  // 크로노 트리거 3인 협공 예약.
+  interface CombatTripleTechBody {
+    combatId: string;
+    actorIds: [string, string, string];
+    techId: string;
+    targetId: string;
+  }
+
+  fastify.post('/combat/triple_tech', async (
+    request: FastifyRequest<{ Body: CombatTripleTechBody }>,
+    reply: FastifyReply,
+  ) => {
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+
+    const { combatId, actorIds, techId, targetId } = request.body;
+    if (!combatId || !Array.isArray(actorIds) || actorIds.length !== 3 || !techId || !targetId) {
+      return reply.status(400).send({ error: '필수 파라미터 누락 (actorIds 3개 필요)' });
+    }
+
+    const engine = combatInstanceManager.get(combatId);
+    if (!engine) {
+      return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+
+    const accepted = engine.submitTripleTech(actorIds, techId, targetId);
+    if (!accepted) {
+      return reply.status(400).send({
+        error: '3인 협공 발동 불가 (ATB/클래스/MP 또는 협공 ID 검증 실패)',
+      });
+    }
+    return { success: true };
   });
 
   // ── POST /combat/:combatId/tick ───────────────────────────

@@ -31,6 +31,8 @@ export interface RewardResult {
   goldPerMember: number;
   /** 드롭 아이템 목록 */
   droppedItems: DroppedItem[];
+  /** CHRONO-S93: chain 4+ 보너스 적용 여부 (UI 표시용). */
+  chainBonusApplied?: boolean;
 }
 
 export interface DroppedItem {

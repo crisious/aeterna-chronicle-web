@@ -26,6 +26,33 @@ import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
+import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
+import { loadLastEra } from '../time/eraStorage';
+import { getDualTechById } from '../../../shared/types/dualTech';
+import { resolveFieldEncounter } from '../../../shared/types/chronoField';
+
+// CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
+const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
+  chrono: 'sfx_combat_magic_cast',
+  holy: 'sfx_combat_magic_heal',
+  dark: 'sfx_combat_magic_cast',
+  fire: 'sfx_combat_magic_cast',
+  ice: 'sfx_combat_magic_cast',
+  lightning: 'sfx_combat_magic_cast',
+  wind: 'sfx_combat_magic_cast',
+  earth: 'sfx_combat_magic_cast',
+  neutral: 'sfx_combat_magic_cast',
+};
+
+// FF6 SPEED_TIER_SCALAR (atbTimeline 와 일치) — UI 표시 전용
+const TIER_LABEL: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
+  1: '×0.5',
+  2: '×0.7',
+  3: '×1.0',
+  4: '×1.3',
+  5: '×1.6',
+  6: '×2.0',
+};
 import { resolveZoneBackground } from '../data/zoneBackgrounds';
 import type { ATBMode } from '../../../shared/types/atb';
 
@@ -50,6 +77,8 @@ export interface BattleSceneData {
   enemyHpMultiplier?: number;
   enemyAttackSpeedMultiplier?: number;
   rewardMultiplier?: number;
+  /** CHRONO-S126: GameScene 에서 보스 sprite 클릭 시 true. boss_room 분위기 강제. */
+  isBossField?: boolean;
   offlineQa?: boolean;
   /** 전투 종료 후 복귀할 씬 (없으면 GameScene) */
   returnScene?: string;
@@ -184,6 +213,36 @@ export class BattleScene extends Phaser.Scene {
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
   private serverCombatId: string | null = null;
+  // CHRONO-S23/S45: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
+  private lastDualTechCandidates: Array<{
+    techId: string;
+    name: string;
+    actorIds: [string, string];
+    element?: string;
+    aoe?: boolean;
+    mpCost?: number;
+  }> = [];
+  // CHRONO-S63: Triple Tech 후보 (3-actor)
+  private lastTripleTechCandidates: Array<{
+    techId: string;
+    name: string;
+    actorIds: [string, string, string];
+    element?: string;
+    aoe?: boolean;
+    mpCost?: number;
+  }> = [];
+  // CHRONO-S87: Triple Tech 후보 선택 인덱스 (Shift+T cycle)
+  private tripleTechSelectedIndex = 0;
+  // CHRONO-S36: 다중 후보 중 선택 인덱스 (Shift+D 로 cycle)
+  private dualTechSelectedIndex = 0;
+  // CHRONO-S31: 협공 발동 버튼 (후보 있을 때만 visible)
+  private dualTechButton: Phaser.GameObjects.Container | null = null;
+  // CHRONO-S65: 3인 협공 발동 버튼
+  private tripleTechButton: Phaser.GameObjects.Container | null = null;
+  // CHRONO-S70: chain combo 카운터 + UI 라벨
+  private chainCount = 0;
+  private chainLabel: Phaser.GameObjects.Text | null = null;
+  private chainExpireTick = 0;
 
   // Auto-battle & speed control
   private autoMode = false;
@@ -238,7 +297,10 @@ export class BattleScene extends Phaser.Scene {
 
     this.skillSlots = data.skillSlots ?? [];
     this.battleId = data.battleId;
-    this._initData = data;
+    // CHRONO-S18: data.eraId 없으면 localStorage 마지막 era 복원 (디버그/직접 진입 ergonomics)
+    this._initData = data.eraId
+      ? data
+      : { ...data, eraId: loadLastEra() ?? undefined };
   }
 
   preload(): void {
@@ -300,12 +362,116 @@ export class BattleScene extends Phaser.Scene {
     } catch (e) { console.warn('[Battle] bg error:', e); }
 
     const era = getChronoEra(this._initData.eraId ?? 'present');
+    const tier = chronoEraToSpeedTier(this._initData.eraId ?? 'present');
     this.add.rectangle(scW / 2, scH / 2, scW, scH, era.tintColor, 0.08).setDepth(1);
-    this.add.text(scW - 20, 12, `${era.label} / ${era.yearLabel}`, {
+    // CHRONO-S11: era 라벨 + ATB tier (시대 기반 ATB 속도 차별화 시각화)
+    this.add.text(scW - 20, 12, `${era.label} / ${era.yearLabel} · ATB ${TIER_LABEL[tier]}`, {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: `#${era.tintColor.toString(16).padStart(6, '0')}`,
-    }).setOrigin(1, 0).setDepth(250);
+    }).setOrigin(1, 0).setDepth(250).setName('eraTierLabel');
+
+    // CHRONO-S109: 필드 encounter ambient line (좌상단 hint)
+    const zoneIdField = this._initData.zoneId ?? '';
+    const fieldEnc = zoneIdField ? resolveFieldEncounter(zoneIdField, this._initData.eraId ?? 'present') : null;
+    if (fieldEnc) {
+      // CHRONO-S144: 35자 이상이면 truncate (UI overflow 방지)
+      const ambientShort = fieldEnc.ambientLine.length > 35
+        ? `${fieldEnc.ambientLine.slice(0, 32)}…`
+        : fieldEnc.ambientLine;
+      this.add.text(20, 12, `🛡 ${ambientShort}${fieldEnc.hasBossSlot ? ' ⚔️' : ''}`, {
+        fontSize: '12px',
+        fontFamily: FONT_FAMILY,
+        color: '#ffd54a',
+        stroke: '#000000',
+        strokeThickness: 2,
+      }).setOrigin(0, 0).setDepth(250).setName('fieldAmbientLine');
+
+      // CHRONO-S113/S118/S127: ambientEffect 약한 색조 overlay
+      // S127: isBossField 시 boss_room 강제 (visible 보스 진입)
+      const effectTint: Record<string, number | null> = {
+        mist: 0xeeeeee,
+        dust: 0xb38b6a,
+        glow: 0xffd54a,
+        void: 0x6633aa,
+        boss_room: 0xff3333,
+        none: null,
+      };
+      const effectKind = this._initData.isBossField ? 'boss_room' : (fieldEnc.ambientEffect ?? 'none');
+      const tint = effectTint[effectKind];
+      if (tint !== null && tint !== undefined) {
+        const alpha = effectKind === 'boss_room' ? 0.12 : 0.06;
+        this.add.rectangle(scW / 2, scH / 2, scW, scH, tint, alpha)
+          .setDepth(2)
+          .setName(`fieldAmbientOverlay_${effectKind}`);
+      }
+      // CHRONO-S128/S129: 보스 진입 시 카메라 진입 zoom + SFX
+      if (this._initData.isBossField) {
+        this.cameras.main.setZoom(1.0);
+        this.tweens.add({
+          targets: this.cameras.main,
+          zoom: 1.05,
+          duration: 400,
+          ease: 'Power2',
+        });
+        // 보스 진입 SFX (자산 미존재 시 SoundManager fallback)
+        try {
+          playSfx(this, 'sfx_combat_magic_cast', 0.9);
+          playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.9);
+        } catch (e) {
+          console.warn('[BattleScene] 보스 진입 SFX 실패:', e);
+        }
+      }
+      // CHRONO-S116/S143: bgmTrack 재생 시도 + 명시 fallback
+      if (fieldEnc.bgmTrack && this.soundManager) {
+        try {
+          this.soundManager.playBgm(fieldEnc.bgmTrack, 1500);
+          this.battleUI?.addLog(`🎵 ${fieldEnc.bgmTrack}`);
+        } catch (e) {
+          console.warn('[BattleScene] BGM 재생 실패 (자산 미존재 가능):', fieldEnc.bgmTrack, e);
+          this.battleUI?.addLog(`🔇 BGM 미존재: ${fieldEnc.bgmTrack}`);
+        }
+      }
+    }
+
+    // CHRONO-S70: chain combo 라벨 (era 라벨 아래)
+    this.chainLabel = this.add.text(scW - 20, 32, '', {
+      fontSize: '14px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffd54a',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(1, 0).setDepth(252).setName('chainLabel').setVisible(false);
+
+    // CHRONO-S31: 협공 발동 버튼 (우하단, 후보 있을 때만 표시)
+    const btnContainer = this.add.container(scW - 90, scH - 50);
+    const btnBg = this.add.rectangle(0, 0, 160, 36, 0x6fd3ff, 0.85)
+      .setStrokeStyle(2, 0xffffff)
+      .setInteractive({ useHandCursor: true });
+    const btnText = this.add.text(0, 0, '✨ 협공 (D)', {
+      fontSize: '14px',
+      fontFamily: FONT_FAMILY,
+      color: '#1a0033',
+    }).setOrigin(0.5);
+    btnContainer.add([btnBg, btnText]);
+    btnContainer.setDepth(260).setVisible(false).setName('dualTechButton');
+    btnBg.on('pointerdown', () => this._triggerFirstDualTech());
+    this.dualTechButton = btnContainer;
+
+    // CHRONO-S65: 3인 협공 버튼 (Dual 위, 더 큰 강조)
+    const tBtnContainer = this.add.container(scW - 90, scH - 92);
+    const tBtnBg = this.add.rectangle(0, 0, 180, 40, 0xffd54a, 0.92)
+      .setStrokeStyle(3, 0xffffff)
+      .setInteractive({ useHandCursor: true });
+    const tBtnText = this.add.text(0, 0, '🌟 3인 협공 (T)', {
+      fontSize: '15px',
+      fontFamily: FONT_FAMILY,
+      color: '#1a0033',
+    }).setOrigin(0.5);
+    tBtnContainer.add([tBtnBg, tBtnText]);
+    tBtnContainer.setDepth(261).setVisible(false).setName('tripleTechButton');
+    tBtnBg.on('pointerdown', () => this._triggerFirstTripleTech());
+    this.tripleTechButton = tBtnContainer;
 
     // ── 매니저 초기화 (개별 try-catch) ────────────────────────
     try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
@@ -356,6 +522,24 @@ export class BattleScene extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
       this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+      // CHRONO-S25: 'D' 키 → 선택된 Dual Tech 후보 발동
+      // CHRONO-S36: Shift+D → 다음 후보로 cycle
+      this.input.keyboard.on('keydown-D', (e: KeyboardEvent) => {
+        if (e.shiftKey) {
+          this._cycleDualTechSelection();
+        } else {
+          this._triggerFirstDualTech();
+        }
+      });
+      // CHRONO-S63: 'T' 키 → 선택된 Triple Tech 후보 발동
+      // CHRONO-S87: Shift+T → 다음 후보 cycle
+      this.input.keyboard.on('keydown-T', (e: KeyboardEvent) => {
+        if (e.shiftKey) {
+          this._cycleTripleTechSelection();
+        } else {
+          this._triggerFirstTripleTech();
+        }
+      });
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -1447,6 +1631,14 @@ export class BattleScene extends Phaser.Scene {
         color: '#ff8888',
       }).setOrigin(0.5).setDepth(51);
 
+      // CHRONO-S52: 시대별 monster sprite tint (present 외 era 에 era.tintColor 살짝 적용)
+      const eraId = this._initData.eraId ?? 'present';
+      if (eraId !== 'present' && sprite instanceof Phaser.GameObjects.Image) {
+        const era = getChronoEra(eraId);
+        sprite.setTint(era.tintColor);
+        sprite.setName(`enemy_${unit.id}_eratint`);
+      }
+
       const us: UnitSprite = {
         unit, sprite, nameText,
         atb: Phaser.Math.Between(0, 20),
@@ -1799,12 +1991,235 @@ export class BattleScene extends Phaser.Scene {
         characterId: this._initData.characterId ?? networkManager.userId ?? '',
         zoneId: this._initData.zoneId,
         monsterId: this._initData.monsterId,
+        // CHRONO-S8: 현재 시대 전달 → 서버가 ATB SpeedTier 매핑 자동 적용
+        eraId: this._initData.eraId,
       });
       this.serverCombatId = result.combatId;
       this.battleUI?.addLog(`[서버] 전투 ID: ${result.combatId}`);
     } catch (err) {
       console.warn('[BattleScene] 서버 전투 시작 실패 (로컬 모드):', err);
     }
+  }
+
+  /**
+   * CHRONO-S25: 'D' 키 → 첫 Dual Tech 후보 발동.
+   * lastDualTechCandidates[0] + 첫 alive 적을 target 으로 networkManager.combatDualTech 호출.
+   * UI 발동 버튼 풀 구현 전 빠른 데모 path (사용자 입력 → 협공 발동 가능).
+   */
+  private async _triggerFirstDualTech(): Promise<void> {
+    if (!this.serverCombatId) {
+      this.battleUI?.addLog('[협공] 서버 전투 미연결');
+      return;
+    }
+    const cand = this.lastDualTechCandidates[this.dualTechSelectedIndex] ?? this.lastDualTechCandidates[0];
+    if (!cand) {
+      this.battleUI?.addLog('[협공] 발동 가능한 후보 없음 (양쪽 ATB 100% + 호환 클래스 필요)');
+      return;
+    }
+    const targetSprite = this.enemySprites.find((s) => s.unit.alive);
+    if (!targetSprite) {
+      this.battleUI?.addLog('[협공] 살아있는 적이 없습니다');
+      return;
+    }
+    try {
+      const resp = await networkManager.combatDualTech({
+        combatId: this.serverCombatId,
+        actorIdA: cand.actorIds[0],
+        actorIdB: cand.actorIds[1],
+        techId: cand.techId,
+        targetId: targetSprite.unit.id,
+      });
+      if (resp.success) {
+        this.battleUI?.addLog(`✨ 협공 발동: ${cand.name}`);
+        // CHRONO-S27: target 위치에 시각 효과 재생
+        const fxKey = `fx_${cand.techId}`;
+        this.effectManager?.spawnDualTechEffect(
+          targetSprite.sprite.x,
+          targetSprite.sprite.y,
+          fxKey,
+          cand.name,
+        );
+        // CHRONO-S33/S44: element 기반 SFX 차별화
+        const def = getDualTechById(cand.techId);
+        const sfxKey = def
+          ? DUAL_TECH_SFX_BY_ELEMENT[def.element] ?? 'sfx_combat_magic_cast'
+          : 'sfx_combat_magic_cast';
+        playSfx(this, sfxKey, 0.8);
+        playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.7);
+        // CHRONO-S49: 카메라 shake — AOE 강 (180ms, 0.01), 단일 약 (120ms, 0.006)
+        if (isScreenShakeEnabled()) {
+          const aoe = def?.aoe ?? false;
+          this.cameras.main.shake(aoe ? 180 : 120, aoe ? 0.01 : 0.006);
+        }
+      } else {
+        this.battleUI?.addLog(`[협공] 발동 실패`);
+      }
+    } catch (err) {
+      console.warn('[BattleScene] 협공 발동 실패:', err);
+      this.battleUI?.addLog('[협공] 네트워크 오류');
+    }
+  }
+
+  /**
+   * CHRONO-S51: 보스 sprite 위에 협공 저항 단계 텍스트 부착/갱신.
+   * sprite 데이터에 캐싱하여 중복 생성 방지.
+   */
+  /**
+   * CHRONO-S86: 협공 완전 면역 보스 라벨 (별도 색조 — 흰색 강조).
+   */
+  private _updateBossImmuneLabel(
+    enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
+  ): void {
+    const cacheKey = '__bossResistText';
+    const existing = (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey];
+    const label = '🛡 협공 면역';
+    if (existing) {
+      existing.setText(label).setColor('#ffffff');
+      existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
+      return;
+    }
+    const t = this.add.text(enemy.sprite.x, enemy.sprite.y - 80, label, {
+      fontSize: '12px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(8800).setName(`bossImmune_${enemy.unit.id}`);
+    (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey] = t;
+  }
+
+  private _updateBossResistLabel(
+    enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
+    dualHits: number,
+    tripleHits: number,
+  ): void {
+    const cacheKey = '__bossResistText';
+    const existing = (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey];
+    const parts: string[] = [];
+    if (dualHits > 0) parts.push(`Dual +${dualHits * 5}%`);
+    if (tripleHits > 0) parts.push(`Triple +${tripleHits * 10}%`);
+    const label = `🛡 ${parts.join(' / ')}`;
+    if (existing) {
+      existing.setText(label);
+      existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
+      return;
+    }
+    const t = this.add.text(enemy.sprite.x, enemy.sprite.y - 80, label, {
+      fontSize: '11px',
+      fontFamily: FONT_FAMILY,
+      color: '#ffd54a',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(8800).setName(`bossResist_${enemy.unit.id}`);
+    (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey] = t;
+  }
+
+  /**
+   * CHRONO-S63: 'T' 키 → 첫 Triple Tech 후보 발동.
+   */
+  private async _triggerFirstTripleTech(): Promise<void> {
+    if (!this.serverCombatId) {
+      this.battleUI?.addLog('[3인 협공] 서버 전투 미연결');
+      return;
+    }
+    const cand = this.lastTripleTechCandidates[this.tripleTechSelectedIndex] ?? this.lastTripleTechCandidates[0];
+    if (!cand) {
+      this.battleUI?.addLog('[3인 협공] 발동 가능한 후보 없음 (3명 ATB 100 + 호환 클래스 필요)');
+      return;
+    }
+    const targetSprite = this.enemySprites.find((s) => s.unit.alive);
+    if (!targetSprite) {
+      this.battleUI?.addLog('[3인 협공] 살아있는 적이 없습니다');
+      return;
+    }
+    try {
+      const resp = await networkManager.combatTripleTech({
+        combatId: this.serverCombatId,
+        actorIds: cand.actorIds,
+        techId: cand.techId,
+        targetId: targetSprite.unit.id,
+      });
+      if (resp.success) {
+        this.battleUI?.addLog(`🌟 3인 협공 발동: ${cand.name}`);
+        // 모든 적에 강한 시각 효과 (Triple Tech 는 항상 AOE 풍)
+        for (const enemy of this.enemySprites) {
+          if (!enemy.unit.alive) continue;
+          this.effectManager?.spawnDualTechEffect(
+            enemy.sprite.x,
+            enemy.sprite.y,
+            `fx_triple_${cand.techId}`,
+            cand.name,
+          );
+        }
+        // SFX + 강한 카메라 shake
+        playSfx(this, 'sfx_combat_magic_cast', 1.0);
+        playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.9);
+        if (isScreenShakeEnabled()) {
+          this.cameras.main.shake(250, 0.015);
+        }
+      } else {
+        this.battleUI?.addLog('[3인 협공] 발동 실패');
+      }
+    } catch (err) {
+      console.warn('[BattleScene] 3인 협공 발동 실패:', err);
+      this.battleUI?.addLog('[3인 협공] 네트워크 오류');
+    }
+  }
+
+  /**
+   * CHRONO-S87: Shift+T 로 Triple Tech 후보 cycle.
+   */
+  private _cycleTripleTechSelection(): void {
+    if (this.lastTripleTechCandidates.length === 0) {
+      this.battleUI?.addLog('[3인 협공] 후보 없음 (cycle 무효)');
+      return;
+    }
+    this.tripleTechSelectedIndex = (this.tripleTechSelectedIndex + 1) % this.lastTripleTechCandidates.length;
+    const sel = this.lastTripleTechCandidates[this.tripleTechSelectedIndex];
+    this.battleUI?.addLog(
+      `🔁 3인 협공 선택: ${sel.name} (${this.tripleTechSelectedIndex + 1}/${this.lastTripleTechCandidates.length})`,
+    );
+    const txt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+    const bg = this.tripleTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+    const aoePrefix = sel.aoe ? '💥 🌟' : '🌟';
+    txt?.setText(`${aoePrefix} ${sel.name} (T)`);
+    const tint = (() => {
+      switch (sel.element) {
+        case 'chrono': return 0x6fd3ff;
+        case 'dark': return 0xc8a2ff;
+        case 'holy': return 0xffd54a;
+        default: return 0xffd54a;
+      }
+    })();
+    bg?.setFillStyle(tint, 0.92);
+  }
+
+  /**
+   * CHRONO-S36: Shift+D 로 협공 후보 cycle. 다음 인덱스로 회전 + 버튼 라벨 갱신.
+   */
+  private _cycleDualTechSelection(): void {
+    if (this.lastDualTechCandidates.length === 0) {
+      this.battleUI?.addLog('[협공] 후보 없음 (cycle 무효)');
+      return;
+    }
+    this.dualTechSelectedIndex = (this.dualTechSelectedIndex + 1) % this.lastDualTechCandidates.length;
+    const sel = this.lastDualTechCandidates[this.dualTechSelectedIndex];
+    this.battleUI?.addLog(
+      `🔁 협공 선택: ${sel.name} (${this.dualTechSelectedIndex + 1}/${this.lastDualTechCandidates.length})`,
+    );
+    const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+    const bg = this.dualTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+    const aoePrefix = sel.aoe ? '💥 ' : '✨ ';
+    txt?.setText(`${aoePrefix}${sel.name} (D)`);
+    const tint = (() => {
+      switch (sel.element) {
+        case 'chrono': return 0x6fd3ff;
+        case 'dark': return 0xc8a2ff;
+        case 'holy': return 0xffd54a;
+        default: return 0x6fd3ff;
+      }
+    })();
+    bg?.setFillStyle(tint, 0.85);
   }
 
   private _shouldUseServerCombat(): boolean {
@@ -1820,9 +2235,182 @@ export class BattleScene extends Phaser.Scene {
     }
 
     const unsub1 = networkManager.on('combat:tick', (data) => {
-      const d = data as { combatId: string; turn: number; actions: unknown[] };
+      const d = data as {
+        combatId: string;
+        turn?: number;
+        tick?: number;
+        actions: Array<{ actionType: string; actorName?: string; targetName?: string; damage?: number }>;
+        // CHRONO-S23/S45: server TickResult.dualTechCandidates 노출 (element/aoe/mpCost 포함)
+        dualTechCandidates?: Array<{
+          techId: string;
+          name: string;
+          actorIds: [string, string];
+          element?: string;
+          aoe?: boolean;
+          mpCost?: number;
+        }>;
+        // CHRONO-S63: Triple Tech 후보 (3-actor)
+        tripleTechCandidates?: Array<{
+          techId: string;
+          name: string;
+          actorIds: [string, string, string];
+          element?: string;
+          aoe?: boolean;
+          mpCost?: number;
+        }>;
+        // CHRONO-S51: 보스 저항 단계 표시용 snapshot
+        participants?: Array<{
+          id: string;
+          team: 'party' | 'monsters';
+          dualTechHitsTaken?: number;
+          tripleTechHitsTaken?: number;
+          dualTechImmune?: boolean;
+        }>;
+        // CHRONO-S83: 협공 사용 통계
+        combatStats?: {
+          dualTechFired: number;
+          tripleTechFired: number;
+          maxChainReached: number;
+        };
+        combatEnded?: boolean;
+      };
       if (d.combatId === this.serverCombatId) {
-        this.battleUI?.addLog(`[서버] 턴 ${d.turn}`);
+        const turn = d.turn ?? d.tick ?? 0;
+        this.battleUI?.addLog(`[서버] 턴 ${turn}`);
+        // CHRONO-S83: 전투 종료 시 협공 통계 보고
+        if (d.combatEnded && d.combatStats) {
+          const cs = d.combatStats;
+          this.battleUI?.addLog(
+            `🏆 협공 통계: Dual ${cs.dualTechFired}회 / Triple ${cs.tripleTechFired}회 / 최대 CHAIN ×${cs.maxChainReached}`,
+          );
+        }
+        if (d.dualTechCandidates && d.dualTechCandidates.length > 0) {
+          const names = d.dualTechCandidates.map((c) => c.name).join(', ');
+          this.battleUI?.addLog(`✨ 협공 가능: ${names}`);
+          this.lastDualTechCandidates = d.dualTechCandidates;
+          // CHRONO-S36: 후보 목록 갱신 시 selectedIndex 가 범위 밖이면 0 으로 reset
+          if (this.dualTechSelectedIndex >= d.dualTechCandidates.length) {
+            this.dualTechSelectedIndex = 0;
+          }
+          // CHRONO-S31/S46: 후보 있으면 버튼 visible + element 색조 + AOE 아이콘
+          this.dualTechButton?.setVisible(true);
+          const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+          const bg = this.dualTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+          const sel = d.dualTechCandidates[this.dualTechSelectedIndex] ?? d.dualTechCandidates[0];
+          const aoePrefix = sel.aoe ? '💥 ' : '✨ ';
+          txt?.setText(`${aoePrefix}${sel.name} (D)`);
+          const tint = (() => {
+            switch (sel.element) {
+              case 'chrono': return 0x6fd3ff;
+              case 'dark': return 0xc8a2ff;
+              case 'holy': return 0xffd54a;
+              default: return 0x6fd3ff;
+            }
+          })();
+          bg?.setFillStyle(tint, 0.85);
+        } else {
+          this.lastDualTechCandidates = [];
+          this.dualTechSelectedIndex = 0;
+          this.dualTechButton?.setVisible(false);
+        }
+        // CHRONO-S63/S65/S87/S91: Triple Tech 후보 수신 + 버튼 가시화 + element 색조 + AOE
+        if (d.tripleTechCandidates && d.tripleTechCandidates.length > 0) {
+          const tNames = d.tripleTechCandidates.map((c) => c.name).join(', ');
+          this.battleUI?.addLog(`🌟 3인 협공 가능: ${tNames} ('T' 키)`);
+          this.lastTripleTechCandidates = d.tripleTechCandidates;
+          if (this.tripleTechSelectedIndex >= d.tripleTechCandidates.length) {
+            this.tripleTechSelectedIndex = 0;
+          }
+          this.tripleTechButton?.setVisible(true);
+          const tTxt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
+          const tBg = this.tripleTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+          const tSel = d.tripleTechCandidates[this.tripleTechSelectedIndex] ?? d.tripleTechCandidates[0];
+          const aoePrefix = tSel.aoe ? '💥 🌟' : '🌟';
+          tTxt?.setText(`${aoePrefix} ${tSel.name} (T)`);
+          const tint = (() => {
+            switch (tSel.element) {
+              case 'chrono': return 0x6fd3ff;
+              case 'dark': return 0xc8a2ff;
+              case 'holy': return 0xffd54a;
+              default: return 0xffd54a;
+            }
+          })();
+          tBg?.setFillStyle(tint, 0.92);
+        } else {
+          this.lastTripleTechCandidates = [];
+          this.tripleTechSelectedIndex = 0;
+          this.tripleTechButton?.setVisible(false);
+        }
+        // CHRONO-S51/S67/S86: 보스 협공 저항 / 면역 표시
+        for (const sp of d.participants ?? []) {
+          if (sp.team !== 'monsters') continue;
+          const dHits = sp.dualTechHitsTaken ?? 0;
+          const tHits = sp.tripleTechHitsTaken ?? 0;
+          const immune = sp.dualTechImmune ?? false;
+          if (!immune && dHits <= 0 && tHits <= 0) continue;
+          const enemy = this.enemySprites.find((es) => es.unit.id === sp.id);
+          if (!enemy) continue;
+          if (immune) {
+            this._updateBossImmuneLabel(enemy);
+          } else {
+            this._updateBossResistLabel(enemy, dHits, tHits);
+          }
+        }
+
+        // CHRONO-S28/S70: chain combo indicator — server 가 actorName 에 '(CHAIN)' 표시
+        // CHRONO-S40: AOE 협공 — actorName '(AOE)' 검출 시 모든 alive 적에 시각 효과
+        const turnNow = d.turn ?? d.tick ?? 0;
+        // chain 만료 검사 (5 tick 지나면 reset)
+        if (this.chainCount > 0 && turnNow > this.chainExpireTick) {
+          this.chainCount = 0;
+          this.chainLabel?.setVisible(false).setAlpha(1);
+        } else if (this.chainCount > 0 && this.chainLabel?.visible) {
+          // CHRONO-S84: 만료 임박 (2 tick 이내) 시 alpha 깜빡 시각 효과
+          const remaining = this.chainExpireTick - turnNow;
+          this.chainLabel.setAlpha(remaining <= 2 ? 0.6 : 1.0);
+        }
+        for (const act of d.actions ?? []) {
+          if (act.actionType === 'dual_tech' || act.actionType === 'triple_tech') {
+            const isChain = act.actorName?.includes('(CHAIN)');
+            const prevChain = this.chainCount;
+            if (isChain) {
+              this.chainCount += 1;
+              this.battleUI?.addLog(`🔥 CHAIN ×${this.chainCount}! (${act.damage ?? 0})`);
+            } else {
+              this.chainCount = 1;
+            }
+            this.chainExpireTick = turnNow + 5;
+            // CHRONO-S74: 4+ 면 빨간색 강조, 그 외 gold
+            const isMax = act.actorName?.includes('(MAX CHAIN)') ?? false;
+            this.chainLabel
+              ?.setText(`${isMax ? '💥' : '🔥'} CHAIN ×${this.chainCount}${isMax ? ' MAX' : ''}`)
+              .setColor(isMax ? '#ff4444' : '#ffd54a')
+              .setStroke('#000000', isMax ? 4 : 2)
+              .setFontSize(isMax ? 18 : 14)
+              .setVisible(true);
+            // CHRONO-S100: chain 막 4 통과 (prev<4 && 현재>=4) 도달 시 알림 효과
+            if (prevChain < 4 && this.chainCount >= 4) {
+              playSfx(this, 'sfx_ui_level_up', 0.9);
+              if (isScreenShakeEnabled()) {
+                this.cameras.main.shake(200, 0.012);
+              }
+              this.battleUI?.addLog('💥 CHAIN MAX 도달! 다음 협공 +50% 데미지');
+            }
+            if (act.actorName?.includes('(AOE)')) {
+              this.battleUI?.addLog(`💥 광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
+              const aoeName = (act.actorName ?? '').split(' (')[0];
+              for (const enemy of this.enemySprites) {
+                if (!enemy.unit.alive) continue;
+                this.effectManager?.spawnDualTechEffect(
+                  enemy.sprite.x,
+                  enemy.sprite.y,
+                  'fx_aoe',
+                  aoeName,
+                );
+              }
+            }
+          }
+        }
       }
     });
 
@@ -1832,6 +2420,10 @@ export class BattleScene extends Phaser.Scene {
         if (result.victory) {
           this.phase = 'victory';
           this.battleUI?.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
+          // CHRONO-S94: chain 보너스 적용 시 별도 강조 로그
+          if (result.chainBonusApplied) {
+            this.battleUI?.addLog('🔥 CHAIN 보너스 +20% 적용!');
+          }
           if (result.levelUp) {
             this.battleUI?.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`);
             playSfx(this, 'sfx_ui_level_up', 0.8);

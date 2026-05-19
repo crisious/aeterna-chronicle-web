@@ -169,6 +169,45 @@ export class EffectManager {
     this.activeHits.push(item);
   }
 
+  /**
+   * CHRONO-S27: Dual Tech 협공 시각 효과.
+   * fxKey 별 색조 분기 (chrono=cyan, dark=purple, holy=gold) + 큰 magic hit + '✨' 강조 텍스트.
+   * 실제 협공 아틀라스 부재 시 fallback magic effect 재사용.
+   */
+  spawnDualTechEffect(x: number, y: number, fxKey: string, techName: string): void {
+    // fxKey → 색조 매핑 (대표 카테고리)
+    const tint: number = (() => {
+      if (fxKey.includes('chrono') || fxKey.includes('memory_warp')) return 0x6fd3ff;
+      if (fxKey.includes('shadow') || fxKey.includes('memory') || fxKey.includes('void')) return 0xc8a2ff;
+      if (fxKey.includes('ether') || fxKey.includes('guardian') || fxKey.includes('holy')) return 0xffd54a;
+      return 0xffffff;
+    })();
+
+    // 큰 magic hit (협공은 강렬한 광역 느낌)
+    this.spawnHitEffect(x, y, 'magic');
+    // 추가 magic hit 으로 확대 효과
+    this.spawnHitEffect(x - 20, y - 20, 'magic');
+    this.spawnHitEffect(x + 20, y + 20, 'magic');
+
+    // 강조 텍스트 ✨{name}
+    const item = this.damagePool.acquire();
+    item.ttl = DAMAGE_TEXT_TTL * 1.5;
+    item.vy = DAMAGE_TEXT_VY * 0.7;
+    item.text.setPosition(x, y - 40);
+    item.text.setText(`✨ ${techName}`);
+    item.text.setStyle({
+      fontSize: '24px',
+      color: `#${tint.toString(16).padStart(6, '0')}`,
+      fontFamily: 'Noto Sans KR',
+      stroke: '#000000',
+      strokeThickness: 4,
+    });
+    item.text.setAlpha(1);
+    item.text.setVisible(true);
+    item.text.setDepth(9500);
+    this.activeDamage.push(item);
+  }
+
   /** 버프/디버프 아이콘 스폰 */
   spawnBuffIcon(x: number, y: number, buffId: string): void {
     const item = this.buffPool.acquire();

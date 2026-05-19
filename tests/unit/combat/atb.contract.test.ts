@@ -25,7 +25,7 @@ import {
   setTargetSelecting,
   switchMode,
 } from '../../../server/src/combat/atb/waitMode';
-import type { ATBMode, ATBSpeedTier } from '../../../shared/types/atb';
+import type { ATBMode, ATBSpeedTier, ATBCommandInput } from '../../../shared/types/atb';
 
 describe('atb contract — atbTimeline', () => {
   // ─── 상수 SSOT ───────────────────────────────────────────────
@@ -168,6 +168,38 @@ describe('atb contract — waitMode', () => {
       expect(menu.menuOpen).toBe(true);
       expect(target.targetSelecting).toBe(true);
       expect(switchMode(target, next)).toEqual({ ...target, mode: 'WAIT' });
+    });
+  });
+
+  // ─── ATBCommandInput protocol (CHRONO-S29) ───────────────────
+  describe('ATBCommandInput protocol — dual_tech kind 추가', () => {
+    it('dual_tech kind 가 union 에 포함됨 (compile-time)', () => {
+      const cmd: ATBCommandInput = {
+        combatId: 'c1',
+        actorId: 'a',
+        clientTick: 0,
+        command: {
+          kind: 'dual_tech',
+          partnerActorId: 'b',
+          techId: 'chrono_blade',
+          targetId: 't',
+        },
+      };
+      // Discriminated union 정상 narrow
+      if (cmd.command.kind === 'dual_tech') {
+        expect(cmd.command.partnerActorId).toBe('b');
+        expect(cmd.command.techId).toBe('chrono_blade');
+        expect(cmd.command.targetId).toBe('t');
+      } else {
+        throw new Error('dual_tech kind narrowing 실패');
+      }
+    });
+
+    it('기존 kind (attack/skill/defend/flee/row/item) 와 호환 유지', () => {
+      const kinds: Array<ATBCommandInput['command']['kind']> = [
+        'attack', 'skill', 'item', 'defend', 'row', 'flee', 'dual_tech',
+      ];
+      expect(kinds).toHaveLength(7);
     });
   });
 });

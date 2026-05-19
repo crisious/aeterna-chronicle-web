@@ -16,6 +16,7 @@ import {
   type ChronoEraId,
 } from '../time/ChronoTimeline';
 import { resolveZoneBackground } from '../data/zoneBackgrounds';
+import { loadLastEra, saveLastEra } from '../time/eraStorage';
 
 // ── 지역 정의 ───────────────────────────────────────────────
 
@@ -69,7 +70,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   init(data?: { eraId?: ChronoEraId }): void {
-    this.currentEraId = data?.eraId ?? this.currentEraId;
+    // 우선순위: scene init data > localStorage 복원 > 기존 currentEraId(present)
+    this.currentEraId = data?.eraId ?? loadLastEra() ?? this.currentEraId;
     this.selectedZone = null;
   }
 
@@ -239,6 +241,7 @@ export class WorldScene extends Phaser.Scene {
 
   private _setChronoEra(nextEraId: ChronoEraId): void {
     this.currentEraId = nextEraId;
+    saveLastEra(nextEraId);
     this._refreshChronoControls();
     if (this.selectedZone) {
       this._onZoneClick(this.selectedZone);
@@ -394,6 +397,26 @@ export class WorldScene extends Phaser.Scene {
       wordWrap: { width: 390 },
     });
     panel.add(eraInfo);
+
+    // CHRONO-S108: 시대별 필드 encounter 정보 추가 (server fetch — async, fire-and-forget)
+    const encounterLine = this.add.text(-152, 22, '필드 정보 로딩…', {
+      fontSize: '11px',
+      color: '#ffd54a',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      wordWrap: { width: 390 },
+    }).setName('zoneEncounterLine');
+    panel.add(encounterLine);
+
+    void networkManager.fetchZoneEncounter(zone.id, this.currentEraId).then((resp) => {
+      if (!resp.ok || !resp.encounter) {
+        encounterLine.setText('필드 데이터 미정의');
+        return;
+      }
+      const enc = resp.encounter;
+      const monsters = enc.monsterPool.map((s) => s.name).join(', ');
+      const bossTag = enc.hasBossSlot ? ' ⚔️ 보스 등장 가능' : '';
+      encounterLine.setText(`🛡 ${enc.ambientLine} — ${monsters} (최대 ${enc.maxSpawn}체)${bossTag}`);
+    }).catch(() => encounterLine.setText('필드 데이터 미정의'));
 
     const enterBtn = this.add.text(288, 30, '[ 시간 이동 ]', {
       fontSize: '15px',

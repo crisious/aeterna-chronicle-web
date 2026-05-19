@@ -73,6 +73,8 @@ export interface CombatStartRequest {
   zoneId?: string;
   dungeonId?: string;
   monsterId?: string;
+  /** CHRONO-S8: 현재 시대 (ancient/present/ruined_future) — 서버 ATB tier 적용 */
+  eraId?: string;
 }
 
 export interface CombatActionRequest {
@@ -110,6 +112,8 @@ export interface CombatResult {
   goldGained: number;
   loot: Array<{ itemId: string; name: string; quantity: number }>;
   levelUp?: { newLevel: number; statGains: Record<string, number> };
+  /** CHRONO-S94: chain 4+ 보너스 +20% 적용 여부 */
+  chainBonusApplied?: boolean;
 }
 
 // ── 퀘스트 타입 ───────────────────────────────────────────────
@@ -511,6 +515,27 @@ class NetworkManager {
     return this.post<CombatState>('/combat/action', req);
   }
 
+  // CHRONO-S19: 2인 협공 (Dual Tech)
+  async combatDualTech(req: {
+    combatId: string;
+    actorIdA: string;
+    actorIdB: string;
+    techId: string;
+    targetId: string;
+  }): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>('/combat/dual_tech', req);
+  }
+
+  // CHRONO-S62: 3인 협공 (Triple Tech)
+  async combatTripleTech(req: {
+    combatId: string;
+    actorIds: [string, string, string];
+    techId: string;
+    targetId: string;
+  }): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>('/combat/triple_tech', req);
+  }
+
   async combatTick(combatId: string): Promise<CombatState> {
     return this.post<CombatState>(`/combat/${combatId}/tick`, { combatId });
   }
@@ -576,6 +601,25 @@ class NetworkManager {
 
   async getZones(): Promise<ZoneInfo[]> {
     return this.get<ZoneInfo[]>('/api/world/zones');
+  }
+
+  // CHRONO-S107/S114: 시대별 필드 encounter 조회 (bgmTrack/ambientEffect 포함)
+  async fetchZoneEncounter(zoneId: string, eraId: 'ancient' | 'present' | 'ruined_future'): Promise<{
+    ok: boolean;
+    encounter?: {
+      zoneId: string;
+      eraId: string;
+      monsterPool: Array<{ monsterId: string; name: string; weight: number; isBoss?: boolean }>;
+      maxSpawn: number;
+      hasBossSlot: boolean;
+      ambientLine: string;
+      bgmTrack?: string;
+      ambientEffect?: 'mist' | 'dust' | 'glow' | 'void' | 'none';
+    };
+    error?: string;
+  }> {
+    const apiCode = CLIENT_ZONE_API_CODE_MAP[zoneId] ?? zoneId;
+    return this.get(`/api/world/zones/${apiCode}/encounter`, { eraId });
   }
 
   async getNpcs(zoneId: string): Promise<Array<{ id: string; name: string; role: string; dialogueId?: string }>> {
