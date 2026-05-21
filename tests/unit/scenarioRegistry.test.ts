@@ -750,6 +750,76 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S40 — chronoField extension (SYNC-33)', () => {
+  it('SCENARIO_EXTRA_ZONES 2 zone (에레보스/솔라리스 chronoField 외)', async () => {
+    const { SCENARIO_EXTRA_ZONES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_EXTRA_ZONES.length).toBe(2);
+    const ids = SCENARIO_EXTRA_ZONES.map((z) => z.obsidianId).sort();
+    expect(ids).toEqual(['erebos', 'solaris']);
+  });
+
+  it('extra zone 모두 plannedGameZoneId 와 매핑 (에레보스/솔라리스)', async () => {
+    const { SCENARIO_EXTRA_ZONES, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    for (const ez of SCENARIO_EXTRA_ZONES) {
+      const sz = SCENARIO_ZONES.find((z) => z.obsidianId === ez.obsidianId);
+      expect(sz, `${ez.obsidianId} in SCENARIO_ZONES`).toBeDefined();
+      expect(sz!.plannedGameZoneId).toBe(ez.extensionZoneId);
+    }
+  });
+
+  it('SCENARIO_EXTRA_BOSSES 1 보스 (라와르 chronoField 외)', async () => {
+    const { SCENARIO_EXTRA_BOSSES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_EXTRA_BOSSES.length).toBe(1);
+    expect(SCENARIO_EXTRA_BOSSES[0].obsidianId).toBe('rawar');
+    expect(SCENARIO_EXTRA_BOSSES[0].extensionBossId).toBe('rawar_ancient_king');
+    expect(SCENARIO_EXTRA_BOSSES[0].phases).toBe(3);
+  });
+
+  it('extra boss 라와르 plannedGameChronoBossId 와 매핑', async () => {
+    const { SCENARIO_EXTRA_BOSSES, getBossByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const rawar = SCENARIO_EXTRA_BOSSES[0];
+    const sceneBoss = getBossByObsidianId('rawar');
+    expect(sceneBoss!.plannedGameChronoBossId).toBe(rawar.extensionBossId);
+  });
+
+  it('extra zone/boss 와 기존 chronoField id 충돌 없음 (격리)', async () => {
+    const { SCENARIO_EXTRA_ZONES, SCENARIO_EXTRA_BOSSES } = await import('../../shared/types/scenarioRegistry');
+    const { listAllBossMonsterIds, listFieldEncounters } = await import('../../shared/types/chronoField');
+    const chronoZones = new Set(listFieldEncounters().map((e) => e.zoneId));
+    const chronoBosses = new Set(listAllBossMonsterIds());
+    for (const z of SCENARIO_EXTRA_ZONES) {
+      expect(chronoZones.has(z.extensionZoneId), `${z.extensionZoneId} not in chronoField`).toBe(false);
+    }
+    for (const b of SCENARIO_EXTRA_BOSSES) {
+      expect(chronoBosses.has(b.extensionBossId), `${b.extensionBossId} not in chronoField`).toBe(false);
+    }
+  });
+
+  it('getExtraZoneByObsidianId + getExtraBossByObsidianId 헬퍼 동작', async () => {
+    const { getExtraZoneByObsidianId, getExtraBossByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    expect(getExtraZoneByObsidianId('erebos')?.extensionZoneId).toBe('erebos_ruins');
+    expect(getExtraBossByObsidianId('rawar')?.phases).toBe(3);
+    expect(getExtraZoneByObsidianId('unknown')).toBeUndefined();
+  });
+
+  it('extra zone 한글 name + chapter 1~5', async () => {
+    const { SCENARIO_EXTRA_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const z of SCENARIO_EXTRA_ZONES) {
+      expect(korean.test(z.name)).toBe(true);
+      expect(z.chapter).toBeGreaterThanOrEqual(1);
+      expect(z.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('chronoField extension cohesion — 21 chronoField + 2 extra zone + 21 chronoField boss + 1 extra boss', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const { listFieldEncounters, listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    expect(listFieldEncounters().length + mod.SCENARIO_EXTRA_ZONES.length).toBe(23);
+    expect(listAllBossMonsterIds().length + mod.SCENARIO_EXTRA_BOSSES.length).toBe(22);
+  });
+});
+
 describe('SYNC-S39 — SCENARIO ↔ STORY chronoField cross-domain (SYNC-31)', () => {
   it('SCENARIO 보스 ↔ chronoField 보스 일치 매핑 (5 sync)', async () => {
     const { SCENARIO_BOSSES } = await import('../../shared/types/scenarioRegistry');

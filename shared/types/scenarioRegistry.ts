@@ -1234,6 +1234,67 @@ export function resolveEntityType(obsidianId: string): string | undefined {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-33: chronoField extension — Obsidian 전용 zone/보스 SSOT
+// (기존 chronoField 7×3=21 cross-product 변경 없이 별도 추가)
+// ════════════════════════════════════════════════════════════════
+
+export interface ScenarioExtraZone {
+  obsidianId: string;
+  name: string;
+  /** Obsidian chapter (Ch1~Ch5) */
+  chapter: number;
+  /** chronoField 와 별개의 extension zone id */
+  extensionZoneId: string;
+}
+
+/** chronoField 에 없지만 Obsidian narrative 에서만 등장하는 zone */
+export const SCENARIO_EXTRA_ZONES: readonly ScenarioExtraZone[] = [
+  {
+    obsidianId: 'erebos',
+    name: '에레보스 (대망각 진원지 폐허)',
+    chapter: 1,
+    extensionZoneId: 'erebos_ruins',
+  },
+  {
+    obsidianId: 'solaris',
+    name: '솔라리스 사막 (이프리타 영역)',
+    chapter: 3,
+    extensionZoneId: 'solaris_dunes',
+  },
+];
+
+export interface ScenarioExtraBoss {
+  obsidianId: string;
+  name: string;
+  /** chronoField 와 별개의 extension boss id */
+  extensionBossId: string;
+  /** 페이즈 수 (Obsidian narrative) */
+  phases: number;
+}
+
+/** chronoField 에 없지만 Obsidian narrative 에서만 등장하는 보스 */
+export const SCENARIO_EXTRA_BOSSES: readonly ScenarioExtraBoss[] = [
+  {
+    obsidianId: 'rawar',
+    name: '라와르 (솔리안의 마지막 왕, 200년 봉인)',
+    extensionBossId: 'rawar_ancient_king',
+    phases: 3,
+  },
+];
+
+export function getExtraZoneByObsidianId(
+  obsidianId: string,
+): ScenarioExtraZone | undefined {
+  return SCENARIO_EXTRA_ZONES.find((z) => z.obsidianId === obsidianId);
+}
+
+export function getExtraBossByObsidianId(
+  obsidianId: string,
+): ScenarioExtraBoss | undefined {
+  return SCENARIO_EXTRA_BOSSES.find((b) => b.obsidianId === obsidianId);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════
