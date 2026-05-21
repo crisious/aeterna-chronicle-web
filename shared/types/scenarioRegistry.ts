@@ -2430,6 +2430,85 @@ export function getQuestLogByChapter(chapter: number): QuestLogPreview | undefin
   return SCENARIO_QUEST_LOG.find((q) => q.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-65: cinematic / cutscene narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface Cinematic {
+  obsidianId: string;
+  /** 한글 제목 */
+  title: string;
+  chapter: number;
+  /** 컷씬 발생 시점 (start/mid/end) */
+  timing: 'chapter_start' | 'chapter_mid' | 'chapter_end' | 'optional';
+  /** 핵심 narrative */
+  narrative: string;
+}
+
+export const SCENARIO_CINEMATICS: readonly Cinematic[] = [
+  {
+    obsidianId: 'cinematic_ch1_opening',
+    title: '오프닝 — 칸텔라 폭풍',
+    chapter: 1,
+    timing: 'chapter_start',
+    narrative: '에리언 시점의 칸텔라 마을 기억 폭풍 발생 + 능력 각성 cinematic.',
+  },
+  {
+    obsidianId: 'cinematic_ch1_erebos_first',
+    title: '에레보스 첫 진입',
+    chapter: 1,
+    timing: 'chapter_mid',
+    narrative: '200년 침묵의 에레보스 폐허 진입 + 회상된 마지막 순간들.',
+  },
+  {
+    obsidianId: 'cinematic_ch2_malatus_awaken',
+    title: '말라투스 각성',
+    chapter: 2,
+    timing: 'chapter_mid',
+    narrative: '말라투스 고목이 세라핀의 회상을 일으키고 보스전 트리거.',
+  },
+  {
+    obsidianId: 'cinematic_ch3_rawar_unseal',
+    title: '라와르 봉인 해방',
+    chapter: 3,
+    timing: 'chapter_end',
+    narrative: '솔리안 왕 라와르의 200년 봉인 의식 환영 + 봉인 해방/재봉인 분기.',
+  },
+  {
+    obsidianId: 'cinematic_ch4_bernardo_reveal',
+    title: '베르나르도의 진실',
+    chapter: 4,
+    timing: 'chapter_mid',
+    narrative: '베르나르도가 레테 교단 내부자임을 밝히는 충격적 폭로.',
+  },
+  {
+    obsidianId: 'cinematic_ch5_kail_meet',
+    title: '카일과의 정신적 대면',
+    chapter: 5,
+    timing: 'chapter_mid',
+    narrative: '망각의 고원에서 200년 전 자신 카일과 정신적 대화 + 봉인 의식 재현.',
+  },
+  {
+    obsidianId: 'cinematic_ch5_minerva',
+    title: '미네르바와의 만남',
+    chapter: 5,
+    timing: 'optional',
+    narrative: '신화 유물 2+ 보유 시 황금 에테르 탑에서 미네르바 신과 만남. 엔딩 D 분기.',
+  },
+];
+
+export function getCinematicByObsidianId(
+  obsidianId: string,
+): Cinematic | undefined {
+  return SCENARIO_CINEMATICS.find((c) => c.obsidianId === obsidianId);
+}
+
+export function listCinematicsByChapter(
+  chapter: number,
+): readonly Cinematic[] {
+  return SCENARIO_CINEMATICS.filter((c) => c.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

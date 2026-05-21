@@ -750,6 +750,62 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S67 — cinematic / cutscene narrative SSOT (SYNC-65)', () => {
+  it('SCENARIO_CINEMATICS ≥ 7 cinematic', async () => {
+    const { SCENARIO_CINEMATICS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CINEMATICS.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 cinematic obsidianId + cinematic_ prefix + 한글', async () => {
+    const { SCENARIO_CINEMATICS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const c of SCENARIO_CINEMATICS) {
+      expect(c.obsidianId.startsWith('cinematic_'), `${c.obsidianId}`).toBe(true);
+      expect(korean.test(c.title)).toBe(true);
+      expect(korean.test(c.narrative)).toBe(true);
+    }
+  });
+
+  it('각 cinematic chapter 1~5 + 한글 narrative', async () => {
+    const { SCENARIO_CINEMATICS } = await import('../../shared/types/scenarioRegistry');
+    for (const c of SCENARIO_CINEMATICS) {
+      expect(c.chapter).toBeGreaterThanOrEqual(1);
+      expect(c.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('timing valid (start/mid/end/optional)', async () => {
+    const { SCENARIO_CINEMATICS } = await import('../../shared/types/scenarioRegistry');
+    const VALID = new Set(['chapter_start', 'chapter_mid', 'chapter_end', 'optional']);
+    for (const c of SCENARIO_CINEMATICS) {
+      expect(VALID.has(c.timing), `${c.obsidianId} timing`).toBe(true);
+    }
+  });
+
+  it('Ch1 오프닝 + Ch5 미네르바 cinematic 보유', async () => {
+    const { getCinematicByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const opening = getCinematicByObsidianId('cinematic_ch1_opening');
+    const minerva = getCinematicByObsidianId('cinematic_ch5_minerva');
+    expect(opening!.timing).toBe('chapter_start');
+    expect(minerva!.timing).toBe('optional');
+    expect(minerva!.narrative).toContain('미네르바');
+  });
+
+  it('5 chapter 모두 ≥1 cinematic', async () => {
+    const { listCinematicsByChapter } = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      expect(listCinematicsByChapter(ch).length, `Ch${ch}`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('베르나르도 cinematic (Ch4 reveal) narrative cohesion', async () => {
+    const { getCinematicByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const bernardo = getCinematicByObsidianId('cinematic_ch4_bernardo_reveal');
+    expect(bernardo).toBeDefined();
+    expect(bernardo!.narrative).toContain('레테');
+  });
+});
+
 describe('🎯 SYNC-S66 — 1800 tests 마디 + 32 도메인 stress (SYNC-64)', () => {
   it('32 SSOT 도메인 entity 총량 ≥ 200', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
