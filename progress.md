@@ -818,3 +818,19 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 **🎯🎯🎯 SCENARIO-SYNC chapter VII 완성 — 6 sprint, +33 가드 (누적 55 sprint, +386 가드)** — 28 SSOT 도메인 + 170+ entity. 신규 narrative SSOT: party_compositions, memory_recalls, choices, factions.
 
+## 2026-05-22 SCENARIO-SYNC chapter VIII — narrative 최종 절정 (5 sprint, +25 가드)
+
+자동 라운드 — 60 sprint 마디 + 30 SSOT 도메인 + 1768+ tests.
+
+- **SYNC-56** 시나리오 prerequisite 그래프 (5 prereq + canEnterChapter, +9 가드)
+- **SYNC-57** docs/scenario-registry-guide.md 28 도메인 반영 (docs only)
+- **SYNC-58** 🎯 28 도메인 종합 final stress (+6 가드)
+- **SYNC-59** 게임 시작 / 5 엔딩 종결 시퀀스 (+10 가드)
+- **SYNC-60** 🎯🎯🎯🎯 60 sprint 마디 + progress.md 갱신
+
+회귀: scenarioRegistry 398/398 + unit 전체 1768 tests pass.
+
+**🎯🎯🎯 SCENARIO-SYNC chapter VIII 완성 — 5 sprint, +25 가드 (누적 60 sprint, +411 가드)** — 30 SSOT 도메인 + 180+ entity + 50+ helpers + docs guide + 398 회귀 가드.
+
+🎯🎯🎯🎯 **SCENARIO-SYNC 60 sprint 마디 도달** — Obsidian narrative ↔ 게임 코드 통합 절정.
+
