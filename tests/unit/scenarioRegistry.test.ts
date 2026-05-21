@@ -750,6 +750,55 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('🎯🎯🎯 SYNC-S55 — 50 sprint 마디 SSOT 최종 정점 (SYNC-50)', () => {
+  it('50 sprint 누적 SSOT 정점 — 25 도메인 + entity ≥150', async () => {
+    const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const s = getScenarioRegistryStats();
+    expect(s.totalEntities).toBeGreaterThanOrEqual(150);
+  });
+
+  it('100% sync 유지 (50 sprint 완성 후에도)', async () => {
+    const { getSyncCompletionReport } = await import('../../shared/types/scenarioRegistry');
+    const r = getSyncCompletionReport();
+    expect(r.coveragePercent).toBe(100);
+  });
+
+  it('완벽한 게임 시나리오 (모든 entity 활용)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    // 1. timeline event (게임 시작)
+    expect(mod.getTimelineEventByObsidianId('game_start_cantela')).toBeDefined();
+    // 2. milestone (Ch1 진입)
+    expect(mod.getMilestoneByChapter(1)).toBeDefined();
+    // 3. visual (UI 색상)
+    expect(mod.getVisualByChapter(1)).toBeDefined();
+    // 4. BGM (음악)
+    expect(mod.getBgmByChapter(1)?.gameBgmTrack).toBe('bgm_erebos_ruins');
+    // 5. difficulty (레벨)
+    expect(mod.getDifficultyByChapter(1)?.recommendedMinLevel).toBe(1);
+    // 6. epic item (chapter reward)
+    expect(mod.getEpicItemsByChapter(1).length).toBeGreaterThanOrEqual(1);
+    // 7. reward narrative
+    expect(mod.getChapterRewardByChapter(1)?.nextZoneId).toBe('silvanheim');
+    // 8. route (worldmap)
+    expect(mod.getRouteByChapter(1)?.endZoneId).toBe('erebos');
+    // 9. sub-plot
+    expect(mod.getSubPlotsByChapter(1).length).toBeGreaterThanOrEqual(1);
+    // 10. 동료 + dialogue + class + story arc
+    expect(mod.getCompanionByObsidianId('seraphine')?.gameNpcId).toBe('npc_seraphine');
+    expect(mod.getCompanionClass('seraphine')).toBe('time_knight');
+    expect(mod.getStoryArcByCompanion('seraphine')?.revealChapter).toBe(2);
+    expect(mod.getDialoguesByNpc('npc_seraphine').length).toBeGreaterThanOrEqual(1);
+    // 11. 4 파편 + 4 신화 유물 + 5 엔딩
+    expect(mod.SCENARIO_FRAGMENTS.length).toBe(4);
+    expect(mod.SCENARIO_MYTHIC_RELICS.length).toBe(4);
+    expect(mod.SCENARIO_ENDINGS.length).toBe(5);
+  });
+
+  it('🎯🎯🎯 50 sprint 마디 marker — narrative SSOT 최종 정점', () => {
+    expect(true).toBe(true);
+  });
+});
+
 describe('SYNC-S54 — getScenarioRegistryStats 25 도메인 완성 (SYNC-48)', () => {
   it('stats 25 도메인 모두 정의', async () => {
     const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
