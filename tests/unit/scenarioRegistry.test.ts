@@ -750,6 +750,60 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S47 — 챕터 난이도 narrative (SYNC-41)', () => {
+  it('SCENARIO_CHAPTER_DIFFICULTIES 5 chapter 난이도', async () => {
+    const { SCENARIO_CHAPTER_DIFFICULTIES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_DIFFICULTIES.length).toBe(5);
+  });
+
+  it('chapter 진행에 따라 권장 레벨 단조 증가', async () => {
+    const { SCENARIO_CHAPTER_DIFFICULTIES } = await import('../../shared/types/scenarioRegistry');
+    const sorted = [...SCENARIO_CHAPTER_DIFFICULTIES].sort((a, b) => a.chapter - b.chapter);
+    for (let i = 1; i < sorted.length; i += 1) {
+      expect(sorted[i].recommendedMinLevel).toBeGreaterThan(sorted[i - 1].recommendedMinLevel);
+    }
+  });
+
+  it('bossDifficulty 1~5 단조 증가', async () => {
+    const { SCENARIO_CHAPTER_DIFFICULTIES } = await import('../../shared/types/scenarioRegistry');
+    const sorted = [...SCENARIO_CHAPTER_DIFFICULTIES].sort((a, b) => a.chapter - b.chapter);
+    for (let i = 1; i < sorted.length; i += 1) {
+      expect(sorted[i].bossDifficulty).toBeGreaterThan(sorted[i - 1].bossDifficulty);
+    }
+  });
+
+  it('Ch1 시작 lv 1 + Ch5 종점 lv 60', async () => {
+    const { getDifficultyByChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(getDifficultyByChapter(1)!.recommendedMinLevel).toBe(1);
+    expect(getDifficultyByChapter(5)!.recommendedMaxLevel).toBe(60);
+  });
+
+  it('Ch5 최종 보스 = 5 페이즈 난이도', async () => {
+    const { getDifficultyByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getDifficultyByChapter(5);
+    expect(ch5!.bossDifficulty).toBe(5);
+    expect(ch5!.description).toContain('레테');
+    expect(ch5!.description).toContain('aetherna_collapse');
+  });
+
+  it('각 difficulty description 한글 narrative + 보스 ID 포함', async () => {
+    const { SCENARIO_CHAPTER_DIFFICULTIES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const d of SCENARIO_CHAPTER_DIFFICULTIES) {
+      expect(korean.test(d.description)).toBe(true);
+      expect(d.description.length).toBeGreaterThanOrEqual(15);
+    }
+  });
+
+  it('SYNC-41 cohesion: difficulty ↔ milestone (Ch3 라와르 cohesion)', async () => {
+    const { getDifficultyByChapter, getMilestoneByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch3Diff = getDifficultyByChapter(3);
+    const ch3Mile = getMilestoneByChapter(3);
+    expect(ch3Diff!.description).toContain('라와르');
+    expect(ch3Mile!.requiredQuests).toContain('SQ_SOLARIS_RAWAR');
+  });
+});
+
 describe('🎯 SYNC-S46 — 300 가드 마디 + dialogue 분포 통계 (SYNC-39)', () => {
   it('dialogue context 분포 검증 (first_meet/trust_build/betrayal/final)', async () => {
     const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');

@@ -1622,6 +1622,66 @@ export function listSubPlotsByCompanion(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-41: 챕터 난이도 + 권장 레벨 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterDifficulty {
+  chapter: number;
+  /** 권장 최소 레벨 (Ch1 = 1 시작) */
+  recommendedMinLevel: number;
+  /** 권장 최대 레벨 */
+  recommendedMaxLevel: number;
+  /** 챕터 보스 난이도 (1~5) */
+  bossDifficulty: number;
+  /** 난이도 narrative */
+  description: string;
+}
+
+export const SCENARIO_CHAPTER_DIFFICULTIES: readonly ChapterDifficulty[] = [
+  {
+    chapter: 1,
+    recommendedMinLevel: 1,
+    recommendedMaxLevel: 5,
+    bossDifficulty: 1,
+    description: '초반 진입 — 기억의 골렘 (chronoField ancient_relic_golem)',
+  },
+  {
+    chapter: 2,
+    recommendedMinLevel: 6,
+    recommendedMaxLevel: 12,
+    bossDifficulty: 2,
+    description: '실반헤임 — 말라투스 3페이즈 (malatus_avatar)',
+  },
+  {
+    chapter: 3,
+    recommendedMinLevel: 13,
+    recommendedMaxLevel: 22,
+    bossDifficulty: 3,
+    description: '솔라리스 — 라와르 3페이즈 (rawar_ancient_king)',
+  },
+  {
+    chapter: 4,
+    recommendedMinLevel: 23,
+    recommendedMaxLevel: 40,
+    bossDifficulty: 4,
+    description: '아르겐티움 — 케인 + 베르나르도 (boss_bernardo_corrupted)',
+  },
+  {
+    chapter: 5,
+    recommendedMinLevel: 41,
+    recommendedMaxLevel: 60,
+    bossDifficulty: 5,
+    description: '망각의 고원 — 레테 5페이즈 (aetherna_collapse / boss_oblivion_lord)',
+  },
+];
+
+export function getDifficultyByChapter(
+  chapter: number,
+): ChapterDifficulty | undefined {
+  return SCENARIO_CHAPTER_DIFFICULTIES.find((d) => d.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════
