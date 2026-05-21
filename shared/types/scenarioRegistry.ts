@@ -1873,6 +1873,70 @@ export function getPartyCompositionByChapter(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-52: 시나리오 회상 (memory recall) narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface MemoryRecall {
+  obsidianId: string;
+  /** 회상 대상 (인물 obsidianId or 'aerien' 주인공) */
+  subject: string;
+  chapter: number;
+  /** 회상 narrative */
+  narrative: string;
+}
+
+export const SCENARIO_MEMORY_RECALLS: readonly MemoryRecall[] = [
+  {
+    obsidianId: 'recall_aerien_kail_first',
+    subject: 'aerien',
+    chapter: 1,
+    narrative: '에레보스 폐허에서 처음 카일 봉인 의식 환영을 본다. 양피지에 적는 손, 마지막 글자.',
+  },
+  {
+    obsidianId: 'recall_seraphine_kael',
+    subject: 'seraphine',
+    chapter: 2,
+    narrative: '말라투스 고목이 세라핀에게 카엘의 마지막 기억을 보여준다. 봉인 의식 12인 중 한 명이었던 카엘.',
+  },
+  {
+    obsidianId: 'recall_crio_great_night',
+    subject: 'maestro_crio',
+    chapter: 1,
+    narrative: '크리오가 갓난아기 시절 살아남은 대망각 당일 밤. 의식 후 침묵의 도시.',
+  },
+  {
+    obsidianId: 'recall_ignara_father',
+    subject: 'ignara',
+    chapter: 3,
+    narrative: '이그나가 아버지 이그리스의 기억 소멸 직전 마지막 말 — "이프리타의 불꽃은 멈추지 않는다".',
+  },
+  {
+    obsidianId: 'recall_rawar_solian',
+    subject: 'rawar',
+    chapter: 3,
+    narrative: '솔라리스 유적에서 라와르 왕의 솔리안 멸망 회상. 자기희생 봉인 의식.',
+  },
+  {
+    obsidianId: 'recall_aerien_kail_full',
+    subject: 'aerien',
+    chapter: 5,
+    narrative: '망각의 고원에서 카일과의 완전한 정신적 대면. 200년 전 봉인 의식 재현 결심.',
+  },
+];
+
+export function getMemoryRecallByObsidianId(
+  obsidianId: string,
+): MemoryRecall | undefined {
+  return SCENARIO_MEMORY_RECALLS.find((r) => r.obsidianId === obsidianId);
+}
+
+export function listMemoryRecallsByChapter(
+  chapter: number,
+): readonly MemoryRecall[] {
+  return SCENARIO_MEMORY_RECALLS.filter((r) => r.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

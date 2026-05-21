@@ -750,6 +750,54 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S57 — 시나리오 회상 (memory recall) narrative (SYNC-52)', () => {
+  it('SCENARIO_MEMORY_RECALLS ≥ 6 회상', async () => {
+    const { SCENARIO_MEMORY_RECALLS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_MEMORY_RECALLS.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('각 회상 obsidianId + recall_ prefix + 한글 narrative', async () => {
+    const { SCENARIO_MEMORY_RECALLS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const r of SCENARIO_MEMORY_RECALLS) {
+      expect(r.obsidianId.startsWith('recall_'), `${r.obsidianId}`).toBe(true);
+      expect(korean.test(r.narrative)).toBe(true);
+      expect(r.chapter).toBeGreaterThanOrEqual(1);
+      expect(r.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('에리언 (주인공) 회상 ≥ 2 (Ch1 시작 + Ch5 종점)', async () => {
+    const { SCENARIO_MEMORY_RECALLS } = await import('../../shared/types/scenarioRegistry');
+    const aerien = SCENARIO_MEMORY_RECALLS.filter((r) => r.subject === 'aerien');
+    expect(aerien.length).toBeGreaterThanOrEqual(2);
+    const chapters = aerien.map((r) => r.chapter).sort();
+    expect(chapters[0]).toBe(1);
+    expect(chapters[chapters.length - 1]).toBe(5);
+  });
+
+  it('카일 회상 narrative — Ch1 + Ch5 (전생 시그니처)', async () => {
+    const { getMemoryRecallByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getMemoryRecallByObsidianId('recall_aerien_kail_first');
+    const ch5 = getMemoryRecallByObsidianId('recall_aerien_kail_full');
+    expect(ch1!.narrative).toContain('카일');
+    expect(ch5!.narrative).toContain('카일');
+  });
+
+  it('동료 subject (seraphine/maestro_crio/ignara) 회상 narrative', async () => {
+    const { SCENARIO_MEMORY_RECALLS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const companionIds = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    const companionRecalls = SCENARIO_MEMORY_RECALLS.filter((r) => companionIds.has(r.subject));
+    expect(companionRecalls.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('listMemoryRecallsByChapter Ch1 ≥ 2 (시작 회상 풍부)', async () => {
+    const { listMemoryRecallsByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = listMemoryRecallsByChapter(1);
+    expect(ch1.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
 describe('SYNC-S56 — 챕터별 추천 동료 조합 narrative (SYNC-51)', () => {
   it('SCENARIO_PARTY_COMPOSITIONS 5 chapter 조합', async () => {
     const { SCENARIO_PARTY_COMPOSITIONS } = await import('../../shared/types/scenarioRegistry');
