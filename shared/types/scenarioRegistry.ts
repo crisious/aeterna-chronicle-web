@@ -712,6 +712,110 @@ export function getEndingSummary(code: ScenarioEndingCode): string {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-17: NPC 대화 SSOT — 동료 + 핵심 NPC 시그니처 대사
+// 출처: 시나리오/NPC대화/챕터*_NPC_대화_스크립트.md
+// ════════════════════════════════════════════════════════════════
+
+export interface NpcDialogue {
+  /** 대화 obsidianId (간단 식별자) */
+  obsidianId: string;
+  /** 게임 NPC id (npc_*) — 동기화된 동료 + Obsidian 인물 */
+  gameNpcId: string;
+  /** 대화 발생 챕터 (Ch1~Ch5) */
+  chapter: number;
+  /** 대화 한글 dialogue */
+  line: string;
+  /** 대화 발생 context (만남/합류/배신/이탈 등) */
+  context: 'first_meet' | 'join' | 'trust_build' | 'betrayal' | 'leave' | 'final';
+}
+
+export const SCENARIO_DIALOGUES: readonly NpcDialogue[] = [
+  // 세라핀 (Ch1 합류)
+  {
+    obsidianId: 'seraphine_first',
+    gameNpcId: 'npc_seraphine',
+    chapter: 1,
+    line: '나는 그날 밤을 기억해. 세계력 3,200년 7월 14일. 에레보스의 불빛들이 하나씩 꺼지던 걸.',
+    context: 'first_meet',
+  },
+  {
+    obsidianId: 'seraphine_join',
+    gameNpcId: 'npc_seraphine',
+    chapter: 1,
+    line: '에레보스에 들어가려면 안내인이 필요하잖아. 내가 도와줄게.',
+    context: 'join',
+  },
+  // 마에스트로 크리오 (Ch1)
+  {
+    obsidianId: 'crio_first',
+    gameNpcId: 'npc_maestro_crio',
+    chapter: 1,
+    line: '에레보스에서 왔어? ... 나는 에레보스에서 태어났어. 대망각 그날 밤, 갓난아기였지. 기억이 없었으니까 망각의 폭풍이 건너뛴 거야.',
+    context: 'first_meet',
+  },
+  {
+    obsidianId: 'crio_betrayal_resist',
+    gameNpcId: 'npc_maestro_crio',
+    chapter: 4,
+    line: '내가 60년 동안 정보를 사고 팔았지만, 결국 가장 중요한 정보는 내 자신이었어.',
+    context: 'trust_build',
+  },
+  // 이그나 (Ch3)
+  {
+    obsidianId: 'ignara_first',
+    gameNpcId: 'npc_ignara',
+    chapter: 3,
+    line: '아버지 이그리스가 기억을 잃기 전, 마지막으로 한 말이 있어. "이프리타의 불꽃은 멈추지 않는다."',
+    context: 'first_meet',
+  },
+  // 베르나르도 (Ch4 배신)
+  {
+    obsidianId: 'bernardo_betrayal',
+    gameNpcId: 'npc_bernardo',
+    chapter: 4,
+    line: '미안해, 에리언. 나는 처음부터 레테 교단의 사람이었어. 밀리아를 위해서였지만, 결국...',
+    context: 'betrayal',
+  },
+  {
+    obsidianId: 'bernardo_final',
+    gameNpcId: 'npc_bernardo_final',
+    chapter: 4,
+    line: '나를 구원하지 마. 나는 이미 너무 멀리 와버렸어.',
+    context: 'final',
+  },
+  // 레이나 (Ch4)
+  {
+    obsidianId: 'reina_first',
+    gameNpcId: 'npc_reina',
+    chapter: 4,
+    line: '레테 교단의 진정한 목표는 구원이 아니야. 신을 강림시키는 것이지.',
+    context: 'first_meet',
+  },
+  // 우르그롬 (Ch4)
+  {
+    obsidianId: 'urgrom_first',
+    gameNpcId: 'npc_urgrom',
+    chapter: 4,
+    line: '북방 기억석 사원은 200년 전 봉인의 마지막 보루야. 여기까지 와줘서 고맙다.',
+    context: 'first_meet',
+  },
+];
+
+export function getDialoguesByNpc(gameNpcId: string): readonly NpcDialogue[] {
+  return SCENARIO_DIALOGUES.filter((d) => d.gameNpcId === gameNpcId);
+}
+
+export function getDialoguesByChapter(chapter: number): readonly NpcDialogue[] {
+  return SCENARIO_DIALOGUES.filter((d) => d.chapter === chapter);
+}
+
+export function getDialoguesByContext(
+  context: NpcDialogue['context'],
+): readonly NpcDialogue[] {
+  return SCENARIO_DIALOGUES.filter((d) => d.context === context);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

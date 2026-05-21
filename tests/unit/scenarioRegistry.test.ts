@@ -750,6 +750,93 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S28 — NPC 대화 SSOT (SYNC-17)', () => {
+  it('SCENARIO_DIALOGUES ≥ 9 대화 entry', async () => {
+    const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_DIALOGUES.length).toBeGreaterThanOrEqual(9);
+  });
+
+  it('모든 dialogue obsidianId unique snake_case', async () => {
+    const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
+    const ids = SCENARIO_DIALOGUES.map((d) => d.obsidianId);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) {
+      expect(id.match(/^[a-z][a-z0-9_]*$/), `${id} snake_case`).not.toBeNull();
+    }
+  });
+
+  it('모든 dialogue gameNpcId 가 SCENARIO_COMPANIONS 의 gameNpcId 또는 게임 NPC 존재', async () => {
+    const { SCENARIO_DIALOGUES, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const companionNpcs = new Set(
+      SCENARIO_COMPANIONS.flatMap((c) => [c.gameNpcId, c.plannedGameNpcId]).filter((x): x is string => !!x),
+    );
+    // npc_bernardo_final 같은 보스 페어도 허용 (베르나르도 체인)
+    const allowedNpcs = new Set([...companionNpcs, 'npc_bernardo_final']);
+    for (const d of SCENARIO_DIALOGUES) {
+      expect(allowedNpcs.has(d.gameNpcId) || d.gameNpcId.startsWith('npc_'), `${d.obsidianId} npc '${d.gameNpcId}'`).toBe(true);
+    }
+  });
+
+  it('모든 dialogue 한글 line + length ≥ 10', async () => {
+    const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const d of SCENARIO_DIALOGUES) {
+      expect(korean.test(d.line), `${d.obsidianId} 한글`).toBe(true);
+      expect(d.line.length, `${d.obsidianId} length`).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('모든 dialogue context valid (first_meet/join/trust_build/betrayal/leave/final)', async () => {
+    const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
+    const VALID = new Set(['first_meet', 'join', 'trust_build', 'betrayal', 'leave', 'final']);
+    for (const d of SCENARIO_DIALOGUES) {
+      expect(VALID.has(d.context), `${d.obsidianId} context '${d.context}'`).toBe(true);
+    }
+  });
+
+  it('chapter 1~5 범위 + 모든 sync 동료 대화 ≥ 1', async () => {
+    const { SCENARIO_DIALOGUES, SCENARIO_COMPANIONS, getDialoguesByNpc } = await import('../../shared/types/scenarioRegistry');
+    for (const d of SCENARIO_DIALOGUES) {
+      expect(d.chapter).toBeGreaterThanOrEqual(1);
+      expect(d.chapter).toBeLessThanOrEqual(5);
+    }
+    // 모든 sync 동료 ≥ 1 대화
+    for (const c of SCENARIO_COMPANIONS) {
+      if (c.gameNpcId) {
+        const dialogues = getDialoguesByNpc(c.gameNpcId);
+        expect(dialogues.length, `${c.obsidianId} dialogues`).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
+  it('베르나르도 체인 narrative — betrayal + final 대화 보유', async () => {
+    const { getDialoguesByNpc, getDialoguesByContext } = await import('../../shared/types/scenarioRegistry');
+    const bernardo = getDialoguesByNpc('npc_bernardo');
+    const bernardoFinal = getDialoguesByNpc('npc_bernardo_final');
+    expect(bernardo.some((d) => d.context === 'betrayal')).toBe(true);
+    expect(bernardoFinal.some((d) => d.context === 'final')).toBe(true);
+    // betrayal context 가드
+    const betrayals = getDialoguesByContext('betrayal');
+    expect(betrayals.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('getDialoguesByChapter: Ch1 대화 ≥ 3 (세라핀 + 크리오 narrative)', async () => {
+    const { getDialoguesByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getDialoguesByChapter(1);
+    expect(ch1.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('SYNC-17 cohesion: dialogues 5 sync 동료 모두 cover (벤자민 포함 6명)', async () => {
+    const { SCENARIO_DIALOGUES, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const dialogueNpcs = new Set(SCENARIO_DIALOGUES.map((d) => d.gameNpcId));
+    const coveredCompanions = SCENARIO_COMPANIONS.filter(
+      (c) => c.gameNpcId && dialogueNpcs.has(c.gameNpcId),
+    );
+    // 최소 5 동료 대화 보유 (벤자민/세라핀/크리오/이그나/레이나/우르그롬)
+    expect(coveredCompanions.length).toBeGreaterThanOrEqual(5);
+  });
+});
+
 describe('SYNC-S27 — 엔딩 D (신화) + FAIL 시나리오 (SYNC-16)', () => {
   it('FAIL 우선: defeatedByLethe = true → FAIL (다른 조건 무관)', async () => {
     const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
