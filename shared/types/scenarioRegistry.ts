@@ -1163,6 +1163,77 @@ export function getRouteByChapter(chapter: number): ChapterRoute | undefined {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-27: SSOT 종합 보고서 generator + entity index helper
+// ════════════════════════════════════════════════════════════════
+
+export interface ScenarioRegistryStats {
+  companions: number;
+  zones: number;
+  bosses: number;
+  chapters: number;
+  endings: number;
+  fragments: number;
+  deities: number;
+  timeline: number;
+  milestones: number;
+  dialogues: number;
+  reputationRewards: number;
+  mythicRelics: number;
+  loreDocuments: number;
+  zoneConnections: number;
+  chapterRoutes: number;
+  /** 합계 */
+  totalEntities: number;
+}
+
+export function getScenarioRegistryStats(): ScenarioRegistryStats {
+  const companions = SCENARIO_COMPANIONS.length;
+  const zones = SCENARIO_ZONES.length;
+  const bosses = SCENARIO_BOSSES.length;
+  const chapters = SCENARIO_CHAPTERS.length;
+  const endings = SCENARIO_ENDINGS.length;
+  const fragments = SCENARIO_FRAGMENTS.length;
+  const deities = SCENARIO_DEITIES.length;
+  const timeline = SCENARIO_TIMELINE.length;
+  const milestones = SCENARIO_MILESTONES.length;
+  const dialogues = SCENARIO_DIALOGUES.length;
+  const reputationRewards = COMPANION_REPUTATION_REWARDS.length;
+  const mythicRelics = SCENARIO_MYTHIC_RELICS.length;
+  const loreDocuments = SCENARIO_LORE_DOCUMENTS.length;
+  const zoneConnections = SCENARIO_ZONE_CONNECTIONS.length;
+  const chapterRoutes = SCENARIO_CHAPTER_ROUTES.length;
+  const totalEntities =
+    companions + zones + bosses + chapters + endings + fragments +
+    deities + timeline + milestones + dialogues + reputationRewards +
+    mythicRelics + loreDocuments + zoneConnections + chapterRoutes;
+  return {
+    companions, zones, bosses, chapters, endings, fragments, deities,
+    timeline, milestones, dialogues, reputationRewards, mythicRelics,
+    loreDocuments, zoneConnections, chapterRoutes, totalEntities,
+  };
+}
+
+/** 전체 obsidianId index — 빠른 entity lookup */
+export function buildScenarioIndex(): ReadonlyMap<string, string> {
+  const index = new Map<string, string>();
+  SCENARIO_COMPANIONS.forEach((c) => index.set(c.obsidianId, 'companion'));
+  SCENARIO_ZONES.forEach((z) => index.set(z.obsidianId, 'zone'));
+  SCENARIO_BOSSES.forEach((b) => index.set(b.obsidianId, 'boss'));
+  SCENARIO_FRAGMENTS.forEach((f) => index.set(f.obsidianId, 'fragment'));
+  SCENARIO_DEITIES.forEach((d) => index.set(d.obsidianId, 'deity'));
+  SCENARIO_TIMELINE.forEach((t) => index.set(t.obsidianId, 'timeline'));
+  SCENARIO_DIALOGUES.forEach((d) => index.set(d.obsidianId, 'dialogue'));
+  SCENARIO_MYTHIC_RELICS.forEach((r) => index.set(r.obsidianId, 'relic'));
+  SCENARIO_LORE_DOCUMENTS.forEach((l) => index.set(l.obsidianId, 'lore'));
+  return index;
+}
+
+/** obsidianId 로 entity 타입 조회 */
+export function resolveEntityType(obsidianId: string): string | undefined {
+  return buildScenarioIndex().get(obsidianId);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

@@ -750,6 +750,65 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S37 — SSOT 종합 stats + entity index (SYNC-27)', () => {
+  it('getScenarioRegistryStats 15 도메인 + totalEntities 계산', async () => {
+    const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const stats = getScenarioRegistryStats();
+    expect(stats.companions).toBe(6);
+    expect(stats.zones).toBe(9);
+    expect(stats.bosses).toBe(9);
+    expect(stats.chapters).toBe(5);
+    expect(stats.endings).toBe(5);
+    expect(stats.fragments).toBe(4);
+    expect(stats.deities).toBe(12);
+    expect(stats.totalEntities).toBeGreaterThanOrEqual(100);
+  });
+
+  it('stats totalEntities = 15 도메인 합계', async () => {
+    const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const s = getScenarioRegistryStats();
+    const computed = s.companions + s.zones + s.bosses + s.chapters + s.endings +
+      s.fragments + s.deities + s.timeline + s.milestones + s.dialogues +
+      s.reputationRewards + s.mythicRelics + s.loreDocuments +
+      s.zoneConnections + s.chapterRoutes;
+    expect(s.totalEntities).toBe(computed);
+  });
+
+  it('buildScenarioIndex 모든 entity obsidianId index', async () => {
+    const { buildScenarioIndex } = await import('../../shared/types/scenarioRegistry');
+    const index = buildScenarioIndex();
+    expect(index.size).toBeGreaterThanOrEqual(60); // entity 종류 합
+  });
+
+  it('resolveEntityType 정확 타입 반환', async () => {
+    const { resolveEntityType } = await import('../../shared/types/scenarioRegistry');
+    expect(resolveEntityType('seraphine')).toBe('companion');
+    expect(resolveEntityType('erebos')).toBe('zone');
+    expect(resolveEntityType('lethe')).toBe('deity');
+    expect(resolveEntityType('fragment_erebos')).toBe('fragment');
+    expect(resolveEntityType('memory_golem')).toBe('boss');
+    expect(resolveEntityType('relic_chronai_hourglass')).toBe('relic');
+    expect(resolveEntityType('letter_001')).toBe('lore');
+  });
+
+  it('resolveEntityType unknown id → undefined', async () => {
+    const { resolveEntityType } = await import('../../shared/types/scenarioRegistry');
+    expect(resolveEntityType('unknown_entity')).toBeUndefined();
+  });
+
+  it('index 모든 obsidianId 도메인 cover (cross-domain 일부 중복 허용)', async () => {
+    const { buildScenarioIndex, getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const index = buildScenarioIndex();
+    const s = getScenarioRegistryStats();
+    // 인덱스에 들어가는 도메인 합 (cross-domain 중복은 후행 덮어쓰기)
+    const indexable = s.companions + s.zones + s.bosses + s.fragments + s.deities +
+      s.timeline + s.dialogues + s.mythicRelics + s.loreDocuments;
+    // 모든 entity 가 unique 면 size = indexable, 중복 있어도 가까운 size
+    expect(index.size).toBeGreaterThanOrEqual(indexable - 5);
+    expect(index.size).toBeLessThanOrEqual(indexable);
+  });
+});
+
 describe('SYNC-S36 — SSOT 15 도메인 cross-domain cohesion (SYNC-26)', () => {
   it('동료 ↔ 대화: 모든 sync 동료가 ≥1 대화 보유', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
