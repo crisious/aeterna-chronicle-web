@@ -750,6 +750,102 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S25 — barrel 통합 + 전 entity cross-domain stress (SYNC-14)', () => {
+  it('chrono.ts barrel 에서 scenarioRegistry 신규 API (SYNC-9~13) 모두 접근', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(typeof mod.applyReputationReward).toBe('function');
+    expect(typeof mod.isReputationRewardSufficient).toBe('function');
+    expect(typeof mod.evaluateGameFlow).toBe('function');
+    expect(typeof mod.checkEndingA).toBe('function');
+    expect(typeof mod.getTimelineEventByObsidianId).toBe('function');
+    expect(typeof mod.listTimelineEventsByEra).toBe('function');
+    expect(Array.isArray(mod.COMPANION_REPUTATION_REWARDS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_TIMELINE)).toBe(true);
+  });
+
+  it('전 SSOT entity 정량 cross-check (단일 barrel 접근)', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(mod.SCENARIO_COMPANIONS.length).toBe(6);
+    expect(mod.SCENARIO_ZONES.length).toBe(9);
+    expect(mod.SCENARIO_BOSSES.length).toBe(9);
+    expect(mod.SCENARIO_CHAPTERS.length).toBe(5);
+    expect(mod.SCENARIO_ENDINGS.length).toBe(5);
+    expect(mod.SCENARIO_FRAGMENTS.length).toBe(4);
+    expect(mod.SCENARIO_DEITIES.length).toBe(12);
+    expect(mod.COMPANION_REPUTATION_REWARDS.length).toBe(5);
+    expect(mod.SCENARIO_TIMELINE.length).toBe(13);
+  });
+
+  it('barrel 통합 stress — 100회 호출 결정성', async () => {
+    const mod = await import('../../shared/types/chrono');
+    const baseline = mod.getSyncCompletionReport();
+    for (let i = 0; i < 100; i += 1) {
+      const r = mod.getSyncCompletionReport();
+      expect(r.coveragePercent).toBe(baseline.coveragePercent);
+      expect(r.companions.synced).toBe(baseline.companions.synced);
+      expect(r.zones.synced).toBe(baseline.zones.synced);
+      expect(r.bosses.synced).toBe(baseline.bosses.synced);
+    }
+  });
+
+  it('100% sync 달성: coveragePercent = 100 (SYNC-8 완료 + SYNC-9~11 게임 로직 통합)', async () => {
+    const { getSyncCompletionReport } = await import('../../shared/types/scenarioRegistry');
+    const r = getSyncCompletionReport();
+    expect(r.coveragePercent).toBe(100);
+    expect(r.companions.orphan).toBe(0);
+    expect(r.zones.orphan).toBe(0);
+    expect(r.bosses.orphan).toBe(0);
+  });
+
+  it('aetherna 게임명 narrative 4중 cross-domain cohesion final', async () => {
+    const { resolveTripleTech } = await import('../../shared/types/tripleTech');
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const { getBossByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    // 1) Triple aetherna_final
+    expect(resolveTripleTech('ether_knight', 'time_knight', 'memory_weaver')?.id).toBe('aetherna_final');
+    // 2) Field aetherna_collapse 보스
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(finalE.monsterPool.find((s) => s.isBoss)?.monsterId).toBe('aetherna_collapse');
+    // 3) Obsidian 레테 → game 매핑
+    const lethe = getBossByObsidianId('lethe');
+    expect(lethe!.gameChronoBossId).toBe('aetherna_collapse');
+    expect(lethe!.gameQuestBossId).toBe('boss_oblivion_lord');
+    // 4) 연대표 레테 narrative
+    const { getTimelineEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    expect(getTimelineEventByObsidianId('lethe_belief_formation')).toBeDefined();
+  });
+
+  it('스토리 → 게임 흐름 (시작→파편→동료→엔딩) 통합 시나리오', async () => {
+    const { applyReputationReward, evaluateGameFlow, checkEndingA } = await import('../../shared/types/scenarioRegistry');
+    // 1. 시작: 게임 시작 (loyalty 0)
+    let loyalty: Record<string, number> = {};
+    // 2. 동료 합류 quest 완료 (5명)
+    for (const [c, q] of [
+      ['seraphine', 'SQ_COMPANION_SERAPHINE'],
+      ['maestro_crio', 'SQ_COMPANION_CRIO'],
+      ['ignara', 'SQ_COMPANION_IGNARA'],
+      ['reina', 'SQ_COMPANION_REINA'],
+      ['urgrom', 'SQ_COMPANION_URGROM'],
+    ] as const) {
+      loyalty[c] = applyReputationReward(c, 0, q).newLoyalty;
+    }
+    loyalty.benjamin_cross = 40;
+    // 3. 4 파편 회수 quest 완료
+    const completedQuests = new Set([
+      'SQ_EREBOS_RUINS',
+      'SQ_SILVANHEIM_FRAGMENT',
+      'SQ_SOLARIS_RAWAR',
+      'SQ_ARGENTIUM_FRAGMENT',
+    ]);
+    const state = { completedQuests, companionLoyalty: loyalty };
+    const flow = evaluateGameFlow(state);
+    // 4. 엔딩 A 달성
+    expect(flow.fragmentsCollected).toBe(4);
+    expect(flow.aliveCompanions.length).toBe(6);
+    expect(checkEndingA(state)).toBe(true);
+  });
+});
+
 describe('SYNC-S24 — 시나리오 연대표 timeline narrative (SYNC-13)', () => {
   it('SCENARIO_TIMELINE 13 핵심 이벤트', async () => {
     const { SCENARIO_TIMELINE } = await import('../../shared/types/scenarioRegistry');
