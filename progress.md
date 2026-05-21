@@ -663,3 +663,34 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 **🎯 SCENARIO-SYNC chapter II 완성 — 7 sprint, +46 가드 (chapter I+II 누적 11 sprint, +119 가드)** — Obsidian 시나리오 ↔ 게임 코드 narrative 동기화 완성 (entity 100% sync + reputation/loyalty 게임 로직 통합 + 엔딩 흐름 SSOT).
 
+## 2026-05-22 SCENARIO-SYNC chapter III — narrative 깊이 확장 (6 sprint, +45 가드)
+
+자동 라운드 — game 통합 + 시나리오 narrative SSOT 확장.
+
+- **SYNC-13** 시나리오 연대표 timeline (13 핵심 이벤트, 7 시대)
+  + ScenarioEra + SCENARIO_TIMELINE + getTimelineEventByObsidianId
+  + 창세 → 게임 시작 (세계력 3,412) 시간 narrative
+  + 회귀 가드 SYNC-S24 (+11)
+- **SYNC-14** chrono.ts barrel scenarioRegistry 통합 stress (+6 가드, S25)
+  + 전 SSOT entity 정량 cross-check
+  + 100회 호출 결정성
+  + aetherna 4중 cross-domain
+  + 전체 게임 흐름 시나리오 (시작→5 동료→4 파편→엔딩 A)
+- **SYNC-15** 챕터별 game-flow milestone (5 chapter)
+  + SCENARIO_MILESTONES + ChapterProgress + evaluateChapterProgress
+  + 회귀 가드 SYNC-S26 (+11)
+- **SYNC-16** 엔딩 D (신화) + FAIL 시나리오
+  + AdvancedGameFlowState + evaluateAdvancedEnding + getEndingSummary
+  + 우선순위: FAIL > D > A/B/C
+  + 회귀 가드 SYNC-S27 (+8)
+- **SYNC-17** NPC 대화 SSOT (9 핵심 대사)
+  + NpcDialogue + SCENARIO_DIALOGUES
+  + 세라핀/크리오/이그나/베르나르도/레이나/우르그롬 대사
+  + context (first_meet/join/trust_build/betrayal/leave/final)
+  + 회귀 가드 SYNC-S28 (+9)
+- **SYNC-18** progress.md 갱신 + 누적 종합 stress
+
+회귀: scenarioRegistry 164/164 + unit 전체 1534 tests pass.
+
+**🎯 SCENARIO-SYNC chapter III 완성 — 6 sprint, +45 가드 (chapter I+II+III 누적 17 sprint, +164 가드)** — Obsidian narrative SSOT 깊이 확장 (timeline + milestone + 엔딩 5종 + 대화). 게임 코드 통합 + narrative 무결성 회귀 가드 완성.
+

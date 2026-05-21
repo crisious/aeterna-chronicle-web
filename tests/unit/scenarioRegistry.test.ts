@@ -750,6 +750,96 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S29 — 누적 종합 stress + 18 sprint cohesion (SYNC-18)', () => {
+  it('전 SSOT entity 정량 (chapter III 완료)', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(mod.SCENARIO_COMPANIONS.length).toBe(6);
+    expect(mod.SCENARIO_ZONES.length).toBe(9);
+    expect(mod.SCENARIO_BOSSES.length).toBe(9);
+    expect(mod.SCENARIO_CHAPTERS.length).toBe(5);
+    expect(mod.SCENARIO_ENDINGS.length).toBe(5);
+    expect(mod.SCENARIO_FRAGMENTS.length).toBe(4);
+    expect(mod.SCENARIO_DEITIES.length).toBe(12);
+    expect(mod.SCENARIO_TIMELINE.length).toBe(13);
+    expect(mod.SCENARIO_MILESTONES.length).toBe(5);
+    expect(mod.SCENARIO_DIALOGUES.length).toBeGreaterThanOrEqual(9);
+    expect(mod.COMPANION_REPUTATION_REWARDS.length).toBe(5);
+  });
+
+  it('SSOT 헬퍼 함수 모두 chrono barrel 접근 (18 sprint 누적)', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // SYNC-1~17 누적 helpers
+    expect(typeof mod.getCompanionByObsidianId).toBe('function');
+    expect(typeof mod.getZoneByObsidianId).toBe('function');
+    expect(typeof mod.getBossByObsidianId).toBe('function');
+    expect(typeof mod.getFragmentByObsidianId).toBe('function');
+    expect(typeof mod.getDeityByObsidianId).toBe('function');
+    expect(typeof mod.getTimelineEventByObsidianId).toBe('function');
+    expect(typeof mod.getMilestoneByChapter).toBe('function');
+    expect(typeof mod.getDialoguesByNpc).toBe('function');
+    expect(typeof mod.evaluateLoyalty).toBe('function');
+    expect(typeof mod.evaluateEnding).toBe('function');
+    expect(typeof mod.evaluateGameFlow).toBe('function');
+    expect(typeof mod.evaluateAdvancedEnding).toBe('function');
+    expect(typeof mod.evaluateChapterProgress).toBe('function');
+    expect(typeof mod.applyReputationReward).toBe('function');
+    expect(typeof mod.getSyncCompletionReport).toBe('function');
+  });
+
+  it('전 entity sync 100% + coverage = 100%', async () => {
+    const { getSyncCompletionReport } = await import('../../shared/types/scenarioRegistry');
+    const r = getSyncCompletionReport();
+    expect(r.coveragePercent).toBe(100);
+    expect(r.companions.synced).toBe(6);
+    expect(r.zones.synced).toBe(9);
+    expect(r.bosses.synced).toBe(9);
+  });
+
+  it('완전한 엔딩 A 시나리오: timeline + milestone + dialogue + reputation + ending', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+
+    // 1. 게임 시작 timeline event
+    const start = mod.getTimelineEventByObsidianId('game_start_cantela');
+    expect(start?.worldYear).toBe(3412);
+
+    // 2. Ch1 milestone — 세라핀+크리오 합류
+    const ch1 = mod.getMilestoneByChapter(1);
+    expect(ch1?.unlockedCompanions).toContain('seraphine');
+    expect(ch1?.unlockedCompanions).toContain('maestro_crio');
+
+    // 3. 세라핀 first_meet 대화
+    const seraphineDialogues = mod.getDialoguesByNpc('npc_seraphine');
+    expect(seraphineDialogues.length).toBeGreaterThanOrEqual(1);
+
+    // 4. 세라핀 quest 완료 → loyalty 50
+    const rep = mod.applyReputationReward('seraphine', 0, 'SQ_COMPANION_SERAPHINE');
+    expect(rep.newLoyalty).toBe(50);
+    expect(rep.meetsThreshold).toBe(true);
+
+    // 5. 엔딩 A 도달 (전 시나리오 완주)
+    const allLoyalty = { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 };
+    const allQuests = new Set([
+      'SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT',
+      'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT',
+    ]);
+    expect(mod.checkEndingA({ completedQuests: allQuests, companionLoyalty: allLoyalty })).toBe(true);
+  });
+
+  it('chapter III 추가 항목 (timeline/milestone/dialogue) cohesion', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    // 모든 milestone Ch ↔ timeline Ch 매핑 가능
+    for (const m of mod.SCENARIO_MILESTONES) {
+      const chapter = mod.getChapterByNumber(m.chapter);
+      expect(chapter, `Ch${m.chapter} chapter`).toBeDefined();
+    }
+    // 모든 dialogue chapter ↔ chapter 매핑 가능
+    for (const d of mod.SCENARIO_DIALOGUES) {
+      const chapter = mod.getChapterByNumber(d.chapter);
+      expect(chapter, `dialogue Ch${d.chapter}`).toBeDefined();
+    }
+  });
+});
+
 describe('SYNC-S28 — NPC 대화 SSOT (SYNC-17)', () => {
   it('SCENARIO_DIALOGUES ≥ 9 대화 entry', async () => {
     const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
