@@ -694,3 +694,28 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 **🎯 SCENARIO-SYNC chapter III 완성 — 6 sprint, +45 가드 (chapter I+II+III 누적 17 sprint, +164 가드)** — Obsidian narrative SSOT 깊이 확장 (timeline + milestone + 엔딩 5종 + 대화). 게임 코드 통합 + narrative 무결성 회귀 가드 완성.
 
+## 2026-05-22 SCENARIO-SYNC chapter III 확장 — narrative 완성 (5 sprint, +43 가드)
+
+자동 라운드 — narrative 완성 + 엔딩 D 조건 + 외전 문서 + Ch2/Ch5 대화.
+
+- **SYNC-19** 신화 유물 SSOT + 엔딩 D 조건 확장 (+10 가드, S30)
+  + 4 유물 (크로나이/이그나루스/베르다/아키우스)
+  + MINERVA_ENCOUNTER 조건 (유물 ≥2 + golden_ether_tower)
+  + canEncounterMinerva 헬퍼
+- **SYNC-20** 🎯 20 sprint 마디 종합 stress (+6 가드, S31)
+  + SSOT entity 정점 정량 (86)
+  + 완전한 엔딩 D 시나리오 + 모든 헬퍼 non-error
+- **SYNC-21** Ch2/Ch5 NPC 대화 확장 (+8 가드, S32)
+  + 카일 (Ch5 전생) + 레테 (final) + 미네르바 (신화)
+  + 실반헤임 장로 + 세라핀 카엘 회상
+  + 5 챕터 모두 대화 cover
+- **SYNC-22** Obsidian 외전 문서 SSOT (+10 가드, S33)
+  + 11 문서 (편지 5 + 도서 4 + 기억 조각 2)
+  + LoreDocumentType + helpers
+  + 레테 교단 narrative ≥2 + Ch1 lore ≥3
+- **SYNC-23** progress.md 최종 갱신 + 종합 cohesion
+
+회귀: scenarioRegistry 203/203 + unit 전체 1573 tests pass.
+
+**🎯 SCENARIO-SYNC chapter III 확장 완성 — 5 sprint, +43 가드 (chapter I+II+III 누적 22 sprint, +207 가드)** — Obsidian narrative 깊이 확장 final. 97 SSOT entity + 20+ helpers + 5 챕터 + 5 엔딩 + 4 파편 + 12 신 + 13 timeline + 5 milestone + 14 dialogues + 4 relics + 11 외전 문서.
+
