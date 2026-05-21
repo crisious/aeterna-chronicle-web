@@ -750,6 +750,52 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S68 — SFX / ambient sound narrative (SYNC-67)', () => {
+  it('SCENARIO_AMBIENT_SOUNDS 5 chapter ambients', async () => {
+    const { SCENARIO_AMBIENT_SOUNDS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_AMBIENT_SOUNDS.length).toBe(5);
+  });
+
+  it('각 ambient gameAmbientId + ambient_ prefix + 한글', async () => {
+    const { SCENARIO_AMBIENT_SOUNDS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const a of SCENARIO_AMBIENT_SOUNDS) {
+      expect(a.gameAmbientId.startsWith('ambient_'), `Ch${a.chapter}`).toBe(true);
+      expect(korean.test(a.description)).toBe(true);
+    }
+  });
+
+  it('Ch1 에레보스 침묵 + Ch5 현실 붕괴 narrative', async () => {
+    const { getAmbientByChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(getAmbientByChapter(1)!.description).toContain('침묵');
+    expect(getAmbientByChapter(5)!.description).toContain('붕괴');
+  });
+
+  it('5 ambient gameAmbientId 모두 unique', async () => {
+    const { SCENARIO_AMBIENT_SOUNDS } = await import('../../shared/types/scenarioRegistry');
+    const ids = SCENARIO_AMBIENT_SOUNDS.map((a) => a.gameAmbientId);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('chapter 1~5 cover (각 chapter 1 ambient)', async () => {
+    const { SCENARIO_AMBIENT_SOUNDS } = await import('../../shared/types/scenarioRegistry');
+    const chapters = SCENARIO_AMBIENT_SOUNDS.map((a) => a.chapter).sort();
+    expect(chapters).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('SYNC-67 cohesion: ambient + BGM 분리 (chapter별 두 도메인)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      const ambient = mod.getAmbientByChapter(ch);
+      const bgm = mod.getBgmByChapter(ch);
+      expect(ambient).toBeDefined();
+      expect(bgm).toBeDefined();
+      // bgm + ambient 다른 트랙
+      expect(ambient!.gameAmbientId).not.toBe(bgm!.gameBgmTrack);
+    }
+  });
+});
+
 describe('SYNC-S67 — cinematic / cutscene narrative SSOT (SYNC-65)', () => {
   it('SCENARIO_CINEMATICS ≥ 7 cinematic', async () => {
     const { SCENARIO_CINEMATICS } = await import('../../shared/types/scenarioRegistry');

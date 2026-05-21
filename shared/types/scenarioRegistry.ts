@@ -2509,6 +2509,50 @@ export function listCinematicsByChapter(
   return SCENARIO_CINEMATICS.filter((c) => c.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-67: 시나리오 SFX / ambient sound narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface AmbientSound {
+  chapter: number;
+  /** 게임 ambient track id */
+  gameAmbientId: string;
+  /** ambient 분위기 narrative */
+  description: string;
+}
+
+export const SCENARIO_AMBIENT_SOUNDS: readonly AmbientSound[] = [
+  {
+    chapter: 1,
+    gameAmbientId: 'ambient_erebos_wind',
+    description: '에레보스 폐허 — 200년 침묵의 바람 + 망각 폭풍 잔향',
+  },
+  {
+    chapter: 2,
+    gameAmbientId: 'ambient_silvanheim_forest',
+    description: '실반헤임 — 시간 지연 숲 + 말라투스 고목 잎새 소리',
+  },
+  {
+    chapter: 3,
+    gameAmbientId: 'ambient_solaris_desert',
+    description: '솔라리스 사막 — 모래 바람 + 신기루 에테르 발광 소리',
+  },
+  {
+    chapter: 4,
+    gameAmbientId: 'ambient_argentium_palace',
+    description: '아르겐티움 황궁 — 음모의 침묵 + 금속 발자국',
+  },
+  {
+    chapter: 5,
+    gameAmbientId: 'ambient_oblivion_void',
+    description: '망각의 고원 — 현실 붕괴 잡음 + 시간 왜곡 echo',
+  },
+];
+
+export function getAmbientByChapter(chapter: number): AmbientSound | undefined {
+  return SCENARIO_AMBIENT_SOUNDS.find((a) => a.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
