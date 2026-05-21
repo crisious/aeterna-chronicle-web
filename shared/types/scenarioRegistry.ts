@@ -25,12 +25,16 @@ export interface ScenarioCompanion {
   role: string;
   /** 합류 챕터 (Obsidian Ch1~Ch5) */
   joinChapter: number;
-  /** 게임 코드 npc id (있을 경우) */
+  /** 게임 코드 npc id — 현재 게임 questSeeds 에 등장 (SYNC 완료) */
   gameNpcId?: string;
-  /** 게임 보스 id (타락/적대 변신 시) */
+  /** 게임 보스 id (타락/적대 변신 시) — questSeeds 등장 */
   gameBossId?: string;
   /** 신뢰도 시스템 임계값 (이탈 기준) */
   loyaltyThreshold: number;
+  /** SYNC-5: planned NPC id — questSeeds 추가 예정 (SSOT 예약 ID) */
+  plannedGameNpcId?: string;
+  /** SYNC-5: planned 보스 id — questSeeds 추가 예정 */
+  plannedGameBossId?: string;
 }
 
 export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
@@ -40,6 +44,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '엘파리스 정찰병',
     joinChapter: 1,
     loyaltyThreshold: 50,
+    plannedGameNpcId: 'npc_seraphine',
   },
   {
     obsidianId: 'maestro_crio',
@@ -47,6 +52,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '200년 생존자 정보상',
     joinChapter: 1,
     loyaltyThreshold: 40,
+    plannedGameNpcId: 'npc_maestro_crio',
   },
   {
     obsidianId: 'ignara',
@@ -54,6 +60,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '이프리타 족장의 딸',
     joinChapter: 3,
     loyaltyThreshold: 20,
+    plannedGameNpcId: 'npc_ignara',
   },
   {
     obsidianId: 'benjamin_cross',
@@ -70,6 +77,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '레테 교단 내부고발자',
     joinChapter: 4,
     loyaltyThreshold: 30,
+    plannedGameNpcId: 'npc_reina',
   },
   {
     obsidianId: 'urgrom',
@@ -77,6 +85,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '북방 기억석 사원 수호자',
     joinChapter: 4,
     loyaltyThreshold: 40,
+    plannedGameNpcId: 'npc_urgrom',
   },
 ];
 
@@ -89,10 +98,14 @@ export interface ScenarioZone {
   name: string;
   /** Obsidian 챕터 (Ch1~Ch5) */
   chapter: number;
-  /** 게임 chronoField zone id (매핑) */
+  /** 게임 chronoField zone id (현재 매핑 완료) */
   gameZoneId?: string;
-  /** 게임 questSeeds zone target (매핑) */
+  /** 게임 questSeeds zone target (현재 매핑 완료) */
   gameQuestZoneTarget?: string;
+  /** SYNC-5: planned questSeeds zone target — 게임 추가 예정 */
+  plannedGameQuestZoneTarget?: string;
+  /** SYNC-5: planned chronoField zone id — 게임 추가 예정 */
+  plannedGameZoneId?: string;
 }
 
 export const SCENARIO_ZONES: readonly ScenarioZone[] = [
@@ -100,12 +113,14 @@ export const SCENARIO_ZONES: readonly ScenarioZone[] = [
     obsidianId: 'erebos',
     name: '에레보스',
     chapter: 1,
-    // 게임 코드 매핑 없음 — 신규 동기화 필요
+    plannedGameQuestZoneTarget: 'zone_erebos_city',
+    plannedGameZoneId: 'erebos_ruins',
   },
   {
     obsidianId: 'cantela_village',
     name: '칸텔라 마을',
     chapter: 1,
+    plannedGameQuestZoneTarget: 'zone_cantela_village',
   },
   {
     obsidianId: 'silvanheim',
@@ -124,6 +139,8 @@ export const SCENARIO_ZONES: readonly ScenarioZone[] = [
     obsidianId: 'solaris',
     name: '솔라리스 사막',
     chapter: 3,
+    plannedGameQuestZoneTarget: 'zone_solaris_desert',
+    plannedGameZoneId: 'solaris_dunes',
   },
   {
     obsidianId: 'argentium',
@@ -161,12 +178,16 @@ export interface ScenarioBoss {
   obsidianId: string;
   name: string;
   chapter: number;
-  /** 게임 chronoField 보스 id (매핑) */
+  /** 게임 chronoField 보스 id (현재 매핑 완료) */
   gameChronoBossId?: string;
-  /** 게임 questSeeds 보스 target (매핑) */
+  /** 게임 questSeeds 보스 target (현재 매핑 완료) */
   gameQuestBossId?: string;
   /** 페이즈 수 (Obsidian 명시) */
   phases?: number;
+  /** SYNC-5: planned questSeeds 보스 — 게임 추가 예정 */
+  plannedGameQuestBossId?: string;
+  /** SYNC-5: planned chronoField 보스 — 게임 추가 예정 */
+  plannedGameChronoBossId?: string;
 }
 
 export const SCENARIO_BOSSES: readonly ScenarioBoss[] = [
@@ -194,11 +215,14 @@ export const SCENARIO_BOSSES: readonly ScenarioBoss[] = [
     name: '라와르 (솔리안 왕)',
     chapter: 3,
     phases: 3,
+    plannedGameQuestBossId: 'boss_rawar',
+    plannedGameChronoBossId: 'rawar_ancient_king',
   },
   {
     obsidianId: 'kane',
     name: '케인 (기억 사냥꾼 간부)',
     chapter: 4,
+    plannedGameQuestBossId: 'boss_kane_corrupted',
   },
   {
     obsidianId: 'corrupted_bernardo',
@@ -540,4 +564,80 @@ export function listCreationDeities(): readonly ScenarioDeity[] {
 
 export function listExcludedDeities(): readonly ScenarioDeity[] {
   return SCENARIO_DEITIES.filter((d) => !d.inCreation);
+}
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-5: planned 매핑 헬퍼 — 미동기 항목 추적
+// ════════════════════════════════════════════════════════════════
+
+/** planned ID 가 부여된 미동기 동료 (게임 추가 예정) */
+export function listPlannedCompanions(): readonly ScenarioCompanion[] {
+  return SCENARIO_COMPANIONS.filter(
+    (c) => c.plannedGameNpcId || c.plannedGameBossId,
+  );
+}
+
+/** planned ID 가 부여된 미동기 zone */
+export function listPlannedZones(): readonly ScenarioZone[] {
+  return SCENARIO_ZONES.filter(
+    (z) => z.plannedGameQuestZoneTarget || z.plannedGameZoneId,
+  );
+}
+
+/** planned ID 가 부여된 미동기 보스 */
+export function listPlannedBosses(): readonly ScenarioBoss[] {
+  return SCENARIO_BOSSES.filter(
+    (b) => b.plannedGameQuestBossId || b.plannedGameChronoBossId,
+  );
+}
+
+export interface SyncCompletionReport {
+  companions: { total: number; synced: number; planned: number; orphan: number };
+  zones: { total: number; synced: number; planned: number; orphan: number };
+  bosses: { total: number; synced: number; planned: number; orphan: number };
+  /** 전체 entity 의 sync+planned 백분율 (0~100) */
+  coveragePercent: number;
+}
+
+/**
+ * 시나리오 SSOT entity 의 sync/planned/orphan 카운트 + 전체 커버리지 계산.
+ * orphan = sync 안 됐고 planned ID 도 없는 항목 (장기 작업 미정의).
+ */
+export function getSyncCompletionReport(): SyncCompletionReport {
+  const companionsSync = listSyncedCompanions().length;
+  const companionsPlanned = listPlannedCompanions().length;
+  const companionsTotal = SCENARIO_COMPANIONS.length;
+
+  const zonesSync = listSyncedZones().length;
+  const zonesPlanned = listPlannedZones().length;
+  const zonesTotal = SCENARIO_ZONES.length;
+
+  const bossesSync = listSyncedBosses().length;
+  const bossesPlanned = listPlannedBosses().length;
+  const bossesTotal = SCENARIO_BOSSES.length;
+
+  const totalEntities = companionsTotal + zonesTotal + bossesTotal;
+  const covered = companionsSync + companionsPlanned + zonesSync + zonesPlanned + bossesSync + bossesPlanned;
+
+  return {
+    companions: {
+      total: companionsTotal,
+      synced: companionsSync,
+      planned: companionsPlanned,
+      orphan: companionsTotal - companionsSync - companionsPlanned,
+    },
+    zones: {
+      total: zonesTotal,
+      synced: zonesSync,
+      planned: zonesPlanned,
+      orphan: zonesTotal - zonesSync - zonesPlanned,
+    },
+    bosses: {
+      total: bossesTotal,
+      synced: bossesSync,
+      planned: bossesPlanned,
+      orphan: bossesTotal - bossesSync - bossesPlanned,
+    },
+    coveragePercent: Math.round((covered / totalEntities) * 100),
+  };
 }

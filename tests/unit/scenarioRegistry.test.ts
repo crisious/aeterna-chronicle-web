@@ -122,13 +122,18 @@ describe('SYNC-S2 — SCENARIO_ZONES Obsidian narrative + 게임 매핑', () => 
     expect(z!.gameQuestZoneTarget).toBe('zone_oblivion_throne');
   });
 
-  it('에레보스 (Ch1) + 솔라리스 (Ch3) 게임 zone 매핑 없음 — sync 후속 작업 표식', () => {
+  it('에레보스 (Ch1) + 솔라리스 (Ch3) 게임 zone 미동기 + planned ID 보유', () => {
     const erebos = getZoneByObsidianId('erebos');
     const solaris = getZoneByObsidianId('solaris');
     expect(erebos).toBeDefined();
     expect(solaris).toBeDefined();
+    // SYNC-5 후 planned ID 추가됨
     expect(erebos!.gameZoneId).toBeUndefined();
+    expect(erebos!.plannedGameQuestZoneTarget).toBe('zone_erebos_city');
+    expect(erebos!.plannedGameZoneId).toBe('erebos_ruins');
     expect(solaris!.gameZoneId).toBeUndefined();
+    expect(solaris!.plannedGameQuestZoneTarget).toBe('zone_solaris_desert');
+    expect(solaris!.plannedGameZoneId).toBe('solaris_dunes');
   });
 });
 
@@ -549,5 +554,222 @@ describe('SYNC-S14 — chrono.ts barrel scenarioRegistry 통합', () => {
     // scenarioRegistry 레테 → aetherna_collapse 매핑
     const lethe = mod.getBossByObsidianId('lethe');
     expect(lethe?.gameChronoBossId).toBe('aetherna_collapse');
+  });
+});
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-5/6 — 미동기 항목 planned 매핑 회귀 가드
+// ════════════════════════════════════════════════════════════════
+
+import {
+  listPlannedCompanions,
+  listPlannedZones,
+  listPlannedBosses,
+  getSyncCompletionReport,
+} from '../../shared/types/scenarioRegistry';
+
+describe('SYNC-S15 — planned 동료 매핑 (5명 미동기)', () => {
+  it('planned 동료 = 5명 (벤자민 제외 모두)', () => {
+    const planned = listPlannedCompanions();
+    expect(planned.length).toBe(5);
+  });
+
+  it('5 동료 plannedGameNpcId 모두 npc_ prefix + snake_case', () => {
+    const planned = listPlannedCompanions();
+    for (const c of planned) {
+      expect(c.plannedGameNpcId, `${c.obsidianId} plannedGameNpcId`).toBeDefined();
+      expect(c.plannedGameNpcId!.startsWith('npc_'), `${c.obsidianId} prefix`).toBe(true);
+      expect(c.plannedGameNpcId!.match(/^npc_[a-z][a-z0-9_]*$/), `${c.obsidianId} snake_case`).not.toBeNull();
+    }
+  });
+
+  it('세라핀/크리오/이그나/레이나/우르그롬 planned npc id 매핑', () => {
+    const map = new Map(
+      listPlannedCompanions().map((c) => [c.obsidianId, c.plannedGameNpcId]),
+    );
+    expect(map.get('seraphine')).toBe('npc_seraphine');
+    expect(map.get('maestro_crio')).toBe('npc_maestro_crio');
+    expect(map.get('ignara')).toBe('npc_ignara');
+    expect(map.get('reina')).toBe('npc_reina');
+    expect(map.get('urgrom')).toBe('npc_urgrom');
+  });
+
+  it('벤자민 (sync 완료) 은 planned 목록 미포함 (이중 정의 가드)', () => {
+    const planned = listPlannedCompanions();
+    const ids = planned.map((c) => c.obsidianId);
+    expect(ids).not.toContain('benjamin_cross');
+  });
+
+  it('planned npcId 5개 모두 unique (충돌 없음)', () => {
+    const planned = listPlannedCompanions();
+    const npcIds = planned.map((c) => c.plannedGameNpcId);
+    expect(new Set(npcIds).size).toBe(npcIds.length);
+  });
+});
+
+describe('SYNC-S16 — planned zone 매핑 (3 zone 미동기)', () => {
+  it('planned zone = 3 (에레보스 + 칸텔라 + 솔라리스)', () => {
+    const planned = listPlannedZones();
+    expect(planned.length).toBe(3);
+    const ids = planned.map((z) => z.obsidianId).sort();
+    expect(ids).toEqual(['cantela_village', 'erebos', 'solaris']);
+  });
+
+  it('planned zone 모두 plannedGameQuestZoneTarget 정의 + zone_ prefix', () => {
+    const planned = listPlannedZones();
+    for (const z of planned) {
+      expect(z.plannedGameQuestZoneTarget, `${z.obsidianId} planned target`).toBeDefined();
+      expect(z.plannedGameQuestZoneTarget!.startsWith('zone_')).toBe(true);
+    }
+  });
+
+  it('에레보스 + 솔라리스 plannedGameZoneId 도 정의 (chronoField 추가 예정)', () => {
+    const erebos = SCENARIO_ZONES.find((z) => z.obsidianId === 'erebos')!;
+    const solaris = SCENARIO_ZONES.find((z) => z.obsidianId === 'solaris')!;
+    expect(erebos.plannedGameZoneId).toBe('erebos_ruins');
+    expect(solaris.plannedGameZoneId).toBe('solaris_dunes');
+  });
+
+  it('칸텔라 (Ch1) 마을은 chronoField zone 미예정 (questSeeds 만 추가)', () => {
+    const cantela = SCENARIO_ZONES.find((z) => z.obsidianId === 'cantela_village')!;
+    expect(cantela.plannedGameQuestZoneTarget).toBe('zone_cantela_village');
+    expect(cantela.plannedGameZoneId).toBeUndefined();
+  });
+});
+
+describe('SYNC-S17 — planned 보스 매핑 (2 보스 미동기)', () => {
+  it('planned 보스 = 2 (라와르 + 케인)', () => {
+    const planned = listPlannedBosses();
+    expect(planned.length).toBe(2);
+    const ids = planned.map((b) => b.obsidianId).sort();
+    expect(ids).toEqual(['kane', 'rawar']);
+  });
+
+  it('라와르 (Ch3) planned: boss_rawar + rawar_ancient_king (chronoField)', () => {
+    const rawar = SCENARIO_BOSSES.find((b) => b.obsidianId === 'rawar')!;
+    expect(rawar.plannedGameQuestBossId).toBe('boss_rawar');
+    expect(rawar.plannedGameChronoBossId).toBe('rawar_ancient_king');
+    expect(rawar.phases).toBe(3);
+  });
+
+  it('케인 (Ch4) planned: boss_kane_corrupted (questSeeds 만)', () => {
+    const kane = SCENARIO_BOSSES.find((b) => b.obsidianId === 'kane')!;
+    expect(kane.plannedGameQuestBossId).toBe('boss_kane_corrupted');
+    expect(kane.plannedGameChronoBossId).toBeUndefined();
+  });
+
+  it('planned 보스 ID 와 기존 questSeeds 보스 ID 충돌 없음', () => {
+    const planned = listPlannedBosses();
+    const existing = new Set<string>();
+    for (const q of ALL_QUEST_SEEDS) {
+      for (const obj of q.objectives) {
+        if (obj.type === 'kill' && obj.target.startsWith('boss_')) {
+          existing.add(obj.target);
+        }
+      }
+    }
+    for (const b of planned) {
+      if (b.plannedGameQuestBossId) {
+        expect(existing.has(b.plannedGameQuestBossId), `${b.obsidianId} collision`).toBe(false);
+      }
+    }
+  });
+});
+
+describe('SYNC-S18 — getSyncCompletionReport 종합 커버리지', () => {
+  it('동료 커버리지: 1 sync + 5 planned = 6 covered / 0 orphan', () => {
+    const r = getSyncCompletionReport();
+    expect(r.companions.total).toBe(6);
+    expect(r.companions.synced).toBeGreaterThanOrEqual(1);
+    expect(r.companions.planned).toBe(5);
+    expect(r.companions.orphan).toBe(0);
+  });
+
+  it('zone 커버리지: orphan ≤ 1 (모든 zone 매핑 or planned)', () => {
+    const r = getSyncCompletionReport();
+    expect(r.zones.total).toBe(9);
+    expect(r.zones.orphan).toBeLessThanOrEqual(1);
+  });
+
+  it('보스 커버리지: orphan = 0 (모든 보스 매핑 or planned)', () => {
+    const r = getSyncCompletionReport();
+    expect(r.bosses.total).toBe(9);
+    expect(r.bosses.orphan).toBe(0);
+  });
+
+  it('전체 커버리지 percentage ≥ 90 (SYNC-5 미동기 추가 후)', () => {
+    const r = getSyncCompletionReport();
+    expect(r.coveragePercent).toBeGreaterThanOrEqual(90);
+  });
+});
+
+describe('SYNC-S19 — planned ID naming 일관성', () => {
+  it('모든 planned NPC id snake_case + npc_ prefix', () => {
+    for (const c of SCENARIO_COMPANIONS) {
+      if (c.plannedGameNpcId) {
+        expect(c.plannedGameNpcId.match(/^npc_[a-z][a-z0-9_]*$/), `${c.obsidianId}`).not.toBeNull();
+      }
+    }
+  });
+
+  it('모든 planned zone target snake_case + zone_ prefix', () => {
+    for (const z of SCENARIO_ZONES) {
+      if (z.plannedGameQuestZoneTarget) {
+        expect(z.plannedGameQuestZoneTarget.match(/^zone_[a-z][a-z0-9_]*$/), `${z.obsidianId}`).not.toBeNull();
+      }
+    }
+  });
+
+  it('모든 planned 보스 questSeeds id snake_case + boss_ prefix', () => {
+    for (const b of SCENARIO_BOSSES) {
+      if (b.plannedGameQuestBossId) {
+        expect(b.plannedGameQuestBossId.match(/^boss_[a-z][a-z0-9_]*$/), `${b.obsidianId}`).not.toBeNull();
+      }
+    }
+  });
+
+  it('planned ID 와 sync 완료 ID 중복 없음 (전 도메인)', () => {
+    for (const c of SCENARIO_COMPANIONS) {
+      if (c.gameNpcId && c.plannedGameNpcId) {
+        expect.fail(`${c.obsidianId} 이중 정의 (sync + planned)`);
+      }
+    }
+    for (const z of SCENARIO_ZONES) {
+      if (z.gameQuestZoneTarget && z.plannedGameQuestZoneTarget) {
+        expect.fail(`${z.obsidianId} 이중 정의 (sync + planned)`);
+      }
+    }
+    for (const b of SCENARIO_BOSSES) {
+      if (b.gameQuestBossId && b.plannedGameQuestBossId) {
+        expect.fail(`${b.obsidianId} 이중 정의 (sync + planned)`);
+      }
+    }
+  });
+});
+
+describe('SYNC-S20 — 미동기화 카운트 갱신 (S8 boomerang)', () => {
+  it('SYNC-5 후 orphan 동료 = 0 (전 5명 planned 부여)', () => {
+    const orphan = SCENARIO_COMPANIONS.filter(
+      (c) => !c.gameNpcId && !c.gameBossId && !c.plannedGameNpcId && !c.plannedGameBossId,
+    );
+    expect(orphan.length).toBe(0);
+  });
+
+  it('SYNC-5 후 orphan zone ≤ 1 (대부분 planned 부여)', () => {
+    const orphan = SCENARIO_ZONES.filter(
+      (z) =>
+        !z.gameZoneId && !z.gameQuestZoneTarget &&
+        !z.plannedGameZoneId && !z.plannedGameQuestZoneTarget,
+    );
+    expect(orphan.length).toBeLessThanOrEqual(1);
+  });
+
+  it('SYNC-5 후 orphan 보스 = 0 (라와르/케인 planned 부여)', () => {
+    const orphan = SCENARIO_BOSSES.filter(
+      (b) =>
+        !b.gameChronoBossId && !b.gameQuestBossId &&
+        !b.plannedGameChronoBossId && !b.plannedGameQuestBossId,
+    );
+    expect(orphan.length).toBe(0);
   });
 });
