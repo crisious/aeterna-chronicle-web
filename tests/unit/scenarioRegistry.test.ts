@@ -750,6 +750,62 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S70 — 미디어 도메인 cohesion stress (SYNC-69)', () => {
+  it('각 chapter media 4중 (BGM + ambient + cinematic + visual)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      const bgm = mod.getBgmByChapter(ch);
+      const ambient = mod.getAmbientByChapter(ch);
+      const visual = mod.getVisualByChapter(ch);
+      const cinematics = mod.listCinematicsByChapter(ch);
+      expect(bgm, `Ch${ch} bgm`).toBeDefined();
+      expect(ambient, `Ch${ch} ambient`).toBeDefined();
+      expect(visual, `Ch${ch} visual`).toBeDefined();
+      expect(cinematics.length, `Ch${ch} cinematics`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('Ch1 미디어 cohesion (에레보스/회색/침묵/오프닝)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const ambient = mod.getAmbientByChapter(1);
+    const visual = mod.getVisualByChapter(1);
+    const bgm = mod.getBgmByChapter(1);
+    expect(ambient!.description).toContain('에레보스');
+    expect(visual!.visualMood).toContain('회색');
+    expect(bgm!.gameBgmTrack).toBe('bgm_erebos_ruins');
+  });
+
+  it('Ch5 최종 미디어 cohesion (망각/보라/붕괴/카일 의식복)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const ambient = mod.getAmbientByChapter(5);
+    const visual = mod.getVisualByChapter(5);
+    const bgm = mod.getBgmByChapter(5);
+    expect(ambient!.description).toContain('붕괴');
+    expect(visual!.visualMood).toContain('보라');
+    expect(visual!.aerienOutfit).toContain('카일');
+    expect(bgm!.gameBgmTrack).toBe('bgm_final_boss');
+  });
+
+  it('동료별 4도메인 cohesion (PQ + arc + class + reputation)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    for (const c of mod.SCENARIO_COMPANIONS) {
+      const pq = mod.getPersonalQuestByCompanion(c.obsidianId);
+      const arc = mod.COMPANION_STORY_ARCS.find((a) => a.companionObsidianId === c.obsidianId);
+      const cls = mod.getCompanionClass(c.obsidianId);
+      expect(pq, `${c.obsidianId} pq`).toBeDefined();
+      expect(arc, `${c.obsidianId} arc`).toBeDefined();
+      expect(cls, `${c.obsidianId} class`).toBeDefined();
+    }
+  });
+
+  it('69 sprint 누적 — 34 도메인 + entity 215+', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    expect(mod.SCENARIO_AMBIENT_SOUNDS.length).toBe(5);
+    expect(mod.COMPANION_PERSONAL_QUESTS.length).toBe(6);
+    expect(mod.SCENARIO_CINEMATICS.length).toBeGreaterThanOrEqual(7);
+  });
+});
+
 describe('SYNC-S69 — 동료별 personal quest narrative (SYNC-68)', () => {
   it('COMPANION_PERSONAL_QUESTS 6 동료 모두', async () => {
     const { COMPANION_PERSONAL_QUESTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
