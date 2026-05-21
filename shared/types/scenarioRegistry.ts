@@ -1364,6 +1364,58 @@ export function listCompanionsByClass(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-35: 챕터별 종결 보상 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterReward {
+  chapter: number;
+  /** 챕터 종결 시 unlock 되는 game feature */
+  unlockedFeature: string;
+  /** 챕터 종결 보상 narrative */
+  narrativeReward: string;
+  /** 종결 후 진입 가능한 다음 zone (worldmap 동선) */
+  nextZoneId?: string;
+}
+
+export const SCENARIO_CHAPTER_REWARDS: readonly ChapterReward[] = [
+  {
+    chapter: 1,
+    unlockedFeature: '동료 시스템 + 신뢰도',
+    narrativeReward: '첫 신성 기억 파편 (에레보스) + 세라핀/크리오 합류 + 기억 공명 능력 각성',
+    nextZoneId: 'silvanheim',
+  },
+  {
+    chapter: 2,
+    unlockedFeature: '시간 지연 메커닉 + 말라투스 보스 패턴',
+    narrativeReward: '실반헤임 파편 + 카엘 회상 + 엘파리스 외교 분기',
+    nextZoneId: 'solaris',
+  },
+  {
+    chapter: 3,
+    unlockedFeature: '에테르 발광 + 신기루 메커닉 + 채광 기지 작전',
+    narrativeReward: '솔라리스 파편 (라와르) + 이그나 합류 + 케인 추적 시작',
+    nextZoneId: 'argentium',
+  },
+  {
+    chapter: 4,
+    unlockedFeature: '동료 이탈 분기 + 황금 에테르 탑 메커닉',
+    narrativeReward: '아르겐티움 파편 + 벤자민/레이나/우르그롬 합류 + 케인/베르나르도 처치',
+    nextZoneId: 'oblivion_plateau',
+  },
+  {
+    chapter: 5,
+    unlockedFeature: '현실 붕괴 + 다중 시간선 + 멀티 엔딩',
+    narrativeReward: '4 파편 통합 + 레테 5페이즈 보스전 + 엔딩 A/B/C/D 분기',
+  },
+];
+
+export function getChapterRewardByChapter(
+  chapter: number,
+): ChapterReward | undefined {
+  return SCENARIO_CHAPTER_REWARDS.find((r) => r.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

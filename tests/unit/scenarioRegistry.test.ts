@@ -750,6 +750,72 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S42 — 챕터별 종결 보상 narrative (SYNC-35)', () => {
+  it('SCENARIO_CHAPTER_REWARDS 5 chapter rewards', async () => {
+    const { SCENARIO_CHAPTER_REWARDS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_REWARDS.length).toBe(5);
+  });
+
+  it('각 reward chapter 1~5 + 한글 narrative', async () => {
+    const { SCENARIO_CHAPTER_REWARDS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const r of SCENARIO_CHAPTER_REWARDS) {
+      expect(r.chapter).toBeGreaterThanOrEqual(1);
+      expect(r.chapter).toBeLessThanOrEqual(5);
+      expect(korean.test(r.unlockedFeature)).toBe(true);
+      expect(korean.test(r.narrativeReward)).toBe(true);
+    }
+  });
+
+  it('Ch1~Ch4 모두 nextZoneId 정의 (worldmap 동선)', async () => {
+    const { SCENARIO_CHAPTER_REWARDS } = await import('../../shared/types/scenarioRegistry');
+    for (const r of SCENARIO_CHAPTER_REWARDS) {
+      if (r.chapter < 5) {
+        expect(r.nextZoneId, `Ch${r.chapter} nextZone`).toBeDefined();
+      }
+    }
+  });
+
+  it('Ch5 nextZoneId 없음 (최종 chapter narrative)', async () => {
+    const { getChapterRewardByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getChapterRewardByChapter(5);
+    expect(ch5!.nextZoneId).toBeUndefined();
+  });
+
+  it('nextZoneId 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_CHAPTER_REWARDS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const r of SCENARIO_CHAPTER_REWARDS) {
+      if (r.nextZoneId) {
+        expect(zoneIds.has(r.nextZoneId), `${r.nextZoneId} in zones`).toBe(true);
+      }
+    }
+  });
+
+  it('Ch1 reward narrative: 에레보스 파편 + 세라핀/크리오', async () => {
+    const { getChapterRewardByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getChapterRewardByChapter(1);
+    expect(ch1!.narrativeReward).toContain('에레보스');
+    expect(ch1!.narrativeReward).toContain('세라핀');
+  });
+
+  it('Ch5 reward narrative: 4 파편 통합 + 엔딩 분기', async () => {
+    const { getChapterRewardByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getChapterRewardByChapter(5);
+    expect(ch5!.narrativeReward).toContain('4 파편');
+    expect(ch5!.unlockedFeature).toContain('엔딩');
+  });
+
+  it('SYNC-35 cohesion: 5 chapter reward ↔ milestone collectedFragment 매핑', async () => {
+    const { SCENARIO_CHAPTER_REWARDS, getMilestoneByChapter } = await import('../../shared/types/scenarioRegistry');
+    // Ch1~Ch4 reward narrative 와 milestone collectedFragment cohesion
+    for (let ch = 1; ch <= 4; ch += 1) {
+      const milestone = getMilestoneByChapter(ch);
+      expect(milestone?.collectedFragment, `Ch${ch} fragment`).toBeDefined();
+    }
+  });
+});
+
 describe('SYNC-S41 — 동료 → 게임 클래스 narrative 매핑 (SYNC-34)', () => {
   it('COMPANION_CLASS_MAPPINGS 6 매핑 (6 동료 모두)', async () => {
     const { COMPANION_CLASS_MAPPINGS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
