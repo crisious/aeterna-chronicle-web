@@ -750,6 +750,73 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S43 — 동료 개인 서사 personal story arc (SYNC-36)', () => {
+  it('COMPANION_STORY_ARCS 6 arcs (6 동료 모두)', async () => {
+    const { COMPANION_STORY_ARCS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_STORY_ARCS.length).toBe(SCENARIO_COMPANIONS.length);
+    expect(COMPANION_STORY_ARCS.length).toBe(6);
+  });
+
+  it('각 arc companionObsidianId가 SCENARIO_COMPANIONS 존재', async () => {
+    const { COMPANION_STORY_ARCS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const a of COMPANION_STORY_ARCS) {
+      expect(ids.has(a.companionObsidianId), `${a.companionObsidianId}`).toBe(true);
+    }
+  });
+
+  it('각 arc revealChapter 1~5 + 한글 narrative', async () => {
+    const { COMPANION_STORY_ARCS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const a of COMPANION_STORY_ARCS) {
+      expect(a.revealChapter).toBeGreaterThanOrEqual(1);
+      expect(a.revealChapter).toBeLessThanOrEqual(5);
+      expect(korean.test(a.coreSecret), `${a.companionObsidianId} 한글`).toBe(true);
+      expect(korean.test(a.betrayalRisk)).toBe(true);
+    }
+  });
+
+  it('세라핀 arc — Ch2 카엘 회상 narrative', async () => {
+    const { getStoryArcByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const arc = getStoryArcByCompanion('seraphine');
+    expect(arc!.revealChapter).toBe(2);
+    expect(arc!.coreSecret).toContain('카엘');
+  });
+
+  it('크리오 arc — Ch1 대망각 생존자 narrative', async () => {
+    const { getStoryArcByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const arc = getStoryArcByCompanion('maestro_crio');
+    expect(arc!.revealChapter).toBe(1);
+    expect(arc!.coreSecret).toContain('대망각');
+  });
+
+  it('레이나 arc — 엔딩 D 단서 (12 신화 시대)', async () => {
+    const { getStoryArcByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const arc = getStoryArcByCompanion('reina');
+    expect(arc!.coreSecret).toContain('12');
+    expect(arc!.coreSecret).toContain('신화');
+  });
+
+  it('벤자민 arc — boss_bernardo_corrupted 연결 narrative', async () => {
+    const { getStoryArcByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const arc = getStoryArcByCompanion('benjamin_cross');
+    expect(arc!.betrayalRisk).toContain('boss_bernardo_corrupted');
+  });
+
+  it('SYNC-36 cohesion: 각 동료 storyArc + dialogue context 매핑', async () => {
+    const { COMPANION_STORY_ARCS, SCENARIO_DIALOGUES, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    // 각 동료가 arc + dialogue 모두 보유
+    for (const c of SCENARIO_COMPANIONS) {
+      const arc = COMPANION_STORY_ARCS.find((a) => a.companionObsidianId === c.obsidianId);
+      expect(arc, `${c.obsidianId} arc`).toBeDefined();
+      if (c.gameNpcId) {
+        const dialogues = SCENARIO_DIALOGUES.filter((d) => d.gameNpcId === c.gameNpcId);
+        expect(dialogues.length, `${c.obsidianId} dialogues`).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+});
+
 describe('SYNC-S42 — 챕터별 종결 보상 narrative (SYNC-35)', () => {
   it('SCENARIO_CHAPTER_REWARDS 5 chapter rewards', async () => {
     const { SCENARIO_CHAPTER_REWARDS } = await import('../../shared/types/scenarioRegistry');

@@ -1416,6 +1416,68 @@ export function getChapterRewardByChapter(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-36: 동료 개인 서사 personal story arc
+// 각 동료의 깊은 이야기 + 핵심 회상 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface CompanionStoryArc {
+  companionObsidianId: string;
+  /** 개인 서사 핵심 비밀 / 회상 */
+  coreSecret: string;
+  /** 서사 노출 챕터 */
+  revealChapter: number;
+  /** 개인 서사 이탈 분기 narrative */
+  betrayalRisk: string;
+}
+
+export const COMPANION_STORY_ARCS: readonly CompanionStoryArc[] = [
+  {
+    companionObsidianId: 'seraphine',
+    coreSecret: '죽은 연인 카엘이 200년 전 봉인 의식 12인 중 한 명이었음',
+    revealChapter: 2,
+    betrayalRisk: '카엘의 진실 노출 시 엘파리스 외교 거부 가능성',
+  },
+  {
+    companionObsidianId: 'maestro_crio',
+    coreSecret: '대망각 당일 갓난아기로 살아남은 에레보스 유일 생존자, 60년 정보상',
+    revealChapter: 1,
+    betrayalRisk: '제국 침투 작전 거부 시 이탈 (Ch4)',
+  },
+  {
+    companionObsidianId: 'ignara',
+    coreSecret: '아버지 이그리스의 기억 소멸 원인이 이프리타 종족 내부 음모',
+    revealChapter: 3,
+    betrayalRisk: '신뢰도 20 미만 시 Ch4 합류 거부',
+  },
+  {
+    companionObsidianId: 'benjamin_cross',
+    coreSecret: '레테 교단 침투 정보원, 조카 밀리아가 교단에 잡혀있음',
+    revealChapter: 4,
+    betrayalRisk: '화해 거부 시 베르나르도 타락 → boss_bernardo_corrupted',
+  },
+  {
+    companionObsidianId: 'reina',
+    coreSecret: '레테 교단의 진짜 목적 = 12 신화 시대 회귀 (엔딩 D 단서)',
+    revealChapter: 4,
+    betrayalRisk: '교단 이탈 실패 시 Ch5 진입 전 이탈',
+  },
+  {
+    companionObsidianId: 'urgrom',
+    coreSecret: '북방 기억석 사원의 마지막 수호자, 200년 봉인 의식의 마지막 단서',
+    revealChapter: 4,
+    betrayalRisk: '북방 방문 미달 시 합류 거부',
+  },
+];
+
+export function getStoryArcByCompanion(
+  companionObsidianId: string,
+): CompanionStoryArc | undefined {
+  return COMPANION_STORY_ARCS.find(
+    (a) => a.companionObsidianId === companionObsidianId,
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════
