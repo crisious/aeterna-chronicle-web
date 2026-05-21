@@ -1827,6 +1827,52 @@ export function getEpicItemsByChapter(chapter: number): readonly EpicItem[] {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-51: 챕터별 추천 동료 조합 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterPartyComposition {
+  chapter: number;
+  /** 추천 동료 obsidianId 목록 (3인 파티) */
+  recommendedCompanions: readonly string[];
+  /** 조합 narrative */
+  strategy: string;
+}
+
+export const SCENARIO_PARTY_COMPOSITIONS: readonly ChapterPartyComposition[] = [
+  {
+    chapter: 1,
+    recommendedCompanions: ['seraphine', 'maestro_crio'],
+    strategy: '에레보스 폐허 — 세라핀 정찰 + 크리오 정보. 초반 2인 파티.',
+  },
+  {
+    chapter: 2,
+    recommendedCompanions: ['seraphine', 'maestro_crio'],
+    strategy: '실반헤임 — 세라핀 엘파리스 외교 + 크리오 정보. 말라투스 회상 cohesion.',
+  },
+  {
+    chapter: 3,
+    recommendedCompanions: ['seraphine', 'maestro_crio', 'ignara'],
+    strategy: '솔라리스 — 이그나 이프리타 영역 + 채광 기지 작전. 첫 3인 파티.',
+  },
+  {
+    chapter: 4,
+    recommendedCompanions: ['benjamin_cross', 'reina', 'urgrom'],
+    strategy: '아르겐티움 — 벤자민 정보망 + 레이나 교단 내부 + 우르그롬 북방. 강력 3인.',
+  },
+  {
+    chapter: 5,
+    recommendedCompanions: ['seraphine', 'ignara', 'benjamin_cross'],
+    strategy: '망각의 고원 — 균형 3인 (정찰/이프리타/제국). 레테 5페이즈 최종 결전.',
+  },
+];
+
+export function getPartyCompositionByChapter(
+  chapter: number,
+): ChapterPartyComposition | undefined {
+  return SCENARIO_PARTY_COMPOSITIONS.find((p) => p.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

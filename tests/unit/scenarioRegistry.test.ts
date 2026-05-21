@@ -750,6 +750,62 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S56 — 챕터별 추천 동료 조합 narrative (SYNC-51)', () => {
+  it('SCENARIO_PARTY_COMPOSITIONS 5 chapter 조합', async () => {
+    const { SCENARIO_PARTY_COMPOSITIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_PARTY_COMPOSITIONS.length).toBe(5);
+  });
+
+  it('각 조합 recommendedCompanions 1~3인 + 한글 strategy', async () => {
+    const { SCENARIO_PARTY_COMPOSITIONS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const p of SCENARIO_PARTY_COMPOSITIONS) {
+      expect(p.recommendedCompanions.length).toBeGreaterThanOrEqual(1);
+      expect(p.recommendedCompanions.length).toBeLessThanOrEqual(3);
+      expect(korean.test(p.strategy), `Ch${p.chapter}`).toBe(true);
+    }
+  });
+
+  it('모든 추천 동료 SCENARIO_COMPANIONS 존재', async () => {
+    const { SCENARIO_PARTY_COMPOSITIONS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const p of SCENARIO_PARTY_COMPOSITIONS) {
+      for (const c of p.recommendedCompanions) {
+        expect(ids.has(c), `Ch${p.chapter} ${c}`).toBe(true);
+      }
+    }
+  });
+
+  it('Ch1~Ch2 초반 2인 파티 (세라핀+크리오)', async () => {
+    const { getPartyCompositionByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getPartyCompositionByChapter(1);
+    expect(ch1!.recommendedCompanions).toContain('seraphine');
+    expect(ch1!.recommendedCompanions).toContain('maestro_crio');
+  });
+
+  it('Ch3 이그나 합류 narrative', async () => {
+    const { getPartyCompositionByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch3 = getPartyCompositionByChapter(3);
+    expect(ch3!.recommendedCompanions).toContain('ignara');
+  });
+
+  it('Ch4 강력 3인 (벤자민+레이나+우르그롬)', async () => {
+    const { getPartyCompositionByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch4 = getPartyCompositionByChapter(4);
+    expect(ch4!.recommendedCompanions.length).toBe(3);
+    expect(ch4!.recommendedCompanions).toContain('benjamin_cross');
+    expect(ch4!.recommendedCompanions).toContain('reina');
+    expect(ch4!.recommendedCompanions).toContain('urgrom');
+  });
+
+  it('Ch5 균형 3인 + 레테 narrative', async () => {
+    const { getPartyCompositionByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getPartyCompositionByChapter(5);
+    expect(ch5!.recommendedCompanions.length).toBe(3);
+    expect(ch5!.strategy).toContain('레테');
+  });
+});
+
 describe('🎯🎯🎯 SYNC-S55 — 50 sprint 마디 SSOT 최종 정점 (SYNC-50)', () => {
   it('50 sprint 누적 SSOT 정점 — 25 도메인 + entity ≥150', async () => {
     const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
