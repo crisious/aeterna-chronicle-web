@@ -620,3 +620,46 @@ skillSeeds.ts ALL_SKILLS / SKILL_SEED_GROUPS export 추가.
 
 **🎯 SCENARIO-SYNC chapter 완성 — 4 sprint, +73 가드** — Obsidian 시나리오 narrative 핵심 entity (동료 6 + zone 9 + 보스 9 + chapter 5 + 엔딩 5 + 파편 4 + 신 12) 단일 SSOT 통합. 게임 코드 매핑 ~30% (15 entity sync) + 미동기화 표식 ~70% (장기 sync TODO 추적). 향후 게임 데이터 확장 시 scenarioRegistry SSOT 참조 + 회귀 가드로 narrative 무결성 보호.
 
+## 2026-05-22 SCENARIO-SYNC chapter II — 미동기 항목 game 동기화 (7 sprint, +46 가드)
+
+사용자 명시 '동기화 작업 진행' / '미동기 항목 추가' / '다음 라운드 진행' 누적.
+
+- **SYNC-5** planned 매핑 필드 추가 (동료 5 + zone 3 + 보스 2 planned ID)
+  + listPlannedCompanions/Zones/Bosses + getSyncCompletionReport 헬퍼
+  + 회귀 가드 +24 (S15~S20): planned 매핑/naming/orphan 표식
+- **SYNC-6** SYNC-5 가드 통합 (S15~S20 + S8 boomerang) — 24 가드 누적
+- **SYNC-7** 5 동료 sub quest 실제 추가 (planned → sync 전환, 60 → 65 quest)
+  + SQ_COMPANION_{SERAPHINE,CRIO,IGNARA,REINA,URGROM}
+  + 모두 reputation 보상 + 신뢰도 narrative 동기화
+  + questCatalog S1/S2 정량 갱신 + scenarioRegistry S15/S18 sync 전환 반영
+- **SYNC-8** zone 3 + 보스 2 sync 전환 (65 → 69 quest, 100% entity sync)
+  + SQ_EREBOS_RUINS / SQ_CANTELA_RESCUE / SQ_SOLARIS_RAWAR / SQ_KANE_HUNT
+  + Ch3 솔라리스 narrative (라와르) 게임 sync
+  + getSyncCompletionReport exclusive 카운트 (planned/orphan 정확화)
+- **SYNC-9** 4 신성 기억 파편 game item 동기화 (69 → 71 quest)
+  + ScenarioFragment.gameItemId + gameQuestCode 매핑
+  + SQ_SILVANHEIM_FRAGMENT (Ch2) + SQ_ARGENTIUM_FRAGMENT (Ch4) 신규
+  + 4 파편 item_memory_fragment_ch1~4 정합
+  + 회귀 가드 SYNC-S21 (+6)
+- **SYNC-10** 신뢰도 reputation → loyalty game 로직 통합
+  + COMPANION_REPUTATION_REWARDS (5 동료)
+  + applyReputationReward + isReputationRewardSufficient 헬퍼
+  + 5 동료 모두 단일 quest 합류 narrative cohesion
+  + 회귀 가드 SYNC-S22 (+9)
+- **SYNC-11** 파편 + 동료 → 엔딩 통합 game-flow
+  + GameFlowState + evaluateGameFlow + checkEndingA
+  + 엔딩 A/B/C 시나리오 게임 흐름 검증
+  + 회귀 가드 SYNC-S23 (+7)
+- **SYNC-12** progress.md SYNC chapter II 갱신
+
+scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
+- 동료 6 sync (100%) — 모두 npcId 매핑 + sub quest 등록
+- zone 9 sync (100%) — gameQuestZoneTarget 매핑 + 일부 chronoField planned
+- 보스 9 sync (100%) — gameQuestBossId 매핑 + 라와르 chronoField planned
+- 파편 4 sync (100%) — gameItemId + gameQuestCode 매핑
+- 엔딩 5 (A/B/C/D/FAIL) — evaluateGameFlow 통합
+
+회귀: questCatalog 36/36 + scenarioRegistry 119/119 + unit 전체 1489 tests pass.
+
+**🎯 SCENARIO-SYNC chapter II 완성 — 7 sprint, +46 가드 (chapter I+II 누적 11 sprint, +119 가드)** — Obsidian 시나리오 ↔ 게임 코드 narrative 동기화 완성 (entity 100% sync + reputation/loyalty 게임 로직 통합 + 엔딩 흐름 SSOT).
+
