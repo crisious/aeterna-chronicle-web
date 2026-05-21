@@ -1682,6 +1682,57 @@ export function getDifficultyByChapter(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-43: 챕터별 시각/의상 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterVisual {
+  chapter: number;
+  /** 챕터 주 색상 (UI 테마) */
+  primaryColor: string;
+  /** 챕터 분위기 시각 narrative */
+  visualMood: string;
+  /** 에리언 의상 변화 (있을 경우) */
+  aerienOutfit?: string;
+}
+
+export const SCENARIO_CHAPTER_VISUALS: readonly ChapterVisual[] = [
+  {
+    chapter: 1,
+    primaryColor: '#4a4a52', // 에레보스 회색
+    visualMood: '폐허/적적/안개 — 회색 톤 + 붉은 안개',
+    aerienOutfit: '여행자 망토 — 초반 기본 의상',
+  },
+  {
+    chapter: 2,
+    primaryColor: '#2d5a3d', // 실반헤임 녹색
+    visualMood: '숲/신비/시간 지연 — 녹색 + 황금빛 햇살',
+    aerienOutfit: '엘파리스 망토 (외교 시)',
+  },
+  {
+    chapter: 3,
+    primaryColor: '#c9683a', // 솔라리스 주황
+    visualMood: '사막/불꽃/신기루 — 주황 + 붉은 에테르 발광',
+    aerienOutfit: '사막 의상 — 이프리타 천 망토',
+  },
+  {
+    chapter: 4,
+    primaryColor: '#1a3a6e', // 아르겐티움 청색
+    visualMood: '제국 황궁/음모/금속 — 청색 + 황금 장식',
+    aerienOutfit: '제국 침투복 + 가면',
+  },
+  {
+    chapter: 5,
+    primaryColor: '#9b4f96', // 망각의 고원 보라
+    visualMood: '현실 붕괴/시간 왜곡 — 보라 + 분열된 색조',
+    aerienOutfit: '카일 봉인 의식복 (전생 의상)',
+  },
+];
+
+export function getVisualByChapter(chapter: number): ChapterVisual | undefined {
+  return SCENARIO_CHAPTER_VISUALS.find((v) => v.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

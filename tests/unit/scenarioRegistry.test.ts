@@ -750,6 +750,52 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S49 — 챕터 시각/의상 narrative (SYNC-43)', () => {
+  it('SCENARIO_CHAPTER_VISUALS 5 chapter visuals', async () => {
+    const { SCENARIO_CHAPTER_VISUALS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_VISUALS.length).toBe(5);
+  });
+
+  it('각 visual primaryColor hex format (# + 6 digit)', async () => {
+    const { SCENARIO_CHAPTER_VISUALS } = await import('../../shared/types/scenarioRegistry');
+    const hexRegex = /^#[0-9a-fA-F]{6}$/;
+    for (const v of SCENARIO_CHAPTER_VISUALS) {
+      expect(hexRegex.test(v.primaryColor), `Ch${v.chapter} color`).toBe(true);
+    }
+  });
+
+  it('각 visualMood + aerienOutfit 한글 narrative', async () => {
+    const { SCENARIO_CHAPTER_VISUALS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const v of SCENARIO_CHAPTER_VISUALS) {
+      expect(korean.test(v.visualMood), `Ch${v.chapter} mood`).toBe(true);
+      if (v.aerienOutfit) {
+        expect(korean.test(v.aerienOutfit)).toBe(true);
+      }
+    }
+  });
+
+  it('Ch1 회색 (에레보스 폐허) + Ch5 보라 (현실 붕괴)', async () => {
+    const { getVisualByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getVisualByChapter(1);
+    const ch5 = getVisualByChapter(5);
+    expect(ch1!.visualMood).toContain('폐허');
+    expect(ch5!.visualMood).toContain('붕괴');
+  });
+
+  it('Ch5 에리언 의상 = 카일 (전생) narrative', async () => {
+    const { getVisualByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getVisualByChapter(5);
+    expect(ch5!.aerienOutfit).toContain('카일');
+  });
+
+  it('5 visual primaryColor 모두 unique (재사용 없음)', async () => {
+    const { SCENARIO_CHAPTER_VISUALS } = await import('../../shared/types/scenarioRegistry');
+    const colors = SCENARIO_CHAPTER_VISUALS.map((v) => v.primaryColor);
+    expect(new Set(colors).size).toBe(colors.length);
+  });
+});
+
 describe('SYNC-S48 — chrono.ts barrel 22 도메인 통합 stress (SYNC-42)', () => {
   it('chrono.ts barrel scenarioRegistry 신규 API (SYNC-33~41) 모두 접근', async () => {
     const mod = await import('../../shared/types/chrono');
