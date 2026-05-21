@@ -750,6 +750,82 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S48 — chrono.ts barrel 22 도메인 통합 stress (SYNC-42)', () => {
+  it('chrono.ts barrel scenarioRegistry 신규 API (SYNC-33~41) 모두 접근', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // SYNC-33: extra zones/bosses
+    expect(Array.isArray(mod.SCENARIO_EXTRA_ZONES)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_EXTRA_BOSSES)).toBe(true);
+    expect(typeof mod.getExtraZoneByObsidianId).toBe('function');
+    expect(typeof mod.getExtraBossByObsidianId).toBe('function');
+    // SYNC-34: class mappings
+    expect(Array.isArray(mod.COMPANION_CLASS_MAPPINGS)).toBe(true);
+    expect(typeof mod.getCompanionClass).toBe('function');
+    expect(typeof mod.listCompanionsByClass).toBe('function');
+    // SYNC-35: chapter rewards
+    expect(Array.isArray(mod.SCENARIO_CHAPTER_REWARDS)).toBe(true);
+    expect(typeof mod.getChapterRewardByChapter).toBe('function');
+    // SYNC-36: story arcs
+    expect(Array.isArray(mod.COMPANION_STORY_ARCS)).toBe(true);
+    expect(typeof mod.getStoryArcByCompanion).toBe('function');
+    // SYNC-37: BGMs
+    expect(Array.isArray(mod.SCENARIO_CHAPTER_BGMS)).toBe(true);
+    expect(typeof mod.getBgmByChapter).toBe('function');
+    // SYNC-38: sub-plots
+    expect(Array.isArray(mod.SCENARIO_SUB_PLOTS)).toBe(true);
+    expect(typeof mod.getSubPlotsByChapter).toBe('function');
+    expect(typeof mod.listSubPlotsByCompanion).toBe('function');
+    // SYNC-41: difficulties
+    expect(Array.isArray(mod.SCENARIO_CHAPTER_DIFFICULTIES)).toBe(true);
+    expect(typeof mod.getDifficultyByChapter).toBe('function');
+  });
+
+  it('22+ 도메인 통합 stress (chapter cohesion: bgm + reward + difficulty + milestone + route)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    // Ch1 모든 도메인 정의 확인
+    expect(mod.getBgmByChapter(1)).toBeDefined();
+    expect(mod.getChapterRewardByChapter(1)).toBeDefined();
+    expect(mod.getDifficultyByChapter(1)).toBeDefined();
+    expect(mod.getMilestoneByChapter(1)).toBeDefined();
+    expect(mod.getRouteByChapter(1)).toBeDefined();
+    expect(mod.getChapterByNumber(1)).toBeDefined();
+  });
+
+  it('Ch5 최종 chapter 6중 cohesion (bgm/reward/difficulty/milestone/route/chapter)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const bgm = mod.getBgmByChapter(5);
+    const reward = mod.getChapterRewardByChapter(5);
+    const diff = mod.getDifficultyByChapter(5);
+    const milestone = mod.getMilestoneByChapter(5);
+    const route = mod.getRouteByChapter(5);
+    const chapter = mod.getChapterByNumber(5);
+    expect(bgm?.gameBgmTrack).toBe('bgm_final_boss');
+    expect(reward?.unlockedFeature).toContain('엔딩');
+    expect(diff?.bossDifficulty).toBe(5);
+    expect(milestone?.endBeat).toContain('레테');
+    expect(route?.endZoneId).toBe('golden_ether_tower');
+    expect(chapter?.location).toContain('망각');
+  });
+
+  it('41 sprint 누적 SSOT 정점 entity 통합 ≥130', async () => {
+    const mod = await import('../../shared/types/chrono');
+    const total =
+      mod.SCENARIO_COMPANIONS.length + mod.SCENARIO_ZONES.length +
+      mod.SCENARIO_BOSSES.length + mod.SCENARIO_CHAPTERS.length +
+      mod.SCENARIO_ENDINGS.length + mod.SCENARIO_FRAGMENTS.length +
+      mod.SCENARIO_DEITIES.length + mod.SCENARIO_TIMELINE.length +
+      mod.SCENARIO_MILESTONES.length + mod.SCENARIO_DIALOGUES.length +
+      mod.COMPANION_REPUTATION_REWARDS.length + mod.SCENARIO_MYTHIC_RELICS.length +
+      mod.SCENARIO_LORE_DOCUMENTS.length + mod.SCENARIO_ZONE_CONNECTIONS.length +
+      mod.SCENARIO_CHAPTER_ROUTES.length + mod.SCENARIO_EXTRA_ZONES.length +
+      mod.SCENARIO_EXTRA_BOSSES.length + mod.COMPANION_CLASS_MAPPINGS.length +
+      mod.SCENARIO_CHAPTER_REWARDS.length + mod.COMPANION_STORY_ARCS.length +
+      mod.SCENARIO_CHAPTER_BGMS.length + mod.SCENARIO_SUB_PLOTS.length +
+      mod.SCENARIO_CHAPTER_DIFFICULTIES.length;
+    expect(total).toBeGreaterThanOrEqual(130);
+  });
+});
+
 describe('SYNC-S47 — 챕터 난이도 narrative (SYNC-41)', () => {
   it('SCENARIO_CHAPTER_DIFFICULTIES 5 chapter 난이도', async () => {
     const { SCENARIO_CHAPTER_DIFFICULTIES } = await import('../../shared/types/scenarioRegistry');
