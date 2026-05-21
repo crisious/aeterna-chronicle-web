@@ -345,6 +345,81 @@ const SUB_QUESTS: QuestSeedData[] = [
     objectives: [{ type: 'kill', target: 'mob_guild_trial', count: 3, description: '시험관 처치 (0/3)' }],
     rewards: [{ type: 'exp', amount: 800, description: '경험치 800' }, { type: 'gold', amount: 500, description: '골드 500' }, { type: 'reputation', amount: 100, description: '길드 명성 100' }],
   },
+  // ─── 동료 합류 sub quest (SYNC-7) ─────────────────────────────
+  // Obsidian 시나리오 6 동료 중 벤자민(=npc_bernardo 매핑 완료) 제외 5명을
+  // sub quest 로 게임에 실제 추가. scenarioRegistry planned → sync 전환.
+  {
+    code: 'SQ_COMPANION_SERAPHINE', name: '세라핀의 합류',
+    description: '에레보스 외곽에서 엘파리스 정찰병 세라핀을 만나 첫 동료로 합류시킨다.',
+    type: 'sub', requiredLevel: 1, prerequisites: ['MQ_CH01'], isRepeatable: false, npcId: 'npc_seraphine',
+    objectives: [
+      { type: 'talk', target: 'npc_seraphine', count: 1, description: '세라핀에게 말 걸기' },
+      { type: 'kill', target: 'mob_memory_phantom', count: 3, description: '기억 유령 처치 (0/3)' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 600, description: '경험치 600' },
+      { type: 'gold', amount: 300, description: '골드 300' },
+      { type: 'reputation', amount: 50, description: '세라핀 신뢰도 +50' },
+    ],
+  },
+  {
+    code: 'SQ_COMPANION_CRIO', name: '마에스트로 크리오와의 거래',
+    description: '에레보스 폐광 수호자단 본부에서 200년 생존자 정보상 마에스트로 크리오를 만난다.',
+    type: 'sub', requiredLevel: 2, prerequisites: ['MQ_CH01'], isRepeatable: false, npcId: 'npc_maestro_crio',
+    objectives: [
+      { type: 'talk', target: 'npc_maestro_crio', count: 1, description: '크리오와 첫 거래' },
+      { type: 'collect', target: 'erebos_memory_relic', count: 3, description: '에레보스 기억 유물 (0/3)' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 700, description: '경험치 700' },
+      { type: 'gold', amount: 400, description: '골드 400' },
+      { type: 'reputation', amount: 40, description: '크리오 신뢰도 +40' },
+    ],
+  },
+  {
+    code: 'SQ_COMPANION_IGNARA', name: '이그나의 거래',
+    description: '솔라리스 사막의 이프리타 족장의 딸 이그나와 아버지 이그리스 구조를 거래한다.',
+    type: 'sub', requiredLevel: 8, prerequisites: ['MQ_CH03'], isRepeatable: false, npcId: 'npc_ignara',
+    objectives: [
+      { type: 'talk', target: 'npc_ignara', count: 1, description: '이그나와 첫 만남' },
+      { type: 'kill', target: 'mob_sandstorm_raider', count: 5, description: '모래폭풍 침입자 처치 (0/5)' },
+      { type: 'collect', target: 'ifrita_seal_token', count: 1, description: '이프리타 봉인 증표' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 900, description: '경험치 900' },
+      { type: 'gold', amount: 600, description: '골드 600' },
+      { type: 'reputation', amount: 20, description: '이그나 신뢰도 +20' },
+    ],
+  },
+  {
+    code: 'SQ_COMPANION_REINA', name: '레이나의 배신',
+    description: '아르겐티움 황궁에서 레테 교단 내부고발자 레이나를 만나 교단의 진정한 목표를 듣는다.',
+    type: 'sub', requiredLevel: 10, prerequisites: ['MQ_CH04'], isRepeatable: false, npcId: 'npc_reina',
+    objectives: [
+      { type: 'talk', target: 'npc_reina', count: 1, description: '레이나와 비밀 회담' },
+      { type: 'explore', target: 'zone_lethe_cult_archive', count: 1, description: '레테 교단 기록보관소 침투' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 1300, description: '경험치 1300' },
+      { type: 'gold', amount: 700, description: '골드 700' },
+      { type: 'reputation', amount: 30, description: '레이나 신뢰도 +30' },
+    ],
+  },
+  {
+    code: 'SQ_COMPANION_URGROM', name: '우르그롬과 북방 기억석 사원',
+    description: '북방 기억석 사원의 수호자 우르그롬을 만나 신뢰를 얻는다.',
+    type: 'sub', requiredLevel: 10, prerequisites: ['MQ_CH04'], isRepeatable: false, npcId: 'npc_urgrom',
+    objectives: [
+      { type: 'explore', target: 'zone_northern_memorystone_temple', count: 1, description: '북방 기억석 사원 도달' },
+      { type: 'talk', target: 'npc_urgrom', count: 1, description: '우르그롬과 첫 대화' },
+      { type: 'kill', target: 'mob_frost_marauder', count: 4, description: '서리 침입자 처치 (0/4)' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 1400, description: '경험치 1400' },
+      { type: 'gold', amount: 800, description: '골드 800' },
+      { type: 'reputation', amount: 40, description: '우르그롬 신뢰도 +40' },
+    ],
+  },
 ];
 
 // ════════════════════════════════════════════════════════════════

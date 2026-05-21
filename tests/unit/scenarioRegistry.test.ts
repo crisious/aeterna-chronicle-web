@@ -333,10 +333,10 @@ describe('SYNC-S7 — synced helper 함수 narrative', () => {
   });
 });
 
-describe('SYNC-S8 — 미동기화 항목 표식 (장기 작업 추적)', () => {
-  it('미동기화 동료 ≥ 5 (sync TODO)', () => {
+describe('SYNC-S8 — 미동기화 항목 표식 (장기 작업 추적, SYNC-7 후 갱신)', () => {
+  it('미동기화 동료 = 0 (SYNC-7 후 6 동료 모두 sync 완료)', () => {
     const unsynced = SCENARIO_COMPANIONS.filter((c) => !c.gameNpcId && !c.gameBossId);
-    expect(unsynced.length).toBeGreaterThanOrEqual(5);
+    expect(unsynced.length).toBe(0);
   });
 
   it('미동기화 zone ≥ 2 (에레보스/솔라리스 + 칸텔라)', () => {
@@ -568,25 +568,21 @@ import {
   getSyncCompletionReport,
 } from '../../shared/types/scenarioRegistry';
 
-describe('SYNC-S15 — planned 동료 매핑 (5명 미동기)', () => {
-  it('planned 동료 = 5명 (벤자민 제외 모두)', () => {
+describe('SYNC-S15 — planned 동료 매핑 (SYNC-7 후 모두 sync 전환)', () => {
+  it('planned 동료 = 0 (SYNC-7 후 5 동료 questSeeds 에 실제 추가)', () => {
     const planned = listPlannedCompanions();
-    expect(planned.length).toBe(5);
+    expect(planned.length).toBe(0);
   });
 
-  it('5 동료 plannedGameNpcId 모두 npc_ prefix + snake_case', () => {
-    const planned = listPlannedCompanions();
-    for (const c of planned) {
-      expect(c.plannedGameNpcId, `${c.obsidianId} plannedGameNpcId`).toBeDefined();
-      expect(c.plannedGameNpcId!.startsWith('npc_'), `${c.obsidianId} prefix`).toBe(true);
-      expect(c.plannedGameNpcId!.match(/^npc_[a-z][a-z0-9_]*$/), `${c.obsidianId} snake_case`).not.toBeNull();
+  it('6 동료 모두 gameNpcId sync 완료 (questSeeds 등장)', () => {
+    for (const c of SCENARIO_COMPANIONS) {
+      expect(c.gameNpcId, `${c.obsidianId} gameNpcId`).toBeDefined();
+      expect(c.gameNpcId!.match(/^npc_[a-z][a-z0-9_]*$/), `${c.obsidianId} npc_ prefix`).not.toBeNull();
     }
   });
 
-  it('세라핀/크리오/이그나/레이나/우르그롬 planned npc id 매핑', () => {
-    const map = new Map(
-      listPlannedCompanions().map((c) => [c.obsidianId, c.plannedGameNpcId]),
-    );
+  it('세라핀/크리오/이그나/레이나/우르그롬 gameNpcId 매핑 정확', () => {
+    const map = new Map(SCENARIO_COMPANIONS.map((c) => [c.obsidianId, c.gameNpcId]));
     expect(map.get('seraphine')).toBe('npc_seraphine');
     expect(map.get('maestro_crio')).toBe('npc_maestro_crio');
     expect(map.get('ignara')).toBe('npc_ignara');
@@ -594,16 +590,30 @@ describe('SYNC-S15 — planned 동료 매핑 (5명 미동기)', () => {
     expect(map.get('urgrom')).toBe('npc_urgrom');
   });
 
-  it('벤자민 (sync 완료) 은 planned 목록 미포함 (이중 정의 가드)', () => {
-    const planned = listPlannedCompanions();
-    const ids = planned.map((c) => c.obsidianId);
-    expect(ids).not.toContain('benjamin_cross');
+  it('5 동료 모두 SQ_COMPANION_* sub quest 에 등장 (questSeeds 실제 등록)', () => {
+    const COMPANION_QUEST_CODES = [
+      'SQ_COMPANION_SERAPHINE', 'SQ_COMPANION_CRIO', 'SQ_COMPANION_IGNARA',
+      'SQ_COMPANION_REINA', 'SQ_COMPANION_URGROM',
+    ];
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const code of COMPANION_QUEST_CODES) {
+      expect(codes.has(code), `${code} in questSeeds`).toBe(true);
+    }
   });
 
-  it('planned npcId 5개 모두 unique (충돌 없음)', () => {
-    const planned = listPlannedCompanions();
-    const npcIds = planned.map((c) => c.plannedGameNpcId);
-    expect(new Set(npcIds).size).toBe(npcIds.length);
+  it('5 동료 sub quest 모두 npcId = scenarioRegistry gameNpcId 매핑', () => {
+    const COMPANION_QUEST_TO_NPC: Record<string, string> = {
+      'SQ_COMPANION_SERAPHINE': 'npc_seraphine',
+      'SQ_COMPANION_CRIO': 'npc_maestro_crio',
+      'SQ_COMPANION_IGNARA': 'npc_ignara',
+      'SQ_COMPANION_REINA': 'npc_reina',
+      'SQ_COMPANION_URGROM': 'npc_urgrom',
+    };
+    for (const [code, expectedNpc] of Object.entries(COMPANION_QUEST_TO_NPC)) {
+      const q = ALL_QUEST_SEEDS.find((x) => x.code === code);
+      expect(q, `${code} found`).toBeDefined();
+      expect(q!.npcId, `${code} npcId`).toBe(expectedNpc);
+    }
   });
 });
 
@@ -676,12 +686,12 @@ describe('SYNC-S17 — planned 보스 매핑 (2 보스 미동기)', () => {
   });
 });
 
-describe('SYNC-S18 — getSyncCompletionReport 종합 커버리지', () => {
-  it('동료 커버리지: 1 sync + 5 planned = 6 covered / 0 orphan', () => {
+describe('SYNC-S18 — getSyncCompletionReport 종합 커버리지 (SYNC-7 후)', () => {
+  it('동료 커버리지: 6 sync + 0 planned = 6 covered / 0 orphan (SYNC-7 완료)', () => {
     const r = getSyncCompletionReport();
     expect(r.companions.total).toBe(6);
-    expect(r.companions.synced).toBeGreaterThanOrEqual(1);
-    expect(r.companions.planned).toBe(5);
+    expect(r.companions.synced).toBe(6);
+    expect(r.companions.planned).toBe(0);
     expect(r.companions.orphan).toBe(0);
   });
 
@@ -747,8 +757,8 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
-describe('SYNC-S20 — 미동기화 카운트 갱신 (S8 boomerang)', () => {
-  it('SYNC-5 후 orphan 동료 = 0 (전 5명 planned 부여)', () => {
+describe('SYNC-S20 — 미동기화 카운트 갱신 (S8 boomerang, SYNC-7)', () => {
+  it('SYNC-7 후 orphan 동료 = 0 (전 6명 sync 완료)', () => {
     const orphan = SCENARIO_COMPANIONS.filter(
       (c) => !c.gameNpcId && !c.gameBossId && !c.plannedGameNpcId && !c.plannedGameBossId,
     );

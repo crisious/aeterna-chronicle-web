@@ -44,7 +44,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '엘파리스 정찰병',
     joinChapter: 1,
     loyaltyThreshold: 50,
-    plannedGameNpcId: 'npc_seraphine',
+    gameNpcId: 'npc_seraphine',  // SYNC-7: questSeeds SQ_COMPANION_SERAPHINE 추가
   },
   {
     obsidianId: 'maestro_crio',
@@ -52,7 +52,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '200년 생존자 정보상',
     joinChapter: 1,
     loyaltyThreshold: 40,
-    plannedGameNpcId: 'npc_maestro_crio',
+    gameNpcId: 'npc_maestro_crio',  // SYNC-7: SQ_COMPANION_CRIO
   },
   {
     obsidianId: 'ignara',
@@ -60,7 +60,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '이프리타 족장의 딸',
     joinChapter: 3,
     loyaltyThreshold: 20,
-    plannedGameNpcId: 'npc_ignara',
+    gameNpcId: 'npc_ignara',  // SYNC-7: SQ_COMPANION_IGNARA
   },
   {
     obsidianId: 'benjamin_cross',
@@ -77,7 +77,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '레테 교단 내부고발자',
     joinChapter: 4,
     loyaltyThreshold: 30,
-    plannedGameNpcId: 'npc_reina',
+    gameNpcId: 'npc_reina',  // SYNC-7: SQ_COMPANION_REINA
   },
   {
     obsidianId: 'urgrom',
@@ -85,7 +85,7 @@ export const SCENARIO_COMPANIONS: readonly ScenarioCompanion[] = [
     role: '북방 기억석 사원 수호자',
     joinChapter: 4,
     loyaltyThreshold: 40,
-    plannedGameNpcId: 'npc_urgrom',
+    gameNpcId: 'npc_urgrom',  // SYNC-7: SQ_COMPANION_URGROM
   },
 ];
 
