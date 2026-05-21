@@ -750,6 +750,76 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S53 — 전 SSOT 도메인 integrity final stress (SYNC-47)', () => {
+  it('전 entity obsidianId snake_case (전체 도메인 cross-check)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const snake_case = /^[a-z][a-z0-9_]*$/;
+    // 11+ 도메인 obsidianId 일관 검증
+    const allIds: string[] = [
+      ...mod.SCENARIO_COMPANIONS.map((c) => c.obsidianId),
+      ...mod.SCENARIO_ZONES.map((z) => z.obsidianId),
+      ...mod.SCENARIO_BOSSES.map((b) => b.obsidianId),
+      ...mod.SCENARIO_FRAGMENTS.map((f) => f.obsidianId),
+      ...mod.SCENARIO_DEITIES.map((d) => d.obsidianId),
+      ...mod.SCENARIO_TIMELINE.map((t) => t.obsidianId),
+      ...mod.SCENARIO_DIALOGUES.map((d) => d.obsidianId),
+      ...mod.SCENARIO_MYTHIC_RELICS.map((r) => r.obsidianId),
+      ...mod.SCENARIO_LORE_DOCUMENTS.map((l) => l.obsidianId),
+      ...mod.SCENARIO_SUB_PLOTS.map((s) => s.obsidianId),
+      ...mod.SCENARIO_EPIC_ITEMS.map((i) => i.obsidianId),
+    ];
+    for (const id of allIds) {
+      expect(snake_case.test(id), `${id} snake_case`).toBe(true);
+    }
+  });
+
+  it('전 entity name/title 한글 narrative (10+ 도메인)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    // 한글 narrative 가 있어야 할 도메인
+    for (const c of mod.SCENARIO_COMPANIONS) expect(korean.test(c.name)).toBe(true);
+    for (const z of mod.SCENARIO_ZONES) expect(korean.test(z.name)).toBe(true);
+    for (const b of mod.SCENARIO_BOSSES) expect(korean.test(b.name)).toBe(true);
+    for (const f of mod.SCENARIO_FRAGMENTS) expect(korean.test(f.name)).toBe(true);
+    for (const d of mod.SCENARIO_DEITIES) expect(korean.test(d.name)).toBe(true);
+    for (const t of mod.SCENARIO_TIMELINE) expect(korean.test(t.name)).toBe(true);
+    for (const r of mod.SCENARIO_MYTHIC_RELICS) expect(korean.test(r.name)).toBe(true);
+    for (const i of mod.SCENARIO_EPIC_ITEMS) expect(korean.test(i.name)).toBe(true);
+  });
+
+  it('chrono.ts barrel 23 도메인 종합 stress — 모두 export 확인', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // 모든 도메인 array export 확인
+    const domains = [
+      'SCENARIO_COMPANIONS', 'SCENARIO_ZONES', 'SCENARIO_BOSSES',
+      'SCENARIO_CHAPTERS', 'SCENARIO_ENDINGS', 'SCENARIO_FRAGMENTS',
+      'SCENARIO_DEITIES', 'SCENARIO_TIMELINE', 'SCENARIO_MILESTONES',
+      'SCENARIO_DIALOGUES', 'COMPANION_REPUTATION_REWARDS',
+      'SCENARIO_MYTHIC_RELICS', 'SCENARIO_LORE_DOCUMENTS',
+      'SCENARIO_ZONE_CONNECTIONS', 'SCENARIO_CHAPTER_ROUTES',
+      'SCENARIO_EXTRA_ZONES', 'SCENARIO_EXTRA_BOSSES',
+      'COMPANION_CLASS_MAPPINGS', 'SCENARIO_CHAPTER_REWARDS',
+      'COMPANION_STORY_ARCS', 'SCENARIO_CHAPTER_BGMS',
+      'SCENARIO_SUB_PLOTS', 'SCENARIO_CHAPTER_DIFFICULTIES',
+      'SCENARIO_CHAPTER_VISUALS', 'SCENARIO_EPIC_ITEMS',
+    ];
+    for (const d of domains) {
+      expect(Array.isArray((mod as Record<string, unknown>)[d]), `${d} array`).toBe(true);
+    }
+    // 25 도메인 확인
+    expect(domains.length).toBeGreaterThanOrEqual(25);
+  });
+
+  it('47 sprint 누적 SSOT 정점 — 25 도메인 + entity ≥115 (getScenarioRegistryStats 15 도메인 합)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const stats = mod.getScenarioRegistryStats();
+    // getScenarioRegistryStats 는 초기 15 도메인 합만 (chapter III/V 신규 도메인 미포함)
+    expect(stats.totalEntities).toBeGreaterThanOrEqual(115);
+    // 100% sync 유지
+    expect(mod.getSyncCompletionReport().coveragePercent).toBe(100);
+  });
+});
+
 describe('SYNC-S52 — index 확장 + sub_plot/epic_item resolve (SYNC-46)', () => {
   it('buildScenarioIndex 확장 — sub_plot/epic_item 추가', async () => {
     const { resolveEntityType } = await import('../../shared/types/scenarioRegistry');
