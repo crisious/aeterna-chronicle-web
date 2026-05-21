@@ -750,6 +750,59 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S65 — quest log preview narrative (SYNC-63)', () => {
+  it('SCENARIO_QUEST_LOG 5 chapter log', async () => {
+    const { SCENARIO_QUEST_LOG } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_QUEST_LOG.length).toBe(5);
+  });
+
+  it('각 log chapter 1~5 + steps 3 단계 + 한글 conclusion', async () => {
+    const { SCENARIO_QUEST_LOG } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const q of SCENARIO_QUEST_LOG) {
+      expect(q.chapter).toBeGreaterThanOrEqual(1);
+      expect(q.chapter).toBeLessThanOrEqual(5);
+      expect(q.steps.length).toBeGreaterThanOrEqual(3);
+      expect(korean.test(q.conclusion)).toBe(true);
+      for (const s of q.steps) {
+        expect(korean.test(s)).toBe(true);
+      }
+    }
+  });
+
+  it('Ch1 conclusion — 에레보스 + 첫 파편 + 2 동료', async () => {
+    const { getQuestLogByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getQuestLogByChapter(1);
+    expect(ch1!.conclusion).toContain('에레보스');
+    expect(ch1!.conclusion).toContain('파편');
+    expect(ch1!.conclusion).toContain('동료');
+  });
+
+  it('Ch5 conclusion — 엔딩 분기 narrative', async () => {
+    const { getQuestLogByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getQuestLogByChapter(5);
+    expect(ch5!.conclusion).toContain('엔딩');
+    expect(ch5!.steps[2]).toContain('레테');
+  });
+
+  it('Ch4 베르나르도 분기 narrative (vs SCENARIO_CHOICES cohesion)', async () => {
+    const { getQuestLogByChapter, getChoiceByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const ch4 = getQuestLogByChapter(4);
+    const choice = getChoiceByObsidianId('choice_ch4_bernardo');
+    expect(ch4!.steps.some((s) => s.includes('베르나르도'))).toBe(true);
+    expect(choice).toBeDefined();
+  });
+
+  it('각 log conclusion 챕터 파편 narrative', async () => {
+    const { SCENARIO_QUEST_LOG } = await import('../../shared/types/scenarioRegistry');
+    // Ch1~Ch4 conclusion 모두 파편 narrative
+    for (let ch = 1; ch <= 4; ch += 1) {
+      const q = SCENARIO_QUEST_LOG.find((qq) => qq.chapter === ch);
+      expect(q!.conclusion).toContain('파편');
+    }
+  });
+});
+
 describe('SYNC-S64 — 시나리오 achievement SSOT (SYNC-62)', () => {
   it('SCENARIO_ACHIEVEMENTS ≥ 9 achievements', async () => {
     const { SCENARIO_ACHIEVEMENTS } = await import('../../shared/types/scenarioRegistry');

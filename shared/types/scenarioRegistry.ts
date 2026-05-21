@@ -2366,6 +2366,70 @@ export function listHiddenAchievements(): readonly ScenarioAchievement[] {
   return SCENARIO_ACHIEVEMENTS.filter((a) => a.hidden);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-63: quest log preview narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface QuestLogPreview {
+  chapter: number;
+  /** 챕터 진행 단계별 narrative */
+  steps: readonly string[];
+  /** 챕터 종결 narrative */
+  conclusion: string;
+}
+
+export const SCENARIO_QUEST_LOG: readonly QuestLogPreview[] = [
+  {
+    chapter: 1,
+    steps: [
+      '칸텔라 마을 기억 폭풍 사건 + 에리언 능력 각성',
+      '에레보스 폐허 진입 + 세라핀/크리오 만남',
+      '에레보스 폐허 탐사 + 첫 파편 회수',
+    ],
+    conclusion: '에레보스의 침묵 — 첫 신성 기억 파편 회수, 동료 2인 합류',
+  },
+  {
+    chapter: 2,
+    steps: [
+      '실반헤임 외교 분기 + 엘파리스와의 접촉',
+      '말라투스 고목 + 세라핀 카엘 회상',
+      '말라투스 보스전 + 실반헤임 파편 회수',
+    ],
+    conclusion: '실반헤임의 신비 — 2 파편 + 말라투스 봉인',
+  },
+  {
+    chapter: 3,
+    steps: [
+      '솔라리스 사막 진입 + 이그나 합류',
+      '이프리타 채광 기지 작전 (정면/공작)',
+      '라와르 봉인 의식 + 솔라리스 파편 회수',
+    ],
+    conclusion: '솔라리스의 불꽃 — 3 파편 + 이그나 동료',
+  },
+  {
+    chapter: 4,
+    steps: [
+      '아르겐티움 잠입 + 벤자민/레이나/우르그롬 합류',
+      '제국 황궁 침투 + 케인 처치',
+      '베르나르도 화해/배신 분기 + 아르겐티움 파편',
+    ],
+    conclusion: '아르겐티움의 음모 — 4 파편 + 동료 6 완성',
+  },
+  {
+    chapter: 5,
+    steps: [
+      '망각의 고원 진입 + 카일과 정신적 대면',
+      '황금 에테르 탑 등반 + 4 파편 통합',
+      '레테 5페이즈 최종 결전',
+    ],
+    conclusion: '에테르나의 운명 — 엔딩 A/B/C/D/FAIL 중 하나로 결정',
+  },
+];
+
+export function getQuestLogByChapter(chapter: number): QuestLogPreview | undefined {
+  return SCENARIO_QUEST_LOG.find((q) => q.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
