@@ -750,6 +750,63 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S44 — Ch3 dialogue 추가 + BGM 매핑 (SYNC-37)', () => {
+  it('Ch3 대화 ≥ 2 (이그나 + 다리오 펜)', async () => {
+    const { getDialoguesByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch3 = getDialoguesByChapter(3);
+    expect(ch3.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('이그나 Ch3 trust_build dialogue (아버지 회상)', async () => {
+    const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
+    const ignara = SCENARIO_DIALOGUES.find((d) => d.obsidianId === 'ignara_father');
+    expect(ignara).toBeDefined();
+    expect(ignara!.chapter).toBe(3);
+    expect(ignara!.context).toBe('trust_build');
+  });
+
+  it('Ch4 황제 레나르도 dialogue (레테 그릇 narrative)', async () => {
+    const { getDialoguesByNpc } = await import('../../shared/types/scenarioRegistry');
+    const emp = getDialoguesByNpc('npc_emperor_lenardo');
+    expect(emp.length).toBeGreaterThanOrEqual(1);
+    expect(emp[0].line).toContain('레테');
+  });
+
+  it('SCENARIO_CHAPTER_BGMS 5 chapter BGMs', async () => {
+    const { SCENARIO_CHAPTER_BGMS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_BGMS.length).toBe(5);
+  });
+
+  it('각 BGM gameBgmTrack bgm_ prefix + 한글 mood', async () => {
+    const { SCENARIO_CHAPTER_BGMS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const b of SCENARIO_CHAPTER_BGMS) {
+      expect(b.gameBgmTrack.startsWith('bgm_')).toBe(true);
+      expect(korean.test(b.mood), `Ch${b.chapter} 한글`).toBe(true);
+    }
+  });
+
+  it('Ch5 BGM = bgm_final_boss (chronoField 최종 보스 cohesion)', async () => {
+    const { getBgmByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getBgmByChapter(5);
+    expect(ch5!.gameBgmTrack).toBe('bgm_final_boss');
+  });
+
+  it('Ch1~Ch4 BGM 모두 unique (재사용 없음)', async () => {
+    const { SCENARIO_CHAPTER_BGMS } = await import('../../shared/types/scenarioRegistry');
+    const tracks = SCENARIO_CHAPTER_BGMS.map((b) => b.gameBgmTrack);
+    expect(new Set(tracks).size).toBe(tracks.length);
+  });
+
+  it('SYNC-37 cohesion: 5 chapter BGM ↔ chronoField bgm 정합 (Ch5 = bgm_final_boss)', async () => {
+    const { getBgmByChapter } = await import('../../shared/types/scenarioRegistry');
+    const { resolveFieldEncounter } = await import('../../shared/types/chronoField');
+    const ch5Bgm = getBgmByChapter(5)!.gameBgmTrack;
+    const finalE = resolveFieldEncounter('chrono_spire', 'ruined_future')!;
+    expect(finalE.bgmTrack).toBe(ch5Bgm);
+  });
+});
+
 describe('SYNC-S43 — 동료 개인 서사 personal story arc (SYNC-36)', () => {
   it('COMPANION_STORY_ARCS 6 arcs (6 동료 모두)', async () => {
     const { COMPANION_STORY_ARCS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');

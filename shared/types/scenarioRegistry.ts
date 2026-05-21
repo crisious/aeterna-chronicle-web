@@ -836,6 +836,29 @@ export const SCENARIO_DIALOGUES: readonly NpcDialogue[] = [
     line: '에리언이여, 너는 신화의 시대를 다시 열어주는 자다. 내가 11신의 의지를 너에게 맡기겠다.',
     context: 'first_meet',
   },
+  // SYNC-37: Ch3 솔라리스 추가 대화
+  {
+    obsidianId: 'ignara_father',
+    gameNpcId: 'npc_ignara',
+    chapter: 3,
+    line: '아버지가 마지막으로 한 말... "이프리타의 불꽃은 어둠에 굴복하지 않는다." 나는 그 의미를 이제 알 것 같아.',
+    context: 'trust_build',
+  },
+  {
+    obsidianId: 'dario_pen',
+    gameNpcId: 'npc_dario_pen',
+    chapter: 3,
+    line: '나는 솔리안 유적 발굴자다. 라와르 왕의 봉인 위치를 알지만, 깨우는 것이 옳은지는 모르겠다.',
+    context: 'first_meet',
+  },
+  // SYNC-37: Ch4 추가 대화 (베르나르도 + 황제)
+  {
+    obsidianId: 'emperor_lenardo',
+    gameNpcId: 'npc_emperor_lenardo',
+    chapter: 4,
+    line: '나는 황제다. 그리고 동시에 레테의 그릇이지. 너는 나를 죽일 수 있겠나, 에리언?',
+    context: 'first_meet',
+  },
 ];
 
 export function getDialoguesByNpc(gameNpcId: string): readonly NpcDialogue[] {
@@ -1475,6 +1498,50 @@ export function getStoryArcByCompanion(
   return COMPANION_STORY_ARCS.find(
     (a) => a.companionObsidianId === companionObsidianId,
   );
+}
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-37: 시나리오 BGM 매핑 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterBgm {
+  chapter: number;
+  /** 게임 BGM trackId */
+  gameBgmTrack: string;
+  /** BGM 분위기 narrative */
+  mood: string;
+}
+
+export const SCENARIO_CHAPTER_BGMS: readonly ChapterBgm[] = [
+  {
+    chapter: 1,
+    gameBgmTrack: 'bgm_erebos_ruins',
+    mood: '에레보스 폐허 — 절망 + 200년 침묵',
+  },
+  {
+    chapter: 2,
+    gameBgmTrack: 'bgm_silvanheim_forest',
+    mood: '실반헤임 — 신비 + 기억 수호',
+  },
+  {
+    chapter: 3,
+    gameBgmTrack: 'bgm_solaris_desert',
+    mood: '솔라리스 사막 — 불꽃 + 거리감',
+  },
+  {
+    chapter: 4,
+    gameBgmTrack: 'bgm_argentium_palace',
+    mood: '아르겐티움 황궁 — 음모 + 배신',
+  },
+  {
+    chapter: 5,
+    gameBgmTrack: 'bgm_final_boss',
+    mood: '망각의 고원 — 최종 결전',
+  },
+];
+
+export function getBgmByChapter(chapter: number): ChapterBgm | undefined {
+  return SCENARIO_CHAPTER_BGMS.find((b) => b.chapter === chapter);
 }
 
 // ════════════════════════════════════════════════════════════════
