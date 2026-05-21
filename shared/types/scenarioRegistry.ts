@@ -799,6 +799,43 @@ export const SCENARIO_DIALOGUES: readonly NpcDialogue[] = [
     line: '북방 기억석 사원은 200년 전 봉인의 마지막 보루야. 여기까지 와줘서 고맙다.',
     context: 'first_meet',
   },
+  // SYNC-21: Ch2 실반헤임 narrative
+  {
+    obsidianId: 'silvanheim_elder',
+    gameNpcId: 'npc_silvanheim_elder',
+    chapter: 2,
+    line: '말라투스는 수천 년 동안 우리의 기억을 지켜왔다. 이 숲 안에서는 망각의 폭풍도 들어오지 못해.',
+    context: 'first_meet',
+  },
+  {
+    obsidianId: 'seraphine_silvanheim_memory',
+    gameNpcId: 'npc_seraphine',
+    chapter: 2,
+    line: '카엘... 내 죽은 연인이야. 말라투스가 그의 마지막 기억을 보여줬어. 그가 봉인 의식의 12인 중 하나였다는 걸.',
+    context: 'trust_build',
+  },
+  // SYNC-21: Ch5 망각의 고원 narrative
+  {
+    obsidianId: 'kail_past_meet',
+    gameNpcId: 'npc_kail',
+    chapter: 5,
+    line: '내가 너야. 200년 전, 봉인의 의식을 마지막으로 주도한 카일. 그리고 너는 나의 환생.',
+    context: 'first_meet',
+  },
+  {
+    obsidianId: 'lethe_final',
+    gameNpcId: 'npc_lethe',
+    chapter: 5,
+    line: '기억은 고통이다. 망각이 곧 구원이다. 너희들이 거부하는 자비를 내가 강제로 주겠다.',
+    context: 'final',
+  },
+  {
+    obsidianId: 'minerva_encounter',
+    gameNpcId: 'npc_minerva',
+    chapter: 5,
+    line: '에리언이여, 너는 신화의 시대를 다시 열어주는 자다. 내가 11신의 의지를 너에게 맡기겠다.',
+    context: 'first_meet',
+  },
 ];
 
 export function getDialoguesByNpc(gameNpcId: string): readonly NpcDialogue[] {

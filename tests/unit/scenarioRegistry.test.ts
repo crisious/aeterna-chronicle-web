@@ -750,6 +750,65 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S32 — Ch2/Ch5 NPC 대화 확장 (SYNC-21)', () => {
+  it('SCENARIO_DIALOGUES ≥ 14 (Ch2 + Ch5 각 추가)', async () => {
+    const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_DIALOGUES.length).toBeGreaterThanOrEqual(14);
+  });
+
+  it('Ch2 대화 ≥ 2 (silvanheim_elder + seraphine memory)', async () => {
+    const { getDialoguesByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch2 = getDialoguesByChapter(2);
+    expect(ch2.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('Ch5 대화 ≥ 3 (kail + lethe + minerva)', async () => {
+    const { getDialoguesByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getDialoguesByChapter(5);
+    expect(ch5.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('카일 (전생) Ch5 대화 narrative — first_meet', async () => {
+    const { getDialoguesByNpc } = await import('../../shared/types/scenarioRegistry');
+    const kail = getDialoguesByNpc('npc_kail');
+    expect(kail.length).toBeGreaterThanOrEqual(1);
+    expect(kail[0].chapter).toBe(5);
+    expect(kail[0].line).toContain('카일');
+  });
+
+  it('레테 Ch5 최종 대화 — final context + "망각/구원" 키워드', async () => {
+    const { getDialoguesByNpc } = await import('../../shared/types/scenarioRegistry');
+    const lethe = getDialoguesByNpc('npc_lethe');
+    expect(lethe.length).toBeGreaterThanOrEqual(1);
+    const finalDialogue = lethe.find((d) => d.context === 'final');
+    expect(finalDialogue).toBeDefined();
+    expect(
+      finalDialogue!.line.includes('망각') || finalDialogue!.line.includes('구원'),
+    ).toBe(true);
+  });
+
+  it('미네르바 Ch5 first_meet — "신화" narrative 키워드', async () => {
+    const { getDialoguesByNpc } = await import('../../shared/types/scenarioRegistry');
+    const minerva = getDialoguesByNpc('npc_minerva');
+    expect(minerva.length).toBeGreaterThanOrEqual(1);
+    expect(minerva[0].line.includes('신화') || minerva[0].line.includes('신')).toBe(true);
+  });
+
+  it('실반헤임 장로 Ch2 대화 — "말라투스" narrative', async () => {
+    const { getDialoguesByNpc } = await import('../../shared/types/scenarioRegistry');
+    const elder = getDialoguesByNpc('npc_silvanheim_elder');
+    expect(elder.length).toBeGreaterThanOrEqual(1);
+    expect(elder[0].line).toContain('말라투스');
+  });
+
+  it('5 챕터 모두 ≥ 1 대화 (Ch1~Ch5 narrative cover)', async () => {
+    const { getDialoguesByChapter } = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      expect(getDialoguesByChapter(ch).length, `Ch${ch} dialogues`).toBeGreaterThanOrEqual(1);
+    }
+  });
+});
+
 describe('🎯 SYNC-S31 — 20 sprint 마디 종합 cohesion stress (SYNC-20)', () => {
   it('SSOT 정점 entity 정량 (chapter I+II+III 누적)', async () => {
     const mod = await import('../../shared/types/chrono');
