@@ -816,6 +816,88 @@ export function getDialoguesByContext(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-19: 신화 유물 SSOT + 엔딩 D 조건 narrative
+// 출처: 01_코어기획/엔딩D_유물_목록.md
+// ════════════════════════════════════════════════════════════════
+
+export interface MythicRelic {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 봉인 위치 (zone obsidianId) */
+  zoneObsidianId: string;
+  /** 어느 신과 연결되는가 (deity obsidianId) */
+  deityObsidianId: string;
+  /** 게임 item id (있을 경우) */
+  gameItemId?: string;
+}
+
+export const SCENARIO_MYTHIC_RELICS: readonly MythicRelic[] = [
+  {
+    obsidianId: 'relic_chronai_hourglass',
+    name: '크로나이의 모래시계',
+    zoneObsidianId: 'argentium',
+    deityObsidianId: 'chronai',
+  },
+  {
+    obsidianId: 'relic_ignarus_flame',
+    name: '이그나루스의 영원불꽃',
+    zoneObsidianId: 'solaris',
+    deityObsidianId: 'ignarus',
+  },
+  {
+    obsidianId: 'relic_verda_seed',
+    name: '베르다의 생명 씨앗',
+    zoneObsidianId: 'silvanheim',
+    deityObsidianId: 'verda',
+  },
+  {
+    obsidianId: 'relic_akius_lantern',
+    name: '아키우스의 별빛 등불',
+    zoneObsidianId: 'erebos',
+    deityObsidianId: 'akius',
+  },
+];
+
+/** 엔딩 D 미네르바 만남 조건 — 신화 유물 ≥ 2 + 특정 zone 탐사 */
+export interface MinervaEncounterCondition {
+  /** 필요 신화 유물 최소 개수 */
+  minMythicRelics: number;
+  /** 필요 zone 탐사 (Obsidian zone obsidianId) */
+  requiredZones: readonly string[];
+}
+
+export const MINERVA_ENCOUNTER: MinervaEncounterCondition = {
+  minMythicRelics: 2,
+  requiredZones: ['golden_ether_tower'],
+};
+
+export function getMythicRelicByObsidianId(
+  obsidianId: string,
+): MythicRelic | undefined {
+  return SCENARIO_MYTHIC_RELICS.find((r) => r.obsidianId === obsidianId);
+}
+
+export function listRelicsByDeity(deityObsidianId: string): readonly MythicRelic[] {
+  return SCENARIO_MYTHIC_RELICS.filter((r) => r.deityObsidianId === deityObsidianId);
+}
+
+/** 엔딩 D 달성 조건 — 신화 유물 + 미네르바 만남 검증 */
+export function canEncounterMinerva(
+  collectedRelics: ReadonlySet<string>,
+  exploredZones: ReadonlySet<string>,
+): boolean {
+  const relicCount = SCENARIO_MYTHIC_RELICS.filter((r) =>
+    collectedRelics.has(r.obsidianId),
+  ).length;
+  if (relicCount < MINERVA_ENCOUNTER.minMythicRelics) return false;
+  for (const z of MINERVA_ENCOUNTER.requiredZones) {
+    if (!exploredZones.has(z)) return false;
+  }
+  return true;
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

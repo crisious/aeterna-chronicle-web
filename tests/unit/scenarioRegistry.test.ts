@@ -750,6 +750,85 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S30 — 신화 유물 SSOT + 엔딩 D 조건 (SYNC-19)', () => {
+  it('SCENARIO_MYTHIC_RELICS 4 유물 (열두 신 중 4신 매핑)', async () => {
+    const { SCENARIO_MYTHIC_RELICS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_MYTHIC_RELICS.length).toBe(4);
+  });
+
+  it('각 유물 obsidianId unique + relic_ prefix', async () => {
+    const { SCENARIO_MYTHIC_RELICS } = await import('../../shared/types/scenarioRegistry');
+    const ids = SCENARIO_MYTHIC_RELICS.map((r) => r.obsidianId);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) {
+      expect(id.startsWith('relic_'), `${id} relic_ prefix`).toBe(true);
+    }
+  });
+
+  it('각 유물 한글 name + zoneObsidianId SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_MYTHIC_RELICS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const r of SCENARIO_MYTHIC_RELICS) {
+      expect(korean.test(r.name), `${r.obsidianId} 한글`).toBe(true);
+      expect(zoneIds.has(r.zoneObsidianId), `${r.obsidianId} zone`).toBe(true);
+    }
+  });
+
+  it('각 유물 deityObsidianId SCENARIO_DEITIES 존재 (창세 11신)', async () => {
+    const { SCENARIO_MYTHIC_RELICS, SCENARIO_DEITIES } = await import('../../shared/types/scenarioRegistry');
+    const creationDeities = new Set(
+      SCENARIO_DEITIES.filter((d) => d.inCreation).map((d) => d.obsidianId),
+    );
+    for (const r of SCENARIO_MYTHIC_RELICS) {
+      expect(creationDeities.has(r.deityObsidianId), `${r.obsidianId} deity`).toBe(true);
+    }
+  });
+
+  it('MINERVA_ENCOUNTER 조건: 신화 유물 ≥2 + golden_ether_tower 탐사', async () => {
+    const { MINERVA_ENCOUNTER } = await import('../../shared/types/scenarioRegistry');
+    expect(MINERVA_ENCOUNTER.minMythicRelics).toBe(2);
+    expect(MINERVA_ENCOUNTER.requiredZones).toContain('golden_ether_tower');
+  });
+
+  it('canEncounterMinerva: 0 유물 → false', async () => {
+    const { canEncounterMinerva } = await import('../../shared/types/scenarioRegistry');
+    expect(canEncounterMinerva(new Set(), new Set(['golden_ether_tower']))).toBe(false);
+  });
+
+  it('canEncounterMinerva: 2 유물 + golden_ether_tower → true', async () => {
+    const { canEncounterMinerva } = await import('../../shared/types/scenarioRegistry');
+    expect(
+      canEncounterMinerva(
+        new Set(['relic_chronai_hourglass', 'relic_ignarus_flame']),
+        new Set(['golden_ether_tower']),
+      ),
+    ).toBe(true);
+  });
+
+  it('canEncounterMinerva: 4 유물 but no golden_ether_tower → false (zone 필수)', async () => {
+    const { canEncounterMinerva, SCENARIO_MYTHIC_RELICS } = await import('../../shared/types/scenarioRegistry');
+    const allRelics = new Set(SCENARIO_MYTHIC_RELICS.map((r) => r.obsidianId));
+    expect(canEncounterMinerva(allRelics, new Set())).toBe(false);
+  });
+
+  it('getMythicRelicByObsidianId + listRelicsByDeity 헬퍼 동작', async () => {
+    const { getMythicRelicByObsidianId, listRelicsByDeity } = await import('../../shared/types/scenarioRegistry');
+    expect(getMythicRelicByObsidianId('relic_chronai_hourglass')?.name).toBe('크로나이의 모래시계');
+    expect(listRelicsByDeity('chronai').length).toBeGreaterThanOrEqual(1);
+    expect(listRelicsByDeity('lethe').length).toBe(0); // 레테는 배제, 유물 없음
+  });
+
+  it('4 유물 zone 분포 narrative (아르겐티움/솔라리스/실반헤임/에레보스)', async () => {
+    const { SCENARIO_MYTHIC_RELICS } = await import('../../shared/types/scenarioRegistry');
+    const zones = new Set(SCENARIO_MYTHIC_RELICS.map((r) => r.zoneObsidianId));
+    expect(zones.has('argentium')).toBe(true);
+    expect(zones.has('solaris')).toBe(true);
+    expect(zones.has('silvanheim')).toBe(true);
+    expect(zones.has('erebos')).toBe(true);
+  });
+});
+
 describe('SYNC-S29 — 누적 종합 stress + 18 sprint cohesion (SYNC-18)', () => {
   it('전 SSOT entity 정량 (chapter III 완료)', async () => {
     const mod = await import('../../shared/types/chrono');
