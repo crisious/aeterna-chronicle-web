@@ -1,14 +1,16 @@
 # scenarioRegistry SSOT 사용 가이드
 
-> 작성: 2026-05-22 (SYNC-29 자동 라운드)
+> 작성: 2026-05-22 (SYNC-29 / SYNC-57 갱신 자동 라운드)
 > 모듈: `shared/types/scenarioRegistry.ts`
-> 누적: 27 sprint, +236 가드, 115 SSOT entity, 30+ helpers, 237 회귀 가드
+> 누적: 56 sprint, +395 가드, 175+ SSOT entity, 50+ helpers, 382 회귀 가드
 
 ## 1. 개요
 
 Obsidian 시나리오 문서 (`시나리오/`)와 게임 코드 (`server/src/quest/`, `shared/types/chronoField.ts` 등) narrative 단일 진입점 SSOT.
 
-## 2. 15 SSOT 도메인
+## 2. 28 SSOT 도메인
+
+### 2.1 핵심 도메인 (chapter I+II)
 
 | 도메인 | 개수 | 설명 |
 |---|---|---|
@@ -21,12 +23,42 @@ Obsidian 시나리오 문서 (`시나리오/`)와 게임 코드 (`server/src/que
 | SCENARIO_DEITIES | 12 | 창세 11신 + 레테 배제 |
 | SCENARIO_TIMELINE | 13 | 창세 → 게임 시작 연대표 |
 | SCENARIO_MILESTONES | 5 | 챕터별 game-flow milestone |
-| SCENARIO_DIALOGUES | 14 | 핵심 NPC 대화 시그니처 |
+| SCENARIO_DIALOGUES | 17+ | 핵심 NPC 대화 시그니처 |
 | COMPANION_REPUTATION_REWARDS | 5 | 동료 합류 quest reputation 매핑 |
 | SCENARIO_MYTHIC_RELICS | 4 | 엔딩 D 신화 유물 |
 | SCENARIO_LORE_DOCUMENTS | 11 | 외전 (편지 5 + 도서 4 + 기억 조각 2) |
 | SCENARIO_ZONE_CONNECTIONS | 8 | zone 이동 경로 |
 | SCENARIO_CHAPTER_ROUTES | 5 | 챕터 진행 동선 |
+
+### 2.2 chronoField extension (SYNC-33)
+
+| 도메인 | 개수 | 설명 |
+|---|---|---|
+| SCENARIO_EXTRA_ZONES | 2 | chronoField 외 zone (에레보스/솔라리스) |
+| SCENARIO_EXTRA_BOSSES | 1 | chronoField 외 보스 (라와르 3 phases) |
+
+### 2.3 narrative 풍부도 (chapter V)
+
+| 도메인 | 개수 | 설명 |
+|---|---|---|
+| COMPANION_CLASS_MAPPINGS | 6 | 동료 → STORY 7 클래스 매핑 |
+| SCENARIO_CHAPTER_REWARDS | 5 | 챕터 종결 보상 + nextZone |
+| COMPANION_STORY_ARCS | 6 | 동료 개인 서사 (coreSecret + revealChapter) |
+| SCENARIO_CHAPTER_BGMS | 5 | 챕터 BGM track 매핑 |
+| SCENARIO_SUB_PLOTS | 7 | 챕터별 부 이야기 narrative |
+| SCENARIO_CHAPTER_DIFFICULTIES | 5 | 권장 레벨 + 보스 난이도 |
+| SCENARIO_CHAPTER_VISUALS | 5 | 색상/분위기/의상 narrative |
+| SCENARIO_EPIC_ITEMS | 5 | 챕터별 epic 아이템 |
+
+### 2.4 chapter VII narrative 확장
+
+| 도메인 | 개수 | 설명 |
+|---|---|---|
+| SCENARIO_PARTY_COMPOSITIONS | 5 | 챕터별 추천 동료 조합 |
+| SCENARIO_MEMORY_RECALLS | 6 | 회상 narrative (에리언/동료/라와르) |
+| SCENARIO_CHOICES | 6 | 분기 선택지 narrative |
+| SCENARIO_FACTIONS | 7 | 세력 (엘파리스/이프리타/제국/교단 등) |
+| SCENARIO_PREREQUISITES | 5 | 챕터 진입 prerequisite 그래프 |
 
 ## 3. 사용 예시
 
@@ -125,8 +157,8 @@ const sync = getSyncCompletionReport();
 
 ## 5. 회귀 가드 위치
 
-- `tests/unit/scenarioRegistry.test.ts` (237 가드)
-- SYNC-S1 ~ SYNC-S37 (각 sprint 별 가드)
+- `tests/unit/scenarioRegistry.test.ts` (382+ 가드)
+- SYNC-S1 ~ SYNC-S60 (각 sprint 별 가드)
 
 ## 6. 확장 절차
 
