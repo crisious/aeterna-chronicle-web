@@ -935,6 +935,128 @@ export function canEncounterMinerva(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-22: 외전 문서 SSOT — 편지 / 도서 / 기억 조각
+// 출처: 시나리오/세계관외전/세계관_외전_문서.md
+// ════════════════════════════════════════════════════════════════
+
+export type LoreDocumentType = 'letter' | 'book' | 'memory_fragment';
+
+export interface LoreDocument {
+  obsidianId: string;
+  /** 문서 종류 */
+  type: LoreDocumentType;
+  /** 한글 제목 */
+  title: string;
+  /** 발견 zone (있을 경우) */
+  zoneObsidianId?: string;
+  /** 챕터 (게임 진행 추천) */
+  chapter?: number;
+  /** 짧은 요약 */
+  summary: string;
+}
+
+export const SCENARIO_LORE_DOCUMENTS: readonly LoreDocument[] = [
+  // 편지 시리즈
+  {
+    obsidianId: 'letter_001',
+    type: 'letter',
+    title: '[편지 001] 에테르나 신화 — 열두 신의 창세기',
+    chapter: 1,
+    summary: '12 신 창세 기록. 레테 배제 narrative 명시.',
+  },
+  {
+    obsidianId: 'letter_002',
+    type: 'letter',
+    title: '[편지 002] 기억 사냥꾼의 비밀 보고서',
+    chapter: 4,
+    summary: '기억 사냥꾼 케인 부대 활동 기록.',
+  },
+  {
+    obsidianId: 'letter_003',
+    type: 'letter',
+    title: '[편지 003] 황제 레나르도 4세 유언장',
+    chapter: 4,
+    summary: '제국 황제의 마지막 유언, 레테 교단 침투 경고.',
+  },
+  {
+    obsidianId: 'letter_004',
+    type: 'letter',
+    title: '[편지 004] 레테 교단 입단 서약문',
+    chapter: 1,
+    summary: '교단 비밀 입단 의식 서약문, 망각의 구원론.',
+  },
+  {
+    obsidianId: 'letter_005',
+    type: 'letter',
+    title: '[편지 005] 마에스트로 크리오의 일기',
+    chapter: 1,
+    summary: '200년 생존자의 60년 정보상 활동 회고.',
+  },
+  // 도서 시리즈
+  {
+    obsidianId: 'book_001',
+    type: 'book',
+    title: '[도서 001] 에테르나 신화 전집',
+    summary: '12 신 + 에테르 결정 + 솔리안 문명 통합 신화 기록.',
+  },
+  {
+    obsidianId: 'book_002',
+    type: 'book',
+    title: '[도서 002] 대망각의 날 사서 일기',
+    chapter: 1,
+    zoneObsidianId: 'erebos',
+    summary: '에레보스 도서관 사서의 200년 전 마지막 일기.',
+  },
+  {
+    obsidianId: 'book_003',
+    type: 'book',
+    title: '[도서 003] 솔리안 문명사',
+    chapter: 3,
+    zoneObsidianId: 'solaris',
+    summary: '솔리안 황금기 + 레테 강림 + 라와르 봉인 의식 기록.',
+  },
+  {
+    obsidianId: 'book_004',
+    type: 'book',
+    title: '[도서 004] 레테 교단의 역사적 기원',
+    chapter: 4,
+    summary: '레테 교단 형성 + 제국 침투 + 망각의 구원론 형성사.',
+  },
+  // 기억 조각 시리즈
+  {
+    obsidianId: 'memory_fragment_kail',
+    type: 'memory_fragment',
+    title: '카일의 과거 기억 조각',
+    chapter: 5,
+    summary: '에리언의 전생 카일의 200년 전 봉인 의식 기억.',
+  },
+  {
+    obsidianId: 'memory_fragment_great_night',
+    type: 'memory_fragment',
+    title: '대망각 당일 밤의 기억편',
+    chapter: 1,
+    zoneObsidianId: 'erebos',
+    summary: '에레보스 시민들의 마지막 순간 기억 조각.',
+  },
+];
+
+export function getLoreDocumentByObsidianId(
+  obsidianId: string,
+): LoreDocument | undefined {
+  return SCENARIO_LORE_DOCUMENTS.find((d) => d.obsidianId === obsidianId);
+}
+
+export function listLoreDocumentsByType(
+  type: LoreDocumentType,
+): readonly LoreDocument[] {
+  return SCENARIO_LORE_DOCUMENTS.filter((d) => d.type === type);
+}
+
+export function listLoreDocumentsByChapter(chapter: number): readonly LoreDocument[] {
+  return SCENARIO_LORE_DOCUMENTS.filter((d) => d.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

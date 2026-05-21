@@ -750,6 +750,83 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S33 — 외전 문서 SSOT (SYNC-22)', () => {
+  it('SCENARIO_LORE_DOCUMENTS ≥ 11 (편지 5 + 도서 4 + 기억 조각 2)', async () => {
+    const { SCENARIO_LORE_DOCUMENTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_LORE_DOCUMENTS.length).toBeGreaterThanOrEqual(11);
+  });
+
+  it('편지 시리즈 = 5 (letter_001~005)', async () => {
+    const { listLoreDocumentsByType } = await import('../../shared/types/scenarioRegistry');
+    const letters = listLoreDocumentsByType('letter');
+    expect(letters.length).toBe(5);
+  });
+
+  it('도서 시리즈 = 4 (book_001~004)', async () => {
+    const { listLoreDocumentsByType } = await import('../../shared/types/scenarioRegistry');
+    const books = listLoreDocumentsByType('book');
+    expect(books.length).toBe(4);
+  });
+
+  it('기억 조각 ≥ 2 (memory_fragment_*)', async () => {
+    const { listLoreDocumentsByType } = await import('../../shared/types/scenarioRegistry');
+    const memories = listLoreDocumentsByType('memory_fragment');
+    expect(memories.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('모든 문서 obsidianId unique + 한글 title', async () => {
+    const { SCENARIO_LORE_DOCUMENTS } = await import('../../shared/types/scenarioRegistry');
+    const ids = SCENARIO_LORE_DOCUMENTS.map((d) => d.obsidianId);
+    expect(new Set(ids).size).toBe(ids.length);
+    const korean = /[가-힣]/;
+    for (const d of SCENARIO_LORE_DOCUMENTS) {
+      expect(korean.test(d.title), `${d.obsidianId} 한글`).toBe(true);
+    }
+  });
+
+  it('zoneObsidianId 있는 문서 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_LORE_DOCUMENTS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const d of SCENARIO_LORE_DOCUMENTS) {
+      if (d.zoneObsidianId) {
+        expect(zoneIds.has(d.zoneObsidianId), `${d.obsidianId} zone`).toBe(true);
+      }
+    }
+  });
+
+  it('chapter 있는 문서 모두 1~5 범위', async () => {
+    const { SCENARIO_LORE_DOCUMENTS } = await import('../../shared/types/scenarioRegistry');
+    for (const d of SCENARIO_LORE_DOCUMENTS) {
+      if (d.chapter !== undefined) {
+        expect(d.chapter).toBeGreaterThanOrEqual(1);
+        expect(d.chapter).toBeLessThanOrEqual(5);
+      }
+    }
+  });
+
+  it('카일 기억 조각 narrative — Ch5 + 전생 시그니처', async () => {
+    const { getLoreDocumentByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const kail = getLoreDocumentByObsidianId('memory_fragment_kail');
+    expect(kail).toBeDefined();
+    expect(kail!.chapter).toBe(5);
+    expect(kail!.summary).toContain('카일');
+  });
+
+  it('레테 교단 narrative 문서 ≥ 2 (letter_004 + book_004)', async () => {
+    const { SCENARIO_LORE_DOCUMENTS } = await import('../../shared/types/scenarioRegistry');
+    const lethe = SCENARIO_LORE_DOCUMENTS.filter((d) =>
+      d.title.includes('레테') || d.summary.includes('레테'),
+    );
+    expect(lethe.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('listLoreDocumentsByChapter Ch1 ≥ 3 (시작 lore 풍부함)', async () => {
+    const { listLoreDocumentsByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = listLoreDocumentsByChapter(1);
+    expect(ch1.length).toBeGreaterThanOrEqual(3);
+  });
+});
+
 describe('SYNC-S32 — Ch2/Ch5 NPC 대화 확장 (SYNC-21)', () => {
   it('SCENARIO_DIALOGUES ≥ 14 (Ch2 + Ch5 각 추가)', async () => {
     const { SCENARIO_DIALOGUES } = await import('../../shared/types/scenarioRegistry');
