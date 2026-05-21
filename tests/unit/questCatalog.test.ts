@@ -18,25 +18,25 @@ const KNOWN_OBJ_TYPES = new Set(['kill', 'collect', 'talk', 'explore', 'craft'])
 const KNOWN_REWARD_TYPES = new Set(['exp', 'gold', 'item', 'title', 'reputation']);
 
 describe('QUEST-QA-S1 — 60 퀘스트 정량 정합성', () => {
-  it('전체 퀘스트 = 65개 (main 15 + sub 25 + daily 15 + weekly 5 + event 5) — SYNC-7 동료 5 추가', () => {
-    expect(ALL_QUEST_SEEDS.length).toBe(65);
+  it('전체 퀘스트 = 69개 (main 15 + sub 29 + daily 15 + weekly 5 + event 5) — SYNC-8 zone/보스 4 추가', () => {
+    expect(ALL_QUEST_SEEDS.length).toBe(69);
   });
 
-  it('group 별 정량: main=15, sub=25, daily=15, weekly=5, event=5', () => {
+  it('group 별 정량: main=15, sub=29, daily=15, weekly=5, event=5', () => {
     expect(QUEST_SEED_GROUPS.main.length).toBe(15);
-    expect(QUEST_SEED_GROUPS.sub.length).toBe(25);
+    expect(QUEST_SEED_GROUPS.sub.length).toBe(29);
     expect(QUEST_SEED_GROUPS.daily.length).toBe(15);
     expect(QUEST_SEED_GROUPS.weekly.length).toBe(5);
     expect(QUEST_SEED_GROUPS.event.length).toBe(5);
   });
 
-  it('type 분포 정확: main 15 + sub 25 + daily 15 + weekly 5 + event 5', () => {
+  it('type 분포 정확: main 15 + sub 29 + daily 15 + weekly 5 + event 5', () => {
     const counts = new Map<string, number>();
     for (const q of ALL_QUEST_SEEDS) {
       counts.set(q.type, (counts.get(q.type) ?? 0) + 1);
     }
     expect(counts.get('main')).toBe(15);
-    expect(counts.get('sub')).toBe(25);
+    expect(counts.get('sub')).toBe(29);
     expect(counts.get('daily')).toBe(15);
     expect(counts.get('weekly')).toBe(5);
     expect(counts.get('event')).toBe(5);
@@ -44,9 +44,9 @@ describe('QUEST-QA-S1 — 60 퀘스트 정량 정합성', () => {
 });
 
 describe('QUEST-QA-S2 — code unique + naming', () => {
-  it('65 퀘스트 code 모두 unique (SYNC-7 동료 5 추가)', () => {
+  it('69 퀘스트 code 모두 unique (SYNC-8 zone+보스 4 추가)', () => {
     const codes = ALL_QUEST_SEEDS.map((q) => q.code);
-    expect(new Set(codes).size).toBe(65);
+    expect(new Set(codes).size).toBe(69);
   });
 
   it('60 퀘스트 code prefix 매칭 (MQ/SQ/DQ/WQ/EQ)', () => {

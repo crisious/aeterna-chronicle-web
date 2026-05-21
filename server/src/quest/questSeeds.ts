@@ -420,6 +420,67 @@ const SUB_QUESTS: QuestSeedData[] = [
       { type: 'reputation', amount: 40, description: '우르그롬 신뢰도 +40' },
     ],
   },
+  // ─── Obsidian zone + 보스 sub quest (SYNC-8) ─────────────────
+  // 에레보스/칸텔라/솔라리스 zone + 라와르/케인 보스 narrative 게임 sync.
+  {
+    code: 'SQ_EREBOS_RUINS', name: '에레보스 폐허 탐사',
+    description: '200년 전 대망각의 진원지 에레보스 폐허에 잠입하여 첫 번째 신성 기억 파편을 회수한다.',
+    type: 'sub', requiredLevel: 4, prerequisites: ['SQ_COMPANION_SERAPHINE'], isRepeatable: false,
+    objectives: [
+      { type: 'explore', target: 'zone_erebos_city', count: 1, description: '에레보스 도시 진입' },
+      { type: 'kill', target: 'mob_memory_phantom', count: 6, description: '기억 유령 처치 (0/6)' },
+      { type: 'collect', target: 'fragment_erebos', count: 1, description: '에레보스 신성 기억 파편' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 1500, description: '경험치 1500' },
+      { type: 'gold', amount: 700, description: '골드 700' },
+      { type: 'item', itemId: 'item_memory_fragment_ch1', amount: 1, description: '신성 기억 파편 (에레보스)' },
+    ],
+  },
+  {
+    code: 'SQ_CANTELA_RESCUE', name: '칸텔라 마을 생존자 구조',
+    description: '기억 소멸 폭풍으로 300명이 소멸한 칸텔라 마을에서 생존자 흔적을 찾는다.',
+    type: 'sub', requiredLevel: 2, prerequisites: ['MQ_CH01'], isRepeatable: false,
+    objectives: [
+      { type: 'explore', target: 'zone_cantela_village', count: 1, description: '칸텔라 마을 진입' },
+      { type: 'talk', target: 'npc_cantela_survivor', count: 1, description: '생존자 흔적 발견' },
+      { type: 'collect', target: 'cantela_memory_locket', count: 3, description: '칸텔라 주민 유품 (0/3)' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 500, description: '경험치 500' },
+      { type: 'gold', amount: 250, description: '골드 250' },
+    ],
+  },
+  {
+    code: 'SQ_SOLARIS_RAWAR', name: '라와르의 비극 — 솔리안 왕의 봉인',
+    description: '솔라리스 사막의 솔리안 유적에서 200년 전 봉인된 솔리안의 마지막 왕 라와르와 대면한다.',
+    type: 'sub', requiredLevel: 9, prerequisites: ['SQ_COMPANION_IGNARA'], isRepeatable: false,
+    objectives: [
+      { type: 'explore', target: 'zone_solaris_desert', count: 1, description: '솔라리스 사막 솔리안 유적 진입' },
+      { type: 'kill', target: 'mob_solian_phantom_guard', count: 5, description: '솔리안 환영 경비병 처치 (0/5)' },
+      { type: 'kill', target: 'boss_rawar', count: 1, description: '라와르 (솔리안 왕) 처치 또는 봉인' },
+      { type: 'collect', target: 'fragment_solaris', count: 1, description: '솔라리스 신성 기억 파편' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 2800, description: '경험치 2800' },
+      { type: 'gold', amount: 1400, description: '골드 1400' },
+      { type: 'item', itemId: 'item_memory_fragment_ch3', amount: 1, description: '신성 기억 파편 (솔라리스)' },
+    ],
+  },
+  {
+    code: 'SQ_KANE_HUNT', name: '케인 추적 — 기억 사냥꾼 간부',
+    description: '아르겐티움 지하 연구소에서 기억 사냥꾼 부대 간부 케인과 최종 대결한다.',
+    type: 'sub', requiredLevel: 12, prerequisites: ['MQ_CH04'], isRepeatable: false,
+    objectives: [
+      { type: 'explore', target: 'zone_argentium_underground', count: 1, description: '아르겐티움 지하 연구소 진입' },
+      { type: 'kill', target: 'boss_kane_corrupted', count: 1, description: '케인 (기억 사냥꾼 간부) 처치' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 2200, description: '경험치 2200' },
+      { type: 'gold', amount: 1300, description: '골드 1300' },
+      { type: 'item', itemId: 'item_memory_hunter_seal', amount: 1, description: '기억 사냥꾼 인장' },
+    ],
+  },
 ];
 
 // ════════════════════════════════════════════════════════════════

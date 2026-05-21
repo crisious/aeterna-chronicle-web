@@ -113,14 +113,14 @@ export const SCENARIO_ZONES: readonly ScenarioZone[] = [
     obsidianId: 'erebos',
     name: '에레보스',
     chapter: 1,
-    plannedGameQuestZoneTarget: 'zone_erebos_city',
-    plannedGameZoneId: 'erebos_ruins',
+    gameQuestZoneTarget: 'zone_erebos_city',  // SYNC-8: SQ_EREBOS_RUINS
+    plannedGameZoneId: 'erebos_ruins',  // chronoField 추가 예정 (다음 라운드)
   },
   {
     obsidianId: 'cantela_village',
     name: '칸텔라 마을',
     chapter: 1,
-    plannedGameQuestZoneTarget: 'zone_cantela_village',
+    gameQuestZoneTarget: 'zone_cantela_village',  // SYNC-8: SQ_CANTELA_RESCUE
   },
   {
     obsidianId: 'silvanheim',
@@ -139,8 +139,8 @@ export const SCENARIO_ZONES: readonly ScenarioZone[] = [
     obsidianId: 'solaris',
     name: '솔라리스 사막',
     chapter: 3,
-    plannedGameQuestZoneTarget: 'zone_solaris_desert',
-    plannedGameZoneId: 'solaris_dunes',
+    gameQuestZoneTarget: 'zone_solaris_desert',  // SYNC-8: SQ_SOLARIS_RAWAR
+    plannedGameZoneId: 'solaris_dunes',  // chronoField 추가 예정
   },
   {
     obsidianId: 'argentium',
@@ -215,14 +215,14 @@ export const SCENARIO_BOSSES: readonly ScenarioBoss[] = [
     name: '라와르 (솔리안 왕)',
     chapter: 3,
     phases: 3,
-    plannedGameQuestBossId: 'boss_rawar',
-    plannedGameChronoBossId: 'rawar_ancient_king',
+    gameQuestBossId: 'boss_rawar',  // SYNC-8: SQ_SOLARIS_RAWAR
+    plannedGameChronoBossId: 'rawar_ancient_king',  // chronoField 추가 예정
   },
   {
     obsidianId: 'kane',
     name: '케인 (기억 사냥꾼 간부)',
     chapter: 4,
-    plannedGameQuestBossId: 'boss_kane_corrupted',
+    gameQuestBossId: 'boss_kane_corrupted',  // SYNC-8: SQ_KANE_HUNT
   },
   {
     obsidianId: 'corrupted_bernardo',
@@ -601,42 +601,66 @@ export interface SyncCompletionReport {
 
 /**
  * 시나리오 SSOT entity 의 sync/planned/orphan 카운트 + 전체 커버리지 계산.
- * orphan = sync 안 됐고 planned ID 도 없는 항목 (장기 작업 미정의).
+ * - synced: 게임 코드 매핑 완료 (planned 도 보유 가능)
+ * - planned: sync 없이 planned ID 만 있음 (exclusive)
+ * - orphan: sync 도 planned 도 없는 entity
  */
 export function getSyncCompletionReport(): SyncCompletionReport {
+  // sync = 모든 sync 보유 entity
   const companionsSync = listSyncedCompanions().length;
-  const companionsPlanned = listPlannedCompanions().length;
+  // planned-only = sync 없이 planned ID 만 있는 entity (exclusive)
+  const companionsPlannedOnly = SCENARIO_COMPANIONS.filter(
+    (c) => !c.gameNpcId && !c.gameBossId && (c.plannedGameNpcId || c.plannedGameBossId),
+  ).length;
+  const companionsOrphan = SCENARIO_COMPANIONS.filter(
+    (c) => !c.gameNpcId && !c.gameBossId && !c.plannedGameNpcId && !c.plannedGameBossId,
+  ).length;
   const companionsTotal = SCENARIO_COMPANIONS.length;
 
   const zonesSync = listSyncedZones().length;
-  const zonesPlanned = listPlannedZones().length;
+  const zonesPlannedOnly = SCENARIO_ZONES.filter(
+    (z) => !z.gameZoneId && !z.gameQuestZoneTarget &&
+           (z.plannedGameZoneId || z.plannedGameQuestZoneTarget),
+  ).length;
+  const zonesOrphan = SCENARIO_ZONES.filter(
+    (z) => !z.gameZoneId && !z.gameQuestZoneTarget &&
+           !z.plannedGameZoneId && !z.plannedGameQuestZoneTarget,
+  ).length;
   const zonesTotal = SCENARIO_ZONES.length;
 
   const bossesSync = listSyncedBosses().length;
-  const bossesPlanned = listPlannedBosses().length;
+  const bossesPlannedOnly = SCENARIO_BOSSES.filter(
+    (b) => !b.gameChronoBossId && !b.gameQuestBossId &&
+           (b.plannedGameChronoBossId || b.plannedGameQuestBossId),
+  ).length;
+  const bossesOrphan = SCENARIO_BOSSES.filter(
+    (b) => !b.gameChronoBossId && !b.gameQuestBossId &&
+           !b.plannedGameChronoBossId && !b.plannedGameQuestBossId,
+  ).length;
   const bossesTotal = SCENARIO_BOSSES.length;
 
   const totalEntities = companionsTotal + zonesTotal + bossesTotal;
-  const covered = companionsSync + companionsPlanned + zonesSync + zonesPlanned + bossesSync + bossesPlanned;
+  const totalOrphan = companionsOrphan + zonesOrphan + bossesOrphan;
+  const covered = totalEntities - totalOrphan;
 
   return {
     companions: {
       total: companionsTotal,
       synced: companionsSync,
-      planned: companionsPlanned,
-      orphan: companionsTotal - companionsSync - companionsPlanned,
+      planned: companionsPlannedOnly,
+      orphan: companionsOrphan,
     },
     zones: {
       total: zonesTotal,
       synced: zonesSync,
-      planned: zonesPlanned,
-      orphan: zonesTotal - zonesSync - zonesPlanned,
+      planned: zonesPlannedOnly,
+      orphan: zonesOrphan,
     },
     bosses: {
       total: bossesTotal,
       synced: bossesSync,
-      planned: bossesPlanned,
-      orphan: bossesTotal - bossesSync - bossesPlanned,
+      planned: bossesPlannedOnly,
+      orphan: bossesOrphan,
     },
     coveragePercent: Math.round((covered / totalEntities) * 100),
   };
