@@ -571,6 +571,72 @@ export function isReputationRewardSufficient(companionObsidianId: string): boole
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-11: 파편 + 동료 → 엔딩 통합 게임 흐름
+// ════════════════════════════════════════════════════════════════
+
+export interface GameFlowState {
+  /** 완료한 quest code 목록 (questEngine 의 completed) */
+  completedQuests: ReadonlySet<string>;
+  /** 동료별 현재 loyalty */
+  companionLoyalty: Readonly<Record<string, number>>;
+}
+
+export interface GameFlowEvaluation {
+  /** 수집한 파편 개수 (game item 보유 기준) */
+  fragmentsCollected: number;
+  /** 합류 + 유지 중인 동료 obsidianId 목록 */
+  aliveCompanions: readonly string[];
+  /** 이탈 동료 목록 */
+  leftCompanions: readonly string[];
+  /** 달성 가능한 엔딩 */
+  achievableEnding: ScenarioEndingCode;
+}
+
+/**
+ * questEngine + companion loyalty 상태 → 엔딩 평가.
+ * 완료한 파편 회수 quest 카운트 + 동료별 loyalty threshold 비교.
+ */
+export function evaluateGameFlow(state: GameFlowState): GameFlowEvaluation {
+  // 파편 회수 quest 완료 카운트
+  const fragmentQuestCodes = new Set(
+    SCENARIO_FRAGMENTS.map((f) => f.gameQuestCode).filter((c): c is string => !!c),
+  );
+  let fragmentsCollected = 0;
+  for (const code of fragmentQuestCodes) {
+    if (state.completedQuests.has(code)) fragmentsCollected += 1;
+  }
+
+  // 동료 생존 평가 — gameNpcId 가 있는 동료 중 loyalty >= threshold
+  const aliveCompanions: string[] = [];
+  const leftCompanions: string[] = [];
+  for (const c of SCENARIO_COMPANIONS) {
+    const loyalty = state.companionLoyalty[c.obsidianId] ?? 0;
+    const evaluation = evaluateLoyalty(c.obsidianId, loyalty);
+    if (evaluation.hasLeft) {
+      leftCompanions.push(c.obsidianId);
+    } else {
+      aliveCompanions.push(c.obsidianId);
+    }
+  }
+
+  const allAlive = leftCompanions.length === 0;
+  const endingResult = evaluateEnding(fragmentsCollected, allAlive);
+
+  return {
+    fragmentsCollected,
+    aliveCompanions,
+    leftCompanions,
+    achievableEnding: endingResult.achievableEnding,
+  };
+}
+
+/** 엔딩 A 달성 조건 — 4 파편 quest 모두 완료 + 6 동료 모두 loyalty threshold */
+export function checkEndingA(state: GameFlowState): boolean {
+  const e = evaluateGameFlow(state);
+  return e.achievableEnding === 'A';
+}
+
+// ════════════════════════════════════════════════════════════════
 // 엔딩 판정 helper — 파편 수집 + 동료 생존
 // ════════════════════════════════════════════════════════════════
 

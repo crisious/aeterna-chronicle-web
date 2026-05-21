@@ -750,6 +750,131 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S23 — 파편 + 동료 → 엔딩 통합 game-flow (SYNC-11)', () => {
+  it('엔딩 A 시나리오: 4 파편 quest 모두 완료 + 6 동료 모두 threshold', async () => {
+    const { evaluateGameFlow, checkEndingA } = await import('../../shared/types/scenarioRegistry');
+    const state = {
+      completedQuests: new Set([
+        'SQ_EREBOS_RUINS',
+        'SQ_SILVANHEIM_FRAGMENT',
+        'SQ_SOLARIS_RAWAR',
+        'SQ_ARGENTIUM_FRAGMENT',
+      ]),
+      companionLoyalty: {
+        seraphine: 50, maestro_crio: 40, ignara: 20,
+        benjamin_cross: 40, reina: 30, urgrom: 40,
+      },
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.fragmentsCollected).toBe(4);
+    expect(e.aliveCompanions.length).toBe(6);
+    expect(e.leftCompanions.length).toBe(0);
+    expect(e.achievableEnding).toBe('A');
+    expect(checkEndingA(state)).toBe(true);
+  });
+
+  it('엔딩 B 시나리오: 3 파편 (Ch4 미수집)', async () => {
+    const { evaluateGameFlow } = await import('../../shared/types/scenarioRegistry');
+    const state = {
+      completedQuests: new Set([
+        'SQ_EREBOS_RUINS',
+        'SQ_SILVANHEIM_FRAGMENT',
+        'SQ_SOLARIS_RAWAR',
+      ]),
+      companionLoyalty: {
+        seraphine: 50, maestro_crio: 40, ignara: 20,
+        benjamin_cross: 40, reina: 30, urgrom: 40,
+      },
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.fragmentsCollected).toBe(3);
+    expect(e.achievableEnding).toBe('B');
+  });
+
+  it('엔딩 B 시나리오: 4 파편 + 동료 일부 이탈 (전원 조건 미달)', async () => {
+    const { evaluateGameFlow } = await import('../../shared/types/scenarioRegistry');
+    const state = {
+      completedQuests: new Set([
+        'SQ_EREBOS_RUINS',
+        'SQ_SILVANHEIM_FRAGMENT',
+        'SQ_SOLARIS_RAWAR',
+        'SQ_ARGENTIUM_FRAGMENT',
+      ]),
+      companionLoyalty: {
+        seraphine: 50, maestro_crio: 40, ignara: 10, // 이그나 threshold 20 미만 → 이탈
+        benjamin_cross: 40, reina: 30, urgrom: 40,
+      },
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.fragmentsCollected).toBe(4);
+    expect(e.aliveCompanions.length).toBe(5);
+    expect(e.leftCompanions).toContain('ignara');
+    expect(e.achievableEnding).toBe('B');
+  });
+
+  it('엔딩 C 시나리오: 파편 2 이하 + 동료 무관', async () => {
+    const { evaluateGameFlow } = await import('../../shared/types/scenarioRegistry');
+    const state = {
+      completedQuests: new Set(['SQ_EREBOS_RUINS']),
+      companionLoyalty: {
+        seraphine: 50, maestro_crio: 40, ignara: 20,
+        benjamin_cross: 40, reina: 30, urgrom: 40,
+      },
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.fragmentsCollected).toBe(1);
+    expect(e.achievableEnding).toBe('C');
+  });
+
+  it('엔딩 C 시나리오: 파편 0 + 동료 0 (최악)', async () => {
+    const { evaluateGameFlow } = await import('../../shared/types/scenarioRegistry');
+    const state = {
+      completedQuests: new Set<string>(),
+      companionLoyalty: {},
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.fragmentsCollected).toBe(0);
+    expect(e.aliveCompanions.length).toBe(0);
+    expect(e.leftCompanions.length).toBe(6);
+    expect(e.achievableEnding).toBe('C');
+  });
+
+  it('aliveCompanions + leftCompanions = 6 (전 동료 평가)', async () => {
+    const { evaluateGameFlow } = await import('../../shared/types/scenarioRegistry');
+    const state = {
+      completedQuests: new Set<string>(),
+      companionLoyalty: { seraphine: 50, ignara: 5 },
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.aliveCompanions.length + e.leftCompanions.length).toBe(6);
+  });
+
+  it('SYNC-11 cohesion: 모든 5 동료 quest 완료 후 → 6 동료 생존 (벤자민 = 메인 퀘스트 매핑)', async () => {
+    const { applyReputationReward, evaluateGameFlow } = await import('../../shared/types/scenarioRegistry');
+    let loyalty: Record<string, number> = {};
+    const QUESTS: Array<[string, string]> = [
+      ['seraphine', 'SQ_COMPANION_SERAPHINE'],
+      ['maestro_crio', 'SQ_COMPANION_CRIO'],
+      ['ignara', 'SQ_COMPANION_IGNARA'],
+      ['reina', 'SQ_COMPANION_REINA'],
+      ['urgrom', 'SQ_COMPANION_URGROM'],
+    ];
+    for (const [c, q] of QUESTS) {
+      const r = applyReputationReward(c, 0, q);
+      loyalty[c] = r.newLoyalty;
+    }
+    // 벤자민은 questSeeds reputation 보상이 없지만 narrative 상 화해 선택 시 생존
+    loyalty.benjamin_cross = 40;
+
+    const state = {
+      completedQuests: new Set<string>(),
+      companionLoyalty: loyalty,
+    };
+    const e = evaluateGameFlow(state);
+    expect(e.aliveCompanions.length).toBe(6);
+  });
+});
+
 describe('SYNC-S22 — 신뢰도 reputation → loyalty 매핑 (SYNC-10)', () => {
   it('5 동료 모두 COMPANION_REPUTATION_REWARDS 에 정의 (벤자민 제외)', async () => {
     const { COMPANION_REPUTATION_REWARDS } = await import('../../shared/types/scenarioRegistry');
