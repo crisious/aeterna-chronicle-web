@@ -1295,6 +1295,75 @@ export function getExtraBossByObsidianId(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-34: 동료 ↔ 게임 클래스 narrative 매핑
+// SCENARIO_COMPANIONS (Obsidian 인물) ↔ skillSeeds 6 클래스
+// ════════════════════════════════════════════════════════════════
+
+export type GameClass =
+  | 'ether_knight'
+  | 'time_knight'
+  | 'shadow_weaver'
+  | 'memory_weaver'
+  | 'time_guardian'
+  | 'void_wanderer'
+  | 'memory_breaker';
+
+export interface CompanionClassMapping {
+  companionObsidianId: string;
+  /** 동료의 게임 클래스 (Obsidian role narrative 기반 매핑) */
+  gameClass: GameClass;
+  /** 매핑 근거 narrative */
+  rationale: string;
+}
+
+export const COMPANION_CLASS_MAPPINGS: readonly CompanionClassMapping[] = [
+  {
+    companionObsidianId: 'seraphine',
+    gameClass: 'time_knight',
+    rationale: '엘파리스 정찰병 — 빠른 시간 기반 검술 + 정찰 narrative',
+  },
+  {
+    companionObsidianId: 'maestro_crio',
+    gameClass: 'memory_weaver',
+    rationale: '200년 생존자 정보상 — 기억 직조 + 정보 분석 narrative',
+  },
+  {
+    companionObsidianId: 'ignara',
+    gameClass: 'ether_knight',
+    rationale: '이프리타 족장의 딸 — 에테르 결정 + 불꽃 시그니처',
+  },
+  {
+    companionObsidianId: 'benjamin_cross',
+    gameClass: 'shadow_weaver',
+    rationale: '전직 형사 / 정보 담당 — 그림자 정보 수집 + 베르나르도 타락 narrative',
+  },
+  {
+    companionObsidianId: 'reina',
+    gameClass: 'memory_breaker',
+    rationale: '레테 교단 내부고발자 — 교단 기억 봉인 파괴 narrative',
+  },
+  {
+    companionObsidianId: 'urgrom',
+    gameClass: 'time_guardian',
+    rationale: '북방 기억석 사원 수호자 — 시간 봉인 수호 narrative',
+  },
+];
+
+export function getCompanionClass(
+  companionObsidianId: string,
+): GameClass | undefined {
+  return COMPANION_CLASS_MAPPINGS.find(
+    (m) => m.companionObsidianId === companionObsidianId,
+  )?.gameClass;
+}
+
+export function listCompanionsByClass(
+  gameClass: GameClass,
+): readonly CompanionClassMapping[] {
+  return COMPANION_CLASS_MAPPINGS.filter((m) => m.gameClass === gameClass);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

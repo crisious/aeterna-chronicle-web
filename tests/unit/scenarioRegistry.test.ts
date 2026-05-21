@@ -750,6 +750,75 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S41 — 동료 → 게임 클래스 narrative 매핑 (SYNC-34)', () => {
+  it('COMPANION_CLASS_MAPPINGS 6 매핑 (6 동료 모두)', async () => {
+    const { COMPANION_CLASS_MAPPINGS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_CLASS_MAPPINGS.length).toBe(SCENARIO_COMPANIONS.length);
+    expect(COMPANION_CLASS_MAPPINGS.length).toBe(6);
+  });
+
+  it('모든 동료 companionObsidianId 가 SCENARIO_COMPANIONS 에 존재', async () => {
+    const { COMPANION_CLASS_MAPPINGS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const m of COMPANION_CLASS_MAPPINGS) {
+      expect(ids.has(m.companionObsidianId), `${m.companionObsidianId}`).toBe(true);
+    }
+  });
+
+  it('모든 gameClass 가 SKILL 6 클래스 중 하나', async () => {
+    const { COMPANION_CLASS_MAPPINGS } = await import('../../shared/types/scenarioRegistry');
+    const VALID = new Set(['ether_knight', 'time_knight', 'shadow_weaver', 'memory_weaver', 'time_guardian', 'void_wanderer', 'memory_breaker']);
+    for (const m of COMPANION_CLASS_MAPPINGS) {
+      expect(VALID.has(m.gameClass), `${m.companionObsidianId} → ${m.gameClass}`).toBe(true);
+    }
+  });
+
+  it('각 매핑 rationale 한글 narrative + length ≥10', async () => {
+    const { COMPANION_CLASS_MAPPINGS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const m of COMPANION_CLASS_MAPPINGS) {
+      expect(korean.test(m.rationale), `${m.companionObsidianId} 한글`).toBe(true);
+      expect(m.rationale.length).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('세라핀 → time_knight (정찰병 narrative)', async () => {
+    const { getCompanionClass } = await import('../../shared/types/scenarioRegistry');
+    expect(getCompanionClass('seraphine')).toBe('time_knight');
+  });
+
+  it('우르그롬 → time_guardian (사원 수호자 narrative)', async () => {
+    const { getCompanionClass } = await import('../../shared/types/scenarioRegistry');
+    expect(getCompanionClass('urgrom')).toBe('time_guardian');
+  });
+
+  it('레이나 → memory_breaker (교단 봉인 파괴 narrative)', async () => {
+    const { getCompanionClass } = await import('../../shared/types/scenarioRegistry');
+    expect(getCompanionClass('reina')).toBe('memory_breaker');
+  });
+
+  it('listCompanionsByClass 헬퍼 동작', async () => {
+    const { listCompanionsByClass } = await import('../../shared/types/scenarioRegistry');
+    // time_knight = 세라핀
+    expect(listCompanionsByClass('time_knight').length).toBe(1);
+    // void_wanderer = 동료 없음 (NPC 외)
+    expect(listCompanionsByClass('void_wanderer').length).toBe(0);
+  });
+
+  it('SYNC-34 cohesion: 6 동료 클래스 매핑 + STORY 7 클래스 도메인 정합', async () => {
+    const { COMPANION_CLASS_MAPPINGS } = await import('../../shared/types/scenarioRegistry');
+    // STORY 7 클래스 (time_knight 포함, skillSeeds 의 6 클래스보다 1 많음)
+    const STORY_CLASSES = new Set([
+      'ether_knight', 'time_knight', 'shadow_weaver', 'memory_weaver',
+      'time_guardian', 'void_wanderer', 'memory_breaker',
+    ]);
+    // 모든 매핑 클래스가 STORY 도메인에 존재
+    for (const m of COMPANION_CLASS_MAPPINGS) {
+      expect(STORY_CLASSES.has(m.gameClass), `${m.gameClass} in STORY classes`).toBe(true);
+    }
+  });
+});
+
 describe('SYNC-S40 — chronoField extension (SYNC-33)', () => {
   it('SCENARIO_EXTRA_ZONES 2 zone (에레보스/솔라리스 chronoField 외)', async () => {
     const { SCENARIO_EXTRA_ZONES } = await import('../../shared/types/scenarioRegistry');
