@@ -1057,6 +1057,112 @@ export function listLoreDocumentsByChapter(chapter: number): readonly LoreDocume
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-24: 시나리오 worldmap zone connections + 동선 narrative
+// 출처: 시나리오/챕터/* + 01_코어기획/worldmap_design.md
+// ════════════════════════════════════════════════════════════════
+
+export interface ZoneConnection {
+  /** 출발 zone obsidianId */
+  from: string;
+  /** 도착 zone obsidianId */
+  to: string;
+  /** 이동 narrative 설명 */
+  travel: string;
+  /** 잠금 해제 조건 (선행 chapter 또는 quest) */
+  unlockCondition?: string;
+}
+
+export const SCENARIO_ZONE_CONNECTIONS: readonly ZoneConnection[] = [
+  // Ch1 — 칸텔라 → 에레보스
+  {
+    from: 'cantela_village',
+    to: 'erebos',
+    travel: '칸텔라 마을에서 망각의 고원 기슭을 따라 도보 1일.',
+    unlockCondition: 'MQ_CH01',
+  },
+  // Ch1→Ch2 — 에레보스 → 실반헤임
+  {
+    from: 'erebos',
+    to: 'silvanheim',
+    travel: '에레보스에서 동부 대륙 끝까지 약 7일. 엘파리스 영역 진입 외교 필요.',
+    unlockCondition: 'SQ_EREBOS_RUINS',
+  },
+  // Ch2 — 실반헤임 → 말라투스 영역
+  {
+    from: 'silvanheim',
+    to: 'malatus_grove',
+    travel: '실반헤임 깊숙이 시간 지연 구역 통과 (1일 = 외부 3시간).',
+    unlockCondition: 'MQ_CH03',
+  },
+  // Ch2→Ch3 — 실반헤임 → 솔라리스
+  {
+    from: 'silvanheim',
+    to: 'solaris',
+    travel: '실반헤임에서 남부 사막으로 약 10일. 신기루 + 에테르 발광 위험.',
+    unlockCondition: 'SQ_SILVANHEIM_FRAGMENT',
+  },
+  // Ch3→Ch4 — 솔라리스 → 아르겐티움
+  {
+    from: 'solaris',
+    to: 'argentium',
+    travel: '솔라리스에서 중북부 평원으로 약 5일. 제국 검문소 통과 필요.',
+    unlockCondition: 'SQ_SOLARIS_RAWAR',
+  },
+  // Ch4 — 아르겐티움 → 팔라티노 지하
+  {
+    from: 'argentium',
+    to: 'palatino_lab',
+    travel: '아르겐티움 황궁 지하 비밀 통로 진입.',
+    unlockCondition: 'MQ_CH04',
+  },
+  // Ch4→Ch5 — 아르겐티움 → 망각의 고원
+  {
+    from: 'argentium',
+    to: 'oblivion_plateau',
+    travel: '아르겐티움에서 중앙-동부 경계 절벽 위로 약 3일. 현실 붕괴 시작.',
+    unlockCondition: 'SQ_ARGENTIUM_FRAGMENT',
+  },
+  // Ch5 — 망각의 고원 → 황금 에테르 탑
+  {
+    from: 'oblivion_plateau',
+    to: 'golden_ether_tower',
+    travel: '고원 정상의 황금 탑 등반. 시간 왜곡 + 과거와 현재 겹침.',
+    unlockCondition: 'MQ_CH13',
+  },
+];
+
+export function getConnectionsFromZone(
+  fromObsidianId: string,
+): readonly ZoneConnection[] {
+  return SCENARIO_ZONE_CONNECTIONS.filter((c) => c.from === fromObsidianId);
+}
+
+export function getConnectionsToZone(
+  toObsidianId: string,
+): readonly ZoneConnection[] {
+  return SCENARIO_ZONE_CONNECTIONS.filter((c) => c.to === toObsidianId);
+}
+
+/** 챕터 진행 동선 — 시작 → 종결 zone 경로 */
+export interface ChapterRoute {
+  chapter: number;
+  startZoneId: string;
+  endZoneId: string;
+}
+
+export const SCENARIO_CHAPTER_ROUTES: readonly ChapterRoute[] = [
+  { chapter: 1, startZoneId: 'cantela_village', endZoneId: 'erebos' },
+  { chapter: 2, startZoneId: 'silvanheim',      endZoneId: 'malatus_grove' },
+  { chapter: 3, startZoneId: 'solaris',         endZoneId: 'solaris' },
+  { chapter: 4, startZoneId: 'argentium',       endZoneId: 'palatino_lab' },
+  { chapter: 5, startZoneId: 'oblivion_plateau', endZoneId: 'golden_ether_tower' },
+];
+
+export function getRouteByChapter(chapter: number): ChapterRoute | undefined {
+  return SCENARIO_CHAPTER_ROUTES.find((r) => r.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

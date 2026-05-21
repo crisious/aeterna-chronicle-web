@@ -750,6 +750,101 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S34 — worldmap zone connections + chapter routes (SYNC-24)', () => {
+  it('SCENARIO_ZONE_CONNECTIONS ≥ 8 zone 이동 경로', async () => {
+    const { SCENARIO_ZONE_CONNECTIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_ZONE_CONNECTIONS.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('모든 connection from/to 가 SCENARIO_ZONES 에 존재', async () => {
+    const { SCENARIO_ZONE_CONNECTIONS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const c of SCENARIO_ZONE_CONNECTIONS) {
+      expect(zoneIds.has(c.from), `from ${c.from}`).toBe(true);
+      expect(zoneIds.has(c.to), `to ${c.to}`).toBe(true);
+    }
+  });
+
+  it('모든 connection self-loop 없음', async () => {
+    const { SCENARIO_ZONE_CONNECTIONS } = await import('../../shared/types/scenarioRegistry');
+    for (const c of SCENARIO_ZONE_CONNECTIONS) {
+      expect(c.from).not.toBe(c.to);
+    }
+  });
+
+  it('모든 connection 한글 travel narrative + length ≥10', async () => {
+    const { SCENARIO_ZONE_CONNECTIONS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const c of SCENARIO_ZONE_CONNECTIONS) {
+      expect(korean.test(c.travel), `${c.from}→${c.to} 한글`).toBe(true);
+      expect(c.travel.length, `${c.from}→${c.to} length`).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('unlockCondition quest code 모두 ALL_QUEST_SEEDS 존재', async () => {
+    const { SCENARIO_ZONE_CONNECTIONS } = await import('../../shared/types/scenarioRegistry');
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const c of SCENARIO_ZONE_CONNECTIONS) {
+      if (c.unlockCondition) {
+        expect(codes.has(c.unlockCondition), `${c.from}→${c.to} '${c.unlockCondition}'`).toBe(true);
+      }
+    }
+  });
+
+  it('getConnectionsFromZone: 아르겐티움 → 2 (palatino_lab + oblivion_plateau)', async () => {
+    const { getConnectionsFromZone } = await import('../../shared/types/scenarioRegistry');
+    const conns = getConnectionsFromZone('argentium');
+    expect(conns.length).toBe(2);
+    const targets = conns.map((c) => c.to);
+    expect(targets).toContain('palatino_lab');
+    expect(targets).toContain('oblivion_plateau');
+  });
+
+  it('SCENARIO_CHAPTER_ROUTES 5 chapter routes 정의', async () => {
+    const { SCENARIO_CHAPTER_ROUTES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_ROUTES.length).toBe(5);
+  });
+
+  it('각 route start/end zone 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_CHAPTER_ROUTES, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const r of SCENARIO_CHAPTER_ROUTES) {
+      expect(zoneIds.has(r.startZoneId), `Ch${r.chapter} start`).toBe(true);
+      expect(zoneIds.has(r.endZoneId), `Ch${r.chapter} end`).toBe(true);
+    }
+  });
+
+  it('Ch1 칸텔라→에레보스, Ch5 망각의고원→황금탑 narrative', async () => {
+    const { getRouteByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getRouteByChapter(1);
+    expect(ch1!.startZoneId).toBe('cantela_village');
+    expect(ch1!.endZoneId).toBe('erebos');
+    const ch5 = getRouteByChapter(5);
+    expect(ch5!.startZoneId).toBe('oblivion_plateau');
+    expect(ch5!.endZoneId).toBe('golden_ether_tower');
+  });
+
+  it('worldmap connectivity: 칸텔라 → 황금탑 도달 가능 (5 chapter 동선)', async () => {
+    const { SCENARIO_ZONE_CONNECTIONS } = await import('../../shared/types/scenarioRegistry');
+    // BFS — 칸텔라에서 황금탑까지 도달 가능 검증
+    const graph = new Map<string, string[]>();
+    for (const c of SCENARIO_ZONE_CONNECTIONS) {
+      if (!graph.has(c.from)) graph.set(c.from, []);
+      graph.get(c.from)!.push(c.to);
+    }
+    const visited = new Set<string>();
+    const queue: string[] = ['cantela_village'];
+    while (queue.length > 0) {
+      const curr = queue.shift()!;
+      if (visited.has(curr)) continue;
+      visited.add(curr);
+      const next = graph.get(curr) ?? [];
+      queue.push(...next);
+    }
+    expect(visited.has('golden_ether_tower'), 'reachable from cantela').toBe(true);
+  });
+});
+
 describe('SYNC-S33 — 외전 문서 SSOT (SYNC-22)', () => {
   it('SCENARIO_LORE_DOCUMENTS ≥ 11 (편지 5 + 도서 4 + 기억 조각 2)', async () => {
     const { SCENARIO_LORE_DOCUMENTS } = await import('../../shared/types/scenarioRegistry');
