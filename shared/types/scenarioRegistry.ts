@@ -1545,6 +1545,83 @@ export function getBgmByChapter(chapter: number): ChapterBgm | undefined {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-38: 시나리오 sub-plot narrative
+// 각 챕터별 메인 외 부 이야기 + 선택 분기 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface SubPlot {
+  obsidianId: string;
+  chapter: number;
+  /** 한글 제목 */
+  title: string;
+  /** 핵심 narrative */
+  narrative: string;
+  /** 관련 동료 obsidianId (있을 경우) */
+  relatedCompanion?: string;
+}
+
+export const SCENARIO_SUB_PLOTS: readonly SubPlot[] = [
+  {
+    obsidianId: 'subplot_ch1_seraphine_first',
+    chapter: 1,
+    title: '세라핀의 첫 신뢰',
+    narrative: '에레보스 폐허 진입 전 세라핀의 카엘 회상이 처음 노출되는 회상 씬.',
+    relatedCompanion: 'seraphine',
+  },
+  {
+    obsidianId: 'subplot_ch2_elfaris_diplomacy',
+    chapter: 2,
+    title: '엘파리스 외교 분기',
+    narrative: '엘파리스 영역 진입 시 평화/전투 선택지. 신뢰도 영향.',
+  },
+  {
+    obsidianId: 'subplot_ch3_ifrita_mine',
+    chapter: 3,
+    title: '이프리타 채광 기지 작전',
+    narrative: '제국 채광 기지를 정면 공격 vs 내부 공작 선택지. 이그나 신뢰도 영향.',
+    relatedCompanion: 'ignara',
+  },
+  {
+    obsidianId: 'subplot_ch3_rawar_choice',
+    chapter: 3,
+    title: '라와르의 처리',
+    narrative: '라와르 봉인 해방 vs 재봉인 선택지. 솔라리스 파편 회수 방식.',
+  },
+  {
+    obsidianId: 'subplot_ch4_bernardo_reconcile',
+    chapter: 4,
+    title: '베르나르도 화해/배신',
+    narrative: '베르나르도 화해 선택 시 생존, 배신 선택 시 boss_bernardo_corrupted 분기.',
+    relatedCompanion: 'benjamin_cross',
+  },
+  {
+    obsidianId: 'subplot_ch4_urgrom_north',
+    chapter: 4,
+    title: '북방 기억석 사원 방문',
+    narrative: '우르그롬 합류를 위한 북방 사원 방문 필수 분기. 미방문 시 엔딩 A 불가.',
+    relatedCompanion: 'urgrom',
+  },
+  {
+    obsidianId: 'subplot_ch5_kail_meet',
+    chapter: 5,
+    title: '카일과의 정신적 대면',
+    narrative: '망각의 고원에서 200년 전 자신 카일과 정신적 만남. 봉인 의식 재현 결심.',
+  },
+];
+
+export function getSubPlotsByChapter(chapter: number): readonly SubPlot[] {
+  return SCENARIO_SUB_PLOTS.filter((s) => s.chapter === chapter);
+}
+
+export function listSubPlotsByCompanion(
+  companionObsidianId: string,
+): readonly SubPlot[] {
+  return SCENARIO_SUB_PLOTS.filter(
+    (s) => s.relatedCompanion === companionObsidianId,
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

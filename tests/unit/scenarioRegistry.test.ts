@@ -750,6 +750,79 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S45 — 시나리오 sub-plot SSOT (SYNC-38)', () => {
+  it('SCENARIO_SUB_PLOTS ≥ 7 sub-plots', async () => {
+    const { SCENARIO_SUB_PLOTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_SUB_PLOTS.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 sub-plot obsidianId unique snake_case + subplot_ prefix', async () => {
+    const { SCENARIO_SUB_PLOTS } = await import('../../shared/types/scenarioRegistry');
+    const ids = SCENARIO_SUB_PLOTS.map((s) => s.obsidianId);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) {
+      expect(id.startsWith('subplot_'), `${id}`).toBe(true);
+    }
+  });
+
+  it('각 sub-plot 한글 title + narrative + chapter 1~5', async () => {
+    const { SCENARIO_SUB_PLOTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const s of SCENARIO_SUB_PLOTS) {
+      expect(korean.test(s.title)).toBe(true);
+      expect(korean.test(s.narrative)).toBe(true);
+      expect(s.chapter).toBeGreaterThanOrEqual(1);
+      expect(s.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('relatedCompanion 있는 sub-plot 모두 SCENARIO_COMPANIONS 존재', async () => {
+    const { SCENARIO_SUB_PLOTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const s of SCENARIO_SUB_PLOTS) {
+      if (s.relatedCompanion) {
+        expect(ids.has(s.relatedCompanion), `${s.relatedCompanion}`).toBe(true);
+      }
+    }
+  });
+
+  it('5 chapter 모두 ≥1 sub-plot 보유', async () => {
+    const { getSubPlotsByChapter } = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      expect(getSubPlotsByChapter(ch).length, `Ch${ch} sub-plot`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('베르나르도 sub-plot (subplot_ch4_bernardo_reconcile) 존재', async () => {
+    const { SCENARIO_SUB_PLOTS } = await import('../../shared/types/scenarioRegistry');
+    const bernardo = SCENARIO_SUB_PLOTS.find((s) => s.obsidianId === 'subplot_ch4_bernardo_reconcile');
+    expect(bernardo).toBeDefined();
+    expect(bernardo!.relatedCompanion).toBe('benjamin_cross');
+    expect(bernardo!.narrative).toContain('boss_bernardo_corrupted');
+  });
+
+  it('Ch4 동료 관련 sub-plot ≥ 2 (벤자민 + 우르그롬)', async () => {
+    const { getSubPlotsByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch4 = getSubPlotsByChapter(4);
+    const withCompanion = ch4.filter((s) => s.relatedCompanion);
+    expect(withCompanion.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('listSubPlotsByCompanion: 세라핀 ≥1 (Ch1)', async () => {
+    const { listSubPlotsByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const seraphine = listSubPlotsByCompanion('seraphine');
+    expect(seraphine.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('Ch5 카일 sub-plot (정신적 대면) 존재', async () => {
+    const { getSubPlotsByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getSubPlotsByChapter(5);
+    const kail = ch5.find((s) => s.obsidianId === 'subplot_ch5_kail_meet');
+    expect(kail).toBeDefined();
+    expect(kail!.narrative).toContain('카일');
+  });
+});
+
 describe('SYNC-S44 — Ch3 dialogue 추가 + BGM 매핑 (SYNC-37)', () => {
   it('Ch3 대화 ≥ 2 (이그나 + 다리오 펜)', async () => {
     const { getDialoguesByChapter } = await import('../../shared/types/scenarioRegistry');
