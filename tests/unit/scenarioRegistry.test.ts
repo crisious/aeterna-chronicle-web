@@ -750,6 +750,111 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S36 — SSOT 15 도메인 cross-domain cohesion (SYNC-26)', () => {
+  it('동료 ↔ 대화: 모든 sync 동료가 ≥1 대화 보유', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const dialogueNpcs = new Set(mod.SCENARIO_DIALOGUES.map((d) => d.gameNpcId));
+    for (const c of mod.SCENARIO_COMPANIONS) {
+      if (c.gameNpcId) {
+        expect(dialogueNpcs.has(c.gameNpcId), `${c.obsidianId}`).toBe(true);
+      }
+    }
+  });
+
+  it('파편 ↔ zone: 4 파편 zoneObsidianId 모두 SCENARIO_ZONES 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(mod.SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const f of mod.SCENARIO_FRAGMENTS) {
+      expect(zoneIds.has(f.zoneObsidianId), `${f.obsidianId}`).toBe(true);
+    }
+  });
+
+  it('유물 ↔ 신: 4 유물 deityObsidianId 모두 SCENARIO_DEITIES 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const deityIds = new Set(mod.SCENARIO_DEITIES.map((d) => d.obsidianId));
+    for (const r of mod.SCENARIO_MYTHIC_RELICS) {
+      expect(deityIds.has(r.deityObsidianId), `${r.obsidianId}`).toBe(true);
+    }
+  });
+
+  it('유물 ↔ zone: 4 유물 zone 모두 SCENARIO_ZONES 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(mod.SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const r of mod.SCENARIO_MYTHIC_RELICS) {
+      expect(zoneIds.has(r.zoneObsidianId), `${r.obsidianId}`).toBe(true);
+    }
+  });
+
+  it('lore ↔ zone: zone 정의된 외전 모두 SCENARIO_ZONES 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(mod.SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const l of mod.SCENARIO_LORE_DOCUMENTS) {
+      if (l.zoneObsidianId) {
+        expect(zoneIds.has(l.zoneObsidianId), `${l.obsidianId}`).toBe(true);
+      }
+    }
+  });
+
+  it('connection ↔ zone: 모든 zone connection from/to SCENARIO_ZONES', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(mod.SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const c of mod.SCENARIO_ZONE_CONNECTIONS) {
+      expect(zoneIds.has(c.from)).toBe(true);
+      expect(zoneIds.has(c.to)).toBe(true);
+    }
+  });
+
+  it('route ↔ chapter: 5 route chapter 모두 SCENARIO_CHAPTERS 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const chapterNums = new Set(mod.SCENARIO_CHAPTERS.map((c) => c.chapter));
+    for (const r of mod.SCENARIO_CHAPTER_ROUTES) {
+      expect(chapterNums.has(r.chapter), `Ch${r.chapter}`).toBe(true);
+    }
+  });
+
+  it('milestone ↔ chapter: 5 milestone chapter 모두 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const chapterNums = new Set(mod.SCENARIO_CHAPTERS.map((c) => c.chapter));
+    for (const m of mod.SCENARIO_MILESTONES) {
+      expect(chapterNums.has(m.chapter), `Ch${m.chapter}`).toBe(true);
+    }
+  });
+
+  it('reputation ↔ companion: 5 reputation companion 모두 SCENARIO_COMPANIONS 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const companionIds = new Set(mod.SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const r of mod.COMPANION_REPUTATION_REWARDS) {
+      expect(companionIds.has(r.companionObsidianId), `${r.companionObsidianId}`).toBe(true);
+    }
+  });
+
+  it('reputation ↔ quest: 5 reputation questCode ALL_QUEST_SEEDS 매핑', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const r of mod.COMPANION_REPUTATION_REWARDS) {
+      expect(codes.has(r.questCode), `${r.questCode}`).toBe(true);
+    }
+  });
+
+  it('timeline ↔ deity: 레테 narrative 연대표 + 신화 신 cross', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const lethe = mod.getDeityByObsidianId('lethe');
+    expect(lethe!.inCreation).toBe(false);
+    // 연대표에서 레테 등장 narrative
+    const letheEvents = mod.SCENARIO_TIMELINE.filter((e) => e.summary.includes('레테'));
+    expect(letheEvents.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('milestone ↔ companion: 5 milestone unlockedCompanions = 6 동료 합 (cohesion)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const unlocked = new Set<string>();
+    for (const m of mod.SCENARIO_MILESTONES) {
+      for (const c of m.unlockedCompanions) unlocked.add(c);
+    }
+    expect(unlocked.size).toBe(6);
+  });
+});
+
 describe('🎯 SYNC-S35 — 25 sprint 마디 end-to-end 게임 흐름 (SYNC-25)', () => {
   it('SSOT entity 정점 총량 ≥ 100 (25 sprint 누적)', async () => {
     const mod = await import('../../shared/types/chrono');
