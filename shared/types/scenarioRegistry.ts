@@ -1236,7 +1236,7 @@ export function getScenarioRegistryStats(): ScenarioRegistryStats {
   };
 }
 
-/** 전체 obsidianId index — 빠른 entity lookup */
+/** 전체 obsidianId index — 빠른 entity lookup (SYNC-46 확장) */
 export function buildScenarioIndex(): ReadonlyMap<string, string> {
   const index = new Map<string, string>();
   SCENARIO_COMPANIONS.forEach((c) => index.set(c.obsidianId, 'companion'));
@@ -1248,6 +1248,9 @@ export function buildScenarioIndex(): ReadonlyMap<string, string> {
   SCENARIO_DIALOGUES.forEach((d) => index.set(d.obsidianId, 'dialogue'));
   SCENARIO_MYTHIC_RELICS.forEach((r) => index.set(r.obsidianId, 'relic'));
   SCENARIO_LORE_DOCUMENTS.forEach((l) => index.set(l.obsidianId, 'lore'));
+  // SYNC-46: 신규 도메인 추가
+  SCENARIO_SUB_PLOTS.forEach((s) => index.set(s.obsidianId, 'sub_plot'));
+  SCENARIO_EPIC_ITEMS.forEach((i) => index.set(i.obsidianId, 'epic_item'));
   return index;
 }
 

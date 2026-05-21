@@ -750,6 +750,47 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S52 — index 확장 + sub_plot/epic_item resolve (SYNC-46)', () => {
+  it('buildScenarioIndex 확장 — sub_plot/epic_item 추가', async () => {
+    const { resolveEntityType } = await import('../../shared/types/scenarioRegistry');
+    expect(resolveEntityType('subplot_ch1_seraphine_first')).toBe('sub_plot');
+    expect(resolveEntityType('item_kail_pendant')).toBe('epic_item');
+    expect(resolveEntityType('item_aetherna_chronicle')).toBe('epic_item');
+  });
+
+  it('index size 증가 (11 도메인 entity 합)', async () => {
+    const { buildScenarioIndex, getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const index = buildScenarioIndex();
+    const stats = getScenarioRegistryStats();
+    // 11 indexable 도메인 (companions/zones/bosses/fragments/deities/timeline/dialogues/relics/lore/sub_plots/epic_items)
+    const expectedIndexable =
+      stats.companions + stats.zones + stats.bosses + stats.fragments +
+      stats.deities + stats.timeline + stats.dialogues + stats.mythicRelics +
+      stats.loreDocuments + 7 + 5; // sub_plots 7 + epic_items 5
+    expect(index.size).toBeGreaterThanOrEqual(expectedIndexable - 5);
+  });
+
+  it('resolveEntityType 11+ 카테고리 lookup', async () => {
+    const { resolveEntityType } = await import('../../shared/types/scenarioRegistry');
+    const lookups: Array<[string, string]> = [
+      ['seraphine', 'companion'],
+      ['erebos', 'zone'],
+      ['memory_golem', 'boss'],
+      ['fragment_erebos', 'fragment'],
+      ['chronai', 'deity'],
+      ['game_start_cantela', 'timeline'],
+      ['seraphine_first', 'dialogue'],
+      ['relic_chronai_hourglass', 'relic'],
+      ['letter_001', 'lore'],
+      ['subplot_ch1_seraphine_first', 'sub_plot'],
+      ['item_kail_pendant', 'epic_item'],
+    ];
+    for (const [id, expected] of lookups) {
+      expect(resolveEntityType(id), `${id}`).toBe(expected);
+    }
+  });
+});
+
 describe('🎯 SYNC-S51 — 1700 tests 마디 + chapter 통합 cohesion (SYNC-45)', () => {
   it('Ch1 통합 (8 도메인 모두 정의)', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
@@ -1709,13 +1750,14 @@ describe('SYNC-S37 — SSOT 종합 stats + entity index (SYNC-27)', () => {
     expect(resolveEntityType('unknown_entity')).toBeUndefined();
   });
 
-  it('index 모든 obsidianId 도메인 cover (cross-domain 일부 중복 허용)', async () => {
-    const { buildScenarioIndex, getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+  it('index 모든 obsidianId 도메인 cover (cross-domain 일부 중복 허용, SYNC-46 확장)', async () => {
+    const { buildScenarioIndex, getScenarioRegistryStats, SCENARIO_SUB_PLOTS, SCENARIO_EPIC_ITEMS } = await import('../../shared/types/scenarioRegistry');
     const index = buildScenarioIndex();
     const s = getScenarioRegistryStats();
-    // 인덱스에 들어가는 도메인 합 (cross-domain 중복은 후행 덮어쓰기)
+    // 11 indexable 도메인 (SYNC-46 sub_plots + epic_items 포함)
     const indexable = s.companions + s.zones + s.bosses + s.fragments + s.deities +
-      s.timeline + s.dialogues + s.mythicRelics + s.loreDocuments;
+      s.timeline + s.dialogues + s.mythicRelics + s.loreDocuments +
+      SCENARIO_SUB_PLOTS.length + SCENARIO_EPIC_ITEMS.length;
     // 모든 entity 가 unique 면 size = indexable, 중복 있어도 가까운 size
     expect(index.size).toBeGreaterThanOrEqual(indexable - 5);
     expect(index.size).toBeLessThanOrEqual(indexable);
