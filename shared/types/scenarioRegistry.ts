@@ -637,6 +637,81 @@ export function checkEndingA(state: GameFlowState): boolean {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-16: 엔딩 D (신화) + FAIL 시나리오 game-flow
+// ════════════════════════════════════════════════════════════════
+
+export interface AdvancedGameFlowState extends GameFlowState {
+  /** 미네르바 신과의 만남 여부 (엔딩 D 필수 조건) */
+  metMinerva?: boolean;
+  /** 보유 신화 유물 카운트 */
+  mythicRelicsCount?: number;
+  /** 최종 보스 패배 여부 (FAIL 조건) */
+  defeatedByLethe?: boolean;
+}
+
+export interface AdvancedEndingEvaluation {
+  fragmentsCollected: number;
+  aliveCompanions: readonly string[];
+  leftCompanions: readonly string[];
+  achievableEnding: ScenarioEndingCode;
+  /** 엔딩 D 달성 가능 여부 (신화 조건 충족) */
+  canAchieveEndingD: boolean;
+  /** FAIL 시나리오 여부 */
+  isFailure: boolean;
+}
+
+/**
+ * 고급 엔딩 평가 — A/B/C 기본 + D (신화) + FAIL (레테 승리).
+ *
+ * 우선순위:
+ * 1. defeatedByLethe = true → FAIL
+ * 2. metMinerva + mythicRelics ≥ 2 → D (신화 우선)
+ * 3. evaluateGameFlow → A/B/C
+ */
+export function evaluateAdvancedEnding(
+  state: AdvancedGameFlowState,
+): AdvancedEndingEvaluation {
+  const baseFlow = evaluateGameFlow(state);
+
+  // FAIL 우선 — 최종 보스 패배
+  if (state.defeatedByLethe) {
+    return {
+      ...baseFlow,
+      achievableEnding: 'FAIL',
+      canAchieveEndingD: false,
+      isFailure: true,
+    };
+  }
+
+  // 엔딩 D 조건 — 미네르바 만남 + 신화 유물 ≥ 2
+  const canAchieveEndingD =
+    !!state.metMinerva && (state.mythicRelicsCount ?? 0) >= 2;
+
+  // 엔딩 D 가 달성 가능하면 우선 (A 보다 우선순위 높음, 가장 거대 스케일)
+  if (canAchieveEndingD) {
+    return {
+      ...baseFlow,
+      achievableEnding: 'D',
+      canAchieveEndingD: true,
+      isFailure: false,
+    };
+  }
+
+  return {
+    ...baseFlow,
+    canAchieveEndingD: false,
+    isFailure: false,
+  };
+}
+
+/** 엔딩별 narrative 요약 반환 */
+export function getEndingSummary(code: ScenarioEndingCode): string {
+  const ending = getEndingByCode(code);
+  if (!ending) return '';
+  return `${ending.code}: ${ending.name} — ${ending.signature}`;
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

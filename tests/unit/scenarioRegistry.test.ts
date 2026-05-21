@@ -750,6 +750,113 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S27 — 엔딩 D (신화) + FAIL 시나리오 (SYNC-16)', () => {
+  it('FAIL 우선: defeatedByLethe = true → FAIL (다른 조건 무관)', async () => {
+    const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateAdvancedEnding({
+      completedQuests: new Set([
+        'SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT',
+        'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT',
+      ]),
+      companionLoyalty: { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 },
+      defeatedByLethe: true,
+    });
+    expect(r.achievableEnding).toBe('FAIL');
+    expect(r.isFailure).toBe(true);
+  });
+
+  it('엔딩 D: 미네르바 만남 + 신화 유물 2개 → D (A 우선순위 위)', async () => {
+    const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateAdvancedEnding({
+      completedQuests: new Set([
+        'SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT',
+        'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT',
+      ]),
+      companionLoyalty: { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 },
+      metMinerva: true,
+      mythicRelicsCount: 2,
+    });
+    expect(r.achievableEnding).toBe('D');
+    expect(r.canAchieveEndingD).toBe(true);
+    expect(r.isFailure).toBe(false);
+  });
+
+  it('엔딩 D 미달: 미네르바만 만났음 (유물 0) → 기본 A 평가', async () => {
+    const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateAdvancedEnding({
+      completedQuests: new Set([
+        'SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT',
+        'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT',
+      ]),
+      companionLoyalty: { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 },
+      metMinerva: true,
+      mythicRelicsCount: 0,
+    });
+    expect(r.achievableEnding).toBe('A');
+    expect(r.canAchieveEndingD).toBe(false);
+  });
+
+  it('엔딩 D 미달: 유물 2 있지만 미네르바 만남 X → 기본 평가', async () => {
+    const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateAdvancedEnding({
+      completedQuests: new Set(['SQ_EREBOS_RUINS']),
+      companionLoyalty: {},
+      mythicRelicsCount: 5,
+    });
+    expect(r.achievableEnding).toBe('C');
+    expect(r.canAchieveEndingD).toBe(false);
+  });
+
+  it('FAIL 이 D 보다 우선 (defeatedByLethe + metMinerva)', async () => {
+    const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateAdvancedEnding({
+      completedQuests: new Set(),
+      companionLoyalty: {},
+      defeatedByLethe: true,
+      metMinerva: true,
+      mythicRelicsCount: 5,
+    });
+    expect(r.achievableEnding).toBe('FAIL');
+    expect(r.isFailure).toBe(true);
+  });
+
+  it('getEndingSummary 5 엔딩 모두 한글 narrative 반환', async () => {
+    const { getEndingSummary } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const code of ['A', 'B', 'C', 'D', 'FAIL'] as const) {
+      const summary = getEndingSummary(code);
+      expect(summary.length, `${code} summary`).toBeGreaterThan(0);
+      expect(korean.test(summary), `${code} 한글`).toBe(true);
+    }
+  });
+
+  it('getEndingSummary 형식: "code: name — signature"', async () => {
+    const { getEndingSummary } = await import('../../shared/types/scenarioRegistry');
+    expect(getEndingSummary('A')).toContain('A:');
+    expect(getEndingSummary('A')).toContain('—');
+  });
+
+  it('SYNC-16 cohesion: 4 시나리오 종합 (A/B/C/D/FAIL 모두 도달 가능)', async () => {
+    const { evaluateAdvancedEnding } = await import('../../shared/types/scenarioRegistry');
+    const allLoyalty = { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 };
+    const allFragments = new Set([
+      'SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT',
+      'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT',
+    ]);
+    // A
+    expect(evaluateAdvancedEnding({ completedQuests: allFragments, companionLoyalty: allLoyalty }).achievableEnding).toBe('A');
+    // B (3 파편)
+    const threeFragments = new Set([...allFragments].slice(0, 3));
+    expect(evaluateAdvancedEnding({ completedQuests: threeFragments, companionLoyalty: allLoyalty }).achievableEnding).toBe('B');
+    // C (1 파편)
+    expect(evaluateAdvancedEnding({ completedQuests: new Set(['SQ_EREBOS_RUINS']), companionLoyalty: {} }).achievableEnding).toBe('C');
+    // D
+    expect(evaluateAdvancedEnding({ completedQuests: allFragments, companionLoyalty: allLoyalty, metMinerva: true, mythicRelicsCount: 2 }).achievableEnding).toBe('D');
+    // FAIL
+    expect(evaluateAdvancedEnding({ completedQuests: new Set(), companionLoyalty: {}, defeatedByLethe: true }).achievableEnding).toBe('FAIL');
+  });
+});
+
 describe('SYNC-S26 — 챕터별 milestone game-flow (SYNC-15)', () => {
   it('SCENARIO_MILESTONES 5 chapter (Ch1~Ch5)', async () => {
     const { SCENARIO_MILESTONES } = await import('../../shared/types/scenarioRegistry');
