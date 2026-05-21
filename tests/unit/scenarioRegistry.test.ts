@@ -750,6 +750,85 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S62 — 게임 시작 / 종결 시퀀스 narrative (SYNC-59)', () => {
+  it('GAME_INTRO_SEQUENCE 5 단계 인트로', async () => {
+    const { GAME_INTRO_SEQUENCE } = await import('../../shared/types/scenarioRegistry');
+    expect(GAME_INTRO_SEQUENCE.length).toBe(5);
+  });
+
+  it('intro step 단조 증가 + 한글 narrative', async () => {
+    const { GAME_INTRO_SEQUENCE } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (let i = 0; i < GAME_INTRO_SEQUENCE.length; i += 1) {
+      expect(GAME_INTRO_SEQUENCE[i].step).toBe(i + 1);
+      expect(korean.test(GAME_INTRO_SEQUENCE[i].text)).toBe(true);
+    }
+  });
+
+  it('intro 첫 단계 — 세계력 3412 + 에레보스', async () => {
+    const { GAME_INTRO_SEQUENCE } = await import('../../shared/types/scenarioRegistry');
+    const first = GAME_INTRO_SEQUENCE[0];
+    expect(first.text).toContain('3,412');
+    expect(first.text).toContain('에레보스');
+  });
+
+  it('intro 마지막 단계 — 카일 봉인 환영', async () => {
+    const { GAME_INTRO_SEQUENCE } = await import('../../shared/types/scenarioRegistry');
+    const last = GAME_INTRO_SEQUENCE[GAME_INTRO_SEQUENCE.length - 1];
+    expect(last.text).toContain('카일');
+  });
+
+  it('bgZoneId 있는 단계 모두 SCENARIO_ZONES 존재', async () => {
+    const { GAME_INTRO_SEQUENCE, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const s of GAME_INTRO_SEQUENCE) {
+      if (s.bgZoneId) {
+        expect(zoneIds.has(s.bgZoneId), `${s.bgZoneId}`).toBe(true);
+      }
+    }
+  });
+
+  it('ENDING_FINAL_SEQUENCES 5 엔딩 모두 (A/B/C/D/FAIL)', async () => {
+    const { ENDING_FINAL_SEQUENCES } = await import('../../shared/types/scenarioRegistry');
+    expect(ENDING_FINAL_SEQUENCES.length).toBe(5);
+    const codes = ENDING_FINAL_SEQUENCES.map((e) => e.endingCode).sort();
+    expect(codes).toEqual(['A', 'B', 'C', 'D', 'FAIL']);
+  });
+
+  it('각 엔딩 sequence ≥ 3 단계 + 한글', async () => {
+    const { ENDING_FINAL_SEQUENCES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const e of ENDING_FINAL_SEQUENCES) {
+      expect(e.sequence.length).toBeGreaterThanOrEqual(3);
+      for (const line of e.sequence) {
+        expect(korean.test(line)).toBe(true);
+      }
+    }
+  });
+
+  it('getEndingSequence 5 엔딩 모두 반환', async () => {
+    const { getEndingSequence } = await import('../../shared/types/scenarioRegistry');
+    for (const code of ['A', 'B', 'C', 'D', 'FAIL'] as const) {
+      expect(getEndingSequence(code)).toBeDefined();
+      expect(getEndingSequence(code)!.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('엔딩 A narrative — 4 파편 + 6 동료 cohesion', async () => {
+    const { getEndingSequence } = await import('../../shared/types/scenarioRegistry');
+    const seqA = getEndingSequence('A')!;
+    expect(seqA.join(' ')).toContain('4');
+    expect(seqA.join(' ')).toContain('6');
+  });
+
+  it('엔딩 D narrative — 미네르바 + 신화 시대 cohesion', async () => {
+    const { getEndingSequence } = await import('../../shared/types/scenarioRegistry');
+    const seqD = getEndingSequence('D')!;
+    expect(seqD.join(' ')).toContain('미네르바');
+    expect(seqD.join(' ')).toContain('신화');
+  });
+});
+
 describe('🎯 SYNC-S61 — 28 도메인 종합 final stress (SYNC-58)', () => {
   it('28 SSOT 도메인 entity 총량 ≥ 175', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');

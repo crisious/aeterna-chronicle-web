@@ -2163,6 +2163,81 @@ export function canEnterChapter(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-59: 게임 시작 / 5 엔딩 종결 시퀀스 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface IntroSequence {
+  /** 시퀀스 단계 (1부터) */
+  step: number;
+  /** 한글 narrative 텍스트 */
+  text: string;
+  /** 배경 zone obsidianId (있을 경우) */
+  bgZoneId?: string;
+}
+
+export const GAME_INTRO_SEQUENCE: readonly IntroSequence[] = [
+  { step: 1, text: '세계력 3,412년. 200년 전 그날 밤, 에레보스가 한 밤에 멸망했다.' },
+  { step: 2, text: '망각의 폭풍은 지금도 대륙을 휩쓸고 있고...' },
+  { step: 3, text: '나, 에리언. 칸텔라 마을에서 평범한 삶을 살고 있었다.', bgZoneId: 'cantela_village' },
+  { step: 4, text: '그러나 그날, 폭풍이 우리 마을을 덮쳤다.', bgZoneId: 'cantela_village' },
+  { step: 5, text: '그리고 처음, 나는 카일의 봉인 의식 환영을 보았다.' },
+];
+
+export interface EndingSequence {
+  endingCode: ScenarioEndingCode;
+  sequence: readonly string[];
+}
+
+export const ENDING_FINAL_SEQUENCES: readonly EndingSequence[] = [
+  {
+    endingCode: 'A',
+    sequence: [
+      '4 신성 기억 파편이 통합된다. 황금 에테르 탑 정상에서.',
+      '레테는 망각의 폭풍과 함께 사라지고, 6 동료가 에리언 곁에 선다.',
+      '세계의 기억이 회복된다. 완전한 엔딩.',
+    ],
+  },
+  {
+    endingCode: 'B',
+    sequence: [
+      '3 파편 통합으로 레테의 일부만 봉인할 수 있다.',
+      '동료 일부 이탈, 일부 사망. 부분적 승리.',
+      '망각의 폭풍은 완전히 사라지지 않는다.',
+    ],
+  },
+  {
+    endingCode: 'C',
+    sequence: [
+      '2 파편 이하로 봉인 불가. 에리언은 레테의 \'구원\'을 받아들인다.',
+      '망각이 모두를 감싼다. 평화롭지만 공허한 세계.',
+      '수용의 엔딩 — 다른 색의 결말.',
+    ],
+  },
+  {
+    endingCode: 'D',
+    sequence: [
+      '신화 유물 통합으로 미네르바와 만난다.',
+      '11신의 의지로 신화 시대 회귀. 4 파편을 통한 시간선 분기.',
+      '에리언은 카일과 통합되어 신화의 후예가 된다. 가장 거대한 결말.',
+    ],
+  },
+  {
+    endingCode: 'FAIL',
+    sequence: [
+      '레테와의 5페이즈 최종 결전에서 패배.',
+      '망각의 폭풍이 모든 기억을 삼킨다.',
+      '에테르나는 영원한 침묵의 세계로 변한다.',
+    ],
+  },
+];
+
+export function getEndingSequence(
+  code: ScenarioEndingCode,
+): readonly string[] | undefined {
+  return ENDING_FINAL_SEQUENCES.find((e) => e.endingCode === code)?.sequence;
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════
