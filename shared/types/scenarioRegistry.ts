@@ -637,6 +637,128 @@ export function checkEndingA(state: GameFlowState): boolean {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
+// 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
+// ════════════════════════════════════════════════════════════════
+
+export type ScenarioEra =
+  | 'creation'        // 창세 시대
+  | 'ancient_myth'    // 고대 신화 시대
+  | 'solian'          // 솔리안 문명 시대
+  | 'kalimar'         // 칼리마르 제국 시대
+  | 'great_forgetting'// 대망각 (세계력 3,200년)
+  | 'post_forgetting' // 망각 이후 (세계력 3,200~3,412년)
+  | 'present';        // 현재 (세계력 3,412년, 게임 시작)
+
+export interface TimelineEvent {
+  obsidianId: string;
+  /** 이벤트 한글 이름 */
+  name: string;
+  /** 시대 분류 */
+  era: ScenarioEra;
+  /** 세계력 년도 (적용 가능 시) */
+  worldYear?: number;
+  /** 이벤트 narrative 요약 */
+  summary: string;
+}
+
+export const SCENARIO_TIMELINE: readonly TimelineEvent[] = [
+  {
+    obsidianId: 'twelve_gods_creation',
+    name: '열두 신의 세계 창조',
+    era: 'creation',
+    summary: '파비우스/크로나이/베르다 외 11신이 세계 창조. 레테(망각)만 배제 — 모든 비극의 씨앗.',
+  },
+  {
+    obsidianId: 'ether_crystal_birth',
+    name: '에테르 결정의 탄생',
+    era: 'creation',
+    summary: '세계가 완성되자 에테르 에너지가 흐르기 시작하여 에테르 결정 형성. 미래 문명의 기초.',
+  },
+  {
+    obsidianId: 'ifrita_first_flame',
+    name: '이프리타 \'최초의 불꽃\' 수여',
+    era: 'ancient_myth',
+    summary: '이프리타족 시조 카를라가 이그나루스 신으로부터 최초의 불꽃 수여. 솔라리스 사막 문화 기초.',
+  },
+  {
+    obsidianId: 'malatus_awakening',
+    name: '실반헤임의 말라투스 나무 각성',
+    era: 'ancient_myth',
+    summary: '말라투스 고목이 기억을 흡수하기 시작. 엘파리스족이 신성한 존재로 수호. 기억 소멸 유일 안전 구역.',
+  },
+  {
+    obsidianId: 'lethe_belief_formation',
+    name: '레테의 신념 형성',
+    era: 'ancient_myth',
+    summary: '레테는 세계의 기억들이 쌓여가는 것을 관찰. "기억은 고통이다, 기억이 없다면 아픔도 없다" — 망각 구원론.',
+  },
+  {
+    obsidianId: 'solian_golden_age',
+    name: '솔리안 황금기',
+    era: 'solian',
+    worldYear: -3000,
+    summary: '솔라리스 사막에 에테르 결정 신전 도시 건설. 라와르 왕 통치 — 현명하고 자비로운 군주.',
+  },
+  {
+    obsidianId: 'solian_collapse',
+    name: '레테 강림 + 솔리안 멸망 + 라와르 봉인',
+    era: 'solian',
+    summary: '레테가 거대한 눈들의 집합체로 하강. 기억 소멸 폭풍으로 솔리안 한 밤에 파괴. 라와르의 자기희생 봉인 의식 → 영원한 수면.',
+  },
+  {
+    obsidianId: 'kalimar_founding',
+    name: '칼리마르 제국 건설',
+    era: 'kalimar',
+    summary: '솔리안 멸망 후 새로운 문명. 아르겐티움 중심 칼리마르 제국 확립.',
+  },
+  {
+    obsidianId: 'lethe_cult_formation',
+    name: '레테 교단 태동',
+    era: 'kalimar',
+    worldYear: 3000,
+    summary: '망각의 신 레테 추종 종교 조직 형성. 기억 소멸을 통한 세계의 "구원" 목표. 비밀스럽게 제국 잠식.',
+  },
+  {
+    obsidianId: 'great_forgetting_event',
+    name: '대망각 (200년 전 봉인 의식)',
+    era: 'great_forgetting',
+    worldYear: 3200,
+    summary: '레테 재강림 방지 봉인 의식. 12인이 신성 기억 파편 4개 봉인 (에레보스/실반헤임/솔라리스/아르겐티움). 카일은 환생.',
+  },
+  {
+    obsidianId: 'empire_dark_age',
+    name: '제국 암흑기 + MDS 확산',
+    era: 'post_forgetting',
+    summary: '기억 소멸 충격으로 문명 퇴보. 레테 교단이 제국 지배층에 깊숙이 침투. MDS (기억 소멸 증후군) 세계 전역 확산.',
+  },
+  {
+    obsidianId: 'aerien_birth',
+    name: '에리언 탄생',
+    era: 'post_forgetting',
+    worldYear: 3374,
+    summary: '주인공 에리언이 약 38세가 되는 시점이 게임 시작. 카일의 전생으로서 기억 공명 능력 각성 대기.',
+  },
+  {
+    obsidianId: 'game_start_cantela',
+    name: '게임 시작 — 칸텔라 마을 사건',
+    era: 'present',
+    worldYear: 3412,
+    summary: '칸텔라 마을의 기억 소멸 폭풍으로 게임 시작. 에리언은 카일의 전생으로서 기억 공명 능력 각성. 신성 기억 파편 4개 회수 사명.',
+  },
+];
+
+export function getTimelineEventByObsidianId(
+  obsidianId: string,
+): TimelineEvent | undefined {
+  return SCENARIO_TIMELINE.find((e) => e.obsidianId === obsidianId);
+}
+
+export function listTimelineEventsByEra(era: ScenarioEra): readonly TimelineEvent[] {
+  return SCENARIO_TIMELINE.filter((e) => e.era === era);
+}
+
+// ════════════════════════════════════════════════════════════════
 // 엔딩 판정 helper — 파편 수집 + 동료 생존
 // ════════════════════════════════════════════════════════════════
 

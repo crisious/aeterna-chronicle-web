@@ -750,6 +750,100 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S24 — 시나리오 연대표 timeline narrative (SYNC-13)', () => {
+  it('SCENARIO_TIMELINE 13 핵심 이벤트', async () => {
+    const { SCENARIO_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_TIMELINE.length).toBe(13);
+  });
+
+  it('이벤트 obsidianId 모두 unique snake_case', async () => {
+    const { SCENARIO_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    const ids = SCENARIO_TIMELINE.map((e) => e.obsidianId);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) {
+      expect(id.match(/^[a-z][a-z0-9_]*$/), `${id} snake_case`).not.toBeNull();
+    }
+  });
+
+  it('7 시대 모두 ≥ 1 이벤트 (creation/ancient_myth/solian/kalimar/great_forgetting/post_forgetting/present)', async () => {
+    const { SCENARIO_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    const eras = new Set(SCENARIO_TIMELINE.map((e) => e.era));
+    expect(eras.size).toBe(7);
+    expect(eras.has('creation')).toBe(true);
+    expect(eras.has('ancient_myth')).toBe(true);
+    expect(eras.has('solian')).toBe(true);
+    expect(eras.has('kalimar')).toBe(true);
+    expect(eras.has('great_forgetting')).toBe(true);
+    expect(eras.has('post_forgetting')).toBe(true);
+    expect(eras.has('present')).toBe(true);
+  });
+
+  it('모든 이벤트 한글 name + summary length ≥ 10', async () => {
+    const { SCENARIO_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const e of SCENARIO_TIMELINE) {
+      expect(korean.test(e.name), `${e.obsidianId} 한글 name`).toBe(true);
+      expect(e.summary.length, `${e.obsidianId} summary`).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('worldYear 정의된 이벤트는 단조 증가 (시간 순서 narrative)', async () => {
+    const { SCENARIO_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    const withYear = SCENARIO_TIMELINE.filter((e) => e.worldYear !== undefined);
+    for (let i = 1; i < withYear.length; i += 1) {
+      expect(withYear[i].worldYear!, `${withYear[i].obsidianId} year`).toBeGreaterThan(withYear[i - 1].worldYear!);
+    }
+  });
+
+  it('대망각 = 세계력 3,200년 (200년 전 봉인 의식)', async () => {
+    const { getTimelineEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const e = getTimelineEventByObsidianId('great_forgetting_event');
+    expect(e).toBeDefined();
+    expect(e!.worldYear).toBe(3200);
+    expect(e!.era).toBe('great_forgetting');
+  });
+
+  it('게임 시작 = 세계력 3,412년 (칸텔라 마을 사건)', async () => {
+    const { getTimelineEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const e = getTimelineEventByObsidianId('game_start_cantela');
+    expect(e!.worldYear).toBe(3412);
+    expect(e!.era).toBe('present');
+  });
+
+  it('대망각 → 게임 시작 = 212년 narrative (세계력 3,200 → 3,412)', async () => {
+    const { getTimelineEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const forgetting = getTimelineEventByObsidianId('great_forgetting_event')!;
+    const start = getTimelineEventByObsidianId('game_start_cantela')!;
+    expect(start.worldYear! - forgetting.worldYear!).toBe(212);
+  });
+
+  it('listTimelineEventsByEra: creation 시대 = 2 이벤트 (열두 신 창조 + 에테르 결정)', async () => {
+    const { listTimelineEventsByEra } = await import('../../shared/types/scenarioRegistry');
+    const creation = listTimelineEventsByEra('creation');
+    expect(creation.length).toBe(2);
+  });
+
+  it('레테 narrative cross-domain: 연대표 + 신화 신 + 보스 시그니처', async () => {
+    const { getTimelineEventByObsidianId, getDeityByObsidianId, getBossByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    // 연대표: 레테 신념 형성 + 솔리안 멸망 (레테 강림)
+    expect(getTimelineEventByObsidianId('lethe_belief_formation')).toBeDefined();
+    expect(getTimelineEventByObsidianId('solian_collapse')!.summary).toContain('레테');
+    // 신화 신: 레테 (배제)
+    const lethe = getDeityByObsidianId('lethe');
+    expect(lethe!.inCreation).toBe(false);
+    // 보스: 레테 = aetherna_collapse
+    const lethBoss = getBossByObsidianId('lethe');
+    expect(lethBoss!.gameQuestBossId).toBe('boss_oblivion_lord');
+  });
+
+  it('SCENARIO_FRAGMENTS sealer narrative ↔ 연대표 cohesion (카일/라와르)', async () => {
+    const { SCENARIO_FRAGMENTS } = await import('../../shared/types/scenarioRegistry');
+    const fragmentSealers = SCENARIO_FRAGMENTS.map((f) => f.sealer).join(' ');
+    expect(fragmentSealers).toContain('카일');
+    expect(fragmentSealers).toContain('라와르');
+  });
+});
+
 describe('SYNC-S23 — 파편 + 동료 → 엔딩 통합 game-flow (SYNC-11)', () => {
   it('엔딩 A 시나리오: 4 파편 quest 모두 완료 + 6 동료 모두 threshold', async () => {
     const { evaluateGameFlow, checkEndingA } = await import('../../shared/types/scenarioRegistry');
