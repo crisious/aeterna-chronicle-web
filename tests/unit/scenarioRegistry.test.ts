@@ -750,6 +750,105 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S26 — 챕터별 milestone game-flow (SYNC-15)', () => {
+  it('SCENARIO_MILESTONES 5 chapter (Ch1~Ch5)', async () => {
+    const { SCENARIO_MILESTONES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_MILESTONES.length).toBe(5);
+    const chapters = SCENARIO_MILESTONES.map((m) => m.chapter).sort();
+    expect(chapters).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('각 milestone startBeat + endBeat 한글 narrative', async () => {
+    const { SCENARIO_MILESTONES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const m of SCENARIO_MILESTONES) {
+      expect(korean.test(m.startBeat), `Ch${m.chapter} startBeat`).toBe(true);
+      expect(korean.test(m.endBeat), `Ch${m.chapter} endBeat`).toBe(true);
+    }
+  });
+
+  it('각 milestone requiredQuests 모두 ALL_QUEST_SEEDS 에 존재', async () => {
+    const { SCENARIO_MILESTONES } = await import('../../shared/types/scenarioRegistry');
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const m of SCENARIO_MILESTONES) {
+      for (const q of m.requiredQuests) {
+        expect(codes.has(q), `Ch${m.chapter} ${q}`).toBe(true);
+      }
+    }
+  });
+
+  it('각 milestone unlockedCompanions 모두 SCENARIO_COMPANIONS 에 존재', async () => {
+    const { SCENARIO_MILESTONES, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const companionIds = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const m of SCENARIO_MILESTONES) {
+      for (const c of m.unlockedCompanions) {
+        expect(companionIds.has(c), `Ch${m.chapter} companion ${c}`).toBe(true);
+      }
+    }
+  });
+
+  it('각 milestone collectedFragment 모두 SCENARIO_FRAGMENTS 에 존재 (Ch5 제외)', async () => {
+    const { SCENARIO_MILESTONES, SCENARIO_FRAGMENTS } = await import('../../shared/types/scenarioRegistry');
+    const fragmentIds = new Set(SCENARIO_FRAGMENTS.map((f) => f.obsidianId));
+    for (const m of SCENARIO_MILESTONES) {
+      if (m.collectedFragment) {
+        expect(fragmentIds.has(m.collectedFragment), `Ch${m.chapter} ${m.collectedFragment}`).toBe(true);
+      }
+    }
+  });
+
+  it('Ch1~Ch4 각 파편 collected narrative (Ch5 는 4 파편 통합)', async () => {
+    const { getMilestoneByChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(getMilestoneByChapter(1)!.collectedFragment).toBe('fragment_erebos');
+    expect(getMilestoneByChapter(2)!.collectedFragment).toBe('fragment_silvanheim');
+    expect(getMilestoneByChapter(3)!.collectedFragment).toBe('fragment_solaris');
+    expect(getMilestoneByChapter(4)!.collectedFragment).toBe('fragment_argentium');
+    expect(getMilestoneByChapter(5)!.collectedFragment).toBeUndefined();
+  });
+
+  it('전 6 동료 합류 = 5 milestone unlockedCompanions 합계', async () => {
+    const { SCENARIO_MILESTONES, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const unlocked = new Set<string>();
+    for (const m of SCENARIO_MILESTONES) {
+      for (const c of m.unlockedCompanions) unlocked.add(c);
+    }
+    expect(unlocked.size).toBe(SCENARIO_COMPANIONS.length);
+  });
+
+  it('evaluateChapterProgress: Ch1 시작 전 (0 quest 완료) → progressRatio 0', async () => {
+    const { evaluateChapterProgress } = await import('../../shared/types/scenarioRegistry');
+    const p = evaluateChapterProgress(1, new Set());
+    expect(p.isComplete).toBe(false);
+    expect(p.progressRatio).toBe(0);
+    expect(p.pendingQuests.length).toBeGreaterThan(0);
+  });
+
+  it('evaluateChapterProgress: Ch1 모든 quest 완료 → isComplete=true, progressRatio=1', async () => {
+    const { evaluateChapterProgress, getMilestoneByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getMilestoneByChapter(1)!;
+    const p = evaluateChapterProgress(1, new Set(ch1.requiredQuests));
+    expect(p.isComplete).toBe(true);
+    expect(p.progressRatio).toBe(1);
+    expect(p.pendingQuests.length).toBe(0);
+  });
+
+  it('evaluateChapterProgress: Ch1 절반 진행 → progressRatio ≈ 0.5', async () => {
+    const { evaluateChapterProgress, getMilestoneByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getMilestoneByChapter(1)!;
+    const half = ch1.requiredQuests.slice(0, Math.floor(ch1.requiredQuests.length / 2));
+    const p = evaluateChapterProgress(1, new Set(half));
+    expect(p.isComplete).toBe(false);
+    expect(p.progressRatio).toBeCloseTo(0.5, 1);
+  });
+
+  it('evaluateChapterProgress: 잘못된 chapter → 안전 fallback', async () => {
+    const { evaluateChapterProgress } = await import('../../shared/types/scenarioRegistry');
+    const p = evaluateChapterProgress(99, new Set());
+    expect(p.isComplete).toBe(false);
+    expect(p.progressRatio).toBe(0);
+  });
+});
+
 describe('SYNC-S25 — barrel 통합 + 전 entity cross-domain stress (SYNC-14)', () => {
   it('chrono.ts barrel 에서 scenarioRegistry 신규 API (SYNC-9~13) 모두 접근', async () => {
     const mod = await import('../../shared/types/chrono');

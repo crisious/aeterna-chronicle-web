@@ -759,6 +759,105 @@ export function listTimelineEventsByEra(era: ScenarioEra): readonly TimelineEven
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-15: 챕터별 game-flow milestone
+// 각 챕터 진행에 따른 게임 상태 변화 narrative (수주→완료 순서)
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterMilestone {
+  chapter: number;
+  /** 챕터 시작 시 plot beat */
+  startBeat: string;
+  /** 챕터 종료 시 plot beat */
+  endBeat: string;
+  /** 챕터 완료 전 필수 quest codes (모두 완료 시 chapter 종결) */
+  requiredQuests: readonly string[];
+  /** 챕터 종결 시 합류하는 동료 obsidianId */
+  unlockedCompanions: readonly string[];
+  /** 챕터에서 회수하는 파편 obsidianId (있을 경우) */
+  collectedFragment?: string;
+}
+
+export const SCENARIO_MILESTONES: readonly ChapterMilestone[] = [
+  {
+    chapter: 1,
+    startBeat: '칸텔라 마을 기억 소멸 폭풍 → 에리언 기억 공명 능력 각성',
+    endBeat: '에레보스 폐허 탐사 → 첫 신성 기억 파편 (에레보스) 회수',
+    requiredQuests: ['MQ_CH01', 'SQ_COMPANION_SERAPHINE', 'SQ_COMPANION_CRIO', 'SQ_EREBOS_RUINS'],
+    unlockedCompanions: ['seraphine', 'maestro_crio'],
+    collectedFragment: 'fragment_erebos',
+  },
+  {
+    chapter: 2,
+    startBeat: '실반헤임 (장막의 숲) 진입 + 엘파리스 외교 분기',
+    endBeat: '말라투스 고목 보스전 → 실반헤임 파편 회수',
+    requiredQuests: ['MQ_CH03', 'SQ_SILVANHEIM_FRAGMENT'],
+    unlockedCompanions: [],
+    collectedFragment: 'fragment_silvanheim',
+  },
+  {
+    chapter: 3,
+    startBeat: '솔라리스 사막 진입 + 이그나 합류 + 채광 기지 작전',
+    endBeat: '솔리안 유적 탐사 → 라와르 봉인 → 솔라리스 파편 회수',
+    requiredQuests: ['SQ_COMPANION_IGNARA', 'SQ_SOLARIS_RAWAR'],
+    unlockedCompanions: ['ignara'],
+    collectedFragment: 'fragment_solaris',
+  },
+  {
+    chapter: 4,
+    startBeat: '아르겐티움 제국 잠입 + 황궁 침투 + 베르나르도 / 레이나 / 우르그롬 합류',
+    endBeat: '케인 처치 + 베르나르도 최후 대결 + 아르겐티움 파편 회수',
+    requiredQuests: [
+      'MQ_CH04',
+      'SQ_COMPANION_REINA',
+      'SQ_COMPANION_URGROM',
+      'SQ_KANE_HUNT',
+      'SQ_ARGENTIUM_FRAGMENT',
+      'MQ_CH12',
+    ],
+    unlockedCompanions: ['benjamin_cross', 'reina', 'urgrom'],
+    collectedFragment: 'fragment_argentium',
+  },
+  {
+    chapter: 5,
+    startBeat: '망각의 고원 + 황금 에테르 탑 침입 + 4 파편 통합',
+    endBeat: '레테 최종 대전 (5페이즈) → 엔딩 분기 (A/B/C/D)',
+    requiredQuests: ['MQ_CH13', 'MQ_CH14', 'MQ_CH15'],
+    unlockedCompanions: [],
+  },
+];
+
+export function getMilestoneByChapter(chapter: number): ChapterMilestone | undefined {
+  return SCENARIO_MILESTONES.find((m) => m.chapter === chapter);
+}
+
+/** 챕터 milestone 진행 상태 평가 */
+export interface ChapterProgress {
+  chapter: number;
+  isComplete: boolean;
+  /** 미완료 quest codes */
+  pendingQuests: readonly string[];
+  /** 진행률 (0~1) */
+  progressRatio: number;
+}
+
+export function evaluateChapterProgress(
+  chapter: number,
+  completedQuests: ReadonlySet<string>,
+): ChapterProgress {
+  const milestone = getMilestoneByChapter(chapter);
+  if (!milestone) {
+    return { chapter, isComplete: false, pendingQuests: [], progressRatio: 0 };
+  }
+  const pending = milestone.requiredQuests.filter((q) => !completedQuests.has(q));
+  return {
+    chapter,
+    isComplete: pending.length === 0,
+    pendingQuests: pending,
+    progressRatio: (milestone.requiredQuests.length - pending.length) / milestone.requiredQuests.length,
+  };
+}
+
+// ════════════════════════════════════════════════════════════════
 // 엔딩 판정 helper — 파편 수집 + 동료 생존
 // ════════════════════════════════════════════════════════════════
 
