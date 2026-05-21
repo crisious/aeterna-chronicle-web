@@ -750,6 +750,71 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S60 — 시나리오 prerequisite 그래프 (SYNC-56)', () => {
+  it('SCENARIO_PREREQUISITES 5 chapter prereq', async () => {
+    const { SCENARIO_PREREQUISITES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_PREREQUISITES.length).toBe(5);
+  });
+
+  it('Ch1 = 0 prereq (시작 chapter)', async () => {
+    const { getPrerequisiteByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getPrerequisiteByChapter(1);
+    expect(ch1!.prerequisiteChapters.length).toBe(0);
+    expect(ch1!.requiredFragments.length).toBe(0);
+  });
+
+  it('Ch2~Ch5 prerequisiteChapters 단조 증가 (체인)', async () => {
+    const { SCENARIO_PREREQUISITES } = await import('../../shared/types/scenarioRegistry');
+    const sorted = [...SCENARIO_PREREQUISITES].sort((a, b) => a.chapter - b.chapter);
+    for (let i = 1; i < sorted.length; i += 1) {
+      expect(sorted[i].prerequisiteChapters.length).toBeGreaterThan(sorted[i - 1].prerequisiteChapters.length);
+    }
+  });
+
+  it('Ch5 = 4 prereq chapters + 4 fragments', async () => {
+    const { getPrerequisiteByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getPrerequisiteByChapter(5);
+    expect(ch5!.prerequisiteChapters.length).toBe(4);
+    expect(ch5!.requiredFragments.length).toBe(4);
+  });
+
+  it('canEnterChapter — 모든 prereq 충족 시 true', async () => {
+    const { canEnterChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(canEnterChapter(5, new Set([1, 2, 3, 4]), new Set([
+      'fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium',
+    ]))).toBe(true);
+  });
+
+  it('canEnterChapter — chapter 미완료 → false', async () => {
+    const { canEnterChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(canEnterChapter(5, new Set([1, 2, 3]), new Set([
+      'fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium',
+    ]))).toBe(false);
+  });
+
+  it('canEnterChapter — fragment 미수집 → false', async () => {
+    const { canEnterChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(canEnterChapter(5, new Set([1, 2, 3, 4]), new Set([
+      'fragment_erebos', 'fragment_silvanheim', 'fragment_solaris',
+    ]))).toBe(false);
+  });
+
+  it('canEnterChapter — Ch1 시작 (조건 없음)', async () => {
+    const { canEnterChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(canEnterChapter(1, new Set(), new Set())).toBe(true);
+  });
+
+  it('모든 requiredFragments SCENARIO_FRAGMENTS 존재', async () => {
+    const { SCENARIO_PREREQUISITES, SCENARIO_FRAGMENTS } = await import('../../shared/types/scenarioRegistry');
+    const fragIds = new Set(SCENARIO_FRAGMENTS.map((f) => f.obsidianId));
+    for (const p of SCENARIO_PREREQUISITES) {
+      for (const f of p.requiredFragments) {
+        expect(fragIds.has(f), `${f}`).toBe(true);
+      }
+    }
+  });
+});
+
 describe('SYNC-S59 — 시나리오 종족 + 세력 narrative (SYNC-54)', () => {
   it('SCENARIO_FACTIONS ≥ 7 세력', async () => {
     const { SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');

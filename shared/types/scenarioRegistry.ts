@@ -2093,6 +2093,76 @@ export function listFactionsByAlignment(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-56: 시나리오 prerequisite 그래프 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterPrerequisite {
+  chapter: number;
+  /** 선행 챕터 (모두 완료 필요) */
+  prerequisiteChapters: readonly number[];
+  /** 필요 fragment obsidianId */
+  requiredFragments: readonly string[];
+  /** narrative 잠금 설명 */
+  unlockNarrative: string;
+}
+
+export const SCENARIO_PREREQUISITES: readonly ChapterPrerequisite[] = [
+  {
+    chapter: 1,
+    prerequisiteChapters: [],
+    requiredFragments: [],
+    unlockNarrative: '게임 시작 — 칸텔라 마을 사건 + 기억 공명 능력 각성',
+  },
+  {
+    chapter: 2,
+    prerequisiteChapters: [1],
+    requiredFragments: ['fragment_erebos'],
+    unlockNarrative: '실반헤임 진입 — 에레보스 파편 회수 후 동부 대륙 여행',
+  },
+  {
+    chapter: 3,
+    prerequisiteChapters: [1, 2],
+    requiredFragments: ['fragment_erebos', 'fragment_silvanheim'],
+    unlockNarrative: '솔라리스 사막 — 첫 2 파편 회수 후 남부 사막 진입',
+  },
+  {
+    chapter: 4,
+    prerequisiteChapters: [1, 2, 3],
+    requiredFragments: ['fragment_erebos', 'fragment_silvanheim', 'fragment_solaris'],
+    unlockNarrative: '아르겐티움 — 3 파편 + 동료 모집 후 제국 잠입',
+  },
+  {
+    chapter: 5,
+    prerequisiteChapters: [1, 2, 3, 4],
+    requiredFragments: ['fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium'],
+    unlockNarrative: '망각의 고원 — 4 파편 모두 회수 후 황금 에테르 탑 진입',
+  },
+];
+
+export function getPrerequisiteByChapter(
+  chapter: number,
+): ChapterPrerequisite | undefined {
+  return SCENARIO_PREREQUISITES.find((p) => p.chapter === chapter);
+}
+
+/** 챕터 진입 가능 여부 평가 */
+export function canEnterChapter(
+  chapter: number,
+  completedChapters: ReadonlySet<number>,
+  collectedFragments: ReadonlySet<string>,
+): boolean {
+  const prereq = getPrerequisiteByChapter(chapter);
+  if (!prereq) return false;
+  for (const ch of prereq.prerequisiteChapters) {
+    if (!completedChapters.has(ch)) return false;
+  }
+  for (const f of prereq.requiredFragments) {
+    if (!collectedFragments.has(f)) return false;
+  }
+  return true;
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════
