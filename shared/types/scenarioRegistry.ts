@@ -2277,6 +2277,95 @@ export interface GameProgressReport {
   totalProgress: number;
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-62: 시나리오 achievement narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface ScenarioAchievement {
+  obsidianId: string;
+  /** 한글 제목 */
+  title: string;
+  /** 달성 조건 narrative */
+  condition: string;
+  /** 보상 점수 */
+  points: number;
+  /** 숨김 achievement 여부 (엔딩 D 등) */
+  hidden?: boolean;
+}
+
+export const SCENARIO_ACHIEVEMENTS: readonly ScenarioAchievement[] = [
+  {
+    obsidianId: 'achievement_first_fragment',
+    title: '첫 신성 파편 회수',
+    condition: 'Ch1 fragment_erebos 회수',
+    points: 10,
+  },
+  {
+    obsidianId: 'achievement_all_companions',
+    title: '6 동료 모두 합류',
+    condition: '6 동료 모두 신뢰도 threshold 충족',
+    points: 30,
+  },
+  {
+    obsidianId: 'achievement_all_fragments',
+    title: '4 파편 통합',
+    condition: '4 신성 기억 파편 모두 회수',
+    points: 50,
+  },
+  {
+    obsidianId: 'achievement_ending_a',
+    title: '엔딩 A — 완전한 승리',
+    condition: '4 파편 + 6 동료 + 레테 처치',
+    points: 100,
+  },
+  {
+    obsidianId: 'achievement_ending_b',
+    title: '엔딩 B — 부분 승리',
+    condition: '3 파편으로 레테 일부 봉인',
+    points: 70,
+  },
+  {
+    obsidianId: 'achievement_ending_c',
+    title: '엔딩 C — 수용의 엔딩',
+    condition: '2 파편 이하 - 망각 수용',
+    points: 50,
+  },
+  {
+    obsidianId: 'achievement_ending_d',
+    title: '엔딩 D — 신화의 후예',
+    condition: '신화 유물 ≥2 + 미네르바 만남',
+    points: 150,
+    hidden: true,
+  },
+  {
+    obsidianId: 'achievement_no_betrayal',
+    title: '베르나르도 화해',
+    condition: 'Ch4 베르나르도 화해 선택',
+    points: 20,
+  },
+  {
+    obsidianId: 'achievement_all_relics',
+    title: '4 신화 유물 회수',
+    condition: '크로나이/이그나루스/베르다/아키우스 유물 모두',
+    points: 60,
+    hidden: true,
+  },
+];
+
+export function getAchievementByObsidianId(
+  obsidianId: string,
+): ScenarioAchievement | undefined {
+  return SCENARIO_ACHIEVEMENTS.find((a) => a.obsidianId === obsidianId);
+}
+
+export function listVisibleAchievements(): readonly ScenarioAchievement[] {
+  return SCENARIO_ACHIEVEMENTS.filter((a) => !a.hidden);
+}
+
+export function listHiddenAchievements(): readonly ScenarioAchievement[] {
+  return SCENARIO_ACHIEVEMENTS.filter((a) => a.hidden);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

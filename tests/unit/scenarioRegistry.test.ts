@@ -750,6 +750,60 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S64 — 시나리오 achievement SSOT (SYNC-62)', () => {
+  it('SCENARIO_ACHIEVEMENTS ≥ 9 achievements', async () => {
+    const { SCENARIO_ACHIEVEMENTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_ACHIEVEMENTS.length).toBeGreaterThanOrEqual(9);
+  });
+
+  it('각 achievement obsidianId + achievement_ prefix + 한글', async () => {
+    const { SCENARIO_ACHIEVEMENTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const a of SCENARIO_ACHIEVEMENTS) {
+      expect(a.obsidianId.startsWith('achievement_'), `${a.obsidianId}`).toBe(true);
+      expect(korean.test(a.title), `${a.obsidianId} title`).toBe(true);
+      expect(korean.test(a.condition), `${a.obsidianId} cond`).toBe(true);
+      expect(a.points).toBeGreaterThan(0);
+    }
+  });
+
+  it('5 엔딩 모두 achievement 보유 (A/B/C/D + 부가)', async () => {
+    const { SCENARIO_ACHIEVEMENTS } = await import('../../shared/types/scenarioRegistry');
+    const endingTitles = SCENARIO_ACHIEVEMENTS.filter((a) => a.title.includes('엔딩'));
+    expect(endingTitles.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('엔딩 D + 신화 유물 = hidden achievement', async () => {
+    const { getAchievementByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const endingD = getAchievementByObsidianId('achievement_ending_d');
+    const relics = getAchievementByObsidianId('achievement_all_relics');
+    expect(endingD!.hidden).toBe(true);
+    expect(relics!.hidden).toBe(true);
+  });
+
+  it('points 단조 증가 (A 100 > B 70 > C 50)', async () => {
+    const { getAchievementByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const a = getAchievementByObsidianId('achievement_ending_a');
+    const b = getAchievementByObsidianId('achievement_ending_b');
+    const c = getAchievementByObsidianId('achievement_ending_c');
+    expect(a!.points).toBeGreaterThan(b!.points);
+    expect(b!.points).toBeGreaterThan(c!.points);
+  });
+
+  it('엔딩 D points (150) > 엔딩 A (100) — 가장 거대한 결말', async () => {
+    const { getAchievementByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const a = getAchievementByObsidianId('achievement_ending_a')!;
+    const d = getAchievementByObsidianId('achievement_ending_d')!;
+    expect(d.points).toBeGreaterThan(a.points);
+  });
+
+  it('listVisibleAchievements ≥ 7 + listHiddenAchievements ≥ 2', async () => {
+    const { listVisibleAchievements, listHiddenAchievements } = await import('../../shared/types/scenarioRegistry');
+    expect(listVisibleAchievements().length).toBeGreaterThanOrEqual(7);
+    expect(listHiddenAchievements().length).toBeGreaterThanOrEqual(2);
+  });
+});
+
 describe('SYNC-S63 — GameProgress 마스터 evaluator (SYNC-61)', () => {
   it('evaluateGameProgress: Ch1 시작 (0 진행) → totalProgress 0', async () => {
     const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
