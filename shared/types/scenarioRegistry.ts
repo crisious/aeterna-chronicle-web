@@ -2014,6 +2014,85 @@ export function listChoicesByChapter(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-54: 시나리오 종족 + 세력 narrative
+// ════════════════════════════════════════════════════════════════
+
+export type FactionAlignment = 'protagonist' | 'neutral' | 'antagonist';
+
+export interface ScenarioFaction {
+  obsidianId: string;
+  name: string;
+  /** 진영 */
+  alignment: FactionAlignment;
+  /** 핵심 zone obsidianId */
+  baseZoneId?: string;
+  /** narrative 설명 */
+  description: string;
+}
+
+export const SCENARIO_FACTIONS: readonly ScenarioFaction[] = [
+  {
+    obsidianId: 'faction_elfaris',
+    name: '엘파리스 (실반헤임)',
+    alignment: 'neutral',
+    baseZoneId: 'silvanheim',
+    description: '실반헤임 영역의 종족, 말라투스 고목 수호 + 기억 수호 전통.',
+  },
+  {
+    obsidianId: 'faction_ifrita',
+    name: '이프리타 (솔라리스)',
+    alignment: 'neutral',
+    baseZoneId: 'solaris',
+    description: '솔라리스 사막의 종족, 이그나루스 신의 \'최초의 불꽃\' 후예.',
+  },
+  {
+    obsidianId: 'faction_solian',
+    name: '솔리안 (멸망)',
+    alignment: 'neutral',
+    baseZoneId: 'solaris',
+    description: '3,000년 전 솔리안 황금기 문명, 레테 강림으로 한 밤에 멸망.',
+  },
+  {
+    obsidianId: 'faction_kalimar_empire',
+    name: '칼리마르 제국',
+    alignment: 'antagonist',
+    baseZoneId: 'argentium',
+    description: '아르겐티움 중심 제국, 레테 교단 침투 받음.',
+  },
+  {
+    obsidianId: 'faction_lethe_cult',
+    name: '레테 교단',
+    alignment: 'antagonist',
+    description: '망각의 신 레테 추종 종교, 기억 소멸 통한 \'구원\' 추구.',
+  },
+  {
+    obsidianId: 'faction_memory_guardian',
+    name: '기억의 수호자단',
+    alignment: 'protagonist',
+    baseZoneId: 'erebos',
+    description: '에레보스 폐광 비밀 본부, 카일 봉인 의식 계승 + 에리언 지원.',
+  },
+  {
+    obsidianId: 'faction_memory_hunter',
+    name: '기억 사냥꾼 부대',
+    alignment: 'antagonist',
+    description: '레테 교단 무력 부대, 케인 간부 이끔, 신성 기억 파편 추적.',
+  },
+];
+
+export function getFactionByObsidianId(
+  obsidianId: string,
+): ScenarioFaction | undefined {
+  return SCENARIO_FACTIONS.find((f) => f.obsidianId === obsidianId);
+}
+
+export function listFactionsByAlignment(
+  alignment: FactionAlignment,
+): readonly ScenarioFaction[] {
+  return SCENARIO_FACTIONS.filter((f) => f.alignment === alignment);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

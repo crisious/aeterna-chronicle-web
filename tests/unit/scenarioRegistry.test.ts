@@ -750,6 +750,58 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S59 — 시나리오 종족 + 세력 narrative (SYNC-54)', () => {
+  it('SCENARIO_FACTIONS ≥ 7 세력', async () => {
+    const { SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_FACTIONS.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 faction obsidianId + faction_ prefix + 한글 name', async () => {
+    const { SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const f of SCENARIO_FACTIONS) {
+      expect(f.obsidianId.startsWith('faction_'), `${f.obsidianId}`).toBe(true);
+      expect(korean.test(f.name)).toBe(true);
+      expect(korean.test(f.description)).toBe(true);
+    }
+  });
+
+  it('alignment 분포 — protagonist/neutral/antagonist 3종 모두', async () => {
+    const { SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');
+    const aligns = new Set(SCENARIO_FACTIONS.map((f) => f.alignment));
+    expect(aligns.size).toBe(3);
+    expect(aligns.has('protagonist')).toBe(true);
+    expect(aligns.has('neutral')).toBe(true);
+    expect(aligns.has('antagonist')).toBe(true);
+  });
+
+  it('baseZoneId 있는 세력 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_FACTIONS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const f of SCENARIO_FACTIONS) {
+      if (f.baseZoneId) {
+        expect(zoneIds.has(f.baseZoneId), `${f.baseZoneId}`).toBe(true);
+      }
+    }
+  });
+
+  it('antagonist ≥ 3 (레테 교단 + 칼리마르 + 기억 사냥꾼)', async () => {
+    const { listFactionsByAlignment } = await import('../../shared/types/scenarioRegistry');
+    const antag = listFactionsByAlignment('antagonist');
+    expect(antag.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('레테 교단 + 기억의 수호자단 narrative cohesion', async () => {
+    const { getFactionByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const cult = getFactionByObsidianId('faction_lethe_cult');
+    const guardian = getFactionByObsidianId('faction_memory_guardian');
+    expect(cult!.alignment).toBe('antagonist');
+    expect(guardian!.alignment).toBe('protagonist');
+    expect(cult!.description).toContain('레테');
+    expect(guardian!.description).toContain('카일');
+  });
+});
+
 describe('SYNC-S58 — 시나리오 분기 선택지 narrative (SYNC-53)', () => {
   it('SCENARIO_CHOICES ≥ 6 선택지', async () => {
     const { SCENARIO_CHOICES } = await import('../../shared/types/scenarioRegistry');
