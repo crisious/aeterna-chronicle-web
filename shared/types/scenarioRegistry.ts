@@ -514,6 +514,63 @@ export function evaluateLoyalty(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-10: 신뢰도 시스템 game 로직 통합
+// 동료 sub quest 의 reputation 보상 → companion loyalty 갱신 매핑
+// ════════════════════════════════════════════════════════════════
+
+export interface ReputationReward {
+  /** 동료 obsidianId */
+  companionObsidianId: string;
+  /** reputation 보상 양 (sub quest reward.amount) */
+  amount: number;
+  /** 보상이 정의된 quest code */
+  questCode: string;
+}
+
+/**
+ * 동료 합류 sub quest 의 reputation 보상 → 신뢰도 가산 매핑.
+ * 게임 questEngine 에서 quest 완료 시 호출되어 동료 loyalty 를 업데이트.
+ */
+export const COMPANION_REPUTATION_REWARDS: readonly ReputationReward[] = [
+  { companionObsidianId: 'seraphine',    questCode: 'SQ_COMPANION_SERAPHINE', amount: 50 },
+  { companionObsidianId: 'maestro_crio', questCode: 'SQ_COMPANION_CRIO',      amount: 40 },
+  { companionObsidianId: 'ignara',       questCode: 'SQ_COMPANION_IGNARA',    amount: 20 },
+  { companionObsidianId: 'reina',        questCode: 'SQ_COMPANION_REINA',     amount: 30 },
+  { companionObsidianId: 'urgrom',       questCode: 'SQ_COMPANION_URGROM',    amount: 40 },
+];
+
+/**
+ * 동료별 누적 reputation → loyalty 계산.
+ * 동료 합류 sub quest 완료 시 reputation 보상 적립 → loyaltyThreshold 도달 여부 평가.
+ */
+export function applyReputationReward(
+  companionObsidianId: string,
+  currentLoyalty: number,
+  questCode: string,
+): { newLoyalty: number; meetsThreshold: boolean } {
+  const reward = COMPANION_REPUTATION_REWARDS.find(
+    (r) => r.companionObsidianId === companionObsidianId && r.questCode === questCode,
+  );
+  if (!reward) {
+    return { newLoyalty: currentLoyalty, meetsThreshold: false };
+  }
+  const newLoyalty = currentLoyalty + reward.amount;
+  const companion = getCompanionByObsidianId(companionObsidianId);
+  const meetsThreshold = companion ? newLoyalty >= companion.loyaltyThreshold : false;
+  return { newLoyalty, meetsThreshold };
+}
+
+/** companion 합류 sub quest 의 reputation 보상이 정확히 loyaltyThreshold 도달용 narrative 인지 확인 */
+export function isReputationRewardSufficient(companionObsidianId: string): boolean {
+  const companion = getCompanionByObsidianId(companionObsidianId);
+  const reward = COMPANION_REPUTATION_REWARDS.find(
+    (r) => r.companionObsidianId === companionObsidianId,
+  );
+  if (!companion || !reward) return false;
+  return reward.amount >= companion.loyaltyThreshold;
+}
+
+// ════════════════════════════════════════════════════════════════
 // 엔딩 판정 helper — 파편 수집 + 동료 생존
 // ════════════════════════════════════════════════════════════════
 

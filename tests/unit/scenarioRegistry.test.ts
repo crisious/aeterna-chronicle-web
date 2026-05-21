@@ -750,6 +750,84 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S22 — 신뢰도 reputation → loyalty 매핑 (SYNC-10)', () => {
+  it('5 동료 모두 COMPANION_REPUTATION_REWARDS 에 정의 (벤자민 제외)', async () => {
+    const { COMPANION_REPUTATION_REWARDS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_REPUTATION_REWARDS.length).toBe(5);
+    const ids = COMPANION_REPUTATION_REWARDS.map((r) => r.companionObsidianId).sort();
+    expect(ids).toEqual(['ignara', 'maestro_crio', 'reina', 'seraphine', 'urgrom']);
+  });
+
+  it('각 reputation 보상의 questCode 모두 ALL_QUEST_SEEDS 존재', async () => {
+    const { COMPANION_REPUTATION_REWARDS } = await import('../../shared/types/scenarioRegistry');
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const r of COMPANION_REPUTATION_REWARDS) {
+      expect(codes.has(r.questCode), `${r.companionObsidianId} questCode '${r.questCode}'`).toBe(true);
+    }
+  });
+
+  it('각 reputation 보상이 quest 의 reputation reward.amount 와 정확 일치 (cohesion)', async () => {
+    const { COMPANION_REPUTATION_REWARDS } = await import('../../shared/types/scenarioRegistry');
+    for (const r of COMPANION_REPUTATION_REWARDS) {
+      const q = ALL_QUEST_SEEDS.find((x) => x.code === r.questCode);
+      expect(q, `${r.questCode} found`).toBeDefined();
+      const repReward = q!.rewards.find((rw) => rw.type === 'reputation');
+      expect(repReward, `${r.questCode} reputation reward`).toBeDefined();
+      expect(repReward!.amount, `${r.questCode} amount`).toBe(r.amount);
+    }
+  });
+
+  it('각 동료의 reputation 보상 >= loyaltyThreshold (단일 quest 합류 narrative)', async () => {
+    const { isReputationRewardSufficient } = await import('../../shared/types/scenarioRegistry');
+    for (const obsidianId of ['seraphine', 'maestro_crio', 'ignara', 'reina', 'urgrom']) {
+      expect(isReputationRewardSufficient(obsidianId), `${obsidianId} sufficient`).toBe(true);
+    }
+  });
+
+  it('applyReputationReward: 세라핀 quest 완료 → loyalty 0 + 50 = 50 (threshold 도달)', async () => {
+    const { applyReputationReward } = await import('../../shared/types/scenarioRegistry');
+    const r = applyReputationReward('seraphine', 0, 'SQ_COMPANION_SERAPHINE');
+    expect(r.newLoyalty).toBe(50);
+    expect(r.meetsThreshold).toBe(true);
+  });
+
+  it('applyReputationReward: 이그나 quest 완료 → 0 + 20 = 20 (threshold)', async () => {
+    const { applyReputationReward } = await import('../../shared/types/scenarioRegistry');
+    const r = applyReputationReward('ignara', 0, 'SQ_COMPANION_IGNARA');
+    expect(r.newLoyalty).toBe(20);
+    expect(r.meetsThreshold).toBe(true);
+  });
+
+  it('applyReputationReward: 잘못된 questCode → loyalty 변화 없음', async () => {
+    const { applyReputationReward } = await import('../../shared/types/scenarioRegistry');
+    const r = applyReputationReward('seraphine', 30, 'UNKNOWN_QUEST');
+    expect(r.newLoyalty).toBe(30);
+    expect(r.meetsThreshold).toBe(false);
+  });
+
+  it('applyReputationReward: 잘못된 companion → loyalty 변화 없음', async () => {
+    const { applyReputationReward } = await import('../../shared/types/scenarioRegistry');
+    const r = applyReputationReward('unknown_companion', 0, 'SQ_COMPANION_SERAPHINE');
+    expect(r.newLoyalty).toBe(0);
+    expect(r.meetsThreshold).toBe(false);
+  });
+
+  it('SYNC-10 cohesion: 모든 5 동료 단일 quest 합류 narrative (1 quest = loyalty 충족)', async () => {
+    const { applyReputationReward } = await import('../../shared/types/scenarioRegistry');
+    const REWARD_QUESTS: Array<[string, string]> = [
+      ['seraphine',    'SQ_COMPANION_SERAPHINE'],
+      ['maestro_crio', 'SQ_COMPANION_CRIO'],
+      ['ignara',       'SQ_COMPANION_IGNARA'],
+      ['reina',        'SQ_COMPANION_REINA'],
+      ['urgrom',       'SQ_COMPANION_URGROM'],
+    ];
+    for (const [companion, quest] of REWARD_QUESTS) {
+      const r = applyReputationReward(companion, 0, quest);
+      expect(r.meetsThreshold, `${companion} single-quest threshold`).toBe(true);
+    }
+  });
+});
+
 describe('SYNC-S21 — 4 파편 game item 동기화 (SYNC-9)', () => {
   it('4 파편 모두 gameItemId + gameQuestCode 매핑 완료', () => {
     for (const f of SCENARIO_FRAGMENTS) {
