@@ -834,3 +834,18 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 🎯🎯🎯🎯 **SCENARIO-SYNC 60 sprint 마디 도달** — Obsidian narrative ↔ 게임 코드 통합 절정.
 
+## 2026-05-22 SCENARIO-SYNC chapter IX — game-flow evaluator + 풍부도 확장 (6 sprint, +33 가드)
+
+자동 라운드 — 65 sprint 마디 + 33 SSOT 도메인 + 1801+ tests.
+
+- **SYNC-61** GameProgress 마스터 evaluator (+9 가드)
+- **SYNC-62** 시나리오 achievement SSOT (9 achievements, +7 가드)
+- **SYNC-63** quest log preview narrative (5 chapter, +6 가드)
+- **SYNC-64** 🎯 1800 tests 마디 + 32 도메인 stress (+4 가드)
+- **SYNC-65** cinematic / cutscene narrative (7 cinematics, +7 가드)
+- **SYNC-66** progress.md 갱신 + 65 sprint 마디
+
+회귀: scenarioRegistry 431/431 + unit 전체 1801 tests pass.
+
+**🎯🎯🎯 SCENARIO-SYNC chapter IX 완성 — 6 sprint, +33 가드 (누적 65 sprint, +450 가드)** — 33 SSOT 도메인 + 210+ entity. 신규 narrative: game progress evaluator + achievements + quest log + cinematics.
+
