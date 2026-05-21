@@ -750,6 +750,69 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S69 — 동료별 personal quest narrative (SYNC-68)', () => {
+  it('COMPANION_PERSONAL_QUESTS 6 동료 모두', async () => {
+    const { COMPANION_PERSONAL_QUESTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_PERSONAL_QUESTS.length).toBe(SCENARIO_COMPANIONS.length);
+  });
+
+  it('각 quest obsidianId + pq_ prefix + 한글 title/narrative', async () => {
+    const { COMPANION_PERSONAL_QUESTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const q of COMPANION_PERSONAL_QUESTS) {
+      expect(q.obsidianId.startsWith('pq_'), `${q.obsidianId}`).toBe(true);
+      expect(korean.test(q.title)).toBe(true);
+      expect(korean.test(q.narrative)).toBe(true);
+    }
+  });
+
+  it('companionObsidianId 모두 SCENARIO_COMPANIONS 존재', async () => {
+    const { COMPANION_PERSONAL_QUESTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const q of COMPANION_PERSONAL_QUESTS) {
+      expect(ids.has(q.companionObsidianId)).toBe(true);
+    }
+  });
+
+  it('gameQuestCode 모두 ALL_QUEST_SEEDS 존재 (SQ_COMPANION_*)', async () => {
+    const { COMPANION_PERSONAL_QUESTS } = await import('../../shared/types/scenarioRegistry');
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const q of COMPANION_PERSONAL_QUESTS) {
+      expect(codes.has(q.gameQuestCode), `${q.gameQuestCode}`).toBe(true);
+    }
+  });
+
+  it('세라핀 personal quest — 카엘 narrative', async () => {
+    const { getPersonalQuestByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const ser = getPersonalQuestByCompanion('seraphine');
+    expect(ser).toBeDefined();
+    expect(ser!.title).toContain('카엘');
+  });
+
+  it('벤자민 personal quest — 밀리아 narrative', async () => {
+    const { getPersonalQuestByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const ben = getPersonalQuestByCompanion('benjamin_cross');
+    expect(ben).toBeDefined();
+    expect(ben!.narrative).toContain('밀리아');
+  });
+
+  it('레이나 personal quest — 12 신화 narrative (엔딩 D 단서)', async () => {
+    const { getPersonalQuestByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const rei = getPersonalQuestByCompanion('reina');
+    expect(rei!.narrative).toContain('12 신화');
+  });
+
+  it('SYNC-68 cohesion: personal quest ↔ storyArc (모든 동료) + reputation ≥5', async () => {
+    const { COMPANION_PERSONAL_QUESTS, COMPANION_REPUTATION_REWARDS, COMPANION_STORY_ARCS } = await import('../../shared/types/scenarioRegistry');
+    // 모든 동료가 PQ + arc 보유 (reputation 은 5 동료 — 벤자민 메인 chain 통합)
+    for (const pq of COMPANION_PERSONAL_QUESTS) {
+      const arc = COMPANION_STORY_ARCS.find((a) => a.companionObsidianId === pq.companionObsidianId);
+      expect(arc, `${pq.companionObsidianId} arc`).toBeDefined();
+    }
+    expect(COMPANION_REPUTATION_REWARDS.length).toBeGreaterThanOrEqual(5);
+  });
+});
+
 describe('SYNC-S68 — SFX / ambient sound narrative (SYNC-67)', () => {
   it('SCENARIO_AMBIENT_SOUNDS 5 chapter ambients', async () => {
     const { SCENARIO_AMBIENT_SOUNDS } = await import('../../shared/types/scenarioRegistry');

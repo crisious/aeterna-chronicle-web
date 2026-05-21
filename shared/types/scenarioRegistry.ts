@@ -2553,6 +2553,74 @@ export function getAmbientByChapter(chapter: number): AmbientSound | undefined {
   return SCENARIO_AMBIENT_SOUNDS.find((a) => a.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-68: 동료별 personal companion quest narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface PersonalQuest {
+  obsidianId: string;
+  companionObsidianId: string;
+  /** 게임 quest code (existing SQ_COMPANION_*) */
+  gameQuestCode: string;
+  /** 한글 quest 제목 */
+  title: string;
+  /** 개인 quest narrative */
+  narrative: string;
+}
+
+export const COMPANION_PERSONAL_QUESTS: readonly PersonalQuest[] = [
+  {
+    obsidianId: 'pq_seraphine',
+    companionObsidianId: 'seraphine',
+    gameQuestCode: 'SQ_COMPANION_SERAPHINE',
+    title: '카엘의 마지막 흔적',
+    narrative: '실반헤임 깊은 곳에서 카엘이 남긴 봉인 의식 흔적을 추적한다.',
+  },
+  {
+    obsidianId: 'pq_crio',
+    companionObsidianId: 'maestro_crio',
+    gameQuestCode: 'SQ_COMPANION_CRIO',
+    title: '에레보스 정보망의 비밀',
+    narrative: '60년 정보상 인맥 네트워크 + 대망각 당일 진실 단서 회수.',
+  },
+  {
+    obsidianId: 'pq_ignara',
+    companionObsidianId: 'ignara',
+    gameQuestCode: 'SQ_COMPANION_IGNARA',
+    title: '이프리타 종족 음모',
+    narrative: '아버지 이그리스의 기억 소멸 배후 — 이프리타 내부 음모 추적.',
+  },
+  {
+    obsidianId: 'pq_benjamin',
+    companionObsidianId: 'benjamin_cross',
+    gameQuestCode: 'MQ_CH04',
+    title: '밀리아 구출 작전',
+    narrative: '레테 교단에 잡혀있는 조카 밀리아를 구출하는 작전 — 메인 chain Ch4 통합.',
+  },
+  {
+    obsidianId: 'pq_reina',
+    companionObsidianId: 'reina',
+    gameQuestCode: 'SQ_COMPANION_REINA',
+    title: '교단 내부고발 증거',
+    narrative: '레테 교단 진정한 목적 (12 신화 회귀) 증거 수집.',
+  },
+  {
+    obsidianId: 'pq_urgrom',
+    companionObsidianId: 'urgrom',
+    gameQuestCode: 'SQ_COMPANION_URGROM',
+    title: '북방 기억석 사원 봉인',
+    narrative: '200년 전 봉인 의식의 마지막 보루 + 사원 비밀 보호.',
+  },
+];
+
+export function getPersonalQuestByCompanion(
+  companionObsidianId: string,
+): PersonalQuest | undefined {
+  return COMPANION_PERSONAL_QUESTS.find(
+    (q) => q.companionObsidianId === companionObsidianId,
+  );
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
