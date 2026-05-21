@@ -750,6 +750,52 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S21 — 4 파편 game item 동기화 (SYNC-9)', () => {
+  it('4 파편 모두 gameItemId + gameQuestCode 매핑 완료', () => {
+    for (const f of SCENARIO_FRAGMENTS) {
+      expect(f.gameItemId, `${f.obsidianId} gameItemId`).toBeDefined();
+      expect(f.gameQuestCode, `${f.obsidianId} gameQuestCode`).toBeDefined();
+    }
+  });
+
+  it('4 파편 gameItemId = item_memory_fragment_ch1~4 (chapter 매핑)', () => {
+    for (const f of SCENARIO_FRAGMENTS) {
+      expect(f.gameItemId).toBe(`item_memory_fragment_ch${f.chapter}`);
+    }
+  });
+
+  it('4 파편 gameQuestCode 모두 ALL_QUEST_SEEDS 에 존재', () => {
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    for (const f of SCENARIO_FRAGMENTS) {
+      expect(codes.has(f.gameQuestCode!), `${f.obsidianId} ${f.gameQuestCode}`).toBe(true);
+    }
+  });
+
+  it('각 파편 회수 quest 의 item reward 가 gameItemId 매칭', () => {
+    for (const f of SCENARIO_FRAGMENTS) {
+      const q = ALL_QUEST_SEEDS.find((x) => x.code === f.gameQuestCode);
+      expect(q, `${f.gameQuestCode} found`).toBeDefined();
+      const itemReward = q!.rewards.find((r) => r.type === 'item' && r.itemId === f.gameItemId);
+      expect(itemReward, `${f.gameQuestCode} ${f.gameItemId} reward`).toBeDefined();
+    }
+  });
+
+  it('SYNC-9 신규 추가: SQ_SILVANHEIM_FRAGMENT (Ch2) + SQ_ARGENTIUM_FRAGMENT (Ch4)', () => {
+    const codes = new Set(ALL_QUEST_SEEDS.map((q) => q.code));
+    expect(codes.has('SQ_SILVANHEIM_FRAGMENT')).toBe(true);
+    expect(codes.has('SQ_ARGENTIUM_FRAGMENT')).toBe(true);
+  });
+
+  it('4 파편 zoneObsidianId 모두 SCENARIO_ZONES 에 sync 완료 (Obsidian zone 매핑)', () => {
+    const zonesWithGame = new Set(
+      SCENARIO_ZONES.filter((z) => z.gameZoneId || z.gameQuestZoneTarget).map((z) => z.obsidianId),
+    );
+    for (const f of SCENARIO_FRAGMENTS) {
+      expect(zonesWithGame.has(f.zoneObsidianId), `${f.obsidianId} zone ${f.zoneObsidianId} sync`).toBe(true);
+    }
+  });
+});
+
 describe('SYNC-S20 — 미동기화 카운트 갱신 (SYNC-8 후 전 entity sync+planned)', () => {
   it('SYNC-8 후 orphan 동료 = 0', () => {
     const orphan = SCENARIO_COMPANIONS.filter(

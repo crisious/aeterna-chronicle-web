@@ -416,6 +416,10 @@ export interface ScenarioFragment {
   zoneObsidianId: string;
   /** 200년 전 봉인한 12인 중 누구 */
   sealer: string;
+  /** SYNC-9: 게임 questSeeds 보상 itemId 매핑 */
+  gameItemId?: string;
+  /** SYNC-9: 회수 sub quest code */
+  gameQuestCode?: string;
 }
 
 export const SCENARIO_FRAGMENTS: readonly ScenarioFragment[] = [
@@ -425,6 +429,8 @@ export const SCENARIO_FRAGMENTS: readonly ScenarioFragment[] = [
     chapter: 1,
     zoneObsidianId: 'erebos',
     sealer: '카일 (주인공의 전생)',
+    gameItemId: 'item_memory_fragment_ch1',  // SYNC-9
+    gameQuestCode: 'SQ_EREBOS_RUINS',  // SYNC-8 에서 추가
   },
   {
     obsidianId: 'fragment_silvanheim',
@@ -432,6 +438,8 @@ export const SCENARIO_FRAGMENTS: readonly ScenarioFragment[] = [
     chapter: 2,
     zoneObsidianId: 'silvanheim',
     sealer: '세라핀의 먼 선조 (엘파리스 기억 수호자)',
+    gameItemId: 'item_memory_fragment_ch2',  // SYNC-9
+    gameQuestCode: 'SQ_SILVANHEIM_FRAGMENT',  // SYNC-9 신규 추가
   },
   {
     obsidianId: 'fragment_solaris',
@@ -439,6 +447,8 @@ export const SCENARIO_FRAGMENTS: readonly ScenarioFragment[] = [
     chapter: 3,
     zoneObsidianId: 'solaris',
     sealer: '라와르 (솔리안의 마지막 왕)',
+    gameItemId: 'item_memory_fragment_ch3',  // SYNC-9
+    gameQuestCode: 'SQ_SOLARIS_RAWAR',  // SYNC-8 에서 추가
   },
   {
     obsidianId: 'fragment_argentium',
@@ -446,6 +456,8 @@ export const SCENARIO_FRAGMENTS: readonly ScenarioFragment[] = [
     chapter: 4,
     zoneObsidianId: 'argentium',
     sealer: '12인 중 1명 (이름 미공개)',
+    gameItemId: 'item_memory_fragment_ch4',  // SYNC-9
+    gameQuestCode: 'SQ_ARGENTIUM_FRAGMENT',  // SYNC-9 신규 추가
   },
 ];
 

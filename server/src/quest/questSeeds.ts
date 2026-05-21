@@ -481,6 +481,41 @@ const SUB_QUESTS: QuestSeedData[] = [
       { type: 'item', itemId: 'item_memory_hunter_seal', amount: 1, description: '기억 사냥꾼 인장' },
     ],
   },
+  // ─── 신성 기억 파편 회수 sub quest (SYNC-9) ───────────────────
+  // Obsidian Ch1~Ch4 각 1개 파편 (총 4개) 게임 sync.
+  // Ch1 (에레보스) + Ch3 (솔라리스) 는 SYNC-8 에서 이미 추가.
+  // SYNC-9: Ch2 (실반헤임) + Ch4 (아르겐티움) 파편 추가.
+  {
+    code: 'SQ_SILVANHEIM_FRAGMENT', name: '실반헤임 파편 — 말라투스의 기억',
+    description: '엘파리스 영역의 말라투스 고목에서 두 번째 신성 기억 파편을 회수한다. 카일이 봉인했던 파편.',
+    type: 'sub', requiredLevel: 7, prerequisites: ['MQ_CH03'], isRepeatable: false,
+    objectives: [
+      { type: 'explore', target: 'zone_veiled_forest', count: 1, description: '실반헤임 (장막의 숲) 깊숙이 진입' },
+      { type: 'talk', target: 'npc_silvanheim_elder', count: 1, description: '엘파리스 장로와 대화' },
+      { type: 'kill', target: 'mob_memory_guardian_treant', count: 4, description: '기억 수호 트렌트 처치 (0/4)' },
+      { type: 'collect', target: 'fragment_silvanheim', count: 1, description: '실반헤임 신성 기억 파편' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 2000, description: '경험치 2000' },
+      { type: 'gold', amount: 1000, description: '골드 1000' },
+      { type: 'item', itemId: 'item_memory_fragment_ch2', amount: 1, description: '신성 기억 파편 (실반헤임)' },
+    ],
+  },
+  {
+    code: 'SQ_ARGENTIUM_FRAGMENT', name: '아르겐티움 파편 — 황궁 지하의 비밀',
+    description: '아르겐티움 황궁 지하에서 네 번째이자 마지막 신성 기억 파편을 회수한다.',
+    type: 'sub', requiredLevel: 14, prerequisites: ['MQ_CH04'], isRepeatable: false,
+    objectives: [
+      { type: 'explore', target: 'zone_argentium_palace_underground', count: 1, description: '아르겐티움 황궁 지하 침투' },
+      { type: 'kill', target: 'mob_imperial_inquisitor', count: 6, description: '제국 심문관 처치 (0/6)' },
+      { type: 'collect', target: 'fragment_argentium', count: 1, description: '아르겐티움 신성 기억 파편' },
+    ],
+    rewards: [
+      { type: 'exp', amount: 3000, description: '경험치 3000' },
+      { type: 'gold', amount: 1600, description: '골드 1600' },
+      { type: 'item', itemId: 'item_memory_fragment_ch4', amount: 1, description: '신성 기억 파편 (아르겐티움)' },
+    ],
+  },
 ];
 
 // ════════════════════════════════════════════════════════════════
