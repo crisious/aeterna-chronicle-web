@@ -745,3 +745,26 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 **🎯 SCENARIO-SYNC chapter III 마무리 완성 — 5 sprint, +29 가드 (chapter I+II+III 누적 27 sprint, +236 가드)** — Obsidian narrative SSOT 완성: 15 도메인 (companion 6 + zone 9 + boss 9 + chapter 5 + ending 5 + fragment 4 + deity 12 + timeline 13 + milestone 5 + dialogue 14 + reputation 5 + relic 4 + lore 11 + connection 8 + route 5) = 115 entity + 30+ helpers + 237 회귀 가드.
 
+## 2026-05-22 SCENARIO-SYNC chapter IV — 정점 final + 문서화 (5 sprint, +18 가드)
+
+자동 라운드 — SSOT 정점 + 문서화 + cross-domain final + 30 sprint 마디.
+
+- **SYNC-28** progress.md chapter III 마무리 갱신 (27 sprint, +236 가드 누적)
+- **SYNC-29** docs/scenario-registry-guide.md 신규 (~163 라인)
+  + 15 도메인 종합 표 + 사용 예시 6 영역 + cross-domain 매핑 원칙
+  + 회귀 가드 위치 + 확장 절차 + Obsidian 출처 + 변경 영향 매트릭스
+- **SYNC-30** 🎯🎯 30 sprint 마디 최종 정점 stress (+6 가드, S38)
+  + 30 sprint 누적 SSOT 정점 ≥110 entity
+  + 100% sync 유지 + 100회 헬퍼 stress
+  + 완전한 게임 시나리오 (시작 → 5 chapter → 엔딩 D)
+  + entity index 5 카테고리 lookup
+- **SYNC-31** SCENARIO ↔ STORY chronoField cross-domain (+6 가드, S39)
+  + 보스/zone 매핑 cohesion
+  + 레테 6중 / 말라투스 4중 / 베르나르도 3중 cohesion
+  + scenarioRegistry + chronoField + questSeeds 통합
+- **SYNC-32** progress.md 최종 + chapter IV 마무리
+
+회귀: scenarioRegistry 249/249 + unit 전체 1619 tests pass.
+
+**🎯🎯🎯 SCENARIO-SYNC chapter IV 완성 — 5 sprint, +18 가드 (chapter I+II+III+IV 누적 32 sprint, +254 가드)** — Obsidian narrative SSOT 정점 완성. 115+ entity / 30+ helpers / 249 회귀 가드 / 5 chapter / 5 엔딩 / 4 파편 / 12 신 / 13 timeline / 5 milestone / 14 dialogues / 4 relics / 11 lore / 8 connections / 5 routes / docs guide. 100% Obsidian SSOT ↔ 게임 코드 동기화 + cross-domain cohesion + game-flow 통합.
+
