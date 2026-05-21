@@ -750,6 +750,58 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S50 — 시나리오 epic 아이템 narrative (SYNC-44)', () => {
+  it('SCENARIO_EPIC_ITEMS 5 chapter 모두 epic 아이템', async () => {
+    const { SCENARIO_EPIC_ITEMS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_EPIC_ITEMS.length).toBe(5);
+  });
+
+  it('각 chapter 1~5 정확히 1 epic item', async () => {
+    const { SCENARIO_EPIC_ITEMS } = await import('../../shared/types/scenarioRegistry');
+    const chapters = SCENARIO_EPIC_ITEMS.map((i) => i.chapter).sort();
+    expect(chapters).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('각 item obsidianId + gameItemId 매핑 + item_ prefix', async () => {
+    const { SCENARIO_EPIC_ITEMS } = await import('../../shared/types/scenarioRegistry');
+    for (const i of SCENARIO_EPIC_ITEMS) {
+      expect(i.obsidianId).toBe(i.gameItemId);
+      expect(i.gameItemId.startsWith('item_')).toBe(true);
+    }
+  });
+
+  it('각 item 한글 name + narrative ≥10', async () => {
+    const { SCENARIO_EPIC_ITEMS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const i of SCENARIO_EPIC_ITEMS) {
+      expect(korean.test(i.name)).toBe(true);
+      expect(korean.test(i.narrative)).toBe(true);
+      expect(i.narrative.length).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it('Ch1 카일 펜던트 (전생 narrative)', async () => {
+    const { getEpicItemByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const kail = getEpicItemByObsidianId('item_kail_pendant');
+    expect(kail!.chapter).toBe(1);
+    expect(kail!.narrative).toContain('카일');
+  });
+
+  it('Ch5 에테르나 크로니클 (게임 제목 시그니처)', async () => {
+    const { getEpicItemByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const aetherna = getEpicItemByObsidianId('item_aetherna_chronicle');
+    expect(aetherna!.chapter).toBe(5);
+    expect(aetherna!.name).toContain('에테르나');
+  });
+
+  it('5 chapter 모두 epic item 보유 (helpers cohesion)', async () => {
+    const { getEpicItemsByChapter } = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      expect(getEpicItemsByChapter(ch).length, `Ch${ch} epic items`).toBeGreaterThanOrEqual(1);
+    }
+  });
+});
+
 describe('SYNC-S49 — 챕터 시각/의상 narrative (SYNC-43)', () => {
   it('SCENARIO_CHAPTER_VISUALS 5 chapter visuals', async () => {
     const { SCENARIO_CHAPTER_VISUALS } = await import('../../shared/types/scenarioRegistry');

@@ -1733,6 +1733,70 @@ export function getVisualByChapter(chapter: number): ChapterVisual | undefined {
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-44: 시나리오 epic 아이템 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface EpicItem {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 회수 챕터 */
+  chapter: number;
+  /** 게임 item id */
+  gameItemId: string;
+  /** 시그니처 narrative */
+  narrative: string;
+}
+
+export const SCENARIO_EPIC_ITEMS: readonly EpicItem[] = [
+  {
+    obsidianId: 'item_kail_pendant',
+    name: '카일의 펜던트',
+    chapter: 1,
+    gameItemId: 'item_kail_pendant',
+    narrative: '에리언이 카일의 전생 기억과 공명하는 시작 아이템',
+  },
+  {
+    obsidianId: 'item_malatus_seed',
+    name: '말라투스 씨앗',
+    chapter: 2,
+    gameItemId: 'item_malatus_seed',
+    narrative: '말라투스 고목에서 받은 기억 보호 아티팩트',
+  },
+  {
+    obsidianId: 'item_rawar_crown',
+    name: '라와르 왕관',
+    chapter: 3,
+    gameItemId: 'item_rawar_crown',
+    narrative: '솔리안 왕의 봉인 의식 상징, 라와르 처리 분기 보상',
+  },
+  {
+    obsidianId: 'item_argentium_seal',
+    name: '아르겐티움 황궁 인장',
+    chapter: 4,
+    gameItemId: 'item_argentium_seal',
+    narrative: '제국 잠입 작전의 핵심 증거 + 황금 에테르 탑 진입 키',
+  },
+  {
+    obsidianId: 'item_aetherna_chronicle',
+    name: '에테르나 크로니클',
+    chapter: 5,
+    gameItemId: 'item_aetherna_chronicle',
+    narrative: '게임 제목 시그니처 — 4 파편 통합 후 생성되는 최종 신성 유물',
+  },
+];
+
+export function getEpicItemByObsidianId(
+  obsidianId: string,
+): EpicItem | undefined {
+  return SCENARIO_EPIC_ITEMS.find((i) => i.obsidianId === obsidianId);
+}
+
+export function getEpicItemsByChapter(chapter: number): readonly EpicItem[] {
+  return SCENARIO_EPIC_ITEMS.filter((i) => i.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════
