@@ -750,6 +750,85 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S39 — SCENARIO ↔ STORY chronoField cross-domain (SYNC-31)', () => {
+  it('SCENARIO 보스 ↔ chronoField 보스 일치 매핑 (5 sync)', async () => {
+    const { SCENARIO_BOSSES } = await import('../../shared/types/scenarioRegistry');
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    const chronoBosses = new Set(listAllBossMonsterIds());
+    const syncedToChrono = SCENARIO_BOSSES.filter((b) => b.gameChronoBossId);
+    for (const b of syncedToChrono) {
+      expect(chronoBosses.has(b.gameChronoBossId!), `${b.obsidianId} → ${b.gameChronoBossId}`).toBe(true);
+    }
+  });
+
+  it('SCENARIO zone (silvanheim/malatus_grove/argentium/oblivion_plateau/golden_ether_tower) → chronoField zone 매핑', async () => {
+    const { SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const { listFieldEncounters } = await import('../../shared/types/chronoField');
+    const chronoZoneIds = new Set(listFieldEncounters().map((e) => e.zoneId));
+    for (const z of SCENARIO_ZONES) {
+      if (z.gameZoneId) {
+        expect(chronoZoneIds.has(z.gameZoneId), `${z.obsidianId} → ${z.gameZoneId}`).toBe(true);
+      }
+    }
+  });
+
+  it('레테 narrative final cohesion (scenarioRegistry + chronoField + questSeeds)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const { listAllBossMonsterIds } = await import('../../shared/types/chronoField');
+    // 1. scenarioRegistry: 레테 = aetherna_collapse + boss_oblivion_lord
+    const lethe = mod.getBossByObsidianId('lethe');
+    expect(lethe!.gameChronoBossId).toBe('aetherna_collapse');
+    expect(lethe!.gameQuestBossId).toBe('boss_oblivion_lord');
+    // 2. chronoField: aetherna_collapse 보스 존재
+    expect(listAllBossMonsterIds()).toContain('aetherna_collapse');
+    // 3. questSeeds: boss_oblivion_lord MQ_CH15 등장
+    const ch15 = ALL_QUEST_SEEDS.find((q) => q.code === 'MQ_CH15');
+    expect(ch15!.objectives.some((o) => o.target === 'boss_oblivion_lord')).toBe(true);
+    // 4. timeline: 레테 narrative
+    expect(mod.getTimelineEventByObsidianId('lethe_belief_formation')).toBeDefined();
+    // 5. deity: 레테 배제
+    expect(mod.getDeityByObsidianId('lethe')!.inCreation).toBe(false);
+    // 6. dialogue: 레테 final
+    const letheDialogues = mod.getDialoguesByNpc('npc_lethe');
+    expect(letheDialogues.find((d) => d.context === 'final')).toBeDefined();
+  });
+
+  it('말라투스 narrative final cohesion (scenario + chronoField + zone)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const { listAllBossMonsterIds, listFieldEncountersByZone } = await import('../../shared/types/chronoField');
+    // 1. scenarioRegistry: 말라투스 zone (malatus_grove) + 보스 (malatus_ancient/fallen_malatus)
+    expect(mod.getZoneByObsidianId('malatus_grove')!.gameZoneId).toBe('malatus_sanctuary');
+    expect(mod.getBossByObsidianId('malatus_ancient')!.gameChronoBossId).toBe('malatus_avatar');
+    // 2. chronoField: malatus_sanctuary zone 존재
+    expect(listFieldEncountersByZone('malatus_sanctuary').length).toBe(3);
+    // 3. chronoField: malatus_avatar 보스 존재
+    expect(listAllBossMonsterIds()).toContain('malatus_avatar');
+  });
+
+  it('베르나르도 narrative final cohesion (scenario + questSeeds)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const benjamin = mod.getCompanionByObsidianId('benjamin_cross');
+    expect(benjamin!.gameNpcId).toBe('npc_bernardo');
+    expect(benjamin!.gameBossId).toBe('boss_bernardo_corrupted');
+    // questSeeds: MQ_CH04 npc_bernardo + MQ_CH12 boss_bernardo_corrupted
+    const ch4 = ALL_QUEST_SEEDS.find((q) => q.code === 'MQ_CH04');
+    const ch12 = ALL_QUEST_SEEDS.find((q) => q.code === 'MQ_CH12');
+    expect(ch4!.objectives.some((o) => o.target === 'npc_bernardo')).toBe(true);
+    expect(ch12!.objectives.some((o) => o.target === 'boss_bernardo_corrupted')).toBe(true);
+  });
+
+  it('cross-domain 종합 — scenario + STORY chronoField + questSeeds + skillSeeds 모두 통합', async () => {
+    const mod = await import('../../shared/types/chrono');
+    // scenarioRegistry
+    expect(mod.SCENARIO_COMPANIONS.length).toBe(6);
+    // chronoField
+    expect(mod.listAllBossMonsterIds().length).toBe(21);
+    // questSeeds (cross-import 검증)
+    expect(ALL_QUEST_SEEDS.length).toBeGreaterThanOrEqual(71);
+    // 모든 SSOT 정합 cohesion 통과
+  });
+});
+
 describe('🎯🎯 SYNC-S38 — 30 sprint 마디 최종 정점 stress (SYNC-30)', () => {
   it('30 sprint 누적 SSOT 정점 검증', async () => {
     const mod = await import('../../shared/types/chrono');
