@@ -768,3 +768,20 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 **🎯🎯🎯 SCENARIO-SYNC chapter IV 완성 — 5 sprint, +18 가드 (chapter I+II+III+IV 누적 32 sprint, +254 가드)** — Obsidian narrative SSOT 정점 완성. 115+ entity / 30+ helpers / 249 회귀 가드 / 5 chapter / 5 엔딩 / 4 파편 / 12 신 / 13 timeline / 5 milestone / 14 dialogues / 4 relics / 11 lore / 8 connections / 5 routes / docs guide. 100% Obsidian SSOT ↔ 게임 코드 동기화 + cross-domain cohesion + game-flow 통합.
 
+## 2026-05-22 SCENARIO-SYNC chapter V — narrative 풍부도 확장 (8 sprint, +56 가드)
+
+자동 라운드 계속 — narrative 깊이 확장 + 게임 추가 통합.
+
+- **SYNC-33** chronoField extension (에레보스/솔라리스 zone + 라와르 보스 extension) +8
+- **SYNC-34** 동료 → 게임 클래스 매핑 (6 동료 ↔ STORY 7 클래스) +9
+- **SYNC-35** 챕터별 종결 보상 narrative (5 chapter unlocks/rewards) +8
+- **SYNC-36** 동료 개인 서사 personal story arc (6 동료) +8
+- **SYNC-37** Ch3 솔라리스 dialogue 추가 + BGM 매핑 (5 BGM) +8
+- **SYNC-38** sub-plot narrative SSOT (7 sub-plots) +9
+- **SYNC-39** 🎯 300 가드 마디 + dialogue context 분포 +5
+- **SYNC-40** 🎯 40 sprint 마디 + progress.md 최종 갱신
+
+회귀: scenarioRegistry 304/304 + unit 전체 1674 tests pass.
+
+**🎯🎯🎯 SCENARIO-SYNC chapter V 완성 — 8 sprint, +56 가드 (누적 40 sprint, +310 가드)** — 22 SSOT 도메인 + 추가 narrative (extra_zones/extra_bosses/class_mappings/chapter_rewards/story_arcs/chapter_bgms/sub_plots). 게임 ↔ Obsidian narrative 깊이 통합 완성.
+
