@@ -1937,6 +1937,83 @@ export function listMemoryRecallsByChapter(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-53: 시나리오 분기 선택지 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ScenarioChoice {
+  obsidianId: string;
+  chapter: number;
+  /** 선택지 한글 prompt */
+  prompt: string;
+  /** 옵션 A 결과 narrative */
+  optionA: string;
+  /** 옵션 B 결과 narrative */
+  optionB: string;
+  /** 영향받는 동료 obsidianId (있을 경우) */
+  affectsCompanion?: string;
+}
+
+export const SCENARIO_CHOICES: readonly ScenarioChoice[] = [
+  {
+    obsidianId: 'choice_ch2_elfaris_diplomacy',
+    chapter: 2,
+    prompt: '실반헤임 입구 — 엘파리스 경비병과 평화 vs 전투',
+    optionA: '평화 — 외교 성공, 세라핀 신뢰도 +20',
+    optionB: '전투 — 강제 진입, 세라핀 신뢰도 -30',
+    affectsCompanion: 'seraphine',
+  },
+  {
+    obsidianId: 'choice_ch3_ifrita_base',
+    chapter: 3,
+    prompt: '솔라리스 채광 기지 — 정면 공격 vs 내부 공작',
+    optionA: '정면 공격 — 전투 보상 +, 이그나 신뢰도 -10',
+    optionB: '내부 공작 — 정보 입수 +, 이그나 신뢰도 +20',
+    affectsCompanion: 'ignara',
+  },
+  {
+    obsidianId: 'choice_ch3_rawar',
+    chapter: 3,
+    prompt: '라와르 처리 — 기억 해방 vs 재봉인',
+    optionA: '기억 해방 — 라와르의 의지 해방, 솔리안 영혼 자유',
+    optionB: '재봉인 — 라와르 영원 봉인, 신성 기억 파편만 회수',
+  },
+  {
+    obsidianId: 'choice_ch4_bernardo',
+    chapter: 4,
+    prompt: '베르나르도 — 화해 vs 배신 처치',
+    optionA: '화해 — 베르나르도 생존, 엔딩 A 가능',
+    optionB: '배신 처치 — boss_bernardo_corrupted, 엔딩 A 불가',
+    affectsCompanion: 'benjamin_cross',
+  },
+  {
+    obsidianId: 'choice_ch4_emperor',
+    chapter: 4,
+    prompt: '황제 레나르도 — 구원 vs 제거',
+    optionA: '구원 — 레테 그릇에서 해방, 제국 안정',
+    optionB: '제거 — 레테와 함께 처치, 제국 혼란',
+  },
+  {
+    obsidianId: 'choice_ch5_final',
+    chapter: 5,
+    prompt: '레테와의 최종 대전 — 기억 수호 vs 망각 받아들임 vs 신화 회귀',
+    optionA: '기억 수호 — 엔딩 A 또는 B (파편 수에 따라)',
+    optionB: '망각 받아들임 — 엔딩 C (수용 엔딩)',
+  },
+];
+
+export function getChoiceByObsidianId(
+  obsidianId: string,
+): ScenarioChoice | undefined {
+  return SCENARIO_CHOICES.find((c) => c.obsidianId === obsidianId);
+}
+
+export function listChoicesByChapter(
+  chapter: number,
+): readonly ScenarioChoice[] {
+  return SCENARIO_CHOICES.filter((c) => c.chapter === chapter);
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

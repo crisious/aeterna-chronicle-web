@@ -750,6 +750,64 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S58 — 시나리오 분기 선택지 narrative (SYNC-53)', () => {
+  it('SCENARIO_CHOICES ≥ 6 선택지', async () => {
+    const { SCENARIO_CHOICES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHOICES.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('각 choice obsidianId + choice_ prefix + 한글 prompt/options', async () => {
+    const { SCENARIO_CHOICES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const c of SCENARIO_CHOICES) {
+      expect(c.obsidianId.startsWith('choice_'), `${c.obsidianId}`).toBe(true);
+      expect(korean.test(c.prompt)).toBe(true);
+      expect(korean.test(c.optionA)).toBe(true);
+      expect(korean.test(c.optionB)).toBe(true);
+    }
+  });
+
+  it('각 choice chapter 1~5 범위', async () => {
+    const { SCENARIO_CHOICES } = await import('../../shared/types/scenarioRegistry');
+    for (const c of SCENARIO_CHOICES) {
+      expect(c.chapter).toBeGreaterThanOrEqual(1);
+      expect(c.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('affectsCompanion 있는 choice 모두 SCENARIO_COMPANIONS 존재', async () => {
+    const { SCENARIO_CHOICES, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const c of SCENARIO_CHOICES) {
+      if (c.affectsCompanion) {
+        expect(ids.has(c.affectsCompanion), `${c.affectsCompanion}`).toBe(true);
+      }
+    }
+  });
+
+  it('베르나르도 choice — boss_bernardo_corrupted narrative', async () => {
+    const { getChoiceByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const bernardo = getChoiceByObsidianId('choice_ch4_bernardo');
+    expect(bernardo).toBeDefined();
+    expect(bernardo!.optionB).toContain('boss_bernardo_corrupted');
+    expect(bernardo!.affectsCompanion).toBe('benjamin_cross');
+  });
+
+  it('Ch5 최종 선택지 — 3 엔딩 narrative', async () => {
+    const { getChoiceByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const final = getChoiceByObsidianId('choice_ch5_final');
+    expect(final).toBeDefined();
+    expect(final!.optionA).toContain('엔딩');
+    expect(final!.optionB).toContain('엔딩');
+  });
+
+  it('listChoicesByChapter Ch4 ≥ 2 (벤자민 + 황제)', async () => {
+    const { listChoicesByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch4 = listChoicesByChapter(4);
+    expect(ch4.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
 describe('SYNC-S57 — 시나리오 회상 (memory recall) narrative (SYNC-52)', () => {
   it('SCENARIO_MEMORY_RECALLS ≥ 6 회상', async () => {
     const { SCENARIO_MEMORY_RECALLS } = await import('../../shared/types/scenarioRegistry');
