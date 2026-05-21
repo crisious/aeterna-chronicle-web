@@ -2238,6 +2238,97 @@ export function getEndingSequence(
 }
 
 // ════════════════════════════════════════════════════════════════
+// SYNC-61: GameProgress 마스터 evaluator — 종합 reporter
+// ════════════════════════════════════════════════════════════════
+
+export interface GameProgressInput {
+  /** 현재 chapter (1~5) */
+  currentChapter: number;
+  /** 완료된 quest codes */
+  completedQuests: ReadonlySet<string>;
+  /** 동료 신뢰도 (obsidianId → 값) */
+  companionLoyalty: Record<string, number>;
+  /** 수집한 fragment obsidianId */
+  collectedFragments: ReadonlySet<string>;
+  /** 수집한 mythic relic obsidianId */
+  collectedRelics?: ReadonlySet<string>;
+  /** 탐사한 zone obsidianId */
+  exploredZones?: ReadonlySet<string>;
+  /** 완료된 chapter (1~5) */
+  completedChapters?: ReadonlySet<number>;
+  /** 미네르바 만남 여부 */
+  metMinerva?: boolean;
+  /** 레테 패배 여부 */
+  defeatedByLethe?: boolean;
+}
+
+export interface GameProgressReport {
+  currentChapter: number;
+  chapterProgress: ChapterProgress;
+  canEnterNextChapter: boolean;
+  achievableEnding: ScenarioEndingCode;
+  isFailure: boolean;
+  canAchieveEndingD: boolean;
+  aliveCompanions: readonly string[];
+  leftCompanions: readonly string[];
+  fragmentsCollected: number;
+  mythicRelicsCollected: number;
+  /** 전체 진행률 (0~1) */
+  totalProgress: number;
+}
+
+/**
+ * 종합 game state → 단일 GameProgressReport.
+ *
+ * 모든 game-flow evaluator (chapter progress, advanced ending,
+ * fragment count, companion alive/left, minerva check) 통합.
+ */
+export function evaluateGameProgress(
+  input: GameProgressInput,
+): GameProgressReport {
+  const chapterProgress = evaluateChapterProgress(input.currentChapter, input.completedQuests);
+
+  // 다음 chapter 진입 가능 여부
+  const nextChapter = input.currentChapter + 1;
+  const completedChapters = input.completedChapters ?? new Set<number>();
+  const canEnterNextChapter = nextChapter <= 5
+    ? canEnterChapter(nextChapter, completedChapters, input.collectedFragments)
+    : false;
+
+  // 고급 엔딩 평가
+  const mythicRelicsCount = input.collectedRelics
+    ? SCENARIO_MYTHIC_RELICS.filter((r) => input.collectedRelics!.has(r.obsidianId)).length
+    : 0;
+  const advancedEval = evaluateAdvancedEnding({
+    completedQuests: input.completedQuests,
+    companionLoyalty: input.companionLoyalty,
+    metMinerva: input.metMinerva,
+    mythicRelicsCount,
+    defeatedByLethe: input.defeatedByLethe,
+  });
+
+  // 전체 진행률 (chapter 5 = 1.0)
+  const totalProgress = Math.min(
+    1,
+    ((input.currentChapter - 1) + chapterProgress.progressRatio) / 5,
+  );
+
+  return {
+    currentChapter: input.currentChapter,
+    chapterProgress,
+    canEnterNextChapter,
+    achievableEnding: advancedEval.achievableEnding,
+    isFailure: advancedEval.isFailure,
+    canAchieveEndingD: advancedEval.canAchieveEndingD,
+    aliveCompanions: advancedEval.aliveCompanions,
+    leftCompanions: advancedEval.leftCompanions,
+    fragmentsCollected: advancedEval.fragmentsCollected,
+    mythicRelicsCollected: mythicRelicsCount,
+    totalProgress,
+  };
+}
+
+// ════════════════════════════════════════════════════════════════
 // SYNC-13: 시나리오 연대표 timeline + 핵심 이벤트
 // 출처: 시나리오/연대표_역사기록.md + 시나리오 마스터 문서
 // ════════════════════════════════════════════════════════════════

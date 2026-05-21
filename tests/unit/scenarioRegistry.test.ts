@@ -750,6 +750,121 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S63 — GameProgress 마스터 evaluator (SYNC-61)', () => {
+  it('evaluateGameProgress: Ch1 시작 (0 진행) → totalProgress 0', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 1,
+      completedQuests: new Set(),
+      companionLoyalty: {},
+      collectedFragments: new Set(),
+    });
+    expect(r.currentChapter).toBe(1);
+    expect(r.totalProgress).toBe(0);
+    expect(r.fragmentsCollected).toBe(0);
+  });
+
+  it('evaluateGameProgress: 5 chapter 모든 quest 완료 → totalProgress ≈ 1.0', async () => {
+    const { evaluateGameProgress, SCENARIO_MILESTONES } = await import('../../shared/types/scenarioRegistry');
+    const allQuests = new Set<string>();
+    for (const m of SCENARIO_MILESTONES) {
+      for (const q of m.requiredQuests) allQuests.add(q);
+    }
+    const r = evaluateGameProgress({
+      currentChapter: 5,
+      completedQuests: allQuests,
+      companionLoyalty: { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 },
+      collectedFragments: new Set(['fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium']),
+      completedChapters: new Set([1, 2, 3, 4]),
+    });
+    expect(r.totalProgress).toBe(1);
+    expect(r.achievableEnding).toBe('A');
+  });
+
+  it('evaluateGameProgress: Ch5 진입 prereq (4 파편 + Ch1~4 완료) → canEnterNextChapter false (Ch5는 next 없음)', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 5,
+      completedQuests: new Set(),
+      companionLoyalty: {},
+      collectedFragments: new Set(['fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium']),
+      completedChapters: new Set([1, 2, 3, 4]),
+    });
+    expect(r.canEnterNextChapter).toBe(false);
+  });
+
+  it('evaluateGameProgress: 신화 유물 + 미네르바 → 엔딩 D 가능', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 5,
+      completedQuests: new Set(['SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT', 'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT']),
+      companionLoyalty: { seraphine: 50, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 },
+      collectedFragments: new Set(['fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium']),
+      collectedRelics: new Set(['relic_chronai_hourglass', 'relic_ignarus_flame']),
+      metMinerva: true,
+    });
+    expect(r.achievableEnding).toBe('D');
+    expect(r.canAchieveEndingD).toBe(true);
+    expect(r.mythicRelicsCollected).toBe(2);
+  });
+
+  it('evaluateGameProgress: defeatedByLethe → FAIL', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 5,
+      completedQuests: new Set(),
+      companionLoyalty: {},
+      collectedFragments: new Set(),
+      defeatedByLethe: true,
+    });
+    expect(r.achievableEnding).toBe('FAIL');
+    expect(r.isFailure).toBe(true);
+  });
+
+  it('evaluateGameProgress: Ch1 → Ch2 진입 가능 (fragment_erebos 보유)', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 1,
+      completedQuests: new Set(),
+      companionLoyalty: {},
+      collectedFragments: new Set(['fragment_erebos']),
+      completedChapters: new Set([1]),
+    });
+    expect(r.canEnterNextChapter).toBe(true);
+  });
+
+  it('evaluateGameProgress: Ch1 → Ch2 진입 불가 (fragment 없음)', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 1,
+      completedQuests: new Set(),
+      companionLoyalty: {},
+      collectedFragments: new Set(),
+      completedChapters: new Set([1]),
+    });
+    expect(r.canEnterNextChapter).toBe(false);
+  });
+
+  it('evaluateGameProgress: 진행률 단조 증가 (Ch1 → Ch2 → Ch3)', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = evaluateGameProgress({ currentChapter: 1, completedQuests: new Set(), companionLoyalty: {}, collectedFragments: new Set() });
+    const ch3 = evaluateGameProgress({ currentChapter: 3, completedQuests: new Set(), companionLoyalty: {}, collectedFragments: new Set() });
+    expect(ch3.totalProgress).toBeGreaterThan(ch1.totalProgress);
+  });
+
+  it('evaluateGameProgress: 동료 신뢰도 부족 → leftCompanions 포함', async () => {
+    const { evaluateGameProgress } = await import('../../shared/types/scenarioRegistry');
+    const r = evaluateGameProgress({
+      currentChapter: 5,
+      completedQuests: new Set(['SQ_EREBOS_RUINS', 'SQ_SILVANHEIM_FRAGMENT', 'SQ_SOLARIS_RAWAR', 'SQ_ARGENTIUM_FRAGMENT']),
+      companionLoyalty: { seraphine: 20, maestro_crio: 40, ignara: 20, benjamin_cross: 40, reina: 30, urgrom: 40 },
+      collectedFragments: new Set(['fragment_erebos', 'fragment_silvanheim', 'fragment_solaris', 'fragment_argentium']),
+    });
+    expect(r.leftCompanions).toContain('seraphine'); // 20 < 50 threshold
+    expect(r.achievableEnding).not.toBe('A');
+  });
+});
+
 describe('SYNC-S62 — 게임 시작 / 종결 시퀀스 narrative (SYNC-59)', () => {
   it('GAME_INTRO_SEQUENCE 5 단계 인트로', async () => {
     const { GAME_INTRO_SEQUENCE } = await import('../../shared/types/scenarioRegistry');
