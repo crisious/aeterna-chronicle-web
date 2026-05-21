@@ -1205,7 +1205,18 @@ export interface ScenarioRegistryStats {
   loreDocuments: number;
   zoneConnections: number;
   chapterRoutes: number;
-  /** 합계 */
+  /** SYNC-48: chapter III/V 신규 도메인 추가 */
+  extraZones: number;
+  extraBosses: number;
+  classMappings: number;
+  chapterRewards: number;
+  storyArcs: number;
+  chapterBgms: number;
+  subPlots: number;
+  chapterDifficulties: number;
+  chapterVisuals: number;
+  epicItems: number;
+  /** 합계 (25 도메인) */
   totalEntities: number;
 }
 
@@ -1225,14 +1236,30 @@ export function getScenarioRegistryStats(): ScenarioRegistryStats {
   const loreDocuments = SCENARIO_LORE_DOCUMENTS.length;
   const zoneConnections = SCENARIO_ZONE_CONNECTIONS.length;
   const chapterRoutes = SCENARIO_CHAPTER_ROUTES.length;
+  // SYNC-48: 신규 도메인 추가
+  const extraZones = SCENARIO_EXTRA_ZONES.length;
+  const extraBosses = SCENARIO_EXTRA_BOSSES.length;
+  const classMappings = COMPANION_CLASS_MAPPINGS.length;
+  const chapterRewards = SCENARIO_CHAPTER_REWARDS.length;
+  const storyArcs = COMPANION_STORY_ARCS.length;
+  const chapterBgms = SCENARIO_CHAPTER_BGMS.length;
+  const subPlots = SCENARIO_SUB_PLOTS.length;
+  const chapterDifficulties = SCENARIO_CHAPTER_DIFFICULTIES.length;
+  const chapterVisuals = SCENARIO_CHAPTER_VISUALS.length;
+  const epicItems = SCENARIO_EPIC_ITEMS.length;
   const totalEntities =
     companions + zones + bosses + chapters + endings + fragments +
     deities + timeline + milestones + dialogues + reputationRewards +
-    mythicRelics + loreDocuments + zoneConnections + chapterRoutes;
+    mythicRelics + loreDocuments + zoneConnections + chapterRoutes +
+    extraZones + extraBosses + classMappings + chapterRewards + storyArcs +
+    chapterBgms + subPlots + chapterDifficulties + chapterVisuals + epicItems;
   return {
     companions, zones, bosses, chapters, endings, fragments, deities,
     timeline, milestones, dialogues, reputationRewards, mythicRelics,
-    loreDocuments, zoneConnections, chapterRoutes, totalEntities,
+    loreDocuments, zoneConnections, chapterRoutes,
+    extraZones, extraBosses, classMappings, chapterRewards, storyArcs,
+    chapterBgms, subPlots, chapterDifficulties, chapterVisuals, epicItems,
+    totalEntities,
   };
 }
 

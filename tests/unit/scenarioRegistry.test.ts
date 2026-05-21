@@ -750,6 +750,42 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S54 — getScenarioRegistryStats 25 도메인 완성 (SYNC-48)', () => {
+  it('stats 25 도메인 모두 정의', async () => {
+    const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const s = getScenarioRegistryStats();
+    expect(s.companions).toBeGreaterThan(0);
+    expect(s.extraZones).toBeGreaterThan(0);
+    expect(s.extraBosses).toBeGreaterThan(0);
+    expect(s.classMappings).toBeGreaterThan(0);
+    expect(s.chapterRewards).toBeGreaterThan(0);
+    expect(s.storyArcs).toBeGreaterThan(0);
+    expect(s.chapterBgms).toBeGreaterThan(0);
+    expect(s.subPlots).toBeGreaterThan(0);
+    expect(s.chapterDifficulties).toBeGreaterThan(0);
+    expect(s.chapterVisuals).toBeGreaterThan(0);
+    expect(s.epicItems).toBeGreaterThan(0);
+  });
+
+  it('totalEntities ≥ 150 (25 도메인 합)', async () => {
+    const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const s = getScenarioRegistryStats();
+    expect(s.totalEntities).toBeGreaterThanOrEqual(150);
+  });
+
+  it('totalEntities = 25 도메인 정확 합', async () => {
+    const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
+    const s = getScenarioRegistryStats();
+    const computed = s.companions + s.zones + s.bosses + s.chapters + s.endings +
+      s.fragments + s.deities + s.timeline + s.milestones + s.dialogues +
+      s.reputationRewards + s.mythicRelics + s.loreDocuments +
+      s.zoneConnections + s.chapterRoutes + s.extraZones + s.extraBosses +
+      s.classMappings + s.chapterRewards + s.storyArcs + s.chapterBgms +
+      s.subPlots + s.chapterDifficulties + s.chapterVisuals + s.epicItems;
+    expect(s.totalEntities).toBe(computed);
+  });
+});
+
 describe('SYNC-S53 — 전 SSOT 도메인 integrity final stress (SYNC-47)', () => {
   it('전 entity obsidianId snake_case (전체 도메인 cross-check)', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
@@ -1788,13 +1824,15 @@ describe('SYNC-S37 — SSOT 종합 stats + entity index (SYNC-27)', () => {
     expect(stats.totalEntities).toBeGreaterThanOrEqual(100);
   });
 
-  it('stats totalEntities = 15 도메인 합계', async () => {
+  it('stats totalEntities = 25 도메인 합계 (SYNC-48 확장)', async () => {
     const { getScenarioRegistryStats } = await import('../../shared/types/scenarioRegistry');
     const s = getScenarioRegistryStats();
     const computed = s.companions + s.zones + s.bosses + s.chapters + s.endings +
       s.fragments + s.deities + s.timeline + s.milestones + s.dialogues +
       s.reputationRewards + s.mythicRelics + s.loreDocuments +
-      s.zoneConnections + s.chapterRoutes;
+      s.zoneConnections + s.chapterRoutes + s.extraZones + s.extraBosses +
+      s.classMappings + s.chapterRewards + s.storyArcs + s.chapterBgms +
+      s.subPlots + s.chapterDifficulties + s.chapterVisuals + s.epicItems;
     expect(s.totalEntities).toBe(computed);
   });
 
