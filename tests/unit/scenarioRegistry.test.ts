@@ -814,6 +814,51 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S90 — 게임 day-by-day timeline narrative (SYNC-89)', () => {
+  it('SCENARIO_DAY_TIMELINE ≥ 15 days', async () => {
+    const { SCENARIO_DAY_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_DAY_TIMELINE.length).toBeGreaterThanOrEqual(15);
+  });
+
+  it('각 day 정수 + chapter 1~5 + 한글 event', async () => {
+    const { SCENARIO_DAY_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const d of SCENARIO_DAY_TIMELINE) {
+      expect(Number.isInteger(d.day)).toBe(true);
+      expect(d.day).toBeGreaterThan(0);
+      expect(d.chapter).toBeGreaterThanOrEqual(1);
+      expect(d.chapter).toBeLessThanOrEqual(5);
+      expect(korean.test(d.event)).toBe(true);
+    }
+  });
+
+  it('day 단조 증가 (1, 3, 7, 14, ...)', async () => {
+    const { SCENARIO_DAY_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    for (let i = 1; i < SCENARIO_DAY_TIMELINE.length; i += 1) {
+      expect(SCENARIO_DAY_TIMELINE[i].day).toBeGreaterThan(SCENARIO_DAY_TIMELINE[i - 1].day);
+    }
+  });
+
+  it('Day 1 = 게임 시작 + Day 100 = Ch5 종결', async () => {
+    const { getDayEvent } = await import('../../shared/types/scenarioRegistry');
+    expect(getDayEvent(1)!.event).toContain('시작');
+    expect(getDayEvent(100)!.event).toContain('레테');
+  });
+
+  it('5 chapter 모두 ≥1 day event', async () => {
+    const { listDayEventsByChapter } = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      expect(listDayEventsByChapter(ch).length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('총 진행 기간 ~100일 narrative', async () => {
+    const { SCENARIO_DAY_TIMELINE } = await import('../../shared/types/scenarioRegistry');
+    const maxDay = Math.max(...SCENARIO_DAY_TIMELINE.map((d) => d.day));
+    expect(maxDay).toBe(100);
+  });
+});
+
 describe('SYNC-S89 — 챕터별 임시 사건 narrative (SYNC-88)', () => {
   it('SCENARIO_INCIDENTAL_EVENTS 5 chapter 임시 사건', async () => {
     const { SCENARIO_INCIDENTAL_EVENTS } = await import('../../shared/types/scenarioRegistry');

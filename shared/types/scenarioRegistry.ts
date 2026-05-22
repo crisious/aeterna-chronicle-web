@@ -3432,6 +3432,44 @@ export function listIncidentalEventsByChapter(
   return SCENARIO_INCIDENTAL_EVENTS.filter((e) => e.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-89: 게임 day-by-day timeline narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface DayTimeline {
+  /** 게임 시작 후 일자 (1부터) */
+  day: number;
+  chapter: number;
+  /** 그 날의 핵심 사건 narrative */
+  event: string;
+}
+
+export const SCENARIO_DAY_TIMELINE: readonly DayTimeline[] = [
+  { day: 1, chapter: 1, event: '게임 시작 — 칸텔라 마을 폭풍 사건' },
+  { day: 3, chapter: 1, event: '에레보스 폐허 진입 + 세라핀 만남' },
+  { day: 7, chapter: 1, event: '에레보스 도서관 발견 + 크리오 만남' },
+  { day: 14, chapter: 1, event: 'Ch1 종결 — 에레보스 파편 회수' },
+  { day: 15, chapter: 2, event: 'Ch2 시작 — 실반헤임 진입' },
+  { day: 28, chapter: 2, event: '말라투스 보스전' },
+  { day: 35, chapter: 2, event: 'Ch2 종결 — 실반헤임 파편 회수' },
+  { day: 36, chapter: 3, event: 'Ch3 시작 — 솔라리스 사막 도착' },
+  { day: 50, chapter: 3, event: '이그나 합류 + 채광 기지 작전' },
+  { day: 63, chapter: 3, event: 'Ch3 종결 — 라와르 봉인 + 솔라리스 파편' },
+  { day: 64, chapter: 4, event: 'Ch4 시작 — 아르겐티움 잠입' },
+  { day: 80, chapter: 4, event: '벤자민/레이나/우르그롬 합류' },
+  { day: 93, chapter: 4, event: 'Ch4 종결 — 아르겐티움 파편 + 베르나르도 분기' },
+  { day: 94, chapter: 5, event: 'Ch5 시작 — 망각의 고원 진입' },
+  { day: 100, chapter: 5, event: 'Ch5 종결 — 레테 최종 결전' },
+];
+
+export function getDayEvent(day: number): DayTimeline | undefined {
+  return SCENARIO_DAY_TIMELINE.find((d) => d.day === day);
+}
+
+export function listDayEventsByChapter(chapter: number): readonly DayTimeline[] {
+  return SCENARIO_DAY_TIMELINE.filter((d) => d.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
