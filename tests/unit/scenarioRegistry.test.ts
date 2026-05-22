@@ -814,6 +814,59 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S82 — zone별 random encounter narrative (SYNC-81)', () => {
+  it('SCENARIO_RANDOM_ENCOUNTERS ≥ 7 zones', async () => {
+    const { SCENARIO_RANDOM_ENCOUNTERS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_RANDOM_ENCOUNTERS.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 encounter zoneObsidianId SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_RANDOM_ENCOUNTERS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const e of SCENARIO_RANDOM_ENCOUNTERS) {
+      expect(zoneIds.has(e.zoneObsidianId), `${e.zoneObsidianId}`).toBe(true);
+    }
+  });
+
+  it('각 encounter enemyArchetypes 모두 SCENARIO_ENEMY_ARCHETYPES 존재', async () => {
+    const { SCENARIO_RANDOM_ENCOUNTERS, SCENARIO_ENEMY_ARCHETYPES } = await import('../../shared/types/scenarioRegistry');
+    const archIds = new Set(SCENARIO_ENEMY_ARCHETYPES.map((a) => a.obsidianId));
+    for (const e of SCENARIO_RANDOM_ENCOUNTERS) {
+      for (const a of e.enemyArchetypes) {
+        expect(archIds.has(a), `${e.zoneObsidianId}: ${a}`).toBe(true);
+      }
+    }
+  });
+
+  it('각 frequency valid (low/medium/high)', async () => {
+    const { SCENARIO_RANDOM_ENCOUNTERS } = await import('../../shared/types/scenarioRegistry');
+    const VALID = new Set(['low', 'medium', 'high']);
+    for (const e of SCENARIO_RANDOM_ENCOUNTERS) {
+      expect(VALID.has(e.frequency), `${e.zoneObsidianId}`).toBe(true);
+    }
+  });
+
+  it('칸텔라 마을 — 전투 없음 (low frequency + 빈 archetype)', async () => {
+    const { getRandomEncounterByZone } = await import('../../shared/types/scenarioRegistry');
+    const cantela = getRandomEncounterByZone('cantela_village');
+    expect(cantela!.frequency).toBe('low');
+    expect(cantela!.enemyArchetypes.length).toBe(0);
+  });
+
+  it('아르겐티움 — high frequency + 제국+레테 narrative', async () => {
+    const { getRandomEncounterByZone } = await import('../../shared/types/scenarioRegistry');
+    const argentium = getRandomEncounterByZone('argentium');
+    expect(argentium!.frequency).toBe('high');
+    expect(argentium!.enemyArchetypes.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('high frequency zone ≥ 3 (에레보스/아르겐티움/망각 고원)', async () => {
+    const { SCENARIO_RANDOM_ENCOUNTERS } = await import('../../shared/types/scenarioRegistry');
+    const high = SCENARIO_RANDOM_ENCOUNTERS.filter((e) => e.frequency === 'high');
+    expect(high.length).toBeGreaterThanOrEqual(3);
+  });
+});
+
 describe('SYNC-S80 — 게임 내 시간 진행 narrative (SYNC-79)', () => {
   it('SCENARIO_CHAPTER_TIMESPANS 5 chapter timespans', async () => {
     const { SCENARIO_CHAPTER_TIMESPANS } = await import('../../shared/types/scenarioRegistry');

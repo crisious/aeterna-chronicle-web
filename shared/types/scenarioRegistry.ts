@@ -3087,6 +3087,71 @@ export function getTimespanByChapter(chapter: number): ChapterTimespan | undefin
   return SCENARIO_CHAPTER_TIMESPANS.find((t) => t.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-81: zone별 random encounter 패턴 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface RandomEncounter {
+  zoneObsidianId: string;
+  /** 가능한 적 archetype obsidianId 목록 */
+  enemyArchetypes: readonly string[];
+  /** 인카운터 빈도 (low/medium/high) */
+  frequency: 'low' | 'medium' | 'high';
+  /** narrative 설명 */
+  description: string;
+}
+
+export const SCENARIO_RANDOM_ENCOUNTERS: readonly RandomEncounter[] = [
+  {
+    zoneObsidianId: 'cantela_village',
+    enemyArchetypes: [],
+    frequency: 'low',
+    description: '평화로운 마을 — 전투 없음 (시작점).',
+  },
+  {
+    zoneObsidianId: 'erebos',
+    enemyArchetypes: ['enemy_memory_remnant', 'enemy_oblivion_wraith'],
+    frequency: 'high',
+    description: '에레보스 폐허 — 기억 잔영 + 망각 원혼 빈번 출현.',
+  },
+  {
+    zoneObsidianId: 'silvanheim',
+    enemyArchetypes: ['enemy_forest_guardian', 'enemy_oblivion_wraith'],
+    frequency: 'medium',
+    description: '실반헤임 — 수호자 + 시간 지연 영역 원혼.',
+  },
+  {
+    zoneObsidianId: 'solaris',
+    enemyArchetypes: ['enemy_sand_phantom', 'enemy_oblivion_wraith'],
+    frequency: 'medium',
+    description: '솔라리스 사막 — 신기루 + 에테르 발광 원혼.',
+  },
+  {
+    zoneObsidianId: 'argentium',
+    enemyArchetypes: ['enemy_imperial_guard', 'enemy_lethe_inquisitor'],
+    frequency: 'high',
+    description: '아르겐티움 — 제국 근위 + 레테 심문관 적대.',
+  },
+  {
+    zoneObsidianId: 'oblivion_plateau',
+    enemyArchetypes: ['enemy_reality_fractured', 'enemy_oblivion_wraith'],
+    frequency: 'high',
+    description: '망각의 고원 — 현실 분열체 + 망각 원혼 절정.',
+  },
+  {
+    zoneObsidianId: 'golden_ether_tower',
+    enemyArchetypes: ['enemy_reality_fractured', 'enemy_lethe_inquisitor'],
+    frequency: 'medium',
+    description: '황금 에테르 탑 — 최종 결전 위치, 정예 적만 출현.',
+  },
+];
+
+export function getRandomEncounterByZone(
+  zoneObsidianId: string,
+): RandomEncounter | undefined {
+  return SCENARIO_RANDOM_ENCOUNTERS.find((e) => e.zoneObsidianId === zoneObsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
