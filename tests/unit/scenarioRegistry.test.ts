@@ -814,6 +814,46 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S89 — 챕터별 임시 사건 narrative (SYNC-88)', () => {
+  it('SCENARIO_INCIDENTAL_EVENTS 5 chapter 임시 사건', async () => {
+    const { SCENARIO_INCIDENTAL_EVENTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_INCIDENTAL_EVENTS.length).toBe(5);
+  });
+
+  it('각 incident obsidianId + incident_ prefix + 한글', async () => {
+    const { SCENARIO_INCIDENTAL_EVENTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const e of SCENARIO_INCIDENTAL_EVENTS) {
+      expect(e.obsidianId.startsWith('incident_'), `${e.obsidianId}`).toBe(true);
+      expect(korean.test(e.title)).toBe(true);
+      expect(korean.test(e.description)).toBe(true);
+      expect(e.chapter).toBeGreaterThanOrEqual(1);
+      expect(e.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('Ch1 칸텔라 폭풍 (게임 시작 사건)', async () => {
+    const { getIncidentalEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = getIncidentalEventByObsidianId('incident_ch1_cantela_storm');
+    expect(ch1!.title).toContain('칸텔라');
+    expect(ch1!.description).toContain('기억');
+  });
+
+  it('Ch5 현실 파열 narrative', async () => {
+    const { getIncidentalEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getIncidentalEventByObsidianId('incident_ch5_reality_break');
+    expect(ch5!.title).toContain('현실');
+    expect(ch5!.description).toContain('시간');
+  });
+
+  it('5 chapter 모두 1 incident', async () => {
+    const { listIncidentalEventsByChapter } = await import('../../shared/types/scenarioRegistry');
+    for (let ch = 1; ch <= 5; ch += 1) {
+      expect(listIncidentalEventsByChapter(ch).length).toBe(1);
+    }
+  });
+});
+
 describe('SYNC-S88 — 동료 친밀도 이벤트 narrative (SYNC-87)', () => {
   it('COMPANION_AFFINITY_EVENTS 6 동료 친밀도 이벤트', async () => {
     const { COMPANION_AFFINITY_EVENTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');

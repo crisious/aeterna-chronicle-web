@@ -3374,6 +3374,64 @@ export function listAffinityEventsByCompanion(
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-88: 챕터별 임시 사건 (incidental event) narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface IncidentalEvent {
+  obsidianId: string;
+  chapter: number;
+  /** 한글 제목 */
+  title: string;
+  /** 사건 narrative */
+  description: string;
+}
+
+export const SCENARIO_INCIDENTAL_EVENTS: readonly IncidentalEvent[] = [
+  {
+    obsidianId: 'incident_ch1_cantela_storm',
+    chapter: 1,
+    title: '칸텔라 마을 기억 폭풍',
+    description: '게임 시작 시 칸텔라 마을 전역 기억 소멸 폭풍 — 일부 마을민 사라짐.',
+  },
+  {
+    obsidianId: 'incident_ch2_elfaris_blockade',
+    chapter: 2,
+    title: '엘파리스 경비대 봉쇄',
+    description: '실반헤임 진입 경비대 봉쇄 — 평화/전투 분기 사건.',
+  },
+  {
+    obsidianId: 'incident_ch3_ifrita_clan_split',
+    chapter: 3,
+    title: '이프리타 부족 내분',
+    description: '솔라리스 채광 기지 사건 이후 이프리타 부족 분열.',
+  },
+  {
+    obsidianId: 'incident_ch4_emperor_collapse',
+    chapter: 4,
+    title: '황제 레나르도 발작',
+    description: '황궁 내부 황제 레나르도 레테 그릇 발작 — 제국 혼란.',
+  },
+  {
+    obsidianId: 'incident_ch5_reality_break',
+    chapter: 5,
+    title: '현실 파열',
+    description: '망각의 고원 진입 시 현실 일부 파열 — 시간 왜곡 발생.',
+  },
+];
+
+export function getIncidentalEventByObsidianId(
+  obsidianId: string,
+): IncidentalEvent | undefined {
+  return SCENARIO_INCIDENTAL_EVENTS.find((e) => e.obsidianId === obsidianId);
+}
+
+export function listIncidentalEventsByChapter(
+  chapter: number,
+): readonly IncidentalEvent[] {
+  return SCENARIO_INCIDENTAL_EVENTS.filter((e) => e.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
