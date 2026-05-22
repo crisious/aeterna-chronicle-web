@@ -814,6 +814,46 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S95 — tutorial step narrative SSOT (SYNC-94)', () => {
+  it('SCENARIO_TUTORIAL_STEPS ≥ 6 tutorial steps', async () => {
+    const { SCENARIO_TUTORIAL_STEPS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_TUTORIAL_STEPS.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('각 step 1~10 + 한글 title/content', async () => {
+    const { SCENARIO_TUTORIAL_STEPS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const s of SCENARIO_TUTORIAL_STEPS) {
+      expect(s.step).toBeGreaterThanOrEqual(1);
+      expect(s.step).toBeLessThanOrEqual(10);
+      expect(korean.test(s.title)).toBe(true);
+      expect(korean.test(s.content)).toBe(true);
+    }
+  });
+
+  it('step 단조 증가 (1~6)', async () => {
+    const { SCENARIO_TUTORIAL_STEPS } = await import('../../shared/types/scenarioRegistry');
+    for (let i = 1; i < SCENARIO_TUTORIAL_STEPS.length; i += 1) {
+      expect(SCENARIO_TUTORIAL_STEPS[i].step).toBeGreaterThan(SCENARIO_TUTORIAL_STEPS[i - 1].step);
+    }
+  });
+
+  it('Step 1 = 게임 시작 + 마지막 step = 4 파편 narrative', async () => {
+    const { getTutorialStepByNumber, SCENARIO_TUTORIAL_STEPS } = await import('../../shared/types/scenarioRegistry');
+    expect(getTutorialStepByNumber(1)!.title).toContain('시작');
+    const last = SCENARIO_TUTORIAL_STEPS[SCENARIO_TUTORIAL_STEPS.length - 1];
+    expect(last.content).toContain('4 파편');
+  });
+
+  it('ATB 전투 + 동료 + 스킬 트리 tutorial 단계 존재', async () => {
+    const { SCENARIO_TUTORIAL_STEPS } = await import('../../shared/types/scenarioRegistry');
+    const allText = SCENARIO_TUTORIAL_STEPS.map((s) => s.title + s.content).join(' ');
+    expect(allText).toContain('ATB');
+    expect(allText).toContain('동료');
+    expect(allText).toContain('스킬 트리');
+  });
+});
+
 describe('SYNC-S94 — save slot marker narrative (SYNC-93)', () => {
   it('SCENARIO_SAVE_SLOTS 5 slots', async () => {
     const { SCENARIO_SAVE_SLOTS } = await import('../../shared/types/scenarioRegistry');

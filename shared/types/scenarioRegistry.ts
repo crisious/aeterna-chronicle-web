@@ -3580,6 +3580,56 @@ export function getSaveSlotByChapter(chapter: number): SaveSlot | undefined {
   return SCENARIO_SAVE_SLOTS.find((s) => s.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-94: 시나리오 tutorial narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface TutorialStep {
+  /** tutorial 단계 번호 */
+  step: number;
+  /** 한글 제목 */
+  title: string;
+  /** 학습 내용 narrative */
+  content: string;
+}
+
+export const SCENARIO_TUTORIAL_STEPS: readonly TutorialStep[] = [
+  {
+    step: 1,
+    title: '게임 시작 — 칸텔라 마을',
+    content: '에리언의 기억 공명 능력 각성 + 기본 이동/대화 학습.',
+  },
+  {
+    step: 2,
+    title: '첫 전투 — 기억 잔영',
+    content: 'ATB 전투 시스템 + 기본 공격/방어 학습.',
+  },
+  {
+    step: 3,
+    title: '동료 합류 — 세라핀',
+    content: '파티 시스템 + 동료 신뢰도 도입.',
+  },
+  {
+    step: 4,
+    title: '에테르 결정 + 인벤토리',
+    content: '아이템 사용 + 인벤토리 관리 + 장비 교체.',
+  },
+  {
+    step: 5,
+    title: '스킬 트리 + 클래스 시스템',
+    content: 'STORY 7 클래스 + 스킬 트리 + 진로 학습.',
+  },
+  {
+    step: 6,
+    title: '신성 기억 파편 회수',
+    content: '4 파편 시스템 + 엔딩 분기 영향 narrative.',
+  },
+];
+
+export function getTutorialStepByNumber(step: number): TutorialStep | undefined {
+  return SCENARIO_TUTORIAL_STEPS.find((t) => t.step === step);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
