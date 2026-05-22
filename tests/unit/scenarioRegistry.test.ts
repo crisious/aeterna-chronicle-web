@@ -750,6 +750,56 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S78 — sub-location narrative (SYNC-77)', () => {
+  it('SCENARIO_SUB_LOCATIONS ≥ 7 sub-locations', async () => {
+    const { SCENARIO_SUB_LOCATIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_SUB_LOCATIONS.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 sub-location obsidianId + sub_ prefix + 한글', async () => {
+    const { SCENARIO_SUB_LOCATIONS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const l of SCENARIO_SUB_LOCATIONS) {
+      expect(l.obsidianId.startsWith('sub_'), `${l.obsidianId}`).toBe(true);
+      expect(korean.test(l.name)).toBe(true);
+      expect(korean.test(l.description)).toBe(true);
+    }
+  });
+
+  it('5 SubLocationType 모두 (village/fortress/ruin/sanctuary/lab)', async () => {
+    const { SCENARIO_SUB_LOCATIONS } = await import('../../shared/types/scenarioRegistry');
+    const types = new Set(SCENARIO_SUB_LOCATIONS.map((l) => l.type));
+    expect(types.size).toBe(5);
+  });
+
+  it('zoneObsidianId 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_SUB_LOCATIONS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const l of SCENARIO_SUB_LOCATIONS) {
+      expect(zoneIds.has(l.zoneObsidianId), `${l.zoneObsidianId}`).toBe(true);
+    }
+  });
+
+  it('아르겐티움 sub-locations ≥ 3 (palace/palatino/north_temple)', async () => {
+    const { listSubLocationsByZone } = await import('../../shared/types/scenarioRegistry');
+    const argentium = listSubLocationsByZone('argentium');
+    expect(argentium.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('에리언의 집 (sub_cantela_house) — village type + 시작점', async () => {
+    const { getSubLocationByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const home = getSubLocationByObsidianId('sub_cantela_house');
+    expect(home!.type).toBe('village');
+    expect(home!.description).toContain('시작점');
+  });
+
+  it('말라투스 고목 — sanctuary type', async () => {
+    const { getSubLocationByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const grove = getSubLocationByObsidianId('sub_silvanheim_grove');
+    expect(grove!.type).toBe('sanctuary');
+  });
+});
+
 describe('SYNC-S77 — NPC vendor 상점 narrative (SYNC-76)', () => {
   it('SCENARIO_VENDORS ≥ 5 vendors', async () => {
     const { SCENARIO_VENDORS } = await import('../../shared/types/scenarioRegistry');

@@ -2955,6 +2955,87 @@ export function listVendorsByZone(
   return SCENARIO_VENDORS.filter((v) => v.zoneObsidianId === zoneObsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-77: 시나리오 sub-location narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export type SubLocationType = 'village' | 'fortress' | 'ruin' | 'sanctuary' | 'lab';
+
+export interface SubLocation {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 상위 zone obsidianId */
+  zoneObsidianId: string;
+  type: SubLocationType;
+  /** 한글 narrative */
+  description: string;
+}
+
+export const SCENARIO_SUB_LOCATIONS: readonly SubLocation[] = [
+  {
+    obsidianId: 'sub_cantela_house',
+    name: '에리언의 집',
+    zoneObsidianId: 'cantela_village',
+    type: 'village',
+    description: '주인공 에리언의 칸텔라 마을 집 — 게임 시작점.',
+  },
+  {
+    obsidianId: 'sub_erebos_library',
+    name: '에레보스 도서관',
+    zoneObsidianId: 'erebos',
+    type: 'ruin',
+    description: '대망각 당일 사서의 마지막 일기가 발견된 도서관 폐허.',
+  },
+  {
+    obsidianId: 'sub_silvanheim_grove',
+    name: '말라투스 고목',
+    zoneObsidianId: 'silvanheim',
+    type: 'sanctuary',
+    description: '실반헤임 중심 — 수천 년 기억을 수호하는 거대 고목.',
+  },
+  {
+    obsidianId: 'sub_solaris_mine',
+    name: '이프리타 채광 기지',
+    zoneObsidianId: 'solaris',
+    type: 'fortress',
+    description: '제국 점령 에테르 결정 채광 기지 — Ch3 작전 분기 위치.',
+  },
+  {
+    obsidianId: 'sub_argentium_palace',
+    name: '아르겐티움 황궁',
+    zoneObsidianId: 'argentium',
+    type: 'fortress',
+    description: '칼리마르 제국 황궁 — Ch4 잠입 + 황제 대결 위치.',
+  },
+  {
+    obsidianId: 'sub_palatino_lab',
+    name: '팔라티노 비밀 연구소',
+    zoneObsidianId: 'argentium',
+    type: 'lab',
+    description: '황궁 지하 — 레테 교단 비밀 실험실 + 베르나르도 마지막 대결.',
+  },
+  {
+    obsidianId: 'sub_north_temple',
+    name: '북방 기억석 사원',
+    zoneObsidianId: 'argentium',
+    type: 'sanctuary',
+    description: '200년 봉인 의식 마지막 보루 — 우르그롬 합류 위치.',
+  },
+];
+
+export function getSubLocationByObsidianId(
+  obsidianId: string,
+): SubLocation | undefined {
+  return SCENARIO_SUB_LOCATIONS.find((l) => l.obsidianId === obsidianId);
+}
+
+export function listSubLocationsByZone(
+  zoneObsidianId: string,
+): readonly SubLocation[] {
+  return SCENARIO_SUB_LOCATIONS.filter((l) => l.zoneObsidianId === zoneObsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
