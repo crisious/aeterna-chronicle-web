@@ -750,6 +750,69 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S74 — 동료 시작 status narrative (SYNC-73)', () => {
+  it('COMPANION_STARTING_STATS 6 동료 시작 status', async () => {
+    const { COMPANION_STARTING_STATS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_STARTING_STATS.length).toBe(SCENARIO_COMPANIONS.length);
+  });
+
+  it('각 status companionObsidianId SCENARIO_COMPANIONS 존재', async () => {
+    const { COMPANION_STARTING_STATS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const s of COMPANION_STARTING_STATS) {
+      expect(ids.has(s.companionObsidianId)).toBe(true);
+    }
+  });
+
+  it('각 status 한글 narrative + startingLevel 1~30', async () => {
+    const { COMPANION_STARTING_STATS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const s of COMPANION_STARTING_STATS) {
+      expect(korean.test(s.narrative)).toBe(true);
+      expect(s.startingLevel).toBeGreaterThanOrEqual(1);
+      expect(s.startingLevel).toBeLessThanOrEqual(30);
+    }
+  });
+
+  it('primaryStat valid (5 카테고리)', async () => {
+    const { COMPANION_STARTING_STATS } = await import('../../shared/types/scenarioRegistry');
+    const VALID = new Set(['근접 공격', '원거리 공격', '마법', '방어', '지원']);
+    for (const s of COMPANION_STARTING_STATS) {
+      expect(VALID.has(s.primaryStat), `${s.primaryStat}`).toBe(true);
+    }
+  });
+
+  it('합류 chapter 진행에 따라 startingLevel 단조 증가 (대체로)', async () => {
+    const { COMPANION_STARTING_STATS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    // Ch1 동료 (세라핀/크리오) lv ≤5
+    const seraphine = COMPANION_STARTING_STATS.find((s) => s.companionObsidianId === 'seraphine');
+    const crio = COMPANION_STARTING_STATS.find((s) => s.companionObsidianId === 'maestro_crio');
+    expect(seraphine!.startingLevel).toBeLessThanOrEqual(5);
+    expect(crio!.startingLevel).toBeLessThanOrEqual(5);
+    // Ch4 동료 (벤자민/레이나/우르그롬) lv ≥20
+    for (const id of ['benjamin_cross', 'reina', 'urgrom']) {
+      const s = COMPANION_STARTING_STATS.find((ss) => ss.companionObsidianId === id);
+      expect(s!.startingLevel).toBeGreaterThanOrEqual(20);
+    }
+  });
+
+  it('우르그롬 — 방어형 + 가장 높은 시작 lv', async () => {
+    const { getStartingStatsByCompanion } = await import('../../shared/types/scenarioRegistry');
+    const urgrom = getStartingStatsByCompanion('urgrom');
+    expect(urgrom!.primaryStat).toBe('방어');
+    expect(urgrom!.startingLevel).toBe(25);
+  });
+
+  it('cohesion: COMPANION_STARTING_STATS ↔ COMPANION_CLASS_MAPPINGS', async () => {
+    const { COMPANION_STARTING_STATS, COMPANION_CLASS_MAPPINGS } = await import('../../shared/types/scenarioRegistry');
+    // 모든 동료가 둘 다 보유
+    for (const s of COMPANION_STARTING_STATS) {
+      const cls = COMPANION_CLASS_MAPPINGS.find((m) => m.companionObsidianId === s.companionObsidianId);
+      expect(cls, `${s.companionObsidianId} class`).toBeDefined();
+    }
+  });
+});
+
 describe('SYNC-S73 — 진영 평판 narrative (SYNC-72)', () => {
   it('FACTION_REPUTATIONS 7 세력 평판', async () => {
     const { FACTION_REPUTATIONS, SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');

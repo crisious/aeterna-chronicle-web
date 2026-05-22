@@ -2755,6 +2755,67 @@ export function getFactionReputationByObsidianId(
   return FACTION_REPUTATIONS.find((r) => r.factionObsidianId === factionObsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-73: 동료 시작 status narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface CompanionStartingStats {
+  companionObsidianId: string;
+  /** 합류 시 시작 level */
+  startingLevel: number;
+  /** 주력 능력치 (game class 기반 narrative) */
+  primaryStat: '근접 공격' | '원거리 공격' | '마법' | '방어' | '지원';
+  /** 시작 status narrative */
+  narrative: string;
+}
+
+export const COMPANION_STARTING_STATS: readonly CompanionStartingStats[] = [
+  {
+    companionObsidianId: 'seraphine',
+    startingLevel: 1,
+    primaryStat: '원거리 공격',
+    narrative: '엘파리스 정찰병 — 시간 가속 검술 + 정찰 시야. lv1 시작.',
+  },
+  {
+    companionObsidianId: 'maestro_crio',
+    startingLevel: 3,
+    primaryStat: '지원',
+    narrative: '200년 생존 정보상 — 기억 직조 지원형. lv3 시작 (정보망 인맥).',
+  },
+  {
+    companionObsidianId: 'ignara',
+    startingLevel: 12,
+    primaryStat: '마법',
+    narrative: '이프리타 족장의 딸 — 에테르 결정 불꽃 마법. Ch3 lv12 합류.',
+  },
+  {
+    companionObsidianId: 'benjamin_cross',
+    startingLevel: 22,
+    primaryStat: '근접 공격',
+    narrative: '전직 형사 — 그림자 잠입 + 정보 수집. Ch4 lv22 합류.',
+  },
+  {
+    companionObsidianId: 'reina',
+    startingLevel: 24,
+    primaryStat: '마법',
+    narrative: '레테 교단 내부고발자 — 기억 봉인 파괴. Ch4 lv24 합류.',
+  },
+  {
+    companionObsidianId: 'urgrom',
+    startingLevel: 25,
+    primaryStat: '방어',
+    narrative: '북방 사원 수호자 — 시간 봉인 방어. Ch4 lv25 합류 (가장 강력).',
+  },
+];
+
+export function getStartingStatsByCompanion(
+  companionObsidianId: string,
+): CompanionStartingStats | undefined {
+  return COMPANION_STARTING_STATS.find(
+    (s) => s.companionObsidianId === companionObsidianId,
+  );
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
