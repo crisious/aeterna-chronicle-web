@@ -3535,6 +3535,51 @@ export function listCollectiblesByZone(
   return SCENARIO_COLLECTIBLES.filter((c) => c.zoneObsidianId === zoneObsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-93: 시나리오 save slot marker narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface SaveSlot {
+  /** 추천 save slot 번호 (1부터) */
+  slotNumber: number;
+  /** save 시점 chapter */
+  chapter: number;
+  /** save 시점 narrative */
+  context: string;
+}
+
+export const SCENARIO_SAVE_SLOTS: readonly SaveSlot[] = [
+  {
+    slotNumber: 1,
+    chapter: 1,
+    context: 'Ch1 진입 직후 — 칸텔라 마을 시작 + 능력 각성 직후',
+  },
+  {
+    slotNumber: 2,
+    chapter: 2,
+    context: 'Ch2 시작 — 실반헤임 외교 분기 직전',
+  },
+  {
+    slotNumber: 3,
+    chapter: 3,
+    context: 'Ch3 진입 — 솔라리스 사막 + 라와르 분기 직전',
+  },
+  {
+    slotNumber: 4,
+    chapter: 4,
+    context: 'Ch4 잠입 — 아르겐티움 + 베르나르도 분기 직전 (가장 분기 풍부)',
+  },
+  {
+    slotNumber: 5,
+    chapter: 5,
+    context: 'Ch5 진입 — 황금 에테르 탑 + 엔딩 분기 직전 (최종 분기점)',
+  },
+];
+
+export function getSaveSlotByChapter(chapter: number): SaveSlot | undefined {
+  return SCENARIO_SAVE_SLOTS.find((s) => s.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

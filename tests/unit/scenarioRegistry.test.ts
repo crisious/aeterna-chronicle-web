@@ -814,6 +814,44 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S94 — save slot marker narrative (SYNC-93)', () => {
+  it('SCENARIO_SAVE_SLOTS 5 slots', async () => {
+    const { SCENARIO_SAVE_SLOTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_SAVE_SLOTS.length).toBe(5);
+  });
+
+  it('각 slot 1~5 + chapter 1~5 + 한글 context', async () => {
+    const { SCENARIO_SAVE_SLOTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const s of SCENARIO_SAVE_SLOTS) {
+      expect(s.slotNumber).toBeGreaterThanOrEqual(1);
+      expect(s.slotNumber).toBeLessThanOrEqual(5);
+      expect(s.chapter).toBeGreaterThanOrEqual(1);
+      expect(s.chapter).toBeLessThanOrEqual(5);
+      expect(korean.test(s.context)).toBe(true);
+    }
+  });
+
+  it('slotNumber와 chapter 일치 (slot N = chapter N)', async () => {
+    const { SCENARIO_SAVE_SLOTS } = await import('../../shared/types/scenarioRegistry');
+    for (const s of SCENARIO_SAVE_SLOTS) {
+      expect(s.slotNumber).toBe(s.chapter);
+    }
+  });
+
+  it('Ch4 = 가장 분기 풍부 narrative', async () => {
+    const { getSaveSlotByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch4 = getSaveSlotByChapter(4);
+    expect(ch4!.context).toContain('분기');
+  });
+
+  it('Ch5 = 최종 분기점 narrative', async () => {
+    const { getSaveSlotByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getSaveSlotByChapter(5);
+    expect(ch5!.context).toContain('엔딩');
+  });
+});
+
 describe('🎯 SYNC-S93 — 1950 tests 마디 + 49 도메인 stress (SYNC-92)', () => {
   it('49 도메인 entity 총량 ≥ 320', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
