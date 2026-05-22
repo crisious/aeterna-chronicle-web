@@ -3249,6 +3249,57 @@ export function listBossPhases(bossObsidianId: string): readonly BossPhase[] {
   return SCENARIO_BOSS_PHASES.filter((p) => p.bossObsidianId === bossObsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-86: 챕터별 메인 적대자 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterAntagonist {
+  chapter: number;
+  /** 적대자 obsidianId (boss or NPC) */
+  antagonistObsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 핵심 motivation narrative */
+  motivation: string;
+}
+
+export const SCENARIO_CHAPTER_ANTAGONISTS: readonly ChapterAntagonist[] = [
+  {
+    chapter: 1,
+    antagonistObsidianId: 'memory_golem',
+    name: '기억의 골렘',
+    motivation: '에레보스 폐허 수호 + 200년 전 죽은 자들의 마지막 의지.',
+  },
+  {
+    chapter: 2,
+    antagonistObsidianId: 'malatus_ancient',
+    name: '말라투스 (각성 형태)',
+    motivation: '실반헤임 수호 + 시간 지연 영역 침범자 처단.',
+  },
+  {
+    chapter: 3,
+    antagonistObsidianId: 'rawar',
+    name: '라와르 (솔리안 왕)',
+    motivation: '200년 봉인 의식의 마지막 보루 + 솔리안 영혼 해방.',
+  },
+  {
+    chapter: 4,
+    antagonistObsidianId: 'kane',
+    name: '케인 (기억 사냥꾼)',
+    motivation: '레테 교단 정예 + 신성 기억 파편 회수 임무.',
+  },
+  {
+    chapter: 5,
+    antagonistObsidianId: 'lethe',
+    name: '레테 (망각의 신)',
+    motivation: '망각을 통한 \'구원\' + 12 신화 시대 회귀.',
+  },
+];
+
+export function getChapterAntagonist(chapter: number): ChapterAntagonist | undefined {
+  return SCENARIO_CHAPTER_ANTAGONISTS.find((a) => a.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

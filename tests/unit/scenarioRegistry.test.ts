@@ -814,6 +814,60 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S87 — 챕터별 메인 적대자 narrative (SYNC-86)', () => {
+  it('SCENARIO_CHAPTER_ANTAGONISTS 5 chapter 적대자', async () => {
+    const { SCENARIO_CHAPTER_ANTAGONISTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_ANTAGONISTS.length).toBe(5);
+  });
+
+  it('각 적대자 chapter 1~5 + 한글 name/motivation', async () => {
+    const { SCENARIO_CHAPTER_ANTAGONISTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const a of SCENARIO_CHAPTER_ANTAGONISTS) {
+      expect(a.chapter).toBeGreaterThanOrEqual(1);
+      expect(a.chapter).toBeLessThanOrEqual(5);
+      expect(korean.test(a.name)).toBe(true);
+      expect(korean.test(a.motivation)).toBe(true);
+    }
+  });
+
+  it('Ch5 = 레테 (최종 보스 + 망각의 신)', async () => {
+    const { getChapterAntagonist } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getChapterAntagonist(5);
+    expect(ch5!.antagonistObsidianId).toBe('lethe');
+    expect(ch5!.motivation).toContain('망각');
+  });
+
+  it('Ch3 = 라와르 (솔리안 왕 200년 봉인)', async () => {
+    const { getChapterAntagonist } = await import('../../shared/types/scenarioRegistry');
+    const ch3 = getChapterAntagonist(3);
+    expect(ch3!.antagonistObsidianId).toBe('rawar');
+    expect(ch3!.motivation).toContain('200년');
+  });
+
+  it('antagonistObsidianId 모두 BOSSES OR EXTRA_BOSSES 존재', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set([
+      ...mod.SCENARIO_BOSSES.map((b) => b.obsidianId),
+      ...mod.SCENARIO_EXTRA_BOSSES.map((b) => b.obsidianId),
+    ]);
+    for (const a of mod.SCENARIO_CHAPTER_ANTAGONISTS) {
+      expect(ids.has(a.antagonistObsidianId), `${a.antagonistObsidianId}`).toBe(true);
+    }
+  });
+
+  it('cohesion: 적대자 ↔ milestone endBeat', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    // Ch1 적대자(memory_golem) ↔ Ch1 milestone 의 endBeat (에레보스 narrative)
+    const ch1 = mod.getChapterAntagonist(1);
+    const milestone = mod.getMilestoneByChapter(1);
+    expect(milestone!.endBeat).toContain('에레보스');
+    // Ch5 레테 ↔ Ch5 milestone
+    expect(mod.getMilestoneByChapter(5)!.endBeat).toContain('레테');
+    expect(ch1).toBeDefined();
+  });
+});
+
 describe('🎯 SYNC-S86 — 85 sprint 마디 + 45 도메인 stress (SYNC-85)', () => {
   it('45 SSOT 도메인 entity 총량 ≥ 290', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
