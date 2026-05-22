@@ -750,6 +750,52 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S80 — 게임 내 시간 진행 narrative (SYNC-79)', () => {
+  it('SCENARIO_CHAPTER_TIMESPANS 5 chapter timespans', async () => {
+    const { SCENARIO_CHAPTER_TIMESPANS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CHAPTER_TIMESPANS.length).toBe(5);
+  });
+
+  it('각 timespan chapter 1~5 + 한글 narrative', async () => {
+    const { SCENARIO_CHAPTER_TIMESPANS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const t of SCENARIO_CHAPTER_TIMESPANS) {
+      expect(t.chapter).toBeGreaterThanOrEqual(1);
+      expect(t.chapter).toBeLessThanOrEqual(5);
+      expect(korean.test(t.startMoment)).toBe(true);
+      expect(korean.test(t.duration)).toBe(true);
+      expect(korean.test(t.endMoment)).toBe(true);
+    }
+  });
+
+  it('5 chapter 모두 세계력 3,412 narrative', async () => {
+    const { SCENARIO_CHAPTER_TIMESPANS } = await import('../../shared/types/scenarioRegistry');
+    for (const t of SCENARIO_CHAPTER_TIMESPANS) {
+      expect(t.startMoment).toContain('3,412');
+    }
+  });
+
+  it('계절 진행 (봄 → 여름 → 가을)', async () => {
+    const { getTimespanByChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(getTimespanByChapter(1)!.startMoment).toContain('봄');
+    expect(getTimespanByChapter(3)!.startMoment).toContain('여름');
+    expect(getTimespanByChapter(5)!.startMoment).toContain('가을');
+  });
+
+  it('Ch5 최종 — 약 7일 (가장 짧은 chapter)', async () => {
+    const { getTimespanByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = getTimespanByChapter(5);
+    expect(ch5!.duration).toContain('7일');
+    expect(ch5!.endMoment).toContain('레테');
+  });
+
+  it('Ch4 가장 긴 chapter — 약 30일', async () => {
+    const { getTimespanByChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch4 = getTimespanByChapter(4);
+    expect(ch4!.duration).toContain('30');
+  });
+});
+
 describe('🎯 SYNC-S79 — 1900 tests 마디 + 41 도메인 stress (SYNC-78)', () => {
   it('41 SSOT 도메인 entity 총량 ≥ 250', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');

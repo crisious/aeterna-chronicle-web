@@ -3036,6 +3036,57 @@ export function listSubLocationsByZone(
   return SCENARIO_SUB_LOCATIONS.filter((l) => l.zoneObsidianId === zoneObsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-79: 게임 내 시간 / 일자 진행 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterTimespan {
+  chapter: number;
+  /** 챕터 시작 시점 narrative */
+  startMoment: string;
+  /** 챕터 진행 기간 (대략) */
+  duration: string;
+  /** 챕터 종료 시점 narrative */
+  endMoment: string;
+}
+
+export const SCENARIO_CHAPTER_TIMESPANS: readonly ChapterTimespan[] = [
+  {
+    chapter: 1,
+    startMoment: '세계력 3,412년 봄 — 칸텔라 마을 기억 폭풍 발생',
+    duration: '약 14일',
+    endMoment: '에레보스 폐허 탐사 종결 + 첫 파편 회수',
+  },
+  {
+    chapter: 2,
+    startMoment: '세계력 3,412년 늦봄 — 실반헤임 진입',
+    duration: '약 21일 (시간 지연 영역 포함)',
+    endMoment: '말라투스 보스전 + 실반헤임 파편 회수',
+  },
+  {
+    chapter: 3,
+    startMoment: '세계력 3,412년 여름 — 솔라리스 사막 도착',
+    duration: '약 28일',
+    endMoment: '라와르 봉인 + 솔라리스 파편 + 이그나 합류',
+  },
+  {
+    chapter: 4,
+    startMoment: '세계력 3,412년 가을 — 아르겐티움 잠입',
+    duration: '약 30일',
+    endMoment: '베르나르도 분기 + 아르겐티움 파편 + 6 동료 완성',
+  },
+  {
+    chapter: 5,
+    startMoment: '세계력 3,412년 늦가을 — 망각의 고원 진입',
+    duration: '약 7일',
+    endMoment: '레테 최종 결전 + 엔딩 분기',
+  },
+];
+
+export function getTimespanByChapter(chapter: number): ChapterTimespan | undefined {
+  return SCENARIO_CHAPTER_TIMESPANS.find((t) => t.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
