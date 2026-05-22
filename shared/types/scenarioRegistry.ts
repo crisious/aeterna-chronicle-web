@@ -3805,6 +3805,56 @@ export function getNewGamePlusByEnding(
   return SCENARIO_NEW_GAME_PLUS.find((n) => n.unlockedByEnding === ending);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-99: credits roll narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface CreditsSection {
+  /** 순서 */
+  order: number;
+  /** 한글 섹션 제목 */
+  section: string;
+  /** 내용 narrative */
+  content: string;
+}
+
+export const SCENARIO_CREDITS: readonly CreditsSection[] = [
+  {
+    order: 1,
+    section: '에테르나 크로니클',
+    content: '게임 제목 시그니처 + 메인 테마 narrative.',
+  },
+  {
+    order: 2,
+    section: '주요 등장 인물',
+    content: '에리언/카일/세라핀/크리오/이그나/벤자민/레이나/우르그롬/레테/미네르바.',
+  },
+  {
+    order: 3,
+    section: '세계 — 에테르나 대륙',
+    content: '에레보스/실반헤임/솔라리스/아르겐티움/망각의 고원/황금 에테르 탑.',
+  },
+  {
+    order: 4,
+    section: '신화 — 12 신',
+    content: '창세 11신 (크로나이/이그나루스/베르다/아키우스 외) + 배제된 레테.',
+  },
+  {
+    order: 5,
+    section: '신성 기억 파편',
+    content: '에레보스/실반헤임/솔라리스/아르겐티움 4 파편 통합.',
+  },
+  {
+    order: 6,
+    section: '제작 — hotbit',
+    content: '에테르나 팀 + Claude Code 협업 narrative.',
+  },
+];
+
+export function getCreditsByOrder(order: number): CreditsSection | undefined {
+  return SCENARIO_CREDITS.find((c) => c.order === order);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

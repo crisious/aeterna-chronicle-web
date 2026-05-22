@@ -814,6 +814,49 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S100 — credits roll narrative SSOT (SYNC-99)', () => {
+  it('SCENARIO_CREDITS ≥ 6 sections', async () => {
+    const { SCENARIO_CREDITS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_CREDITS.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('각 section order 정수 + 한글 section/content', async () => {
+    const { SCENARIO_CREDITS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const c of SCENARIO_CREDITS) {
+      expect(Number.isInteger(c.order)).toBe(true);
+      expect(c.order).toBeGreaterThanOrEqual(1);
+      expect(korean.test(c.section)).toBe(true);
+      expect(korean.test(c.content)).toBe(true);
+    }
+  });
+
+  it('order 단조 증가 + 첫 section = 게임 제목', async () => {
+    const { SCENARIO_CREDITS, getCreditsByOrder } = await import('../../shared/types/scenarioRegistry');
+    for (let i = 1; i < SCENARIO_CREDITS.length; i += 1) {
+      expect(SCENARIO_CREDITS[i].order).toBeGreaterThan(SCENARIO_CREDITS[i - 1].order);
+    }
+    expect(getCreditsByOrder(1)!.section).toContain('에테르나');
+  });
+
+  it('등장 인물 + 세계 + 신화 + 파편 + 제작 narrative cover', async () => {
+    const { SCENARIO_CREDITS } = await import('../../shared/types/scenarioRegistry');
+    const allText = SCENARIO_CREDITS.map((c) => c.content).join(' ');
+    expect(allText).toContain('에리언');
+    expect(allText).toContain('레테');
+    expect(allText).toContain('에레보스');
+    expect(allText).toContain('파편');
+    expect(allText).toContain('에테르나 팀');
+  });
+
+  it('미네르바 + 카일 narrative (등장 인물 섹션)', async () => {
+    const { getCreditsByOrder } = await import('../../shared/types/scenarioRegistry');
+    const chars = getCreditsByOrder(2);
+    expect(chars!.content).toContain('카일');
+    expect(chars!.content).toContain('미네르바');
+  });
+});
+
 describe('SYNC-S99 — New Game+ narrative SSOT (SYNC-98)', () => {
   it('SCENARIO_NEW_GAME_PLUS 5 (엔딩 A/B/C/D/FAIL 모두)', async () => {
     const { SCENARIO_NEW_GAME_PLUS } = await import('../../shared/types/scenarioRegistry');
