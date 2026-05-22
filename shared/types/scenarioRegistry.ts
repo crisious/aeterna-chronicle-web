@@ -2816,6 +2816,77 @@ export function getStartingStatsByCompanion(
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-74: 시나리오 enemy archetype narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface EnemyArchetype {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 출현 chapter (시작) */
+  fromChapter: number;
+  /** 한글 narrative */
+  description: string;
+}
+
+export const SCENARIO_ENEMY_ARCHETYPES: readonly EnemyArchetype[] = [
+  {
+    obsidianId: 'enemy_memory_remnant',
+    name: '기억 잔영',
+    fromChapter: 1,
+    description: '에레보스 폐허에서 출현 — 200년 전 죽은 자들의 기억 응결체.',
+  },
+  {
+    obsidianId: 'enemy_oblivion_wraith',
+    name: '망각의 원혼',
+    fromChapter: 1,
+    description: '레테 교단 영향으로 망각된 영혼 — 모든 chapter 출현.',
+  },
+  {
+    obsidianId: 'enemy_forest_guardian',
+    name: '실반헤임 수호자',
+    fromChapter: 2,
+    description: '말라투스 영역 시간 지연 사용 + 식물 마법.',
+  },
+  {
+    obsidianId: 'enemy_sand_phantom',
+    name: '솔라리스 신기루',
+    fromChapter: 3,
+    description: '솔라리스 사막 환영 + 에테르 발광으로 시야 왜곡.',
+  },
+  {
+    obsidianId: 'enemy_imperial_guard',
+    name: '제국 근위병',
+    fromChapter: 4,
+    description: '아르겐티움 근위대 + 케인 부대 정예 병력.',
+  },
+  {
+    obsidianId: 'enemy_lethe_inquisitor',
+    name: '레테 심문관',
+    fromChapter: 4,
+    description: '레테 교단 정예 무력 — 기억 사냥꾼 + 케인 부대 상위.',
+  },
+  {
+    obsidianId: 'enemy_reality_fractured',
+    name: '현실 분열체',
+    fromChapter: 5,
+    description: '망각의 고원 — 현실 붕괴로 인한 비현실적 적.',
+  },
+];
+
+export function getEnemyArchetypeByObsidianId(
+  obsidianId: string,
+): EnemyArchetype | undefined {
+  return SCENARIO_ENEMY_ARCHETYPES.find((e) => e.obsidianId === obsidianId);
+}
+
+export function listEnemyArchetypesFromChapter(
+  chapter: number,
+): readonly EnemyArchetype[] {
+  return SCENARIO_ENEMY_ARCHETYPES.filter((e) => e.fromChapter <= chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

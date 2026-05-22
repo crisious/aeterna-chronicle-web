@@ -750,6 +750,57 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S75 — enemy archetype narrative (SYNC-74)', () => {
+  it('SCENARIO_ENEMY_ARCHETYPES ≥ 7 archetypes', async () => {
+    const { SCENARIO_ENEMY_ARCHETYPES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_ENEMY_ARCHETYPES.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 enemy obsidianId + enemy_ prefix + 한글', async () => {
+    const { SCENARIO_ENEMY_ARCHETYPES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const e of SCENARIO_ENEMY_ARCHETYPES) {
+      expect(e.obsidianId.startsWith('enemy_'), `${e.obsidianId}`).toBe(true);
+      expect(korean.test(e.name)).toBe(true);
+      expect(korean.test(e.description)).toBe(true);
+    }
+  });
+
+  it('fromChapter 1~5 범위', async () => {
+    const { SCENARIO_ENEMY_ARCHETYPES } = await import('../../shared/types/scenarioRegistry');
+    for (const e of SCENARIO_ENEMY_ARCHETYPES) {
+      expect(e.fromChapter).toBeGreaterThanOrEqual(1);
+      expect(e.fromChapter).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('Ch1 출현 ≥ 2 (기억 잔영 + 망각 원혼)', async () => {
+    const { listEnemyArchetypesFromChapter } = await import('../../shared/types/scenarioRegistry');
+    const ch1 = listEnemyArchetypesFromChapter(1);
+    expect(ch1.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('Ch5 까지 모든 archetype 출현 (cumulative)', async () => {
+    const { listEnemyArchetypesFromChapter, SCENARIO_ENEMY_ARCHETYPES } = await import('../../shared/types/scenarioRegistry');
+    const ch5 = listEnemyArchetypesFromChapter(5);
+    expect(ch5.length).toBe(SCENARIO_ENEMY_ARCHETYPES.length);
+  });
+
+  it('레테 심문관 + 제국 근위병 Ch4 출현', async () => {
+    const { getEnemyArchetypeByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const inquisitor = getEnemyArchetypeByObsidianId('enemy_lethe_inquisitor');
+    const guard = getEnemyArchetypeByObsidianId('enemy_imperial_guard');
+    expect(inquisitor!.fromChapter).toBe(4);
+    expect(guard!.fromChapter).toBe(4);
+  });
+
+  it('현실 분열체 Ch5 출현 (최종 chapter)', async () => {
+    const { getEnemyArchetypeByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const fractured = getEnemyArchetypeByObsidianId('enemy_reality_fractured');
+    expect(fractured!.fromChapter).toBe(5);
+  });
+});
+
 describe('SYNC-S74 — 동료 시작 status narrative (SYNC-73)', () => {
   it('COMPANION_STARTING_STATS 6 동료 시작 status', async () => {
     const { COMPANION_STARTING_STATS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
