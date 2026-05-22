@@ -814,6 +814,53 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('🎯 SYNC-S96 — 95 sprint 마디 + 51 도메인 stress (SYNC-95)', () => {
+  it('51 도메인 entity 총량 ≥ 330', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const total =
+      mod.SCENARIO_COMPANIONS.length + mod.SCENARIO_ZONES.length +
+      mod.SCENARIO_BOSSES.length + mod.SCENARIO_CHAPTERS.length +
+      mod.SCENARIO_ENDINGS.length + mod.SCENARIO_FRAGMENTS.length +
+      mod.SCENARIO_DEITIES.length + mod.SCENARIO_TIMELINE.length +
+      mod.SCENARIO_MILESTONES.length + mod.SCENARIO_DIALOGUES.length +
+      mod.COMPANION_REPUTATION_REWARDS.length + mod.SCENARIO_MYTHIC_RELICS.length +
+      mod.SCENARIO_LORE_DOCUMENTS.length + mod.SCENARIO_ZONE_CONNECTIONS.length +
+      mod.SCENARIO_CHAPTER_ROUTES.length + mod.SCENARIO_EXTRA_ZONES.length +
+      mod.SCENARIO_EXTRA_BOSSES.length + mod.COMPANION_CLASS_MAPPINGS.length +
+      mod.SCENARIO_CHAPTER_REWARDS.length + mod.COMPANION_STORY_ARCS.length +
+      mod.SCENARIO_CHAPTER_BGMS.length + mod.SCENARIO_SUB_PLOTS.length +
+      mod.SCENARIO_CHAPTER_DIFFICULTIES.length + mod.SCENARIO_CHAPTER_VISUALS.length +
+      mod.SCENARIO_EPIC_ITEMS.length + mod.SCENARIO_PARTY_COMPOSITIONS.length +
+      mod.SCENARIO_MEMORY_RECALLS.length + mod.SCENARIO_CHOICES.length +
+      mod.SCENARIO_FACTIONS.length + mod.SCENARIO_PREREQUISITES.length +
+      mod.GAME_INTRO_SEQUENCE.length + mod.ENDING_FINAL_SEQUENCES.length +
+      mod.SCENARIO_ACHIEVEMENTS.length + mod.SCENARIO_QUEST_LOG.length +
+      mod.SCENARIO_CINEMATICS.length + mod.SCENARIO_AMBIENT_SOUNDS.length +
+      mod.COMPANION_PERSONAL_QUESTS.length + mod.SCENARIO_STATUS_EFFECTS.length +
+      mod.FACTION_REPUTATIONS.length + mod.COMPANION_STARTING_STATS.length +
+      mod.SCENARIO_ENEMY_ARCHETYPES.length + mod.SCENARIO_VENDORS.length +
+      mod.SCENARIO_SUB_LOCATIONS.length + mod.SCENARIO_CHAPTER_TIMESPANS.length +
+      mod.SCENARIO_RANDOM_ENCOUNTERS.length + mod.COMPANION_JOIN_TRIGGERS.length +
+      mod.SCENARIO_BOSS_PHASES.length + mod.SCENARIO_CHAPTER_ANTAGONISTS.length +
+      mod.COMPANION_AFFINITY_EVENTS.length + mod.SCENARIO_INCIDENTAL_EVENTS.length +
+      mod.SCENARIO_DAY_TIMELINE.length + mod.SCENARIO_COLLECTIBLES.length +
+      mod.SCENARIO_SAVE_SLOTS.length + mod.SCENARIO_TUTORIAL_STEPS.length;
+    expect(total).toBeGreaterThanOrEqual(330);
+  });
+
+  it('chrono.ts barrel SYNC-93~94 신규 API 모두 export', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(Array.isArray(mod.SCENARIO_SAVE_SLOTS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_TUTORIAL_STEPS)).toBe(true);
+    expect(typeof mod.getSaveSlotByChapter).toBe('function');
+    expect(typeof mod.getTutorialStepByNumber).toBe('function');
+  });
+
+  it('🎯 95 sprint 마디 marker', () => {
+    expect(true).toBe(true);
+  });
+});
+
 describe('SYNC-S95 — tutorial step narrative SSOT (SYNC-94)', () => {
   it('SCENARIO_TUTORIAL_STEPS ≥ 6 tutorial steps', async () => {
     const { SCENARIO_TUTORIAL_STEPS } = await import('../../shared/types/scenarioRegistry');

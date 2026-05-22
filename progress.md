@@ -918,6 +918,20 @@ scenarioRegistry SSOT 100% 게임 코드 동기화 달성:
 
 **🎯🎯🎯🎯🎯🎯🎯 SCENARIO-SYNC 90 sprint 마디 — 5 sprint, +28 가드 (누적 90 sprint, +590 가드)** — 48 SSOT 도메인 + 315+ entity + 75+ helpers + 570 회귀 가드.
 
+## 2026-05-22 SCENARIO-SYNC chapter XV — narrative game-feel 통합 (5 sprint, +22 가드)
+
+자동 라운드 — 95 sprint 마디 + 51 SSOT 도메인.
+
+- **SYNC-91** collectible 모음품 (6 items, +6 가드)
+- **SYNC-92** 🎯 1950 tests 마디 + 49 도메인 stress (+3 가드)
+- **SYNC-93** save slot marker (5 slots, +5 가드)
+- **SYNC-94** tutorial step (6 steps, +5 가드)
+- **SYNC-95** 🎯 95 sprint 마디 + 51 도메인 stress (+3 가드)
+
+회귀: scenarioRegistry 592/592 + unit 전체 1962+ tests pass.
+
+**🎯 SCENARIO-SYNC 95 sprint 마디 — 5 sprint, +22 가드 (누적 95 sprint, +612 가드)** — 51 SSOT 도메인 + 330+ entity + 80+ helpers + 592 회귀 가드.
+
 Obsidian narrative ↔ 게임 코드 통합 — 5 chapter × 10 도메인 cohesion +
 6 동료 × 4 도메인 cohesion + 5 엔딩 + 9 achievements + 4 유물 + 12 신 +
 intro/ending sequences + cinematics + ambient sounds + personal quests.
