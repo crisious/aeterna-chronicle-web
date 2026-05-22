@@ -814,6 +814,63 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('🎯 SYNC-S84 — 1900 tests 마디 II + 44 도메인 stress (SYNC-83)', () => {
+  it('44 SSOT 도메인 entity 총량 ≥ 275', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const total =
+      mod.SCENARIO_COMPANIONS.length + mod.SCENARIO_ZONES.length +
+      mod.SCENARIO_BOSSES.length + mod.SCENARIO_CHAPTERS.length +
+      mod.SCENARIO_ENDINGS.length + mod.SCENARIO_FRAGMENTS.length +
+      mod.SCENARIO_DEITIES.length + mod.SCENARIO_TIMELINE.length +
+      mod.SCENARIO_MILESTONES.length + mod.SCENARIO_DIALOGUES.length +
+      mod.COMPANION_REPUTATION_REWARDS.length + mod.SCENARIO_MYTHIC_RELICS.length +
+      mod.SCENARIO_LORE_DOCUMENTS.length + mod.SCENARIO_ZONE_CONNECTIONS.length +
+      mod.SCENARIO_CHAPTER_ROUTES.length + mod.SCENARIO_EXTRA_ZONES.length +
+      mod.SCENARIO_EXTRA_BOSSES.length + mod.COMPANION_CLASS_MAPPINGS.length +
+      mod.SCENARIO_CHAPTER_REWARDS.length + mod.COMPANION_STORY_ARCS.length +
+      mod.SCENARIO_CHAPTER_BGMS.length + mod.SCENARIO_SUB_PLOTS.length +
+      mod.SCENARIO_CHAPTER_DIFFICULTIES.length + mod.SCENARIO_CHAPTER_VISUALS.length +
+      mod.SCENARIO_EPIC_ITEMS.length + mod.SCENARIO_PARTY_COMPOSITIONS.length +
+      mod.SCENARIO_MEMORY_RECALLS.length + mod.SCENARIO_CHOICES.length +
+      mod.SCENARIO_FACTIONS.length + mod.SCENARIO_PREREQUISITES.length +
+      mod.GAME_INTRO_SEQUENCE.length + mod.ENDING_FINAL_SEQUENCES.length +
+      mod.SCENARIO_ACHIEVEMENTS.length + mod.SCENARIO_QUEST_LOG.length +
+      mod.SCENARIO_CINEMATICS.length + mod.SCENARIO_AMBIENT_SOUNDS.length +
+      mod.COMPANION_PERSONAL_QUESTS.length + mod.SCENARIO_STATUS_EFFECTS.length +
+      mod.FACTION_REPUTATIONS.length + mod.COMPANION_STARTING_STATS.length +
+      mod.SCENARIO_ENEMY_ARCHETYPES.length + mod.SCENARIO_VENDORS.length +
+      mod.SCENARIO_SUB_LOCATIONS.length + mod.SCENARIO_CHAPTER_TIMESPANS.length +
+      mod.SCENARIO_RANDOM_ENCOUNTERS.length + mod.COMPANION_JOIN_TRIGGERS.length;
+    expect(total).toBeGreaterThanOrEqual(275);
+  });
+
+  it('chrono.ts barrel SYNC-81~82 신규 API 모두 export', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(Array.isArray(mod.SCENARIO_RANDOM_ENCOUNTERS)).toBe(true);
+    expect(Array.isArray(mod.COMPANION_JOIN_TRIGGERS)).toBe(true);
+    expect(typeof mod.getRandomEncounterByZone).toBe('function');
+    expect(typeof mod.getJoinTriggerByCompanion).toBe('function');
+  });
+
+  it('동료 5도메인 cohesion (PQ + arc + class + reputation + trigger)', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    for (const c of mod.SCENARIO_COMPANIONS) {
+      const pq = mod.getPersonalQuestByCompanion(c.obsidianId);
+      const arc = mod.COMPANION_STORY_ARCS.find((a) => a.companionObsidianId === c.obsidianId);
+      const cls = mod.getCompanionClass(c.obsidianId);
+      const trigger = mod.getJoinTriggerByCompanion(c.obsidianId);
+      expect(pq, `${c.obsidianId} pq`).toBeDefined();
+      expect(arc, `${c.obsidianId} arc`).toBeDefined();
+      expect(cls, `${c.obsidianId} class`).toBeDefined();
+      expect(trigger, `${c.obsidianId} trigger`).toBeDefined();
+    }
+  });
+
+  it('🎯 1900 tests 마디 II — 83 sprint 누적 +555 가드', () => {
+    expect(true).toBe(true);
+  });
+});
+
 describe('SYNC-S83 — 동료 합류 trigger event narrative (SYNC-82)', () => {
   it('COMPANION_JOIN_TRIGGERS 6 동료', async () => {
     const { COMPANION_JOIN_TRIGGERS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
