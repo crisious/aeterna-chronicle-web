@@ -750,6 +750,51 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S77 — NPC vendor 상점 narrative (SYNC-76)', () => {
+  it('SCENARIO_VENDORS ≥ 5 vendors', async () => {
+    const { SCENARIO_VENDORS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_VENDORS.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('각 vendor obsidianId + vendor_ prefix + 한글', async () => {
+    const { SCENARIO_VENDORS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const v of SCENARIO_VENDORS) {
+      expect(v.obsidianId.startsWith('vendor_'), `${v.obsidianId}`).toBe(true);
+      expect(korean.test(v.name)).toBe(true);
+      expect(korean.test(v.description)).toBe(true);
+    }
+  });
+
+  it('vendorType 5 카테고리 모두 (weapon/armor/consumable/mixed/information)', async () => {
+    const { SCENARIO_VENDORS } = await import('../../shared/types/scenarioRegistry');
+    const types = new Set(SCENARIO_VENDORS.map((v) => v.vendorType));
+    expect(types.size).toBe(5);
+  });
+
+  it('zoneObsidianId 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_VENDORS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const v of SCENARIO_VENDORS) {
+      expect(zoneIds.has(v.zoneObsidianId), `${v.zoneObsidianId}`).toBe(true);
+    }
+  });
+
+  it('크리오 정보망 — information type', async () => {
+    const { getVendorByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const crio = getVendorByObsidianId('vendor_crio_informant');
+    expect(crio!.vendorType).toBe('information');
+    expect(crio!.zoneObsidianId).toBe('erebos');
+  });
+
+  it('칸텔라 시작 잡화상 — mixed type', async () => {
+    const { listVendorsByZone } = await import('../../shared/types/scenarioRegistry');
+    const cantela = listVendorsByZone('cantela_village');
+    expect(cantela.length).toBeGreaterThanOrEqual(1);
+    expect(cantela[0].vendorType).toBe('mixed');
+  });
+});
+
 describe('🎯🎯🎯🎯🎯 SYNC-S76 — 75 sprint 마디 39 도메인 stress (SYNC-75)', () => {
   it('75 sprint 누적 SSOT 정점 — 39 도메인 + entity ≥240', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');

@@ -2887,6 +2887,74 @@ export function listEnemyArchetypesFromChapter(
   return SCENARIO_ENEMY_ARCHETYPES.filter((e) => e.fromChapter <= chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-76: 시나리오 NPC vendor / 상점 narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export type VendorType = 'weapon' | 'armor' | 'consumable' | 'mixed' | 'information';
+
+export interface ScenarioVendor {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 위치 zone obsidianId */
+  zoneObsidianId: string;
+  /** vendor 타입 */
+  vendorType: VendorType;
+  /** 한글 narrative */
+  description: string;
+}
+
+export const SCENARIO_VENDORS: readonly ScenarioVendor[] = [
+  {
+    obsidianId: 'vendor_cantela_general',
+    name: '칸텔라 잡화상',
+    zoneObsidianId: 'cantela_village',
+    vendorType: 'mixed',
+    description: '시작 마을 잡화 상점 — 기본 회복 약품 + 초기 장비.',
+  },
+  {
+    obsidianId: 'vendor_silvanheim_herbalist',
+    name: '실반헤임 약초사',
+    zoneObsidianId: 'silvanheim',
+    vendorType: 'consumable',
+    description: '엘파리스 약초사 — 자연 회복 약 + 시간 지연 해독제.',
+  },
+  {
+    obsidianId: 'vendor_solaris_armory',
+    name: '솔라리스 무기 상점',
+    zoneObsidianId: 'solaris',
+    vendorType: 'weapon',
+    description: '이프리타 무기 — 에테르 결정 무기 + 화염 속성 장비.',
+  },
+  {
+    obsidianId: 'vendor_argentium_smith',
+    name: '아르겐티움 황궁 대장간',
+    zoneObsidianId: 'argentium',
+    vendorType: 'armor',
+    description: '제국 정예 갑옷 — 황금 에테르 방어구 + 침투복.',
+  },
+  {
+    obsidianId: 'vendor_crio_informant',
+    name: '마에스트로 크리오의 정보망',
+    zoneObsidianId: 'erebos',
+    vendorType: 'information',
+    description: '60년 정보상 — gold 대신 정보로 거래. 비밀 위치/적 정보.',
+  },
+];
+
+export function getVendorByObsidianId(
+  obsidianId: string,
+): ScenarioVendor | undefined {
+  return SCENARIO_VENDORS.find((v) => v.obsidianId === obsidianId);
+}
+
+export function listVendorsByZone(
+  zoneObsidianId: string,
+): readonly ScenarioVendor[] {
+  return SCENARIO_VENDORS.filter((v) => v.zoneObsidianId === zoneObsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
