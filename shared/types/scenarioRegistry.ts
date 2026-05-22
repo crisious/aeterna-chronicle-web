@@ -3470,6 +3470,71 @@ export function listDayEventsByChapter(chapter: number): readonly DayTimeline[] 
   return SCENARIO_DAY_TIMELINE.filter((d) => d.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-91: 시나리오 collectible 모음품 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface Collectible {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 발견 zone obsidianId */
+  zoneObsidianId: string;
+  /** 한글 narrative */
+  description: string;
+}
+
+export const SCENARIO_COLLECTIBLES: readonly Collectible[] = [
+  {
+    obsidianId: 'collectible_cantela_old_diary',
+    name: '오래된 일기장',
+    zoneObsidianId: 'cantela_village',
+    description: '에리언 어머니의 일기장 — 200년 전 봉인 의식 단서 일부 포함.',
+  },
+  {
+    obsidianId: 'collectible_erebos_torn_letter',
+    name: '찢어진 편지',
+    zoneObsidianId: 'erebos',
+    description: '대망각 당일 마지막 편지 — 에레보스 시민의 마지막 작별.',
+  },
+  {
+    obsidianId: 'collectible_silvanheim_petal',
+    name: '말라투스 꽃잎',
+    zoneObsidianId: 'silvanheim',
+    description: '말라투스 고목에서 떨어진 꽃잎 — 천 년 기억 잔재.',
+  },
+  {
+    obsidianId: 'collectible_solaris_crystal',
+    name: '솔라리스 에테르 결정',
+    zoneObsidianId: 'solaris',
+    description: '이프리타 영역의 발광 에테르 결정 — 이그나의 부족 유물.',
+  },
+  {
+    obsidianId: 'collectible_argentium_imperial_seal',
+    name: '제국 인장 조각',
+    zoneObsidianId: 'argentium',
+    description: '아르겐티움 황궁의 부서진 인장 — 황제 레나르도 비밀 단서.',
+  },
+  {
+    obsidianId: 'collectible_oblivion_kail_token',
+    name: '카일의 봉인 토큰',
+    zoneObsidianId: 'oblivion_plateau',
+    description: '카일이 200년 전 남긴 봉인 의식 토큰 — Ch5 진입 마커.',
+  },
+];
+
+export function getCollectibleByObsidianId(
+  obsidianId: string,
+): Collectible | undefined {
+  return SCENARIO_COLLECTIBLES.find((c) => c.obsidianId === obsidianId);
+}
+
+export function listCollectiblesByZone(
+  zoneObsidianId: string,
+): readonly Collectible[] {
+  return SCENARIO_COLLECTIBLES.filter((c) => c.zoneObsidianId === zoneObsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

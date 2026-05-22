@@ -814,6 +814,51 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S92 — collectible 모음품 narrative SSOT (SYNC-91)', () => {
+  it('SCENARIO_COLLECTIBLES ≥ 6 collectibles', async () => {
+    const { SCENARIO_COLLECTIBLES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_COLLECTIBLES.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('각 collectible obsidianId + collectible_ prefix + 한글', async () => {
+    const { SCENARIO_COLLECTIBLES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const c of SCENARIO_COLLECTIBLES) {
+      expect(c.obsidianId.startsWith('collectible_'), `${c.obsidianId}`).toBe(true);
+      expect(korean.test(c.name)).toBe(true);
+      expect(korean.test(c.description)).toBe(true);
+    }
+  });
+
+  it('zoneObsidianId 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_COLLECTIBLES, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const c of SCENARIO_COLLECTIBLES) {
+      expect(zoneIds.has(c.zoneObsidianId), `${c.zoneObsidianId}`).toBe(true);
+    }
+  });
+
+  it('칸텔라 일기장 (에리언 어머니 narrative)', async () => {
+    const { getCollectibleByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const diary = getCollectibleByObsidianId('collectible_cantela_old_diary');
+    expect(diary!.description).toContain('어머니');
+    expect(diary!.description).toContain('봉인 의식');
+  });
+
+  it('카일 토큰 — oblivion_plateau Ch5 진입 마커', async () => {
+    const { getCollectibleByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const token = getCollectibleByObsidianId('collectible_oblivion_kail_token');
+    expect(token!.zoneObsidianId).toBe('oblivion_plateau');
+    expect(token!.description).toContain('카일');
+  });
+
+  it('listCollectiblesByZone 헬퍼 동작', async () => {
+    const { listCollectiblesByZone } = await import('../../shared/types/scenarioRegistry');
+    expect(listCollectiblesByZone('erebos').length).toBeGreaterThanOrEqual(1);
+    expect(listCollectiblesByZone('unknown').length).toBe(0);
+  });
+});
+
 describe('🎯🎯🎯🎯🎯🎯🎯 SYNC-S91 — 90 sprint 마디 절정 III (SYNC-90)', () => {
   it('90 sprint 누적 SSOT — 48 도메인 + entity ≥315', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
