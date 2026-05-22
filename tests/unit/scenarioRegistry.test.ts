@@ -814,6 +814,63 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S83 — 동료 합류 trigger event narrative (SYNC-82)', () => {
+  it('COMPANION_JOIN_TRIGGERS 6 동료', async () => {
+    const { COMPANION_JOIN_TRIGGERS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_JOIN_TRIGGERS.length).toBe(SCENARIO_COMPANIONS.length);
+  });
+
+  it('각 trigger companionObsidianId SCENARIO_COMPANIONS 존재', async () => {
+    const { COMPANION_JOIN_TRIGGERS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const t of COMPANION_JOIN_TRIGGERS) {
+      expect(ids.has(t.companionObsidianId)).toBe(true);
+    }
+  });
+
+  it('triggerZoneId 모두 SCENARIO_ZONES 존재', async () => {
+    const { COMPANION_JOIN_TRIGGERS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const t of COMPANION_JOIN_TRIGGERS) {
+      expect(zoneIds.has(t.triggerZoneId), `${t.triggerZoneId}`).toBe(true);
+    }
+  });
+
+  it('각 trigger 한글 condition + narrative', async () => {
+    const { COMPANION_JOIN_TRIGGERS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const t of COMPANION_JOIN_TRIGGERS) {
+      expect(korean.test(t.triggerCondition)).toBe(true);
+      expect(korean.test(t.joinNarrative)).toBe(true);
+    }
+  });
+
+  it('세라핀+크리오 Ch1 에레보스 + 이그나 Ch3 솔라리스', async () => {
+    const { getJoinTriggerByCompanion } = await import('../../shared/types/scenarioRegistry');
+    expect(getJoinTriggerByCompanion('seraphine')!.triggerZoneId).toBe('erebos');
+    expect(getJoinTriggerByCompanion('maestro_crio')!.triggerZoneId).toBe('erebos');
+    expect(getJoinTriggerByCompanion('ignara')!.triggerZoneId).toBe('solaris');
+  });
+
+  it('Ch4 동료 (벤자민/레이나/우르그롬) 모두 아르겐티움', async () => {
+    const { getJoinTriggerByCompanion } = await import('../../shared/types/scenarioRegistry');
+    for (const id of ['benjamin_cross', 'reina', 'urgrom']) {
+      expect(getJoinTriggerByCompanion(id)!.triggerZoneId).toBe('argentium');
+    }
+  });
+
+  it('cohesion: trigger ↔ companion joinChapter ↔ milestone unlockedCompanions', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    for (const t of mod.COMPANION_JOIN_TRIGGERS) {
+      const c = mod.getCompanionByObsidianId(t.companionObsidianId);
+      expect(c, `${t.companionObsidianId}`).toBeDefined();
+      const milestone = mod.getMilestoneByChapter(c!.joinChapter);
+      expect(milestone!.unlockedCompanions, `Ch${c!.joinChapter} unlocked`)
+        .toContain(t.companionObsidianId);
+    }
+  });
+});
+
 describe('SYNC-S82 — zone별 random encounter narrative (SYNC-81)', () => {
   it('SCENARIO_RANDOM_ENCOUNTERS ≥ 7 zones', async () => {
     const { SCENARIO_RANDOM_ENCOUNTERS } = await import('../../shared/types/scenarioRegistry');

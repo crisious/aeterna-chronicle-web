@@ -3152,6 +3152,67 @@ export function getRandomEncounterByZone(
   return SCENARIO_RANDOM_ENCOUNTERS.find((e) => e.zoneObsidianId === zoneObsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-82: 동료 합류 trigger event narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface CompanionJoinTrigger {
+  companionObsidianId: string;
+  /** trigger zone obsidianId */
+  triggerZoneId: string;
+  /** trigger 조건 narrative */
+  triggerCondition: string;
+  /** 합류 직후 narrative */
+  joinNarrative: string;
+}
+
+export const COMPANION_JOIN_TRIGGERS: readonly CompanionJoinTrigger[] = [
+  {
+    companionObsidianId: 'seraphine',
+    triggerZoneId: 'erebos',
+    triggerCondition: 'Ch1 에레보스 진입 후 첫 만남 + 안내인 제안 수락',
+    joinNarrative: '엘파리스 정찰병 — 에레보스 폐허 안내인 자처.',
+  },
+  {
+    companionObsidianId: 'maestro_crio',
+    triggerZoneId: 'erebos',
+    triggerCondition: 'Ch1 에레보스 도서관 발견 + 60년 정보망 거래 성공',
+    joinNarrative: '200년 생존자 정보상 — 에리언 기억 공명 능력 인정.',
+  },
+  {
+    companionObsidianId: 'ignara',
+    triggerZoneId: 'solaris',
+    triggerCondition: 'Ch3 솔라리스 진입 + 아버지 이그리스 회상 트리거',
+    joinNarrative: '이프리타 족장의 딸 — 부족 음모 진실 추적 동행.',
+  },
+  {
+    companionObsidianId: 'benjamin_cross',
+    triggerZoneId: 'argentium',
+    triggerCondition: 'Ch4 아르겐티움 잠입 + 밀리아 구출 정보 교환',
+    joinNarrative: '전직 형사 — 레테 교단 정보 + 밀리아 구출 동맹.',
+  },
+  {
+    companionObsidianId: 'reina',
+    triggerZoneId: 'argentium',
+    triggerCondition: 'Ch4 황궁 침투 + 교단 내부고발 결심',
+    joinNarrative: '레테 교단 내부고발자 — 12 신화 회귀 음모 폭로.',
+  },
+  {
+    companionObsidianId: 'urgrom',
+    triggerZoneId: 'argentium',
+    triggerCondition: 'Ch4 북방 기억석 사원 방문 + 봉인 협력 약속',
+    joinNarrative: '북방 사원 수호자 — 200년 봉인 의식 마지막 단서 전달.',
+  },
+];
+
+export function getJoinTriggerByCompanion(
+  companionObsidianId: string,
+): CompanionJoinTrigger | undefined {
+  return COMPANION_JOIN_TRIGGERS.find(
+    (t) => t.companionObsidianId === companionObsidianId,
+  );
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
