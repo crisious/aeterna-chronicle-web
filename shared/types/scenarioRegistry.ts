@@ -3752,6 +3752,59 @@ export function getEasterEggByObsidianId(
   return SCENARIO_EASTER_EGGS.find((e) => e.obsidianId === obsidianId);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-98: New Game+ narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface NewGamePlusBonus {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** unlock 조건 (선행 엔딩 code) */
+  unlockedByEnding: ScenarioEndingCode;
+  /** narrative 설명 */
+  description: string;
+}
+
+export const SCENARIO_NEW_GAME_PLUS: readonly NewGamePlusBonus[] = [
+  {
+    obsidianId: 'ng_plus_ending_a',
+    name: '완전한 승리 회상',
+    unlockedByEnding: 'A',
+    description: '엔딩 A 클리어 후 — 차회차에서 모든 동료 회상 시그니처 unlock.',
+  },
+  {
+    obsidianId: 'ng_plus_ending_b',
+    name: '부분 봉인 회상',
+    unlockedByEnding: 'B',
+    description: '엔딩 B 클리어 후 — 차회차에서 신성 파편 시각 효과 강화.',
+  },
+  {
+    obsidianId: 'ng_plus_ending_c',
+    name: '수용의 회상',
+    unlockedByEnding: 'C',
+    description: '엔딩 C 클리어 후 — 차회차에서 망각 narrative 추가 dialogue unlock.',
+  },
+  {
+    obsidianId: 'ng_plus_ending_d',
+    name: '신화의 후예 회상',
+    unlockedByEnding: 'D',
+    description: '엔딩 D 클리어 후 — 차회차에서 12 신화 시대 chapter 0 unlock.',
+  },
+  {
+    obsidianId: 'ng_plus_ending_fail',
+    name: '망각의 침묵',
+    unlockedByEnding: 'FAIL',
+    description: '엔딩 FAIL 후 — 레테 시점 부 시나리오 unlock.',
+  },
+];
+
+export function getNewGamePlusByEnding(
+  ending: ScenarioEndingCode,
+): NewGamePlusBonus | undefined {
+  return SCENARIO_NEW_GAME_PLUS.find((n) => n.unlockedByEnding === ending);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

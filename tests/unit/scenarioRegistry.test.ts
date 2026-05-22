@@ -814,6 +814,49 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S99 — New Game+ narrative SSOT (SYNC-98)', () => {
+  it('SCENARIO_NEW_GAME_PLUS 5 (엔딩 A/B/C/D/FAIL 모두)', async () => {
+    const { SCENARIO_NEW_GAME_PLUS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_NEW_GAME_PLUS.length).toBe(5);
+    const endings = SCENARIO_NEW_GAME_PLUS.map((n) => n.unlockedByEnding).sort();
+    expect(endings).toEqual(['A', 'B', 'C', 'D', 'FAIL']);
+  });
+
+  it('각 ng+ obsidianId + ng_plus_ prefix + 한글', async () => {
+    const { SCENARIO_NEW_GAME_PLUS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const n of SCENARIO_NEW_GAME_PLUS) {
+      expect(n.obsidianId.startsWith('ng_plus_'), `${n.obsidianId}`).toBe(true);
+      expect(korean.test(n.name)).toBe(true);
+      expect(korean.test(n.description)).toBe(true);
+    }
+  });
+
+  it('엔딩 D — 12 신화 chapter 0 unlock narrative', async () => {
+    const { getNewGamePlusByEnding } = await import('../../shared/types/scenarioRegistry');
+    const ngD = getNewGamePlusByEnding('D');
+    expect(ngD!.description).toContain('12 신화');
+    expect(ngD!.description).toContain('chapter 0');
+  });
+
+  it('엔딩 FAIL — 레테 시점 부 시나리오', async () => {
+    const { getNewGamePlusByEnding } = await import('../../shared/types/scenarioRegistry');
+    const ngFail = getNewGamePlusByEnding('FAIL');
+    expect(ngFail!.description).toContain('레테 시점');
+  });
+
+  it('엔딩 A — 모든 동료 회상 시그니처', async () => {
+    const { getNewGamePlusByEnding } = await import('../../shared/types/scenarioRegistry');
+    const ngA = getNewGamePlusByEnding('A');
+    expect(ngA!.description).toContain('동료');
+  });
+
+  it('cohesion: ng+ 5 = SCENARIO_ENDINGS 5', async () => {
+    const { SCENARIO_NEW_GAME_PLUS, SCENARIO_ENDINGS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_NEW_GAME_PLUS.length).toBe(SCENARIO_ENDINGS.length);
+  });
+});
+
 describe('SYNC-S98 — 이스터에그 narrative SSOT (SYNC-97)', () => {
   it('SCENARIO_EASTER_EGGS 5 eggs', async () => {
     const { SCENARIO_EASTER_EGGS } = await import('../../shared/types/scenarioRegistry');
