@@ -3630,6 +3630,75 @@ export function getTutorialStepByNumber(step: number): TutorialStep | undefined 
   return SCENARIO_TUTORIAL_STEPS.find((t) => t.step === step);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-96: 시나리오 advanced 보상 트리 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface RewardTreeNode {
+  obsidianId: string;
+  chapter: number;
+  /** 한글 보상 이름 */
+  rewardName: string;
+  /** 선행 노드 obsidianId (있을 경우) */
+  prerequisite?: string;
+  /** 보상 narrative */
+  description: string;
+}
+
+export const SCENARIO_REWARD_TREE: readonly RewardTreeNode[] = [
+  {
+    obsidianId: 'reward_ch1_first_resonance',
+    chapter: 1,
+    rewardName: '첫 기억 공명',
+    description: 'Ch1 진입 시 에리언 기억 공명 능력 초기 unlock.',
+  },
+  {
+    obsidianId: 'reward_ch1_seraphine_join',
+    chapter: 1,
+    rewardName: '세라핀 합류 + 정찰 시야',
+    prerequisite: 'reward_ch1_first_resonance',
+    description: '세라핀 합류 후 정찰 시야 시스템 활성화.',
+  },
+  {
+    obsidianId: 'reward_ch2_silvanheim_blessing',
+    chapter: 2,
+    rewardName: '실반헤임 축복',
+    prerequisite: 'reward_ch1_seraphine_join',
+    description: '말라투스 보스전 종결 후 시간 지연 면역 부여.',
+  },
+  {
+    obsidianId: 'reward_ch3_ifrita_flame',
+    chapter: 3,
+    rewardName: '이프리타 불꽃',
+    prerequisite: 'reward_ch2_silvanheim_blessing',
+    description: '이그나 합류 후 화염 마법 + 에테르 결정 활용.',
+  },
+  {
+    obsidianId: 'reward_ch4_empire_seal',
+    chapter: 4,
+    rewardName: '제국 인장 + 6 동료 결성',
+    prerequisite: 'reward_ch3_ifrita_flame',
+    description: '6 동료 완성 + 황금 에테르 탑 진입 키 회수.',
+  },
+  {
+    obsidianId: 'reward_ch5_fragment_integration',
+    chapter: 5,
+    rewardName: '4 파편 통합',
+    prerequisite: 'reward_ch4_empire_seal',
+    description: '4 파편 통합 + 레테 5페이즈 결전 자격.',
+  },
+];
+
+export function getRewardTreeNodeByObsidianId(
+  obsidianId: string,
+): RewardTreeNode | undefined {
+  return SCENARIO_REWARD_TREE.find((n) => n.obsidianId === obsidianId);
+}
+
+export function listRewardTreeByChapter(chapter: number): readonly RewardTreeNode[] {
+  return SCENARIO_REWARD_TREE.filter((n) => n.chapter === chapter);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

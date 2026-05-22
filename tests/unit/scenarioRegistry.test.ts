@@ -814,6 +814,53 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S97 — advanced 보상 트리 narrative (SYNC-96)', () => {
+  it('SCENARIO_REWARD_TREE ≥ 6 nodes', async () => {
+    const { SCENARIO_REWARD_TREE } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_REWARD_TREE.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('각 node obsidianId + reward_ prefix + 한글', async () => {
+    const { SCENARIO_REWARD_TREE } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const n of SCENARIO_REWARD_TREE) {
+      expect(n.obsidianId.startsWith('reward_'), `${n.obsidianId}`).toBe(true);
+      expect(korean.test(n.rewardName)).toBe(true);
+      expect(korean.test(n.description)).toBe(true);
+    }
+  });
+
+  it('prerequisite 모두 SCENARIO_REWARD_TREE 존재 (chain)', async () => {
+    const { SCENARIO_REWARD_TREE } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_REWARD_TREE.map((n) => n.obsidianId));
+    for (const n of SCENARIO_REWARD_TREE) {
+      if (n.prerequisite) {
+        expect(ids.has(n.prerequisite), `${n.prerequisite}`).toBe(true);
+      }
+    }
+  });
+
+  it('reward tree chain — 첫 노드는 prerequisite 없음, 이후 노드는 있음', async () => {
+    const { SCENARIO_REWARD_TREE } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_REWARD_TREE[0].prerequisite).toBeUndefined();
+    for (let i = 1; i < SCENARIO_REWARD_TREE.length; i += 1) {
+      expect(SCENARIO_REWARD_TREE[i].prerequisite).toBeDefined();
+    }
+  });
+
+  it('Ch5 마지막 노드 — 4 파편 통합 narrative', async () => {
+    const { SCENARIO_REWARD_TREE } = await import('../../shared/types/scenarioRegistry');
+    const ch5Node = SCENARIO_REWARD_TREE.find((n) => n.chapter === 5);
+    expect(ch5Node!.rewardName).toContain('4 파편');
+  });
+
+  it('listRewardTreeByChapter 헬퍼 동작', async () => {
+    const { listRewardTreeByChapter } = await import('../../shared/types/scenarioRegistry');
+    expect(listRewardTreeByChapter(1).length).toBeGreaterThanOrEqual(2); // 첫 공명 + 세라핀
+    expect(listRewardTreeByChapter(99).length).toBe(0);
+  });
+});
+
 describe('🎯 SYNC-S96 — 95 sprint 마디 + 51 도메인 stress (SYNC-95)', () => {
   it('51 도메인 entity 총량 ≥ 330', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');
