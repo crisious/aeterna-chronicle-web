@@ -814,6 +814,64 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('🎯🎯🎯🎯🎯🎯🎯🎯 SYNC-S101 — 100 sprint 마디 narrative SSOT 절정 (SYNC-100)', () => {
+  it('100 sprint 누적 SSOT — 54 도메인 + entity ≥345', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const total =
+      mod.SCENARIO_COMPANIONS.length + mod.SCENARIO_ZONES.length +
+      mod.SCENARIO_BOSSES.length + mod.SCENARIO_CHAPTERS.length +
+      mod.SCENARIO_ENDINGS.length + mod.SCENARIO_FRAGMENTS.length +
+      mod.SCENARIO_DEITIES.length + mod.SCENARIO_TIMELINE.length +
+      mod.SCENARIO_MILESTONES.length + mod.SCENARIO_DIALOGUES.length +
+      mod.COMPANION_REPUTATION_REWARDS.length + mod.SCENARIO_MYTHIC_RELICS.length +
+      mod.SCENARIO_LORE_DOCUMENTS.length + mod.SCENARIO_ZONE_CONNECTIONS.length +
+      mod.SCENARIO_CHAPTER_ROUTES.length + mod.SCENARIO_EXTRA_ZONES.length +
+      mod.SCENARIO_EXTRA_BOSSES.length + mod.COMPANION_CLASS_MAPPINGS.length +
+      mod.SCENARIO_CHAPTER_REWARDS.length + mod.COMPANION_STORY_ARCS.length +
+      mod.SCENARIO_CHAPTER_BGMS.length + mod.SCENARIO_SUB_PLOTS.length +
+      mod.SCENARIO_CHAPTER_DIFFICULTIES.length + mod.SCENARIO_CHAPTER_VISUALS.length +
+      mod.SCENARIO_EPIC_ITEMS.length + mod.SCENARIO_PARTY_COMPOSITIONS.length +
+      mod.SCENARIO_MEMORY_RECALLS.length + mod.SCENARIO_CHOICES.length +
+      mod.SCENARIO_FACTIONS.length + mod.SCENARIO_PREREQUISITES.length +
+      mod.GAME_INTRO_SEQUENCE.length + mod.ENDING_FINAL_SEQUENCES.length +
+      mod.SCENARIO_ACHIEVEMENTS.length + mod.SCENARIO_QUEST_LOG.length +
+      mod.SCENARIO_CINEMATICS.length + mod.SCENARIO_AMBIENT_SOUNDS.length +
+      mod.COMPANION_PERSONAL_QUESTS.length + mod.SCENARIO_STATUS_EFFECTS.length +
+      mod.FACTION_REPUTATIONS.length + mod.COMPANION_STARTING_STATS.length +
+      mod.SCENARIO_ENEMY_ARCHETYPES.length + mod.SCENARIO_VENDORS.length +
+      mod.SCENARIO_SUB_LOCATIONS.length + mod.SCENARIO_CHAPTER_TIMESPANS.length +
+      mod.SCENARIO_RANDOM_ENCOUNTERS.length + mod.COMPANION_JOIN_TRIGGERS.length +
+      mod.SCENARIO_BOSS_PHASES.length + mod.SCENARIO_CHAPTER_ANTAGONISTS.length +
+      mod.COMPANION_AFFINITY_EVENTS.length + mod.SCENARIO_INCIDENTAL_EVENTS.length +
+      mod.SCENARIO_DAY_TIMELINE.length + mod.SCENARIO_COLLECTIBLES.length +
+      mod.SCENARIO_SAVE_SLOTS.length + mod.SCENARIO_TUTORIAL_STEPS.length +
+      mod.SCENARIO_REWARD_TREE.length + mod.SCENARIO_EASTER_EGGS.length +
+      mod.SCENARIO_NEW_GAME_PLUS.length + mod.SCENARIO_CREDITS.length;
+    expect(total).toBeGreaterThanOrEqual(345);
+  });
+
+  it('chrono.ts barrel SYNC-96~99 신규 API 모두 export', async () => {
+    const mod = await import('../../shared/types/chrono');
+    expect(Array.isArray(mod.SCENARIO_REWARD_TREE)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_EASTER_EGGS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_NEW_GAME_PLUS)).toBe(true);
+    expect(Array.isArray(mod.SCENARIO_CREDITS)).toBe(true);
+    expect(typeof mod.getRewardTreeNodeByObsidianId).toBe('function');
+    expect(typeof mod.getEasterEggByObsidianId).toBe('function');
+    expect(typeof mod.getNewGamePlusByEnding).toBe('function');
+    expect(typeof mod.getCreditsByOrder).toBe('function');
+  });
+
+  it('100% sync 유지 (100 sprint 누적 후에도)', async () => {
+    const { getSyncCompletionReport } = await import('../../shared/types/scenarioRegistry');
+    expect(getSyncCompletionReport().coveragePercent).toBe(100);
+  });
+
+  it('🎯🎯🎯🎯🎯🎯🎯🎯 100 sprint 마디 marker — narrative SSOT 절정', () => {
+    expect(true).toBe(true);
+  });
+});
+
 describe('SYNC-S100 — credits roll narrative SSOT (SYNC-99)', () => {
   it('SCENARIO_CREDITS ≥ 6 sections', async () => {
     const { SCENARIO_CREDITS } = await import('../../shared/types/scenarioRegistry');
