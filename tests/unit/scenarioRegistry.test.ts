@@ -750,6 +750,53 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S73 — 진영 평판 narrative (SYNC-72)', () => {
+  it('FACTION_REPUTATIONS 7 세력 평판', async () => {
+    const { FACTION_REPUTATIONS, SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(FACTION_REPUTATIONS.length).toBe(SCENARIO_FACTIONS.length);
+  });
+
+  it('각 reputation factionObsidianId SCENARIO_FACTIONS 존재', async () => {
+    const { FACTION_REPUTATIONS, SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_FACTIONS.map((f) => f.obsidianId));
+    for (const r of FACTION_REPUTATIONS) {
+      expect(ids.has(r.factionObsidianId), `${r.factionObsidianId}`).toBe(true);
+    }
+  });
+
+  it('각 reputation 한글 influence + startingReputation 범위', async () => {
+    const { FACTION_REPUTATIONS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const r of FACTION_REPUTATIONS) {
+      expect(korean.test(r.influence)).toBe(true);
+      expect(r.startingReputation).toBeGreaterThanOrEqual(-50);
+      expect(r.startingReputation).toBeLessThanOrEqual(50);
+    }
+  });
+
+  it('레테 교단 시작 -50 (antagonist 최대)', async () => {
+    const { getFactionReputationByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const cult = getFactionReputationByObsidianId('faction_lethe_cult');
+    expect(cult!.startingReputation).toBe(-50);
+  });
+
+  it('수호자단 시작 +30 (protagonist)', async () => {
+    const { getFactionReputationByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const guardian = getFactionReputationByObsidianId('faction_memory_guardian');
+    expect(guardian!.startingReputation).toBe(30);
+  });
+
+  it('cohesion: SCENARIO_FACTIONS antagonist 시작 평판 ≤ 0', async () => {
+    const { FACTION_REPUTATIONS, SCENARIO_FACTIONS } = await import('../../shared/types/scenarioRegistry');
+    for (const f of SCENARIO_FACTIONS) {
+      if (f.alignment === 'antagonist') {
+        const rep = FACTION_REPUTATIONS.find((r) => r.factionObsidianId === f.obsidianId);
+        expect(rep!.startingReputation, `${f.obsidianId} antag`).toBeLessThanOrEqual(0);
+      }
+    }
+  });
+});
+
 describe('SYNC-S72 — 시나리오 status effect narrative (SYNC-71)', () => {
   it('SCENARIO_STATUS_EFFECTS ≥ 7 status effects', async () => {
     const { SCENARIO_STATUS_EFFECTS } = await import('../../shared/types/scenarioRegistry');

@@ -2699,6 +2699,62 @@ export function listStatusEffectsByType(
   return SCENARIO_STATUS_EFFECTS.filter((s) => s.type === type);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-72: 시나리오 진영 평판 (faction reputation) narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface FactionReputation {
+  factionObsidianId: string;
+  /** 평판 시작 값 */
+  startingReputation: number;
+  /** 평판 +/- 영향 narrative */
+  influence: string;
+}
+
+export const FACTION_REPUTATIONS: readonly FactionReputation[] = [
+  {
+    factionObsidianId: 'faction_elfaris',
+    startingReputation: 0,
+    influence: 'Ch2 평화 선택 +20, 전투 선택 -30. 외교 진입 영향.',
+  },
+  {
+    factionObsidianId: 'faction_ifrita',
+    startingReputation: 0,
+    influence: 'Ch3 채광 기지 내부 공작 +20, 정면 공격 -10. 이그나 신뢰 영향.',
+  },
+  {
+    factionObsidianId: 'faction_solian',
+    startingReputation: 0,
+    influence: 'Ch3 라와르 해방 +30, 재봉인 +10. 솔리안 영혼 자유 narrative.',
+  },
+  {
+    factionObsidianId: 'faction_kalimar_empire',
+    startingReputation: -10,
+    influence: 'Ch4 황제 구원 +30, 제거 -20. 제국 안정/혼란 narrative.',
+  },
+  {
+    factionObsidianId: 'faction_lethe_cult',
+    startingReputation: -50,
+    influence: '모든 교단 활동 적대적. 베르나르도/레이나 분기 영향.',
+  },
+  {
+    factionObsidianId: 'faction_memory_guardian',
+    startingReputation: 30,
+    influence: '에리언 시작 +30, 4 파편 회수 시마다 +20. 엔딩 A 영향.',
+  },
+  {
+    factionObsidianId: 'faction_memory_hunter',
+    startingReputation: -30,
+    influence: 'Ch4 케인 처치 +50 평판 회복. 기억 사냥꾼 패배 narrative.',
+  },
+];
+
+export function getFactionReputationByObsidianId(
+  factionObsidianId: string,
+): FactionReputation | undefined {
+  return FACTION_REPUTATIONS.find((r) => r.factionObsidianId === factionObsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
