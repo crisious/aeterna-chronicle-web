@@ -3300,6 +3300,80 @@ export function getChapterAntagonist(chapter: number): ChapterAntagonist | undef
   return SCENARIO_CHAPTER_ANTAGONISTS.find((a) => a.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-87: 동료 친밀도 이벤트 narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface AffinityEvent {
+  obsidianId: string;
+  companionObsidianId: string;
+  /** 발생 chapter */
+  chapter: number;
+  /** 친밀도 변화량 */
+  affinityDelta: number;
+  /** narrative 설명 */
+  narrative: string;
+}
+
+export const COMPANION_AFFINITY_EVENTS: readonly AffinityEvent[] = [
+  {
+    obsidianId: 'affinity_seraphine_kael_share',
+    companionObsidianId: 'seraphine',
+    chapter: 2,
+    affinityDelta: 30,
+    narrative: '말라투스 고목에서 세라핀이 카엘 회상 공유 — 신뢰 형성.',
+  },
+  {
+    obsidianId: 'affinity_crio_information_trust',
+    companionObsidianId: 'maestro_crio',
+    chapter: 1,
+    affinityDelta: 20,
+    narrative: '크리오에게 첫 정보 거래 성공 — 60년 정보망 일부 공개.',
+  },
+  {
+    obsidianId: 'affinity_ignara_father_truth',
+    companionObsidianId: 'ignara',
+    chapter: 3,
+    affinityDelta: 25,
+    narrative: '이그나의 아버지 진실 함께 추적 — 이프리타 내부 음모 확인.',
+  },
+  {
+    obsidianId: 'affinity_benjamin_milia_rescue',
+    companionObsidianId: 'benjamin_cross',
+    chapter: 4,
+    affinityDelta: 40,
+    narrative: '벤자민 조카 밀리아 구출 협력 — 평생 빚 narrative.',
+  },
+  {
+    obsidianId: 'affinity_reina_cult_betray',
+    companionObsidianId: 'reina',
+    chapter: 4,
+    affinityDelta: 30,
+    narrative: '레이나 교단 배신 결심 함께 지원 — 12 신화 진실 공유.',
+  },
+  {
+    obsidianId: 'affinity_urgrom_temple_seal',
+    companionObsidianId: 'urgrom',
+    chapter: 4,
+    affinityDelta: 35,
+    narrative: '우르그롬 북방 사원 봉인 의식 협력 — 200년 마지막 단서 전달.',
+  },
+];
+
+export function getAffinityEventByObsidianId(
+  obsidianId: string,
+): AffinityEvent | undefined {
+  return COMPANION_AFFINITY_EVENTS.find((e) => e.obsidianId === obsidianId);
+}
+
+export function listAffinityEventsByCompanion(
+  companionObsidianId: string,
+): readonly AffinityEvent[] {
+  return COMPANION_AFFINITY_EVENTS.filter(
+    (e) => e.companionObsidianId === companionObsidianId,
+  );
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *

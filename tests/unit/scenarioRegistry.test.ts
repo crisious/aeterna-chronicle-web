@@ -814,6 +814,60 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S88 — 동료 친밀도 이벤트 narrative (SYNC-87)', () => {
+  it('COMPANION_AFFINITY_EVENTS 6 동료 친밀도 이벤트', async () => {
+    const { COMPANION_AFFINITY_EVENTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    expect(COMPANION_AFFINITY_EVENTS.length).toBe(SCENARIO_COMPANIONS.length);
+  });
+
+  it('각 event obsidianId + affinity_ prefix + 한글 narrative', async () => {
+    const { COMPANION_AFFINITY_EVENTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const e of COMPANION_AFFINITY_EVENTS) {
+      expect(e.obsidianId.startsWith('affinity_'), `${e.obsidianId}`).toBe(true);
+      expect(korean.test(e.narrative)).toBe(true);
+    }
+  });
+
+  it('각 event affinityDelta 정수 > 0', async () => {
+    const { COMPANION_AFFINITY_EVENTS } = await import('../../shared/types/scenarioRegistry');
+    for (const e of COMPANION_AFFINITY_EVENTS) {
+      expect(e.affinityDelta).toBeGreaterThan(0);
+      expect(Number.isInteger(e.affinityDelta)).toBe(true);
+    }
+  });
+
+  it('companionObsidianId 모두 SCENARIO_COMPANIONS 존재', async () => {
+    const { COMPANION_AFFINITY_EVENTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set(SCENARIO_COMPANIONS.map((c) => c.obsidianId));
+    for (const e of COMPANION_AFFINITY_EVENTS) {
+      expect(ids.has(e.companionObsidianId)).toBe(true);
+    }
+  });
+
+  it('벤자민 — 가장 큰 affinityDelta (밀리아 구출 40)', async () => {
+    const { getAffinityEventByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const benjamin = getAffinityEventByObsidianId('affinity_benjamin_milia_rescue');
+    expect(benjamin!.affinityDelta).toBe(40);
+  });
+
+  it('listAffinityEventsByCompanion 헬퍼 동작', async () => {
+    const { listAffinityEventsByCompanion } = await import('../../shared/types/scenarioRegistry');
+    expect(listAffinityEventsByCompanion('seraphine').length).toBeGreaterThanOrEqual(1);
+    expect(listAffinityEventsByCompanion('unknown').length).toBe(0);
+  });
+
+  it('chapter 1~5 범위 + 6 동료 모두 cover', async () => {
+    const { COMPANION_AFFINITY_EVENTS, SCENARIO_COMPANIONS } = await import('../../shared/types/scenarioRegistry');
+    const companionsWithEvent = new Set(COMPANION_AFFINITY_EVENTS.map((e) => e.companionObsidianId));
+    expect(companionsWithEvent.size).toBe(SCENARIO_COMPANIONS.length);
+    for (const e of COMPANION_AFFINITY_EVENTS) {
+      expect(e.chapter).toBeGreaterThanOrEqual(1);
+      expect(e.chapter).toBeLessThanOrEqual(5);
+    }
+  });
+});
+
 describe('SYNC-S87 — 챕터별 메인 적대자 narrative (SYNC-86)', () => {
   it('SCENARIO_CHAPTER_ANTAGONISTS 5 chapter 적대자', async () => {
     const { SCENARIO_CHAPTER_ANTAGONISTS } = await import('../../shared/types/scenarioRegistry');
