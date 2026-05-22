@@ -814,6 +814,54 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S98 — 이스터에그 narrative SSOT (SYNC-97)', () => {
+  it('SCENARIO_EASTER_EGGS 5 eggs', async () => {
+    const { SCENARIO_EASTER_EGGS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_EASTER_EGGS.length).toBe(5);
+  });
+
+  it('각 egg obsidianId + egg_ prefix + 한글', async () => {
+    const { SCENARIO_EASTER_EGGS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const e of SCENARIO_EASTER_EGGS) {
+      expect(e.obsidianId.startsWith('egg_'), `${e.obsidianId}`).toBe(true);
+      expect(korean.test(e.description)).toBe(true);
+      expect(korean.test(e.trigger)).toBe(true);
+    }
+  });
+
+  it('zoneObsidianId 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_EASTER_EGGS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const e of SCENARIO_EASTER_EGGS) {
+      expect(zoneIds.has(e.zoneObsidianId)).toBe(true);
+    }
+  });
+
+  it('크로노 트리거 헌사 + FF6 ATB 헌사 narrative (게임 컨셉)', async () => {
+    const { getEasterEggByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const chrono = getEasterEggByObsidianId('egg_silvanheim_chrono_trigger');
+    const ff6 = getEasterEggByObsidianId('egg_solaris_ff6_atb');
+    expect(chrono!.description).toContain('크로노 트리거');
+    expect(ff6!.description).toContain('FF6');
+  });
+
+  it('hotbit 개발자 + 에테르나 팀 시그니처', async () => {
+    const { getEasterEggByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const dev = getEasterEggByObsidianId('egg_crio_developer_diary');
+    const team = getEasterEggByObsidianId('egg_argentium_aeterna_team');
+    expect(dev!.description).toContain('hotbit');
+    expect(team!.description).toContain('에테르나 팀');
+  });
+
+  it('카일 시그니처 (200년 전) Ch5', async () => {
+    const { getEasterEggByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const kail = getEasterEggByObsidianId('egg_oblivion_kail_signature');
+    expect(kail!.zoneObsidianId).toBe('oblivion_plateau');
+    expect(kail!.description).toContain('카일');
+  });
+});
+
 describe('SYNC-S97 — advanced 보상 트리 narrative (SYNC-96)', () => {
   it('SCENARIO_REWARD_TREE ≥ 6 nodes', async () => {
     const { SCENARIO_REWARD_TREE } = await import('../../shared/types/scenarioRegistry');

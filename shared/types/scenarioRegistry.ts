@@ -3699,6 +3699,59 @@ export function listRewardTreeByChapter(chapter: number): readonly RewardTreeNod
   return SCENARIO_REWARD_TREE.filter((n) => n.chapter === chapter);
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-97: 시나리오 이스터에그 narrative
+// ════════════════════════════════════════════════════════════════
+
+export interface EasterEgg {
+  obsidianId: string;
+  /** 발견 zone obsidianId */
+  zoneObsidianId: string;
+  /** 한글 이스터에그 narrative */
+  description: string;
+  /** 트리거 조건 */
+  trigger: string;
+}
+
+export const SCENARIO_EASTER_EGGS: readonly EasterEgg[] = [
+  {
+    obsidianId: 'egg_crio_developer_diary',
+    zoneObsidianId: 'erebos',
+    description: '에레보스 도서관 깊은 곳 — hotbit 개발자 일기장 발견.',
+    trigger: 'Ch1 에레보스 도서관에서 특정 책장 3번 상호작용.',
+  },
+  {
+    obsidianId: 'egg_silvanheim_chrono_trigger',
+    zoneObsidianId: 'silvanheim',
+    description: '말라투스 고목 옆 작은 공동 — \'크로노 트리거\' 헌사.',
+    trigger: 'Ch2 말라투스 고목 뒤편 숨겨진 길.',
+  },
+  {
+    obsidianId: 'egg_solaris_ff6_atb',
+    zoneObsidianId: 'solaris',
+    description: '솔라리스 모래 폭풍 — FF6 ATB 시그니처 헌사.',
+    trigger: 'Ch3 솔라리스 모래 폭풍 중 특정 위치 대기.',
+  },
+  {
+    obsidianId: 'egg_argentium_aeterna_team',
+    zoneObsidianId: 'argentium',
+    description: '아르겐티움 황궁 비밀 방 — 에테르나 팀 표지판.',
+    trigger: 'Ch4 황궁 침투 시 비밀 방 열기.',
+  },
+  {
+    obsidianId: 'egg_oblivion_kail_signature',
+    zoneObsidianId: 'oblivion_plateau',
+    description: '망각의 고원 — 카일의 봉인 의식 시그니처 (200년 전).',
+    trigger: 'Ch5 황금 에테르 탑 진입 직전 특정 좌표.',
+  },
+];
+
+export function getEasterEggByObsidianId(
+  obsidianId: string,
+): EasterEgg | undefined {
+  return SCENARIO_EASTER_EGGS.find((e) => e.obsidianId === obsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
