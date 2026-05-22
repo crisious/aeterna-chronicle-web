@@ -750,6 +750,61 @@ describe('SYNC-S19 — planned ID naming 일관성', () => {
   });
 });
 
+describe('SYNC-S72 — 시나리오 status effect narrative (SYNC-71)', () => {
+  it('SCENARIO_STATUS_EFFECTS ≥ 7 status effects', async () => {
+    const { SCENARIO_STATUS_EFFECTS } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_STATUS_EFFECTS.length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('각 status obsidianId + status_ prefix + 한글', async () => {
+    const { SCENARIO_STATUS_EFFECTS } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const s of SCENARIO_STATUS_EFFECTS) {
+      expect(s.obsidianId.startsWith('status_'), `${s.obsidianId}`).toBe(true);
+      expect(korean.test(s.name)).toBe(true);
+      expect(korean.test(s.description)).toBe(true);
+    }
+  });
+
+  it('3 type 모두 (buff/debuff/environment)', async () => {
+    const { SCENARIO_STATUS_EFFECTS } = await import('../../shared/types/scenarioRegistry');
+    const types = new Set(SCENARIO_STATUS_EFFECTS.map((s) => s.type));
+    expect(types.size).toBe(3);
+    expect(types.has('buff')).toBe(true);
+    expect(types.has('debuff')).toBe(true);
+    expect(types.has('environment')).toBe(true);
+  });
+
+  it('zoneObsidianId 있는 status 모두 SCENARIO_ZONES 존재', async () => {
+    const { SCENARIO_STATUS_EFFECTS, SCENARIO_ZONES } = await import('../../shared/types/scenarioRegistry');
+    const zoneIds = new Set(SCENARIO_ZONES.map((z) => z.obsidianId));
+    for (const s of SCENARIO_STATUS_EFFECTS) {
+      if (s.zoneObsidianId) {
+        expect(zoneIds.has(s.zoneObsidianId), `${s.zoneObsidianId}`).toBe(true);
+      }
+    }
+  });
+
+  it('debuff ≥ 2 (memory_storm + lethe_whisper)', async () => {
+    const { listStatusEffectsByType } = await import('../../shared/types/scenarioRegistry');
+    const debuffs = listStatusEffectsByType('debuff');
+    expect(debuffs.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('environment ≥ 3 (solaris/silvanheim/oblivion_plateau)', async () => {
+    const { listStatusEffectsByType } = await import('../../shared/types/scenarioRegistry');
+    const envs = listStatusEffectsByType('environment');
+    expect(envs.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('레테 속삭임 narrative (debuff + 망각)', async () => {
+    const { getStatusEffectByObsidianId } = await import('../../shared/types/scenarioRegistry');
+    const lethe = getStatusEffectByObsidianId('status_lethe_whisper');
+    expect(lethe!.type).toBe('debuff');
+    expect(lethe!.description).toContain('망각');
+  });
+});
+
 describe('🎯🎯🎯🎯🎯 SYNC-S71 — 70 sprint 마디 narrative SSOT 절정 (SYNC-70)', () => {
   it('70 sprint 누적 SSOT 정점 — 35 도메인 + entity ≥220', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');

@@ -2621,6 +2621,84 @@ export function getPersonalQuestByCompanion(
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-71: 시나리오 status effect narrative
+// ════════════════════════════════════════════════════════════════
+
+export type StatusEffectType = 'debuff' | 'buff' | 'environment';
+
+export interface ScenarioStatusEffect {
+  obsidianId: string;
+  /** 한글 이름 */
+  name: string;
+  /** 타입 */
+  type: StatusEffectType;
+  /** 발생 zone obsidianId (있을 경우) */
+  zoneObsidianId?: string;
+  /** 한글 narrative */
+  description: string;
+}
+
+export const SCENARIO_STATUS_EFFECTS: readonly ScenarioStatusEffect[] = [
+  {
+    obsidianId: 'status_memory_storm',
+    name: '기억 폭풍',
+    type: 'debuff',
+    description: '망각의 폭풍 접근 — 모든 캐릭터 기억 일부 소멸 위험.',
+  },
+  {
+    obsidianId: 'status_ether_glow',
+    name: '에테르 발광',
+    type: 'environment',
+    zoneObsidianId: 'solaris',
+    description: '솔라리스 사막 — 에테르 결정 발광으로 시야 왜곡.',
+  },
+  {
+    obsidianId: 'status_time_dilation',
+    name: '시간 지연',
+    type: 'environment',
+    zoneObsidianId: 'silvanheim',
+    description: '실반헤임 — 시간이 외부보다 느리게 흐름 (1일=외부 3시간).',
+  },
+  {
+    obsidianId: 'status_aerien_resonance',
+    name: '에리언 기억 공명',
+    type: 'buff',
+    description: '신성 기억 파편 회수 시 에리언의 기억 공명 능력 강화.',
+  },
+  {
+    obsidianId: 'status_reality_collapse',
+    name: '현실 붕괴',
+    type: 'environment',
+    zoneObsidianId: 'oblivion_plateau',
+    description: '망각의 고원 — 현실과 과거가 겹침, 카일 환영 빈도 증가.',
+  },
+  {
+    obsidianId: 'status_lethe_whisper',
+    name: '레테의 속삭임',
+    type: 'debuff',
+    description: '레테 교단 근접 시 망각의 유혹 — 의지 약화 위험.',
+  },
+  {
+    obsidianId: 'status_companion_bond',
+    name: '동료 유대',
+    type: 'buff',
+    description: '6 동료 신뢰도 threshold 달성 시 파티 능력치 강화.',
+  },
+];
+
+export function getStatusEffectByObsidianId(
+  obsidianId: string,
+): ScenarioStatusEffect | undefined {
+  return SCENARIO_STATUS_EFFECTS.find((s) => s.obsidianId === obsidianId);
+}
+
+export function listStatusEffectsByType(
+  type: StatusEffectType,
+): readonly ScenarioStatusEffect[] {
+  return SCENARIO_STATUS_EFFECTS.filter((s) => s.type === type);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
