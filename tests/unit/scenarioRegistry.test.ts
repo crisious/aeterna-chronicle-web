@@ -814,6 +814,63 @@ describe('🎯🎯🎯🎯🎯🎯 SYNC-S81 — 80 sprint 마디 narrative SSOT 
   });
 });
 
+describe('SYNC-S85 — 보스 페이즈 narrative SSOT (SYNC-84)', () => {
+  it('SCENARIO_BOSS_PHASES ≥ 13 phases', async () => {
+    const { SCENARIO_BOSS_PHASES } = await import('../../shared/types/scenarioRegistry');
+    expect(SCENARIO_BOSS_PHASES.length).toBeGreaterThanOrEqual(13);
+  });
+
+  it('각 phase 한글 narrative + phase ≥1', async () => {
+    const { SCENARIO_BOSS_PHASES } = await import('../../shared/types/scenarioRegistry');
+    const korean = /[가-힣]/;
+    for (const p of SCENARIO_BOSS_PHASES) {
+      expect(korean.test(p.description)).toBe(true);
+      expect(p.phase).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('말라투스 3 페이즈 + 라와르 3 페이즈', async () => {
+    const { listBossPhases } = await import('../../shared/types/scenarioRegistry');
+    expect(listBossPhases('malatus_ancient').length).toBe(3);
+    expect(listBossPhases('rawar').length).toBe(3);
+  });
+
+  it('레테 5 페이즈 (최종 보스)', async () => {
+    const { listBossPhases } = await import('../../shared/types/scenarioRegistry');
+    const lethe = listBossPhases('lethe');
+    expect(lethe.length).toBe(5);
+    // 페이즈 1~5 모두 정의
+    const phases = lethe.map((p) => p.phase).sort();
+    expect(phases).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('레테 5페이즈 — 엔딩 분기 narrative', async () => {
+    const { listBossPhases } = await import('../../shared/types/scenarioRegistry');
+    const lethe5 = listBossPhases('lethe').find((p) => p.phase === 5);
+    expect(lethe5!.description).toContain('엔딩');
+  });
+
+  it('보스 페이즈 narrative 키워드 (시간/봉인/망각)', async () => {
+    const { SCENARIO_BOSS_PHASES } = await import('../../shared/types/scenarioRegistry');
+    const allText = SCENARIO_BOSS_PHASES.map((p) => p.description).join(' ');
+    expect(allText).toContain('시간');
+    expect(allText).toContain('봉인');
+    expect(allText).toContain('망각');
+  });
+
+  it('bossObsidianId 모두 SCENARIO_BOSSES OR EXTRA_BOSSES OR COMPANIONS 존재', async () => {
+    const mod = await import('../../shared/types/scenarioRegistry');
+    const ids = new Set([
+      ...mod.SCENARIO_BOSSES.map((b) => b.obsidianId),
+      ...mod.SCENARIO_EXTRA_BOSSES.map((b) => b.obsidianId),
+      ...mod.SCENARIO_COMPANIONS.map((c) => c.obsidianId), // benjamin_cross boss form
+    ]);
+    for (const p of mod.SCENARIO_BOSS_PHASES) {
+      expect(ids.has(p.bossObsidianId), `${p.bossObsidianId}`).toBe(true);
+    }
+  });
+});
+
 describe('🎯 SYNC-S84 — 1900 tests 마디 II + 44 도메인 stress (SYNC-83)', () => {
   it('44 SSOT 도메인 entity 총량 ≥ 275', async () => {
     const mod = await import('../../shared/types/scenarioRegistry');

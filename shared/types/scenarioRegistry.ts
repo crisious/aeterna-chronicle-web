@@ -3213,6 +3213,42 @@ export function getJoinTriggerByCompanion(
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// SYNC-84: 시나리오 보스 페이즈 narrative SSOT
+// ════════════════════════════════════════════════════════════════
+
+export interface BossPhase {
+  bossObsidianId: string;
+  /** 페이즈 번호 (1부터) */
+  phase: number;
+  /** 페이즈 narrative */
+  description: string;
+}
+
+export const SCENARIO_BOSS_PHASES: readonly BossPhase[] = [
+  // 말라투스 3 페이즈
+  { bossObsidianId: 'malatus_ancient', phase: 1, description: '말라투스 1페이즈 — 시간 지연 + 식물 마법 기본 공격' },
+  { bossObsidianId: 'malatus_ancient', phase: 2, description: '말라투스 2페이즈 — 카엘 회상 환영 + 세라핀 정신 공격' },
+  { bossObsidianId: 'malatus_ancient', phase: 3, description: '말라투스 3페이즈 — 천 년의 분노 + 광역 식물 폭주' },
+  // 라와르 3 페이즈
+  { bossObsidianId: 'rawar', phase: 1, description: '라와르 1페이즈 — 솔리안 의식 + 불꽃 패턴' },
+  { bossObsidianId: 'rawar', phase: 2, description: '라와르 2페이즈 — 자기희생 봉인 narrative 공명' },
+  { bossObsidianId: 'rawar', phase: 3, description: '라와르 3페이즈 — 200년 영혼 분열 + 최종 봉인 의식' },
+  // 베르나르도 (타락 형태)
+  { bossObsidianId: 'benjamin_cross', phase: 1, description: '베르나르도 1페이즈 — 형사 검술 + 그림자 잠입' },
+  { bossObsidianId: 'benjamin_cross', phase: 2, description: '베르나르도 2페이즈 — 레테 교단 타락 + 망각 검술 발현' },
+  // 레테 5 페이즈
+  { bossObsidianId: 'lethe', phase: 1, description: '레테 1페이즈 — 망각의 안개 + 기억 침식 시작' },
+  { bossObsidianId: 'lethe', phase: 2, description: '레테 2페이즈 — 4 파편 무력화 시도 + 동료 환영 공격' },
+  { bossObsidianId: 'lethe', phase: 3, description: '레테 3페이즈 — 12 신화 회귀 패턴 + 시간 왜곡 광역기' },
+  { bossObsidianId: 'lethe', phase: 4, description: '레테 4페이즈 — 에리언 카일 회상 침투 + 의지 시험' },
+  { bossObsidianId: 'lethe', phase: 5, description: '레테 5페이즈 — 4 파편 통합 최종 봉인 or 엔딩 분기' },
+];
+
+export function listBossPhases(bossObsidianId: string): readonly BossPhase[] {
+  return SCENARIO_BOSS_PHASES.filter((p) => p.bossObsidianId === bossObsidianId);
+}
+
 /**
  * 종합 game state → 단일 GameProgressReport.
  *
