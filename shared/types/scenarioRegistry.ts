@@ -5493,3 +5493,65 @@ export function listClassLevelUpNarratives(classKey: ClassKey): readonly ClassLe
 export function listClassMilestones(): readonly (10 | 20 | 30)[] {
   return MILESTONES;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-118: 아이템 등급 narrative — 5 등급 (common ~ legendary)
+// 인벤토리/획득 화면에 표시되는 등급별 flavor + 색상.
+// ════════════════════════════════════════════════════════════════
+
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
+export interface ItemRarityDescription {
+  rarity: ItemRarity;
+  label: string;
+  /** UI 표시 hex color (#rrggbb) */
+  uiColor: string;
+  flavor: string;
+  pickupAnchor: string;
+}
+
+export const SCENARIO_ITEM_RARITY_DESCRIPTIONS: readonly ItemRarityDescription[] = [
+  {
+    rarity: 'common',
+    label: '일반',
+    uiColor: '#bfbfbf',
+    flavor: '필드 어디서나 찾을 수 있는 자원. 양으로 승부하는 등급.',
+    pickupAnchor: '— 일반 자원이 가방에 담깁니다.',
+  },
+  {
+    rarity: 'uncommon',
+    label: '고급',
+    uiColor: '#5fbf5f',
+    flavor: '유의미한 제작 재료. 보스 직전 보급 단계의 핵심.',
+    pickupAnchor: '— 고급 자원의 무게가 가방에 더해집니다.',
+  },
+  {
+    rarity: 'rare',
+    label: '희귀',
+    uiColor: '#5f9fff',
+    flavor: '특정 zone 의 한정 자원. 동료 신뢰도 보상에 자주 사용.',
+    pickupAnchor: '— 희귀 자원의 빛이 가방 안쪽에서 잠시 반짝입니다.',
+  },
+  {
+    rarity: 'epic',
+    label: '영웅',
+    uiColor: '#bf5fff',
+    flavor: '챕터 보스 보상 또는 메인 퀘스트 핵심 보상. 빌드의 분기점이 되는 등급.',
+    pickupAnchor: '— 영웅 자원의 결이 가방 안에서 균일한 진동을 일으킵니다.',
+  },
+  {
+    rarity: 'legendary',
+    label: '전설',
+    uiColor: '#ffb720',
+    flavor: '신성 기억 파편급 신화 자원. 게임 전체에서 손에 꼽는 갯수의 등급.',
+    pickupAnchor: '— 전설 자원의 빛이 화면 가장자리까지 잠시 번지며 가방에 자리잡습니다.',
+  },
+];
+
+export function getItemRarityDescription(rarity: ItemRarity): ItemRarityDescription | undefined {
+  return SCENARIO_ITEM_RARITY_DESCRIPTIONS.find((r) => r.rarity === rarity);
+}
+
+export function listItemRaritiesAscending(): readonly ItemRarity[] {
+  return ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+}
