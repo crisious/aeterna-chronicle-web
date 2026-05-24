@@ -9498,3 +9498,32 @@ export function getInventoryFilterPresetNarrative(preset: InventoryFilterPreset)
 export function listInventoryFilterPresets(): readonly InventoryFilterPreset[] {
   return ['all', 'equippable', 'consumable', 'quest', 'new'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-203: 메뉴 네비 depth SSOT — 4 depth (root~detail)
+// ════════════════════════════════════════════════════════════════
+
+export type MenuNavDepth = 'root' | 'category' | 'item' | 'detail';
+
+export interface MenuNavDepthNarrative {
+  depth: MenuNavDepth;
+  label: string;
+  depthNumber: number;
+  breadcrumbFormat: string;
+  backKeyBehavior: string;
+}
+
+export const SCENARIO_MENU_NAV_DEPTHS: readonly MenuNavDepthNarrative[] = [
+  { depth: 'root',     label: '루트',     depthNumber: 0, breadcrumbFormat: '메뉴',                                       backKeyBehavior: '게임 재개 (메뉴 닫기).' },
+  { depth: 'category', label: '카테고리', depthNumber: 1, breadcrumbFormat: '메뉴 / {카테고리}',                          backKeyBehavior: '루트로 이동.' },
+  { depth: 'item',     label: '항목',     depthNumber: 2, breadcrumbFormat: '메뉴 / {카테고리} / {항목}',                 backKeyBehavior: '카테고리로 이동.' },
+  { depth: 'detail',   label: '상세',     depthNumber: 3, breadcrumbFormat: '메뉴 / {카테고리} / {항목} / 상세',          backKeyBehavior: '항목으로 이동.' },
+];
+
+export function getMenuNavDepthNarrative(depth: MenuNavDepth): MenuNavDepthNarrative | undefined {
+  return SCENARIO_MENU_NAV_DEPTHS.find((d) => d.depth === depth);
+}
+
+export function listMenuNavDepthsAscending(): readonly MenuNavDepthNarrative[] {
+  return [...SCENARIO_MENU_NAV_DEPTHS].sort((a, b) => a.depthNumber - b.depthNumber);
+}
