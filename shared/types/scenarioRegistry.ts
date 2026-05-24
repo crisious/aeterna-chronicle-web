@@ -4723,3 +4723,75 @@ export function getLoadScreenTipById(tipId: string): LoadScreenTip | undefined {
 export function listLoadScreenTipsByChapter(chapter: number): readonly LoadScreenTip[] {
   return SCENARIO_LOAD_SCREEN_TIPS.filter((t) => t.chapter === chapter);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-107: 챕터 오프닝 cinematic narrative — 챕터 시작 시 화면에 표시
+// 5 챕터 × (title + subtitle + 3 narrative line) 구조.
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterOpeningNarrative {
+  chapter: number;
+  /** 화면 상단 제목 */
+  title: string;
+  /** 부제 (시대/위치 anchor) */
+  subtitle: string;
+  /** 3줄 cinematic 본문 (낭송 가능한 호흡 단위) */
+  lines: readonly [string, string, string];
+}
+
+export const SCENARIO_CHAPTER_OPENING_NARRATIVES: readonly ChapterOpeningNarrative[] = [
+  {
+    chapter: 1,
+    title: '첫 번째 장 — 꺼진 도시',
+    subtitle: '세계력 3,412년, 칸텔라 마을 + 에레보스 폐허',
+    lines: [
+      '기억 소멸 폭풍이 칸텔라의 새벽을 휩쓸었습니다. 발자국이 지워진 거리에서 에리언은 처음으로 자기 자신의 호흡을 의심합니다.',
+      '카일의 전생은 가까이 있고, 공명은 이미 손끝에서 흔들립니다.',
+      '꺼진 운하 도시 에레보스로의 길이 열립니다 — 첫 번째 신성 기억 파편이 그 안에서 잠들어 있습니다.',
+    ],
+  },
+  {
+    chapter: 2,
+    title: '두 번째 장 — 잎새 사이의 안전',
+    subtitle: '실반헤임, 말라투스 고목의 영역',
+    lines: [
+      '망각이 닿지 않는 마지막 숲이 가까워집니다. 잎새 사이로 새어 드는 빛은 신중하고 무겁습니다.',
+      '엘파리스의 외교가 길을 결정합니다 — 호의는 안내를, 무시는 미궁을 가져옵니다.',
+      '말라투스 고목 아래에 두 번째 파편의 봉인이 흔들리고 있습니다.',
+    ],
+  },
+  {
+    chapter: 3,
+    title: '세 번째 장 — 모래의 불꽃',
+    subtitle: '솔라리스 사막, 솔리안 유적',
+    lines: [
+      '이프리타족의 최초의 불꽃이 길을 따라 줄지어 타오릅니다. 그 빛은 안내이자 시험입니다.',
+      '이그나의 합류는 채광 기지의 통제선을 흔들고, 라와르의 봉인이 사막 아래에서 응답합니다.',
+      '세 번째 파편이 솔리안 유적의 가장 깊은 방에서 기다리고 있습니다.',
+    ],
+  },
+  {
+    chapter: 4,
+    title: '네 번째 장 — 잿빛 침묵',
+    subtitle: '아르겐티움 제국, 팔라티노 지하 연구소',
+    lines: [
+      '제국의 첨탑이 잿빛 하늘을 가르고, 시민들은 같은 동선을 반복합니다. 침묵은 우연이 아닙니다.',
+      '베르나르도의 정체와 레이나의 진실, 우르그롬의 약속 — 세 사람의 신뢰가 동시에 시험됩니다.',
+      '네 번째 파편은 황궁 가장 깊은 곳에서 케인의 그림자 아래 봉인되어 있습니다.',
+    ],
+  },
+  {
+    chapter: 5,
+    title: '다섯 번째 장 — 황금 탑의 정점',
+    subtitle: '망각의 고원, 황금 에테르 탑',
+    lines: [
+      '네 파편이 응답하기 시작합니다. 고원의 바람은 봉인 의식의 잔재를 흩날립니다.',
+      '황금 에테르 탑의 위층마다 시간이 더 느리게 흐릅니다. 모든 동료의 호흡을 확인하세요.',
+      '레테가 다섯 페이즈에 걸쳐 강림합니다. 어떤 엔딩으로 마침표가 찍힐지는 — 이 자리의 선택에 달렸습니다.',
+    ],
+  },
+];
+
+export function getChapterOpeningNarrative(chapter: number): ChapterOpeningNarrative | undefined {
+  return SCENARIO_CHAPTER_OPENING_NARRATIVES.find((c) => c.chapter === chapter);
+}
