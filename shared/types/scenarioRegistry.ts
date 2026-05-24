@@ -8775,3 +8775,38 @@ export function getGamepadButtonMapping(button: GamepadButton): GamepadButtonMap
 export function listGamepadButtons(): readonly GamepadButton[] {
   return ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-183: 디버그 오버레이 라벨 SSOT — 6 라벨
+// 개발/QA 모드 디버그 오버레이 + 단축키.
+// ════════════════════════════════════════════════════════════════
+
+export type DebugOverlayKey = 'fps' | 'draw_calls' | 'memory' | 'atb_trace' | 'zone_id' | 'network';
+
+export interface DebugOverlayLabel {
+  key: DebugOverlayKey;
+  label: string;
+  /** 토글 단축키 (Shift+F-key) */
+  toggleShortcut: string;
+  /** 표시 위치 (HudAnchor) */
+  anchor: HudAnchor;
+  /** 설명 */
+  description: string;
+}
+
+export const SCENARIO_DEBUG_OVERLAY_LABELS: readonly DebugOverlayLabel[] = [
+  { key: 'fps',         label: 'FPS',         toggleShortcut: 'Shift+F1', anchor: 'top_right',     description: '프레임 레이트 + 평균 / 최저 / 최고.' },
+  { key: 'draw_calls',  label: 'Draw Calls',  toggleShortcut: 'Shift+F2', anchor: 'top_right',     description: '프레임당 draw call 수 + GPU sync 시간.' },
+  { key: 'memory',      label: 'Memory',      toggleShortcut: 'Shift+F3', anchor: 'top_right',     description: 'JS heap / GPU texture 메모리 사용량.' },
+  { key: 'atb_trace',   label: 'ATB Trace',   toggleShortcut: 'Shift+F4', anchor: 'bottom_left',   description: '전투 ATB 게이지 + 행동 큐 + cooldown 트레이스.' },
+  { key: 'zone_id',     label: 'Zone ID',     toggleShortcut: 'Shift+F5', anchor: 'top_left',      description: '현재 zone obsidianId + 좌표 + 인접 zone.' },
+  { key: 'network',     label: 'Network',     toggleShortcut: 'Shift+F6', anchor: 'bottom_right',  description: 'WebSocket latency + 요청 큐 + 오류 카운트.' },
+];
+
+export function getDebugOverlayLabel(key: DebugOverlayKey): DebugOverlayLabel | undefined {
+  return SCENARIO_DEBUG_OVERLAY_LABELS.find((d) => d.key === key);
+}
+
+export function listDebugOverlayKeys(): readonly DebugOverlayKey[] {
+  return ['fps', 'draw_calls', 'memory', 'atb_trace', 'zone_id', 'network'];
+}
