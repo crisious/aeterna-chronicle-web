@@ -7125,3 +7125,74 @@ export function getCompletionPercentByValue(percent: number): CompletionPercentN
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-151: 보스 페이즈 전이 narrative — phases 보유 보스 3 (malatus 3 + rawar 3 + lethe 5) = 11 전이
+// 각 보스 페이즈 진입 시 화면 표시되는 전이 anchor + 패턴 hint.
+// SCENARIO_BOSSES.phases 와 cross-validate.
+// ════════════════════════════════════════════════════════════════
+
+export interface BossPhaseTransition {
+  /** SCENARIO_BOSSES.obsidianId 와 매칭 */
+  bossObsidianId: string;
+  /** 페이즈 번호 (1-indexed) */
+  phaseNumber: number;
+  /** 페이즈 라벨 */
+  phaseLabel: string;
+  /** 전이 anchor — 페이즈 시작 시 표시 */
+  transitionAnchor: string;
+  /** 패턴 hint — 이 페이즈의 핵심 패턴 */
+  patternHint: string;
+}
+
+export const SCENARIO_BOSS_PHASE_TRANSITIONS: readonly BossPhaseTransition[] = [
+  // malatus_ancient — 3 페이즈
+  { bossObsidianId: 'malatus_ancient', phaseNumber: 1, phaseLabel: '잎새의 결',
+    transitionAnchor: '— 말라투스의 잎새가 옅은 빛으로 떨립니다.',
+    patternHint: '단일 대상 흡수 공격. 회피 우선, 회복 1턴 여유 확보.' },
+  { bossObsidianId: 'malatus_ancient', phaseNumber: 2, phaseLabel: '뿌리의 결',
+    transitionAnchor: '— 잎새의 빛이 짙은 초록으로 가라앉으며 뿌리가 솟구칩니다.',
+    patternHint: '광역 뿌리 공격. 후열 배치 + 광역 회복 준비.' },
+  { bossObsidianId: 'malatus_ancient', phaseNumber: 3, phaseLabel: '봉인의 결',
+    transitionAnchor: '— 잎새와 뿌리가 동시에 황금빛으로 응결됩니다.',
+    patternHint: '봉인 의식 발동. 단일 폭딜로 응결 시간 단축 필요.' },
+  // rawar — 3 페이즈
+  { bossObsidianId: 'rawar', phaseNumber: 1, phaseLabel: '깨어남',
+    transitionAnchor: '— 라와르가 영원한 수면에서 천천히 눈을 뜹니다.',
+    patternHint: '느린 단일 강타. 회피 + 카운터 빌드 유리.' },
+  { bossObsidianId: 'rawar', phaseNumber: 2, phaseLabel: '의식의 결',
+    transitionAnchor: '— 모래 폭풍이 라와르를 두르며 봉인 의식이 시작됩니다.',
+    patternHint: '광역 모래 공격 + 회복 봉쇄. 디버프 해제 + 광역 방어.' },
+  { bossObsidianId: 'rawar', phaseNumber: 3, phaseLabel: '왕의 자기희생',
+    transitionAnchor: '— 라와르가 자기희생 의식으로 마지막 결을 풀어냅니다.',
+    patternHint: '극한 단발 폭딜. 단일 회복 + 부활 패시브 준비.' },
+  // lethe — 5 페이즈
+  { bossObsidianId: 'lethe', phaseNumber: 1, phaseLabel: '강림',
+    transitionAnchor: '— 거대한 눈들의 집합체가 처음으로 시야를 가둡니다.',
+    patternHint: '4 파편 첫 공명으로 시야 가림 해제 가능. 단일 폭딜.' },
+  { bossObsidianId: 'lethe', phaseNumber: 2, phaseLabel: '망각의 폭풍',
+    transitionAnchor: '— 시야가 다시 좁아지며 풍경의 결이 흐려집니다.',
+    patternHint: '광역 디버프. 디버프 해제 + 후열 회복 빌드.' },
+  { bossObsidianId: 'lethe', phaseNumber: 3, phaseLabel: '시간의 비틈',
+    transitionAnchor: '— ATB 게이지가 일그러지며 행동 순서가 뒤집힙니다.',
+    patternHint: '시간 수호자 reverse 카운터 + auto_resurrect 패시브.' },
+  { bossObsidianId: 'lethe', phaseNumber: 4, phaseLabel: '봉인의 균열',
+    transitionAnchor: '— 거대한 눈들이 하나씩 깨지며 봉인이 흔들립니다.',
+    patternHint: '집중 폭딜 구간. crit_echo + 콤보 빌드로 4 파편 동시 공명.' },
+  { bossObsidianId: 'lethe', phaseNumber: 5, phaseLabel: '마지막 호흡',
+    transitionAnchor: '— 모든 결이 응결되며 망각의 신이 마지막 빛으로 사라집니다.',
+    patternHint: '엔딩 분기 결정 구간. 전원 생존 유지 필수.' },
+];
+
+export function getBossPhaseTransition(
+  bossObsidianId: string,
+  phaseNumber: number,
+): BossPhaseTransition | undefined {
+  return SCENARIO_BOSS_PHASE_TRANSITIONS.find(
+    (t) => t.bossObsidianId === bossObsidianId && t.phaseNumber === phaseNumber,
+  );
+}
+
+export function listBossPhaseTransitions(bossObsidianId: string): readonly BossPhaseTransition[] {
+  return SCENARIO_BOSS_PHASE_TRANSITIONS.filter((t) => t.bossObsidianId === bossObsidianId);
+}
