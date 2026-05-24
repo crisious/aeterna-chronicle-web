@@ -7010,3 +7010,54 @@ export function getQuickslotHint(slotIndex: 1 | 2 | 3 | 4): QuickslotHint | unde
 export function listQuickslotCategories(): readonly QuickslotCategory[] {
   return ['heal', 'attack', 'defense', 'special'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-149: 파티 역할 narrative — 4 역할 (lead/support/healer/scout)
+// 파티 구성 UI 의 슬롯 역할 + 추천 클래스 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export type PartyRole = 'lead' | 'support' | 'healer' | 'scout';
+
+export interface PartyRoleLabel {
+  role: PartyRole;
+  label: string;
+  /** 역할 설명 */
+  description: string;
+  /** 추천 클래스 (ClassKey 목록) */
+  recommendedClasses: readonly ClassKey[];
+}
+
+export const SCENARIO_PARTY_ROLE_LABELS: readonly PartyRoleLabel[] = [
+  {
+    role: 'lead',
+    label: '리더 / 탱커',
+    description: '전투 최전방에서 적의 시선을 끌고 일격의 무게를 받아냅니다.',
+    recommendedClasses: ['ether_knight', 'memory_destroyer'],
+  },
+  {
+    role: 'support',
+    label: '서포터',
+    description: '버프 / 디버프 / ATB 조작으로 파티 전체의 결을 조율합니다.',
+    recommendedClasses: ['time_guardian', 'shadow_weaver'],
+  },
+  {
+    role: 'healer',
+    label: '힐러',
+    description: '회복과 디버프 해제로 파티 지속력을 유지합니다.',
+    recommendedClasses: ['memorist'],
+  },
+  {
+    role: 'scout',
+    label: '정찰',
+    description: '회피와 분단으로 위협을 우회하고 적 패턴을 흔듭니다.',
+    recommendedClasses: ['void_wanderer', 'shadow_weaver'],
+  },
+];
+
+export function getPartyRoleLabel(role: PartyRole): PartyRoleLabel | undefined {
+  return SCENARIO_PARTY_ROLE_LABELS.find((r) => r.role === role);
+}
+
+export function listPartyRoles(): readonly PartyRole[] {
+  return ['lead', 'support', 'healer', 'scout'];
+}
