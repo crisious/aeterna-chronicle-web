@@ -8010,3 +8010,53 @@ export function getCameraModeNarrative(mode: CameraMode): CameraModeNarrative | 
 export function listCameraModes(): readonly CameraMode[] {
   return ['follow', 'free', 'cinematic'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-168: 파벌 갈등 narrative — 4 conflict pair
+// SCENARIO_FACTIONS 간 주요 갈등 + 플레이어 개입 hint.
+// ════════════════════════════════════════════════════════════════
+
+export interface FactionConflictNarrative {
+  conflictId: string;
+  /** 양측 faction obsidianId */
+  factions: readonly [string, string];
+  /** 갈등 anchor */
+  conflictAnchor: string;
+  /** 플레이어 개입 시 영향 */
+  playerImpactHint: string;
+}
+
+export const SCENARIO_FACTION_CONFLICTS: readonly FactionConflictNarrative[] = [
+  {
+    conflictId: 'guardians_vs_hunters',
+    factions: ['faction_memory_guardian', 'faction_memory_hunter'],
+    conflictAnchor: '— 봉인 의식 계승자와 파편 추적자의 대립 — 가장 직접적인 적대 라인.',
+    playerImpactHint: '에리언의 모든 행동이 이 갈등의 결을 흔듭니다. 중립 불가, 한쪽 편 필수.',
+  },
+  {
+    conflictId: 'elfaris_vs_cult',
+    factions: ['faction_elfaris', 'faction_lethe_cult'],
+    conflictAnchor: '— 잎새의 결을 지키는 자와 망각을 부르는 자의 분리.',
+    playerImpactHint: '엘파리스 외교 분기 (sync-156 BRANCH_DECISION) 와 직결. 호의 시 교단 잠입 단서 제공.',
+  },
+  {
+    conflictId: 'empire_vs_cult_internal',
+    factions: ['faction_kalimar_empire', 'faction_lethe_cult'],
+    conflictAnchor: '— 제국 표면과 그 안의 교단 — 외부에선 한 몸, 안에선 갈등.',
+    playerImpactHint: '잠입 동선에서 노출되는 갈등. 한쪽 정보를 다른 쪽에 흘리면 분기 무너짐.',
+  },
+  {
+    conflictId: 'ifrita_vs_legacy_solian',
+    factions: ['faction_ifrita', 'faction_solian'],
+    conflictAnchor: '— 현재의 불꽃 부족과 멸망한 솔리안의 봉인 — 시간을 가르는 정체성 갈등.',
+    playerImpactHint: '솔리안 유적 해석 시 이프리타 부족의 협조 필요. 라와르 봉인 단서가 양측 모두에서 필요.',
+  },
+];
+
+export function getFactionConflictNarrative(conflictId: string): FactionConflictNarrative | undefined {
+  return SCENARIO_FACTION_CONFLICTS.find((c) => c.conflictId === conflictId);
+}
+
+export function listFactionConflictsForFaction(factionObsidianId: string): readonly FactionConflictNarrative[] {
+  return SCENARIO_FACTION_CONFLICTS.filter((c) => c.factions.includes(factionObsidianId));
+}
