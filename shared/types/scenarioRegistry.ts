@@ -7718,3 +7718,59 @@ export function getGuildRankByContribution(contribution: number): GuildRankNarra
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-162: 일일 quest 패턴 narrative — 4 패턴 (gather/hunt/escort/explore)
+// 일일 재발생 quest 의 패턴 + 평균 보상 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export type DailyQuestPattern = 'gather' | 'hunt' | 'escort' | 'explore';
+
+export interface DailyQuestPatternNarrative {
+  pattern: DailyQuestPattern;
+  label: string;
+  objectiveTemplate: string;
+  /** 평균 보상 anchor */
+  averageRewardAnchor: string;
+  /** 평균 소요 시간 (분) */
+  averageDurationMinutes: number;
+}
+
+export const SCENARIO_DAILY_QUEST_PATTERNS: readonly DailyQuestPatternNarrative[] = [
+  {
+    pattern: 'gather',
+    label: '채집',
+    objectiveTemplate: '{zone} 에서 {resource} {count}개 채집',
+    averageRewardAnchor: '— uncommon 자원 ×3 + 기여도 +5.',
+    averageDurationMinutes: 10,
+  },
+  {
+    pattern: 'hunt',
+    label: '사냥',
+    objectiveTemplate: '{zone} 에서 {enemy} {count}마리 처치',
+    averageRewardAnchor: '— rare 결정 ×1 + 경험치 보너스 + 기여도 +8.',
+    averageDurationMinutes: 15,
+  },
+  {
+    pattern: 'escort',
+    label: '호위',
+    objectiveTemplate: '{npc} 을 {from} 에서 {to} 까지 안전 호위',
+    averageRewardAnchor: '— faction reputation +10 + 기여도 +12.',
+    averageDurationMinutes: 20,
+  },
+  {
+    pattern: 'explore',
+    label: '탐색',
+    objectiveTemplate: '{zone} 의 미발견 지점 {count} 군데 발견',
+    averageRewardAnchor: '— 지도 fast travel +1 잠금 해제 + 기여도 +10.',
+    averageDurationMinutes: 25,
+  },
+];
+
+export function getDailyQuestPatternNarrative(pattern: DailyQuestPattern): DailyQuestPatternNarrative | undefined {
+  return SCENARIO_DAILY_QUEST_PATTERNS.find((p) => p.pattern === pattern);
+}
+
+export function listDailyQuestPatterns(): readonly DailyQuestPattern[] {
+  return ['gather', 'hunt', 'escort', 'explore'];
+}
