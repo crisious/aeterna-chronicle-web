@@ -7774,3 +7774,48 @@ export function getDailyQuestPatternNarrative(pattern: DailyQuestPattern): Daily
 export function listDailyQuestPatterns(): readonly DailyQuestPattern[] {
   return ['gather', 'hunt', 'escort', 'explore'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-163: 보물 상자 등급 narrative — 5 tier (ITEM_RARITY 와 1:1)
+// 필드 보물 상자 발견 시 등급별 anchor + 평균 보상 구성.
+// ════════════════════════════════════════════════════════════════
+
+export interface TreasureChestTier {
+  rarity: ItemRarity;
+  /** 상자 외관 anchor */
+  chestAnchor: string;
+  /** 평균 보상 구성 */
+  rewardComposition: string;
+}
+
+export const SCENARIO_TREASURE_CHEST_TIERS: readonly TreasureChestTier[] = [
+  {
+    rarity: 'common',
+    chestAnchor: '— 낡은 나무 상자가 풀숲에 반쯤 묻혀 있습니다.',
+    rewardComposition: 'common 자원 ×3~5 + 소액 화폐.',
+  },
+  {
+    rarity: 'uncommon',
+    chestAnchor: '— 가죽으로 감싼 상자에 잔잔한 결이 보입니다.',
+    rewardComposition: 'uncommon 자원 ×2 + common ×5 + 보조 회복품.',
+  },
+  {
+    rarity: 'rare',
+    chestAnchor: '— 푸른빛이 옅게 새어 나오는 결정 상자입니다.',
+    rewardComposition: 'rare 결정 ×1 + uncommon ×3 + 스킬 트레이닝 도구.',
+  },
+  {
+    rarity: 'epic',
+    chestAnchor: '— 보랏빛 결이 응결된 영웅의 상자 — 결의 무게가 다릅니다.',
+    rewardComposition: 'epic 장비 ×1 + rare ×2 + 빌드 분기 단서 1개.',
+  },
+  {
+    rarity: 'legendary',
+    chestAnchor: '— 황금빛이 화면 가장자리까지 번지는 신화의 상자입니다.',
+    rewardComposition: 'legendary 자원 ×1 + epic ×2 + 메인 quest 단서 1개.',
+  },
+];
+
+export function getTreasureChestTier(rarity: ItemRarity): TreasureChestTier | undefined {
+  return SCENARIO_TREASURE_CHEST_TIERS.find((t) => t.rarity === rarity);
+}
