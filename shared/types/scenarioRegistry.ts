@@ -9148,3 +9148,38 @@ export function getAnimationEasingNarrative(easing: AnimationEasingKind): Animat
 export function listAnimationEasingKinds(): readonly AnimationEasingKind[] {
   return ['linear', 'ease_in', 'ease_out', 'ease_in_out', 'bounce'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-193: 프레임 페이싱 타겟 SSOT — 4 타겟 (30/60/120/adaptive)
+// 렌더 루프 타겟 FPS + frame budget + VSync 정책.
+// ════════════════════════════════════════════════════════════════
+
+export type FramePacingTarget = 'fps_30' | 'fps_60' | 'fps_120' | 'adaptive';
+
+export interface FramePacingNarrative {
+  target: FramePacingTarget;
+  label: string;
+  /** 타겟 FPS (adaptive 는 0) */
+  targetFps: number;
+  /** frame budget (ms) */
+  frameBudgetMs: number;
+  /** VSync 정책 */
+  vsyncPolicy: 'on' | 'off' | 'adaptive';
+  /** 적용 hint */
+  usageHint: string;
+}
+
+export const SCENARIO_FRAME_PACING_TARGETS: readonly FramePacingNarrative[] = [
+  { target: 'fps_30',   label: '30 FPS',    targetFps: 30,  frameBudgetMs: 33.33, vsyncPolicy: 'on',       usageHint: '저사양 디바이스 / 모바일.' },
+  { target: 'fps_60',   label: '60 FPS',    targetFps: 60,  frameBudgetMs: 16.67, vsyncPolicy: 'on',       usageHint: '표준 PC 게임플레이.' },
+  { target: 'fps_120',  label: '120 FPS',   targetFps: 120, frameBudgetMs: 8.33,  vsyncPolicy: 'on',       usageHint: '고주사율 모니터 + 고사양 GPU.' },
+  { target: 'adaptive', label: '가변',      targetFps: 0,   frameBudgetMs: 0,     vsyncPolicy: 'adaptive', usageHint: 'G-Sync / FreeSync 호환. GPU 부하에 따라 자동 조정.' },
+];
+
+export function getFramePacingNarrative(target: FramePacingTarget): FramePacingNarrative | undefined {
+  return SCENARIO_FRAME_PACING_TARGETS.find((f) => f.target === target);
+}
+
+export function listFramePacingTargets(): readonly FramePacingTarget[] {
+  return ['fps_30', 'fps_60', 'fps_120', 'adaptive'];
+}
