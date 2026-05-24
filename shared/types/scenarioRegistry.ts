@@ -9039,3 +9039,80 @@ export function getBenchmarkProfileNarrative(profile: BenchmarkProfileKey): Benc
 export function listBenchmarkProfilesAscending(): readonly BenchmarkProfileKey[] {
   return ['low', 'medium', 'high', 'ultra'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-191: 빌드 프리셋 추천 SSOT — 6 클래스 × 1 추천 빌드
+// 각 클래스 별 입문자 권장 빌드 (6 스킬 슬롯 + 1 패시브 + 타겟 레벨).
+// ════════════════════════════════════════════════════════════════
+
+export interface BuildPresetNarrative {
+  classKey: ClassKey;
+  presetName: string;
+  /** 6 스킬 슬롯에 권장 배치할 스킬 family */
+  recommendedSkillFamilies: readonly string[];
+  /** 권장 패시브 (PassiveEffectType) */
+  recommendedPassive: PassiveEffectType;
+  /** 타겟 milestone level */
+  targetLevel: 10 | 20 | 30;
+  /** 빌드 설명 */
+  flavorSummary: string;
+}
+
+export const SCENARIO_BUILD_PRESETS: readonly BuildPresetNarrative[] = [
+  {
+    classKey: 'ether_knight',
+    presetName: '검결 균형',
+    recommendedSkillFamilies: ['광역 검결', '단일 카운터', '방어 자세', '회복 검결', '강타', '광역 강타'],
+    recommendedPassive: 'reflect',
+    targetLevel: 20,
+    flavorSummary: '근접 폭딜 + 반사 방어 균형. 보스전 1~3 페이즈 안정형.',
+  },
+  {
+    classKey: 'memorist',
+    presetName: '공명 회복',
+    recommendedSkillFamilies: ['단일 회복', '광역 회복', '디버프 해제', 'ATB 가속', '광역 버프', '비상 부활'],
+    recommendedPassive: 'battle_regen',
+    targetLevel: 20,
+    flavorSummary: '파티 지속력 최대화. 장기전 / 보스 페이즈 통과 빌드.',
+  },
+  {
+    classKey: 'shadow_weaver',
+    presetName: '회피 콤보',
+    recommendedSkillFamilies: ['회피 무빙', '카운터', '다단 히트', '약점 직격', '광역 그림자', '잠입 표식'],
+    recommendedPassive: 'evasion_up',
+    targetLevel: 20,
+    flavorSummary: '회피 + 콤보 기여 빌드. 엘리트 적 안정 처리.',
+  },
+  {
+    classKey: 'memory_destroyer',
+    presetName: '극한 폭딜',
+    recommendedSkillFamilies: ['강타', '광역 파괴', '봉인 파쇄', '저 HP 강화', '치명 회복', '최후의 일격'],
+    recommendedPassive: 'low_hp_atk_up',
+    targetLevel: 30,
+    flavorSummary: '위험 감수 + 폭딜 빌드. 보스 페이즈 전이 압축형.',
+  },
+  {
+    classKey: 'time_guardian',
+    presetName: '시간 통제',
+    recommendedSkillFamilies: ['ATB 정지', '역전', '광역 둔화', '회복 가속', '시간 가속', '균열 봉합'],
+    recommendedPassive: 'defense_up_conditional',
+    targetLevel: 30,
+    flavorSummary: '적 행동 통제 + 파티 가속 빌드. 균열 / 시간 보스전 최적.',
+  },
+  {
+    classKey: 'void_wanderer',
+    presetName: '균열 분단',
+    recommendedSkillFamilies: ['이동 강타', '텔레포트', '독 표식', '광역 분단', '균열 함정', '부활 표식'],
+    recommendedPassive: 'auto_resurrect',
+    targetLevel: 30,
+    flavorSummary: '기동력 + 분단 + 부활 사이클 빌드. 단독 진입 최적.',
+  },
+];
+
+export function getBuildPresetNarrative(classKey: ClassKey): BuildPresetNarrative | undefined {
+  return SCENARIO_BUILD_PRESETS.find((b) => b.classKey === classKey);
+}
+
+export function listBuildPresetClassKeys(): readonly ClassKey[] {
+  return SCENARIO_BUILD_PRESETS.map((b) => b.classKey);
+}
