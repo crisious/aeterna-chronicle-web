@@ -6430,3 +6430,46 @@ export function getKeybindDescription(action: KeybindAction): KeybindDescription
 export function listKeybindActions(): readonly KeybindAction[] {
   return SCENARIO_KEYBIND_DESCRIPTIONS.map((k) => k.action);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-138: 설정 메뉴 description — 8 항목 (audio/graphics/accessibility)
+// 각 설정 항목 label + 카테고리 + 설명 + 기본값.
+// ════════════════════════════════════════════════════════════════
+
+export type SettingsCategory = 'audio' | 'graphics' | 'accessibility';
+
+export type SettingsItemKey =
+  | 'audio_master' | 'audio_bgm' | 'audio_sfx'
+  | 'graphics_quality' | 'graphics_fullscreen'
+  | 'accessibility_colorblind' | 'accessibility_subtitle' | 'accessibility_reduce_motion';
+
+export interface SettingsDescription {
+  itemKey: SettingsItemKey;
+  category: SettingsCategory;
+  label: string;
+  /** 기본값의 한글 표현 */
+  defaultValue: string;
+  description: string;
+}
+
+export const SCENARIO_SETTINGS_DESCRIPTIONS: readonly SettingsDescription[] = [
+  // audio
+  { itemKey: 'audio_master', category: 'audio', label: '마스터 볼륨', defaultValue: '80%', description: '전체 오디오 볼륨. 0~100 슬라이더로 조정.' },
+  { itemKey: 'audio_bgm',    category: 'audio', label: 'BGM 볼륨',  defaultValue: '70%', description: '배경 음악 볼륨. 마스터 볼륨에 비례 적용.' },
+  { itemKey: 'audio_sfx',    category: 'audio', label: 'SFX 볼륨',  defaultValue: '85%', description: '효과음 볼륨. 마스터 볼륨에 비례 적용.' },
+  // graphics
+  { itemKey: 'graphics_quality',    category: 'graphics', label: '그래픽 품질', defaultValue: '중간', description: '저/중간/높음. 저사양 PC 는 저로 설정 권장.' },
+  { itemKey: 'graphics_fullscreen', category: 'graphics', label: '전체화면',    defaultValue: '꺼짐', description: '윈도우 / 전체화면 전환. F11 단축키도 동일 작동.' },
+  // accessibility
+  { itemKey: 'accessibility_colorblind',    category: 'accessibility', label: '색맹 모드',     defaultValue: '꺼짐', description: '4 SVG 필터 (protanopia / deuteranopia / tritanopia / achromatopsia).' },
+  { itemKey: 'accessibility_subtitle',      category: 'accessibility', label: '자막 크기',     defaultValue: '중간', description: '자막 텍스트 크기 — 작음 / 중간 / 큼.' },
+  { itemKey: 'accessibility_reduce_motion', category: 'accessibility', label: '모션 감소',     defaultValue: 'OS 따름', description: 'prefers-reduced-motion 우선. 화면 흔들림과 큰 모션 효과를 줄입니다.' },
+];
+
+export function getSettingsDescription(itemKey: SettingsItemKey): SettingsDescription | undefined {
+  return SCENARIO_SETTINGS_DESCRIPTIONS.find((s) => s.itemKey === itemKey);
+}
+
+export function listSettingsByCategory(category: SettingsCategory): readonly SettingsDescription[] {
+  return SCENARIO_SETTINGS_DESCRIPTIONS.filter((s) => s.category === category);
+}
