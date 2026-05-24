@@ -6829,3 +6829,59 @@ export function getExpectedDropRate(
   if (enemyKind === 'elite') return tier.eliteDropRate;
   return tier.bossDropRate;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-145: 🎯 도전과제 tier narrative — bronze/silver/gold/platinum 4 tier
+// SCENARIO_ACHIEVEMENTS 와 cross. UI 색상 + tier label + 획득 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum';
+
+export interface AchievementTierNarrative {
+  tier: AchievementTier;
+  label: string;
+  uiColor: string;
+  /** 획득 시 화면 표시 anchor */
+  unlockAnchor: string;
+  /** 일반 획득 비율 hint */
+  prevalenceHint: string;
+}
+
+export const SCENARIO_ACHIEVEMENT_TIER_NARRATIVES: readonly AchievementTierNarrative[] = [
+  {
+    tier: 'bronze',
+    label: '청동',
+    uiColor: '#a07040',
+    unlockAnchor: '— 청동 도전과제가 잠금 해제됩니다.',
+    prevalenceHint: '진행 도중 자연스럽게 ~70% 플레이어가 획득.',
+  },
+  {
+    tier: 'silver',
+    label: '은',
+    uiColor: '#bfbfbf',
+    unlockAnchor: '— 은 도전과제가 잠금 해제됩니다.',
+    prevalenceHint: '의도된 빌드/탐색 시 ~40% 플레이어가 획득.',
+  },
+  {
+    tier: 'gold',
+    label: '금',
+    uiColor: '#ffb720',
+    unlockAnchor: '— 금 도전과제가 잠금 해제됩니다.',
+    prevalenceHint: 'A 엔딩 / 동료 전원 생존 라인의 ~15% 플레이어가 획득.',
+  },
+  {
+    tier: 'platinum',
+    label: '백금',
+    uiColor: '#e0e0ff',
+    unlockAnchor: '— 백금 도전과제가 잠금 해제됩니다 — 화면 한가운데 빛이 잠시 머뭅니다.',
+    prevalenceHint: 'Nightmare 난이도 + NG+3 이상 + 모든 도메인 클리어. ~1% 미만.',
+  },
+];
+
+export function getAchievementTierNarrative(tier: AchievementTier): AchievementTierNarrative | undefined {
+  return SCENARIO_ACHIEVEMENT_TIER_NARRATIVES.find((t) => t.tier === tier);
+}
+
+export function listAchievementTiersAscending(): readonly AchievementTier[] {
+  return ['bronze', 'silver', 'gold', 'platinum'];
+}
