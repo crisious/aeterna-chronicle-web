@@ -5109,3 +5109,60 @@ export function listBossVictoryNarrativesByChapter(chapter: number): readonly Bo
   );
   return SCENARIO_BOSS_VICTORY_NARRATIVES.filter((n) => bossIdsInChapter.has(n.bossObsidianId));
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-112: 챕터 전환 narrative — Ch1→2, 2→3, 3→4, 4→5 4종
+// 챕터 종결 ~ 다음 챕터 시작 사이의 epilogue 흐름.
+// ════════════════════════════════════════════════════════════════
+
+export interface ChapterTransitionNarrative {
+  /** 종료된 챕터 (1~4) */
+  fromChapter: number;
+  /** 시작되는 챕터 (2~5) — fromChapter + 1 */
+  toChapter: number;
+  /** epilogue 헤드라인 — 종료 챕터의 결과 */
+  epilogue: string;
+  /** prologue 헤드라인 — 다음 챕터로의 동기 */
+  prologue: string;
+  /** 이동 묘사 — 어떻게 다음 zone 으로 향했는지 */
+  travelLine: string;
+}
+
+export const SCENARIO_CHAPTER_TRANSITIONS: readonly ChapterTransitionNarrative[] = [
+  {
+    fromChapter: 1,
+    toChapter: 2,
+    epilogue: '에레보스의 첫 파편이 손에 들어왔습니다. 도시의 잔향은 잠시 잠잠해졌습니다.',
+    prologue: '두 번째 파편의 호흡이 실반헤임 숲에서 응답해 옵니다. 말라투스 고목이 흔들리고 있습니다.',
+    travelLine: '세라핀의 안내로 칸텔라를 떠나 잎새 사이의 길을 따라 실반헤임으로 향합니다.',
+  },
+  {
+    fromChapter: 2,
+    toChapter: 3,
+    epilogue: '실반헤임 파편이 두 번째 그릇을 채웠습니다. 엘파리스의 외교 분기가 다음 길의 안전을 가릅니다.',
+    prologue: '솔라리스 사막의 라와르 봉인이 흔들리기 시작했습니다. 이그나의 합류가 가까워졌습니다.',
+    travelLine: '실반헤임의 마지막 잎새 길을 떠나 모래 폭풍의 가장자리를 따라 솔라리스로 진입합니다.',
+  },
+  {
+    fromChapter: 3,
+    toChapter: 4,
+    epilogue: '라와르 왕의 마지막 의지가 세 번째 그릇을 채웁니다. 사막의 열기가 조용히 가라앉습니다.',
+    prologue: '아르겐티움 제국의 잿빛 침묵 아래 네 번째 파편이 봉인되어 있습니다. 케인의 그림자가 다가옵니다.',
+    travelLine: '솔라리스를 떠나 제국 국경을 우회 — 하수도 입구를 통한 잠입 경로로 황궁에 진입합니다.',
+  },
+  {
+    fromChapter: 4,
+    toChapter: 5,
+    epilogue: '네 번째 파편이 마지막 그릇을 채웠습니다. 동료들의 신뢰도가 다음 결말의 분기점을 결정합니다.',
+    prologue: '망각의 고원에서 4 파편의 공명이 시작됩니다. 황금 에테르 탑이 최종 무대로 떠오릅니다.',
+    travelLine: '잿빛 황궁을 떠나 고원의 바람을 가르며 황금 탑의 정점을 향해 오릅니다.',
+  },
+];
+
+export function getChapterTransition(fromChapter: number): ChapterTransitionNarrative | undefined {
+  return SCENARIO_CHAPTER_TRANSITIONS.find((t) => t.fromChapter === fromChapter);
+}
+
+export function getChapterTransitionTo(toChapter: number): ChapterTransitionNarrative | undefined {
+  return SCENARIO_CHAPTER_TRANSITIONS.find((t) => t.toChapter === toChapter);
+}
