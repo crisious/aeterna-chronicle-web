@@ -7875,3 +7875,54 @@ export function getDialogueChoicePatternNarrative(pattern: DialogueChoicePattern
 export function listDialogueChoicePatterns(): readonly DialogueChoicePattern[] {
   return ['agree', 'refuse', 'negotiate', 'silent'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-165: 🎯 인벤토리 정렬 옵션 narrative — 4 옵션 (rarity/name/recent/category)
+// 가방 UI 정렬 옵션 + 적용 효과 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type InventorySortOption = 'rarity' | 'name' | 'recent' | 'category';
+
+export interface InventorySortOptionNarrative {
+  option: InventorySortOption;
+  label: string;
+  /** 정렬 방향 (asc/desc 기본) */
+  defaultDirection: 'asc' | 'desc';
+  /** 효과 hint */
+  effectHint: string;
+}
+
+export const SCENARIO_INVENTORY_SORT_OPTIONS: readonly InventorySortOptionNarrative[] = [
+  {
+    option: 'rarity',
+    label: '등급순',
+    defaultDirection: 'desc',
+    effectHint: 'legendary → epic → rare → uncommon → common 순서. 고가치 자원 즉시 확인.',
+  },
+  {
+    option: 'name',
+    label: '이름순',
+    defaultDirection: 'asc',
+    effectHint: '한글 가나다 정렬. 특정 자원 찾기 빠름.',
+  },
+  {
+    option: 'recent',
+    label: '최근 획득순',
+    defaultDirection: 'desc',
+    effectHint: '최근에 가방에 들어온 자원이 위로. 직전 전투 보상 확인에 유리.',
+  },
+  {
+    option: 'category',
+    label: '카테고리순',
+    defaultDirection: 'asc',
+    effectHint: 'consumable / equipment / materials / quest_items / special 순서 (SHOP_CATEGORY 와 정합).',
+  },
+];
+
+export function getInventorySortOptionNarrative(option: InventorySortOption): InventorySortOptionNarrative | undefined {
+  return SCENARIO_INVENTORY_SORT_OPTIONS.find((o) => o.option === option);
+}
+
+export function listInventorySortOptions(): readonly InventorySortOption[] {
+  return ['rarity', 'name', 'recent', 'category'];
+}
