@@ -4895,3 +4895,65 @@ export function listBossIntroNarrativesByChapter(chapter: number): readonly Boss
   );
   return SCENARIO_BOSS_INTRO_NARRATIVES.filter((n) => bossIdsInChapter.has(n.bossObsidianId));
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-109: 신성 기억 파편 회수 narrative — 4 파편 도착/공명/해제 3단 흐름
+// SCENARIO_FRAGMENTS 4종 1:1 매칭.
+// ════════════════════════════════════════════════════════════════
+
+export interface FragmentRecoveryNarrative {
+  /** SCENARIO_FRAGMENTS.obsidianId 와 1:1 매칭 */
+  fragmentObsidianId: string;
+  /** 단계 1 — 봉인 장소 도착 시 */
+  arrivalLine: string;
+  /** 단계 2 — 에리언의 기억 공명이 응답할 때 */
+  resonanceLine: string;
+  /** 단계 3 — 파편이 해제되어 손에 들어올 때 */
+  recoveryLine: string;
+}
+
+export const SCENARIO_FRAGMENT_RECOVERY_NARRATIVES: readonly FragmentRecoveryNarrative[] = [
+  {
+    fragmentObsidianId: 'fragment_erebos',
+    arrivalLine: '꺼진 운하 도시 한복판, 무너진 종탑 아래에서 카일이 봉인한 첫 파편의 잔향이 흘러나옵니다.',
+    resonanceLine: '에리언의 손끝이 떨립니다 — 전생의 호흡이 지금의 호흡과 겹쳐 두 박자가 하나로 맞춰집니다.',
+    recoveryLine: '에레보스 파편이 손바닥 위에서 안정됩니다. 첫 번째 신성 기억의 그릇이 채워졌습니다.',
+  },
+  {
+    fragmentObsidianId: 'fragment_silvanheim',
+    arrivalLine: '말라투스 고목의 가장 깊은 뿌리실에 도착했습니다. 잎새 사이로 새어 드는 빛이 일제히 가라앉습니다.',
+    resonanceLine: '엘파리스 기억 수호자의 봉인 의식이 천천히 풀리며 에리언의 공명에 응답합니다.',
+    recoveryLine: '실반헤임 파편이 잎새의 빛을 흡수하며 손 안에 자리잡습니다. 두 번째 그릇이 채워졌습니다.',
+  },
+  {
+    fragmentObsidianId: 'fragment_solaris',
+    arrivalLine: '솔리안 유적의 가장 깊은 방, 라와르 왕이 영원한 수면에 든 봉인의 자리에 발이 닿습니다.',
+    resonanceLine: '왕의 자기희생 의식이 모래 폭풍처럼 일어나며 에리언의 공명을 시험합니다.',
+    recoveryLine: '솔라리스 파편이 라와르의 마지막 의지와 함께 풀려납니다. 세 번째 그릇이 채워졌습니다.',
+  },
+  {
+    fragmentObsidianId: 'fragment_argentium',
+    arrivalLine: '아르겐티움 황궁 가장 깊은 곳, 케인의 그림자가 걷힌 자리에 봉인된 파편이 놓여 있습니다.',
+    resonanceLine: '12인 중 이름이 지워진 한 사람의 호흡이 잠시 에리언의 공명과 마주합니다.',
+    recoveryLine: '아르겐티움 파편이 마지막 그릇을 채웁니다. 네 파편이 손 안에서 서로의 빛을 환기합니다.',
+  },
+];
+
+export function getFragmentRecoveryNarrative(
+  fragmentObsidianId: string,
+): FragmentRecoveryNarrative | undefined {
+  return SCENARIO_FRAGMENT_RECOVERY_NARRATIVES.find(
+    (n) => n.fragmentObsidianId === fragmentObsidianId,
+  );
+}
+
+export function listFragmentRecoveryNarrativesByChapter(
+  chapter: number,
+): readonly FragmentRecoveryNarrative[] {
+  const fragmentIdsInChapter = new Set(
+    SCENARIO_FRAGMENTS.filter((f) => f.chapter === chapter).map((f) => f.obsidianId),
+  );
+  return SCENARIO_FRAGMENT_RECOVERY_NARRATIVES.filter(
+    (n) => fragmentIdsInChapter.has(n.fragmentObsidianId),
+  );
+}
