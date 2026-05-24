@@ -7819,3 +7819,59 @@ export const SCENARIO_TREASURE_CHEST_TIERS: readonly TreasureChestTier[] = [
 export function getTreasureChestTier(rarity: ItemRarity): TreasureChestTier | undefined {
   return SCENARIO_TREASURE_CHEST_TIERS.find((t) => t.rarity === rarity);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-164: 대화 선택 패턴 narrative — 4 종 (agree/refuse/negotiate/silent)
+// NPC 대화 UI 에 표시되는 표준 선택 패턴 + UI hint.
+// ════════════════════════════════════════════════════════════════
+
+export type DialogueChoicePattern = 'agree' | 'refuse' | 'negotiate' | 'silent';
+
+export interface DialogueChoicePatternNarrative {
+  pattern: DialogueChoicePattern;
+  label: string;
+  uiColor: string;
+  /** 평판 영향 hint */
+  reputationImpact: string;
+  /** 흐름 hint */
+  flowHint: string;
+}
+
+export const SCENARIO_DIALOGUE_CHOICE_PATTERNS: readonly DialogueChoicePatternNarrative[] = [
+  {
+    pattern: 'agree',
+    label: '동의한다',
+    uiColor: '#60c060',
+    reputationImpact: '대화 NPC faction reputation +5.',
+    flowHint: '대화가 자연스럽게 다음 단계로 흐릅니다.',
+  },
+  {
+    pattern: 'refuse',
+    label: '거절한다',
+    uiColor: '#d04040',
+    reputationImpact: '대화 NPC faction reputation -5.',
+    flowHint: '대화가 단호하게 마무리됩니다. 일부 분기는 차단될 수 있습니다.',
+  },
+  {
+    pattern: 'negotiate',
+    label: '협상한다',
+    uiColor: '#ffb720',
+    reputationImpact: '협상 성공 시 +3, 실패 시 -3. 캐릭터 카리스마 스탯이 영향.',
+    flowHint: '추가 분기 선택지가 열리며, 보상 조정 가능.',
+  },
+  {
+    pattern: 'silent',
+    label: '침묵한다',
+    uiColor: '#a0a0a0',
+    reputationImpact: '평판 변동 없음.',
+    flowHint: '대화 흐름이 일시 정지되며 NPC 가 추가 정보를 흘릴 수 있습니다.',
+  },
+];
+
+export function getDialogueChoicePatternNarrative(pattern: DialogueChoicePattern): DialogueChoicePatternNarrative | undefined {
+  return SCENARIO_DIALOGUE_CHOICE_PATTERNS.find((p) => p.pattern === pattern);
+}
+
+export function listDialogueChoicePatterns(): readonly DialogueChoicePattern[] {
+  return ['agree', 'refuse', 'negotiate', 'silent'];
+}
