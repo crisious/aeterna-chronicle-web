@@ -4605,3 +4605,73 @@ export function getBgmNarrative(bgmId: string): BgmNarrative | undefined {
 export function listBgmNarrativesByIntensity(intensity: BgmIntensity): readonly BgmNarrative[] {
   return SCENARIO_BGM_NARRATIVES.filter((b) => b.intensity === intensity);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-105: ambient sound narrative — zoneSeeds ambientSound id 별 의도
+// 43 unique ambient id 1:1 매핑. zoneSeeds.ambientSound 전수 커버.
+// ════════════════════════════════════════════════════════════════
+
+export type AmbientCategory = 'urban' | 'wild' | 'water' | 'machine' | 'sacred' | 'occult';
+
+export interface AmbientNarrative {
+  /** zoneSeeds.ambientSound 와 1:1 매칭 */
+  ambientId: string;
+  /** 짧은 한글 설명 */
+  description: string;
+  /** 분류 */
+  category: AmbientCategory;
+}
+
+export const SCENARIO_AMBIENT_NARRATIVES: readonly AmbientNarrative[] = [
+  { ambientId: 'city_crowd', description: '제국 도시의 발자국과 낮은 대화', category: 'urban' },
+  { ambientId: 'market_bustle', description: '시장 외침과 동전 부딪는 소리', category: 'urban' },
+  { ambientId: 'dripping_water', description: '하수도 천장의 일정한 물방울', category: 'water' },
+  { ambientId: 'wind_tower', description: '첨탑 꼭대기를 휘감는 높은 바람', category: 'wild' },
+  { ambientId: 'forest_birds', description: '말라투스 숲의 잔잔한 새소리', category: 'wild' },
+  { ambientId: 'ancient_hum', description: '고목 봉인이 발산하는 저음 공명', category: 'sacred' },
+  { ambientId: 'swamp_fog', description: '안개 늪의 축축한 발소리와 개구리', category: 'wild' },
+  { ambientId: 'holy_chime', description: '엘프 성소의 청량한 풍경 소리', category: 'sacred' },
+  { ambientId: 'crystal_resonance', description: '에테르 결정의 미세한 진동음', category: 'sacred' },
+  { ambientId: 'ghost_wind', description: '에레보스 운하를 가로지르는 한기 어린 바람', category: 'occult' },
+  { ambientId: 'ruins_echo', description: '폐허 회랑에서 반사되는 발소리', category: 'occult' },
+  { ambientId: 'cathedral_organ', description: '잊혀진 대성당의 멀리서 울리는 오르간', category: 'sacred' },
+  { ambientId: 'catacomb_drip', description: '카타콤 천장의 차가운 물방울', category: 'occult' },
+  { ambientId: 'oasis_water', description: '오아시스 분수의 잔잔한 물결', category: 'water' },
+  { ambientId: 'sandstorm', description: '시야를 가리는 모래 폭풍의 거센 바람', category: 'wild' },
+  { ambientId: 'mine_drill', description: '에테르 채광기의 일정한 진동', category: 'machine' },
+  { ambientId: 'temple_chant', description: '고대 신전의 멀리서 들리는 성가', category: 'sacred' },
+  { ambientId: 'blizzard_soft', description: '북방 설원의 부드러운 눈보라', category: 'wild' },
+  { ambientId: 'ice_crack', description: '얼음 동굴의 미세한 균열음', category: 'wild' },
+  { ambientId: 'peak_wind', description: '결정 봉우리의 날카로운 고지대 바람', category: 'wild' },
+  { ambientId: 'frozen_lake', description: '얼어붙은 호수면의 길게 끄는 진동', category: 'water' },
+  { ambientId: 'harbor_seagull', description: '항구의 갈매기와 파도 부딪는 소리', category: 'water' },
+  { ambientId: 'underground_whisper', description: '암시장 통로의 속삭임과 발소리', category: 'urban' },
+  { ambientId: 'cave_waves', description: '해적 동굴 안쪽의 깊은 파도', category: 'water' },
+  { ambientId: 'crowd_cheer', description: '투기장 관중의 함성', category: 'urban' },
+  { ambientId: 'time_distortion', description: '시간이 일그러질 때의 미세한 리버스 음', category: 'occult' },
+  { ambientId: 'rift_echo', description: '시간 균열에서 새어 나오는 다중 에코', category: 'occult' },
+  { ambientId: 'aether_pulse', description: '에테르 결정 응집지의 일정한 박동', category: 'sacred' },
+  { ambientId: 'ocean_mist', description: '안개 바다의 짠 공기와 잔물결', category: 'water' },
+  { ambientId: 'lighthouse_wind', description: '등대 주변의 회전하는 바람', category: 'wild' },
+  { ambientId: 'shipwreck_creak', description: '난파선의 삐걱이는 목재', category: 'occult' },
+  { ambientId: 'seal_resonance', description: '봉인 첨탑이 발산하는 저음 공명', category: 'sacred' },
+  { ambientId: 'abyss_rumble', description: '심해 접근 시 들려오는 깊은 진동', category: 'occult' },
+  { ambientId: 'deep_sea_ambient', description: '심해의 압력감 있는 정적', category: 'water' },
+  { ambientId: 'sunken_ruins', description: '침몰 도시 잔해의 물 흐름', category: 'water' },
+  { ambientId: 'underwater_library', description: '심해 도서관의 부유 음향', category: 'sacred' },
+  { ambientId: 'mystical_hall', description: '시험의 전당의 신비로운 공명', category: 'sacred' },
+  { ambientId: 'void_pulse', description: '심연 핵의 거대한 저음 박동', category: 'occult' },
+  { ambientId: 'rift_hum', description: '균열 입구의 일정한 저음 윙윙거림', category: 'occult' },
+  { ambientId: 'echo_voices', description: '거울 도시의 자기 목소리 잔향', category: 'occult' },
+  { ambientId: 'frozen_silence', description: '얼어붙은 전장의 완전한 정적', category: 'occult' },
+  { ambientId: 'reverse_waterfall', description: '역행 숲의 거꾸로 흐르는 폭포', category: 'occult' },
+  { ambientId: 'void_whisper', description: '균열의 핵에서 들려오는 단편적 속삭임', category: 'occult' },
+];
+
+export function getAmbientNarrative(ambientId: string): AmbientNarrative | undefined {
+  return SCENARIO_AMBIENT_NARRATIVES.find((a) => a.ambientId === ambientId);
+}
+
+export function listAmbientNarrativesByCategory(category: AmbientCategory): readonly AmbientNarrative[] {
+  return SCENARIO_AMBIENT_NARRATIVES.filter((a) => a.category === category);
+}
