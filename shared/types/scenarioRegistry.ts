@@ -8060,3 +8060,62 @@ export function getFactionConflictNarrative(conflictId: string): FactionConflict
 export function listFactionConflictsForFaction(factionObsidianId: string): readonly FactionConflictNarrative[] {
   return SCENARIO_FACTION_CONFLICTS.filter((c) => c.factions.includes(factionObsidianId));
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-169: 기억 공명 유형 narrative — 4 종 (에리언의 공명 능력 표현)
+// 메인 quest 진행 + zone 진입 시 발동되는 공명의 4 결.
+// ════════════════════════════════════════════════════════════════
+
+export type MemoryResonanceType = 'fragment_echo' | 'ancestral_voice' | 'dream_glimpse' | 'time_loop';
+
+export interface MemoryResonanceNarrative {
+  type: MemoryResonanceType;
+  label: string;
+  /** 공명 발동 anchor */
+  resonanceAnchor: string;
+  /** 효과 hint — 게임 mechanic */
+  effectHint: string;
+  /** 발동 빈도 */
+  frequency: 'rare' | 'uncommon' | 'common';
+}
+
+export const SCENARIO_MEMORY_RESONANCE_TYPES: readonly MemoryResonanceNarrative[] = [
+  {
+    type: 'fragment_echo',
+    label: '파편 에코',
+    resonanceAnchor: '— 신성 기억 파편이 손바닥에서 진동하며 위치 단서를 전달합니다.',
+    effectHint: 'zone 안의 신성 기억 파편 단서를 화면 가장자리에 표시.',
+    frequency: 'uncommon',
+  },
+  {
+    type: 'ancestral_voice',
+    label: '선조의 목소리',
+    resonanceAnchor: '— 카일의 전생이 흐릿한 목소리로 에리언의 결에 닿습니다.',
+    effectHint: '메인 quest 핵심 단서 또는 봉인 의식 힌트 전달 — chapter 마다 1~2회.',
+    frequency: 'rare',
+  },
+  {
+    type: 'dream_glimpse',
+    label: '꿈의 일별',
+    resonanceAnchor: '— 잠시 풍경이 흐려지며 다른 시대의 결이 겹쳐 보입니다.',
+    effectHint: '미래 / 과거의 zone 모습을 짧게 미리보기. lore 단서 + 분기 hint.',
+    frequency: 'common',
+  },
+  {
+    type: 'time_loop',
+    label: '시간 고리',
+    resonanceAnchor: '— 같은 순간의 결이 반복되며 에리언의 호흡이 두 번 겹칩니다.',
+    effectHint: '직전 1턴 행동을 무효화하고 다시 선택 가능 (전투당 1회).',
+    frequency: 'rare',
+  },
+];
+
+export function getMemoryResonanceNarrative(type: MemoryResonanceType): MemoryResonanceNarrative | undefined {
+  return SCENARIO_MEMORY_RESONANCE_TYPES.find((r) => r.type === type);
+}
+
+export function listMemoryResonancesByFrequency(
+  frequency: 'rare' | 'uncommon' | 'common',
+): readonly MemoryResonanceNarrative[] {
+  return SCENARIO_MEMORY_RESONANCE_TYPES.filter((r) => r.frequency === frequency);
+}
