@@ -8674,3 +8674,36 @@ export function getCraftingOutcomeNarrative(outcome: CraftingOutcomeKind): Craft
 export function getTotalCraftingProbability(): number {
   return SCENARIO_CRAFTING_OUTCOMES.reduce((sum, o) => sum + o.baseProbability, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-180: 🎯 NPC 직업 라벨 narrative — 6 직업
+// 필드 NPC 의 직업/역할 분류. zoneSeeds role 과 연결.
+// ════════════════════════════════════════════════════════════════
+
+export type NpcOccupation = 'merchant' | 'guard' | 'healer' | 'scholar' | 'quest_giver' | 'wanderer';
+
+export interface NpcOccupationLabel {
+  occupation: NpcOccupation;
+  label: string;
+  /** 대화 시 일반 어조 hint */
+  conversationToneHint: string;
+  /** 평균 상호작용 시간 (초) */
+  averageInteractionSeconds: number;
+}
+
+export const SCENARIO_NPC_OCCUPATION_LABELS: readonly NpcOccupationLabel[] = [
+  { occupation: 'merchant',   label: '상인',     conversationToneHint: '거래 중심의 짧고 명료한 어조.', averageInteractionSeconds: 30 },
+  { occupation: 'guard',      label: '경비',     conversationToneHint: '직무 중심의 절제된 어조. 권한 확인 우선.', averageInteractionSeconds: 15 },
+  { occupation: 'healer',     label: '치유사',   conversationToneHint: '온화하고 차분한 어조. 회복 관련 hint.', averageInteractionSeconds: 25 },
+  { occupation: 'scholar',    label: '학자',     conversationToneHint: '정보 전달 중심의 긴 어조. lore 단서 포함.', averageInteractionSeconds: 60 },
+  { occupation: 'quest_giver', label: '의뢰자',  conversationToneHint: '간절하거나 단호한 어조. 의뢰 동기 명확.', averageInteractionSeconds: 45 },
+  { occupation: 'wanderer',   label: '방랑자',   conversationToneHint: '예측 불가 어조. 일관성 적으나 가끔 깊은 단서.', averageInteractionSeconds: 20 },
+];
+
+export function getNpcOccupationLabel(occupation: NpcOccupation): NpcOccupationLabel | undefined {
+  return SCENARIO_NPC_OCCUPATION_LABELS.find((o) => o.occupation === occupation);
+}
+
+export function listNpcOccupations(): readonly NpcOccupation[] {
+  return ['merchant', 'guard', 'healer', 'scholar', 'quest_giver', 'wanderer'];
+}
