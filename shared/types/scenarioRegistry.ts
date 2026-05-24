@@ -6599,3 +6599,68 @@ export function getEscapeNarrative(outcome: EscapeOutcome): EscapeNarrative | un
 export function listEscapeOutcomes(): readonly EscapeOutcome[] {
   return ['success', 'fail', 'blocked', 'forbidden', 'critical'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-141: 상태이상 카테고리 narrative — 5 카테고리 (buff/debuff/control/dot/special)
+// 상태이상 아이콘 UI 그룹화 + 색상/우선순위 + 일반 설명.
+// ════════════════════════════════════════════════════════════════
+
+export type StatusEffectCategory = 'buff' | 'debuff' | 'control' | 'dot' | 'special';
+
+export interface StatusEffectCategoryNarrative {
+  category: StatusEffectCategory;
+  label: string;
+  uiColor: string;
+  /** UI 표시 우선순위 (낮을수록 먼저) */
+  displayPriority: number;
+  /** 카테고리 설명 */
+  description: string;
+}
+
+export const SCENARIO_STATUS_EFFECT_CATEGORIES: readonly StatusEffectCategoryNarrative[] = [
+  {
+    category: 'buff',
+    label: '강화',
+    uiColor: '#60c060',
+    displayPriority: 1,
+    description: '아군 능력치 / 행동 패턴이 향상된 상태. 잎새 색 테두리로 표시.',
+  },
+  {
+    category: 'debuff',
+    label: '약화',
+    uiColor: '#d09040',
+    displayPriority: 2,
+    description: '적/아군 능력치가 일정 시간 감소한 상태. 모래 색 테두리.',
+  },
+  {
+    category: 'control',
+    label: '행동 제어',
+    uiColor: '#d04040',
+    displayPriority: 3,
+    description: '기절/속박/혼란 등 행동 자체가 제한된 상태. 붉은 테두리 + 우선 표시.',
+  },
+  {
+    category: 'dot',
+    label: '지속 피해',
+    uiColor: '#bf5fff',
+    displayPriority: 4,
+    description: 'poison / burn / bleed 등 일정 시간마다 피해가 누적되는 상태.',
+  },
+  {
+    category: 'special',
+    label: '특수',
+    uiColor: '#40b0e0',
+    displayPriority: 5,
+    description: '시간 정지, 부활 대기, 봉인 응답 등 시나리오 전용 효과.',
+  },
+];
+
+export function getStatusEffectCategoryNarrative(
+  category: StatusEffectCategory,
+): StatusEffectCategoryNarrative | undefined {
+  return SCENARIO_STATUS_EFFECT_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listStatusEffectCategoriesByPriority(): readonly StatusEffectCategoryNarrative[] {
+  return [...SCENARIO_STATUS_EFFECT_CATEGORIES].sort((a, b) => a.displayPriority - b.displayPriority);
+}
