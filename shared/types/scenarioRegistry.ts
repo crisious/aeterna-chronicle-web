@@ -6125,3 +6125,35 @@ export const SCENARIO_FACTION_INTRO_NARRATIVES: readonly FactionIntroNarrative[]
 export function getFactionIntroNarrative(factionObsidianId: string): FactionIntroNarrative | undefined {
   return SCENARIO_FACTION_INTRO_NARRATIVES.find((n) => n.factionObsidianId === factionObsidianId);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-131: 상점 UI 카테고리 label — 5 카테고리
+// 상점 UI 탭 구성 + 짧은 카테고리 description.
+// ════════════════════════════════════════════════════════════════
+
+export type ShopCategoryKey = 'consumables' | 'equipment' | 'materials' | 'quest_items' | 'special';
+
+export interface ShopCategoryLabel {
+  key: ShopCategoryKey;
+  label: string;
+  /** UI sort 순서 (1~) */
+  sortOrder: number;
+  /** 카테고리 설명 */
+  description: string;
+}
+
+export const SCENARIO_SHOP_CATEGORY_LABELS: readonly ShopCategoryLabel[] = [
+  { key: 'consumables', label: '소모품',   sortOrder: 1, description: '회복 물자, 일회용 폭탄, 임시 버프 — 전투/탐색 보급의 기본.' },
+  { key: 'equipment',   label: '장비',     sortOrder: 2, description: '무기, 방어구, 장신구 — 6 슬롯 빌드의 핵심 자원.' },
+  { key: 'materials',   label: '제작 재료', sortOrder: 3, description: '강화, 합성, 제작 도구의 입력 자원 — 보스 직전 보급 단계 핵심.' },
+  { key: 'quest_items', label: '퀘스트 물품', sortOrder: 4, description: '퀘스트 전용 자원 — 판매 불가, 갯수 한정.' },
+  { key: 'special',     label: '특수 거래', sortOrder: 5, description: '평판/마일스톤 기반 잠금 해제. 우호 tier 이상에서만 노출.' },
+];
+
+export function getShopCategoryLabel(key: ShopCategoryKey): ShopCategoryLabel | undefined {
+  return SCENARIO_SHOP_CATEGORY_LABELS.find((c) => c.key === key);
+}
+
+export function listShopCategoriesSorted(): readonly ShopCategoryLabel[] {
+  return [...SCENARIO_SHOP_CATEGORY_LABELS].sort((a, b) => a.sortOrder - b.sortOrder);
+}
