@@ -8361,3 +8361,60 @@ export function getNpcPatrolPatternNarrative(pattern: NpcPatrolPattern): NpcPatr
 export function listNpcPatrolPatterns(): readonly NpcPatrolPattern[] {
   return ['stationary', 'circular', 'random', 'follow_target', 'scheduled'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-174: 던전 레이아웃 패턴 narrative — 4 패턴 (linear/branching/maze/circular)
+// 던전 zone 의 구조적 패턴 + 탐색 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type DungeonLayoutPattern = 'linear' | 'branching' | 'maze' | 'circular';
+
+export interface DungeonLayoutNarrative {
+  pattern: DungeonLayoutPattern;
+  label: string;
+  /** 구조 설명 */
+  structureSummary: string;
+  /** 평균 클리어 시간 (분) */
+  averageClearMinutes: number;
+  /** 탐색 hint */
+  explorationHint: string;
+}
+
+export const SCENARIO_DUNGEON_LAYOUT_PATTERNS: readonly DungeonLayoutNarrative[] = [
+  {
+    pattern: 'linear',
+    label: '선형',
+    structureSummary: '시작점 → 보스방까지 일직선 경로. 분기 없음.',
+    averageClearMinutes: 15,
+    explorationHint: '뒤로 돌아갈 일 없음. 자원 보급은 도중 상자 위주.',
+  },
+  {
+    pattern: 'branching',
+    label: '분기형',
+    structureSummary: '메인 경로 + 2~3 선택 분기 (보물 / 보너스 / shortcut).',
+    averageClearMinutes: 25,
+    explorationHint: '분기 선택에 따라 보상 종류 차이. 100% 탐색은 시간 소모 큼.',
+  },
+  {
+    pattern: 'maze',
+    label: '미로',
+    structureSummary: '복잡한 격자 + 막다른 길 다수. 지도 필수.',
+    averageClearMinutes: 40,
+    explorationHint: 'minimap 자주 확인. fragment_echo 공명 활성화 권장.',
+  },
+  {
+    pattern: 'circular',
+    label: '환형',
+    structureSummary: '중앙 광장 + 외곽 회랑. 보스방은 중앙 또는 외곽 끝.',
+    averageClearMinutes: 30,
+    explorationHint: '중앙 광장에서 보스방 방향 결정. 외곽 한 바퀴 시 보너스 단서.',
+  },
+];
+
+export function getDungeonLayoutNarrative(pattern: DungeonLayoutPattern): DungeonLayoutNarrative | undefined {
+  return SCENARIO_DUNGEON_LAYOUT_PATTERNS.find((d) => d.pattern === pattern);
+}
+
+export function listDungeonLayoutPatterns(): readonly DungeonLayoutPattern[] {
+  return ['linear', 'branching', 'maze', 'circular'];
+}
