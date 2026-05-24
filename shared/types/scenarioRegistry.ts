@@ -9257,3 +9257,32 @@ export function classifyNetworkQuality(pingMs: number, packetLossPercent: number
   }
   return ascending[ascending.length - 1];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-196: 연결 상태 narrative SSOT — 4 상태 (connected/connecting/disconnected/reconnecting)
+// 서버 연결 / 클라우드 세이브 / WebSocket 상태.
+// ════════════════════════════════════════════════════════════════
+
+export type ConnectionState = 'connected' | 'connecting' | 'disconnected' | 'reconnecting';
+
+export interface ConnectionStateNarrative {
+  state: ConnectionState;
+  label: string;
+  indicatorColor: string;
+  statusMessage: string;
+}
+
+export const SCENARIO_CONNECTION_STATES: readonly ConnectionStateNarrative[] = [
+  { state: 'connected',    label: '연결됨',    indicatorColor: '#5fbf5f', statusMessage: '서버에 연결되어 있습니다.' },
+  { state: 'connecting',   label: '연결 중',   indicatorColor: '#ffb720', statusMessage: '서버에 연결을 시도하고 있습니다...' },
+  { state: 'disconnected', label: '연결 끊김', indicatorColor: '#d04040', statusMessage: '— 서버 연결이 끊겼습니다. 오프라인 모드로 전환됩니다.' },
+  { state: 'reconnecting', label: '재연결 중', indicatorColor: '#ffb720', statusMessage: '재연결을 시도하고 있습니다...' },
+];
+
+export function getConnectionStateNarrative(state: ConnectionState): ConnectionStateNarrative | undefined {
+  return SCENARIO_CONNECTION_STATES.find((s) => s.state === state);
+}
+
+export function listConnectionStates(): readonly ConnectionState[] {
+  return ['connected', 'connecting', 'disconnected', 'reconnecting'];
+}
