@@ -5989,3 +5989,58 @@ export function getPauseMenuLabel(key: PauseMenuKey): PauseMenuLabel | undefined
 export function listPauseMenuLabelsSorted(): readonly PauseMenuLabel[] {
   return [...SCENARIO_PAUSE_MENU_LABELS].sort((a, b) => a.sortOrder - b.sortOrder);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-128: 메인 퀘스트 완료 narrative — MAIN_QUEST_ACCEPT 5종 대조
+// 5 핵심 quest 완료 시 의뢰자 반응 + 보상 + 다음 단계.
+// ════════════════════════════════════════════════════════════════
+
+export interface MainQuestTurnInNarrative {
+  questCode: string;
+  chapter: number;
+  giverReaction: string;
+  rewardLine: string;
+  nextStepAnchor: string;
+}
+
+export const SCENARIO_MAIN_QUEST_TURNIN_NARRATIVES: readonly MainQuestTurnInNarrative[] = [
+  {
+    questCode: 'MQ_CH01',
+    chapter: 1,
+    giverReaction: '칸텔라 마을 장로가 깊은 한숨을 내쉽니다. "정말 첫 파편을 회수했다니..."',
+    rewardLine: '칸텔라 마을 신뢰도 +20, 에레보스 안전 통로 개방, 메모리 결정 ×3',
+    nextStepAnchor: '실반헤임 외곽 안내인의 약속이 다음 길을 안내합니다 — 잎새 사이로 향하세요.',
+  },
+  {
+    questCode: 'MQ_CH03',
+    chapter: 2,
+    giverReaction: '엘파리스 안내인이 잎새 빛 색을 한 번 더 확인하고 안도의 미소를 짓습니다.',
+    rewardLine: '엘파리스 외교 신뢰도 +30, 깊은 숲 영구 출입권, 말라투스 잎새 ×5',
+    nextStepAnchor: '솔라리스 사막 가장자리의 모래 폭풍이 다음 단계의 시험을 예고합니다.',
+  },
+  {
+    questCode: 'MQ_CH04',
+    chapter: 4,
+    giverReaction: '잠입 안내인이 짧게 끄덕입니다. "잿빛 침묵의 진원이 흔들렸군."',
+    rewardLine: '잠행 거리 신뢰도 +40, 황궁 내부 우회 경로 개방, 황궁 통행증 ×1',
+    nextStepAnchor: '망각의 고원 입구에서 4 파편의 첫 동시 공명이 시작됩니다.',
+  },
+  {
+    questCode: 'MQ_CH13',
+    chapter: 5,
+    giverReaction: '4 파편이 손바닥 위에서 마지막 빛으로 응결됩니다. 누구도 말을 잇지 못합니다.',
+    rewardLine: '황금 에테르 탑 입장 권한, 4 파편 통합 의식 발동',
+    nextStepAnchor: '탑 최상층 — 레테 강림 직전 모든 모티프 회상이 시작됩니다.',
+  },
+  {
+    questCode: 'MQ_CH15',
+    chapter: 5,
+    giverReaction: '레테가 흩어지며 거대한 눈들의 집합체가 마지막 빛으로 사라집니다.',
+    rewardLine: '엔딩 분기 확정 — A/B/C/D 중 조건에 따른 결말 cinematic 재생',
+    nextStepAnchor: '크레딧 → New Game+ 진입 가능. 동료 신뢰도 일부 인계.',
+  },
+];
+
+export function getMainQuestTurnInNarrative(questCode: string): MainQuestTurnInNarrative | undefined {
+  return SCENARIO_MAIN_QUEST_TURNIN_NARRATIVES.find((n) => n.questCode === questCode);
+}
