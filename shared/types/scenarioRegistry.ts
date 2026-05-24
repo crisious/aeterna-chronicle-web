@@ -6942,3 +6942,39 @@ export function getTimeTravelNarrative(destination: TimeTravelDestination): Time
 export function listTimeTravelDestinations(): readonly TimeTravelDestination[] {
   return ['past', 'present', 'future', 'rift'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-147: 지도 범례 narrative — 7 entry (zone/quest_npc/boss/treasure/save_point/fast_travel/danger)
+// 월드맵 / 미니맵 UI 의 아이콘 범례 설명.
+// ════════════════════════════════════════════════════════════════
+
+export type MapLegendKind =
+  | 'zone_marker' | 'quest_npc' | 'boss' | 'treasure'
+  | 'save_point' | 'fast_travel' | 'danger_zone';
+
+export interface MapLegendEntry {
+  kind: MapLegendKind;
+  label: string;
+  /** 아이콘 (이모지 / 심볼) */
+  icon: string;
+  /** 범례 설명 */
+  description: string;
+}
+
+export const SCENARIO_MAP_LEGEND_ENTRIES: readonly MapLegendEntry[] = [
+  { kind: 'zone_marker', label: '지역 마커', icon: '◉', description: '주요 zone 의 중심 위치를 표시합니다.' },
+  { kind: 'quest_npc',   label: '퀘스트 NPC', icon: '!', description: '의뢰 가능한 NPC 위치 — 메인/서브 quest 진입점.' },
+  { kind: 'boss',        label: '보스',     icon: '☠', description: '보스 등장 위치 — 진입 전 빌드 점검 권장.' },
+  { kind: 'treasure',    label: '보물',     icon: '◆', description: '미확인 보물 상자 위치 — 등급별로 색이 다릅니다.' },
+  { kind: 'save_point',  label: '저장점',   icon: '✚', description: '수동 저장 가능한 지점 — 보스 직전엔 반드시 활용.' },
+  { kind: 'fast_travel', label: '빠른 이동', icon: '⇄', description: '이미 발견한 fast travel hub — 클릭으로 즉시 이동.' },
+  { kind: 'danger_zone', label: '위험 구역', icon: '⚠', description: '레벨이 부족한 영역 — 진입 시 적이 강화됩니다.' },
+];
+
+export function getMapLegendEntry(kind: MapLegendKind): MapLegendEntry | undefined {
+  return SCENARIO_MAP_LEGEND_ENTRIES.find((e) => e.kind === kind);
+}
+
+export function listMapLegendKinds(): readonly MapLegendKind[] {
+  return ['zone_marker', 'quest_npc', 'boss', 'treasure', 'save_point', 'fast_travel', 'danger_zone'];
+}
