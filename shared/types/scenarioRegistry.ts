@@ -9469,3 +9469,32 @@ export function getGameplayTimerNarrative(timer: GameplayTimerKind): GameplayTim
 export function listGameplayTimerKinds(): readonly GameplayTimerKind[] {
   return ['chapter', 'quest_deadline', 'boss_enrage', 'event_window'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-202: 인벤토리 필터 프리셋 SSOT — 5 프리셋
+// ════════════════════════════════════════════════════════════════
+
+export type InventoryFilterPreset = 'all' | 'equippable' | 'consumable' | 'quest' | 'new';
+
+export interface InventoryFilterPresetNarrative {
+  preset: InventoryFilterPreset;
+  label: string;
+  filterCondition: string;
+  defaultActive: boolean;
+}
+
+export const SCENARIO_INVENTORY_FILTER_PRESETS: readonly InventoryFilterPresetNarrative[] = [
+  { preset: 'all',         label: '전체',       filterCondition: '모든 아이템 표시.',                              defaultActive: true },
+  { preset: 'equippable',  label: '장비',       filterCondition: 'category=equipment 만 표시.',                    defaultActive: false },
+  { preset: 'consumable',  label: '소모품',     filterCondition: 'category=consumable 만 표시.',                   defaultActive: false },
+  { preset: 'quest',       label: '퀘스트',     filterCondition: 'category=quest_items 만 표시.',                  defaultActive: false },
+  { preset: 'new',         label: '새 획득',    filterCondition: '최근 60분 이내 획득한 아이템만 표시.',           defaultActive: false },
+];
+
+export function getInventoryFilterPresetNarrative(preset: InventoryFilterPreset): InventoryFilterPresetNarrative | undefined {
+  return SCENARIO_INVENTORY_FILTER_PRESETS.find((p) => p.preset === preset);
+}
+
+export function listInventoryFilterPresets(): readonly InventoryFilterPreset[] {
+  return ['all', 'equippable', 'consumable', 'quest', 'new'];
+}
