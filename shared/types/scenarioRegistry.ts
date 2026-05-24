@@ -6473,3 +6473,72 @@ export function getSettingsDescription(itemKey: SettingsItemKey): SettingsDescri
 export function listSettingsByCategory(category: SettingsCategory): readonly SettingsDescription[] {
   return SCENARIO_SETTINGS_DESCRIPTIONS.filter((s) => s.category === category);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-139: 데미지 타입 narrative — 6 element (physical/fire/ice/lightning/shadow/holy)
+// 각 element 의 popup 색상 + 분류 + flavor.
+// ════════════════════════════════════════════════════════════════
+
+export type DamageElement = 'physical' | 'fire' | 'ice' | 'lightning' | 'shadow' | 'holy';
+
+export interface DamageTypeNarrative {
+  element: DamageElement;
+  label: string;
+  popupColor: string;
+  /** 약점 hint — 어떤 적에게 효과적 */
+  strongAgainst: string;
+  flavor: string;
+}
+
+export const SCENARIO_DAMAGE_TYPE_NARRATIVES: readonly DamageTypeNarrative[] = [
+  {
+    element: 'physical',
+    label: '물리',
+    popupColor: '#bfbfbf',
+    strongAgainst: '대부분의 일반 적. 무방비 갑옷 / 가죽 적에게 효과적.',
+    flavor: '— 가장 기본의 결, 칼날과 주먹의 무게.',
+  },
+  {
+    element: 'fire',
+    label: '화염',
+    popupColor: '#ff6b40',
+    strongAgainst: '얼음 계열 / 식물성 적. 비/눈 날씨에서는 효과 -10%.',
+    flavor: '— 이프리타족의 최초의 불꽃이 남긴 결.',
+  },
+  {
+    element: 'ice',
+    label: '얼음',
+    popupColor: '#5fc0ff',
+    strongAgainst: '화염 계열 / 빠른 적 (이동 속도 둔화). 눈 날씨에서 +10%.',
+    flavor: '— 정지의 결, 흐름을 잠시 멈춥니다.',
+  },
+  {
+    element: 'lightning',
+    label: '번개',
+    popupColor: '#ffd040',
+    strongAgainst: '금속 갑옷 / 수중 적. 폭풍우 날씨에서 발동 시 +15%.',
+    flavor: '— 즉시의 결, 풍경을 한 박자 가르는 빛.',
+  },
+  {
+    element: 'shadow',
+    label: '그림자',
+    popupColor: '#7f40bf',
+    strongAgainst: '신성/빛 계열 적. 그림자 직조사 콤보 발동 시 +20%.',
+    flavor: '— 잠식의 결, 그림자가 그림자를 부르는 흐름.',
+  },
+  {
+    element: 'holy',
+    label: '신성',
+    popupColor: '#ffd57f',
+    strongAgainst: '레테 교단 / 망각/언데드 계열. 황혼/밤 시간대 +10%.',
+    flavor: '— 봉인의 결, 카일 전생의 의지가 깃든 빛.',
+  },
+];
+
+export function getDamageTypeNarrative(element: DamageElement): DamageTypeNarrative | undefined {
+  return SCENARIO_DAMAGE_TYPE_NARRATIVES.find((d) => d.element === element);
+}
+
+export function listDamageElements(): readonly DamageElement[] {
+  return ['physical', 'fire', 'ice', 'lightning', 'shadow', 'holy'];
+}
