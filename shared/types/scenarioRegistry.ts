@@ -9583,3 +9583,33 @@ export function getReplayPlaybackSpeedNarrative(speed: ReplayPlaybackSpeed): Rep
 export function listReplayPlaybackSpeedsAscending(): readonly ReplayPlaybackSpeedNarrative[] {
   return [...SCENARIO_REPLAY_PLAYBACK_SPEEDS].sort((a, b) => a.multiplier - b.multiplier);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-206: 개발용 치트 코드 SSOT — 5 종 (DEV_MODE 한정)
+// ════════════════════════════════════════════════════════════════
+
+export type CheatCodeKey = 'god_mode' | 'instant_kill' | 'teleport' | 'give_item' | 'skip_dialogue';
+
+export interface CheatCodeNarrative {
+  cheat: CheatCodeKey;
+  command: string;
+  label: string;
+  effectDescription: string;
+  activationRequirement: string;
+}
+
+export const SCENARIO_CHEAT_CODES: readonly CheatCodeNarrative[] = [
+  { cheat: 'god_mode',      command: 'cheat.god',                    label: '무적 모드',  effectDescription: '모든 데미지 무효, HP/MP 무한.',              activationRequirement: 'DEV_MODE=true' },
+  { cheat: 'instant_kill',  command: 'cheat.instakill',              label: '즉시 처치',  effectDescription: '모든 적을 1회 공격으로 처치.',                activationRequirement: 'DEV_MODE=true' },
+  { cheat: 'teleport',      command: 'cheat.tp <zoneId>',            label: '순간 이동',  effectDescription: '지정한 zone 으로 즉시 이동.',                 activationRequirement: 'DEV_MODE=true' },
+  { cheat: 'give_item',     command: 'cheat.give <itemId> <count>',  label: '아이템 지급', effectDescription: '지정한 아이템을 가방에 추가.',                activationRequirement: 'DEV_MODE=true' },
+  { cheat: 'skip_dialogue', command: 'cheat.skipdlg',                label: '대화 스킵',  effectDescription: '진행 중인 모든 대화를 즉시 종료 + 분기 자동.', activationRequirement: 'DEV_MODE=true' },
+];
+
+export function getCheatCodeNarrative(cheat: CheatCodeKey): CheatCodeNarrative | undefined {
+  return SCENARIO_CHEAT_CODES.find((c) => c.cheat === cheat);
+}
+
+export function listCheatCodeKeys(): readonly CheatCodeKey[] {
+  return ['god_mode', 'instant_kill', 'teleport', 'give_item', 'skip_dialogue'];
+}
