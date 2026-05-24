@@ -8707,3 +8707,35 @@ export function getNpcOccupationLabel(occupation: NpcOccupation): NpcOccupationL
 export function listNpcOccupations(): readonly NpcOccupation[] {
   return ['merchant', 'guard', 'healer', 'scholar', 'quest_giver', 'wanderer'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-181: 오디오 채널 라벨 narrative — 5 채널 (master/bgm/sfx/voice/ambient)
+// 사운드 시스템 채널 분류 + 기본 볼륨 + UI 라벨.
+// ════════════════════════════════════════════════════════════════
+
+export type AudioChannelKey = 'master' | 'bgm' | 'sfx' | 'voice' | 'ambient';
+
+export interface AudioChannelLabel {
+  channel: AudioChannelKey;
+  label: string;
+  /** 기본 볼륨 (0~100) */
+  defaultVolume: number;
+  /** 채널 설명 */
+  description: string;
+}
+
+export const SCENARIO_AUDIO_CHANNEL_LABELS: readonly AudioChannelLabel[] = [
+  { channel: 'master',  label: '마스터',   defaultVolume: 80, description: '전체 오디오 출력 — 모든 채널이 마스터에 비례.' },
+  { channel: 'bgm',     label: '배경 음악', defaultVolume: 70, description: '배경 음악 (SCENARIO_BGM_NARRATIVES 매핑 적용).' },
+  { channel: 'sfx',     label: '효과음',   defaultVolume: 85, description: '전투 / UI / 상호작용 효과음.' },
+  { channel: 'voice',   label: '음성',     defaultVolume: 90, description: '대사 / 동료 외침 / cinematic 음성.' },
+  { channel: 'ambient', label: '환경음',   defaultVolume: 65, description: '주변 환경 ambient (SCENARIO_AMBIENT_NARRATIVES 매핑).' },
+];
+
+export function getAudioChannelLabel(channel: AudioChannelKey): AudioChannelLabel | undefined {
+  return SCENARIO_AUDIO_CHANNEL_LABELS.find((c) => c.channel === channel);
+}
+
+export function listAudioChannels(): readonly AudioChannelKey[] {
+  return ['master', 'bgm', 'sfx', 'voice', 'ambient'];
+}
