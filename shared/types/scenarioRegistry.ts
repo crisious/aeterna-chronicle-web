@@ -7229,3 +7229,62 @@ export function getSaveFileMetadataLabel(key: SaveMetadataKey): SaveFileMetadata
 export function listSaveFileMetadataLabelsSorted(): readonly SaveFileMetadataLabel[] {
   return [...SCENARIO_SAVE_FILE_METADATA_LABELS].sort((a, b) => a.sortOrder - b.sortOrder);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-153: 콤보 family narrative — Phase 54 E chapter 30 콤보를 6 family 로 분류
+// ClassKey 6종 × 5 콤보 = 30 콤보의 family 별 의도.
+// ════════════════════════════════════════════════════════════════
+
+export interface ComboFamilyNarrative {
+  /** ClassKey 와 동일 — 콤보 family 는 클래스 기반 분류 */
+  classKey: ClassKey;
+  /** family 한글 이름 */
+  familyName: string;
+  /** 5 콤보 공통 의도 */
+  intentSummary: string;
+  /** 발동 조건 hint */
+  triggerHint: string;
+}
+
+export const SCENARIO_COMBO_FAMILY_NARRATIVES: readonly ComboFamilyNarrative[] = [
+  {
+    classKey: 'ether_knight',
+    familyName: '검결 연환',
+    intentSummary: '에테르 검결을 동료의 행동에 맞춰 연속 발동 — 광역 + 단일 폭딜 균형.',
+    triggerHint: '에테르 기사 행동 직후 2턴 내 동료 1명 행동 시 발동.',
+  },
+  {
+    classKey: 'memorist',
+    familyName: '공명 회복',
+    intentSummary: '기억술사의 공명을 매개로 파티 회복 + 디버프 해제 + ATB 가속 연쇄.',
+    triggerHint: '기억술사 회복 스킬 + 동료 받는 피해 ≥ 30% 시 발동.',
+  },
+  {
+    classKey: 'shadow_weaver',
+    familyName: '그림자 직조',
+    intentSummary: '그림자 직조사의 회피 무빙을 시작으로 다단 히트 + 카운터 연쇄.',
+    triggerHint: '그림자 직조사 회피 성공 직후 1턴 내 동료 공격 시 발동.',
+  },
+  {
+    classKey: 'memory_destroyer',
+    familyName: '봉인 파쇄',
+    intentSummary: '기억 파괴자의 일격을 매개로 봉인 파쇄 + 반격 + 위협 흡수 연쇄.',
+    triggerHint: '기억 파괴자 강타 + 적 HP ≤ 50% 시 발동.',
+  },
+  {
+    classKey: 'time_guardian',
+    familyName: '시간 정지 결',
+    intentSummary: '시간 수호자의 ATB 조작을 매개로 적 행동 순서 역전 + 폭딜 응축.',
+    triggerHint: '시간 수호자 정지/역전 직후 2턴 내 동료 행동 시 발동.',
+  },
+  {
+    classKey: 'void_wanderer',
+    familyName: '균열 분단',
+    intentSummary: '허공의 방랑자의 이동을 매개로 적 분단 + DoT 증폭 + 부활 사이클.',
+    triggerHint: '허공의 방랑자 이동 직후 적 위치 분단 시 발동.',
+  },
+];
+
+export function getComboFamilyNarrative(classKey: ClassKey): ComboFamilyNarrative | undefined {
+  return SCENARIO_COMBO_FAMILY_NARRATIVES.find((c) => c.classKey === classKey);
+}
