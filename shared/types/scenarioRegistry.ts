@@ -9384,3 +9384,34 @@ export function getAssetLoadPriorityNarrative(priority: AssetLoadPriority): Asse
 export function listAssetLoadPrioritiesByOrder(): readonly AssetLoadPriorityNarrative[] {
   return [...SCENARIO_ASSET_LOAD_PRIORITIES].sort((a, b) => a.order - b.order);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-200: 🎯🎯🎯 100 sprint 거대 마디 — RELEASE_VERSION_LABELS
+// 빌드 채널 + 안정성 라벨 + 권장 사용 대상.
+// ════════════════════════════════════════════════════════════════
+
+export type ReleaseVersionChannel = 'alpha' | 'beta' | 'rc' | 'stable' | 'lts';
+
+export interface ReleaseVersionLabelNarrative {
+  channel: ReleaseVersionChannel;
+  label: string;
+  stabilityScore: number;
+  recommendedAudience: string;
+  updateFrequency: string;
+}
+
+export const SCENARIO_RELEASE_VERSION_LABELS: readonly ReleaseVersionLabelNarrative[] = [
+  { channel: 'alpha',  label: '알파',     stabilityScore: 0.3,  recommendedAudience: '내부 개발자만.',                                                    updateFrequency: '일일 빌드' },
+  { channel: 'beta',   label: '베타',     stabilityScore: 0.6,  recommendedAudience: '테스터 / 얼리어답터.',                                              updateFrequency: '주간 빌드' },
+  { channel: 'rc',     label: 'RC',       stabilityScore: 0.85, recommendedAudience: '베타 후 stable 직전 검증자.',                                      updateFrequency: '격주 빌드' },
+  { channel: 'stable', label: '안정',     stabilityScore: 0.95, recommendedAudience: '일반 플레이어 — 표준 권장.',                                        updateFrequency: '월간 빌드' },
+  { channel: 'lts',    label: 'LTS',      stabilityScore: 1.0,  recommendedAudience: '장기 안정성 우선 — NG+ 회차 누적 플레이어.',                       updateFrequency: '분기 빌드' },
+];
+
+export function getReleaseVersionLabel(channel: ReleaseVersionChannel): ReleaseVersionLabelNarrative | undefined {
+  return SCENARIO_RELEASE_VERSION_LABELS.find((r) => r.channel === channel);
+}
+
+export function listReleaseVersionsByStability(): readonly ReleaseVersionLabelNarrative[] {
+  return [...SCENARIO_RELEASE_VERSION_LABELS].sort((a, b) => a.stabilityScore - b.stabilityScore);
+}
