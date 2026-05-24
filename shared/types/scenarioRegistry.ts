@@ -8183,3 +8183,60 @@ export function getAetherResonanceLevelNarrative(level: AetherResonanceLevel): A
 export function listAetherResonanceLevelsAscending(): readonly AetherResonanceLevel[] {
   return ['dormant', 'awakening', 'active', 'peak', 'transcendent'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-171: 조명 프리셋 narrative — 4 프리셋 (warm/cool/dim/bright)
+// zone 별 조명 분위기 결정 + 컬러 톤 hex.
+// ════════════════════════════════════════════════════════════════
+
+export type LightingPreset = 'warm' | 'cool' | 'dim' | 'bright';
+
+export interface LightingPresetNarrative {
+  preset: LightingPreset;
+  label: string;
+  /** 컬러 톤 hex (#rrggbb) */
+  toneHex: string;
+  /** 분위기 anchor */
+  moodAnchor: string;
+  /** 사용 권장 zone 류 */
+  recommendedZoneType: string;
+}
+
+export const SCENARIO_LIGHTING_PRESETS: readonly LightingPresetNarrative[] = [
+  {
+    preset: 'warm',
+    label: '따뜻한',
+    toneHex: '#ffb060',
+    moodAnchor: '— 노을이 풍경에 황금빛을 입힙니다.',
+    recommendedZoneType: '솔라리스 사막 / 칸텔라 마을 / 안전 hub zone',
+  },
+  {
+    preset: 'cool',
+    label: '차가운',
+    toneHex: '#5f9fff',
+    moodAnchor: '— 푸른 톤이 풍경을 한 박자 가라앉힙니다.',
+    recommendedZoneType: '북방 설원 / 얼음 동굴 / 안개 바다',
+  },
+  {
+    preset: 'dim',
+    label: '어두운',
+    toneHex: '#404060',
+    moodAnchor: '— 빛의 가장자리가 짙은 회색으로 침잠합니다.',
+    recommendedZoneType: '에레보스 폐허 / 카타콤 / 심해 zone',
+  },
+  {
+    preset: 'bright',
+    label: '밝은',
+    toneHex: '#f0f0e0',
+    moodAnchor: '— 빛이 풍경의 모든 결을 또렷이 드러냅니다.',
+    recommendedZoneType: '엘프 성소 / 황금 에테르 탑 / 신성 zone',
+  },
+];
+
+export function getLightingPresetNarrative(preset: LightingPreset): LightingPresetNarrative | undefined {
+  return SCENARIO_LIGHTING_PRESETS.find((p) => p.preset === preset);
+}
+
+export function listLightingPresets(): readonly LightingPreset[] {
+  return ['warm', 'cool', 'dim', 'bright'];
+}
