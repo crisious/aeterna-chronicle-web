@@ -9116,3 +9116,35 @@ export function getBuildPresetNarrative(classKey: ClassKey): BuildPresetNarrativ
 export function listBuildPresetClassKeys(): readonly ClassKey[] {
   return SCENARIO_BUILD_PRESETS.map((b) => b.classKey);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-192: 애니메이션 이징 곡선 SSOT — 5 종 (CSS 표준)
+// UI 애니메이션 / 카메라 전환 / 시네마틱에 사용할 이징.
+// ════════════════════════════════════════════════════════════════
+
+export type AnimationEasingKind = 'linear' | 'ease_in' | 'ease_out' | 'ease_in_out' | 'bounce';
+
+export interface AnimationEasingNarrative {
+  easing: AnimationEasingKind;
+  label: string;
+  /** CSS cubic-bezier 또는 keyword */
+  cssValue: string;
+  /** 사용 hint */
+  usageHint: string;
+}
+
+export const SCENARIO_ANIMATION_EASING_CURVES: readonly AnimationEasingNarrative[] = [
+  { easing: 'linear',      label: '리니어',          cssValue: 'linear',                            usageHint: '게이지 / 일정 속도 카운트다운.' },
+  { easing: 'ease_in',     label: '점진 가속',       cssValue: 'cubic-bezier(0.4, 0, 1, 1)',        usageHint: '진입 모션 — UI 등장, 화면 페이드 인.' },
+  { easing: 'ease_out',    label: '점진 감속',       cssValue: 'cubic-bezier(0, 0, 0.2, 1)',        usageHint: '퇴장 모션 — UI 사라짐, 화면 페이드 아웃.' },
+  { easing: 'ease_in_out', label: '진입+퇴장 곡선',  cssValue: 'cubic-bezier(0.4, 0, 0.2, 1)',      usageHint: '카메라 추종 / 부드러운 전환 표준.' },
+  { easing: 'bounce',      label: '바운스',          cssValue: 'cubic-bezier(0.68, -0.55, 0.27, 1.55)', usageHint: '강조 모션 — 보상 popup / 콤보 강조.' },
+];
+
+export function getAnimationEasingNarrative(easing: AnimationEasingKind): AnimationEasingNarrative | undefined {
+  return SCENARIO_ANIMATION_EASING_CURVES.find((e) => e.easing === easing);
+}
+
+export function listAnimationEasingKinds(): readonly AnimationEasingKind[] {
+  return ['linear', 'ease_in', 'ease_out', 'ease_in_out', 'bounce'];
+}
