@@ -5780,3 +5780,67 @@ export function getWeatherNarrative(weather: WeatherKind): WeatherNarrative | un
 export function listWeatherKinds(): readonly WeatherKind[] {
   return ['clear', 'rain', 'storm', 'snow', 'fog'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-124: 인벤토리 상태 narrative — empty / normal / heavy / full
+// 가방 점유율 구간 narrative + 이동/획득 modifier hint.
+// ════════════════════════════════════════════════════════════════
+
+export type InventoryState = 'empty' | 'normal' | 'heavy' | 'full';
+
+export interface InventoryStateNarrative {
+  state: InventoryState;
+  label: string;
+  /** 점유율 하한 (inclusive, 0~100) */
+  minOccupancyPercent: number;
+  enterLine: string;
+  modifierHint: string;
+}
+
+export const SCENARIO_INVENTORY_STATE_NARRATIVES: readonly InventoryStateNarrative[] = [
+  {
+    state: 'empty',
+    label: '비어 있음',
+    minOccupancyPercent: 0,
+    enterLine: '— 가방이 거의 비어 있습니다. 모든 자원에 대해 여유가 있습니다.',
+    modifierHint: '이동 속도 +5%, 신규 획득 자원 자동 정렬.',
+  },
+  {
+    state: 'normal',
+    label: '여유 있음',
+    minOccupancyPercent: 25,
+    enterLine: '— 가방에 적당한 양의 자원이 담겨 있습니다.',
+    modifierHint: '표준 이동 속도, 모든 획득/거래 modifier 기준값.',
+  },
+  {
+    state: 'heavy',
+    label: '무거움',
+    minOccupancyPercent: 75,
+    enterLine: '— 가방의 무게가 어깨에 느껴지기 시작합니다.',
+    modifierHint: '이동 속도 -5%, 회피 -5%. 보급 마을에서 정리 권장.',
+  },
+  {
+    state: 'full',
+    label: '가득 참',
+    minOccupancyPercent: 95,
+    enterLine: '— 가방이 가득 차 더 이상 자원이 들어갈 자리가 없습니다.',
+    modifierHint: '신규 자원 획득 시 선택 dialog 강제 — 자동 보관 차단.',
+  },
+];
+
+export function getInventoryStateNarrative(state: InventoryState): InventoryStateNarrative | undefined {
+  return SCENARIO_INVENTORY_STATE_NARRATIVES.find((s) => s.state === state);
+}
+
+export function getInventoryStateByOccupancy(occupancyPercent: number): InventoryStateNarrative {
+  const ascending = [...SCENARIO_INVENTORY_STATE_NARRATIVES].sort(
+    (a, b) => a.minOccupancyPercent - b.minOccupancyPercent,
+  );
+  let current = ascending[0];
+  for (const s of ascending) {
+    if (occupancyPercent >= s.minOccupancyPercent) {
+      current = s;
+    }
+  }
+  return current;
+}
