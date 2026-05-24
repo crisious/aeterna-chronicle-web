@@ -6356,3 +6356,40 @@ export function getPartyFormationNarrative(formation: PartyFormation): PartyForm
 export function listPartyFormations(): readonly PartyFormation[] {
   return ['front_row', 'back_row', 'solo'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-136: 빠른 이동 narrative — SCENARIO_ZONES 9 zone + universal
+// 빠른 이동 hub 도착 시 표시되는 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export interface FastTravelNarrative {
+  /** SCENARIO_ZONES.obsidianId 또는 'universal' */
+  zoneObsidianId: string;
+  /** 도착 anchor */
+  arrivalLine: string;
+}
+
+export const SCENARIO_FAST_TRAVEL_NARRATIVES: readonly FastTravelNarrative[] = [
+  { zoneObsidianId: 'erebos',              arrivalLine: '— 운하 위 검은 물결을 가르며 에레보스 hub 에 도착합니다.' },
+  { zoneObsidianId: 'cantela_village',     arrivalLine: '— 칸텔라 마을 광장의 종탑 그림자 아래 발이 닿습니다.' },
+  { zoneObsidianId: 'silvanheim',          arrivalLine: '— 잎새 사이 빛이 발걸음을 안내합니다 — 실반헤임 hub.' },
+  { zoneObsidianId: 'malatus_grove',       arrivalLine: '— 말라투스 고목의 호흡 안쪽으로 미끄러져 들어옵니다.' },
+  { zoneObsidianId: 'solaris',             arrivalLine: '— 솔라리스 오아시스의 시원한 물결 옆에 도착합니다.' },
+  { zoneObsidianId: 'argentium',           arrivalLine: '— 잿빛 황궁의 첨탑 그림자 아래 발이 닿습니다.' },
+  { zoneObsidianId: 'palatino_lab',        arrivalLine: '— 청록빛 에테르 결정의 명멸 속으로 미끄러져 들어옵니다.' },
+  { zoneObsidianId: 'oblivion_plateau',    arrivalLine: '— 망각의 고원 바람이 어깨를 가볍게 두드립니다.' },
+  { zoneObsidianId: 'golden_ether_tower',  arrivalLine: '— 황금 에테르 탑 최저층 — 시간이 느려지는 결을 느낍니다.' },
+  { zoneObsidianId: 'universal',           arrivalLine: '— 빠른 이동이 완료되었습니다. 주변을 한 번 둘러보세요.' },
+];
+
+export function getFastTravelNarrative(zoneObsidianId: string): FastTravelNarrative | undefined {
+  return SCENARIO_FAST_TRAVEL_NARRATIVES.find((n) => n.zoneObsidianId === zoneObsidianId);
+}
+
+export function getFastTravelFallback(): FastTravelNarrative {
+  const fb = SCENARIO_FAST_TRAVEL_NARRATIVES.find((n) => n.zoneObsidianId === 'universal');
+  if (!fb) {
+    throw new Error('SCENARIO_FAST_TRAVEL_NARRATIVES universal fallback 누락');
+  }
+  return fb;
+}
