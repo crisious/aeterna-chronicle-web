@@ -9317,3 +9317,40 @@ export function getTelemetryEventNarrative(event: TelemetryEventType): Telemetry
 export function listTelemetryEventsByPriority(): readonly TelemetryEventNarrative[] {
   return [...SCENARIO_TELEMETRY_EVENT_TYPES].sort((a, b) => a.priority - b.priority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-198: 성능 budget 카테고리 SSOT — 4 카테고리
+// 프레임당 budget + 경고/위험 임계값.
+// ════════════════════════════════════════════════════════════════
+
+export type PerformanceBudgetCategory = 'cpu' | 'gpu' | 'memory' | 'network';
+
+export interface PerformanceBudgetNarrative {
+  category: PerformanceBudgetCategory;
+  label: string;
+  unit: string;
+  warningThreshold: number;
+  criticalThreshold: number;
+}
+
+export const SCENARIO_PERFORMANCE_BUDGETS: readonly PerformanceBudgetNarrative[] = [
+  { category: 'cpu',     label: 'CPU 사용률',      unit: '%',    warningThreshold: 70,   criticalThreshold: 90 },
+  { category: 'gpu',     label: 'GPU 사용률',      unit: '%',    warningThreshold: 80,   criticalThreshold: 95 },
+  { category: 'memory',  label: '메모리 점유',     unit: 'MB',   warningThreshold: 1500, criticalThreshold: 3000 },
+  { category: 'network', label: '네트워크 대역폭', unit: 'KB/s', warningThreshold: 500,  criticalThreshold: 2000 },
+];
+
+export function getPerformanceBudgetNarrative(category: PerformanceBudgetCategory): PerformanceBudgetNarrative | undefined {
+  return SCENARIO_PERFORMANCE_BUDGETS.find((b) => b.category === category);
+}
+
+export function evaluateBudgetStatus(
+  category: PerformanceBudgetCategory,
+  value: number,
+): 'normal' | 'warning' | 'critical' {
+  const b = getPerformanceBudgetNarrative(category);
+  if (!b) return 'normal';
+  if (value >= b.criticalThreshold) return 'critical';
+  if (value >= b.warningThreshold) return 'warning';
+  return 'normal';
+}
