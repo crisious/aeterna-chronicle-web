@@ -9815,3 +9815,32 @@ export function getFriendStatusNarrative(status: FriendStatus): FriendStatusNarr
 export function listFriendStatuses(): readonly FriendStatus[] {
   return ['online', 'away', 'in_game', 'offline'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-213: 푸시 알림 카테고리 SSOT — 4 카테고리
+// ════════════════════════════════════════════════════════════════
+
+export type PushNotificationCategory = 'event' | 'friend' | 'quest' | 'system';
+
+export interface PushNotificationCategoryNarrative {
+  category: PushNotificationCategory;
+  label: string;
+  defaultOptIn: boolean;
+  dailyMaxCount: number;
+  exampleMessage: string;
+}
+
+export const SCENARIO_PUSH_NOTIFICATION_CATEGORIES: readonly PushNotificationCategoryNarrative[] = [
+  { category: 'event',  label: '이벤트',  defaultOptIn: true,  dailyMaxCount: 3,  exampleMessage: '오늘의 새 이벤트가 시작되었습니다.' },
+  { category: 'friend', label: '친구',    defaultOptIn: true,  dailyMaxCount: 20, exampleMessage: '친구가 게임을 시작했습니다.' },
+  { category: 'quest',  label: '퀘스트',  defaultOptIn: false, dailyMaxCount: 5,  exampleMessage: '진행 중인 퀘스트가 곧 만료됩니다.' },
+  { category: 'system', label: '시스템',  defaultOptIn: true,  dailyMaxCount: 2,  exampleMessage: '게임 업데이트가 준비되었습니다.' },
+];
+
+export function getPushNotificationCategoryNarrative(category: PushNotificationCategory): PushNotificationCategoryNarrative | undefined {
+  return SCENARIO_PUSH_NOTIFICATION_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listPushNotificationCategories(): readonly PushNotificationCategory[] {
+  return ['event', 'friend', 'quest', 'system'];
+}
