@@ -9354,3 +9354,33 @@ export function evaluateBudgetStatus(
   if (value >= b.warningThreshold) return 'warning';
   return 'normal';
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-199: 에셋 로딩 우선순위 SSOT — 5 우선순위 (critical~lazy)
+// ════════════════════════════════════════════════════════════════
+
+export type AssetLoadPriority = 'critical' | 'high' | 'medium' | 'low' | 'lazy';
+
+export interface AssetLoadPriorityNarrative {
+  priority: AssetLoadPriority;
+  label: string;
+  order: number;
+  loadingTimingHint: string;
+  exampleAssets: string;
+}
+
+export const SCENARIO_ASSET_LOAD_PRIORITIES: readonly AssetLoadPriorityNarrative[] = [
+  { priority: 'critical', label: '필수',     order: 1, loadingTimingHint: '게임 시작 즉시 — 진행 차단.',           exampleAssets: '메인 메뉴 UI / 폰트 / core scripts' },
+  { priority: 'high',     label: '높음',     order: 2, loadingTimingHint: '메인 메뉴 직후 — 첫 zone 진입 전.',     exampleAssets: 'chapter 1 zone tiles / 핵심 BGM' },
+  { priority: 'medium',   label: '중간',     order: 3, loadingTimingHint: 'zone 진입 후 background.',               exampleAssets: '주변 NPC 스프라이트 / 보조 SFX' },
+  { priority: 'low',      label: '낮음',     order: 4, loadingTimingHint: '게임 idle 중 background.',               exampleAssets: '다음 zone 사전 로딩 / 옵션 cosmetic' },
+  { priority: 'lazy',     label: '지연',     order: 5, loadingTimingHint: '실제 필요한 시점에 on-demand.',          exampleAssets: '엔딩 cinematic / 특수 효과 모음' },
+];
+
+export function getAssetLoadPriorityNarrative(priority: AssetLoadPriority): AssetLoadPriorityNarrative | undefined {
+  return SCENARIO_ASSET_LOAD_PRIORITIES.find((p) => p.priority === priority);
+}
+
+export function listAssetLoadPrioritiesByOrder(): readonly AssetLoadPriorityNarrative[] {
+  return [...SCENARIO_ASSET_LOAD_PRIORITIES].sort((a, b) => a.order - b.order);
+}
