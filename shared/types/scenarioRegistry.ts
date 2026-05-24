@@ -9689,3 +9689,34 @@ export function getAbTestVariantNarrative(variant: AbTestVariantKey): AbTestVari
 export function getTotalAbTestTrafficWeight(): number {
   return SCENARIO_AB_TEST_VARIANTS.reduce((sum, v) => sum + v.trafficWeight, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-209: 사용자 피드백 카테고리 SSOT — 5 카테고리
+// 인게임 피드백 폼 + 라우팅 + 우선순위.
+// ════════════════════════════════════════════════════════════════
+
+export type UserFeedbackCategory = 'bug' | 'balance' | 'feature' | 'translation' | 'praise';
+
+export interface UserFeedbackCategoryNarrative {
+  category: UserFeedbackCategory;
+  label: string;
+  routingDestination: string;
+  priority: number;
+  placeholderHint: string;
+}
+
+export const SCENARIO_USER_FEEDBACK_CATEGORIES: readonly UserFeedbackCategoryNarrative[] = [
+  { category: 'bug',         label: '버그',     routingDestination: 'engineering',   priority: 1, placeholderHint: '재현 단계, 발생 zone, 빌드 정보를 적어 주세요.' },
+  { category: 'balance',     label: '밸런스',   routingDestination: 'game_design',   priority: 2, placeholderHint: '어떤 상황에서 부족/과도하다고 느꼈는지 적어 주세요.' },
+  { category: 'feature',     label: '기능 제안', routingDestination: 'product',      priority: 3, placeholderHint: '제안 내용과 어떤 문제를 해결하는지 적어 주세요.' },
+  { category: 'translation', label: '번역',     routingDestination: 'localization', priority: 2, placeholderHint: '문제 텍스트와 권장 번역을 적어 주세요.' },
+  { category: 'praise',      label: '칭찬',     routingDestination: 'community',    priority: 4, placeholderHint: '어떤 부분이 좋았는지 자유롭게 적어 주세요.' },
+];
+
+export function getUserFeedbackCategoryNarrative(category: UserFeedbackCategory): UserFeedbackCategoryNarrative | undefined {
+  return SCENARIO_USER_FEEDBACK_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listUserFeedbackCategoriesByPriority(): readonly UserFeedbackCategoryNarrative[] {
+  return [...SCENARIO_USER_FEEDBACK_CATEGORIES].sort((a, b) => a.priority - b.priority);
+}
