@@ -6664,3 +6664,40 @@ export function getStatusEffectCategoryNarrative(
 export function listStatusEffectCategoriesByPriority(): readonly StatusEffectCategoryNarrative[] {
   return [...SCENARIO_STATUS_EFFECT_CATEGORIES].sort((a, b) => a.displayPriority - b.displayPriority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-142: 전투 popup 결과 라벨 — 7 종 (Phase 54 B chapter 가시화 popup 확장)
+// 클라 popup 시스템에 표시되는 전투 결과 라벨 + 색상 + 우선순위.
+// ════════════════════════════════════════════════════════════════
+
+export type CombatResultKind =
+  | 'hit' | 'miss' | 'crit' | 'reflect' | 'evade' | 'combo' | 'crit_echo';
+
+export interface CombatResultLabel {
+  kind: CombatResultKind;
+  label: string;
+  /** popup 색상 hex */
+  popupColor: string;
+  /** popup 표시 우선순위 (낮을수록 먼저) */
+  displayPriority: number;
+  /** popup 아이콘 (이모지 / 심볼) */
+  icon: string;
+}
+
+export const SCENARIO_COMBAT_RESULT_LABELS: readonly CombatResultLabel[] = [
+  { kind: 'hit',       label: 'HIT',      popupColor: '#ffffff', displayPriority: 5, icon: '' },
+  { kind: 'miss',      label: 'MISS',     popupColor: '#bfbfbf', displayPriority: 3, icon: '✗' },
+  { kind: 'crit',      label: 'CRIT',     popupColor: '#ffb720', displayPriority: 2, icon: '!' },
+  { kind: 'reflect',   label: 'REFLECT',  popupColor: '#5f9fff', displayPriority: 4, icon: '🛡' },
+  { kind: 'evade',     label: 'EVADE',    popupColor: '#a0a0a0', displayPriority: 3, icon: '~' },
+  { kind: 'combo',     label: 'COMBO',    popupColor: '#ff6b40', displayPriority: 1, icon: '⚡' },
+  { kind: 'crit_echo', label: 'CRIT ECHO', popupColor: '#bf5fff', displayPriority: 2, icon: '✨' },
+];
+
+export function getCombatResultLabel(kind: CombatResultKind): CombatResultLabel | undefined {
+  return SCENARIO_COMBAT_RESULT_LABELS.find((r) => r.kind === kind);
+}
+
+export function listCombatResultsByPriority(): readonly CombatResultLabel[] {
+  return [...SCENARIO_COMBAT_RESULT_LABELS].sort((a, b) => a.displayPriority - b.displayPriority);
+}
