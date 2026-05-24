@@ -9786,3 +9786,32 @@ export function getNetworkRegionNarrative(region: NetworkRegion): NetworkRegionN
 export function getOptimalRegionFromKR(): NetworkRegionNarrative {
   return [...SCENARIO_NETWORK_REGION_LABELS].sort((a, b) => a.averagePingFromKR - b.averagePingFromKR)[0];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-212: 친구 상태 라벨 SSOT — 4 상태
+// ════════════════════════════════════════════════════════════════
+
+export type FriendStatus = 'online' | 'away' | 'in_game' | 'offline';
+
+export interface FriendStatusNarrative {
+  status: FriendStatus;
+  label: string;
+  indicatorColor: string;
+  canInteract: boolean;
+  displayMessage: string;
+}
+
+export const SCENARIO_FRIEND_STATUS_LABELS: readonly FriendStatusNarrative[] = [
+  { status: 'online',  label: '온라인',    indicatorColor: '#5fbf5f', canInteract: true,  displayMessage: '온라인 — 채팅 / 초대 가능.' },
+  { status: 'away',    label: '자리비움',  indicatorColor: '#ffb720', canInteract: true,  displayMessage: '자리비움 — 메시지는 전송되지만 응답 지연 가능.' },
+  { status: 'in_game', label: '게임 중',   indicatorColor: '#5f9fff', canInteract: false, displayMessage: '게임 중 — 일시정지 시까지 응답 지연.' },
+  { status: 'offline', label: '오프라인',  indicatorColor: '#808080', canInteract: false, displayMessage: '오프라인 — 메시지는 다음 로그인 시 전달.' },
+];
+
+export function getFriendStatusNarrative(status: FriendStatus): FriendStatusNarrative | undefined {
+  return SCENARIO_FRIEND_STATUS_LABELS.find((s) => s.status === status);
+}
+
+export function listFriendStatuses(): readonly FriendStatus[] {
+  return ['online', 'away', 'in_game', 'offline'];
+}
