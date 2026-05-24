@@ -9554,3 +9554,32 @@ export function getTutorialSkipOptionNarrative(option: TutorialSkipOption): Tuto
 export function listTutorialSkipOptions(): readonly TutorialSkipOption[] {
   return ['none', 'per_step', 'all'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-205: 🎯 리플레이 재생 속도 SSOT — 5 속도 (0.25x~4x)
+// ════════════════════════════════════════════════════════════════
+
+export type ReplayPlaybackSpeed = 'quarter' | 'half' | 'normal' | 'double' | 'quad';
+
+export interface ReplayPlaybackSpeedNarrative {
+  speed: ReplayPlaybackSpeed;
+  label: string;
+  multiplier: number;
+  usageHint: string;
+}
+
+export const SCENARIO_REPLAY_PLAYBACK_SPEEDS: readonly ReplayPlaybackSpeedNarrative[] = [
+  { speed: 'quarter', label: '0.25x', multiplier: 0.25, usageHint: '슬로우 모션 — 보스 페이즈 전이 / 콤보 분석.' },
+  { speed: 'half',    label: '0.5x',  multiplier: 0.5,  usageHint: '느린 재생 — 입력 타이밍 학습.' },
+  { speed: 'normal',  label: '1x',    multiplier: 1.0,  usageHint: '표준 재생.' },
+  { speed: 'double',  label: '2x',    multiplier: 2.0,  usageHint: '빠른 재생 — 긴 cinematic 빠르게 확인.' },
+  { speed: 'quad',    label: '4x',    multiplier: 4.0,  usageHint: '최대 가속 — 디버그 / QA 빠른 검증.' },
+];
+
+export function getReplayPlaybackSpeedNarrative(speed: ReplayPlaybackSpeed): ReplayPlaybackSpeedNarrative | undefined {
+  return SCENARIO_REPLAY_PLAYBACK_SPEEDS.find((s) => s.speed === speed);
+}
+
+export function listReplayPlaybackSpeedsAscending(): readonly ReplayPlaybackSpeedNarrative[] {
+  return [...SCENARIO_REPLAY_PLAYBACK_SPEEDS].sort((a, b) => a.multiplier - b.multiplier);
+}
