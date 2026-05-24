@@ -9661,3 +9661,31 @@ export function getLocalizationFallbackRuleNarrative(rule: LocalizationFallbackR
 export function listLocalizationFallbackRules(): readonly LocalizationFallbackRule[] {
   return ['strict', 'region_first', 'english_default', 'native_only'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-208: A/B 테스트 변형 SSOT — 4 변형 (분포 합 = 1.0)
+// ════════════════════════════════════════════════════════════════
+
+export type AbTestVariantKey = 'control' | 'variant_a' | 'variant_b' | 'variant_c';
+
+export interface AbTestVariantNarrative {
+  variant: AbTestVariantKey;
+  label: string;
+  trafficWeight: number;
+  description: string;
+}
+
+export const SCENARIO_AB_TEST_VARIANTS: readonly AbTestVariantNarrative[] = [
+  { variant: 'control',   label: '대조군', trafficWeight: 0.4, description: '기존 표준 — 측정 baseline.' },
+  { variant: 'variant_a', label: '변형 A', trafficWeight: 0.2, description: '실험 가설 1 — 1차 변경 적용.' },
+  { variant: 'variant_b', label: '변형 B', trafficWeight: 0.2, description: '실험 가설 2 — 2차 변경 적용.' },
+  { variant: 'variant_c', label: '변형 C', trafficWeight: 0.2, description: '실험 가설 3 — 3차 변경 적용.' },
+];
+
+export function getAbTestVariantNarrative(variant: AbTestVariantKey): AbTestVariantNarrative | undefined {
+  return SCENARIO_AB_TEST_VARIANTS.find((v) => v.variant === variant);
+}
+
+export function getTotalAbTestTrafficWeight(): number {
+  return SCENARIO_AB_TEST_VARIANTS.reduce((sum, v) => sum + v.trafficWeight, 0);
+}
