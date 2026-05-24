@@ -5600,3 +5600,51 @@ export const SCENARIO_BATTLE_VICTORY_BARKS: readonly BattleVictoryBark[] = [
 export function getBattleVictoryBark(companionObsidianId: string): BattleVictoryBark | undefined {
   return SCENARIO_BATTLE_VICTORY_BARKS.find((b) => b.companionObsidianId === companionObsidianId);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-121: 하루 시간대 narrative — dawn/day/dusk/night 4종
+// ════════════════════════════════════════════════════════════════
+
+export type DayPhase = 'dawn' | 'day' | 'dusk' | 'night';
+
+export interface DayPhaseNarrative {
+  phase: DayPhase;
+  label: string;
+  enterLine: string;
+  modifierHint: string;
+}
+
+export const SCENARIO_DAY_PHASE_NARRATIVES: readonly DayPhaseNarrative[] = [
+  {
+    phase: 'dawn',
+    label: '새벽',
+    enterLine: '— 지평선이 옅은 보랏빛으로 물들기 시작합니다.',
+    modifierHint: '기억 공명의 감도가 +10%. 봉인 의식 조사에 유리한 시간대입니다.',
+  },
+  {
+    phase: 'day',
+    label: '낮',
+    enterLine: '— 햇빛이 풍경의 모든 결을 드러냅니다.',
+    modifierHint: '필드 시야가 가장 좋은 표준 시간대. 일반 전투 / 탐색에 균형이 잡힙니다.',
+  },
+  {
+    phase: 'dusk',
+    label: '황혼',
+    enterLine: '— 그림자가 길어지며 모든 색이 한 톤 짙어집니다.',
+    modifierHint: '그림자 직조사 패시브가 +15% 증폭. 잠입 동선에 유리합니다.',
+  },
+  {
+    phase: 'night',
+    label: '밤',
+    enterLine: '— 어둠이 깊어지며 별빛이 길을 안내합니다.',
+    modifierHint: '필드 시야 감소, 회피 +10%. 야간 한정 NPC 가 등장하기도 합니다.',
+  },
+];
+
+export function getDayPhaseNarrative(phase: DayPhase): DayPhaseNarrative | undefined {
+  return SCENARIO_DAY_PHASE_NARRATIVES.find((d) => d.phase === phase);
+}
+
+export function listDayPhases(): readonly DayPhase[] {
+  return ['dawn', 'day', 'dusk', 'night'];
+}
