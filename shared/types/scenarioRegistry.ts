@@ -5958,3 +5958,34 @@ export function listSaveSlotKinds(): readonly SaveSlotKind[] {
 export function getTotalDefaultSaveSlots(): number {
   return SCENARIO_SAVE_SLOT_DESCRIPTIONS.reduce((sum, s) => sum + s.defaultSlotCount, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-127: 일시정지 메뉴 label — 6 항목 (resume/inventory/skill/quest/settings/title)
+// ════════════════════════════════════════════════════════════════
+
+export type PauseMenuKey = 'resume' | 'inventory' | 'skill' | 'quest' | 'settings' | 'title';
+
+export interface PauseMenuLabel {
+  key: PauseMenuKey;
+  label: string;
+  tooltip: string;
+  /** UI sort 순서 (1~) */
+  sortOrder: number;
+}
+
+export const SCENARIO_PAUSE_MENU_LABELS: readonly PauseMenuLabel[] = [
+  { key: 'resume',    label: '계속하기',         tooltip: '일시정지를 해제하고 현재 자리로 돌아갑니다.',         sortOrder: 1 },
+  { key: 'inventory', label: '가방',             tooltip: '아이템과 장비를 확인하고 정리합니다.',                sortOrder: 2 },
+  { key: 'skill',     label: '스킬 / 빌드',      tooltip: '스킬 포인트를 재분배하고 빌드를 점검합니다.',         sortOrder: 3 },
+  { key: 'quest',     label: '퀘스트 기록',      tooltip: '진행 중인 퀘스트와 메인 milestone 을 확인합니다.',    sortOrder: 4 },
+  { key: 'settings',  label: '설정',             tooltip: '오디오 / 그래픽 / 키 설정을 조정합니다.',             sortOrder: 5 },
+  { key: 'title',     label: '타이틀로 돌아가기', tooltip: '저장되지 않은 진행은 잃습니다 — 신중히 선택하세요.', sortOrder: 6 },
+];
+
+export function getPauseMenuLabel(key: PauseMenuKey): PauseMenuLabel | undefined {
+  return SCENARIO_PAUSE_MENU_LABELS.find((m) => m.key === key);
+}
+
+export function listPauseMenuLabelsSorted(): readonly PauseMenuLabel[] {
+  return [...SCENARIO_PAUSE_MENU_LABELS].sort((a, b) => a.sortOrder - b.sortOrder);
+}
