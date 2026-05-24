@@ -8842,3 +8842,34 @@ export function getOptionMenuCategory(category: OptionMenuCategoryKey): OptionMe
 export function listOptionMenuCategoriesSorted(): readonly OptionMenuCategoryLabel[] {
   return [...SCENARIO_OPTION_CATEGORIES].sort((a, b) => a.sortOrder - b.sortOrder);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-185: 🎯 시네마틱 전환 효과 narrative — 4 종 (fade/slide/iris/dissolve)
+// scene 전환 / cinematic 도입 시 사용되는 화면 전환 효과.
+// ════════════════════════════════════════════════════════════════
+
+export type CinematicTransitionKind = 'fade' | 'slide' | 'iris' | 'dissolve';
+
+export interface CinematicTransitionNarrative {
+  kind: CinematicTransitionKind;
+  label: string;
+  /** 전환 시간 (ms) */
+  durationMs: number;
+  /** 사용 시점 hint */
+  usageHint: string;
+}
+
+export const SCENARIO_CINEMATIC_TRANSITIONS: readonly CinematicTransitionNarrative[] = [
+  { kind: 'fade',     label: '페이드',     durationMs: 800,  usageHint: 'zone 전환 / 챕터 전환 / 일반 scene 전환.' },
+  { kind: 'slide',    label: '슬라이드',   durationMs: 600,  usageHint: '대화창 / 메뉴 진입 / 빠른 UI 전환.' },
+  { kind: 'iris',     label: '아이리스',   durationMs: 1200, usageHint: '보스 등장 / 결정적 순간 강조.' },
+  { kind: 'dissolve', label: '디졸브',     durationMs: 1500, usageHint: '회상 / dream_glimpse / 시간 이동.' },
+];
+
+export function getCinematicTransitionNarrative(kind: CinematicTransitionKind): CinematicTransitionNarrative | undefined {
+  return SCENARIO_CINEMATIC_TRANSITIONS.find((t) => t.kind === kind);
+}
+
+export function listCinematicTransitionKinds(): readonly CinematicTransitionKind[] {
+  return ['fade', 'slide', 'iris', 'dissolve'];
+}
