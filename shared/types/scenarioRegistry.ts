@@ -5723,3 +5723,60 @@ export function getReputationTierByScore(score: number): ReputationTierNarrative
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-123: 날씨 narrative — 5 weather (clear/rain/storm/snow/fog)
+// 필드 진입 시 표시되는 날씨 anchor + 전투/탐색 modifier hint.
+// ════════════════════════════════════════════════════════════════
+
+export type WeatherKind = 'clear' | 'rain' | 'storm' | 'snow' | 'fog';
+
+export interface WeatherNarrative {
+  weather: WeatherKind;
+  label: string;
+  /** 진입 anchor */
+  enterLine: string;
+  /** 전투/탐색 modifier */
+  modifierHint: string;
+}
+
+export const SCENARIO_WEATHER_NARRATIVES: readonly WeatherNarrative[] = [
+  {
+    weather: 'clear',
+    label: '맑음',
+    enterLine: '— 하늘이 깨끗하게 열려 있습니다.',
+    modifierHint: '시야 표준, 모든 modifier 기준값. 전투 균형이 잡힙니다.',
+  },
+  {
+    weather: 'rain',
+    label: '비',
+    enterLine: '— 빗방울이 지면을 두드리며 발자국 소리를 가립니다.',
+    modifierHint: '잠입 +5%, 불꽃 계열 데미지 -10%. 화염 패시브 효율이 떨어집니다.',
+  },
+  {
+    weather: 'storm',
+    label: '폭풍우',
+    enterLine: '— 번개가 잠시 풍경을 흰빛으로 가르고, 거센 바람이 휘몰아칩니다.',
+    modifierHint: '시야 -20%, 원거리 명중 -15%. 근접 / 광역 빌드에 유리합니다.',
+  },
+  {
+    weather: 'snow',
+    label: '눈',
+    enterLine: '— 눈송이가 천천히 내려 풍경의 가장자리를 흐립니다.',
+    modifierHint: '얼음 계열 데미지 +10%, 이동 속도 -5%. 얼음 빌드에 유리.',
+  },
+  {
+    weather: 'fog',
+    label: '안개',
+    enterLine: '— 짙은 안개가 시야의 모서리부터 천천히 잠식해 옵니다.',
+    modifierHint: '시야 -30%, 회피 +10%. 적의 선제권이 자주 올라갑니다 — 신중한 진입 필요.',
+  },
+];
+
+export function getWeatherNarrative(weather: WeatherKind): WeatherNarrative | undefined {
+  return SCENARIO_WEATHER_NARRATIVES.find((w) => w.weather === weather);
+}
+
+export function listWeatherKinds(): readonly WeatherKind[] {
+  return ['clear', 'rain', 'storm', 'snow', 'fog'];
+}
