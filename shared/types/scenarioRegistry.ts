@@ -4675,3 +4675,51 @@ export function getAmbientNarrative(ambientId: string): AmbientNarrative | undef
 export function listAmbientNarrativesByCategory(category: AmbientCategory): readonly AmbientNarrative[] {
   return SCENARIO_AMBIENT_NARRATIVES.filter((a) => a.category === category);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-106: 로딩 화면 narrative 팁 — chapter 1~5 별 게임 mechanic + lore 결합
+// 각 챕터 3개 = 15 tip. 로딩 사이 사이 player 가 현재 상황을 환기할 수 있도록.
+// ════════════════════════════════════════════════════════════════
+
+export type LoadScreenTipKind = 'mechanic' | 'lore' | 'tactical';
+
+export interface LoadScreenTip {
+  tipId: string;
+  /** 등장 챕터 (1~5). 0 = 모든 챕터 공통 */
+  chapter: number;
+  /** 분류 */
+  kind: LoadScreenTipKind;
+  /** 짧은 본문 (1~2 문장) */
+  body: string;
+}
+
+export const SCENARIO_LOAD_SCREEN_TIPS: readonly LoadScreenTip[] = [
+  // Chapter 1 — 칸텔라/에레보스
+  { tipId: 'ch1_mechanic_atb', chapter: 1, kind: 'mechanic', body: 'ATB 게이지가 가득 차면 행동을 선택할 수 있습니다. 대기열을 활용해 동료 행동 순서를 조율하세요.' },
+  { tipId: 'ch1_lore_memory_resonance', chapter: 1, kind: 'lore', body: '에리언의 기억 공명 능력은 카일의 전생에서 비롯됩니다. 폐허의 잔향을 듣는 데 사용하세요.' },
+  { tipId: 'ch1_tactical_seraphine', chapter: 1, kind: 'tactical', body: '세라핀의 안내가 있으면 에레보스 순찰조와의 직접 충돌을 우회할 수 있습니다.' },
+  // Chapter 2 — 실반헤임
+  { tipId: 'ch2_mechanic_skill_tree', chapter: 2, kind: 'mechanic', body: '스킬 포인트는 30개 한도 안에서 자유롭게 재분배할 수 있습니다. 보스전 전에 빌드를 조정하세요.' },
+  { tipId: 'ch2_lore_malatus', chapter: 2, kind: 'lore', body: '말라투스 고목은 기억 소멸 폭풍으로부터 안전한 마지막 피난처입니다. 잎새의 빛이 약해지면 봉인이 흔들리고 있다는 신호입니다.' },
+  { tipId: 'ch2_tactical_elf_diplomacy', chapter: 2, kind: 'tactical', body: '엘파리스 외교 분기에서 호의를 얻으면 깊은 숲 안내인이 동행해 길 잃음을 막아 줍니다.' },
+  // Chapter 3 — 솔라리스
+  { tipId: 'ch3_mechanic_combo', chapter: 3, kind: 'mechanic', body: '동료 2~3명이 같은 ATB 타이밍에 행동하면 콤보가 발동합니다. 30종의 콤보가 준비되어 있습니다.' },
+  { tipId: 'ch3_lore_ifrita', chapter: 3, kind: 'lore', body: '이프리타족의 최초의 불꽃은 이그나루스 신이 시조 카를라에게 직접 수여한 신성한 유산입니다.' },
+  { tipId: 'ch3_tactical_sandstorm', chapter: 3, kind: 'tactical', body: '모래 폭풍 구간에서는 시야가 줄어 적의 선제권이 올라갑니다. 폭풍이 잦아드는 야간에 이동하세요.' },
+  // Chapter 4 — 아르겐티움
+  { tipId: 'ch4_mechanic_branch', chapter: 4, kind: 'mechanic', body: '4 챕터부터 동료별 분기 신뢰도가 갈립니다. 베르나르도/레이나의 대화를 놓치지 마세요.' },
+  { tipId: 'ch4_lore_lethe_cult', chapter: 4, kind: 'lore', body: '레테 교단의 진정한 목표는 구원이 아니라 망각의 신 강림입니다. 황궁의 침묵은 우연이 아닙니다.' },
+  { tipId: 'ch4_tactical_sewer_route', chapter: 4, kind: 'tactical', body: '하수도 잠입 동선이 정문 돌파보다 자원 손실이 적습니다. 통행증이 없다면 정문은 통과할 수 없습니다.' },
+  // Chapter 5 — 망각의 고원 + 황금 탑
+  { tipId: 'ch5_mechanic_passive', chapter: 5, kind: 'mechanic', body: '14종 패시브 효과가 자동으로 발동합니다. SkillTreeUI 디테일 패널에서 발동 조건을 확인하세요.' },
+  { tipId: 'ch5_lore_endings', chapter: 5, kind: 'lore', body: '엔딩 A 조건은 4 파편 회수 + 전원 동료 생존입니다. 한 명이라도 이탈하면 B 엔딩으로 분기됩니다.' },
+  { tipId: 'ch5_tactical_lethe_phases', chapter: 5, kind: 'tactical', body: '레테 최종 5페이즈는 각각 다른 저항 패턴을 가집니다. 페이즈 시작 직후 BGM 변화를 신호로 빌드를 전환하세요.' },
+];
+
+export function getLoadScreenTipById(tipId: string): LoadScreenTip | undefined {
+  return SCENARIO_LOAD_SCREEN_TIPS.find((t) => t.tipId === tipId);
+}
+
+export function listLoadScreenTipsByChapter(chapter: number): readonly LoadScreenTip[] {
+  return SCENARIO_LOAD_SCREEN_TIPS.filter((t) => t.chapter === chapter);
+}
