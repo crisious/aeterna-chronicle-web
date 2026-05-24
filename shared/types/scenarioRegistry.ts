@@ -6885,3 +6885,60 @@ export function getAchievementTierNarrative(tier: AchievementTier): AchievementT
 export function listAchievementTiersAscending(): readonly AchievementTier[] {
   return ['bronze', 'silver', 'gold', 'platinum'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-146: 시간 이동 narrative — 4 destination (past/present/future/rift)
+// 시간 수호자 클래스 + chronoField 시스템과 연결되는 narrative.
+// ════════════════════════════════════════════════════════════════
+
+export type TimeTravelDestination = 'past' | 'present' | 'future' | 'rift';
+
+export interface TimeTravelNarrative {
+  destination: TimeTravelDestination;
+  label: string;
+  /** 진입 anchor */
+  arrivalLine: string;
+  /** 위험도 hint */
+  riskHint: string;
+  /** flavor */
+  flavor: string;
+}
+
+export const SCENARIO_TIME_TRAVEL_NARRATIVES: readonly TimeTravelNarrative[] = [
+  {
+    destination: 'past',
+    label: '과거',
+    arrivalLine: '— 발걸음이 한 시대 뒤로 미끄러져 들어옵니다. 풍경이 한 톤 색바랜 결을 띱니다.',
+    riskHint: '시간 흐름 안정. 회수 가능한 단서 다수, 행동의 결과가 현재로 반영됨.',
+    flavor: '— 카일의 전생이 호흡하던 시간의 결.',
+  },
+  {
+    destination: 'present',
+    label: '현재',
+    arrivalLine: '— 풍경이 본래의 결로 되돌아옵니다. 시간 흐름이 일상의 속도로 흐릅니다.',
+    riskHint: '시간 안정. 모든 상호작용이 표준 modifier 로 작동.',
+    flavor: '— 에리언이 지금 호흡하는 시간의 결.',
+  },
+  {
+    destination: 'future',
+    label: '미래',
+    arrivalLine: '— 풍경이 한 시대 앞으로 흐려집니다. 색이 옅고 형태의 가장자리가 떨립니다.',
+    riskHint: '시간 흐름 불안정. 일부 NPC 부재, 분기에 따라 풍경 자체가 다름.',
+    flavor: '— 4 파편의 결정이 부르는 가능성의 결.',
+  },
+  {
+    destination: 'rift',
+    label: '균열',
+    arrivalLine: '— 시간이 일그러진 자리 — 모든 결이 한꺼번에 겹쳐집니다.',
+    riskHint: '시간 흐름 매우 불안정. ATB 페널티, 시간 수호자 보스 등장 가능.',
+    flavor: '— 레테의 망각이 시간을 비틀어 만든 결.',
+  },
+];
+
+export function getTimeTravelNarrative(destination: TimeTravelDestination): TimeTravelNarrative | undefined {
+  return SCENARIO_TIME_TRAVEL_NARRATIVES.find((t) => t.destination === destination);
+}
+
+export function listTimeTravelDestinations(): readonly TimeTravelDestination[] {
+  return ['past', 'present', 'future', 'rift'];
+}
