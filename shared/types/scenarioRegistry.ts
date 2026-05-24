@@ -9286,3 +9286,34 @@ export function getConnectionStateNarrative(state: ConnectionState): ConnectionS
 export function listConnectionStates(): readonly ConnectionState[] {
   return ['connected', 'connecting', 'disconnected', 'reconnecting'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-197: 텔레메트리 이벤트 타입 SSOT — 5 이벤트
+// 분석 시스템에 전송할 표준 이벤트.
+// ════════════════════════════════════════════════════════════════
+
+export type TelemetryEventType =
+  | 'session_start' | 'zone_enter' | 'quest_complete' | 'player_death' | 'purchase';
+
+export interface TelemetryEventNarrative {
+  event: TelemetryEventType;
+  label: string;
+  priority: number;
+  payloadFieldsHint: string;
+}
+
+export const SCENARIO_TELEMETRY_EVENT_TYPES: readonly TelemetryEventNarrative[] = [
+  { event: 'session_start',    label: '세션 시작',     priority: 1, payloadFieldsHint: 'user_id / device / locale / session_id' },
+  { event: 'zone_enter',       label: 'zone 진입',     priority: 3, payloadFieldsHint: 'zone_obsidian_id / chapter / playtime_ms' },
+  { event: 'quest_complete',   label: '퀘스트 완료',   priority: 2, payloadFieldsHint: 'quest_code / outcome / duration_ms / reward' },
+  { event: 'player_death',     label: '플레이어 사망', priority: 1, payloadFieldsHint: 'cause / chapter / zone / boss_id / build_summary' },
+  { event: 'purchase',         label: '구매',          priority: 1, payloadFieldsHint: 'item_sku / price / currency / context' },
+];
+
+export function getTelemetryEventNarrative(event: TelemetryEventType): TelemetryEventNarrative | undefined {
+  return SCENARIO_TELEMETRY_EVENT_TYPES.find((e) => e.event === event);
+}
+
+export function listTelemetryEventsByPriority(): readonly TelemetryEventNarrative[] {
+  return [...SCENARIO_TELEMETRY_EVENT_TYPES].sort((a, b) => a.priority - b.priority);
+}
