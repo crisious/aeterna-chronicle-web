@@ -6393,3 +6393,40 @@ export function getFastTravelFallback(): FastTravelNarrative {
   }
   return fb;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-137: 키바인딩 narrative — 8 action 기본값 + 설명
+// 설정 메뉴 키 바인딩 표에 표시되는 action label + default key + description.
+// ════════════════════════════════════════════════════════════════
+
+export type KeybindAction =
+  | 'move_up' | 'move_down' | 'move_left' | 'move_right'
+  | 'interact' | 'open_menu' | 'quickslot_1' | 'escape';
+
+export interface KeybindDescription {
+  action: KeybindAction;
+  label: string;
+  /** 기본 키 (PC 키보드 표준) */
+  defaultKey: string;
+  /** action 설명 */
+  description: string;
+}
+
+export const SCENARIO_KEYBIND_DESCRIPTIONS: readonly KeybindDescription[] = [
+  { action: 'move_up',     label: '위로 이동',        defaultKey: 'W',     description: '캐릭터를 위쪽으로 이동.' },
+  { action: 'move_down',   label: '아래로 이동',      defaultKey: 'S',     description: '캐릭터를 아래쪽으로 이동.' },
+  { action: 'move_left',   label: '왼쪽으로 이동',    defaultKey: 'A',     description: '캐릭터를 왼쪽으로 이동.' },
+  { action: 'move_right',  label: '오른쪽으로 이동',  defaultKey: 'D',     description: '캐릭터를 오른쪽으로 이동.' },
+  { action: 'interact',    label: '상호작용',         defaultKey: 'E',     description: 'NPC 대화, 아이템 획득, 봉인 조사 등 표준 상호작용.' },
+  { action: 'open_menu',   label: '메뉴 열기',        defaultKey: 'Tab',   description: '일시정지 메뉴 토글 (가방 / 스킬 / 퀘스트 / 설정 / 타이틀).' },
+  { action: 'quickslot_1', label: '퀵슬롯 1',         defaultKey: '1',     description: '인벤토리에 등록된 1번 슬롯의 회복 물자를 즉시 사용.' },
+  { action: 'escape',      label: '취소 / 종료',      defaultKey: 'Esc',   description: '현재 모달/다이얼로그 종료, 또는 메뉴 한 단계 뒤로.' },
+];
+
+export function getKeybindDescription(action: KeybindAction): KeybindDescription | undefined {
+  return SCENARIO_KEYBIND_DESCRIPTIONS.find((k) => k.action === action);
+}
+
+export function listKeybindActions(): readonly KeybindAction[] {
+  return SCENARIO_KEYBIND_DESCRIPTIONS.map((k) => k.action);
+}
