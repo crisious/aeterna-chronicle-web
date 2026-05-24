@@ -6542,3 +6542,60 @@ export function getDamageTypeNarrative(element: DamageElement): DamageTypeNarrat
 export function listDamageElements(): readonly DamageElement[] {
   return ['physical', 'fire', 'ice', 'lightning', 'shadow', 'holy'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-140: 🎯 전투 도주 narrative — 5 outcome (success/fail/blocked/forbidden/critical)
+// 전투 중 도주 버튼 발동 시 결과별 narrative.
+// ════════════════════════════════════════════════════════════════
+
+export type EscapeOutcome = 'success' | 'fail' | 'blocked' | 'forbidden' | 'critical';
+
+export interface EscapeNarrative {
+  outcome: EscapeOutcome;
+  label: string;
+  /** 결과 anchor */
+  resultLine: string;
+  /** 페널티 hint — 도주에 따른 비용 */
+  penaltyHint: string;
+}
+
+export const SCENARIO_ESCAPE_NARRATIVES: readonly EscapeNarrative[] = [
+  {
+    outcome: 'success',
+    label: '도주 성공',
+    resultLine: '— 호흡을 다잡고 풍경을 한 발 물러섭니다. 적의 시야에서 벗어났습니다.',
+    penaltyHint: '획득 경험치 없음, 사망 페널티 회피. 다음 전투 ATB 시작값 +20%.',
+  },
+  {
+    outcome: 'fail',
+    label: '도주 실패',
+    resultLine: '— 발걸음이 묶이고 적의 시선이 다시 꽂힙니다.',
+    penaltyHint: '적의 다음 행동 우선권 +1, 1턴 동안 회피 -10%.',
+  },
+  {
+    outcome: 'blocked',
+    label: '도주 차단',
+    resultLine: '— 지형이 가로막혀 물러설 자리가 없습니다.',
+    penaltyHint: '도주 시도 자체 차단. 적의 모든 cooldown -1턴 누적.',
+  },
+  {
+    outcome: 'forbidden',
+    label: '도주 불가',
+    resultLine: '— 봉인된 결의 무게가 발걸음을 잡습니다 — 보스전 / 시나리오 전투는 도주 불가.',
+    penaltyHint: '시도 자체 불가. 빌드를 재구성하고 정면 돌파하세요.',
+  },
+  {
+    outcome: 'critical',
+    label: '비상 도주',
+    resultLine: '— 동료 1명이 후방을 막아주는 사이 가까스로 풍경을 벗어났습니다.',
+    penaltyHint: '동료 1명 일시 이탈 (3 전투 동안). 다음 전투 ATB 페널티 -25%.',
+  },
+];
+
+export function getEscapeNarrative(outcome: EscapeOutcome): EscapeNarrative | undefined {
+  return SCENARIO_ESCAPE_NARRATIVES.find((e) => e.outcome === outcome);
+}
+
+export function listEscapeOutcomes(): readonly EscapeOutcome[] {
+  return ['success', 'fail', 'blocked', 'forbidden', 'critical'];
+}
