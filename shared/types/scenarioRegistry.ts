@@ -4957,3 +4957,82 @@ export function listFragmentRecoveryNarrativesByChapter(
     (n) => fragmentIdsInChapter.has(n.fragmentObsidianId),
   );
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-110: 🎯 게임오버 narrative — chapter 1~5 별 패배 시 화면 표시
+// 5 챕터 + universal fallback 1종 = 6 entry.
+// ════════════════════════════════════════════════════════════════
+
+export type GameOverCause = 'party_wipe' | 'time_limit' | 'critical_failure' | 'universal';
+
+export interface GameOverNarrative {
+  gameOverId: string;
+  /** chapter 0 = universal fallback */
+  chapter: number;
+  cause: GameOverCause;
+  /** 짧은 헤드라인 */
+  headline: string;
+  /** 본문 — 분위기 + 재도전 hint */
+  body: string;
+}
+
+export const SCENARIO_GAME_OVER_NARRATIVES: readonly GameOverNarrative[] = [
+  {
+    gameOverId: 'ch1_party_wipe',
+    chapter: 1,
+    cause: 'party_wipe',
+    headline: '— 운하의 어둠이 발자국마저 지웠습니다.',
+    body: '에레보스의 잔향이 에리언의 공명을 가두었습니다. 칸텔라로 돌아가 휴식 후 다시 도전하세요.',
+  },
+  {
+    gameOverId: 'ch2_party_wipe',
+    chapter: 2,
+    cause: 'party_wipe',
+    headline: '— 말라투스의 잎새가 마지막 빛까지 떨어졌습니다.',
+    body: '봉인이 흔들리며 보스의 페이즈 전이를 놓쳤습니다. 잎새 빛 색깔 변화 직전에 빌드를 전환해 보세요.',
+  },
+  {
+    gameOverId: 'ch3_party_wipe',
+    chapter: 3,
+    cause: 'party_wipe',
+    headline: '— 솔리안의 모래가 발걸음을 묻었습니다.',
+    body: '왕의 자기희생 의식이 광범위 공격으로 응답했습니다. 회피와 광역 회복을 미리 준비하세요.',
+  },
+  {
+    gameOverId: 'ch4_party_wipe',
+    chapter: 4,
+    cause: 'party_wipe',
+    headline: '— 잿빛 침묵이 모든 호흡을 가져갔습니다.',
+    body: '레테 교단의 의식이 동료의 신뢰도를 흔들었습니다. 베르나르도/레이나의 대화를 놓치지 마세요.',
+  },
+  {
+    gameOverId: 'ch5_party_wipe',
+    chapter: 5,
+    cause: 'party_wipe',
+    headline: '— 황금 탑의 시간이 마지막까지 흘렀습니다.',
+    body: '레테의 5 페이즈는 모티프 전환을 신호로 빌드를 바꿔야 합니다. BGM 변화에 귀를 기울이세요.',
+  },
+  {
+    gameOverId: 'universal_critical_failure',
+    chapter: 0,
+    cause: 'universal',
+    headline: '— 기억의 끈이 끊어졌습니다.',
+    body: '저장된 자리로 돌아갑니다. 빌드를 재구성하고 차분히 다시 시작하세요.',
+  },
+];
+
+export function getGameOverNarrative(gameOverId: string): GameOverNarrative | undefined {
+  return SCENARIO_GAME_OVER_NARRATIVES.find((g) => g.gameOverId === gameOverId);
+}
+
+export function listGameOverNarrativesByChapter(chapter: number): readonly GameOverNarrative[] {
+  return SCENARIO_GAME_OVER_NARRATIVES.filter((g) => g.chapter === chapter);
+}
+
+export function getUniversalGameOver(): GameOverNarrative {
+  const universal = SCENARIO_GAME_OVER_NARRATIVES.find((g) => g.chapter === 0);
+  if (!universal) {
+    throw new Error('SCENARIO_GAME_OVER_NARRATIVES 에 chapter 0 universal fallback 누락');
+  }
+  return universal;
+}
