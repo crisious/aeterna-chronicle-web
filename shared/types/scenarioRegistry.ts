@@ -10003,3 +10003,32 @@ export function classifyFriendshipByScore(score: number): FriendshipLevelNarrati
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-219: 상점 새로고침 주기 SSOT — 4 주기
+// ════════════════════════════════════════════════════════════════
+
+export type ShopRefreshInterval = 'hourly' | 'daily' | 'weekly' | 'event';
+
+export interface ShopRefreshIntervalNarrative {
+  interval: ShopRefreshInterval;
+  label: string;
+  refreshMinutes: number;
+  inventorySize: number;
+  uiHint: string;
+}
+
+export const SCENARIO_SHOP_REFRESH_INTERVALS: readonly ShopRefreshIntervalNarrative[] = [
+  { interval: 'hourly', label: '시간별',    refreshMinutes: 60,        inventorySize: 5,  uiHint: '일반 상점 — 매 시간 자동 새로고침.' },
+  { interval: 'daily',  label: '일간',      refreshMinutes: 1440,      inventorySize: 10, uiHint: '도시 중심 대형 상점 — 매일 자정 새로고침.' },
+  { interval: 'weekly', label: '주간',      refreshMinutes: 10080,     inventorySize: 15, uiHint: '평판 잠금 한정 상점 — 매주 월요일 새로고침.' },
+  { interval: 'event',  label: '이벤트',    refreshMinutes: 0,         inventorySize: 8,  uiHint: '이벤트 한정 — 이벤트 종료 시 재고 사라짐.' },
+];
+
+export function getShopRefreshIntervalNarrative(interval: ShopRefreshInterval): ShopRefreshIntervalNarrative | undefined {
+  return SCENARIO_SHOP_REFRESH_INTERVALS.find((i) => i.interval === interval);
+}
+
+export function listShopRefreshIntervals(): readonly ShopRefreshInterval[] {
+  return ['hourly', 'daily', 'weekly', 'event'];
+}
