@@ -5254,3 +5254,62 @@ export function listDeityNarrativesByCreation(inCreation: boolean): readonly Dei
   );
   return SCENARIO_DEITY_NARRATIVES.filter((n) => ids.has(n.deityObsidianId));
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-114: 메인 퀘스트 수락 narrative — chapter milestone requiredQuests 핵심
+// MQ_CH01/03/04/13/15 — 각 챕터 메인 quest 진입 시 의뢰자/동기/첫 목표 3단.
+// ════════════════════════════════════════════════════════════════
+
+export interface MainQuestAcceptNarrative {
+  questCode: string;
+  chapter: number;
+  giverContext: string;
+  motivationLine: string;
+  firstObjective: string;
+}
+
+export const SCENARIO_MAIN_QUEST_ACCEPT_NARRATIVES: readonly MainQuestAcceptNarrative[] = [
+  {
+    questCode: 'MQ_CH01',
+    chapter: 1,
+    giverContext: '칸텔라 광장의 종탑 아래 — 폭풍 잔해를 정리하는 마을 장로',
+    motivationLine: '발자국이 지워진 거리에서 처음으로 자기 호흡을 의심한 에리언은, 잃어버린 것을 되찾을 첫 단서를 따라가기로 합니다.',
+    firstObjective: '꺼진 운하 도시 에레보스 폐허로 진입해 첫 신성 기억 파편의 위치를 확인하세요.',
+  },
+  {
+    questCode: 'MQ_CH03',
+    chapter: 2,
+    giverContext: '실반헤임 외곽의 엘파리스 안내인 — 잎새의 빛 색깔이 옅어진 상태',
+    motivationLine: '말라투스 고목의 흔들림을 느낀 에리언은 외교 분기를 통과해 숲의 가장 깊은 곳으로 들어가기로 합니다.',
+    firstObjective: '엘파리스 외교 NPC 와의 대화를 통해 깊은 숲 진입 허가를 얻고 말라투스 봉인을 조사하세요.',
+  },
+  {
+    questCode: 'MQ_CH04',
+    chapter: 4,
+    giverContext: '아르겐티움 외곽의 잠입 안내인 — 잿빛 침묵을 두려워하는 잠행 거리의 인물',
+    motivationLine: '제국 시민들의 표정 없는 동선을 본 에리언은, 침묵의 진원을 파헤치는 것이 곧 네 번째 파편으로 가는 길임을 깨닫습니다.',
+    firstObjective: '하수도 입구를 통해 황궁 잠입 — 케인의 동선을 추적해 황궁 가장 깊은 곳으로 진입하세요.',
+  },
+  {
+    questCode: 'MQ_CH13',
+    chapter: 5,
+    giverContext: '망각의 고원 입구 — 4 파편의 공명이 처음으로 동시에 응답하는 자리',
+    motivationLine: '네 파편이 손바닥 위에서 서로의 빛을 환기하는 순간, 에리언은 마지막 무대가 황금 에테르 탑 정점임을 직감합니다.',
+    firstObjective: '황금 에테르 탑 1층 진입 — 시간 흐름이 느려지는 첫 층의 봉인 메커니즘을 해제하세요.',
+  },
+  {
+    questCode: 'MQ_CH15',
+    chapter: 5,
+    giverContext: '황금 에테르 탑 최상층 — 레테 강림 직전 모든 모티프가 회상되는 자리',
+    motivationLine: '동료 전원의 호흡을 마지막으로 확인한 에리언은, 5 페이즈에 걸친 레테와의 대결을 받아들입니다.',
+    firstObjective: '레테 1 페이즈 — 거대한 눈들의 집합체가 시야를 가두기 전 4 파편의 첫 공명을 발동하세요.',
+  },
+];
+
+export function getMainQuestAcceptNarrative(questCode: string): MainQuestAcceptNarrative | undefined {
+  return SCENARIO_MAIN_QUEST_ACCEPT_NARRATIVES.find((n) => n.questCode === questCode);
+}
+
+export function listMainQuestAcceptNarrativesByChapter(chapter: number): readonly MainQuestAcceptNarrative[] {
+  return SCENARIO_MAIN_QUEST_ACCEPT_NARRATIVES.filter((n) => n.chapter === chapter);
+}
