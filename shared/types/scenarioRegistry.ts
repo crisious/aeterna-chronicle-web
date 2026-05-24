@@ -7061,3 +7061,67 @@ export function getPartyRoleLabel(role: PartyRole): PartyRoleLabel | undefined {
 export function listPartyRoles(): readonly PartyRole[] {
   return ['lead', 'support', 'healer', 'scout'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-150: 🎯🎯🎯 진행률 milestone narrative — 5 milestone (0/25/50/75/100%)
+// 게임 전체 진행률 도달 시 화면 anchor — 챕터 별 큰 marker.
+// ════════════════════════════════════════════════════════════════
+
+export interface CompletionPercentNarrative {
+  /** 진행률 % (0/25/50/75/100) */
+  percent: 0 | 25 | 50 | 75 | 100;
+  /** milestone 라벨 */
+  label: string;
+  /** 도달 anchor */
+  anchorLine: string;
+  /** 추천 다음 행동 */
+  recommendedAction: string;
+}
+
+export const SCENARIO_COMPLETION_PERCENT_NARRATIVES: readonly CompletionPercentNarrative[] = [
+  {
+    percent: 0,
+    label: '여정의 첫 호흡',
+    anchorLine: '— 칸텔라의 새벽이 첫 발자국을 남깁니다. 무엇이든 가능한 결입니다.',
+    recommendedAction: '메인 quest MQ_CH01 진입 — 에레보스 폐허로 향하세요.',
+  },
+  {
+    percent: 25,
+    label: '첫 파편의 무게',
+    anchorLine: '— 한 그릇이 채워졌습니다. 다음 결이 잎새 사이에서 부르고 있습니다.',
+    recommendedAction: '실반헤임 외교 분기 진입 — 엘파리스 안내인을 만나세요.',
+  },
+  {
+    percent: 50,
+    label: '반환점의 결',
+    anchorLine: '— 두 그릇이 채워졌습니다. 길의 반환점에서 호흡을 다잡습니다.',
+    recommendedAction: '솔라리스 라와르 봉인 조사 — 이그나의 합류가 가까워졌습니다.',
+  },
+  {
+    percent: 75,
+    label: '잿빛 침묵의 결',
+    anchorLine: '— 세 그릇이 채워졌습니다. 마지막 파편이 황궁 깊은 곳에서 응답합니다.',
+    recommendedAction: '아르겐티움 잠입 동선 진입 — 동료 분기 신뢰도 점검.',
+  },
+  {
+    percent: 100,
+    label: '여정의 매듭',
+    anchorLine: '— 네 그릇이 마지막 빛으로 응결됩니다. 엔딩 분기가 결정되는 순간입니다.',
+    recommendedAction: '황금 에테르 탑 최상층 — 레테 5 페이즈 대전 진입.',
+  },
+];
+
+export function getCompletionPercentNarrative(percent: 0 | 25 | 50 | 75 | 100): CompletionPercentNarrative | undefined {
+  return SCENARIO_COMPLETION_PERCENT_NARRATIVES.find((c) => c.percent === percent);
+}
+
+export function getCompletionPercentByValue(percent: number): CompletionPercentNarrative {
+  const ascending = [...SCENARIO_COMPLETION_PERCENT_NARRATIVES].sort((a, b) => a.percent - b.percent);
+  let current = ascending[0];
+  for (const c of ascending) {
+    if (percent >= c.percent) {
+      current = c;
+    }
+  }
+  return current;
+}
