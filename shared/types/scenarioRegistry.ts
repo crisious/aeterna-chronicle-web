@@ -9969,3 +9969,37 @@ export function getMountTypeNarrative(mount: MountType): MountTypeNarrative | un
 export function listMountTypesBySpeed(): readonly MountTypeNarrative[] {
   return [...SCENARIO_MOUNT_TYPES].sort((a, b) => a.speedMultiplier - b.speedMultiplier);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-218: 친밀도 레벨 SSOT — 5 레벨
+// ════════════════════════════════════════════════════════════════
+
+export type FriendshipLevel = 'stranger' | 'acquaintance' | 'friend' | 'close' | 'best_friend';
+
+export interface FriendshipLevelNarrative {
+  level: FriendshipLevel;
+  label: string;
+  minScore: number;
+  unlockedInteractions: readonly string[];
+}
+
+export const SCENARIO_FRIENDSHIP_LEVELS: readonly FriendshipLevelNarrative[] = [
+  { level: 'stranger',     label: '낯선이',  minScore: 0,   unlockedInteractions: ['일반 대화'] },
+  { level: 'acquaintance', label: '지인',    minScore: 20,  unlockedInteractions: ['일반 대화', '간단한 의뢰'] },
+  { level: 'friend',       label: '친구',    minScore: 50,  unlockedInteractions: ['일반 대화', '의뢰', '선물 교환'] },
+  { level: 'close',        label: '가까운',  minScore: 100, unlockedInteractions: ['일반 대화', '의뢰', '선물 교환', '개인 quest 잠금 해제'] },
+  { level: 'best_friend',  label: '절친',    minScore: 200, unlockedInteractions: ['모든 상호작용', '엔딩 분기 영향', '동료 모집'] },
+];
+
+export function getFriendshipLevelNarrative(level: FriendshipLevel): FriendshipLevelNarrative | undefined {
+  return SCENARIO_FRIENDSHIP_LEVELS.find((l) => l.level === level);
+}
+
+export function classifyFriendshipByScore(score: number): FriendshipLevelNarrative {
+  const ascending = [...SCENARIO_FRIENDSHIP_LEVELS].sort((a, b) => a.minScore - b.minScore);
+  let current = ascending[0];
+  for (const l of ascending) {
+    if (score >= l.minScore) current = l;
+  }
+  return current;
+}
