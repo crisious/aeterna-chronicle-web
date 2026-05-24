@@ -9415,3 +9415,57 @@ export function getReleaseVersionLabel(channel: ReleaseVersionChannel): ReleaseV
 export function listReleaseVersionsByStability(): readonly ReleaseVersionLabelNarrative[] {
   return [...SCENARIO_RELEASE_VERSION_LABELS].sort((a, b) => a.stabilityScore - b.stabilityScore);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-201: 게임 내 타이머 narrative SSOT — 4 타이머
+// 챕터 / 퀘스트 데드라인 / 보스 enrage / 이벤트 윈도우.
+// ════════════════════════════════════════════════════════════════
+
+export type GameplayTimerKind = 'chapter' | 'quest_deadline' | 'boss_enrage' | 'event_window';
+
+export interface GameplayTimerNarrative {
+  timer: GameplayTimerKind;
+  label: string;
+  defaultDurationMinutes: number;
+  expirationOutcome: string;
+  displayHint: string;
+}
+
+export const SCENARIO_GAMEPLAY_TIMERS: readonly GameplayTimerNarrative[] = [
+  {
+    timer: 'chapter',
+    label: '챕터 타이머',
+    defaultDurationMinutes: 0,
+    expirationOutcome: '챕터 타이머 자체는 없음 (참조용). chapter milestone 완료 시 자동 종결.',
+    displayHint: 'HUD 비활성 — 메뉴에서만 확인 가능.',
+  },
+  {
+    timer: 'quest_deadline',
+    label: '퀘스트 데드라인',
+    defaultDurationMinutes: 30,
+    expirationOutcome: '퀘스트 실패 — 의뢰자 신뢰도 -10, 보상 차단.',
+    displayHint: 'HUD 우상단 카운트다운 + 5분 남았을 때 경고.',
+  },
+  {
+    timer: 'boss_enrage',
+    label: '보스 광폭화',
+    defaultDurationMinutes: 5,
+    expirationOutcome: '보스 enrage — 공격력 +50%, 회피 무시.',
+    displayHint: 'HUD 보스 체력 바 위 카운트다운 + 30초 경고.',
+  },
+  {
+    timer: 'event_window',
+    label: '이벤트 윈도우',
+    defaultDurationMinutes: 60,
+    expirationOutcome: '이벤트 종료 — 한정 보상 / NPC 제공 차단.',
+    displayHint: '월드맵 위 이벤트 마커 + 5분/1분 시점에 알림.',
+  },
+];
+
+export function getGameplayTimerNarrative(timer: GameplayTimerKind): GameplayTimerNarrative | undefined {
+  return SCENARIO_GAMEPLAY_TIMERS.find((t) => t.timer === timer);
+}
+
+export function listGameplayTimerKinds(): readonly GameplayTimerKind[] {
+  return ['chapter', 'quest_deadline', 'boss_enrage', 'event_window'];
+}
