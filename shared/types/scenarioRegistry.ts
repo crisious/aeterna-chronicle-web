@@ -9527,3 +9527,30 @@ export function getMenuNavDepthNarrative(depth: MenuNavDepth): MenuNavDepthNarra
 export function listMenuNavDepthsAscending(): readonly MenuNavDepthNarrative[] {
   return [...SCENARIO_MENU_NAV_DEPTHS].sort((a, b) => a.depthNumber - b.depthNumber);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-204: 튜토리얼 스킵 옵션 SSOT — 3 옵션
+// ════════════════════════════════════════════════════════════════
+
+export type TutorialSkipOption = 'none' | 'per_step' | 'all';
+
+export interface TutorialSkipOptionNarrative {
+  option: TutorialSkipOption;
+  label: string;
+  description: string;
+  rewardImpact: string;
+}
+
+export const SCENARIO_TUTORIAL_SKIP_OPTIONS: readonly TutorialSkipOptionNarrative[] = [
+  { option: 'none',     label: '스킵 없음',   description: '모든 튜토리얼 단계를 순서대로 진행.', rewardImpact: '완료 시 튜토리얼 청동 도전과제 + 모든 보상.' },
+  { option: 'per_step', label: '단계별 스킵', description: '각 단계 진입 시 스킵 버튼 표시.',     rewardImpact: '스킵한 단계의 보상만 제외, 나머지는 유지.' },
+  { option: 'all',      label: '전체 스킵',   description: '튜토리얼 전체를 한 번에 건너뛰기.',   rewardImpact: '튜토리얼 보상 전체 차단. 청동 도전과제 잠금.' },
+];
+
+export function getTutorialSkipOptionNarrative(option: TutorialSkipOption): TutorialSkipOptionNarrative | undefined {
+  return SCENARIO_TUTORIAL_SKIP_OPTIONS.find((o) => o.option === option);
+}
+
+export function listTutorialSkipOptions(): readonly TutorialSkipOption[] {
+  return ['none', 'per_step', 'all'];
+}
