@@ -6701,3 +6701,61 @@ export function getCombatResultLabel(kind: CombatResultKind): CombatResultLabel 
 export function listCombatResultsByPriority(): readonly CombatResultLabel[] {
   return [...SCENARIO_COMBAT_RESULT_LABELS].sort((a, b) => a.displayPriority - b.displayPriority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-143: NG+ 모디파이어 narrative — 5 영역 (회차/난이도/동료/적/보상)
+// SCENARIO_NEW_GAME_PLUS (sync-98) 의 mechanic 보강.
+// ════════════════════════════════════════════════════════════════
+
+export type NgPlusModifierKey =
+  | 'cycle_tier' | 'difficulty_carry' | 'companion_loyalty_carry' | 'enemy_amplify' | 'reward_multiplier';
+
+export interface NgPlusModifier {
+  key: NgPlusModifierKey;
+  label: string;
+  /** 적용 수식 (한 줄) */
+  formulaSummary: string;
+  /** flavor 설명 */
+  flavor: string;
+}
+
+export const SCENARIO_NEW_GAME_PLUS_MODIFIERS: readonly NgPlusModifier[] = [
+  {
+    key: 'cycle_tier',
+    label: '회차 단계',
+    formulaSummary: 'NG+1 / NG+2 / NG+3 / ... 회차마다 1씩 상승',
+    flavor: '— 회차가 누적될수록 모든 modifier 가 함께 강화됩니다.',
+  },
+  {
+    key: 'difficulty_carry',
+    label: '난이도 인계',
+    formulaSummary: '전 회차 난이도 ≥ Hard → NG+ 시작 시 같은 난이도 잠금',
+    flavor: '— 도전 의지를 다음 회차로 가져가는 결.',
+  },
+  {
+    key: 'companion_loyalty_carry',
+    label: '동료 신뢰도 인계',
+    formulaSummary: '엔딩 시점 신뢰도 × 30% 가 NG+ 시작값으로 인계',
+    flavor: '— 한 회차의 신뢰는 다음 회차의 첫 호흡에 닿습니다.',
+  },
+  {
+    key: 'enemy_amplify',
+    label: '적 강화',
+    formulaSummary: '적 HP × (1 + 0.2 × cycle_tier), 적 패시브 +0.5 단계',
+    flavor: '— 회차가 깊어질수록 적의 결도 한 단 단단해집니다.',
+  },
+  {
+    key: 'reward_multiplier',
+    label: '보상 배율',
+    formulaSummary: '획득 경험치 / 자원 × (1 + 0.1 × cycle_tier)',
+    flavor: '— 회차의 무게는 보상의 무게로 돌아옵니다.',
+  },
+];
+
+export function getNgPlusModifier(key: NgPlusModifierKey): NgPlusModifier | undefined {
+  return SCENARIO_NEW_GAME_PLUS_MODIFIERS.find((m) => m.key === key);
+}
+
+export function listNgPlusModifierKeys(): readonly NgPlusModifierKey[] {
+  return ['cycle_tier', 'difficulty_carry', 'companion_loyalty_carry', 'enemy_amplify', 'reward_multiplier'];
+}
