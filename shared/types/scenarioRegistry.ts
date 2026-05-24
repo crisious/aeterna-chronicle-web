@@ -8119,3 +8119,67 @@ export function listMemoryResonancesByFrequency(
 ): readonly MemoryResonanceNarrative[] {
   return SCENARIO_MEMORY_RESONANCE_TYPES.filter((r) => r.frequency === frequency);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-170: 🎯 에테르 공명 레벨 narrative — 5 레벨 (dormant~transcendent)
+// 에리언의 기억 공명 능력 레벨업 단계 + 잠금 해제 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type AetherResonanceLevel = 'dormant' | 'awakening' | 'active' | 'peak' | 'transcendent';
+
+export interface AetherResonanceLevelNarrative {
+  level: AetherResonanceLevel;
+  label: string;
+  /** 도달 anchor */
+  ascendAnchor: string;
+  /** 잠금 해제되는 능력 */
+  unlockedAbility: string;
+  /** 필요 메인 quest milestone */
+  requiredMilestone: string;
+}
+
+export const SCENARIO_AETHER_RESONANCE_LEVELS: readonly AetherResonanceLevelNarrative[] = [
+  {
+    level: 'dormant',
+    label: '잠재',
+    ascendAnchor: '— 공명의 결이 아직 잠들어 있습니다. 호흡만 가능한 단계.',
+    unlockedAbility: '기본 fragment_echo 1회 발동 가능 (chapter 1 진입 직후).',
+    requiredMilestone: '게임 시작',
+  },
+  {
+    level: 'awakening',
+    label: '각성',
+    ascendAnchor: '— 첫 파편의 응답이 공명을 깨웁니다.',
+    unlockedAbility: 'ancestral_voice 활성, dream_glimpse 1 chapter 1회.',
+    requiredMilestone: 'fragment_erebos 회수 후',
+  },
+  {
+    level: 'active',
+    label: '활성',
+    ascendAnchor: '— 공명이 일상의 결로 자리잡습니다. 결의 흔들림을 매번 읽습니다.',
+    unlockedAbility: 'time_loop 1 전투 1회 사용 가능.',
+    requiredMilestone: 'fragment_silvanheim + fragment_solaris 회수 후',
+  },
+  {
+    level: 'peak',
+    label: '정점',
+    ascendAnchor: '— 4 파편의 결이 손바닥 위에서 응결되며 공명이 정점에 듭니다.',
+    unlockedAbility: '모든 공명 유형 무한 사용. 시야 가림 디버프 면역.',
+    requiredMilestone: '4 파편 모두 회수 후 (oblivion_plateau 진입)',
+  },
+  {
+    level: 'transcendent',
+    label: '초월',
+    ascendAnchor: '— 공명이 카일의 전생을 넘어 새로운 결을 만들어냅니다.',
+    unlockedAbility: '엔딩 A 분기 시 마지막 페이즈 한정 — 모든 동료 행동 +1턴.',
+    requiredMilestone: '레테 phase 4 종결 + 전원 생존',
+  },
+];
+
+export function getAetherResonanceLevelNarrative(level: AetherResonanceLevel): AetherResonanceLevelNarrative | undefined {
+  return SCENARIO_AETHER_RESONANCE_LEVELS.find((l) => l.level === level);
+}
+
+export function listAetherResonanceLevelsAscending(): readonly AetherResonanceLevel[] {
+  return ['dormant', 'awakening', 'active', 'peak', 'transcendent'];
+}
