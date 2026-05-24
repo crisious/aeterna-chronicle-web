@@ -7337,3 +7337,31 @@ export function listPassiveEffectsByClassification(
 ): readonly PassiveEffectLabel[] {
   return SCENARIO_PASSIVE_EFFECT_LABELS.filter((p) => p.classification === classification);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-155: 🎯 튜토리얼 완료 보상 narrative — 7 step 보상 anchor
+// SCENARIO_TUTORIAL_ANCHOR_LINES (sync-132) 와 1:1 매칭.
+// ════════════════════════════════════════════════════════════════
+
+export interface TutorialCompletionReward {
+  /** SCENARIO_TUTORIAL_ANCHOR_LINES.step 와 1:1 매칭 */
+  step: TutorialStepKey;
+  /** 보상 라벨 (한글) */
+  rewardLabel: string;
+  /** 보상 anchor (화면 표시 라인) */
+  rewardAnchor: string;
+}
+
+export const SCENARIO_TUTORIAL_COMPLETION_REWARDS: readonly TutorialCompletionReward[] = [
+  { step: 'move',      rewardLabel: '이동 익숙',         rewardAnchor: '— 이동 단축키 hint 가 화면 모서리에 자리잡습니다.' },
+  { step: 'atb',       rewardLabel: 'ATB 호흡',          rewardAnchor: '— ATB 게이지 100% 도달 시 빛 효과가 활성화됩니다.' },
+  { step: 'skill',     rewardLabel: '빌드 첫 발걸음',    rewardAnchor: '— 스킬 슬롯 6개가 모두 등록 가능해집니다.' },
+  { step: 'inventory', rewardLabel: '가방 정돈',         rewardAnchor: '— 인벤토리 자동 정렬 기능이 활성화됩니다.' },
+  { step: 'quest',     rewardLabel: '퀘스트 추적',       rewardAnchor: '— 메인/서브 퀘스트 추적 UI 가 활성화됩니다.' },
+  { step: 'save',      rewardLabel: '저장 습관',         rewardAnchor: '— 빠른 저장 단축키 (F5) 가 활성화됩니다.' },
+  { step: 'exit',      rewardLabel: '튜토리얼 졸업',     rewardAnchor: '— 튜토리얼 도전과제 청동이 잠금 해제되었습니다.' },
+];
+
+export function getTutorialCompletionReward(step: TutorialStepKey): TutorialCompletionReward | undefined {
+  return SCENARIO_TUTORIAL_COMPLETION_REWARDS.find((r) => r.step === step);
+}
