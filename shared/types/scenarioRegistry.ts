@@ -9183,3 +9183,40 @@ export function getFramePacingNarrative(target: FramePacingTarget): FramePacingN
 export function listFramePacingTargets(): readonly FramePacingTarget[] {
   return ['fps_30', 'fps_60', 'fps_120', 'adaptive'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-194: 입력 지연 tier SSOT — 4 tier (excellent~poor)
+// 입력→화면 반응 지연 분류 + 임계값 + 권장 액션.
+// ════════════════════════════════════════════════════════════════
+
+export type InputLatencyTier = 'excellent' | 'good' | 'acceptable' | 'poor';
+
+export interface InputLatencyTierNarrative {
+  tier: InputLatencyTier;
+  label: string;
+  /** 지연 임계값 (ms, 미만) */
+  maxLatencyMs: number;
+  /** UI 색상 */
+  uiColor: string;
+  /** 권장 액션 */
+  recommendedAction: string;
+}
+
+export const SCENARIO_INPUT_LATENCY_TIERS: readonly InputLatencyTierNarrative[] = [
+  { tier: 'excellent',  label: '최상',   maxLatencyMs: 20,  uiColor: '#5fbf5f', recommendedAction: '경쟁 게임 / 시간 보스전 가능. 모든 빌드 최적 작동.' },
+  { tier: 'good',       label: '양호',   maxLatencyMs: 50,  uiColor: '#9fcf5f', recommendedAction: '표준 게임플레이 양호. 일반 보스전 가능.' },
+  { tier: 'acceptable', label: '허용',   maxLatencyMs: 100, uiColor: '#ffb720', recommendedAction: '느린 빌드 권장. 회피 의존 빌드 어려움.' },
+  { tier: 'poor',       label: '저조',   maxLatencyMs: 200, uiColor: '#d04040', recommendedAction: '난이도 낮춤 또는 그래픽 품질 저로 변경 권장.' },
+];
+
+export function getInputLatencyTierNarrative(tier: InputLatencyTier): InputLatencyTierNarrative | undefined {
+  return SCENARIO_INPUT_LATENCY_TIERS.find((t) => t.tier === tier);
+}
+
+export function classifyInputLatencyMs(latencyMs: number): InputLatencyTierNarrative {
+  const ascending = [...SCENARIO_INPUT_LATENCY_TIERS].sort((a, b) => a.maxLatencyMs - b.maxLatencyMs);
+  for (const t of ascending) {
+    if (latencyMs < t.maxLatencyMs) return t;
+  }
+  return ascending[ascending.length - 1];
+}
