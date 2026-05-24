@@ -8297,3 +8297,67 @@ export function getZoneDensityNarrative(density: ZoneDensityLevel): ZoneDensityN
 export function listZoneDensityLevels(): readonly ZoneDensityLevel[] {
   return ['empty', 'sparse', 'normal', 'crowded'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-173: NPC 순찰 패턴 narrative — 5 패턴 (stationary/circular/random/follow/scheduled)
+// 필드 NPC 의 이동 패턴 + 잠입/회피 영향 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type NpcPatrolPattern = 'stationary' | 'circular' | 'random' | 'follow_target' | 'scheduled';
+
+export interface NpcPatrolPatternNarrative {
+  pattern: NpcPatrolPattern;
+  label: string;
+  /** 패턴 설명 */
+  description: string;
+  /** 잠입 회피 hint */
+  stealthHint: string;
+  /** 적용 NPC 류 */
+  applicableNpcTypes: string;
+}
+
+export const SCENARIO_NPC_PATROL_PATTERNS: readonly NpcPatrolPatternNarrative[] = [
+  {
+    pattern: 'stationary',
+    label: '고정',
+    description: '한 자리에 머물며 일정 각도로 시야만 회전.',
+    stealthHint: '시야각 90도 외 사각 지대 안전. 후방 우회로 무력화 가능.',
+    applicableNpcTypes: '상인 / 의뢰자 / 봉인 수호자',
+  },
+  {
+    pattern: 'circular',
+    label: '원형 순찰',
+    description: '고정 경로를 일정 주기로 도는 순찰.',
+    stealthHint: '주기 측정 후 사이 틈으로 이동. 모서리 정지 1턴 활용.',
+    applicableNpcTypes: '경비대 / 황궁 정문 수호',
+  },
+  {
+    pattern: 'random',
+    label: '무작위 이동',
+    description: '주변 3x3 grid 내 무작위 위치로 이동.',
+    stealthHint: '예측 불가 — 회피 패시브 또는 그림자 직조 필요.',
+    applicableNpcTypes: '야생 동물 / 정찰 무리',
+  },
+  {
+    pattern: 'follow_target',
+    label: '타겟 추적',
+    description: '플레이어 발견 시 마지막 위치까지 추적.',
+    stealthHint: '시야 차단 + 노이즈 우회. 일정 거리 이상 벌어지면 추적 해제.',
+    applicableNpcTypes: '기억 사냥꾼 / 경계 강화 경비',
+  },
+  {
+    pattern: 'scheduled',
+    label: '스케줄 순찰',
+    description: '하루 시간대 (DAY_PHASE) 기반 위치 변경.',
+    stealthHint: '특정 시간대 (밤) 에 부재. 시간대 활용한 우회 가능.',
+    applicableNpcTypes: '상점 NPC / 일과 NPC',
+  },
+];
+
+export function getNpcPatrolPatternNarrative(pattern: NpcPatrolPattern): NpcPatrolPatternNarrative | undefined {
+  return SCENARIO_NPC_PATROL_PATTERNS.find((p) => p.pattern === pattern);
+}
+
+export function listNpcPatrolPatterns(): readonly NpcPatrolPattern[] {
+  return ['stationary', 'circular', 'random', 'follow_target', 'scheduled'];
+}
