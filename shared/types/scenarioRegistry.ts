@@ -4291,3 +4291,169 @@ export function getSyncCompletionReport(): SyncCompletionReport {
     coveragePercent: Math.round((covered / totalEntities) * 100),
   };
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-102: 필드 NPC 대화 narrative — role default + npc 특화 override
+// zoneSeeds 의 필드 NPC (npc_*) 가 대화 인터랙션 시 사용하는 narrative SSOT.
+// `{name}` 토큰은 런타임에 NPC 이름으로 치환된다.
+// ════════════════════════════════════════════════════════════════
+
+export type FieldNpcRole = 'shop' | 'quest' | 'craft' | 'dialogue' | 'boss';
+
+export interface FieldNpcChoice {
+  /** 선택지 id (A/B/C/CLOSE) */
+  choiceId: string;
+  /** 선택지 label */
+  label: string;
+}
+
+export interface FieldNpcChoiceResult {
+  /** 선택지 id — 'CLOSE' 또는 매칭되는 결과 없으면 대화 종료 */
+  choiceId: string;
+  /** 결과 대사 — null/누락이면 후속 대사 없이 종료 */
+  resultLine: string | null;
+}
+
+export interface FieldNpcDialogueTemplate {
+  /** role default 면 FieldNpcRole, 특화 NPC 면 npc_* id */
+  key: FieldNpcRole | string;
+  /** 종류: role 기본 / npc 특화 */
+  kind: 'role' | 'npc';
+  /** 도입 대사 */
+  openingLine: string;
+  /** 사용자 선택지 */
+  choices: readonly FieldNpcChoice[];
+  /** 선택지별 결과 narrative */
+  results: readonly FieldNpcChoiceResult[];
+}
+
+const FIELD_NPC_ROLE_TEMPLATES: readonly FieldNpcDialogueTemplate[] = [
+  {
+    key: 'shop',
+    kind: 'role',
+    openingLine: '필요한 물건이 있다면 둘러보세요. 오래 머뭇거리면 좋은 물건부터 사라집니다.',
+    choices: [
+      { choiceId: 'A', label: '거래하기' },
+      { choiceId: 'B', label: '추천 물품 묻기' },
+      { choiceId: 'C', label: '닫기' },
+    ],
+    results: [
+      { choiceId: 'A', resultLine: '{name}의 거래품을 확인했습니다. 회복 물자, 지역 보급품, 희귀 재료 목록이 준비되어 있습니다.' },
+      { choiceId: 'B', resultLine: '{name}이 추천 물품을 골라 줬습니다. 현재 지역에서는 회복 물자와 귀환석을 먼저 챙기는 편이 안전합니다.' },
+      { choiceId: 'C', resultLine: null },
+    ],
+  },
+  {
+    key: 'quest',
+    kind: 'role',
+    openingLine: '도움이 필요합니다. 준비가 되었다면 의뢰 내용을 확인해 주세요.',
+    choices: [
+      { choiceId: 'A', label: '의뢰를 확인한다.' },
+      { choiceId: 'B', label: '나중에 온다.' },
+    ],
+    results: [
+      { choiceId: 'A', resultLine: '{name}의 의뢰 내용을 확인했습니다. 목표 지점과 위험 요소가 퀘스트 기록에 정리되었습니다.' },
+      { choiceId: 'B', resultLine: '{name}이 고개를 끄덕였습니다. 준비가 끝나면 다시 찾아오라고 합니다.' },
+    ],
+  },
+  {
+    key: 'craft',
+    kind: 'role',
+    openingLine: '재료 상태를 확인해 보겠습니다. 무리한 제작은 장비 내구도를 빠르게 깎습니다.',
+    choices: [
+      { choiceId: 'A', label: '제작을 맡긴다.' },
+      { choiceId: 'B', label: '재료를 확인한다.' },
+      { choiceId: 'C', label: '그만둔다.' },
+    ],
+    results: [
+      { choiceId: 'A', resultLine: '{name}이 제작 도구를 점검했습니다. 제작 가능한 장비와 강화 재료를 확인할 수 있습니다.' },
+      { choiceId: 'B', resultLine: '{name}이 필요한 재료를 짚어 줬습니다. 부족한 재료는 필드 채집과 전투 보상으로 보충해야 합니다.' },
+      { choiceId: 'C', resultLine: '{name}이 작업대를 정리했습니다. 제작이 필요해지면 다시 말을 걸어 주세요.' },
+    ],
+  },
+  {
+    key: 'dialogue',
+    kind: 'role',
+    openingLine: '무슨 일로 찾아왔나요? 필요한 이야기가 있다면 짧게 말씀해 주세요.',
+    choices: [
+      { choiceId: 'A', label: '대화한다.' },
+      { choiceId: 'B', label: '지나간다.' },
+    ],
+    results: [
+      { choiceId: 'A', resultLine: '{name}이 현재 지역의 소문과 주의할 징후를 알려 줬습니다. 지도와 퀘스트 동선을 함께 확인하세요.' },
+      { choiceId: 'B', resultLine: '{name}과의 대화를 마쳤습니다. 주변 상황은 변하지 않았습니다.' },
+    ],
+  },
+  {
+    key: 'boss',
+    kind: 'role',
+    openingLine: '봉인의 기척이 짙습니다. 섣불리 건드리면 전장이 흔들릴 수 있습니다.',
+    choices: [
+      { choiceId: 'A', label: '봉인을 조사한다.' },
+      { choiceId: 'B', label: '물러난다.' },
+    ],
+    results: [
+      { choiceId: 'A', resultLine: '{name}의 봉인 반응을 조사했습니다. 강한 공명이 감지되며, 전투 준비 후 접근하는 편이 안전합니다.' },
+      { choiceId: 'B', resultLine: '{name}에게서 물러났습니다. 봉인은 그대로 유지되고 있습니다.' },
+    ],
+  },
+];
+
+const FIELD_NPC_OVERRIDE_TEMPLATES: readonly FieldNpcDialogueTemplate[] = [
+  {
+    key: 'npc_ghost_merchant',
+    kind: 'npc',
+    openingLine: '산 자의 발소리는 오랜만이군. 그림자 안쪽에 오래된 물건들이 남아 있다네.',
+    choices: [
+      { choiceId: 'A', label: '거래한다.' },
+      { choiceId: 'B', label: '희귀 물건을 얻는다.' },
+      { choiceId: 'C', label: '지금은 지나간다.' },
+    ],
+    results: [
+      {
+        choiceId: 'A',
+        resultLine: [
+          '고로디가 낡은 궤짝을 열어 거래품을 펼쳤습니다.',
+          '[희귀] 망각의 은화 · [고급] 유령 도시 귀환석 · [일반] 영혼 등불',
+          '정식 상점 장부가 열리기 전까지는 이 목록에서 필요한 물건을 확인하세요.',
+        ].join('\n'),
+      },
+      {
+        choiceId: 'B',
+        resultLine: '고로디가 낡은 포장을 풀고 [희귀] 망각의 은화를 건넸습니다. 희귀 물건을 획득했습니다.',
+      },
+      {
+        choiceId: 'C',
+        resultLine: '고로디가 궤짝을 닫고 그림자 속으로 한 걸음 물러섰습니다. 필요해지면 다시 말을 걸어 주세요.',
+      },
+    ],
+  },
+];
+
+export const SCENARIO_FIELD_NPC_DIALOGUE_TEMPLATES: readonly FieldNpcDialogueTemplate[] = [
+  ...FIELD_NPC_ROLE_TEMPLATES,
+  ...FIELD_NPC_OVERRIDE_TEMPLATES,
+];
+
+export function getFieldNpcRoleTemplate(role: string): FieldNpcDialogueTemplate | undefined {
+  return SCENARIO_FIELD_NPC_DIALOGUE_TEMPLATES.find(
+    (t) => t.kind === 'role' && t.key === role,
+  );
+}
+
+export function getFieldNpcOverrideTemplate(npcId: string): FieldNpcDialogueTemplate | undefined {
+  return SCENARIO_FIELD_NPC_DIALOGUE_TEMPLATES.find(
+    (t) => t.kind === 'npc' && t.key === npcId,
+  );
+}
+
+export function resolveFieldNpcTemplate(
+  npcId: string,
+  role: string,
+): FieldNpcDialogueTemplate | undefined {
+  return getFieldNpcOverrideTemplate(npcId) ?? getFieldNpcRoleTemplate(role);
+}
+
+export function applyFieldNpcNameToken(text: string, name: string): string {
+  return text.replace(/\{name\}/g, name);
+}
