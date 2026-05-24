@@ -6069,3 +6069,59 @@ export const SCENARIO_LEVEL_UP_SHOUTS: readonly LevelUpShout[] = [
 export function getLevelUpShout(characterId: string): LevelUpShout | undefined {
   return SCENARIO_LEVEL_UP_SHOUTS.find((s) => s.characterId === characterId);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-130: 🎯 파벌 소개 narrative — SCENARIO_FACTIONS 7 파벌 1:1
+// 각 파벌과 첫 조우 시 표시되는 정체성 anchor + 추천 접근 방식.
+// ════════════════════════════════════════════════════════════════
+
+export interface FactionIntroNarrative {
+  /** SCENARIO_FACTIONS.obsidianId 와 1:1 매칭 */
+  factionObsidianId: string;
+  /** 정체성 anchor — 1줄 */
+  identityLine: string;
+  /** 접근 권장 — 우호/적대/중립 가이드 */
+  approachHint: string;
+}
+
+export const SCENARIO_FACTION_INTRO_NARRATIVES: readonly FactionIntroNarrative[] = [
+  {
+    factionObsidianId: 'faction_elfaris',
+    identityLine: '— 잎새 사이 빛으로 자기 자리를 지키는 엘파리스의 수호자들.',
+    approachHint: '외교 분기를 통해 호의를 얻으세요. 깊은 숲 안내가 동행에 큰 차이를 만듭니다.',
+  },
+  {
+    factionObsidianId: 'faction_ifrita',
+    identityLine: '— 이그나루스의 최초의 불꽃을 손에 든 사막의 부족.',
+    approachHint: '부족 의식을 존중하면 화로 영역 진입권이 열립니다. 모래 폭풍의 안전 통로도 안내됩니다.',
+  },
+  {
+    factionObsidianId: 'faction_solian',
+    identityLine: '— 한 밤에 멸망한 솔리안 황금기의 잔향, 라와르 봉인에 깃들어 있습니다.',
+    approachHint: '직접적인 외교는 불가 — 유적 안의 봉인 의식을 해석해 그들의 의지에 응답하세요.',
+  },
+  {
+    factionObsidianId: 'faction_kalimar_empire',
+    identityLine: '— 첨탑이 잿빛 하늘을 가르는 제국, 시민의 침묵은 우연이 아닙니다.',
+    approachHint: '정면 대치는 자원 소모가 큽니다. 잠입 동선과 통행증 우회가 우선입니다.',
+  },
+  {
+    factionObsidianId: 'faction_lethe_cult',
+    identityLine: '— 거대한 눈들을 추종하는 망각 구원론자들의 비밀 종교.',
+    approachHint: '내부고발자 (레이나) 정보가 핵심. 의식 패턴을 사전 파악해 약점을 찌르세요.',
+  },
+  {
+    factionObsidianId: 'faction_memory_guardian',
+    identityLine: '— 에레보스 폐광 비밀 본부, 카일 봉인 의식의 계승자들.',
+    approachHint: '에리언의 공명에 가장 친화적인 파벌. 본부 진입 후 보급/정보 모두 우호적입니다.',
+  },
+  {
+    factionObsidianId: 'faction_memory_hunter',
+    identityLine: '— 케인이 이끄는 레테 교단의 무력 부대 — 파편을 추적합니다.',
+    approachHint: '필드 조우 시 거의 항상 적대. 회피와 우회 동선을 우선 검토하세요.',
+  },
+];
+
+export function getFactionIntroNarrative(factionObsidianId: string): FactionIntroNarrative | undefined {
+  return SCENARIO_FACTION_INTRO_NARRATIVES.find((n) => n.factionObsidianId === factionObsidianId);
+}
