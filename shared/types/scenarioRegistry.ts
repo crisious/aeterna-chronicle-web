@@ -6306,3 +6306,53 @@ export function getAtbPhaseNarrative(phase: AtbPhaseKind): AtbPhaseNarrative | u
 export function listAtbPhasesInOrder(): readonly AtbPhaseKind[] {
   return ['charging', 'ready', 'acting', 'cooldown'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-135: 🎯 파티 구성 narrative — front_row/back_row/solo 3종
+// 전투 진입 시 선택한 파티 구성 별 narrative + 전투 modifier.
+// ════════════════════════════════════════════════════════════════
+
+export type PartyFormation = 'front_row' | 'back_row' | 'solo';
+
+export interface PartyFormationNarrative {
+  formation: PartyFormation;
+  label: string;
+  /** 진입 anchor */
+  anchorLine: string;
+  /** 권장 빌드 */
+  recommendedBuild: string;
+  /** modifier 요약 */
+  modifierSummary: string;
+}
+
+export const SCENARIO_PARTY_FORMATION_NARRATIVES: readonly PartyFormationNarrative[] = [
+  {
+    formation: 'front_row',
+    label: '전열',
+    anchorLine: '— 모든 동료가 적과 정면 대치 — 일격의 무게가 가장 큽니다.',
+    recommendedBuild: '에테르 기사 + 기억 파괴자 중심. 근접 폭딜 + reflect 패시브 조합.',
+    modifierSummary: '근접 데미지 +15%, 받는 피해 +10%, 회피 -5%.',
+  },
+  {
+    formation: 'back_row',
+    label: '후열',
+    anchorLine: '— 후열 배치 — 안전한 거리에서 결을 조율합니다.',
+    recommendedBuild: '기억술사 + 시간 수호자 중심. 회복 + ATB 조작 + 디버프 빌드.',
+    modifierSummary: '받는 피해 -15%, 근접 데미지 -10%, 원거리 명중 +5%.',
+  },
+  {
+    formation: 'solo',
+    label: '단독',
+    anchorLine: '— 동료 없이 단독 진입 — 호흡이 한 사람에게 모입니다.',
+    recommendedBuild: '허공의 방랑자 + auto_resurrect 패시브. 회피 + 분단 빌드.',
+    modifierSummary: '경험치 +30%, 받는 피해 +25%, 보스 페이즈 전이 -1.',
+  },
+];
+
+export function getPartyFormationNarrative(formation: PartyFormation): PartyFormationNarrative | undefined {
+  return SCENARIO_PARTY_FORMATION_NARRATIVES.find((p) => p.formation === formation);
+}
+
+export function listPartyFormations(): readonly PartyFormation[] {
+  return ['front_row', 'back_row', 'solo'];
+}
