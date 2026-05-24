@@ -8609,3 +8609,68 @@ export function getBuffDurationLevelNarrative(level: BuffDurationLevel): BuffDur
 export function classifyBuffDurationByTurns(turns: number): BuffDurationLevelNarrative | undefined {
   return SCENARIO_BUFF_DURATION_LEVELS.find((d) => turns >= d.minTurns && turns <= d.maxTurns);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-179: 제작 결과 narrative — 5 결과 (success/crit_success/failure/crit_failure/breakthrough)
+// 제작 시도 후 결과별 anchor + 자원 소모/획득.
+// ════════════════════════════════════════════════════════════════
+
+export type CraftingOutcomeKind =
+  | 'success' | 'crit_success' | 'failure' | 'crit_failure' | 'breakthrough';
+
+export interface CraftingOutcomeNarrative {
+  outcome: CraftingOutcomeKind;
+  label: string;
+  /** 발생 확률 (0~1) */
+  baseProbability: number;
+  /** 결과 anchor */
+  outcomeAnchor: string;
+  /** 자원/결과물 영향 */
+  resourceImpact: string;
+}
+
+export const SCENARIO_CRAFTING_OUTCOMES: readonly CraftingOutcomeNarrative[] = [
+  {
+    outcome: 'success',
+    label: '성공',
+    baseProbability: 0.6,
+    outcomeAnchor: '— 제작이 의도대로 완성됩니다.',
+    resourceImpact: '입력 자원 모두 소모, 결과물 1개 표준 등급.',
+  },
+  {
+    outcome: 'crit_success',
+    label: '대성공',
+    baseProbability: 0.1,
+    outcomeAnchor: '— 결이 황금빛으로 빛나며 한 단계 위 등급으로 완성됩니다.',
+    resourceImpact: '입력 자원 모두 소모, 결과물 1개 + 등급 +1 (예: rare → epic).',
+  },
+  {
+    outcome: 'failure',
+    label: '실패',
+    baseProbability: 0.2,
+    outcomeAnchor: '— 제작이 어긋나며 결과물이 만들어지지 않습니다.',
+    resourceImpact: '입력 자원 50% 소모, 결과물 없음.',
+  },
+  {
+    outcome: 'crit_failure',
+    label: '대실패',
+    baseProbability: 0.05,
+    outcomeAnchor: '— 작업대가 튀며 자원이 모두 흩어집니다.',
+    resourceImpact: '입력 자원 모두 소실, 작업대 1턴 사용 불가.',
+  },
+  {
+    outcome: 'breakthrough',
+    label: '돌파',
+    baseProbability: 0.05,
+    outcomeAnchor: '— 의도하지 않은 결이 깨우치며 새 레시피가 잠금 해제됩니다.',
+    resourceImpact: '입력 자원 모두 소모, 결과물 1개 + 신규 레시피 1개 해금.',
+  },
+];
+
+export function getCraftingOutcomeNarrative(outcome: CraftingOutcomeKind): CraftingOutcomeNarrative | undefined {
+  return SCENARIO_CRAFTING_OUTCOMES.find((o) => o.outcome === outcome);
+}
+
+export function getTotalCraftingProbability(): number {
+  return SCENARIO_CRAFTING_OUTCOMES.reduce((sum, o) => sum + o.baseProbability, 0);
+}
