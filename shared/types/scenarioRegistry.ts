@@ -6759,3 +6759,73 @@ export function getNgPlusModifier(key: NgPlusModifierKey): NgPlusModifier | unde
 export function listNgPlusModifierKeys(): readonly NgPlusModifierKey[] {
   return ['cycle_tier', 'difficulty_carry', 'companion_loyalty_carry', 'enemy_amplify', 'reward_multiplier'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-144: 아이템 등급별 드롭율 narrative — 5 등급 (ITEM_RARITY 와 cross)
+// 일반 적/엘리트 적/보스 기준 baseline drop rate.
+// ════════════════════════════════════════════════════════════════
+
+export interface LootTierDropRate {
+  rarity: ItemRarity;
+  /** 일반 적 baseline drop rate (0~1) */
+  normalDropRate: number;
+  /** 엘리트 적 baseline drop rate */
+  eliteDropRate: number;
+  /** 보스 baseline drop rate */
+  bossDropRate: number;
+  /** flavor narrative */
+  flavor: string;
+}
+
+export const SCENARIO_LOOT_TIER_DROP_RATES: readonly LootTierDropRate[] = [
+  {
+    rarity: 'common',
+    normalDropRate: 0.5,
+    eliteDropRate: 0.7,
+    bossDropRate: 1.0,
+    flavor: '— 어느 적이든 떨굴 수 있는 결의 자원.',
+  },
+  {
+    rarity: 'uncommon',
+    normalDropRate: 0.15,
+    eliteDropRate: 0.35,
+    bossDropRate: 0.8,
+    flavor: '— 일반 적 6~7명 처치 당 1개 정도 — 보급 단계의 핵심.',
+  },
+  {
+    rarity: 'rare',
+    normalDropRate: 0.03,
+    eliteDropRate: 0.12,
+    bossDropRate: 0.5,
+    flavor: '— 엘리트 적 8명 처치 당 1개 정도 — zone 한정 자원.',
+  },
+  {
+    rarity: 'epic',
+    normalDropRate: 0.005,
+    eliteDropRate: 0.03,
+    bossDropRate: 0.25,
+    flavor: '— 보스 4회 처치 당 1개 정도 — 빌드 분기점.',
+  },
+  {
+    rarity: 'legendary',
+    normalDropRate: 0,
+    eliteDropRate: 0.001,
+    bossDropRate: 0.05,
+    flavor: '— 보스 20회 처치 당 1개 정도 — 신화 자원.',
+  },
+];
+
+export function getLootTierDropRate(rarity: ItemRarity): LootTierDropRate | undefined {
+  return SCENARIO_LOOT_TIER_DROP_RATES.find((d) => d.rarity === rarity);
+}
+
+export function getExpectedDropRate(
+  rarity: ItemRarity,
+  enemyKind: 'normal' | 'elite' | 'boss',
+): number {
+  const tier = getLootTierDropRate(rarity);
+  if (!tier) return 0;
+  if (enemyKind === 'normal') return tier.normalDropRate;
+  if (enemyKind === 'elite') return tier.eliteDropRate;
+  return tier.bossDropRate;
+}
