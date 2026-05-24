@@ -8739,3 +8739,39 @@ export function getAudioChannelLabel(channel: AudioChannelKey): AudioChannelLabe
 export function listAudioChannels(): readonly AudioChannelKey[] {
   return ['master', 'bgm', 'sfx', 'voice', 'ambient'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-182: 게임패드 버튼 매핑 SSOT — 8 버튼 (Xbox/PS 공용)
+// XInput 표준 + 기본 action 매핑 + 키보드 대응.
+// ════════════════════════════════════════════════════════════════
+
+export type GamepadButton = 'A' | 'B' | 'X' | 'Y' | 'LB' | 'RB' | 'LT' | 'RT';
+
+export interface GamepadButtonMapping {
+  button: GamepadButton;
+  /** PS 표기 (□△○✕) */
+  psLabel: string;
+  /** 기본 action */
+  defaultAction: KeybindAction;
+  /** 키보드 대응 키 */
+  keyboardEquivalent: string;
+}
+
+export const SCENARIO_GAMEPAD_BUTTON_MAPPINGS: readonly GamepadButtonMapping[] = [
+  { button: 'A',  psLabel: 'X (cross)',     defaultAction: 'interact',    keyboardEquivalent: 'E' },
+  { button: 'B',  psLabel: 'O (circle)',    defaultAction: 'escape',      keyboardEquivalent: 'Esc' },
+  { button: 'X',  psLabel: '□ (square)',    defaultAction: 'quickslot_1', keyboardEquivalent: '1' },
+  { button: 'Y',  psLabel: '△ (triangle)',  defaultAction: 'open_menu',   keyboardEquivalent: 'Tab' },
+  { button: 'LB', psLabel: 'L1',            defaultAction: 'move_left',   keyboardEquivalent: 'A' },
+  { button: 'RB', psLabel: 'R1',            defaultAction: 'move_right',  keyboardEquivalent: 'D' },
+  { button: 'LT', psLabel: 'L2',            defaultAction: 'move_up',     keyboardEquivalent: 'W' },
+  { button: 'RT', psLabel: 'R2',            defaultAction: 'move_down',   keyboardEquivalent: 'S' },
+];
+
+export function getGamepadButtonMapping(button: GamepadButton): GamepadButtonMapping | undefined {
+  return SCENARIO_GAMEPAD_BUTTON_MAPPINGS.find((m) => m.button === button);
+}
+
+export function listGamepadButtons(): readonly GamepadButton[] {
+  return ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT'];
+}
