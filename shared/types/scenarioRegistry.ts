@@ -7542,3 +7542,52 @@ export function getCraftCategoryNarrative(category: CraftCategoryKey): CraftCate
 export function listCraftCategoriesSorted(): readonly CraftCategoryNarrative[] {
   return [...SCENARIO_CRAFT_RECIPE_CATEGORIES].sort((a, b) => a.sortOrder - b.sortOrder);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-159: 무작위 조우 narrative — 4 종 (peaceful/normal/elite/ambush)
+// 필드 이동 시 무작위 발생하는 조우 종류별 anchor + 첫 turn modifier.
+// ════════════════════════════════════════════════════════════════
+
+export type EncounterKind = 'peaceful' | 'normal' | 'elite' | 'ambush';
+
+export interface RandomEncounterFlavor {
+  kind: EncounterKind;
+  label: string;
+  encounterAnchor: string;
+  firstTurnModifier: string;
+}
+
+export const SCENARIO_RANDOM_ENCOUNTER_FLAVORS: readonly RandomEncounterFlavor[] = [
+  {
+    kind: 'peaceful',
+    label: '평화',
+    encounterAnchor: '— 풍경이 가만히 흐릅니다. 잠시 호흡을 다잡을 자리.',
+    firstTurnModifier: '전투 발생 없음. 자원 채집 / 정찰 hint 표시.',
+  },
+  {
+    kind: 'normal',
+    label: '일반',
+    encounterAnchor: '— 적의 발자국이 가까이 다가옵니다.',
+    firstTurnModifier: '양측 선제권 균등. 표준 ATB 시작.',
+  },
+  {
+    kind: 'elite',
+    label: '엘리트',
+    encounterAnchor: '— 흐름이 한 박자 무거워집니다 — 엘리트 적의 결.',
+    firstTurnModifier: '적 선제권 +10%, 보상 +30%. 회피 우선 빌드 권장.',
+  },
+  {
+    kind: 'ambush',
+    label: '기습',
+    encounterAnchor: '— 시야 밖에서 무엇인가 빠르게 다가옵니다.',
+    firstTurnModifier: '적이 선제 1턴, ATB 시작값 -30%. 광역 방어 / 디버프 해제 우선.',
+  },
+];
+
+export function getRandomEncounterFlavor(kind: EncounterKind): RandomEncounterFlavor | undefined {
+  return SCENARIO_RANDOM_ENCOUNTER_FLAVORS.find((e) => e.kind === kind);
+}
+
+export function listEncounterKinds(): readonly EncounterKind[] {
+  return ['peaceful', 'normal', 'elite', 'ambush'];
+}
