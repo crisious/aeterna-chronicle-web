@@ -5648,3 +5648,78 @@ export function getDayPhaseNarrative(phase: DayPhase): DayPhaseNarrative | undef
 export function listDayPhases(): readonly DayPhase[] {
   return ['dawn', 'day', 'dusk', 'night'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-122: 파벌 평판 tier narrative — 5 tier (hostile ~ allied)
+// faction reputation 점수 구간별 narrative + UI label + interaction hint.
+// ════════════════════════════════════════════════════════════════
+
+export type ReputationTier = 'hostile' | 'wary' | 'neutral' | 'friendly' | 'allied';
+
+export interface ReputationTierNarrative {
+  tier: ReputationTier;
+  label: string;
+  /** 점수 하한 (inclusive) */
+  minScore: number;
+  uiColor: string;
+  flavor: string;
+  interactionHint: string;
+}
+
+export const SCENARIO_REPUTATION_TIER_NARRATIVES: readonly ReputationTierNarrative[] = [
+  {
+    tier: 'hostile',
+    label: '적대',
+    minScore: -100,
+    uiColor: '#d04040',
+    flavor: '파벌이 당신을 위협으로 간주합니다. 영역 진입만으로도 경계 경보가 울립니다.',
+    interactionHint: '거래/퀘스트 차단. 영역 통과 시 적대 NPC 가 공격합니다.',
+  },
+  {
+    tier: 'wary',
+    label: '경계',
+    minScore: -40,
+    uiColor: '#d09040',
+    flavor: '파벌이 당신을 주시합니다. 행동 하나하나가 평판 점수에 반영됩니다.',
+    interactionHint: '거래 가격 +20%, 퀘스트 일부만 수주 가능. 신뢰 회복 quest 진입 가능.',
+  },
+  {
+    tier: 'neutral',
+    label: '중립',
+    minScore: -10,
+    uiColor: '#a0a0a0',
+    flavor: '파벌이 당신을 외부인으로 대합니다. 특별한 호의도 적의도 없습니다.',
+    interactionHint: '표준 거래 가격. 일반 quest 만 수주 가능합니다.',
+  },
+  {
+    tier: 'friendly',
+    label: '우호',
+    minScore: 30,
+    uiColor: '#60c060',
+    flavor: '파벌이 당신을 동료로 인정합니다. 우호 NPC 들이 정보를 먼저 건넵니다.',
+    interactionHint: '거래 가격 -10%, 우호 한정 quest 와 보상 trade 가 열립니다.',
+  },
+  {
+    tier: 'allied',
+    label: '동맹',
+    minScore: 70,
+    uiColor: '#40b0e0',
+    flavor: '파벌이 당신을 자기 사람으로 본격적으로 받아들입니다.',
+    interactionHint: '거래 가격 -20%, 동맹 한정 raid 와 동행 NPC 호출 가능.',
+  },
+];
+
+export function getReputationTierNarrative(tier: ReputationTier): ReputationTierNarrative | undefined {
+  return SCENARIO_REPUTATION_TIER_NARRATIVES.find((r) => r.tier === tier);
+}
+
+export function getReputationTierByScore(score: number): ReputationTierNarrative {
+  const ascending = [...SCENARIO_REPUTATION_TIER_NARRATIVES].sort((a, b) => a.minScore - b.minScore);
+  let current = ascending[0];
+  for (const t of ascending) {
+    if (score >= t.minScore) {
+      current = t;
+    }
+  }
+  return current;
+}
