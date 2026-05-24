@@ -8577,3 +8577,35 @@ export function getPartyAuraNarrative(aura: PartyAuraKind): PartyAuraNarrative |
 export function listPartyAurasByClass(classKey: ClassKey): readonly PartyAuraNarrative[] {
   return SCENARIO_PARTY_AURA_EFFECTS.filter((a) => a.emitterClass === classKey);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-178: buff 지속 시간 분류 narrative — 4 분류 (brief/short/medium/long)
+// buff/debuff/aura 의 지속 시간을 4 단계로 분류.
+// ════════════════════════════════════════════════════════════════
+
+export type BuffDurationLevel = 'brief' | 'short' | 'medium' | 'long';
+
+export interface BuffDurationLevelNarrative {
+  level: BuffDurationLevel;
+  label: string;
+  /** 지속 턴수 범위 (inclusive) */
+  minTurns: number;
+  maxTurns: number;
+  /** UI 표시 hint */
+  uiHint: string;
+}
+
+export const SCENARIO_BUFF_DURATION_LEVELS: readonly BuffDurationLevelNarrative[] = [
+  { level: 'brief',  label: '짧은',     minTurns: 1, maxTurns: 2,  uiHint: '아이콘 표시 + 깜빡임. 1~2턴 안에 효과 종료.' },
+  { level: 'short',  label: '단기',     minTurns: 3, maxTurns: 5,  uiHint: '아이콘 + 남은 턴 숫자. 표준 전투 1~2 라운드.' },
+  { level: 'medium', label: '중기',     minTurns: 6, maxTurns: 10, uiHint: '아이콘 + 숫자. 전투 거의 전체에 영향.' },
+  { level: 'long',   label: '장기',     minTurns: 11, maxTurns: 30, uiHint: '아이콘 + 숫자 + 우선 표시. 다음 전투까지 지속 가능.' },
+];
+
+export function getBuffDurationLevelNarrative(level: BuffDurationLevel): BuffDurationLevelNarrative | undefined {
+  return SCENARIO_BUFF_DURATION_LEVELS.find((d) => d.level === level);
+}
+
+export function classifyBuffDurationByTurns(turns: number): BuffDurationLevelNarrative | undefined {
+  return SCENARIO_BUFF_DURATION_LEVELS.find((d) => turns >= d.minTurns && turns <= d.maxTurns);
+}
