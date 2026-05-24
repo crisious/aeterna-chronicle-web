@@ -6249,3 +6249,60 @@ export function getNotificationToneNarrative(tone: NotificationTone): Notificati
 export function listNotificationTones(): readonly NotificationTone[] {
   return ['info', 'success', 'warning', 'error'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-134: ATB 전투 phase narrative — charging/ready/acting/cooldown 4종
+// FF6 ATB 시스템의 단계별 narrative + UI hint.
+// ════════════════════════════════════════════════════════════════
+
+export type AtbPhaseKind = 'charging' | 'ready' | 'acting' | 'cooldown';
+
+export interface AtbPhaseNarrative {
+  phase: AtbPhaseKind;
+  label: string;
+  /** 시각적 UI 표현 */
+  uiHint: string;
+  /** 게이지 % 또는 상태 의미 */
+  stateMeaning: string;
+  /** flavor */
+  flavor: string;
+}
+
+export const SCENARIO_ATB_PHASE_NARRATIVES: readonly AtbPhaseNarrative[] = [
+  {
+    phase: 'charging',
+    label: '충전 중',
+    uiHint: 'ATB 바가 0%~99% 사이에서 천천히 채워집니다.',
+    stateMeaning: '행동 권한 없음. 적의 행동을 관찰하며 다음 빌드를 준비할 시간.',
+    flavor: '— 호흡을 가다듬는 결.',
+  },
+  {
+    phase: 'ready',
+    label: '준비 완료',
+    uiHint: 'ATB 바가 100% 도달, 캐릭터 주변 빛 효과 활성화.',
+    stateMeaning: '행동 선택 가능. 대기 시 적의 행동 우선권은 다른 캐릭터에게 넘어갑니다.',
+    flavor: '— 결단이 손끝에 머무는 순간.',
+  },
+  {
+    phase: 'acting',
+    label: '행동 중',
+    uiHint: '스킬 애니메이션 + 피해/효과 popup 표시.',
+    stateMeaning: '행동 실행 중. 인터럽트 가능 여부는 스킬마다 다름.',
+    flavor: '— 결단이 풍경을 흔드는 결.',
+  },
+  {
+    phase: 'cooldown',
+    label: '쿨다운',
+    uiHint: 'ATB 바가 0%로 리셋되며 잠시 비활성화.',
+    stateMeaning: '다음 충전 시작까지 짧은 휴식. Auto AI 는 이 시간에 다음 빌드를 평가.',
+    flavor: '— 결단이 가라앉는 결, 다음 호흡을 기다립니다.',
+  },
+];
+
+export function getAtbPhaseNarrative(phase: AtbPhaseKind): AtbPhaseNarrative | undefined {
+  return SCENARIO_ATB_PHASE_NARRATIVES.find((p) => p.phase === phase);
+}
+
+export function listAtbPhasesInOrder(): readonly AtbPhaseKind[] {
+  return ['charging', 'ready', 'acting', 'cooldown'];
+}
