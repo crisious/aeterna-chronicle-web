@@ -8240,3 +8240,60 @@ export function getLightingPresetNarrative(preset: LightingPreset): LightingPres
 export function listLightingPresets(): readonly LightingPreset[] {
   return ['warm', 'cool', 'dim', 'bright'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-172: zone 인구 밀도 narrative — 4 레벨 (empty/sparse/normal/crowded)
+// 각 zone 의 NPC/적 밀도 + 분위기 anchor + 무작위 조우 빈도.
+// ════════════════════════════════════════════════════════════════
+
+export type ZoneDensityLevel = 'empty' | 'sparse' | 'normal' | 'crowded';
+
+export interface ZoneDensityNarrative {
+  density: ZoneDensityLevel;
+  label: string;
+  /** NPC 평균 갯수 (5x5 grid 기준) */
+  averageNpcCount: number;
+  /** 무작위 조우 발생 확률 (이동 100보당) */
+  encounterRatePer100Steps: number;
+  /** 분위기 anchor */
+  moodAnchor: string;
+}
+
+export const SCENARIO_ZONE_DENSITY_LEVELS: readonly ZoneDensityNarrative[] = [
+  {
+    density: 'empty',
+    label: '비어 있음',
+    averageNpcCount: 0,
+    encounterRatePer100Steps: 5,
+    moodAnchor: '— 풍경에 발자국이 거의 없습니다. 호흡 소리만 또렷합니다.',
+  },
+  {
+    density: 'sparse',
+    label: '드문드문',
+    averageNpcCount: 2,
+    encounterRatePer100Steps: 15,
+    moodAnchor: '— 몇몇 발자국이 멀리서 흩어집니다.',
+  },
+  {
+    density: 'normal',
+    label: '보통',
+    averageNpcCount: 5,
+    encounterRatePer100Steps: 25,
+    moodAnchor: '— NPC 들이 자기 일을 하며 풍경에 자연스럽게 자리잡습니다.',
+  },
+  {
+    density: 'crowded',
+    label: '붐빔',
+    averageNpcCount: 12,
+    encounterRatePer100Steps: 40,
+    moodAnchor: '— 거리의 결이 발자국과 대화로 가득 찹니다.',
+  },
+];
+
+export function getZoneDensityNarrative(density: ZoneDensityLevel): ZoneDensityNarrative | undefined {
+  return SCENARIO_ZONE_DENSITY_LEVELS.find((d) => d.density === density);
+}
+
+export function listZoneDensityLevels(): readonly ZoneDensityLevel[] {
+  return ['empty', 'sparse', 'normal', 'crowded'];
+}
