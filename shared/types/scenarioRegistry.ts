@@ -9910,3 +9910,32 @@ export function classifyPvpRankByElo(elo: number): PvpRankTierNarrative {
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-216: 거래 제안 상태 SSOT — 4 상태
+// ════════════════════════════════════════════════════════════════
+
+export type TradeOfferStatus = 'pending' | 'accepted' | 'rejected' | 'cancelled';
+
+export interface TradeOfferStatusNarrative {
+  status: TradeOfferStatus;
+  label: string;
+  indicatorColor: string;
+  allowedActions: readonly string[];
+  displayMessage: string;
+}
+
+export const SCENARIO_TRADE_OFFER_STATUSES: readonly TradeOfferStatusNarrative[] = [
+  { status: 'pending',   label: '대기 중',  indicatorColor: '#ffb720', allowedActions: ['accept', 'reject', 'cancel'], displayMessage: '거래 제안 응답 대기 중 — 60초 후 자동 취소.' },
+  { status: 'accepted',  label: '수락됨',   indicatorColor: '#5fbf5f', allowedActions: ['view_log'],                   displayMessage: '거래가 완료되었습니다 — 가방을 확인하세요.' },
+  { status: 'rejected',  label: '거절됨',   indicatorColor: '#d04040', allowedActions: ['view_log', 'send_new'],       displayMessage: '거래 제안이 거절되었습니다.' },
+  { status: 'cancelled', label: '취소됨',   indicatorColor: '#808080', allowedActions: ['view_log', 'send_new'],       displayMessage: '거래가 취소되었습니다 — 자원은 반환되었습니다.' },
+];
+
+export function getTradeOfferStatusNarrative(status: TradeOfferStatus): TradeOfferStatusNarrative | undefined {
+  return SCENARIO_TRADE_OFFER_STATUSES.find((s) => s.status === status);
+}
+
+export function listTradeOfferStatuses(): readonly TradeOfferStatus[] {
+  return ['pending', 'accepted', 'rejected', 'cancelled'];
+}
