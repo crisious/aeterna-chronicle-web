@@ -6044,3 +6044,28 @@ export const SCENARIO_MAIN_QUEST_TURNIN_NARRATIVES: readonly MainQuestTurnInNarr
 export function getMainQuestTurnInNarrative(questCode: string): MainQuestTurnInNarrative | undefined {
   return SCENARIO_MAIN_QUEST_TURNIN_NARRATIVES.find((n) => n.questCode === questCode);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-129: 레벨업 동료 외침 — 6 동료 + 에리언 = 7 entry
+// 필드/메뉴에서 레벨업 발동 시 짧은 한 줄 외침.
+// ════════════════════════════════════════════════════════════════
+
+export interface LevelUpShout {
+  /** SCENARIO_COMPANIONS.obsidianId 또는 'aerien' (주인공) */
+  characterId: string;
+  shoutLine: string;
+}
+
+export const SCENARIO_LEVEL_UP_SHOUTS: readonly LevelUpShout[] = [
+  { characterId: 'aerien',          shoutLine: '"공명이 한 결 더 깊어졌다 — 다음으로."' },
+  { characterId: 'seraphine',       shoutLine: '"길의 폭이 한 뼘 더 넓어졌어. 따라와."' },
+  { characterId: 'maestro_crio',    shoutLine: '"새 카드 한 장이 들어왔다. 다음 거래는 더 유리하겠지."' },
+  { characterId: 'ignara',          shoutLine: '"불꽃이 또 한 단계 — 멈출 이유 없지."' },
+  { characterId: 'benjamin_cross',  shoutLine: '"수사 노트에 한 줄 더. 다음 단서로 간다."' },
+  { characterId: 'reina',           shoutLine: '"교단의 약점이 또 하나 보였어. 다음에 쓴다."' },
+  { characterId: 'urgrom',          shoutLine: '"북방의 결이 한 겹 더 단단해졌군. 좋다."' },
+];
+
+export function getLevelUpShout(characterId: string): LevelUpShout | undefined {
+  return SCENARIO_LEVEL_UP_SHOUTS.find((s) => s.characterId === characterId);
+}
