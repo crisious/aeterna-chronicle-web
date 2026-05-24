@@ -5555,3 +5555,26 @@ export function getItemRarityDescription(rarity: ItemRarity): ItemRarityDescript
 export function listItemRaritiesAscending(): readonly ItemRarity[] {
   return ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-119: 전투 시작 동료 외침 — 6 동료 1:1
+// 첫 전투 진입 시 화면 상단에 짧게 표시되는 동료의 한 줄 외침.
+// ════════════════════════════════════════════════════════════════
+
+export interface BattleOpeningBark {
+  companionObsidianId: string;
+  barkLine: string;
+}
+
+export const SCENARIO_BATTLE_OPENING_BARKS: readonly BattleOpeningBark[] = [
+  { companionObsidianId: 'seraphine',      barkLine: '"길은 내가 본다 — 너희는 신호만 따라!"' },
+  { companionObsidianId: 'maestro_crio',   barkLine: '"60년 거래의 첫 규칙, 살아 남는 자가 정보를 가진다."' },
+  { companionObsidianId: 'ignara',         barkLine: '"불꽃은 멈추지 않는다 — 시작하자!"' },
+  { companionObsidianId: 'benjamin_cross', barkLine: '"증거는 시체가 말한다. 끝내자."' },
+  { companionObsidianId: 'reina',          barkLine: '"교단의 약점을 알아 — 약점부터 친다."' },
+  { companionObsidianId: 'urgrom',         barkLine: '"북방의 봉인은 흔들리지 않는다. 나도 그렇다."' },
+];
+
+export function getBattleOpeningBark(companionObsidianId: string): BattleOpeningBark | undefined {
+  return SCENARIO_BATTLE_OPENING_BARKS.find((b) => b.companionObsidianId === companionObsidianId);
+}
