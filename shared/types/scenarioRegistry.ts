@@ -5844,3 +5844,60 @@ export function getInventoryStateByOccupancy(occupancyPercent: number): Inventor
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-125: 🎯 난이도 narrative — easy/normal/hard/nightmare 4종
+// 게임 시작 시 선택하는 난이도 + 각 난이도 modifier 와 추천 대상.
+// ════════════════════════════════════════════════════════════════
+
+export type DifficultyTier = 'easy' | 'normal' | 'hard' | 'nightmare';
+
+export interface DifficultyNarrative {
+  difficulty: DifficultyTier;
+  label: string;
+  /** 추천 대상 */
+  recommended: string;
+  /** modifier 한 줄 요약 */
+  modifierSummary: string;
+  /** flavor narrative */
+  flavor: string;
+}
+
+export const SCENARIO_DIFFICULTY_NARRATIVES: readonly DifficultyNarrative[] = [
+  {
+    difficulty: 'easy',
+    label: '쉬움',
+    recommended: 'RPG 입문자 / 스토리 우선 플레이',
+    modifierSummary: '적 HP -25%, 동료 회복 +20%, 사망 페널티 없음',
+    flavor: '— 길은 부드럽고, 동료의 호흡은 깊습니다. 이야기에 집중하기 좋은 결입니다.',
+  },
+  {
+    difficulty: 'normal',
+    label: '보통',
+    recommended: '표준 RPG 경험을 원하는 플레이어',
+    modifierSummary: '모든 modifier 기준값, 표준 보상',
+    flavor: '— 게임이 의도한 균형의 결. 모든 시스템이 설계된 그대로 작동합니다.',
+  },
+  {
+    difficulty: 'hard',
+    label: '어려움',
+    recommended: 'ATB / 빌드 / 콤보 시스템에 익숙한 플레이어',
+    modifierSummary: '적 HP +30%, 적 ATB 속도 +15%, 보상 +10%',
+    flavor: '— 길은 좁고, 매 turn 마다 선택의 무게가 또렷합니다. 빌드가 곧 답이 됩니다.',
+  },
+  {
+    difficulty: 'nightmare',
+    label: '악몽',
+    recommended: '엔드게임 도전자 / 도전 모디파이어 누적자',
+    modifierSummary: '적 HP +60%, 적 패시브 +1 단계, 동료 사망 영구화',
+    flavor: '— 모든 호흡이 마지막이 될 수 있습니다. 가장 작은 실수도 회복되지 않습니다.',
+  },
+];
+
+export function getDifficultyNarrative(difficulty: DifficultyTier): DifficultyNarrative | undefined {
+  return SCENARIO_DIFFICULTY_NARRATIVES.find((d) => d.difficulty === difficulty);
+}
+
+export function listDifficultyTiersAscending(): readonly DifficultyTier[] {
+  return ['easy', 'normal', 'hard', 'nightmare'];
+}
