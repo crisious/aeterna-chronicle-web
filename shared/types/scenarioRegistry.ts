@@ -5166,3 +5166,91 @@ export function getChapterTransition(fromChapter: number): ChapterTransitionNarr
 export function getChapterTransitionTo(toChapter: number): ChapterTransitionNarrative | undefined {
   return SCENARIO_CHAPTER_TRANSITIONS.find((t) => t.toChapter === toChapter);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-113: 12 신 narrative — SCENARIO_DEITIES 12종 (창세 11 + 레테 배제)
+// 각 신의 성격/관장/믿음의 안내 narrative.
+// ════════════════════════════════════════════════════════════════
+
+export interface DeityNarrative {
+  /** SCENARIO_DEITIES.obsidianId 와 1:1 매칭 */
+  deityObsidianId: string;
+  /** 신성 표상 — 한 줄 anchor */
+  signature: string;
+  /** 신앙 narrative — 신자/추종자에게 전해지는 핵심 호흡 */
+  doctrine: string;
+}
+
+export const SCENARIO_DEITY_NARRATIVES: readonly DeityNarrative[] = [
+  {
+    deityObsidianId: 'fabius',
+    signature: '— 모든 실타래의 끝을 보는 운명의 시선.',
+    doctrine: '운명은 선택의 부재가 아니라 선택의 무게다. 파비우스는 그 무게를 기록한다.',
+  },
+  {
+    deityObsidianId: 'chronai',
+    signature: '— 모래시계의 첫 알갱이를 떨어뜨리는 손.',
+    doctrine: '시간은 흐르지 않고 쌓인다. 크로나이는 쌓인 순간들이 무너지지 않도록 지킨다.',
+  },
+  {
+    deityObsidianId: 'verda',
+    signature: '— 첫 잎새가 돋는 호흡.',
+    doctrine: '생명은 빛이나 어둠이 아니라 호흡이다. 베르다는 모든 호흡의 균형을 본다.',
+  },
+  {
+    deityObsidianId: 'ignarus',
+    signature: '— 꺼지지 않는 최초의 불꽃을 든 신.',
+    doctrine: '불꽃은 파괴가 아니라 의지다. 이그나루스는 시조의 손에 의지의 첫 빛을 건넸다.',
+  },
+  {
+    deityObsidianId: 'akius',
+    signature: '— 그림자에게도 길을 내어 주는 빛.',
+    doctrine: '빛은 어둠을 부정하지 않는다. 아키우스는 모든 그림자가 자기 자리를 찾도록 한다.',
+  },
+  {
+    deityObsidianId: 'salome',
+    signature: '— 끝의 자락을 단정히 접는 손.',
+    doctrine: '죽음은 단절이 아니라 매듭이다. 살로메는 매듭이 풀리지 않도록 마지막 호흡을 받친다.',
+  },
+  {
+    deityObsidianId: 'martius',
+    signature: '— 검을 거두는 순간의 균형.',
+    doctrine: '전쟁은 폭력이 아니라 결단이다. 마르티우스는 결단이 무모해지지 않도록 칼끝을 누른다.',
+  },
+  {
+    deityObsidianId: 'neptilus',
+    signature: '— 가장 깊은 곳에서 일어나는 첫 파도.',
+    doctrine: '바다는 길을 막는 것이 아니라 길을 잇는다. 넵틸루스는 그 길의 안전을 관장한다.',
+  },
+  {
+    deityObsidianId: 'terus',
+    signature: '— 발 아래의 단단한 침묵.',
+    doctrine: '대지는 약속이다. 테루스는 그 약속이 어떤 폭풍에도 부서지지 않도록 한다.',
+  },
+  {
+    deityObsidianId: 'aerus',
+    signature: '— 닿지 않으나 모든 것을 옮기는 호흡.',
+    doctrine: '바람은 형태가 없지만 방향을 가진다. 아에루스는 방향을 잃지 않도록 한다.',
+  },
+  {
+    deityObsidianId: 'oneiros',
+    signature: '— 잠든 자의 눈꺼풀 안쪽에 흐르는 빛.',
+    doctrine: '꿈은 도피가 아니라 다른 길이다. 오네이로스는 잠 속에서도 답을 찾을 수 있도록 안내한다.',
+  },
+  {
+    deityObsidianId: 'lethe',
+    signature: '— 창세에서 배제된, 거대한 눈들의 집합체.',
+    doctrine: '망각은 구원이 아니다. 레테의 안내는 모든 호흡을 단절시키는 단 하나의 길로 귀결된다.',
+  },
+];
+
+export function getDeityNarrative(deityObsidianId: string): DeityNarrative | undefined {
+  return SCENARIO_DEITY_NARRATIVES.find((d) => d.deityObsidianId === deityObsidianId);
+}
+
+export function listDeityNarrativesByCreation(inCreation: boolean): readonly DeityNarrative[] {
+  const ids = new Set(
+    SCENARIO_DEITIES.filter((d) => d.inCreation === inCreation).map((d) => d.obsidianId),
+  );
+  return SCENARIO_DEITY_NARRATIVES.filter((n) => ids.has(n.deityObsidianId));
+}
