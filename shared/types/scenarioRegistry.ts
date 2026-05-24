@@ -9720,3 +9720,38 @@ export function getUserFeedbackCategoryNarrative(category: UserFeedbackCategory)
 export function listUserFeedbackCategoriesByPriority(): readonly UserFeedbackCategoryNarrative[] {
   return [...SCENARIO_USER_FEEDBACK_CATEGORIES].sort((a, b) => a.priority - b.priority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-210: 🎯 콘텐츠 등급 라벨 SSOT — 5 등급 (한국 게임물관리위원회 기반)
+// ════════════════════════════════════════════════════════════════
+
+export type ContentRating = 'all' | 'twelve_plus' | 'fifteen_plus' | 'teen' | 'mature';
+
+export interface ContentRatingNarrative {
+  rating: ContentRating;
+  label: string;
+  minAge: number;
+  uiColor: string;
+  reason: string;
+}
+
+export const SCENARIO_CONTENT_RATING_LABELS: readonly ContentRatingNarrative[] = [
+  { rating: 'all',          label: '전체 이용가',    minAge: 0,  uiColor: '#5fbf5f', reason: '폭력성 / 선정성 없음. 전 연령 권장.' },
+  { rating: 'twelve_plus',  label: '12세 이용가',    minAge: 12, uiColor: '#9fcf5f', reason: '약한 판타지 폭력 / 단순 대결 묘사.' },
+  { rating: 'fifteen_plus', label: '15세 이용가',    minAge: 15, uiColor: '#ffb720', reason: '전투 묘사 + 캐릭터 사망 + 어두운 narrative.' },
+  { rating: 'teen',         label: '청소년 이용가',  minAge: 17, uiColor: '#ff8040', reason: '강한 전투 묘사 + 동료 배신 / 죽음 서사.' },
+  { rating: 'mature',       label: '청소년 이용불가', minAge: 19, uiColor: '#d04040', reason: '강한 폭력 / 묘사 + 성인 주제. NG+3 이상 잠금 컨텐츠 포함.' },
+];
+
+export function getContentRatingNarrative(rating: ContentRating): ContentRatingNarrative | undefined {
+  return SCENARIO_CONTENT_RATING_LABELS.find((r) => r.rating === rating);
+}
+
+export function classifyContentRatingByAge(age: number): ContentRatingNarrative {
+  const ascending = [...SCENARIO_CONTENT_RATING_LABELS].sort((a, b) => a.minAge - b.minAge);
+  let current = ascending[0];
+  for (const r of ascending) {
+    if (age >= r.minAge) current = r;
+  }
+  return current;
+}
