@@ -9220,3 +9220,40 @@ export function classifyInputLatencyMs(latencyMs: number): InputLatencyTierNarra
   }
   return ascending[ascending.length - 1];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-195: 🎯 네트워크 품질 tier SSOT — 4 tier (excellent~poor)
+// 멀티플레이어 / 클라우드 세이브 / WebSocket 연결 품질 분류.
+// ════════════════════════════════════════════════════════════════
+
+export type NetworkQualityTier = 'excellent' | 'good' | 'acceptable' | 'poor';
+
+export interface NetworkQualityNarrative {
+  tier: NetworkQualityTier;
+  label: string;
+  /** ping 임계값 (ms, 미만) */
+  maxPingMs: number;
+  /** packet loss 임계값 (%, 미만) */
+  maxPacketLossPercent: number;
+  /** UI 아이콘 */
+  icon: string;
+}
+
+export const SCENARIO_NETWORK_QUALITY_TIERS: readonly NetworkQualityNarrative[] = [
+  { tier: 'excellent',  label: '최상',   maxPingMs: 30,  maxPacketLossPercent: 0.5, icon: '●●●●' },
+  { tier: 'good',       label: '양호',   maxPingMs: 80,  maxPacketLossPercent: 2,   icon: '●●●○' },
+  { tier: 'acceptable', label: '허용',   maxPingMs: 150, maxPacketLossPercent: 5,   icon: '●●○○' },
+  { tier: 'poor',       label: '저조',   maxPingMs: 300, maxPacketLossPercent: 10,  icon: '●○○○' },
+];
+
+export function getNetworkQualityNarrative(tier: NetworkQualityTier): NetworkQualityNarrative | undefined {
+  return SCENARIO_NETWORK_QUALITY_TIERS.find((n) => n.tier === tier);
+}
+
+export function classifyNetworkQuality(pingMs: number, packetLossPercent: number): NetworkQualityNarrative {
+  const ascending = [...SCENARIO_NETWORK_QUALITY_TIERS].sort((a, b) => a.maxPingMs - b.maxPingMs);
+  for (const t of ascending) {
+    if (pingMs < t.maxPingMs && packetLossPercent < t.maxPacketLossPercent) return t;
+  }
+  return ascending[ascending.length - 1];
+}
