@@ -5414,3 +5414,82 @@ export const SCENARIO_GAME_ENTRY_NARRATIVES: readonly GameEntryNarrative[] = [
 export function getGameEntryNarrative(mode: GameEntryMode): GameEntryNarrative | undefined {
   return SCENARIO_GAME_ENTRY_NARRATIVES.find((n) => n.mode === mode);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-117: 클래스 레벨업 narrative — 6 클래스 × 3 milestone (lv 10/20/30) = 18
+// 각 클래스 milestone 레벨 도달 시 화면 anchor + 빌드 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type ClassKey =
+  | 'ether_knight'      // 에테르 기사
+  | 'memorist'          // 기억술사
+  | 'shadow_weaver'     // 그림자 직조사
+  | 'memory_destroyer'  // 기억 파괴자
+  | 'time_guardian'     // 시간 수호자
+  | 'void_wanderer';    // 허공의 방랑자
+
+export interface ClassLevelUpNarrative {
+  classKey: ClassKey;
+  className: string;
+  milestoneLevel: 10 | 20 | 30;
+  /** 도달 anchor — 1줄 */
+  anchorLine: string;
+  /** 빌드 hint — 다음 어떤 스킬을 키울지 */
+  buildHint: string;
+}
+
+const MILESTONES: readonly (10 | 20 | 30)[] = [10, 20, 30] as const;
+
+function classMilestone(
+  classKey: ClassKey,
+  className: string,
+  level: 10 | 20 | 30,
+  anchor: string,
+  hint: string,
+): ClassLevelUpNarrative {
+  return { classKey, className, milestoneLevel: level, anchorLine: anchor, buildHint: hint };
+}
+
+export const SCENARIO_CLASS_LEVEL_UP_NARRATIVES: readonly ClassLevelUpNarrative[] = [
+  // 에테르 기사
+  classMilestone('ether_knight', '에테르 기사', 10, '— 에테르 기사의 첫 번째 검결이 자리를 잡습니다.', 'Tier 1 광역 검 스킬 4종을 우선 배치하세요. 방어 패시브 1종 슬롯도 확보합니다.'),
+  classMilestone('ether_knight', '에테르 기사', 20, '— 에테르 기사의 검결이 동료의 호흡에 맞춰 흐릅니다.', 'Tier 2 카운터 스킬 + crit_echo 패시브 조합으로 콤보 기여도를 끌어올리세요.'),
+  classMilestone('ether_knight', '에테르 기사', 30, '— 에테르 기사의 결이 보스 페이즈 전환을 압축합니다.', 'Tier 3+4 광역 강타 + reflect 패시브 — 보스 페이즈 시작 직후 첫 3턴 폭딜 빌드.'),
+  // 기억술사
+  classMilestone('memorist', '기억술사', 10, '— 기억술사의 첫 공명이 호흡을 안정시킵니다.', 'Tier 1 회복 스킬 2종 + mp_regen 패시브 — 파티 지속력 확보가 첫 목표.'),
+  classMilestone('memorist', '기억술사', 20, '— 기억술사의 공명이 동료 신뢰도와 함께 깊어집니다.', 'Tier 2 광역 회복 + 디버프 해제 — 보스전에 대비한 회복 로테이션 구축.'),
+  classMilestone('memorist', '기억술사', 30, '— 기억술사의 공명이 파티 전체 ATB 흐름을 조율합니다.', 'Tier 3+4 ATB 가속 + battle_regen 패시브 — 장기전 최적화 빌드.'),
+  // 그림자 직조사
+  classMilestone('shadow_weaver', '그림자 직조사', 10, '— 그림자 직조사의 첫 회피 무빙이 자리를 잡습니다.', 'Tier 1 회피 스킬 + evasion_up 패시브 — 단일 타겟 위주의 안전 빌드 시작.'),
+  classMilestone('shadow_weaver', '그림자 직조사', 20, '— 그림자 직조사의 직조가 다중 타격으로 펼쳐집니다.', 'Tier 2 다단 히트 + bonus_hit_chance 패시브 — 콤보 기여 빌드.'),
+  classMilestone('shadow_weaver', '그림자 직조사', 30, '— 그림자 직조사의 직조가 보스 약점을 정확히 찌릅니다.', 'Tier 3+4 단일 폭딜 + crit_echo — 보스 약점 노출 타이밍 폭딜 빌드.'),
+  // 기억 파괴자
+  classMilestone('memory_destroyer', '기억 파괴자', 10, '— 기억 파괴자의 첫 일격이 봉인을 흔듭니다.', 'Tier 1 강타 스킬 + low_hp_atk_up 패시브 — 위험 감수 빌드 시작.'),
+  classMilestone('memory_destroyer', '기억 파괴자', 20, '— 기억 파괴자의 일격이 페이즈 전이를 가속합니다.', 'Tier 2 광역 파괴 + projectile_reflect — 위협 흡수 + 반격 빌드.'),
+  classMilestone('memory_destroyer', '기억 파괴자', 30, '— 기억 파괴자의 일격이 신성 봉인의 결을 쪼개기 시작합니다.', 'Tier 3+4 극단 폭딜 + cheat_death — 최후의 일격 빌드.'),
+  // 시간 수호자
+  classMilestone('time_guardian', '시간 수호자', 10, '— 시간 수호자의 첫 정지 결이 자리를 잡습니다.', 'Tier 1 ATB 조작 + defense_up_conditional 패시브 — 통제력 빌드 시작.'),
+  classMilestone('time_guardian', '시간 수호자', 20, '— 시간 수호자의 결이 보스 행동 우선권을 빼앗습니다.', 'Tier 2 시간 정지 + reverse — 보스 행동 1턴 미루기 빌드.'),
+  classMilestone('time_guardian', '시간 수호자', 30, '— 시간 수호자의 결이 페이즈 전체의 흐름을 통제합니다.', 'Tier 3+4 시간 가속 + battle_regen — 페이즈 전체 통제 + 회복 빌드.'),
+  // 허공의 방랑자
+  classMilestone('void_wanderer', '허공의 방랑자', 10, '— 허공의 방랑자의 첫 발걸음이 균열을 가볍게 짚습니다.', 'Tier 1 이동 + move_damage_aura 패시브 — 기동력 + 지속 피해 빌드.'),
+  classMilestone('void_wanderer', '허공의 방랑자', 20, '— 허공의 방랑자의 발걸음이 보스 패턴을 우회합니다.', 'Tier 2 텔레포트 + poison_amplify — 회피 + DoT 증폭 빌드.'),
+  classMilestone('void_wanderer', '허공의 방랑자', 30, '— 허공의 방랑자의 발걸음이 보스 위치를 분단합니다.', 'Tier 3+4 광역 이동 + auto_resurrect — 분단 + 부활 사이클 빌드.'),
+];
+
+export function getClassLevelUpNarrative(
+  classKey: ClassKey,
+  milestoneLevel: 10 | 20 | 30,
+): ClassLevelUpNarrative | undefined {
+  return SCENARIO_CLASS_LEVEL_UP_NARRATIVES.find(
+    (n) => n.classKey === classKey && n.milestoneLevel === milestoneLevel,
+  );
+}
+
+export function listClassLevelUpNarratives(classKey: ClassKey): readonly ClassLevelUpNarrative[] {
+  return SCENARIO_CLASS_LEVEL_UP_NARRATIVES.filter((n) => n.classKey === classKey);
+}
+
+export function listClassMilestones(): readonly (10 | 20 | 30)[] {
+  return MILESTONES;
+}
