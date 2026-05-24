@@ -4534,3 +4534,74 @@ export function listZoneEntryNarrativesByChapter(chapter: number): readonly Zone
   );
   return SCENARIO_ZONE_ENTRY_NARRATIVES.filter((n) => zoneIdsInChapter.has(n.zoneObsidianId));
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-104: BGM narrative — zoneSeeds bgm id 별 분위기 intent
+// 42 unique bgm id 1:1 매핑. zoneSeeds.bgm 에서 참조하는 모든 id 커버.
+// ════════════════════════════════════════════════════════════════
+
+export type BgmIntensity = 'calm' | 'mystery' | 'tension' | 'combat' | 'climactic';
+
+export interface BgmNarrative {
+  /** zoneSeeds.bgm 와 1:1 매칭 */
+  bgmId: string;
+  /** 곡 분위기 한글 명 */
+  mood: string;
+  /** 곡이 의도하는 narrative 효과 */
+  intent: string;
+  /** 강도 분류 (UI/loadout 결정에 사용) */
+  intensity: BgmIntensity;
+}
+
+export const SCENARIO_BGM_NARRATIVES: readonly BgmNarrative[] = [
+  { bgmId: 'argentium_theme', mood: '제국의 그림자', intent: '잿빛 황궁의 무거운 통제 — 시민의 침묵을 음으로 압축.', intensity: 'tension' },
+  { bgmId: 'dungeon_sewer', mood: '하수도 잠입', intent: '물방울과 저음 드론으로 잠입 긴장도 유지.', intensity: 'mystery' },
+  { bgmId: 'golden_tower', mood: '황금 탑', intent: '시간이 느려지는 탑 내부 — 신성과 위협을 동시에 환기.', intensity: 'climactic' },
+  { bgmId: 'silvanhome_theme', mood: '엘파리스의 숲', intent: '말라투스 잎새 사이 빛의 떨림 — 안전과 신비의 균형.', intensity: 'calm' },
+  { bgmId: 'ancient_tree', mood: '고목의 호흡', intent: '말라투스 고목 둘레의 봉인 공명 — 저음 합창 중심.', intensity: 'mystery' },
+  { bgmId: 'mist_swamp', mood: '안개 늪지', intent: '낮은 현 + 휘파람 모티프로 길 잃은 감각 유도.', intensity: 'mystery' },
+  { bgmId: 'elf_sanctum', mood: '엘프 성소', intent: '하프와 합창 — 위계와 외교의 무게.', intensity: 'calm' },
+  { bgmId: 'crystal_cave', mood: '결정 동굴', intent: '에테르 결정 공명 — 글래스 hits 중심의 청량한 미스터리.', intensity: 'mystery' },
+  { bgmId: 'erebos_theme', mood: '에레보스 폐허', intent: '꺼진 도시의 잔향 — 운하 위 검은 물결을 첼로로 묘사.', intensity: 'mystery' },
+  { bgmId: 'ruins_center', mood: '폐허 중심부', intent: '에레보스 깊은 곳 — 신성 기억 파편의 진동을 저음으로 암시.', intensity: 'tension' },
+  { bgmId: 'forgotten_cathedral', mood: '잊혀진 대성당', intent: '오르간 + 합창 — 망각의 신앙이 가시화되는 순간.', intensity: 'tension' },
+  { bgmId: 'catacomb_dark', mood: '카타콤의 정적', intent: '거의 무음에 가까운 저음 드론 — 발자국의 무게.', intensity: 'mystery' },
+  { bgmId: 'solaris_theme', mood: '솔라리스 사막', intent: '이프리타족 타악기 + 두둠 — 모래의 열기와 부족의 자부심.', intensity: 'calm' },
+  { bgmId: 'storm_desert', mood: '모래 폭풍', intent: '강한 타악 + 휘몰아치는 현 — 시야 차단 위기감.', intensity: 'tension' },
+  { bgmId: 'aether_mine', mood: '에테르 채광 기지', intent: '기계음 + 인부의 노동가 — 자원 통제의 긴장.', intensity: 'tension' },
+  { bgmId: 'ancient_temple', mood: '고대 신전', intent: '솔리안 황금기 잔향 — 라와르 봉인의 신성한 호흡.', intensity: 'mystery' },
+  { bgmId: 'northland_theme', mood: '북방 설원', intent: '얼음 바람 + 합창 — 프레야 부족의 고독한 위엄.', intensity: 'calm' },
+  { bgmId: 'ice_cave', mood: '얼음 동굴', intent: '글래스 + 크리스털 hits — 미끄러지는 정적.', intensity: 'mystery' },
+  { bgmId: 'crystal_peak', mood: '결정 봉우리', intent: '높은 음역대 합창 + 종소리 — 고지의 청정.', intensity: 'mystery' },
+  { bgmId: 'aether_lake', mood: '에테르 호수', intent: '느린 신스 패드 + 물의 반향 — 시간 정지 환영.', intensity: 'calm' },
+  { bgmId: 'britallia_theme', mood: '브리탈리아 항구', intent: '아코디언 + 갈매기 — 항해와 거래의 활기.', intensity: 'calm' },
+  { bgmId: 'black_market', mood: '암시장', intent: '낮은 현 + 빠른 베이스라인 — 은밀한 거래의 긴장.', intensity: 'tension' },
+  { bgmId: 'pirate_lair', mood: '해적 은신처', intent: '거친 드럼 + 어쿠스틱 — 자유와 위험의 공존.', intensity: 'tension' },
+  { bgmId: 'arena_battle', mood: '투기장', intent: '강한 호른 + 군중 함성 샘플 — 결투 직전의 흥분.', intensity: 'combat' },
+  { bgmId: 'oblivion_theme', mood: '망각의 고원', intent: '거대한 합창 + 저음 종 — 4 파편 통합 직전의 무게.', intensity: 'climactic' },
+  { bgmId: 'time_rift', mood: '시간 균열', intent: '리버스 효과 + 신스 — 과거/현재 중첩 감각.', intensity: 'mystery' },
+  { bgmId: 'final_sanctum', mood: '최종 성역', intent: '레테 강림 직전 — 모든 모티프 회상.', intensity: 'climactic' },
+  { bgmId: 'mist_sea_calm', mood: '안개 바다 잔잔', intent: '낮은 현 + 파도 — 항해 휴식 구간.', intensity: 'calm' },
+  { bgmId: 'mist_sea_mystery', mood: '안개 바다 신비', intent: '하프 + 잔향 — 등대지기 회상 톤.', intensity: 'mystery' },
+  { bgmId: 'mist_sea_eerie', mood: '안개 바다 음산', intent: '불협 + 휘파람 — 유령선 접근 경고.', intensity: 'tension' },
+  { bgmId: 'mist_sea_spire_theme', mood: '안개 바다 첨탑', intent: '느린 호른 + 합창 — 봉인 첨탑의 신성.', intensity: 'mystery' },
+  { bgmId: 'mist_sea_abyss_theme', mood: '안개 바다 심연', intent: '강한 저음 + 리버스 — 심해 접근 위기.', intensity: 'tension' },
+  { bgmId: 'abyss_gate_theme', mood: '심연의 문', intent: '거대한 저음 종 + 합창 — 심해 진입 의식.', intensity: 'climactic' },
+  { bgmId: 'sunken_city_theme', mood: '침몰 도시', intent: '리버스 물소리 + 합창 — 망각된 문명의 잔향.', intensity: 'mystery' },
+  { bgmId: 'library_theme', mood: '심해 도서관', intent: '하프 + 페이지 넘기는 효과 — 학자의 정적.', intensity: 'calm' },
+  { bgmId: 'trial_hall_theme', mood: '시험의 전당', intent: '점진적 빌드업 + 합창 — 봉인 시험 진행.', intensity: 'tension' },
+  { bgmId: 'abyss_core_theme', mood: '심연의 핵', intent: '모든 저음 통합 + 종 + 합창 — 최종 봉인 대전.', intensity: 'combat' },
+  { bgmId: 'bgm_temporal_rift_threshold', mood: '시간 균열 입구', intent: '느린 리버스 + 글래스 — 시공 경계.', intensity: 'mystery' },
+  { bgmId: 'bgm_mirror_city', mood: '거울 도시', intent: '에코 + 더블링 신스 — 자기 잔상과 마주.', intensity: 'mystery' },
+  { bgmId: 'bgm_frozen_battlefield', mood: '얼어붙은 전장', intent: '얼음 hits + 군중 함성 잔향 — 과거 전투 재현.', intensity: 'combat' },
+  { bgmId: 'bgm_reverse_forest', mood: '역행의 숲', intent: '리버스 새소리 + 거꾸로 흐르는 현 — 시간 역행 감각.', intensity: 'mystery' },
+  { bgmId: 'bgm_rift_core', mood: '균열의 핵', intent: '모든 시간 모티프 통합 + 거대한 저음 — 시간 보스전.', intensity: 'combat' },
+];
+
+export function getBgmNarrative(bgmId: string): BgmNarrative | undefined {
+  return SCENARIO_BGM_NARRATIVES.find((b) => b.bgmId === bgmId);
+}
+
+export function listBgmNarrativesByIntensity(intensity: BgmIntensity): readonly BgmNarrative[] {
+  return SCENARIO_BGM_NARRATIVES.filter((b) => b.intensity === intensity);
+}
