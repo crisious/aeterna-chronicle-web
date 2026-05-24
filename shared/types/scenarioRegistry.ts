@@ -5578,3 +5578,25 @@ export const SCENARIO_BATTLE_OPENING_BARKS: readonly BattleOpeningBark[] = [
 export function getBattleOpeningBark(companionObsidianId: string): BattleOpeningBark | undefined {
   return SCENARIO_BATTLE_OPENING_BARKS.find((b) => b.companionObsidianId === companionObsidianId);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-120: 🎯 전투 승리 동료 외침 — 6 동료 1:1 (opening 의 대조)
+// ════════════════════════════════════════════════════════════════
+
+export interface BattleVictoryBark {
+  companionObsidianId: string;
+  barkLine: string;
+}
+
+export const SCENARIO_BATTLE_VICTORY_BARKS: readonly BattleVictoryBark[] = [
+  { companionObsidianId: 'seraphine',      barkLine: '"길을 잘 봤다 — 다음 신호도 놓치지 마."' },
+  { companionObsidianId: 'maestro_crio',   barkLine: '"수지가 맞았어. 다음 거래도 이쯤이면 좋겠는데."' },
+  { companionObsidianId: 'ignara',         barkLine: '"불꽃이 멈추지 않았다. 그게 답이다."' },
+  { companionObsidianId: 'benjamin_cross', barkLine: '"증거 정리 완료. 다음 단서로 간다."' },
+  { companionObsidianId: 'reina',          barkLine: '"약점은 예상대로였다. 다음도 같은 방식으로."' },
+  { companionObsidianId: 'urgrom',         barkLine: '"북방의 봉인은 흔들리지 않았다. 우리도."' },
+];
+
+export function getBattleVictoryBark(companionObsidianId: string): BattleVictoryBark | undefined {
+  return SCENARIO_BATTLE_VICTORY_BARKS.find((b) => b.companionObsidianId === companionObsidianId);
+}
