@@ -7647,3 +7647,74 @@ export function getEnvironmentHazardNarrative(kind: EnvironmentHazardKind): Envi
 export function listEnvironmentHazardKinds(): readonly EnvironmentHazardKind[] {
   return ['fire', 'poison', 'spike', 'cliff'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-161: 길드 평판 tier narrative — 5 tier (initiate~master)
+// 기억 수호자단 길드 시스템 (faction_memory_guardian 와 연결).
+// ════════════════════════════════════════════════════════════════
+
+export type GuildRank = 'initiate' | 'member' | 'veteran' | 'elder' | 'master';
+
+export interface GuildRankNarrative {
+  rank: GuildRank;
+  label: string;
+  /** 진입 시 anchor */
+  promotionAnchor: string;
+  /** 잠금 해제되는 권한 */
+  unlockedPermission: string;
+  /** 필요 기여도 점수 (누적 quest 완료) */
+  requiredContribution: number;
+}
+
+export const SCENARIO_GUILD_RANK_NARRATIVES: readonly GuildRankNarrative[] = [
+  {
+    rank: 'initiate',
+    label: '입회자',
+    promotionAnchor: '— 기억 수호자단 입회 — 본부 출입 권한이 열립니다.',
+    unlockedPermission: '본부 1층 출입, 일일 quest 1개 수주 가능.',
+    requiredContribution: 0,
+  },
+  {
+    rank: 'member',
+    label: '정회원',
+    promotionAnchor: '— 정회원 승급 — 동료 정찰단의 신뢰가 자리잡습니다.',
+    unlockedPermission: '본부 2층 출입, 일일 quest 3개 수주, 보급 -5% 할인.',
+    requiredContribution: 20,
+  },
+  {
+    rank: 'veteran',
+    label: '베테랑',
+    promotionAnchor: '— 베테랑 승급 — 봉인 의식 단서 열람 권한.',
+    unlockedPermission: '본부 3층 출입, 주간 raid 참여, 보급 -10%.',
+    requiredContribution: 60,
+  },
+  {
+    rank: 'elder',
+    label: '원로',
+    promotionAnchor: '— 원로 승급 — 카일 봉인 의식 계승자료 열람.',
+    unlockedPermission: '본부 비밀 서고 출입, 동료 합류 quest 제안, 보급 -15%.',
+    requiredContribution: 140,
+  },
+  {
+    rank: 'master',
+    label: '대마스터',
+    promotionAnchor: '— 대마스터 승급 — 기억 수호자단의 결을 함께 짭니다.',
+    unlockedPermission: '모든 권한 + NG+ 회차 인계 시 본부 시작 위치 잠금 해제.',
+    requiredContribution: 300,
+  },
+];
+
+export function getGuildRankNarrative(rank: GuildRank): GuildRankNarrative | undefined {
+  return SCENARIO_GUILD_RANK_NARRATIVES.find((r) => r.rank === rank);
+}
+
+export function getGuildRankByContribution(contribution: number): GuildRankNarrative {
+  const ascending = [...SCENARIO_GUILD_RANK_NARRATIVES].sort((a, b) => a.requiredContribution - b.requiredContribution);
+  let current = ascending[0];
+  for (const r of ascending) {
+    if (contribution >= r.requiredContribution) {
+      current = r;
+    }
+  }
+  return current;
+}
