@@ -7460,3 +7460,53 @@ export function getBranchDecision(decisionId: BranchDecisionId): BranchDecisionN
 export function listBranchDecisionsByChapter(chapter: number): readonly BranchDecisionNarrative[] {
   return SCENARIO_BRANCH_DECISIONS.filter((d) => d.chapter === chapter);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-157: 입력 장치 narrative — keyboard/gamepad/touch 3 종
+// 입력 장치 감지 시 표시되는 hint + 권장 단축키 표기.
+// ════════════════════════════════════════════════════════════════
+
+export type InputDeviceKind = 'keyboard' | 'gamepad' | 'touch';
+
+export interface InputDeviceNarrative {
+  device: InputDeviceKind;
+  label: string;
+  /** 감지 anchor */
+  detectionAnchor: string;
+  /** 권장 사용 hint */
+  recommendedHint: string;
+  /** 단축키 표기 prefix (예: "WASD" / "L-stick" / "swipe") */
+  shortcutPrefix: string;
+}
+
+export const SCENARIO_INPUT_DEVICE_NARRATIVES: readonly InputDeviceNarrative[] = [
+  {
+    device: 'keyboard',
+    label: '키보드',
+    detectionAnchor: '— 키보드 입력이 감지되었습니다.',
+    recommendedHint: 'WASD 이동, E 상호작용, 1~4 퀵슬롯. 마우스 클릭은 보조 입력.',
+    shortcutPrefix: 'WASD',
+  },
+  {
+    device: 'gamepad',
+    label: '게임패드',
+    detectionAnchor: '— 게임패드가 연결되었습니다.',
+    recommendedHint: 'L-stick 이동, A 상호작용, R-trigger 퀵슬롯. PC/Steam Deck 모두 동일.',
+    shortcutPrefix: 'L-stick',
+  },
+  {
+    device: 'touch',
+    label: '터치',
+    detectionAnchor: '— 터치 입력이 감지되었습니다.',
+    recommendedHint: '가상 D-pad 이동, 화면 우측 버튼 상호작용. 모바일/태블릿 자동 활성화.',
+    shortcutPrefix: 'swipe',
+  },
+];
+
+export function getInputDeviceNarrative(device: InputDeviceKind): InputDeviceNarrative | undefined {
+  return SCENARIO_INPUT_DEVICE_NARRATIVES.find((d) => d.device === device);
+}
+
+export function listInputDevices(): readonly InputDeviceKind[] {
+  return ['keyboard', 'gamepad', 'touch'];
+}
