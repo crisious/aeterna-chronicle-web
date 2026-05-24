@@ -7288,3 +7288,52 @@ export const SCENARIO_COMBO_FAMILY_NARRATIVES: readonly ComboFamilyNarrative[] =
 export function getComboFamilyNarrative(classKey: ClassKey): ComboFamilyNarrative | undefined {
   return SCENARIO_COMBO_FAMILY_NARRATIVES.find((c) => c.classKey === classKey);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-154: 패시브 효과 14 type 라벨 SSOT — Phase 55 S4 formatter
+// client/src/skills/passiveEffectFormatter.ts 의 14 type 한글 라벨 SSOT 화.
+// ════════════════════════════════════════════════════════════════
+
+export type PassiveEffectType =
+  | 'mp_regen' | 'evasion_up' | 'bonus_hit_chance' | 'low_hp_atk_up' | 'defense_up_conditional'
+  | 'reflect' | 'projectile_reflect' | 'cheat_death' | 'battle_regen'
+  | 'crit_echo' | 'move_damage_aura' | 'auto_resurrect' | 'poison_amplify' | 'drain_amplify';
+
+export interface PassiveEffectLabel {
+  effectType: PassiveEffectType;
+  label: string;
+  /** 분류: 상시 / 트리거 / 기타 */
+  classification: 'constant' | 'trigger' | 'amplify';
+  /** 짧은 설명 */
+  description: string;
+}
+
+export const SCENARIO_PASSIVE_EFFECT_LABELS: readonly PassiveEffectLabel[] = [
+  // 상시 5종 (Phase 55 S1+S2)
+  { effectType: 'mp_regen',               label: 'MP 회복',         classification: 'constant', description: '턴마다 일정량 MP 자동 회복.' },
+  { effectType: 'evasion_up',             label: '회피 증가',       classification: 'constant', description: '회피 확률 일정 비율 증가.' },
+  { effectType: 'bonus_hit_chance',       label: '명중 보너스',     classification: 'constant', description: '명중 확률 일정 비율 증가.' },
+  { effectType: 'low_hp_atk_up',          label: '저 HP 공격력',    classification: 'constant', description: 'HP 가 임계점 이하일 때 공격력 증가.' },
+  { effectType: 'defense_up_conditional', label: '조건부 방어',     classification: 'constant', description: '특정 조건 (예: 전열) 충족 시 방어 증가.' },
+  // 트리거 4종 (Phase 55 S3)
+  { effectType: 'reflect',             label: '반사',             classification: 'trigger', description: '받은 피해의 일정 비율을 적에게 반사.' },
+  { effectType: 'projectile_reflect',  label: '투사체 반사',      classification: 'trigger', description: '원거리 투사체 피해를 받기 전 반사.' },
+  { effectType: 'cheat_death',         label: '죽음 회피',        classification: 'trigger', description: '치명 피해 1회 무효화 (전투당 1회).' },
+  { effectType: 'battle_regen',        label: '전투 회복',        classification: 'trigger', description: '전투 중 일정 턴마다 HP 자동 회복.' },
+  // 기타 4종 (Phase 55 S5~S7)
+  { effectType: 'crit_echo',           label: '크리티컬 에코',    classification: 'amplify', description: '치명타 발동 시 후속 추가 피해.' },
+  { effectType: 'move_damage_aura',    label: '이동 피해 오라',   classification: 'amplify', description: '이동 시 주변 적에게 지속 피해.' },
+  { effectType: 'auto_resurrect',      label: '자동 부활',        classification: 'trigger', description: '사망 시 일정 시간 후 자동 부활.' },
+  { effectType: 'poison_amplify',      label: '독 증폭',          classification: 'amplify', description: '시전자 측 DoT (독) 피해 증폭.' },
+  { effectType: 'drain_amplify',       label: '흡혈 증폭',        classification: 'amplify', description: '시전자 측 lifesteal 효율 증폭 (deferred).' },
+];
+
+export function getPassiveEffectLabel(effectType: PassiveEffectType): PassiveEffectLabel | undefined {
+  return SCENARIO_PASSIVE_EFFECT_LABELS.find((p) => p.effectType === effectType);
+}
+
+export function listPassiveEffectsByClassification(
+  classification: 'constant' | 'trigger' | 'amplify',
+): readonly PassiveEffectLabel[] {
+  return SCENARIO_PASSIVE_EFFECT_LABELS.filter((p) => p.classification === classification);
+}
