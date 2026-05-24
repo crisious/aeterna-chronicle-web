@@ -7510,3 +7510,35 @@ export function getInputDeviceNarrative(device: InputDeviceKind): InputDeviceNar
 export function listInputDevices(): readonly InputDeviceKind[] {
   return ['keyboard', 'gamepad', 'touch'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-158: 제작 레시피 카테고리 narrative — 4 종 (weapon/armor/consumable/material)
+// 제작 UI 탭 + 입력 자원 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type CraftCategoryKey = 'weapon' | 'armor' | 'consumable' | 'material';
+
+export interface CraftCategoryNarrative {
+  category: CraftCategoryKey;
+  label: string;
+  sortOrder: number;
+  /** 입력 자원 hint */
+  inputHint: string;
+  /** 결과물 anchor */
+  outputAnchor: string;
+}
+
+export const SCENARIO_CRAFT_RECIPE_CATEGORIES: readonly CraftCategoryNarrative[] = [
+  { category: 'weapon',     label: '무기',      sortOrder: 1, inputHint: 'rare 등급 이상의 결정 + uncommon 합금 + 강화 룬.', outputAnchor: '— 새 무기가 작업대에서 빛을 머금고 자리잡습니다.' },
+  { category: 'armor',      label: '방어구',   sortOrder: 2, inputHint: 'uncommon 가죽/금속 + 강화 룬 + 보호 인장.', outputAnchor: '— 새 방어구의 결이 견고하게 마무리됩니다.' },
+  { category: 'consumable', label: '소모품',   sortOrder: 3, inputHint: '약초 + 회복 결정 + 정제수.', outputAnchor: '— 소모품이 가방에 적절한 갯수로 분류됩니다.' },
+  { category: 'material',   label: '제작 재료', sortOrder: 4, inputHint: 'common 자원 ≥ 5 + 정제 도구.', outputAnchor: '— 정제된 재료가 더 높은 등급의 입력으로 자리잡습니다.' },
+];
+
+export function getCraftCategoryNarrative(category: CraftCategoryKey): CraftCategoryNarrative | undefined {
+  return SCENARIO_CRAFT_RECIPE_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listCraftCategoriesSorted(): readonly CraftCategoryNarrative[] {
+  return [...SCENARIO_CRAFT_RECIPE_CATEGORIES].sort((a, b) => a.sortOrder - b.sortOrder);
+}
