@@ -9844,3 +9844,33 @@ export function getPushNotificationCategoryNarrative(category: PushNotificationC
 export function listPushNotificationCategories(): readonly PushNotificationCategory[] {
   return ['event', 'friend', 'quest', 'system'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-214: 리더보드 카테고리 SSOT — 5 카테고리
+// ════════════════════════════════════════════════════════════════
+
+export type LeaderboardCategory = 'speedrun' | 'highscore' | 'combo' | 'no_death' | 'no_damage';
+
+export interface LeaderboardCategoryNarrative {
+  category: LeaderboardCategory;
+  label: string;
+  sortDirection: 'asc' | 'desc';
+  recordUnit: string;
+  qualificationRequirement: string;
+}
+
+export const SCENARIO_LEADERBOARD_CATEGORIES: readonly LeaderboardCategoryNarrative[] = [
+  { category: 'speedrun',   label: '스피드런',     sortDirection: 'asc',  recordUnit: 'HH:MM:SS', qualificationRequirement: '챕터 1~5 완주 + 100% 진행률 도달.' },
+  { category: 'highscore',  label: '최고 점수',    sortDirection: 'desc', recordUnit: '점수',     qualificationRequirement: '엔딩 A~D 중 하나 도달.' },
+  { category: 'combo',      label: '최대 콤보',    sortDirection: 'desc', recordUnit: '콤보 수',  qualificationRequirement: '단일 전투에서 콤보 50회 이상.' },
+  { category: 'no_death',   label: '논데스 클리어', sortDirection: 'asc',  recordUnit: '플레이 시간', qualificationRequirement: '챕터 1~5 완주 + 사망 0회.' },
+  { category: 'no_damage',  label: '노데미지 보스', sortDirection: 'asc',  recordUnit: '플레이 시간', qualificationRequirement: '보스전 1~5 중 1개 이상 노데미지 클리어.' },
+];
+
+export function getLeaderboardCategoryNarrative(category: LeaderboardCategory): LeaderboardCategoryNarrative | undefined {
+  return SCENARIO_LEADERBOARD_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listLeaderboardCategories(): readonly LeaderboardCategory[] {
+  return ['speedrun', 'highscore', 'combo', 'no_death', 'no_damage'];
+}
