@@ -8482,3 +8482,34 @@ export function getDungeonTrapNarrative(trap: DungeonTrapKind): DungeonTrapNarra
 export function listDungeonTrapKinds(): readonly DungeonTrapKind[] {
   return ['pressure_plate', 'dart', 'falling_floor', 'poison_gas', 'magic_seal'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-176: 날씨 전이 체인 narrative — 5 chain (WeatherKind 간 자연 전이)
+// SCENARIO_WEATHER (sync-123) 와 cross. 한 날씨 → 다음 날씨 자연 흐름 + 확률.
+// ════════════════════════════════════════════════════════════════
+
+export interface WeatherTransitionChain {
+  /** WeatherKind 전이 from→to */
+  from: WeatherKind;
+  to: WeatherKind;
+  /** 전이 확률 (0~1) */
+  transitionProbability: number;
+  /** 전이 anchor */
+  transitionAnchor: string;
+}
+
+export const SCENARIO_WEATHER_TRANSITION_CHAINS: readonly WeatherTransitionChain[] = [
+  { from: 'clear', to: 'rain',  transitionProbability: 0.2, transitionAnchor: '— 맑은 하늘에 구름이 모이며 빗방울이 떨어집니다.' },
+  { from: 'rain',  to: 'storm', transitionProbability: 0.3, transitionAnchor: '— 빗줄기가 거세지며 폭풍우로 바뀝니다.' },
+  { from: 'storm', to: 'rain',  transitionProbability: 0.5, transitionAnchor: '— 폭풍의 결이 가라앉으며 일반 비로 약해집니다.' },
+  { from: 'rain',  to: 'fog',   transitionProbability: 0.25, transitionAnchor: '— 비가 그치며 짙은 안개가 몰려옵니다.' },
+  { from: 'fog',   to: 'clear', transitionProbability: 0.4, transitionAnchor: '— 안개가 천천히 걷히며 풍경이 다시 드러납니다.' },
+];
+
+export function getWeatherTransitionChain(from: WeatherKind, to: WeatherKind): WeatherTransitionChain | undefined {
+  return SCENARIO_WEATHER_TRANSITION_CHAINS.find((c) => c.from === from && c.to === to);
+}
+
+export function listWeatherTransitionsFrom(from: WeatherKind): readonly WeatherTransitionChain[] {
+  return SCENARIO_WEATHER_TRANSITION_CHAINS.filter((c) => c.from === from);
+}
