@@ -9006,3 +9006,36 @@ export function getLocaleLabelNarrative(locale: LocaleCode): LocaleLabelNarrativ
 export function listLocalesByCompleteness(): readonly LocaleLabelNarrative[] {
   return [...SCENARIO_LOCALE_LABELS].sort((a, b) => b.translationCompleteness - a.translationCompleteness);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-190: 🎯 그래픽 벤치마크 프로파일 SSOT — 4 프로파일 (low~ultra)
+// 자동 설정 / 벤치마크 모드의 graphics_quality 매핑.
+// ════════════════════════════════════════════════════════════════
+
+export type BenchmarkProfileKey = 'low' | 'medium' | 'high' | 'ultra';
+
+export interface BenchmarkProfileNarrative {
+  profile: BenchmarkProfileKey;
+  label: string;
+  /** 타겟 FPS */
+  targetFps: number;
+  /** 권장 GPU tier */
+  recommendedGpuTier: string;
+  /** 적용 modifier */
+  modifierSummary: string;
+}
+
+export const SCENARIO_BENCHMARK_PROFILES: readonly BenchmarkProfileNarrative[] = [
+  { profile: 'low',    label: '저사양',  targetFps: 30, recommendedGpuTier: 'Intel HD / 통합 그래픽', modifierSummary: '해상도 720p, 그림자 비활성, 안티앨리어싱 끔.' },
+  { profile: 'medium', label: '중사양',  targetFps: 60, recommendedGpuTier: 'GTX 1050 / GTX 1060',    modifierSummary: '해상도 1080p, 그림자 저, FXAA.' },
+  { profile: 'high',   label: '고사양',  targetFps: 60, recommendedGpuTier: 'GTX 1660 / RTX 2060',    modifierSummary: '해상도 1440p, 그림자 중, MSAA 2x.' },
+  { profile: 'ultra',  label: '최상사양', targetFps: 120, recommendedGpuTier: 'RTX 3070 / RTX 4060 이상', modifierSummary: '해상도 4K, 그림자 고, MSAA 4x + 사후처리.' },
+];
+
+export function getBenchmarkProfileNarrative(profile: BenchmarkProfileKey): BenchmarkProfileNarrative | undefined {
+  return SCENARIO_BENCHMARK_PROFILES.find((p) => p.profile === profile);
+}
+
+export function listBenchmarkProfilesAscending(): readonly BenchmarkProfileKey[] {
+  return ['low', 'medium', 'high', 'ultra'];
+}
