@@ -6193,3 +6193,59 @@ export function getTutorialAnchorLine(step: TutorialStepKey): TutorialAnchorLine
 export function listTutorialAnchorsSorted(): readonly TutorialAnchorLine[] {
   return [...SCENARIO_TUTORIAL_ANCHOR_LINES].sort((a, b) => a.stepOrder - b.stepOrder);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-133: 알림 톤 narrative — info/success/warning/error 4종
+// 시스템 알림 띄울 때 사용하는 톤 별 label + UI color + ARIA priority.
+// ════════════════════════════════════════════════════════════════
+
+export type NotificationTone = 'info' | 'success' | 'warning' | 'error';
+
+export interface NotificationToneNarrative {
+  tone: NotificationTone;
+  label: string;
+  uiColor: string;
+  /** WAI-ARIA live region priority */
+  ariaLive: 'polite' | 'assertive';
+  /** 톤 의미 narrative */
+  intent: string;
+}
+
+export const SCENARIO_NOTIFICATION_TONE_NARRATIVES: readonly NotificationToneNarrative[] = [
+  {
+    tone: 'info',
+    label: '안내',
+    uiColor: '#5f9fff',
+    ariaLive: 'polite',
+    intent: '플레이어가 즉시 반응하지 않아도 되는 단순 안내. 화면 모서리에서 짧게 fade-in/out.',
+  },
+  {
+    tone: 'success',
+    label: '성공',
+    uiColor: '#5fbf5f',
+    ariaLive: 'polite',
+    intent: '행동이 의도대로 완료된 상태. 성취감 anchor — 0.8s 표시 후 자동 소멸.',
+  },
+  {
+    tone: 'warning',
+    label: '경고',
+    uiColor: '#ffb720',
+    ariaLive: 'polite',
+    intent: '게임이 진행되지만 주의가 필요한 상태. 인벤토리 거의 가득, 신뢰도 하락 등.',
+  },
+  {
+    tone: 'error',
+    label: '오류',
+    uiColor: '#d04040',
+    ariaLive: 'assertive',
+    intent: '플레이어 행동이 실패했거나 시스템 문제. 즉시 인지 필요 — 화면 중앙 모달.',
+  },
+];
+
+export function getNotificationToneNarrative(tone: NotificationTone): NotificationToneNarrative | undefined {
+  return SCENARIO_NOTIFICATION_TONE_NARRATIVES.find((n) => n.tone === tone);
+}
+
+export function listNotificationTones(): readonly NotificationTone[] {
+  return ['info', 'success', 'warning', 'error'];
+}
