@@ -9988,7 +9988,7 @@ export const SCENARIO_FRIENDSHIP_LEVELS: readonly FriendshipLevelNarrative[] = [
   { level: 'acquaintance', label: '지인',    minScore: 20,  unlockedInteractions: ['일반 대화', '간단한 의뢰'] },
   { level: 'friend',       label: '친구',    minScore: 50,  unlockedInteractions: ['일반 대화', '의뢰', '선물 교환'] },
   { level: 'close',        label: '가까운',  minScore: 100, unlockedInteractions: ['일반 대화', '의뢰', '선물 교환', '개인 quest 잠금 해제'] },
-  { level: 'best_friend',  label: '절친',    minScore: 200, unlockedInteractions: ['모든 상호작용', '엔딩 분기 영향', '동료 모집'] },
+  { level: 'best_friend',  label: '절친',    minScore: 200, unlockedInteractions: ['일반 대화', '의뢰', '선물 교환', '개인 quest 잠금 해제', '엔딩 분기 영향', '동료 모집'] },
 ];
 
 export function getFriendshipLevelNarrative(level: FriendshipLevel): FriendshipLevelNarrative | undefined {
@@ -10031,4 +10031,34 @@ export function getShopRefreshIntervalNarrative(interval: ShopRefreshInterval): 
 
 export function listShopRefreshIntervals(): readonly ShopRefreshInterval[] {
   return ['hourly', 'daily', 'weekly', 'event'];
+}
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-220: 🎯 캘린더 이벤트 타입 SSOT — 5 종
+// ════════════════════════════════════════════════════════════════
+
+export type CalendarEventType = 'seasonal' | 'weekly_challenge' | 'community' | 'maintenance' | 'lore';
+
+export interface CalendarEventTypeNarrative {
+  event: CalendarEventType;
+  label: string;
+  averageDurationDays: number;
+  notificationPriority: number;
+  description: string;
+}
+
+export const SCENARIO_CALENDAR_EVENT_TYPES: readonly CalendarEventTypeNarrative[] = [
+  { event: 'seasonal',         label: '시즌',       averageDurationDays: 30, notificationPriority: 2, description: '계절 한정 — 시즌 보상 / 한정 NPC.' },
+  { event: 'weekly_challenge', label: '주간 도전',  averageDurationDays: 7,  notificationPriority: 1, description: '매주 갱신 — 누적 시 추가 보상.' },
+  { event: 'community',        label: '커뮤니티',   averageDurationDays: 14, notificationPriority: 2, description: '전 세계 플레이어 협력 — 목표 달성 시 모두 보상.' },
+  { event: 'maintenance',      label: '점검',       averageDurationDays: 1,  notificationPriority: 1, description: '서버 점검 — 게임 일시 중단 + 보상 지급.' },
+  { event: 'lore',             label: '세계관',     averageDurationDays: 3,  notificationPriority: 3, description: '세계관 이벤트 — 한정 lore 단서 + 챕터 분기 영향.' },
+];
+
+export function getCalendarEventTypeNarrative(event: CalendarEventType): CalendarEventTypeNarrative | undefined {
+  return SCENARIO_CALENDAR_EVENT_TYPES.find((e) => e.event === event);
+}
+
+export function listCalendarEventTypesByPriority(): readonly CalendarEventTypeNarrative[] {
+  return [...SCENARIO_CALENDAR_EVENT_TYPES].sort((a, b) => a.notificationPriority - b.notificationPriority);
 }
