@@ -8972,3 +8972,37 @@ export function getLogLevelNarrative(level: LogLevel): LogLevelNarrative | undef
 export function listLogLevelsByPriority(): readonly LogLevelNarrative[] {
   return [...SCENARIO_LOG_LEVELS].sort((a, b) => a.priority - b.priority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-189: 언어 로케일 라벨 SSOT — 4 로케일 (ko/en/ja/zh)
+// i18n 시스템 로케일 + native name + 권장 폰트 패밀리.
+// ════════════════════════════════════════════════════════════════
+
+export type LocaleCode = 'ko_KR' | 'en_US' | 'ja_JP' | 'zh_CN';
+
+export interface LocaleLabelNarrative {
+  locale: LocaleCode;
+  /** 영문 표기 */
+  englishName: string;
+  /** 자국 표기 */
+  nativeName: string;
+  /** 권장 폰트 패밀리 */
+  recommendedFontFamily: string;
+  /** 번역 완성도 (0~1) */
+  translationCompleteness: number;
+}
+
+export const SCENARIO_LOCALE_LABELS: readonly LocaleLabelNarrative[] = [
+  { locale: 'ko_KR', englishName: 'Korean',  nativeName: '한국어',   recommendedFontFamily: 'Galmuri11, Pretendard, Noto Sans KR', translationCompleteness: 1.0 },
+  { locale: 'en_US', englishName: 'English', nativeName: 'English',  recommendedFontFamily: 'Inter, system-ui, sans-serif',        translationCompleteness: 0.85 },
+  { locale: 'ja_JP', englishName: 'Japanese', nativeName: '日本語',   recommendedFontFamily: 'Noto Sans JP, sans-serif',            translationCompleteness: 0.6 },
+  { locale: 'zh_CN', englishName: 'Chinese (Simplified)', nativeName: '简体中文', recommendedFontFamily: 'Noto Sans SC, sans-serif', translationCompleteness: 0.4 },
+];
+
+export function getLocaleLabelNarrative(locale: LocaleCode): LocaleLabelNarrative | undefined {
+  return SCENARIO_LOCALE_LABELS.find((l) => l.locale === locale);
+}
+
+export function listLocalesByCompleteness(): readonly LocaleLabelNarrative[] {
+  return [...SCENARIO_LOCALE_LABELS].sort((a, b) => b.translationCompleteness - a.translationCompleteness);
+}
