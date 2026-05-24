@@ -9939,3 +9939,33 @@ export function getTradeOfferStatusNarrative(status: TradeOfferStatus): TradeOff
 export function listTradeOfferStatuses(): readonly TradeOfferStatus[] {
   return ['pending', 'accepted', 'rejected', 'cancelled'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-217: 탈것 타입 SSOT — 5 종
+// ════════════════════════════════════════════════════════════════
+
+export type MountType = 'horse' | 'ostrich' | 'dragon' | 'airship' | 'teleport_stone';
+
+export interface MountTypeNarrative {
+  mount: MountType;
+  label: string;
+  speedMultiplier: number;
+  unlockRequirement: string;
+  usageHint: string;
+}
+
+export const SCENARIO_MOUNT_TYPES: readonly MountTypeNarrative[] = [
+  { mount: 'horse',          label: '말',          speedMultiplier: 1.5, unlockRequirement: '칸텔라 마을 마구간 quest 완료.',           usageHint: '필드 표준 탈것 — 모든 zone 사용 가능.' },
+  { mount: 'ostrich',        label: '타조',        speedMultiplier: 2.0, unlockRequirement: '솔라리스 사막 quest 완료.',                 usageHint: '사막/모래 지대 전용.' },
+  { mount: 'dragon',         label: '드래곤',      speedMultiplier: 3.0, unlockRequirement: '엔딩 A 도달 + NG+1 진입.',                  usageHint: '비행 가능 — 고원/탑 영역 직접 이동.' },
+  { mount: 'airship',        label: '비공정',      speedMultiplier: 4.0, unlockRequirement: '챕터 5 완료 + 모든 zone 발견.',             usageHint: '맵 자유 이동 — fast travel 대체.' },
+  { mount: 'teleport_stone', label: '순간이동석',  speedMultiplier: 999, unlockRequirement: 'fast travel hub 발견 후 자동.',             usageHint: '발견한 hub 간 즉시 이동.' },
+];
+
+export function getMountTypeNarrative(mount: MountType): MountTypeNarrative | undefined {
+  return SCENARIO_MOUNT_TYPES.find((m) => m.mount === mount);
+}
+
+export function listMountTypesBySpeed(): readonly MountTypeNarrative[] {
+  return [...SCENARIO_MOUNT_TYPES].sort((a, b) => a.speedMultiplier - b.speedMultiplier);
+}
