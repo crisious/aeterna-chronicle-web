@@ -4457,3 +4457,80 @@ export function resolveFieldNpcTemplate(
 export function applyFieldNpcNameToken(text: string, name: string): string {
   return text.replace(/\{name\}/g, name);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-103: zone 진입 narrative — 첫 방문 시 분위기 anchor + 추천 행동
+// SCENARIO_ZONES 9개 한정. obsidianId 기준으로 1:1 매칭한다.
+// ════════════════════════════════════════════════════════════════
+
+export interface ZoneEntryNarrative {
+  /** SCENARIO_ZONES.obsidianId 와 1:1 매칭 */
+  zoneObsidianId: string;
+  /** 진입 분위기 anchor (1~2 문장) */
+  mood: string;
+  /** 추천 행동 hint (퀘스트/탐사/전투 방향) */
+  suggestion: string;
+}
+
+export const SCENARIO_ZONE_ENTRY_NARRATIVES: readonly ZoneEntryNarrative[] = [
+  {
+    zoneObsidianId: 'erebos',
+    mood: '꺼진 가로등이 검은 운하 위로 흔들리고, 기억을 잃은 도시의 그림자가 발자국마다 따라붙습니다.',
+    suggestion: '운하변 폐허에서 첫 신성 기억 파편의 단서를 찾아보세요. 야간 순찰조와의 충돌은 우회가 가능합니다.',
+  },
+  {
+    zoneObsidianId: 'cantela_village',
+    mood: '아침 안개 사이로 기억 소멸 폭풍의 잔열이 가시지 않은 광장이 보입니다. 비어 있는 집의 문들이 반쯤 열려 있습니다.',
+    suggestion: '광장 중앙의 종탑부터 살펴 NPC 생존자와 대화하세요. 폭풍의 진원이 종탑 지하에 있을 가능성이 높습니다.',
+  },
+  {
+    zoneObsidianId: 'silvanheim',
+    mood: '말라투스 고목의 잎이 햇빛을 걸러 초록과 금빛이 교차합니다. 숲은 외부의 망각으로부터 안전한 마지막 피난처입니다.',
+    suggestion: '엘파리스 외교 분기 NPC 를 먼저 만나 통과 허가를 얻으세요. 깊은 숲은 안내인 없이 진입하면 길을 잃습니다.',
+  },
+  {
+    zoneObsidianId: 'malatus_grove',
+    mood: '거대한 고목의 뿌리가 바닥을 가르고 흐릅니다. 기억의 진동이 잎새 끝마다 가벼운 빛으로 맺힙니다.',
+    suggestion: '고목 둘레의 봉인 의식 흔적을 따라가면 실반헤임 파편 단서가 드러납니다. 보스전 전 회복 자원을 보충하세요.',
+  },
+  {
+    zoneObsidianId: 'solaris',
+    mood: '모래 폭풍이 지평선을 흐리고, 이프리타족의 불꽃 봉헌물이 길을 따라 줄지어 있습니다. 발걸음마다 마른 열기가 올라옵니다.',
+    suggestion: '오아시스 마을에서 보급을 마치고 솔리안 유적 입구로 향하세요. 라와르 봉인 의식의 단서가 사막 깊은 곳에 있습니다.',
+  },
+  {
+    zoneObsidianId: 'argentium',
+    mood: '황궁의 첨탑이 잿빛 하늘을 가르고, 거리의 시민들은 표정 없이 같은 동선을 반복합니다. 도시 전체가 무거운 침묵에 잠겨 있습니다.',
+    suggestion: '하수도 입구를 통한 잠입 동선이 안전합니다. 정문 경비대는 통행증 없이는 통과할 수 없습니다.',
+  },
+  {
+    zoneObsidianId: 'palatino_lab',
+    mood: '지하 연구소의 에테르 결정이 청록빛으로 명멸합니다. 실험대 위의 자료들은 황급히 떠난 흔적만 남기고 있습니다.',
+    suggestion: '연구 일지를 회수해 케인의 동선을 추적하세요. 통제실의 봉인 장치를 해제하지 않으면 깊은 구역은 진입 불가입니다.',
+  },
+  {
+    zoneObsidianId: 'oblivion_plateau',
+    mood: '고원의 바람이 기억의 잔재를 흩날립니다. 발 아래 땅은 한때 봉인 의식이 행해졌던 흔적이 또렷합니다.',
+    suggestion: '4 파편을 모두 모은 뒤 진입하세요. 황금 에테르 탑으로 향하는 길은 파편 공명이 있어야 열립니다.',
+  },
+  {
+    zoneObsidianId: 'golden_ether_tower',
+    mood: '탑 내부의 황금빛 에테르 흐름이 모든 층을 관통합니다. 위로 올라갈수록 시간의 흐름이 느리고 무거워집니다.',
+    suggestion: '레테 최종 5페이즈 전 모든 동료의 생존을 확인하세요. 엔딩 A 조건은 4 파편 + 전원 생존입니다.',
+  },
+];
+
+export function getZoneEntryNarrative(
+  zoneObsidianId: string,
+): ZoneEntryNarrative | undefined {
+  return SCENARIO_ZONE_ENTRY_NARRATIVES.find(
+    (n) => n.zoneObsidianId === zoneObsidianId,
+  );
+}
+
+export function listZoneEntryNarrativesByChapter(chapter: number): readonly ZoneEntryNarrative[] {
+  const zoneIdsInChapter = new Set(
+    SCENARIO_ZONES.filter((z) => z.chapter === chapter).map((z) => z.obsidianId),
+  );
+  return SCENARIO_ZONE_ENTRY_NARRATIVES.filter((n) => zoneIdsInChapter.has(n.zoneObsidianId));
+}
