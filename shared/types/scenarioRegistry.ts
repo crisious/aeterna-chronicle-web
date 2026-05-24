@@ -8418,3 +8418,67 @@ export function getDungeonLayoutNarrative(pattern: DungeonLayoutPattern): Dungeo
 export function listDungeonLayoutPatterns(): readonly DungeonLayoutPattern[] {
   return ['linear', 'branching', 'maze', 'circular'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-175: 🎯 던전 함정 narrative — 5 종 (pressure/dart/floor/gas/seal)
+// 던전 함정 발동 시 anchor + 피해 패턴 + 회피 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type DungeonTrapKind = 'pressure_plate' | 'dart' | 'falling_floor' | 'poison_gas' | 'magic_seal';
+
+export interface DungeonTrapNarrative {
+  trap: DungeonTrapKind;
+  label: string;
+  /** 발동 anchor */
+  triggerAnchor: string;
+  /** 피해 형태 */
+  damagePattern: string;
+  /** 회피 hint */
+  avoidanceHint: string;
+}
+
+export const SCENARIO_DUNGEON_TRAPS: readonly DungeonTrapNarrative[] = [
+  {
+    trap: 'pressure_plate',
+    label: '압력판',
+    triggerAnchor: '— 바닥의 결이 한 박자 가라앉습니다.',
+    damagePattern: '단발 ~10% 피해 + 1턴 둔화.',
+    avoidanceHint: '발판 가장자리로 우회. 시야 확인 + 인식 패시브 권장.',
+  },
+  {
+    trap: 'dart',
+    label: '독침',
+    triggerAnchor: '— 벽 사이에서 짧은 휘파람 소리가 들립니다.',
+    damagePattern: '단발 ~15% 피해 + poison DoT (3턴).',
+    avoidanceHint: '회피 패시브 또는 빠른 이동. 독 저항 아이템.',
+  },
+  {
+    trap: 'falling_floor',
+    label: '함정 바닥',
+    triggerAnchor: '— 발 아래의 결이 갑자기 꺾입니다.',
+    damagePattern: '추락 ~25% 피해 + 위치 강제 이동.',
+    avoidanceHint: '점프 또는 시간 수호자 reverse 1턴 활용.',
+  },
+  {
+    trap: 'poison_gas',
+    label: '독 가스',
+    triggerAnchor: '— 짙은 보랏빛 기체가 천장에서 내려옵니다.',
+    damagePattern: '광역 poison DoT (5턴) + 시야 -30%.',
+    avoidanceHint: '광역 정화 스킬 또는 마스크 아이템. 빠른 통과.',
+  },
+  {
+    trap: 'magic_seal',
+    label: '마법 봉인',
+    triggerAnchor: '— 발 밑에 룬 결정이 떠올라 빛납니다.',
+    damagePattern: '광역 ~20% 피해 + 1턴 행동 불능.',
+    avoidanceHint: '디버프 면역 패시브 또는 봉인 해제 스킬. 시야로 사전 확인.',
+  },
+];
+
+export function getDungeonTrapNarrative(trap: DungeonTrapKind): DungeonTrapNarrative | undefined {
+  return SCENARIO_DUNGEON_TRAPS.find((t) => t.trap === trap);
+}
+
+export function listDungeonTrapKinds(): readonly DungeonTrapKind[] {
+  return ['pressure_plate', 'dart', 'falling_floor', 'poison_gas', 'magic_seal'];
+}
