@@ -7926,3 +7926,38 @@ export function getInventorySortOptionNarrative(option: InventorySortOption): In
 export function listInventorySortOptions(): readonly InventorySortOption[] {
   return ['rarity', 'name', 'recent', 'category'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-166: HUD 컴포넌트 label SSOT — 6 컴포넌트
+// HUD orchestrator 가 노출하는 컴포넌트 + 화면 위치 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export type HudComponentKey =
+  | 'status_bar' | 'quick_slots' | 'dialogue' | 'minimap' | 'quest_tracker' | 'notifications';
+
+export type HudAnchor = 'top_left' | 'top_right' | 'top_center' | 'bottom_left' | 'bottom_right' | 'bottom_center';
+
+export interface HudComponentLabel {
+  key: HudComponentKey;
+  label: string;
+  anchor: HudAnchor;
+  /** 짧은 description */
+  description: string;
+}
+
+export const SCENARIO_HUD_COMPONENT_LABELS: readonly HudComponentLabel[] = [
+  { key: 'status_bar',    label: '상태 바',        anchor: 'top_left',     description: 'HP / MP / ATB 게이지 + 동료 portrait.' },
+  { key: 'quick_slots',   label: '퀵슬롯',         anchor: 'bottom_left',  description: '1~4 슬롯 + 단축키 hint 표시.' },
+  { key: 'dialogue',      label: '대화창',         anchor: 'bottom_center', description: 'NPC 대화 + 선택지 UI. 일시정지 동안 활성.' },
+  { key: 'minimap',       label: '미니맵',         anchor: 'top_right',    description: '현재 zone 의 작은 지도 + 지도 범례.' },
+  { key: 'quest_tracker', label: '퀘스트 추적기',  anchor: 'top_center',   description: '진행 중 메인 quest 의 다음 목표 1줄.' },
+  { key: 'notifications', label: '알림',          anchor: 'bottom_right', description: '아이템 획득 / 평판 변화 / 시스템 메시지.' },
+];
+
+export function getHudComponentLabel(key: HudComponentKey): HudComponentLabel | undefined {
+  return SCENARIO_HUD_COMPONENT_LABELS.find((c) => c.key === key);
+}
+
+export function listHudComponentsByAnchor(anchor: HudAnchor): readonly HudComponentLabel[] {
+  return SCENARIO_HUD_COMPONENT_LABELS.filter((c) => c.anchor === anchor);
+}
