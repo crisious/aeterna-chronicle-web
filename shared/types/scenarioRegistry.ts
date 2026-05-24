@@ -5901,3 +5901,60 @@ export function getDifficultyNarrative(difficulty: DifficultyTier): DifficultyNa
 export function listDifficultyTiersAscending(): readonly DifficultyTier[] {
   return ['easy', 'normal', 'hard', 'nightmare'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-126: 저장 슬롯 narrative — manual/auto/quick/checkpoint 4종
+// ════════════════════════════════════════════════════════════════
+
+export type SaveSlotKind = 'manual' | 'auto' | 'quick' | 'checkpoint';
+
+export interface SaveSlotDescription {
+  kind: SaveSlotKind;
+  label: string;
+  triggerSummary: string;
+  defaultSlotCount: number;
+  usageHint: string;
+}
+
+export const SCENARIO_SAVE_SLOT_DESCRIPTIONS: readonly SaveSlotDescription[] = [
+  {
+    kind: 'manual',
+    label: '수동 저장',
+    triggerSummary: '플레이어가 메뉴에서 직접 저장 시',
+    defaultSlotCount: 10,
+    usageHint: '중요한 분기 직전에 별도 슬롯에 저장해 두면 분기 비교에 유용합니다.',
+  },
+  {
+    kind: 'auto',
+    label: '자동 저장',
+    triggerSummary: '챕터 진입, 보스 직전, zone 전환 시 자동',
+    defaultSlotCount: 3,
+    usageHint: '최신 3개가 rotation 으로 유지됩니다. 갑작스러운 종료에 대비된 보험.',
+  },
+  {
+    kind: 'quick',
+    label: '빠른 저장',
+    triggerSummary: '키 단축키 (F5) 1회 누르면 즉시 갱신',
+    defaultSlotCount: 1,
+    usageHint: '단일 슬롯이라 덮어쓰기 됩니다. 시험 빌드 테스트용으로 적합.',
+  },
+  {
+    kind: 'checkpoint',
+    label: '체크포인트',
+    triggerSummary: '메인 퀘스트 milestone 도달 시 자동',
+    defaultSlotCount: 5,
+    usageHint: '챕터별 milestone 5개까지 영구 보존. 회차 비교에 사용합니다.',
+  },
+];
+
+export function getSaveSlotDescription(kind: SaveSlotKind): SaveSlotDescription | undefined {
+  return SCENARIO_SAVE_SLOT_DESCRIPTIONS.find((s) => s.kind === kind);
+}
+
+export function listSaveSlotKinds(): readonly SaveSlotKind[] {
+  return ['manual', 'auto', 'quick', 'checkpoint'];
+}
+
+export function getTotalDefaultSaveSlots(): number {
+  return SCENARIO_SAVE_SLOT_DESCRIPTIONS.reduce((sum, s) => sum + s.defaultSlotCount, 0);
+}
