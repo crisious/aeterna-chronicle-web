@@ -5313,3 +5313,66 @@ export function getMainQuestAcceptNarrative(questCode: string): MainQuestAcceptN
 export function listMainQuestAcceptNarrativesByChapter(chapter: number): readonly MainQuestAcceptNarrative[] {
   return SCENARIO_MAIN_QUEST_ACCEPT_NARRATIVES.filter((n) => n.chapter === chapter);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-115: 동료 이탈 narrative — loyaltyThreshold 미달 시 표시
+// SCENARIO_COMPANIONS 6명 1:1 매칭. 신뢰도 하락 사유 + 이탈 직후 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export interface CompanionFarewellNarrative {
+  /** SCENARIO_COMPANIONS.obsidianId 와 1:1 매칭 */
+  companionObsidianId: string;
+  /** 이탈 직전 사유 — 한 줄 anchor */
+  reasonLine: string;
+  /** 이탈 직후 마지막 대사 — 동료의 마지막 말 */
+  farewellLine: string;
+  /** narrative epilogue — 파티 시점의 떠남 묘사 */
+  partyEpilogue: string;
+}
+
+export const SCENARIO_COMPANION_FAREWELL_NARRATIVES: readonly CompanionFarewellNarrative[] = [
+  {
+    companionObsidianId: 'seraphine',
+    reasonLine: '— 신뢰가 무너지자 세라핀의 눈빛이 한 걸음 물러섭니다.',
+    farewellLine: '"내가 안내했던 길이 결국 너에게는 다른 의미였구나."',
+    partyEpilogue: '세라핀은 잎새의 길 한 갈래로 발걸음을 옮깁니다. 다음 만남은 약속되지 않았습니다.',
+  },
+  {
+    companionObsidianId: 'maestro_crio',
+    reasonLine: '— 마에스트로 크리오가 정보의 무게를 다시 저울에 올립니다.',
+    farewellLine: '"60년 동안 사고팔았지만, 이번 거래만은 잘못 계산했군."',
+    partyEpilogue: '크리오는 운하변의 그림자 속으로 사라지며 마지막 정보 카드 한 장을 떨어뜨립니다.',
+  },
+  {
+    companionObsidianId: 'ignara',
+    reasonLine: '— 이그나의 불꽃이 잠시 호흡을 잃습니다.',
+    farewellLine: '"아버지의 마지막 말이 떠올라. ‘이프리타의 불꽃은 멈추지 않는다’ — 멈춘 건 내 신뢰였어."',
+    partyEpilogue: '이그나는 사막의 모래 폭풍 가장자리로 향합니다. 부족의 화로가 그녀를 기다립니다.',
+  },
+  {
+    companionObsidianId: 'benjamin_cross',
+    reasonLine: '— 벤자민 크로스가 옛 신분증을 손에서 놓아 버립니다.',
+    farewellLine: '"미안해, 에리언. 나는 처음부터 두 자리를 가졌고, 결국 한쪽으로 흘렀어."',
+    partyEpilogue: '벤자민은 잿빛 거리의 한쪽으로 모습을 감춥니다. 그의 다음 행보는 적인지 동행인지 가늠되지 않습니다.',
+  },
+  {
+    companionObsidianId: 'reina',
+    reasonLine: '— 레이나가 마지막 내부 정보를 봉투에 넣어 건넵니다.',
+    farewellLine: '"내가 줄 수 있는 건 여기까지야. 나머지 길은 너희가 골라야 해."',
+    partyEpilogue: '레이나는 교단의 뒷길로 다시 잠적합니다. 봉투 안에는 다음 잠입 경로가 그려져 있습니다.',
+  },
+  {
+    companionObsidianId: 'urgrom',
+    reasonLine: '— 우르그롬이 북방 기억석 사원의 망토를 다시 두릅니다.',
+    farewellLine: '"200년 봉인의 마지막 보루는 내 자리야. 나는 거기로 돌아간다."',
+    partyEpilogue: '우르그롬은 북방의 설원 길로 발걸음을 돌립니다. 사원의 불씨가 그를 안내합니다.',
+  },
+];
+
+export function getCompanionFarewellNarrative(
+  companionObsidianId: string,
+): CompanionFarewellNarrative | undefined {
+  return SCENARIO_COMPANION_FAREWELL_NARRATIVES.find(
+    (n) => n.companionObsidianId === companionObsidianId,
+  );
+}
