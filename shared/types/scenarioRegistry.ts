@@ -5036,3 +5036,76 @@ export function getUniversalGameOver(): GameOverNarrative {
   }
   return universal;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-111: 보스 승리 narrative — SCENARIO_BOSSES 9 종 종결부
+// boss intro 의 대조. 승리 직후 화면 표시되는 종결 anchor + reward hint.
+// ════════════════════════════════════════════════════════════════
+
+export interface BossVictoryNarrative {
+  /** SCENARIO_BOSSES.obsidianId 와 1:1 매칭 */
+  bossObsidianId: string;
+  /** 종결 anchor — 보스 쓰러진 직후 1줄 */
+  closingLine: string;
+  /** 보상 hint — 획득 자원/단서 1줄 */
+  rewardLine: string;
+}
+
+export const SCENARIO_BOSS_VICTORY_NARRATIVES: readonly BossVictoryNarrative[] = [
+  {
+    bossObsidianId: 'memory_golem',
+    closingLine: '— 기억의 골렘이 잔해 위로 무너지며 빛을 내려놓습니다.',
+    rewardLine: '핵 결정 하나가 손 위에 떨어집니다. 에레보스 파편의 단서가 가까워졌습니다.',
+  },
+  {
+    bossObsidianId: 'malatus_ancient',
+    closingLine: '— 말라투스 고목의 가지가 천천히 본래의 형태로 가라앉습니다.',
+    rewardLine: '잎새의 빛 하나가 에리언의 손에 머뭅니다. 실반헤임 파편의 잠금이 풀렸습니다.',
+  },
+  {
+    bossObsidianId: 'fallen_malatus',
+    closingLine: '— 타락의 검은 결이 잎새에서 빠져나가며 흩어집니다.',
+    rewardLine: '봉인이 안정됩니다. 숲의 깊은 곳으로 향하는 길이 열렸습니다.',
+  },
+  {
+    bossObsidianId: 'rawar',
+    closingLine: '— 라와르 왕이 다시 영원한 수면에 듭니다. 모래가 그의 자리를 조용히 덮습니다.',
+    rewardLine: '왕의 마지막 의지가 한 자루의 의식 단검으로 응결됩니다. 솔라리스 파편의 봉인이 해제됩니다.',
+  },
+  {
+    bossObsidianId: 'kane',
+    closingLine: '— 케인의 칼날이 꺾이고, 그의 호흡이 그림자 속으로 흩어집니다.',
+    rewardLine: '레테 교단의 표식이 그의 손에서 떨어집니다. 황궁 깊은 곳으로 향하는 통행이 풀렸습니다.',
+  },
+  {
+    bossObsidianId: 'corrupted_bernardo',
+    closingLine: '— 타락한 베르나르도가 무릎을 꿇으며 옛 눈빛으로 돌아옵니다.',
+    rewardLine: '동료의 신뢰도가 분기 선택에 따라 결말을 가릅니다 — 결정은 여기서 멈추지 않습니다.',
+  },
+  {
+    bossObsidianId: 'time_watcher',
+    closingLine: '— 시간의 감시자의 시선이 균열 너머로 거두어집니다.',
+    rewardLine: '주변 시간 흐름이 안정됩니다. 균열의 깊은 곳으로 향하는 통로가 잠시 열렸습니다.',
+  },
+  {
+    bossObsidianId: 'gear_guardian',
+    closingLine: '— 톱니 수호자의 기계 팔이 마지막 회전을 마치고 정지합니다.',
+    rewardLine: '톱니 한 조각이 분리됩니다. 황금 탑 상층으로 향하는 잠금장치가 풀렸습니다.',
+  },
+  {
+    bossObsidianId: 'lethe',
+    closingLine: '— 망각의 신 레테가 거대한 눈들의 집합체에서 흩어지며 사라집니다.',
+    rewardLine: '4 파편이 손바닥 위에서 마지막 빛으로 응결됩니다 — 엔딩 분기가 결정되는 순간입니다.',
+  },
+];
+
+export function getBossVictoryNarrative(bossObsidianId: string): BossVictoryNarrative | undefined {
+  return SCENARIO_BOSS_VICTORY_NARRATIVES.find((b) => b.bossObsidianId === bossObsidianId);
+}
+
+export function listBossVictoryNarrativesByChapter(chapter: number): readonly BossVictoryNarrative[] {
+  const bossIdsInChapter = new Set(
+    SCENARIO_BOSSES.filter((b) => b.chapter === chapter).map((b) => b.obsidianId),
+  );
+  return SCENARIO_BOSS_VICTORY_NARRATIVES.filter((n) => bossIdsInChapter.has(n.bossObsidianId));
+}
