@@ -5376,3 +5376,41 @@ export function getCompanionFarewellNarrative(
     (n) => n.companionObsidianId === companionObsidianId,
   );
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-116: 게임 진입 narrative — new_game / continue / new_game_plus 3종
+// ════════════════════════════════════════════════════════════════
+
+export type GameEntryMode = 'new_game' | 'continue' | 'new_game_plus';
+
+export interface GameEntryNarrative {
+  mode: GameEntryMode;
+  modeLabel: string;
+  primaryLine: string;
+  secondaryLine: string;
+}
+
+export const SCENARIO_GAME_ENTRY_NARRATIVES: readonly GameEntryNarrative[] = [
+  {
+    mode: 'new_game',
+    modeLabel: '새 게임',
+    primaryLine: '— 세계력 3,412년. 칸텔라 마을의 새벽 — 첫 호흡이 시작됩니다.',
+    secondaryLine: '에리언으로서 기억 공명의 첫 떨림을 마주합니다. 길은 폐허의 운하 도시 에레보스로 향합니다.',
+  },
+  {
+    mode: 'continue',
+    modeLabel: '이어하기',
+    primaryLine: '— 잠시 놓아 두었던 자리로 다시 돌아옵니다.',
+    secondaryLine: '저장된 자리의 호흡이 그대로 이어집니다. 동료들의 호흡과 빌드를 다시 확인하세요.',
+  },
+  {
+    mode: 'new_game_plus',
+    modeLabel: '새 게임+',
+    primaryLine: '— 한 번의 끝을 본 뒤 다시 시작하는 길.',
+    secondaryLine: '이전 회차의 동료 신뢰도 일부가 인계됩니다. 도전 모디파이어가 적용되어 난이도와 보상이 함께 올라갑니다.',
+  },
+];
+
+export function getGameEntryNarrative(mode: GameEntryMode): GameEntryNarrative | undefined {
+  return SCENARIO_GAME_ENTRY_NARRATIVES.find((n) => n.mode === mode);
+}
