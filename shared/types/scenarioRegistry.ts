@@ -8810,3 +8810,35 @@ export function getDebugOverlayLabel(key: DebugOverlayKey): DebugOverlayLabel | 
 export function listDebugOverlayKeys(): readonly DebugOverlayKey[] {
   return ['fps', 'draw_calls', 'memory', 'atb_trace', 'zone_id', 'network'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-184: 옵션 메뉴 카테고리 SSOT — 4 카테고리
+// 옵션 메뉴 상위 탭 + SETTINGS_DESCRIPTIONS 와 cross.
+// ════════════════════════════════════════════════════════════════
+
+export type OptionMenuCategoryKey = 'game' | 'audio' | 'graphics' | 'accessibility';
+
+export interface OptionMenuCategoryLabel {
+  category: OptionMenuCategoryKey;
+  label: string;
+  sortOrder: number;
+  /** 카테고리 설명 */
+  description: string;
+  /** 항목 갯수 hint */
+  itemCountHint: number;
+}
+
+export const SCENARIO_OPTION_CATEGORIES: readonly OptionMenuCategoryLabel[] = [
+  { category: 'game',          label: '게임플레이',     sortOrder: 1, description: '난이도, 키바인딩, 콘트롤 옵션.', itemCountHint: 8 },
+  { category: 'audio',         label: '오디오',         sortOrder: 2, description: '5 채널 볼륨 (master/bgm/sfx/voice/ambient).', itemCountHint: 5 },
+  { category: 'graphics',      label: '그래픽',         sortOrder: 3, description: '품질, 해상도, 전체화면 토글.', itemCountHint: 2 },
+  { category: 'accessibility', label: '접근성',         sortOrder: 4, description: '색맹 모드, 자막 크기, 모션 감소.', itemCountHint: 3 },
+];
+
+export function getOptionMenuCategory(category: OptionMenuCategoryKey): OptionMenuCategoryLabel | undefined {
+  return SCENARIO_OPTION_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listOptionMenuCategoriesSorted(): readonly OptionMenuCategoryLabel[] {
+  return [...SCENARIO_OPTION_CATEGORIES].sort((a, b) => a.sortOrder - b.sortOrder);
+}
