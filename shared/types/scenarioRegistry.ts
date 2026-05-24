@@ -6978,3 +6978,35 @@ export function getMapLegendEntry(kind: MapLegendKind): MapLegendEntry | undefin
 export function listMapLegendKinds(): readonly MapLegendKind[] {
   return ['zone_marker', 'quest_npc', 'boss', 'treasure', 'save_point', 'fast_travel', 'danger_zone'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-148: 퀵슬롯 hint narrative — 4 슬롯 (heal/attack/defense/special)
+// 인벤토리 quick slot 의 권장 카테고리 + 단축키 + 사용 anchor.
+// ════════════════════════════════════════════════════════════════
+
+export type QuickslotCategory = 'heal' | 'attack' | 'defense' | 'special';
+
+export interface QuickslotHint {
+  slotIndex: 1 | 2 | 3 | 4;
+  category: QuickslotCategory;
+  label: string;
+  /** 키보드 단축키 */
+  shortcutKey: string;
+  /** 권장 등록 아이템 anchor */
+  recommendedItemAnchor: string;
+}
+
+export const SCENARIO_QUICKSLOT_HINTS: readonly QuickslotHint[] = [
+  { slotIndex: 1, category: 'heal',    label: '회복',     shortcutKey: '1', recommendedItemAnchor: '회복 물자 (포션 / 기억 결정) — 전투 중 HP 위급 시 즉시 사용.' },
+  { slotIndex: 2, category: 'attack',  label: '공격',     shortcutKey: '2', recommendedItemAnchor: '광역 폭탄 / 화염 병 — 다수 적 진입 시 첫 turn 광역 데미지.' },
+  { slotIndex: 3, category: 'defense', label: '방어',     shortcutKey: '3', recommendedItemAnchor: '방어 토템 / 일시 보호막 — 보스 광역 공격 직전 발동.' },
+  { slotIndex: 4, category: 'special', label: '특수',     shortcutKey: '4', recommendedItemAnchor: '시간 결정 / 봉인 부적 — 시나리오 분기 진입 시 사용.' },
+];
+
+export function getQuickslotHint(slotIndex: 1 | 2 | 3 | 4): QuickslotHint | undefined {
+  return SCENARIO_QUICKSLOT_HINTS.find((q) => q.slotIndex === slotIndex);
+}
+
+export function listQuickslotCategories(): readonly QuickslotCategory[] {
+  return ['heal', 'attack', 'defense', 'special'];
+}
