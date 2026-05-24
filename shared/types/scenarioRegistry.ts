@@ -9755,3 +9755,34 @@ export function classifyContentRatingByAge(age: number): ContentRatingNarrative 
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-211: 네트워크 지역 라벨 SSOT — 5 지역
+// 서버 region + 평균 ping + cloud save endpoint.
+// ════════════════════════════════════════════════════════════════
+
+export type NetworkRegion = 'asia_kr' | 'asia_jp' | 'asia_sea' | 'na_us' | 'eu_west';
+
+export interface NetworkRegionNarrative {
+  region: NetworkRegion;
+  label: string;
+  /** 평균 ping (ms, KR 기준) */
+  averagePingFromKR: number;
+  endpointHost: string;
+}
+
+export const SCENARIO_NETWORK_REGION_LABELS: readonly NetworkRegionNarrative[] = [
+  { region: 'asia_kr',  label: '아시아-한국',     averagePingFromKR: 15,  endpointHost: 'kr.aeterna.io' },
+  { region: 'asia_jp',  label: '아시아-일본',     averagePingFromKR: 35,  endpointHost: 'jp.aeterna.io' },
+  { region: 'asia_sea', label: '아시아-동남아',   averagePingFromKR: 90,  endpointHost: 'sea.aeterna.io' },
+  { region: 'na_us',    label: '북미-미국',       averagePingFromKR: 150, endpointHost: 'us.aeterna.io' },
+  { region: 'eu_west',  label: '유럽-서부',       averagePingFromKR: 230, endpointHost: 'eu.aeterna.io' },
+];
+
+export function getNetworkRegionNarrative(region: NetworkRegion): NetworkRegionNarrative | undefined {
+  return SCENARIO_NETWORK_REGION_LABELS.find((r) => r.region === region);
+}
+
+export function getOptimalRegionFromKR(): NetworkRegionNarrative {
+  return [...SCENARIO_NETWORK_REGION_LABELS].sort((a, b) => a.averagePingFromKR - b.averagePingFromKR)[0];
+}
