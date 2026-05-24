@@ -7591,3 +7591,59 @@ export function getRandomEncounterFlavor(kind: EncounterKind): RandomEncounterFl
 export function listEncounterKinds(): readonly EncounterKind[] {
   return ['peaceful', 'normal', 'elite', 'ambush'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-160: 🎯 환경 위험 narrative — 4 종 (fire/poison/spike/cliff)
+// 필드 환경 위험 진입 시 표시되는 anchor + 피해 / 회피 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type EnvironmentHazardKind = 'fire' | 'poison' | 'spike' | 'cliff';
+
+export interface EnvironmentHazardNarrative {
+  kind: EnvironmentHazardKind;
+  label: string;
+  enterAnchor: string;
+  /** 피해 형태 hint */
+  damageHint: string;
+  /** 회피 방법 hint */
+  avoidanceHint: string;
+}
+
+export const SCENARIO_ENVIRONMENT_HAZARDS: readonly EnvironmentHazardNarrative[] = [
+  {
+    kind: 'fire',
+    label: '불타는 지대',
+    enterAnchor: '— 발 아래의 결이 뜨거워집니다. 화염의 잔재가 가시지 않은 자리.',
+    damageHint: '머무는 동안 fire DoT (초당 ~5%). 솔라리스 사막 / 화염 보스 zone 빈번.',
+    avoidanceHint: '화염 저항 패시브 또는 빠른 이동. 비/눈 날씨에 잠시 약화.',
+  },
+  {
+    kind: 'poison',
+    label: '독 안개',
+    enterAnchor: '— 짙은 안개가 발걸음을 무겁게 합니다. 색이 옅은 보라빛.',
+    damageHint: '머무는 동안 poison DoT (초당 ~3%). 안개 늪 / 심해 zone 빈번.',
+    avoidanceHint: '독 저항 패시브 또는 마스크 아이템. 디버프 해제 스킬 사용 가능.',
+  },
+  {
+    kind: 'spike',
+    label: '함정 지대',
+    enterAnchor: '— 발 아래에서 결이 날카롭게 솟구칩니다.',
+    damageHint: '단발 피해 (현재 HP 의 ~15%) + 짧은 행동 불능.',
+    avoidanceHint: '회피 패시브 또는 점프 동작. 그림자 직조사 evade 자동 활성.',
+  },
+  {
+    kind: 'cliff',
+    label: '절벽',
+    enterAnchor: '— 풍경의 가장자리가 갑자기 끊어집니다. 발걸음이 멈춥니다.',
+    damageHint: '추락 시 강제 이전 위치로 복귀 + HP 25% 피해.',
+    avoidanceHint: '이동 전 시야 확인. 시간 수호자 reverse 로 추락 직전 1턴 되돌리기 가능.',
+  },
+];
+
+export function getEnvironmentHazardNarrative(kind: EnvironmentHazardKind): EnvironmentHazardNarrative | undefined {
+  return SCENARIO_ENVIRONMENT_HAZARDS.find((h) => h.kind === kind);
+}
+
+export function listEnvironmentHazardKinds(): readonly EnvironmentHazardKind[] {
+  return ['fire', 'poison', 'spike', 'cliff'];
+}
