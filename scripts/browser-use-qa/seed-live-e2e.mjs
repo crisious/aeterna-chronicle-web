@@ -134,7 +134,7 @@ const zones = [
     levelRange: { min: 25, max: 33 },
     connections: ['silvanhome_crystal', 'erebos_center', 'britallia_port'],
     npcs: [
-      { npcId: 'npc_ghost_merchant', name: '유령 상인 고르디', posX: 80, posY: 60, role: 'shop' },
+      { npcId: 'npc_ghost_merchant', name: '유령 상인 고로디', posX: 80, posY: 60, role: 'shop' },
     ],
     ambientSound: 'ghost_wind',
     bgm: 'erebos_theme',

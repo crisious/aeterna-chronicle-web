@@ -8,13 +8,17 @@
 
 import * as Phaser from 'phaser';
 import {
-  DialogueData,
   HudOverlay,
   HudStatusProps,
   QuickSlotData,
   makeDefaultQuests,
   makeDefaultSlots,
 } from '../ui/HudOverlay';
+import {
+  buildNpcDialogueData,
+  resolveNpcDialogueChoice,
+  type NpcDialogueSource,
+} from '../gameplay/npcDialogue';
 
 // ── HUDOrchestrator ───────────────────────────────────────────
 
@@ -81,22 +85,24 @@ export class HUDOrchestrator {
   }
 
   /**
-   * 대화창 토글
+   * 필드 NPC 대화창 표시
    */
-  toggleSampleDialogue(): void {
-    const sample: DialogueData = {
-      speakerName: '누아리엘',
-      bodyText: '버티는 건 치료가 아니에요. 선택하세요. 짧게 버틸지, 길게 살아남을지.',
-      choices: [
-        { choiceId: 'A', text: '바로 다녀올게.', disabled: false },
-        { choiceId: 'B', text: '대체 재료는 없어?', disabled: false },
-        { choiceId: 'C', text: '지금은 시간이 없어.', disabled: false },
-      ],
-      canSkip: true,
-    };
-
+  showNpcDialogue(npc: NpcDialogueSource): void {
     this.dialogueOpenAtMs = Date.now();
-    this.hud.showDialogue(sample);
+    this.hud.showDialogue(buildNpcDialogueData(npc));
+  }
+
+  /**
+   * NPC 선택지 결과 표시 — 후속 대사가 없으면 false 반환
+   */
+  showNpcChoiceResult(npc: NpcDialogueSource, choiceId: string): boolean {
+    const nextDialogue = resolveNpcDialogueChoice(npc, choiceId);
+    if (!nextDialogue) {
+      return false;
+    }
+
+    this.hud.showDialogue(nextDialogue);
+    return true;
   }
 
   /**
