@@ -8938,3 +8938,37 @@ export function getAchievementCategoryNarrative(category: AchievementCategory): 
 export function getTotalAchievementCount(): number {
   return SCENARIO_ACHIEVEMENT_CATEGORIES.reduce((sum, c) => sum + c.averageCount, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-188: 로그 레벨 narrative — 5 레벨 (debug/info/warn/error/fatal)
+// 로깅 시스템 레벨 + 우선순위 + UI 색상.
+// ════════════════════════════════════════════════════════════════
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+
+export interface LogLevelNarrative {
+  level: LogLevel;
+  label: string;
+  /** 우선순위 (낮을수록 noisy) */
+  priority: number;
+  /** 콘솔 색상 */
+  consoleColor: string;
+  /** 발생 시점 hint */
+  whenToUse: string;
+}
+
+export const SCENARIO_LOG_LEVELS: readonly LogLevelNarrative[] = [
+  { level: 'debug', label: 'DEBUG', priority: 0, consoleColor: '#a0a0a0', whenToUse: '개발 트레이스 — 프로덕션 비활성.' },
+  { level: 'info',  label: 'INFO',  priority: 1, consoleColor: '#5f9fff', whenToUse: '일반 상태 변경 / 진행 정보.' },
+  { level: 'warn',  label: 'WARN',  priority: 2, consoleColor: '#ffb720', whenToUse: '주의 필요 — 게임은 계속되지만 예상 외 상태.' },
+  { level: 'error', label: 'ERROR', priority: 3, consoleColor: '#d04040', whenToUse: '기능 실패 — 일부 시스템 작동 불가.' },
+  { level: 'fatal', label: 'FATAL', priority: 4, consoleColor: '#7f00ff', whenToUse: '치명적 오류 — 게임 종료 또는 크래시.' },
+];
+
+export function getLogLevelNarrative(level: LogLevel): LogLevelNarrative | undefined {
+  return SCENARIO_LOG_LEVELS.find((l) => l.level === level);
+}
+
+export function listLogLevelsByPriority(): readonly LogLevelNarrative[] {
+  return [...SCENARIO_LOG_LEVELS].sort((a, b) => a.priority - b.priority);
+}
