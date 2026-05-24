@@ -8905,3 +8905,36 @@ export function getPathFindingProfileNarrative(profile: PathFindingProfile): Pat
 export function listPathFindingProfiles(): readonly PathFindingProfile[] {
   return ['direct', 'avoid_enemy', 'safe', 'explore'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-187: 도전과제 카테고리 narrative — 4 카테고리
+// SCENARIO_ACHIEVEMENTS 의 상위 분류 + UI 탭 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type AchievementCategory = 'combat' | 'story' | 'exploration' | 'collection';
+
+export interface AchievementCategoryNarrative {
+  category: AchievementCategory;
+  label: string;
+  /** UI 아이콘 (이모지) */
+  icon: string;
+  /** 카테고리 설명 */
+  description: string;
+  /** 평균 갯수 hint */
+  averageCount: number;
+}
+
+export const SCENARIO_ACHIEVEMENT_CATEGORIES: readonly AchievementCategoryNarrative[] = [
+  { category: 'combat',      label: '전투',     icon: '⚔', description: '보스 처치 / 콤보 / 빌드 도전 — 전투 시스템 마스터.', averageCount: 25 },
+  { category: 'story',       label: '스토리',   icon: '📖', description: '메인 quest 진행 / 분기 선택 / 엔딩 도달.', averageCount: 30 },
+  { category: 'exploration', label: '탐험',     icon: '🗺', description: 'zone 완전 탐색 / 숨겨진 단서 발견 / 모든 zone 방문.', averageCount: 15 },
+  { category: 'collection',  label: '수집',     icon: '💎', description: '아이템 / 동료 / 도감 컴플리션.', averageCount: 20 },
+];
+
+export function getAchievementCategoryNarrative(category: AchievementCategory): AchievementCategoryNarrative | undefined {
+  return SCENARIO_ACHIEVEMENT_CATEGORIES.find((c) => c.category === category);
+}
+
+export function getTotalAchievementCount(): number {
+  return SCENARIO_ACHIEVEMENT_CATEGORIES.reduce((sum, c) => sum + c.averageCount, 0);
+}
