@@ -6157,3 +6157,39 @@ export function getShopCategoryLabel(key: ShopCategoryKey): ShopCategoryLabel | 
 export function listShopCategoriesSorted(): readonly ShopCategoryLabel[] {
   return [...SCENARIO_SHOP_CATEGORY_LABELS].sort((a, b) => a.sortOrder - b.sortOrder);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-132: 튜토리얼 anchor — 7 단계 (move/atb/skill/inventory/quest/save/exit)
+// 각 단계 진입 시 화면 표시 anchor + 추천 action.
+// ════════════════════════════════════════════════════════════════
+
+export type TutorialStepKey = 'move' | 'atb' | 'skill' | 'inventory' | 'quest' | 'save' | 'exit';
+
+export interface TutorialAnchorLine {
+  step: TutorialStepKey;
+  stepOrder: number;
+  /** 단계 한글 명 */
+  stepLabel: string;
+  /** anchor 본문 — 무엇을 배우는가 */
+  anchorText: string;
+  /** 추천 action — 어떤 입력을 시도할지 */
+  recommendedAction: string;
+}
+
+export const SCENARIO_TUTORIAL_ANCHOR_LINES: readonly TutorialAnchorLine[] = [
+  { step: 'move',      stepOrder: 1, stepLabel: '이동', anchorText: '— 칸텔라 광장의 발걸음이 첫 호흡을 시작합니다.', recommendedAction: '화살표 키 또는 WASD 로 이동, 마우스 클릭으로 목적지 지정 가능.' },
+  { step: 'atb',       stepOrder: 2, stepLabel: 'ATB 게이지', anchorText: '— ATB 게이지가 가득 차면 행동을 선택합니다.', recommendedAction: '게이지가 100% 일 때 행동 선택. 대기열을 활용해 동료 순서를 조율.' },
+  { step: 'skill',     stepOrder: 3, stepLabel: '스킬 / 빌드', anchorText: '— 6 슬롯에 스킬을 배치해 빌드를 구성합니다.', recommendedAction: '메뉴 → 스킬 → 6 슬롯에 Tier 1 부터 배치. 패시브 1 슬롯 권장.' },
+  { step: 'inventory', stepOrder: 4, stepLabel: '인벤토리', anchorText: '— 가방에 자원을 정리하고 장비를 교체합니다.', recommendedAction: '메뉴 → 가방. 회복 물자는 quick slot 에 등록해 두면 전투 중 즉시 사용 가능.' },
+  { step: 'quest',     stepOrder: 5, stepLabel: '퀘스트 기록', anchorText: '— 퀘스트 기록이 다음 목표를 추적합니다.', recommendedAction: '메뉴 → 퀘스트. 메인 quest 와 서브 quest 의 보상 비교에 사용.' },
+  { step: 'save',      stepOrder: 6, stepLabel: '저장', anchorText: '— 중요한 분기 직전엔 별도 슬롯에 저장하세요.', recommendedAction: '메뉴 → 저장. 수동(10) / 자동(3) / 빠른(1) / 체크포인트(5) = 19 슬롯.' },
+  { step: 'exit',      stepOrder: 7, stepLabel: '종료', anchorText: '— 타이틀로 돌아가기 전 마지막 저장을 확인하세요.', recommendedAction: '메뉴 → 타이틀로 돌아가기. 저장되지 않은 진행은 잃습니다.' },
+];
+
+export function getTutorialAnchorLine(step: TutorialStepKey): TutorialAnchorLine | undefined {
+  return SCENARIO_TUTORIAL_ANCHOR_LINES.find((t) => t.step === step);
+}
+
+export function listTutorialAnchorsSorted(): readonly TutorialAnchorLine[] {
+  return [...SCENARIO_TUTORIAL_ANCHOR_LINES].sort((a, b) => a.stepOrder - b.stepOrder);
+}
