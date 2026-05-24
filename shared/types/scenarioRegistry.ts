@@ -7196,3 +7196,36 @@ export function getBossPhaseTransition(
 export function listBossPhaseTransitions(bossObsidianId: string): readonly BossPhaseTransition[] {
   return SCENARIO_BOSS_PHASE_TRANSITIONS.filter((t) => t.bossObsidianId === bossObsidianId);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-152: 저장 파일 메타데이터 label SSOT — 6 라벨
+// 저장 슬롯 UI 에 표시되는 메타데이터 항목 + format hint.
+// ════════════════════════════════════════════════════════════════
+
+export type SaveMetadataKey = 'slot_name' | 'chapter' | 'playtime' | 'last_zone' | 'last_action' | 'difficulty';
+
+export interface SaveFileMetadataLabel {
+  key: SaveMetadataKey;
+  label: string;
+  /** UI sort 순서 */
+  sortOrder: number;
+  /** 값 format hint */
+  formatHint: string;
+}
+
+export const SCENARIO_SAVE_FILE_METADATA_LABELS: readonly SaveFileMetadataLabel[] = [
+  { key: 'slot_name',  label: '슬롯 이름',     sortOrder: 1, formatHint: '플레이어가 지정한 슬롯 이름 (기본: "슬롯 N").' },
+  { key: 'chapter',    label: '챕터',         sortOrder: 2, formatHint: '"Chapter N: <title>" 형식 — SCENARIO_CHAPTER_OPENING_NARRATIVES.title 사용.' },
+  { key: 'playtime',   label: '플레이 시간',  sortOrder: 3, formatHint: 'HH:MM:SS 형식, 24시간 초과 시 DD일 HH:MM 표현.' },
+  { key: 'last_zone',  label: '최근 지역',    sortOrder: 4, formatHint: 'SCENARIO_ZONES.name 표시 + 챕터 번호.' },
+  { key: 'last_action',label: '최근 행동',    sortOrder: 5, formatHint: '"보스 처치 / 파편 회수 / 동료 합류" 등 행동 분류.' },
+  { key: 'difficulty', label: '난이도',       sortOrder: 6, formatHint: 'SCENARIO_DIFFICULTY_NARRATIVES.label 표시 + 색상.' },
+];
+
+export function getSaveFileMetadataLabel(key: SaveMetadataKey): SaveFileMetadataLabel | undefined {
+  return SCENARIO_SAVE_FILE_METADATA_LABELS.find((m) => m.key === key);
+}
+
+export function listSaveFileMetadataLabelsSorted(): readonly SaveFileMetadataLabel[] {
+  return [...SCENARIO_SAVE_FILE_METADATA_LABELS].sort((a, b) => a.sortOrder - b.sortOrder);
+}
