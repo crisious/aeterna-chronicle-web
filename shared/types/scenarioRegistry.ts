@@ -8513,3 +8513,67 @@ export function getWeatherTransitionChain(from: WeatherKind, to: WeatherKind): W
 export function listWeatherTransitionsFrom(from: WeatherKind): readonly WeatherTransitionChain[] {
   return SCENARIO_WEATHER_TRANSITION_CHAINS.filter((c) => c.from === from);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-177: 파티 오라 효과 narrative — 5 종 (defense/offense/regen/speed/silence)
+// 동료가 발산하는 광역 오라 — 인접 동료에게 modifier 부여.
+// ════════════════════════════════════════════════════════════════
+
+export type PartyAuraKind = 'defense' | 'offense' | 'regen' | 'speed' | 'silence';
+
+export interface PartyAuraNarrative {
+  aura: PartyAuraKind;
+  label: string;
+  /** 오라 활성 anchor */
+  activationAnchor: string;
+  /** 적용 modifier */
+  modifierSummary: string;
+  /** 시전 가능 ClassKey */
+  emitterClass: ClassKey;
+}
+
+export const SCENARIO_PARTY_AURA_EFFECTS: readonly PartyAuraNarrative[] = [
+  {
+    aura: 'defense',
+    label: '방어 오라',
+    activationAnchor: '— 푸른빛이 동료들의 결을 두릅니다.',
+    modifierSummary: '인접 동료 받는 피해 -15%, 1회 방패 (HP 의 5%).',
+    emitterClass: 'ether_knight',
+  },
+  {
+    aura: 'offense',
+    label: '공격 오라',
+    activationAnchor: '— 붉은 결이 동료들의 무기 끝에 응결됩니다.',
+    modifierSummary: '인접 동료 공격력 +10%, crit 확률 +5%.',
+    emitterClass: 'memory_destroyer',
+  },
+  {
+    aura: 'regen',
+    label: '회복 오라',
+    activationAnchor: '— 잎새 색 결이 동료들의 호흡 위로 내립니다.',
+    modifierSummary: '인접 동료 턴마다 HP +3%, MP +2%.',
+    emitterClass: 'memorist',
+  },
+  {
+    aura: 'speed',
+    label: '가속 오라',
+    activationAnchor: '— 시간의 결이 빠르게 흐릅니다.',
+    modifierSummary: '인접 동료 ATB 충전 속도 +20%, 회피 +5%.',
+    emitterClass: 'time_guardian',
+  },
+  {
+    aura: 'silence',
+    label: '침묵 오라',
+    activationAnchor: '— 풍경의 결이 한 박자 가라앉으며 적의 호흡이 흐릿해집니다.',
+    modifierSummary: '인접 적 디버프 해제 차단, 스킬 발동 속도 -10%.',
+    emitterClass: 'shadow_weaver',
+  },
+];
+
+export function getPartyAuraNarrative(aura: PartyAuraKind): PartyAuraNarrative | undefined {
+  return SCENARIO_PARTY_AURA_EFFECTS.find((a) => a.aura === aura);
+}
+
+export function listPartyAurasByClass(classKey: ClassKey): readonly PartyAuraNarrative[] {
+  return SCENARIO_PARTY_AURA_EFFECTS.filter((a) => a.emitterClass === classKey);
+}
