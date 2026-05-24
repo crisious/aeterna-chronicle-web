@@ -9874,3 +9874,39 @@ export function getLeaderboardCategoryNarrative(category: LeaderboardCategory): 
 export function listLeaderboardCategories(): readonly LeaderboardCategory[] {
   return ['speedrun', 'highscore', 'combo', 'no_death', 'no_damage'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-215: 🎯 PvP 랭크 tier SSOT — 6 tier (bronze~mythic)
+// ════════════════════════════════════════════════════════════════
+
+export type PvpRankTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'mythic';
+
+export interface PvpRankTierNarrative {
+  tier: PvpRankTier;
+  label: string;
+  minElo: number;
+  uiColor: string;
+  seasonRewardHint: string;
+}
+
+export const SCENARIO_PVP_RANK_TIERS: readonly PvpRankTierNarrative[] = [
+  { tier: 'bronze',   label: '브론즈',   minElo: 0,    uiColor: '#a07040', seasonRewardHint: '시즌 종료 시 청동 도전과제 + 일반 자원.' },
+  { tier: 'silver',   label: '실버',     minElo: 800,  uiColor: '#bfbfbf', seasonRewardHint: '시즌 종료 시 은 도전과제 + uncommon 자원 ×5.' },
+  { tier: 'gold',     label: '골드',     minElo: 1500, uiColor: '#ffb720', seasonRewardHint: '시즌 종료 시 금 도전과제 + rare 자원 ×3.' },
+  { tier: 'platinum', label: '플래티넘', minElo: 2200, uiColor: '#5fc0ff', seasonRewardHint: '시즌 종료 시 epic 장비 ×1 + 특수 cosmetic.' },
+  { tier: 'diamond',  label: '다이아',   minElo: 2800, uiColor: '#bf5fff', seasonRewardHint: '시즌 종료 시 legendary 장비 ×1 + 한정 칭호.' },
+  { tier: 'mythic',   label: '미씩',     minElo: 3500, uiColor: '#ffd57f', seasonRewardHint: '시즌 종료 시 세계 100위 한정 — 신화 장비 + 영구 칭호.' },
+];
+
+export function getPvpRankTierNarrative(tier: PvpRankTier): PvpRankTierNarrative | undefined {
+  return SCENARIO_PVP_RANK_TIERS.find((t) => t.tier === tier);
+}
+
+export function classifyPvpRankByElo(elo: number): PvpRankTierNarrative {
+  const ascending = [...SCENARIO_PVP_RANK_TIERS].sort((a, b) => a.minElo - b.minElo);
+  let current = ascending[0];
+  for (const t of ascending) {
+    if (elo >= t.minElo) current = t;
+  }
+  return current;
+}
