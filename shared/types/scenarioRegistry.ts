@@ -7961,3 +7961,52 @@ export function getHudComponentLabel(key: HudComponentKey): HudComponentLabel | 
 export function listHudComponentsByAnchor(anchor: HudAnchor): readonly HudComponentLabel[] {
   return SCENARIO_HUD_COMPONENT_LABELS.filter((c) => c.anchor === anchor);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-167: 카메라 모드 narrative — 3 모드 (follow/free/cinematic)
+// 게임 카메라 모드별 anchor + 사용 hint + 단축키.
+// ════════════════════════════════════════════════════════════════
+
+export type CameraMode = 'follow' | 'free' | 'cinematic';
+
+export interface CameraModeNarrative {
+  mode: CameraMode;
+  label: string;
+  shortcutKey: string;
+  /** 진입 anchor */
+  enterAnchor: string;
+  /** 사용 hint */
+  usageHint: string;
+}
+
+export const SCENARIO_CAMERA_MODE_NARRATIVES: readonly CameraModeNarrative[] = [
+  {
+    mode: 'follow',
+    label: '추종',
+    shortcutKey: 'C',
+    enterAnchor: '— 카메라가 캐릭터를 부드럽게 따라옵니다.',
+    usageHint: '표준 게임 플레이 모드. 캐릭터 중심 부드러운 추적, 자동 회전.',
+  },
+  {
+    mode: 'free',
+    label: '자유',
+    shortcutKey: 'V',
+    enterAnchor: '— 카메라가 캐릭터에서 분리되어 자유 이동 가능합니다.',
+    usageHint: '풍경 감상 / 스크린샷용. 마우스 드래그로 회전, 휠로 줌.',
+  },
+  {
+    mode: 'cinematic',
+    label: '시네마틱',
+    shortcutKey: 'B',
+    enterAnchor: '— 시네마틱 카메라가 결정적 순간을 부각합니다.',
+    usageHint: '보스 등장 / 챕터 전환 / 엔딩 자동 활성. UI 일시 숨김.',
+  },
+];
+
+export function getCameraModeNarrative(mode: CameraMode): CameraModeNarrative | undefined {
+  return SCENARIO_CAMERA_MODE_NARRATIVES.find((c) => c.mode === mode);
+}
+
+export function listCameraModes(): readonly CameraMode[] {
+  return ['follow', 'free', 'cinematic'];
+}
