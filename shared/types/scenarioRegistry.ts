@@ -4795,3 +4795,103 @@ export const SCENARIO_CHAPTER_OPENING_NARRATIVES: readonly ChapterOpeningNarrati
 export function getChapterOpeningNarrative(chapter: number): ChapterOpeningNarrative | undefined {
   return SCENARIO_CHAPTER_OPENING_NARRATIVES.find((c) => c.chapter === chapter);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-108: 🎯 보스 등장 narrative — SCENARIO_BOSSES 9 종 도입부
+// 보스 등장 직전 화면 표시되는 위협 anchor + 핵심 약점 hint.
+// ════════════════════════════════════════════════════════════════
+
+export interface BossIntroNarrative {
+  /** SCENARIO_BOSSES.obsidianId 와 1:1 매칭 */
+  bossObsidianId: string;
+  /** 등장 시 화면 상단 1줄 — 위협의 정체 */
+  threatLine: string;
+  /** 등장 직후 2줄 — 분위기 + 행동 hint */
+  followLines: readonly [string, string];
+}
+
+export const SCENARIO_BOSS_INTRO_NARRATIVES: readonly BossIntroNarrative[] = [
+  {
+    bossObsidianId: 'memory_golem',
+    threatLine: '— 기억의 골렘이 잔해 사이에서 일어섭니다.',
+    followLines: [
+      '꺼진 폐허의 잔향이 골렘의 핵 속에서 응결되어 굳어 갑니다.',
+      '단단한 외피는 일관된 패턴을 따릅니다 — 타격 직후 잠깐의 틈이 열립니다.',
+    ],
+  },
+  {
+    bossObsidianId: 'malatus_ancient',
+    threatLine: '— 말라투스 고목의 가지가 천천히 휘어 인격을 띱니다.',
+    followLines: [
+      '봉인이 흔들리며 잎새 하나하나에 기억의 빛이 응집됩니다.',
+      '3 페이즈로 전이됩니다 — 잎새의 빛 색깔이 페이즈 신호입니다.',
+    ],
+  },
+  {
+    bossObsidianId: 'fallen_malatus',
+    threatLine: '— 타락한 말라투스가 봉인을 비틀어 일어섭니다.',
+    followLines: [
+      '잎새의 빛이 검게 변하고, 뿌리가 지반을 가르며 솟구칩니다.',
+      '봉인 해제 직후 첫 3턴은 광범위 공격에 대비하세요.',
+    ],
+  },
+  {
+    bossObsidianId: 'rawar',
+    threatLine: '— 솔리안의 왕 라와르가 영원한 수면에서 깨어납니다.',
+    followLines: [
+      '봉인 의식의 잔재가 모래 폭풍처럼 그를 두릅니다.',
+      '3 페이즈 — 왕의 자기희생 의식이 페이즈마다 형태를 바꿉니다.',
+    ],
+  },
+  {
+    bossObsidianId: 'kane',
+    threatLine: '— 기억 사냥꾼 간부 케인이 그림자에서 걸어 나옵니다.',
+    followLines: [
+      '레테 교단의 의지를 손에 든 그의 칼날은 기억 자체를 베어냅니다.',
+      '회피와 반격 패턴 — 회피 성공률을 사전에 끌어올리고 진입하세요.',
+    ],
+  },
+  {
+    bossObsidianId: 'corrupted_bernardo',
+    threatLine: '— 타락한 베르나르도가 옛 동료의 얼굴을 들어 올립니다.',
+    followLines: [
+      '레테 교단의 의식이 그의 호흡 사이에 새겨져 있습니다.',
+      '신뢰도가 충분히 쌓인 동료의 대사가 회복 효과를 발동시킵니다.',
+    ],
+  },
+  {
+    bossObsidianId: 'time_watcher',
+    threatLine: '— 시간의 감시자가 균열 너머에서 시선을 던집니다.',
+    followLines: [
+      '주변의 시간 흐름이 일그러지고 ATB 게이지가 불안정해집니다.',
+      '리버스 효과 발동 시 행동 선택을 1턴 미루는 편이 안전합니다.',
+    ],
+  },
+  {
+    bossObsidianId: 'gear_guardian',
+    threatLine: '— 톱니 수호자의 거대한 기계 팔이 회전하며 멈춥니다.',
+    followLines: [
+      '각 톱니의 회전 방향이 다음 공격 패턴을 예고합니다.',
+      '톱니가 정지하는 순간이 약점 노출 — 강타 스킬을 준비하세요.',
+    ],
+  },
+  {
+    bossObsidianId: 'lethe',
+    threatLine: '— 망각의 신 레테가 거대한 눈들의 집합체로 강림합니다.',
+    followLines: [
+      '4 파편의 공명이 그의 시야를 잠시 가립니다 — 그 짧은 틈이 유일한 기회입니다.',
+      '5 페이즈 전체 — 페이즈 시작 직후 BGM 모티프 변화에 따라 빌드를 전환하세요.',
+    ],
+  },
+];
+
+export function getBossIntroNarrative(bossObsidianId: string): BossIntroNarrative | undefined {
+  return SCENARIO_BOSS_INTRO_NARRATIVES.find((b) => b.bossObsidianId === bossObsidianId);
+}
+
+export function listBossIntroNarrativesByChapter(chapter: number): readonly BossIntroNarrative[] {
+  const bossIdsInChapter = new Set(
+    SCENARIO_BOSSES.filter((b) => b.chapter === chapter).map((b) => b.obsidianId),
+  );
+  return SCENARIO_BOSS_INTRO_NARRATIVES.filter((n) => bossIdsInChapter.has(n.bossObsidianId));
+}
