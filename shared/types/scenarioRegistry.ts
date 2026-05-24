@@ -7365,3 +7365,98 @@ export const SCENARIO_TUTORIAL_COMPLETION_REWARDS: readonly TutorialCompletionRe
 export function getTutorialCompletionReward(step: TutorialStepKey): TutorialCompletionReward | undefined {
   return SCENARIO_TUTORIAL_COMPLETION_REWARDS.find((r) => r.step === step);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-156: 메인 분기 결정 narrative — 4 주요 분기 (D chapter S1~S4)
+// 게임 전체에서 큰 영향을 미치는 결정 4종 + 두 갈래 결과.
+// ════════════════════════════════════════════════════════════════
+
+export type BranchDecisionId =
+  | 'bernardo_trust' | 'kane_judgment' | 'elfaris_diplomacy' | 'lethe_sealing_method';
+
+export interface BranchOption {
+  /** 선택 라벨 */
+  label: string;
+  /** 결과 narrative */
+  outcomeLine: string;
+  /** 영향 받는 메트릭 hint */
+  metricImpact: string;
+}
+
+export interface BranchDecisionNarrative {
+  decisionId: BranchDecisionId;
+  /** 결정 위치 (zone obsidianId) */
+  zoneObsidianId: string;
+  chapter: number;
+  /** 결정의 prompt 라인 */
+  promptLine: string;
+  /** 두 갈래 선택지 */
+  options: readonly [BranchOption, BranchOption];
+}
+
+export const SCENARIO_BRANCH_DECISIONS: readonly BranchDecisionNarrative[] = [
+  {
+    decisionId: 'bernardo_trust',
+    zoneObsidianId: 'argentium',
+    chapter: 4,
+    promptLine: '— 베르나르도의 정체가 밝혀집니다. 그를 신뢰할지, 처분할지 결정해야 합니다.',
+    options: [
+      { label: '신뢰한다',
+        outcomeLine: '베르나르도가 마지막 정보를 건넵니다. 황궁 잠입 동선이 더 깊이 열립니다.',
+        metricImpact: 'companion_loyalty[benjamin_cross] +30, 황궁 우회 경로 +1' },
+      { label: '처분한다',
+        outcomeLine: '베르나르도의 마지막 시선이 잠시 머뭅니다. 황궁 잠입은 정공법으로만 가능합니다.',
+        metricImpact: 'companion_loyalty[benjamin_cross] -100 (이탈), 황궁 정공 빌드 +1' },
+    ],
+  },
+  {
+    decisionId: 'kane_judgment',
+    zoneObsidianId: 'argentium',
+    chapter: 4,
+    promptLine: '— 케인이 무릎을 꿇습니다. 처형할지, 봉인할지 결정해야 합니다.',
+    options: [
+      { label: '처형한다',
+        outcomeLine: '케인의 호흡이 그림자 속으로 흩어집니다. 레테 교단의 무력 부대가 약화됩니다.',
+        metricImpact: 'faction_reputation[memory_hunter] -50, 챕터 5 적 빈도 -20%' },
+      { label: '봉인한다',
+        outcomeLine: '케인의 봉인이 자리잡습니다. 챕터 5 에서 정보 source 로 재활용 가능.',
+        metricImpact: 'faction_reputation[memory_hunter] -20, 챕터 5 단서 quest +1' },
+    ],
+  },
+  {
+    decisionId: 'elfaris_diplomacy',
+    zoneObsidianId: 'silvanheim',
+    chapter: 2,
+    promptLine: '— 엘파리스 안내인이 외교 제안을 합니다. 받아들일지, 거절할지 결정해야 합니다.',
+    options: [
+      { label: '제안을 받아들인다',
+        outcomeLine: '깊은 숲 안내가 동행합니다. 말라투스 봉인 조사 시 길 잃음이 차단됩니다.',
+        metricImpact: 'faction_reputation[elfaris] +40, malatus 보스전 광역 데미지 -10%' },
+      { label: '제안을 거절한다',
+        outcomeLine: '엘파리스가 한 걸음 물러섭니다. 안내 없이 깊은 숲에 진입하면 길을 잃을 수 있습니다.',
+        metricImpact: 'faction_reputation[elfaris] -20, 챕터 2 탐색 시간 +30%' },
+    ],
+  },
+  {
+    decisionId: 'lethe_sealing_method',
+    zoneObsidianId: 'golden_ether_tower',
+    chapter: 5,
+    promptLine: '— 레테 5 페이즈 종결 — 망각을 어떻게 매듭지을지 결정해야 합니다.',
+    options: [
+      { label: '봉인한다 (수호)',
+        outcomeLine: '레테의 결이 4 파편 안쪽으로 다시 가둬집니다. 세계는 안정되지만 망각의 위협은 잠복합니다.',
+        metricImpact: '엔딩 A 분기 (전원 생존 + 4 파편 조건 시), achievement gold +1' },
+      { label: '소멸시킨다 (증언)',
+        outcomeLine: '레테가 흩어지며 망각이 영원히 끝납니다. 세계의 결이 거대한 균열을 남깁니다.',
+        metricImpact: '엔딩 B 분기, NG+ 시작 시 균열 zone 추가 발생' },
+    ],
+  },
+];
+
+export function getBranchDecision(decisionId: BranchDecisionId): BranchDecisionNarrative | undefined {
+  return SCENARIO_BRANCH_DECISIONS.find((d) => d.decisionId === decisionId);
+}
+
+export function listBranchDecisionsByChapter(chapter: number): readonly BranchDecisionNarrative[] {
+  return SCENARIO_BRANCH_DECISIONS.filter((d) => d.chapter === chapter);
+}
