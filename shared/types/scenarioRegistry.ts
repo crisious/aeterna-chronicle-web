@@ -9613,3 +9613,51 @@ export function getCheatCodeNarrative(cheat: CheatCodeKey): CheatCodeNarrative |
 export function listCheatCodeKeys(): readonly CheatCodeKey[] {
   return ['god_mode', 'instant_kill', 'teleport', 'give_item', 'skip_dialogue'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-207: 로컬라이제이션 폴백 규칙 SSOT — 4 규칙
+// ════════════════════════════════════════════════════════════════
+
+export type LocalizationFallbackRule = 'strict' | 'region_first' | 'english_default' | 'native_only';
+
+export interface LocalizationFallbackRuleNarrative {
+  rule: LocalizationFallbackRule;
+  label: string;
+  fallbackBehavior: string;
+  recommendedUse: string;
+}
+
+export const SCENARIO_LOCALIZATION_FALLBACK_RULES: readonly LocalizationFallbackRuleNarrative[] = [
+  {
+    rule: 'strict',
+    label: '엄격',
+    fallbackBehavior: '번역 누락 시 [MISSING_KEY] placeholder 표시.',
+    recommendedUse: '번역 검증 / QA 모드 — 누락 발견에 효과적.',
+  },
+  {
+    rule: 'region_first',
+    label: '지역 우선',
+    fallbackBehavior: '같은 지역 (ko_KR → ko) → 영어 → key id 순서로 폴백.',
+    recommendedUse: '다국어 베타 — 자연스러운 사용자 경험.',
+  },
+  {
+    rule: 'english_default',
+    label: '영어 기본',
+    fallbackBehavior: '번역 누락 시 영어 (en_US) 으로 즉시 폴백.',
+    recommendedUse: '국제 출시 표준 — 안정성 우선.',
+  },
+  {
+    rule: 'native_only',
+    label: '네이티브 전용',
+    fallbackBehavior: '선택 로케일의 텍스트만 사용. 누락 시 빈 문자열.',
+    recommendedUse: '한국어 단독 출시 / 완성도 100% 로케일만.',
+  },
+];
+
+export function getLocalizationFallbackRuleNarrative(rule: LocalizationFallbackRule): LocalizationFallbackRuleNarrative | undefined {
+  return SCENARIO_LOCALIZATION_FALLBACK_RULES.find((r) => r.rule === rule);
+}
+
+export function listLocalizationFallbackRules(): readonly LocalizationFallbackRule[] {
+  return ['strict', 'region_first', 'english_default', 'native_only'];
+}
