@@ -8873,3 +8873,35 @@ export function getCinematicTransitionNarrative(kind: CinematicTransitionKind): 
 export function listCinematicTransitionKinds(): readonly CinematicTransitionKind[] {
   return ['fade', 'slide', 'iris', 'dissolve'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-186: 경로 탐색 프로파일 narrative — 4 프로파일
+// 자동 이동 / 네비게이션 시 적용할 가중치 프로파일.
+// ════════════════════════════════════════════════════════════════
+
+export type PathFindingProfile = 'direct' | 'avoid_enemy' | 'safe' | 'explore';
+
+export interface PathFindingProfileNarrative {
+  profile: PathFindingProfile;
+  label: string;
+  /** 가중치 (낮을수록 우선) */
+  enemyAvoidanceWeight: number;
+  treasureSeekWeight: number;
+  /** 사용 hint */
+  usageHint: string;
+}
+
+export const SCENARIO_PATH_FINDING_PROFILES: readonly PathFindingProfileNarrative[] = [
+  { profile: 'direct',      label: '직진',     enemyAvoidanceWeight: 0,  treasureSeekWeight: 0,  usageHint: '가장 짧은 거리. 적/보물 무시.' },
+  { profile: 'avoid_enemy', label: '적 회피',  enemyAvoidanceWeight: 5,  treasureSeekWeight: 0,  usageHint: '적과의 조우 최소화. 거리 +20% 감수.' },
+  { profile: 'safe',        label: '안전',     enemyAvoidanceWeight: 10, treasureSeekWeight: 0,  usageHint: '함정/위험 지대 완전 우회. 거리 +50%.' },
+  { profile: 'explore',     label: '탐색',     enemyAvoidanceWeight: 2,  treasureSeekWeight: 8,  usageHint: '보물/단서 우선 방문. 거리 +100%.' },
+];
+
+export function getPathFindingProfileNarrative(profile: PathFindingProfile): PathFindingProfileNarrative | undefined {
+  return SCENARIO_PATH_FINDING_PROFILES.find((p) => p.profile === profile);
+}
+
+export function listPathFindingProfiles(): readonly PathFindingProfile[] {
+  return ['direct', 'avoid_enemy', 'safe', 'explore'];
+}
