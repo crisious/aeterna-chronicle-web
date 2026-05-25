@@ -11070,3 +11070,33 @@ export function getArenaMatchFormatNarrative(format: ArenaMatchFormat): ArenaMat
 export function listArenaMatchFormats(): readonly ArenaMatchFormat[] {
   return ['1v1', '2v2', '3v3', '5v5'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-254: 보석 슬롯 색상 SSOT — 4 색 (red/blue/yellow/prismatic)
+// ════════════════════════════════════════════════════════════════
+
+export type GemSocketColor = 'red' | 'blue' | 'yellow' | 'prismatic';
+
+export interface GemSocketColorNarrative {
+  color: GemSocketColor;
+  label: string;
+  /** 주 부여 능력치 */
+  primaryStat: '공격력' | '체력' | '명중률' | '범용';
+  /** UI 색상 */
+  uiColor: string;
+}
+
+export const SCENARIO_GEM_SOCKET_COLORS: readonly GemSocketColorNarrative[] = [
+  { color: 'red',       label: '붉은',  primaryStat: '공격력', uiColor: '#d04040' },
+  { color: 'blue',      label: '푸른',  primaryStat: '체력',   uiColor: '#4080d0' },
+  { color: 'yellow',    label: '노란',  primaryStat: '명중률', uiColor: '#d0c040' },
+  { color: 'prismatic', label: '프리즘', primaryStat: '범용',   uiColor: '#c060d0' },
+];
+
+export function getGemSocketColorNarrative(color: GemSocketColor): GemSocketColorNarrative | undefined {
+  return SCENARIO_GEM_SOCKET_COLORS.find((g) => g.color === color);
+}
+
+export function listGemSocketColors(): readonly GemSocketColor[] {
+  return ['red', 'blue', 'yellow', 'prismatic'];
+}
