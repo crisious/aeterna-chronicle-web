@@ -10710,3 +10710,34 @@ export function getPartyHudLayoutNarrative(layout: PartyHudLayout): PartyHudLayo
 export function listPartyHudLayouts(): readonly PartyHudLayout[] {
   return ['compact', 'standard', 'wide', 'minimal'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-243: 자동 플레이 제한 SSOT — 4 한계 (battle/time/stamina/death)
+// ════════════════════════════════════════════════════════════════
+
+export type AutoPlayLimitKind = 'battle_count' | 'session_time' | 'stamina_floor' | 'death_count';
+
+export interface AutoPlayLimitNarrative {
+  kind: AutoPlayLimitKind;
+  label: string;
+  /** 임계치 수치 (단위는 kind마다 다름) */
+  threshold: number;
+  unit: string;
+  /** 도달 시 동작 */
+  onReach: '일시중지' | '종료' | '경고';
+}
+
+export const SCENARIO_AUTO_PLAY_LIMITS: readonly AutoPlayLimitNarrative[] = [
+  { kind: 'battle_count',  label: '전투 횟수', threshold: 50,  unit: '회',  onReach: '일시중지' },
+  { kind: 'session_time',  label: '세션 시간', threshold: 120, unit: '분',  onReach: '경고' },
+  { kind: 'stamina_floor', label: '최소 스태미나', threshold: 20, unit: '%', onReach: '종료' },
+  { kind: 'death_count',   label: '연속 패배', threshold: 3, unit: '회', onReach: '종료' },
+];
+
+export function getAutoPlayLimitNarrative(kind: AutoPlayLimitKind): AutoPlayLimitNarrative | undefined {
+  return SCENARIO_AUTO_PLAY_LIMITS.find((l) => l.kind === kind);
+}
+
+export function listAutoPlayLimits(): readonly AutoPlayLimitKind[] {
+  return ['battle_count', 'session_time', 'stamina_floor', 'death_count'];
+}
