@@ -10062,3 +10062,34 @@ export function getCalendarEventTypeNarrative(event: CalendarEventType): Calenda
 export function listCalendarEventTypesByPriority(): readonly CalendarEventTypeNarrative[] {
   return [...SCENARIO_CALENDAR_EVENT_TYPES].sort((a, b) => a.notificationPriority - b.notificationPriority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-221: 시즌 사이클 phase SSOT — 4 phase (start/active/closing/break)
+// 시즌 전체 흐름 + 각 phase 길이 + 플레이어 액션 hint.
+// ════════════════════════════════════════════════════════════════
+
+export type SeasonCyclePhase = 'start' | 'active' | 'closing' | 'break';
+
+export interface SeasonCyclePhaseNarrative {
+  phase: SeasonCyclePhase;
+  label: string;
+  /** phase 길이 (일) */
+  durationDays: number;
+  /** 권장 액션 */
+  recommendedAction: string;
+}
+
+export const SCENARIO_SEASON_CYCLE_PHASES: readonly SeasonCyclePhaseNarrative[] = [
+  { phase: 'start',   label: '시작',   durationDays: 3,  recommendedAction: '시즌 패스 / 첫 보상 수령 + 신규 컨텐츠 확인.' },
+  { phase: 'active',  label: '진행',   durationDays: 21, recommendedAction: '주간 도전 + 랭크 매치 + 시즌 quest 완주.' },
+  { phase: 'closing', label: '마감',   durationDays: 5,  recommendedAction: '미완료 보상 수령 + 시즌 랭크 확정.' },
+  { phase: 'break',   label: '휴식',   durationDays: 1,  recommendedAction: '다음 시즌 대비 — 빌드 정리 / 자원 정렬.' },
+];
+
+export function getSeasonCyclePhaseNarrative(phase: SeasonCyclePhase): SeasonCyclePhaseNarrative | undefined {
+  return SCENARIO_SEASON_CYCLE_PHASES.find((p) => p.phase === phase);
+}
+
+export function getSeasonTotalDurationDays(): number {
+  return SCENARIO_SEASON_CYCLE_PHASES.reduce((sum, p) => sum + p.durationDays, 0);
+}
