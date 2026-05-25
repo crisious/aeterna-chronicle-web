@@ -10443,3 +10443,32 @@ export function getShrineTypeNarrative(shrine: ShrineType): ShrineTypeNarrative 
 export function listShrineTypes(): readonly ShrineType[] {
   return ['memory', 'healing', 'combat_buff', 'wisdom', 'teleport'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-234: 길드 권한 역할 SSOT — 5 역할
+// ════════════════════════════════════════════════════════════════
+
+export type GuildPermissionRole = 'member' | 'officer' | 'raid_leader' | 'treasurer' | 'leader';
+
+export interface GuildPermissionRoleNarrative {
+  role: GuildPermissionRole;
+  label: string;
+  hierarchyLevel: number;
+  permissions: readonly string[];
+}
+
+export const SCENARIO_GUILD_PERMISSION_ROLES: readonly GuildPermissionRoleNarrative[] = [
+  { role: 'member',      label: '일반 회원',   hierarchyLevel: 1, permissions: ['길드 채팅', '일일 quest 참여'] },
+  { role: 'officer',     label: '간부',       hierarchyLevel: 2, permissions: ['길드 채팅', '일일 quest', '회원 초대 / 추방'] },
+  { role: 'raid_leader', label: '레이드 리더', hierarchyLevel: 3, permissions: ['길드 채팅', 'raid 일정 관리', '파티 구성'] },
+  { role: 'treasurer',   label: '재무',       hierarchyLevel: 3, permissions: ['길드 채팅', '길드 창고 관리', '화폐 분배'] },
+  { role: 'leader',      label: '길드장',     hierarchyLevel: 4, permissions: ['모든 권한 + 길드 해체 / 양도'] },
+];
+
+export function getGuildPermissionRoleNarrative(role: GuildPermissionRole): GuildPermissionRoleNarrative | undefined {
+  return SCENARIO_GUILD_PERMISSION_ROLES.find((r) => r.role === role);
+}
+
+export function listGuildRolesByHierarchy(): readonly GuildPermissionRoleNarrative[] {
+  return [...SCENARIO_GUILD_PERMISSION_ROLES].sort((a, b) => a.hierarchyLevel - b.hierarchyLevel);
+}
