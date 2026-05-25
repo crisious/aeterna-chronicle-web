@@ -10506,3 +10506,33 @@ export function classifyItemDurabilityByPercent(percent: number): ItemDurability
   }
   return descending[descending.length - 1];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-236: 적 archetype 그룹 SSOT — 5 그룹
+// ════════════════════════════════════════════════════════════════
+
+export type EnemyArchetypeGroup = 'humanoid' | 'beast' | 'undead' | 'elemental' | 'aberration';
+
+export interface EnemyArchetypeGroupNarrative {
+  group: EnemyArchetypeGroup;
+  label: string;
+  weaknessElement: DamageElement;
+  baseFrequencyWeight: number;
+  behaviorHint: string;
+}
+
+export const SCENARIO_ENEMY_ARCHETYPE_GROUPS: readonly EnemyArchetypeGroupNarrative[] = [
+  { group: 'humanoid',   label: '인간형',  weaknessElement: 'physical', baseFrequencyWeight: 1.0, behaviorHint: '협동 / 무기 사용 / 후퇴 가능.' },
+  { group: 'beast',      label: '야수',    weaknessElement: 'fire',     baseFrequencyWeight: 1.2, behaviorHint: '단독 또는 무리 / 회피 우선.' },
+  { group: 'undead',     label: '언데드',  weaknessElement: 'holy',     baseFrequencyWeight: 0.7, behaviorHint: '느린 이동 / 죽음 저항 / 야간 +30%.' },
+  { group: 'elemental',  label: '원소',    weaknessElement: 'ice',      baseFrequencyWeight: 0.5, behaviorHint: '특정 element zone 한정 / 강한 element 공격.' },
+  { group: 'aberration', label: '이형',    weaknessElement: 'shadow',   baseFrequencyWeight: 0.3, behaviorHint: '예측 불가 패턴 / 균열 zone / 보스 전조.' },
+];
+
+export function getEnemyArchetypeGroupNarrative(group: EnemyArchetypeGroup): EnemyArchetypeGroupNarrative | undefined {
+  return SCENARIO_ENEMY_ARCHETYPE_GROUPS.find((g) => g.group === group);
+}
+
+export function listEnemyArchetypeGroups(): readonly EnemyArchetypeGroup[] {
+  return ['humanoid', 'beast', 'undead', 'elemental', 'aberration'];
+}
