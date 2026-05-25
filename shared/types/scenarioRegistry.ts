@@ -10904,3 +10904,33 @@ export function getGuildActivityScoreNarrative(kind: GuildActivityKind): GuildAc
 export function listGuildActivityScores(): readonly GuildActivityKind[] {
   return ['daily_login', 'raid', 'contribution', 'event', 'donation'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-249: 거래소 매물 기간 SSOT — 4 기간 (12h/24h/48h/7d)
+// ════════════════════════════════════════════════════════════════
+
+export type MarketListingDuration = '12h' | '24h' | '48h' | '7d';
+
+export interface MarketListingDurationNarrative {
+  duration: MarketListingDuration;
+  label: string;
+  /** 시간(분) */
+  minutes: number;
+  /** 수수료 (%) — 기간 길수록 가파른 수수료 */
+  listingFeePercent: number;
+}
+
+export const SCENARIO_MARKET_LISTING_DURATIONS: readonly MarketListingDurationNarrative[] = [
+  { duration: '12h', label: '12시간', minutes: 12 * 60,    listingFeePercent: 1 },
+  { duration: '24h', label: '24시간', minutes: 24 * 60,    listingFeePercent: 2 },
+  { duration: '48h', label: '48시간', minutes: 48 * 60,    listingFeePercent: 3 },
+  { duration: '7d',  label: '7일',   minutes: 7 * 24 * 60, listingFeePercent: 5 },
+];
+
+export function getMarketListingDurationNarrative(d: MarketListingDuration): MarketListingDurationNarrative | undefined {
+  return SCENARIO_MARKET_LISTING_DURATIONS.find((m) => m.duration === d);
+}
+
+export function listMarketListingDurations(): readonly MarketListingDuration[] {
+  return ['12h', '24h', '48h', '7d'];
+}
