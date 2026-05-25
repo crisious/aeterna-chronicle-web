@@ -10565,3 +10565,31 @@ export function getLootSourceTypeNarrative(source: LootSourceType): LootSourceTy
 export function listLootSourceTypes(): readonly LootSourceType[] {
   return ['kill', 'chest', 'quest', 'trade', 'craft'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-238: 일일 리셋 시간 SSOT — 4 시간대 (KST 기준)
+// ════════════════════════════════════════════════════════════════
+
+export type DailyResetTimeKey = 'dawn' | 'morning' | 'evening' | 'midnight';
+
+export interface DailyResetTimeNarrative {
+  key: DailyResetTimeKey;
+  label: string;
+  hourKST: number;
+  resetTargets: readonly string[];
+}
+
+export const SCENARIO_DAILY_RESET_TIMES: readonly DailyResetTimeNarrative[] = [
+  { key: 'dawn',     label: '새벽 (06:00 KST)', hourKST: 6,  resetTargets: ['일일 quest', '신전 cooldown'] },
+  { key: 'morning',  label: '오전 (09:00 KST)', hourKST: 9,  resetTargets: ['상점 새로고침 (hourly)', '주간 quest 진행'] },
+  { key: 'evening',  label: '저녁 (18:00 KST)', hourKST: 18, resetTargets: ['PvP 매칭 풀 갱신', '이벤트 진행 체크'] },
+  { key: 'midnight', label: '자정 (00:00 KST)', hourKST: 0,  resetTargets: ['전체 일일 리셋', '체크포인트 저장', '주간 challenge 시작'] },
+];
+
+export function getDailyResetTimeNarrative(key: DailyResetTimeKey): DailyResetTimeNarrative | undefined {
+  return SCENARIO_DAILY_RESET_TIMES.find((t) => t.key === key);
+}
+
+export function listDailyResetTimes(): readonly DailyResetTimeKey[] {
+  return ['dawn', 'morning', 'evening', 'midnight'];
+}
