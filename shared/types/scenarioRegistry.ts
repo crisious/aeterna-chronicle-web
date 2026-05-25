@@ -10472,3 +10472,37 @@ export function getGuildPermissionRoleNarrative(role: GuildPermissionRole): Guil
 export function listGuildRolesByHierarchy(): readonly GuildPermissionRoleNarrative[] {
   return [...SCENARIO_GUILD_PERMISSION_ROLES].sort((a, b) => a.hierarchyLevel - b.hierarchyLevel);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-235: 🎯 아이템 내구도 레벨 SSOT — 5 레벨
+// ════════════════════════════════════════════════════════════════
+
+export type ItemDurabilityLevel = 'pristine' | 'intact' | 'worn' | 'damaged' | 'broken';
+
+export interface ItemDurabilityLevelNarrative {
+  level: ItemDurabilityLevel;
+  label: string;
+  minPercent: number;
+  uiColor: string;
+  modifierSummary: string;
+}
+
+export const SCENARIO_ITEM_DURABILITY_LEVELS: readonly ItemDurabilityLevelNarrative[] = [
+  { level: 'pristine', label: '완벽',   minPercent: 90, uiColor: '#5fbf5f', modifierSummary: '100% 성능 + 외관 효과 보너스.' },
+  { level: 'intact',   label: '온전',   minPercent: 70, uiColor: '#9fcf5f', modifierSummary: '100% 성능, 외관 보너스 없음.' },
+  { level: 'worn',     label: '낡음',   minPercent: 40, uiColor: '#ffb720', modifierSummary: '성능 -10%, 수리 권장.' },
+  { level: 'damaged',  label: '손상',   minPercent: 10, uiColor: '#ff8040', modifierSummary: '성능 -30%, 즉시 수리 필요.' },
+  { level: 'broken',   label: '파손',   minPercent: 0,  uiColor: '#d04040', modifierSummary: '장비 사용 불가 — 수리 또는 교체 필수.' },
+];
+
+export function getItemDurabilityLevelNarrative(level: ItemDurabilityLevel): ItemDurabilityLevelNarrative | undefined {
+  return SCENARIO_ITEM_DURABILITY_LEVELS.find((l) => l.level === level);
+}
+
+export function classifyItemDurabilityByPercent(percent: number): ItemDurabilityLevelNarrative {
+  const descending = [...SCENARIO_ITEM_DURABILITY_LEVELS].sort((a, b) => b.minPercent - a.minPercent);
+  for (const l of descending) {
+    if (percent >= l.minPercent) return l;
+  }
+  return descending[descending.length - 1];
+}
