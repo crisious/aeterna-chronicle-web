@@ -11168,3 +11168,33 @@ export function getDungeonLockoutScheduleNarrative(s: DungeonLockoutSchedule): D
 export function listDungeonLockoutSchedules(): readonly DungeonLockoutSchedule[] {
   return ['daily', 'weekly', 'biweekly', 'seasonal'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-257: PvE 던전 등급 SSOT — 4 등급 (novice/veteran/heroic/mythic)
+// ════════════════════════════════════════════════════════════════
+
+export type PveDungeonTier = 'novice' | 'veteran' | 'heroic' | 'mythic';
+
+export interface PveDungeonTierNarrative {
+  tier: PveDungeonTier;
+  label: string;
+  /** 권장 레벨 */
+  recommendedLevel: number;
+  /** 보상 배율 (novice=1.0 기준) */
+  rewardMultiplier: number;
+}
+
+export const SCENARIO_PVE_DUNGEON_TIERS: readonly PveDungeonTierNarrative[] = [
+  { tier: 'novice',  label: '초보',  recommendedLevel: 10, rewardMultiplier: 1.0 },
+  { tier: 'veteran', label: '숙련',  recommendedLevel: 30, rewardMultiplier: 1.8 },
+  { tier: 'heroic',  label: '영웅',  recommendedLevel: 50, rewardMultiplier: 3.0 },
+  { tier: 'mythic',  label: '신화',  recommendedLevel: 70, rewardMultiplier: 5.0 },
+];
+
+export function getPveDungeonTierNarrative(tier: PveDungeonTier): PveDungeonTierNarrative | undefined {
+  return SCENARIO_PVE_DUNGEON_TIERS.find((d) => d.tier === tier);
+}
+
+export function listPveDungeonTiers(): readonly PveDungeonTier[] {
+  return ['novice', 'veteran', 'heroic', 'mythic'];
+}
