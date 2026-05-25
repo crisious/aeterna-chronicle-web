@@ -10772,3 +10772,39 @@ export function getFriendRequestStateNarrative(state: FriendRequestState): Frien
 export function listFriendRequestStates(): readonly FriendRequestState[] {
   return ['pending', 'accepted', 'declined', 'blocked', 'expired'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-245 🎯: 네임플레이트 태그 SSOT — 5 태그 (party_leader/guild_master/dev/streamer/season_champion)
+// ════════════════════════════════════════════════════════════════
+
+export type NameplateTag =
+  | 'party_leader'
+  | 'guild_master'
+  | 'developer'
+  | 'streamer'
+  | 'season_champion';
+
+export interface NameplateTagNarrative {
+  tag: NameplateTag;
+  label: string;
+  /** 표시 우선순위 (낮을수록 먼저 표시) */
+  priority: number;
+  /** 텍스트 색 */
+  uiColor: string;
+}
+
+export const SCENARIO_NAMEPLATE_TAGS: readonly NameplateTagNarrative[] = [
+  { tag: 'developer',       label: '개발자',  priority: 1, uiColor: '#ff4040' },
+  { tag: 'season_champion', label: '챔피언',  priority: 2, uiColor: '#ffd040' },
+  { tag: 'guild_master',    label: '길마',    priority: 3, uiColor: '#bf5fff' },
+  { tag: 'streamer',        label: '스트리머', priority: 4, uiColor: '#5fbfff' },
+  { tag: 'party_leader',    label: '파티장',  priority: 5, uiColor: '#5fbf5f' },
+];
+
+export function getNameplateTagNarrative(tag: NameplateTag): NameplateTagNarrative | undefined {
+  return SCENARIO_NAMEPLATE_TAGS.find((t) => t.tag === tag);
+}
+
+export function listNameplateTagsByPriority(): readonly NameplateTagNarrative[] {
+  return [...SCENARIO_NAMEPLATE_TAGS].sort((a, b) => a.priority - b.priority);
+}
