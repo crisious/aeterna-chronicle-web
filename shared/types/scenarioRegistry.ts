@@ -10841,3 +10841,34 @@ export function getChatSlashCommandNarrative(command: ChatSlashCommand): ChatSla
 export function listChatSlashCommands(): readonly ChatSlashCommand[] {
   return ['/help', '/who', '/party', '/guild', '/whisper', '/report'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-247: 인벤토리 정렬 모드 SSOT — 5 모드 (rarity/level/recent/name/value)
+// ════════════════════════════════════════════════════════════════
+
+export type InventorySortMode = 'rarity' | 'level' | 'recent' | 'name' | 'value';
+
+export interface InventorySortModeNarrative {
+  mode: InventorySortMode;
+  label: string;
+  /** 정렬 방향 */
+  direction: 'asc' | 'desc';
+  /** 일반 사용자 선호 점수 (1~5) */
+  popularityScore: number;
+}
+
+export const SCENARIO_INVENTORY_SORT_MODES: readonly InventorySortModeNarrative[] = [
+  { mode: 'rarity', label: '희귀도',     direction: 'desc', popularityScore: 5 },
+  { mode: 'level',  label: '레벨',       direction: 'desc', popularityScore: 4 },
+  { mode: 'recent', label: '획득 최근순', direction: 'desc', popularityScore: 3 },
+  { mode: 'value',  label: '가치',       direction: 'desc', popularityScore: 3 },
+  { mode: 'name',   label: '이름',       direction: 'asc',  popularityScore: 2 },
+];
+
+export function getInventorySortModeNarrative(mode: InventorySortMode): InventorySortModeNarrative | undefined {
+  return SCENARIO_INVENTORY_SORT_MODES.find((m) => m.mode === mode);
+}
+
+export function listInventorySortModes(): readonly InventorySortMode[] {
+  return ['rarity', 'level', 'recent', 'name', 'value'];
+}
