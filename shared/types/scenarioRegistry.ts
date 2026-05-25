@@ -10182,3 +10182,34 @@ export function getPartyRosterSizeNarrative(size: PartyRosterSize): PartyRosterS
 export function listPartyRosterSizes(): readonly PartyRosterSize[] {
   return ['solo', 'duo', 'trio', 'full_party'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-225: 🎯 거래 오류 코드 SSOT — 5 코드
+// ════════════════════════════════════════════════════════════════
+
+export type TransactionErrorCode =
+  | 'insufficient_funds' | 'item_locked' | 'inventory_full' | 'partner_offline' | 'rate_limit';
+
+export interface TransactionErrorCodeNarrative {
+  code: TransactionErrorCode;
+  httpStatus: number;
+  label: string;
+  userMessage: string;
+  recoveryHint: string;
+}
+
+export const SCENARIO_TRANSACTION_ERROR_CODES: readonly TransactionErrorCodeNarrative[] = [
+  { code: 'insufficient_funds', httpStatus: 402, label: '자금 부족',     userMessage: '화폐가 부족합니다.',                     recoveryHint: '필요한 화폐를 채집/quest 로 확보 후 재시도.' },
+  { code: 'item_locked',        httpStatus: 423, label: '아이템 잠금',  userMessage: '아이템이 잠금 상태입니다.',              recoveryHint: '평판/quest 잠금 해제 후 재시도.' },
+  { code: 'inventory_full',     httpStatus: 409, label: '가방 가득',    userMessage: '가방이 가득 차 있습니다.',               recoveryHint: '가방 정리 또는 lower priority 자원 폐기 후 재시도.' },
+  { code: 'partner_offline',    httpStatus: 410, label: '상대 오프라인', userMessage: '거래 상대가 오프라인 상태입니다.',       recoveryHint: '상대가 다시 온라인이 될 때까지 대기 / 다른 거래 상대.' },
+  { code: 'rate_limit',         httpStatus: 429, label: '요청 과다',    userMessage: '거래 시도가 너무 많습니다.',             recoveryHint: '60초 후 재시도. 자동 거래 봇 의심 시 신고.' },
+];
+
+export function getTransactionErrorCodeNarrative(code: TransactionErrorCode): TransactionErrorCodeNarrative | undefined {
+  return SCENARIO_TRANSACTION_ERROR_CODES.find((c) => c.code === code);
+}
+
+export function listTransactionErrorCodes(): readonly TransactionErrorCode[] {
+  return ['insufficient_funds', 'item_locked', 'inventory_full', 'partner_offline', 'rate_limit'];
+}
