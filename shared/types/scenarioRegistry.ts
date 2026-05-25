@@ -10934,3 +10934,48 @@ export function getMarketListingDurationNarrative(d: MarketListingDuration): Mar
 export function listMarketListingDurations(): readonly MarketListingDuration[] {
   return ['12h', '24h', '48h', '7d'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-250 🎯🎯: 튜토리얼 체크포인트 SSOT — 6 단계
+// 신규 플레이어 온보딩 흐름.
+// ════════════════════════════════════════════════════════════════
+
+export type TutorialCheckpoint =
+  | 'character_create'
+  | 'first_battle'
+  | 'first_quest'
+  | 'first_skill_unlock'
+  | 'party_invitation'
+  | 'graduation';
+
+export interface TutorialCheckpointNarrative {
+  checkpoint: TutorialCheckpoint;
+  label: string;
+  /** 순서 (1~6) */
+  order: number;
+  /** 예상 완료 시간(분) */
+  estimatedMinutes: number;
+  /** 스킵 허용 */
+  skippable: boolean;
+}
+
+export const SCENARIO_TUTORIAL_CHECKPOINTS: readonly TutorialCheckpointNarrative[] = [
+  { checkpoint: 'character_create',    label: '캐릭터 생성',   order: 1, estimatedMinutes: 5,  skippable: false },
+  { checkpoint: 'first_battle',        label: '첫 전투',      order: 2, estimatedMinutes: 3,  skippable: false },
+  { checkpoint: 'first_quest',         label: '첫 퀘스트',     order: 3, estimatedMinutes: 8,  skippable: true  },
+  { checkpoint: 'first_skill_unlock',  label: '첫 스킬 잠금해제', order: 4, estimatedMinutes: 2, skippable: true },
+  { checkpoint: 'party_invitation',    label: '파티 초대',     order: 5, estimatedMinutes: 4,  skippable: true  },
+  { checkpoint: 'graduation',          label: '튜토리얼 졸업',  order: 6, estimatedMinutes: 1,  skippable: false },
+];
+
+export function getTutorialCheckpointNarrative(checkpoint: TutorialCheckpoint): TutorialCheckpointNarrative | undefined {
+  return SCENARIO_TUTORIAL_CHECKPOINTS.find((t) => t.checkpoint === checkpoint);
+}
+
+export function listTutorialCheckpointsByOrder(): readonly TutorialCheckpointNarrative[] {
+  return [...SCENARIO_TUTORIAL_CHECKPOINTS].sort((a, b) => a.order - b.order);
+}
+
+export function getTotalTutorialEstimatedMinutes(): number {
+  return SCENARIO_TUTORIAL_CHECKPOINTS.reduce((s, t) => s + t.estimatedMinutes, 0);
+}
