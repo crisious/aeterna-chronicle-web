@@ -10536,3 +10536,32 @@ export function getEnemyArchetypeGroupNarrative(group: EnemyArchetypeGroup): Ene
 export function listEnemyArchetypeGroups(): readonly EnemyArchetypeGroup[] {
   return ['humanoid', 'beast', 'undead', 'elemental', 'aberration'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-237: 루트 소스 타입 SSOT — 5 종
+// ════════════════════════════════════════════════════════════════
+
+export type LootSourceType = 'kill' | 'chest' | 'quest' | 'trade' | 'craft';
+
+export interface LootSourceTypeNarrative {
+  source: LootSourceType;
+  label: string;
+  averageRarity: ItemRarity;
+  dailyFrequency: number;
+}
+
+export const SCENARIO_LOOT_SOURCE_TYPES: readonly LootSourceTypeNarrative[] = [
+  { source: 'kill',  label: '처치',     averageRarity: 'common',   dailyFrequency: 200 },
+  { source: 'chest', label: '상자',     averageRarity: 'uncommon', dailyFrequency: 30 },
+  { source: 'quest', label: '퀘스트',   averageRarity: 'rare',     dailyFrequency: 10 },
+  { source: 'trade', label: '거래',     averageRarity: 'uncommon', dailyFrequency: 5 },
+  { source: 'craft', label: '제작',     averageRarity: 'epic',     dailyFrequency: 2 },
+];
+
+export function getLootSourceTypeNarrative(source: LootSourceType): LootSourceTypeNarrative | undefined {
+  return SCENARIO_LOOT_SOURCE_TYPES.find((s) => s.source === source);
+}
+
+export function listLootSourceTypes(): readonly LootSourceType[] {
+  return ['kill', 'chest', 'quest', 'trade', 'craft'];
+}
