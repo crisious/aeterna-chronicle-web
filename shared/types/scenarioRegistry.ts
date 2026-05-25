@@ -10979,3 +10979,34 @@ export function listTutorialCheckpointsByOrder(): readonly TutorialCheckpointNar
 export function getTotalTutorialEstimatedMinutes(): number {
   return SCENARIO_TUTORIAL_CHECKPOINTS.reduce((s, t) => s + t.estimatedMinutes, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-251: 코스메틱 슬롯 SSOT — 5 슬롯 (helm/armor/weapon_skin/back/aura)
+// ════════════════════════════════════════════════════════════════
+
+export type CosmeticSlot = 'helm' | 'armor' | 'weapon_skin' | 'back' | 'aura';
+
+export interface CosmeticSlotNarrative {
+  slot: CosmeticSlot;
+  label: string;
+  /** 표시 zone (캐릭터 모델 부위) */
+  bodyZone: '머리' | '몸통' | '손' | '등' | '주변';
+  /** 다른 슬롯과 가시적 충돌 가능 여부 */
+  canConflict: boolean;
+}
+
+export const SCENARIO_COSMETIC_SLOTS: readonly CosmeticSlotNarrative[] = [
+  { slot: 'helm',        label: '투구',     bodyZone: '머리', canConflict: true  },
+  { slot: 'armor',       label: '갑옷',     bodyZone: '몸통', canConflict: true  },
+  { slot: 'weapon_skin', label: '무기 스킨', bodyZone: '손',  canConflict: false },
+  { slot: 'back',        label: '망토',     bodyZone: '등',  canConflict: true  },
+  { slot: 'aura',        label: '오라',     bodyZone: '주변', canConflict: false },
+];
+
+export function getCosmeticSlotNarrative(slot: CosmeticSlot): CosmeticSlotNarrative | undefined {
+  return SCENARIO_COSMETIC_SLOTS.find((c) => c.slot === slot);
+}
+
+export function listCosmeticSlots(): readonly CosmeticSlot[] {
+  return ['helm', 'armor', 'weapon_skin', 'back', 'aura'];
+}
