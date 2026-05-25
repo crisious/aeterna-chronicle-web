@@ -10653,3 +10653,32 @@ export function getReportReasonNarrative(reason: ReportReason): ReportReasonNarr
 export function listReportReasonsByPriority(): readonly ReportReasonNarrative[] {
   return [...SCENARIO_REPORT_REASONS].sort((a, b) => a.priority - b.priority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-241: 전투 보상 구성 SSOT — 5 항목 (합 1.0)
+// ════════════════════════════════════════════════════════════════
+
+export type BattleRewardKind = 'exp' | 'gold' | 'loot' | 'honor' | 'seasonal';
+
+export interface BattleRewardNarrative {
+  kind: BattleRewardKind;
+  label: string;
+  averageShare: number;
+  uiColor: string;
+}
+
+export const SCENARIO_BATTLE_REWARD_BREAKDOWN: readonly BattleRewardNarrative[] = [
+  { kind: 'exp',      label: '경험치',  averageShare: 0.4,  uiColor: '#5fbf5f' },
+  { kind: 'gold',     label: '금화',    averageShare: 0.3,  uiColor: '#ffb720' },
+  { kind: 'loot',     label: '아이템',  averageShare: 0.2,  uiColor: '#bf5fff' },
+  { kind: 'honor',    label: '명예',    averageShare: 0.05, uiColor: '#d04040' },
+  { kind: 'seasonal', label: '시즌',    averageShare: 0.05, uiColor: '#40b0e0' },
+];
+
+export function getBattleRewardNarrative(kind: BattleRewardKind): BattleRewardNarrative | undefined {
+  return SCENARIO_BATTLE_REWARD_BREAKDOWN.find((r) => r.kind === kind);
+}
+
+export function getTotalBattleRewardShare(): number {
+  return SCENARIO_BATTLE_REWARD_BREAKDOWN.reduce((sum, r) => sum + r.averageShare, 0);
+}
