@@ -11138,3 +11138,33 @@ export function getBossEnragePhaseAtHp(hpPercent: number): BossEnragePhase {
   }
   return current;
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-256: 던전 락아웃 일정 SSOT — 4 일정 (daily/weekly/biweekly/seasonal)
+// ════════════════════════════════════════════════════════════════
+
+export type DungeonLockoutSchedule = 'daily' | 'weekly' | 'biweekly' | 'seasonal';
+
+export interface DungeonLockoutScheduleNarrative {
+  schedule: DungeonLockoutSchedule;
+  label: string;
+  /** 초기화 주기 (시간) */
+  resetHours: number;
+  /** 1회 입장당 보상 배율 (잦은 입장일수록 낮음) */
+  rewardMultiplier: number;
+}
+
+export const SCENARIO_DUNGEON_LOCKOUT_SCHEDULES: readonly DungeonLockoutScheduleNarrative[] = [
+  { schedule: 'daily',    label: '일일',  resetHours: 24,        rewardMultiplier: 1.0 },
+  { schedule: 'weekly',   label: '주간',  resetHours: 24 * 7,    rewardMultiplier: 2.0 },
+  { schedule: 'biweekly', label: '격주',  resetHours: 24 * 14,   rewardMultiplier: 3.0 },
+  { schedule: 'seasonal', label: '시즌',  resetHours: 24 * 90,   rewardMultiplier: 6.0 },
+];
+
+export function getDungeonLockoutScheduleNarrative(s: DungeonLockoutSchedule): DungeonLockoutScheduleNarrative | undefined {
+  return SCENARIO_DUNGEON_LOCKOUT_SCHEDULES.find((d) => d.schedule === s);
+}
+
+export function listDungeonLockoutSchedules(): readonly DungeonLockoutSchedule[] {
+  return ['daily', 'weekly', 'biweekly', 'seasonal'];
+}
