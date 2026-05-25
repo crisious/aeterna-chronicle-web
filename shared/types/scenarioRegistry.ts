@@ -10093,3 +10093,33 @@ export function getSeasonCyclePhaseNarrative(phase: SeasonCyclePhase): SeasonCyc
 export function getSeasonTotalDurationDays(): number {
   return SCENARIO_SEASON_CYCLE_PHASES.reduce((sum, p) => sum + p.durationDays, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-222: 길드 raid tier SSOT — 4 tier (PvpRankTier cross)
+// ════════════════════════════════════════════════════════════════
+
+export type GuildRaidTier = 'normal' | 'hard' | 'nightmare' | 'legendary';
+
+export interface GuildRaidTierNarrative {
+  tier: GuildRaidTier;
+  label: string;
+  recommendedPlayerCount: number;
+  bossHpMultiplier: number;
+  recommendedRankTier: PvpRankTier;
+  rewardHint: string;
+}
+
+export const SCENARIO_GUILD_RAID_TIERS: readonly GuildRaidTierNarrative[] = [
+  { tier: 'normal',    label: '일반',   recommendedPlayerCount: 8,  bossHpMultiplier: 1,  recommendedRankTier: 'silver',   rewardHint: 'uncommon 보상 + 길드 기여도 +5.' },
+  { tier: 'hard',      label: '어려움', recommendedPlayerCount: 10, bossHpMultiplier: 2,  recommendedRankTier: 'gold',     rewardHint: 'rare 보상 + 길드 기여도 +15.' },
+  { tier: 'nightmare', label: '악몽',   recommendedPlayerCount: 16, bossHpMultiplier: 4,  recommendedRankTier: 'platinum', rewardHint: 'epic 보상 + 길드 기여도 +40.' },
+  { tier: 'legendary', label: '전설',   recommendedPlayerCount: 24, bossHpMultiplier: 10, recommendedRankTier: 'diamond',  rewardHint: 'legendary 보상 + 길드 기여도 +100 + 영구 칭호.' },
+];
+
+export function getGuildRaidTierNarrative(tier: GuildRaidTier): GuildRaidTierNarrative | undefined {
+  return SCENARIO_GUILD_RAID_TIERS.find((t) => t.tier === tier);
+}
+
+export function listGuildRaidTiersAscending(): readonly GuildRaidTier[] {
+  return ['normal', 'hard', 'nightmare', 'legendary'];
+}
