@@ -10872,3 +10872,35 @@ export function getInventorySortModeNarrative(mode: InventorySortMode): Inventor
 export function listInventorySortModes(): readonly InventorySortMode[] {
   return ['rarity', 'level', 'recent', 'name', 'value'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-248: 길드 활동 점수 SSOT — 5 활동 (daily_login/raid/contribution/event/donation)
+// 길드 활동 점수 가중치 + 일/주 한도.
+// ════════════════════════════════════════════════════════════════
+
+export type GuildActivityKind = 'daily_login' | 'raid' | 'contribution' | 'event' | 'donation';
+
+export interface GuildActivityScoreNarrative {
+  kind: GuildActivityKind;
+  label: string;
+  /** 단위 활동당 점수 */
+  pointsPerUnit: number;
+  /** 일일 최대 점수 (0 = 무제한) */
+  dailyCap: number;
+}
+
+export const SCENARIO_GUILD_ACTIVITY_SCORES: readonly GuildActivityScoreNarrative[] = [
+  { kind: 'daily_login',  label: '일일 출석',  pointsPerUnit: 10, dailyCap: 10 },
+  { kind: 'raid',         label: '레이드 참여', pointsPerUnit: 50, dailyCap: 150 },
+  { kind: 'contribution', label: '길드 기여',  pointsPerUnit: 5,  dailyCap: 100 },
+  { kind: 'event',        label: '이벤트',    pointsPerUnit: 30, dailyCap: 90 },
+  { kind: 'donation',     label: '금화 기부',  pointsPerUnit: 1,  dailyCap: 50 },
+];
+
+export function getGuildActivityScoreNarrative(kind: GuildActivityKind): GuildActivityScoreNarrative | undefined {
+  return SCENARIO_GUILD_ACTIVITY_SCORES.find((g) => g.kind === kind);
+}
+
+export function listGuildActivityScores(): readonly GuildActivityKind[] {
+  return ['daily_login', 'raid', 'contribution', 'event', 'donation'];
+}
