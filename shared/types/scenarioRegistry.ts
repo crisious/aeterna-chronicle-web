@@ -10330,3 +10330,30 @@ export function getPhotoModeFilterNarrative(filter: PhotoModeFilter): PhotoModeF
 export function listPhotoModeFilters(): readonly PhotoModeFilter[] {
   return ['none', 'sepia', 'noir', 'vintage', 'neon'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-230: 🎯 컷씬 재생 옵션 SSOT — 3 옵션
+// ════════════════════════════════════════════════════════════════
+
+export type CutscenePlaybackOption = 'auto' | 'manual' | 'skip';
+
+export interface CutscenePlaybackOptionNarrative {
+  option: CutscenePlaybackOption;
+  label: string;
+  autoAdvance: boolean;
+  inputHandling: string;
+}
+
+export const SCENARIO_CUTSCENE_PLAYBACK_OPTIONS: readonly CutscenePlaybackOptionNarrative[] = [
+  { option: 'auto',   label: '자동 재생', autoAdvance: true,  inputHandling: '대사가 자동 진행 — 키 입력으로 일시정지 가능.' },
+  { option: 'manual', label: '수동 재생', autoAdvance: false, inputHandling: '대사마다 키 입력 필요 — 천천히 음미 가능.' },
+  { option: 'skip',   label: '스킵',     autoAdvance: false, inputHandling: '컷씬 전체 스킵 — 처음 본 컷씬만 활성화.' },
+];
+
+export function getCutscenePlaybackOptionNarrative(option: CutscenePlaybackOption): CutscenePlaybackOptionNarrative | undefined {
+  return SCENARIO_CUTSCENE_PLAYBACK_OPTIONS.find((o) => o.option === option);
+}
+
+export function listCutscenePlaybackOptions(): readonly CutscenePlaybackOption[] {
+  return ['auto', 'manual', 'skip'];
+}
