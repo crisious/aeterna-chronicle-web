@@ -10682,3 +10682,31 @@ export function getBattleRewardNarrative(kind: BattleRewardKind): BattleRewardNa
 export function getTotalBattleRewardShare(): number {
   return SCENARIO_BATTLE_REWARD_BREAKDOWN.reduce((sum, r) => sum + r.averageShare, 0);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-242: 파티 HUD 레이아웃 SSOT — 4 레이아웃 (compact/standard/wide/minimal)
+// ════════════════════════════════════════════════════════════════
+
+export type PartyHudLayout = 'compact' | 'standard' | 'wide' | 'minimal';
+
+export interface PartyHudLayoutNarrative {
+  layout: PartyHudLayout;
+  label: string;
+  infoPerSlot: number;
+  screenOccupancyPercent: number;
+}
+
+export const SCENARIO_PARTY_HUD_LAYOUTS: readonly PartyHudLayoutNarrative[] = [
+  { layout: 'compact',  label: '컴팩트', infoPerSlot: 3, screenOccupancyPercent: 10 },
+  { layout: 'standard', label: '표준',   infoPerSlot: 5, screenOccupancyPercent: 18 },
+  { layout: 'wide',     label: '와이드', infoPerSlot: 7, screenOccupancyPercent: 28 },
+  { layout: 'minimal',  label: '최소',   infoPerSlot: 2, screenOccupancyPercent: 6 },
+];
+
+export function getPartyHudLayoutNarrative(layout: PartyHudLayout): PartyHudLayoutNarrative | undefined {
+  return SCENARIO_PARTY_HUD_LAYOUTS.find((l) => l.layout === layout);
+}
+
+export function listPartyHudLayouts(): readonly PartyHudLayout[] {
+  return ['compact', 'standard', 'wide', 'minimal'];
+}
