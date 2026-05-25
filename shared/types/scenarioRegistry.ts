@@ -10301,3 +10301,32 @@ export function getEmoteCategoryNarrative(category: EmoteCategory): EmoteCategor
 export function listPvpAllowedEmoteCategories(): readonly EmoteCategoryNarrative[] {
   return SCENARIO_EMOTE_CATEGORIES.filter((c) => c.allowedInPvp);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-229: 포토 모드 필터 SSOT — 5 필터
+// ════════════════════════════════════════════════════════════════
+
+export type PhotoModeFilter = 'none' | 'sepia' | 'noir' | 'vintage' | 'neon';
+
+export interface PhotoModeFilterNarrative {
+  filter: PhotoModeFilter;
+  label: string;
+  cssFilter: string;
+  moodHint: string;
+}
+
+export const SCENARIO_PHOTO_MODE_FILTERS: readonly PhotoModeFilterNarrative[] = [
+  { filter: 'none',    label: '원본',     cssFilter: 'none',                                          moodHint: '원본 그대로 — 후보정 없이 자연스러운 결.' },
+  { filter: 'sepia',   label: '세피아',   cssFilter: 'sepia(0.8)',                                    moodHint: '추억 / 회상 — 카일 전생을 환기하는 옛 결.' },
+  { filter: 'noir',    label: '느와르',   cssFilter: 'grayscale(1) contrast(1.2)',                    moodHint: '어두운 분위기 — 에레보스 / 카타콤 등 음산한 zone.' },
+  { filter: 'vintage', label: '빈티지',   cssFilter: 'sepia(0.4) saturate(0.7) contrast(1.1)',        moodHint: '따뜻한 회고 — 칸텔라 / 솔라리스 오아시스의 햇빛.' },
+  { filter: 'neon',    label: '네온',     cssFilter: 'saturate(2) hue-rotate(15deg) contrast(1.3)',   moodHint: '미래/판타지 — 황금 에테르 탑 / 균열 zone.' },
+];
+
+export function getPhotoModeFilterNarrative(filter: PhotoModeFilter): PhotoModeFilterNarrative | undefined {
+  return SCENARIO_PHOTO_MODE_FILTERS.find((f) => f.filter === filter);
+}
+
+export function listPhotoModeFilters(): readonly PhotoModeFilter[] {
+  return ['none', 'sepia', 'noir', 'vintage', 'neon'];
+}
