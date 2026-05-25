@@ -10123,3 +10123,33 @@ export function getGuildRaidTierNarrative(tier: GuildRaidTier): GuildRaidTierNar
 export function listGuildRaidTiersAscending(): readonly GuildRaidTier[] {
   return ['normal', 'hard', 'nightmare', 'legendary'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-223: 보상 화폐 SSOT — 5 종
+// ════════════════════════════════════════════════════════════════
+
+export type RewardCurrencyKind = 'gold' | 'honor' | 'seal' | 'aether_crystal' | 'seasonal_token';
+
+export interface RewardCurrencyNarrative {
+  currency: RewardCurrencyKind;
+  label: string;
+  symbol: string;
+  primarySource: string;
+  primarySink: string;
+}
+
+export const SCENARIO_QUEST_REWARD_CURRENCIES: readonly RewardCurrencyNarrative[] = [
+  { currency: 'gold',           label: '금화',       symbol: 'G', primarySource: '일반 적 처치 / 일반 quest 보상.',           primarySink: '일반 상점 거래 / 장비 강화.' },
+  { currency: 'honor',          label: '명예',       symbol: 'H', primarySource: '엘리트 적 / PvP 매치 승리.',                 primarySink: '평판 잠금 상점 / 길드 raid 입장권.' },
+  { currency: 'seal',           label: '봉인 인장',  symbol: '✚', primarySource: '보스 처치 / 파편 회수.',                     primarySink: 'epic 장비 제작 / 봉인 의식 자료.' },
+  { currency: 'aether_crystal', label: '에테르 결정', symbol: '◆', primarySource: '특수 zone 채광 / 신전 보상.',               primarySink: 'legendary 장비 / 시간 수호자 스킬 강화.' },
+  { currency: 'seasonal_token', label: '시즌 토큰',  symbol: '★', primarySource: '시즌 도전 / 주간 challenge / 시즌 quest.',  primarySink: '시즌 한정 상점 (시즌 종료 시 사라짐).' },
+];
+
+export function getRewardCurrencyNarrative(currency: RewardCurrencyKind): RewardCurrencyNarrative | undefined {
+  return SCENARIO_QUEST_REWARD_CURRENCIES.find((c) => c.currency === currency);
+}
+
+export function listRewardCurrencies(): readonly RewardCurrencyKind[] {
+  return ['gold', 'honor', 'seal', 'aether_crystal', 'seasonal_token'];
+}
