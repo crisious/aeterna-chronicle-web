@@ -10385,3 +10385,32 @@ export function getBattleFormationNarrative(formation: BattleFormation): BattleF
 export function listBattleFormations(): readonly BattleFormation[] {
   return ['aggressive', 'defensive', 'balanced', 'flanking'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-232: 조우 환경 biome SSOT — 5 biome
+// ════════════════════════════════════════════════════════════════
+
+export type EncounterBiome = 'forest' | 'desert' | 'cave' | 'urban' | 'abyss';
+
+export interface EncounterBiomeNarrative {
+  biome: EncounterBiome;
+  label: string;
+  enemyDensityWeight: number;
+  environmentModifier: string;
+}
+
+export const SCENARIO_ENCOUNTER_BIOMES: readonly EncounterBiomeNarrative[] = [
+  { biome: 'forest', label: '숲',     enemyDensityWeight: 1.2, environmentModifier: '시야 -10%, 회피 +5%, 식물성 적 빈도 +30%.' },
+  { biome: 'desert', label: '사막',   enemyDensityWeight: 0.8, environmentModifier: '시야 +15%, 모래 폭풍 시 ATB 시작값 -20%.' },
+  { biome: 'cave',   label: '동굴',   enemyDensityWeight: 1.0, environmentModifier: '시야 -30%, 광원 아이템 권장, 그림자 직조사 +10%.' },
+  { biome: 'urban',  label: '도시',   enemyDensityWeight: 1.5, environmentModifier: '엘리트 빈도 +20%, 잠입 동선 권장.' },
+  { biome: 'abyss',  label: '심연',   enemyDensityWeight: 0.6, environmentModifier: '시야 -50%, 보스급 적 빈도 +40%, 회피 -10%.' },
+];
+
+export function getEncounterBiomeNarrative(biome: EncounterBiome): EncounterBiomeNarrative | undefined {
+  return SCENARIO_ENCOUNTER_BIOMES.find((b) => b.biome === biome);
+}
+
+export function listEncounterBiomes(): readonly EncounterBiome[] {
+  return ['forest', 'desert', 'cave', 'urban', 'abyss'];
+}
