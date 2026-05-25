@@ -11100,3 +11100,41 @@ export function getGemSocketColorNarrative(color: GemSocketColor): GemSocketColo
 export function listGemSocketColors(): readonly GemSocketColor[] {
   return ['red', 'blue', 'yellow', 'prismatic'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-255 🎯: 보스 격노 단계 SSOT — 4 단계 (calm/agitated/enraged/desperate)
+// HP 임계치 기준으로 격노 단계 진입, 데미지 배율 단조 증가.
+// ════════════════════════════════════════════════════════════════
+
+export type BossEnragePhase = 'calm' | 'agitated' | 'enraged' | 'desperate';
+
+export interface BossEnragePhaseNarrative {
+  phase: BossEnragePhase;
+  label: string;
+  /** 진입 HP% (이하에서 진입) */
+  enterAtHpPercent: number;
+  /** 데미지 배율 */
+  damageMultiplier: number;
+}
+
+export const SCENARIO_BOSS_ENRAGE_PHASES: readonly BossEnragePhaseNarrative[] = [
+  { phase: 'calm',      label: '평정',  enterAtHpPercent: 100, damageMultiplier: 1.0 },
+  { phase: 'agitated',  label: '동요',  enterAtHpPercent: 75,  damageMultiplier: 1.2 },
+  { phase: 'enraged',   label: '격노',  enterAtHpPercent: 50,  damageMultiplier: 1.5 },
+  { phase: 'desperate', label: '발악',  enterAtHpPercent: 20,  damageMultiplier: 2.0 },
+];
+
+export function getBossEnragePhaseNarrative(phase: BossEnragePhase): BossEnragePhaseNarrative | undefined {
+  return SCENARIO_BOSS_ENRAGE_PHASES.find((p) => p.phase === phase);
+}
+
+export function getBossEnragePhaseAtHp(hpPercent: number): BossEnragePhase {
+  // hpPercent 가 enterAtHpPercent 이하인 가장 마지막(가장 격노) phase
+  let current: BossEnragePhase = 'calm';
+  for (const p of SCENARIO_BOSS_ENRAGE_PHASES) {
+    if (hpPercent <= p.enterAtHpPercent) {
+      current = p.phase;
+    }
+  }
+  return current;
+}
