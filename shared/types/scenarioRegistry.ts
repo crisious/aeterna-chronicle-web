@@ -10357,3 +10357,31 @@ export function getCutscenePlaybackOptionNarrative(option: CutscenePlaybackOptio
 export function listCutscenePlaybackOptions(): readonly CutscenePlaybackOption[] {
   return ['auto', 'manual', 'skip'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-231: 전투 진형 narrative SSOT — 4 진형
+// ════════════════════════════════════════════════════════════════
+
+export type BattleFormation = 'aggressive' | 'defensive' | 'balanced' | 'flanking';
+
+export interface BattleFormationNarrative {
+  formation: BattleFormation;
+  label: string;
+  modifierSummary: string;
+  recommendedAgainst: string;
+}
+
+export const SCENARIO_BATTLE_FORMATIONS: readonly BattleFormationNarrative[] = [
+  { formation: 'aggressive', label: '공세',     modifierSummary: '공격력 +15%, 받는 피해 +10%.',                     recommendedAgainst: '체력 낮은 적 다수 / 빠른 처치 필요.' },
+  { formation: 'defensive',  label: '방어',     modifierSummary: '받는 피해 -20%, 공격력 -10%, 위협도 +30%.',         recommendedAgainst: '강한 단일 보스 / 광역 공격 보스.' },
+  { formation: 'balanced',   label: '균형',     modifierSummary: '모든 modifier 기준값 — 가장 안정적.',               recommendedAgainst: '일반 전투 / 다양한 적 유형 혼합.' },
+  { formation: 'flanking',   label: '측면 공격', modifierSummary: 'crit 확률 +15%, 적 회피 -10%, 받는 피해 +5%.',     recommendedAgainst: '엘리트 적 / 회피율 높은 보스.' },
+];
+
+export function getBattleFormationNarrative(formation: BattleFormation): BattleFormationNarrative | undefined {
+  return SCENARIO_BATTLE_FORMATIONS.find((f) => f.formation === formation);
+}
+
+export function listBattleFormations(): readonly BattleFormation[] {
+  return ['aggressive', 'defensive', 'balanced', 'flanking'];
+}
