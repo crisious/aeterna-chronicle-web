@@ -10272,3 +10272,32 @@ export function getPlayerTitleCategoryNarrative(category: PlayerTitleCategory): 
 export function listPermanentTitleCategories(): readonly PlayerTitleCategoryNarrative[] {
   return SCENARIO_PLAYER_TITLE_CATEGORIES.filter((c) => c.permanent);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-228: 이모트 카테고리 SSOT — 4 카테고리
+// ════════════════════════════════════════════════════════════════
+
+export type EmoteCategory = 'greeting' | 'celebration' | 'taunt' | 'communication';
+
+export interface EmoteCategoryNarrative {
+  category: EmoteCategory;
+  label: string;
+  averageEmoteCount: number;
+  allowedInPvp: boolean;
+  description: string;
+}
+
+export const SCENARIO_EMOTE_CATEGORIES: readonly EmoteCategoryNarrative[] = [
+  { category: 'greeting',      label: '인사',     averageEmoteCount: 6,  allowedInPvp: true,  description: '안녕 / 잘 가 / 손 흔들기 등 친근 표현.' },
+  { category: 'celebration',   label: '축하',     averageEmoteCount: 8,  allowedInPvp: true,  description: '승리 / 박수 / 점프 — 도전 성공 시 표현.' },
+  { category: 'taunt',         label: '도발',     averageEmoteCount: 4,  allowedInPvp: true,  description: '도발 / 비웃음 — PvP 매치에서 적에게 사용.' },
+  { category: 'communication', label: '소통',     averageEmoteCount: 10, allowedInPvp: false, description: '도움 요청 / 집결 / 잠시 대기 등 협동 표현.' },
+];
+
+export function getEmoteCategoryNarrative(category: EmoteCategory): EmoteCategoryNarrative | undefined {
+  return SCENARIO_EMOTE_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listPvpAllowedEmoteCategories(): readonly EmoteCategoryNarrative[] {
+  return SCENARIO_EMOTE_CATEGORIES.filter((c) => c.allowedInPvp);
+}
