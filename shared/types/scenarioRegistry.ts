@@ -10213,3 +10213,32 @@ export function getTransactionErrorCodeNarrative(code: TransactionErrorCode): Tr
 export function listTransactionErrorCodes(): readonly TransactionErrorCode[] {
   return ['insufficient_funds', 'item_locked', 'inventory_full', 'partner_offline', 'rate_limit'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-226: 인스턴스 던전 난이도 SSOT — 4 난이도
+// ════════════════════════════════════════════════════════════════
+
+export type InstanceDungeonDifficulty = 'story' | 'normal' | 'heroic' | 'mythic';
+
+export interface InstanceDungeonDifficultyNarrative {
+  difficulty: InstanceDungeonDifficulty;
+  label: string;
+  recommendedLevel: number;
+  dailyEntryLimit: number;
+  rewardHint: string;
+}
+
+export const SCENARIO_INSTANCE_DUNGEON_DIFFICULTIES: readonly InstanceDungeonDifficultyNarrative[] = [
+  { difficulty: 'story',  label: '스토리',  recommendedLevel: 10, dailyEntryLimit: 999, rewardHint: '스토리 진행 보상만 — 자원 적음.' },
+  { difficulty: 'normal', label: '일반',    recommendedLevel: 20, dailyEntryLimit: 5,   rewardHint: 'uncommon 자원 ×3 + 일일 quest 진행.' },
+  { difficulty: 'heroic', label: '영웅',    recommendedLevel: 25, dailyEntryLimit: 3,   rewardHint: 'rare 결정 ×1 + epic 장비 chance.' },
+  { difficulty: 'mythic', label: '신화',    recommendedLevel: 30, dailyEntryLimit: 1,   rewardHint: 'epic 장비 ×1 + legendary 자원 chance.' },
+];
+
+export function getInstanceDungeonDifficultyNarrative(difficulty: InstanceDungeonDifficulty): InstanceDungeonDifficultyNarrative | undefined {
+  return SCENARIO_INSTANCE_DUNGEON_DIFFICULTIES.find((d) => d.difficulty === difficulty);
+}
+
+export function listInstanceDungeonDifficulties(): readonly InstanceDungeonDifficulty[] {
+  return ['story', 'normal', 'heroic', 'mythic'];
+}
