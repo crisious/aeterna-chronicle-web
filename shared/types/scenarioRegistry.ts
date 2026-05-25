@@ -10414,3 +10414,32 @@ export function getEncounterBiomeNarrative(biome: EncounterBiome): EncounterBiom
 export function listEncounterBiomes(): readonly EncounterBiome[] {
   return ['forest', 'desert', 'cave', 'urban', 'abyss'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-233: 신전 종류 SSOT — 5 종
+// ════════════════════════════════════════════════════════════════
+
+export type ShrineType = 'memory' | 'healing' | 'combat_buff' | 'wisdom' | 'teleport';
+
+export interface ShrineTypeNarrative {
+  shrine: ShrineType;
+  label: string;
+  effectSummary: string;
+  cooldownMinutes: number;
+}
+
+export const SCENARIO_SHRINE_TYPES: readonly ShrineTypeNarrative[] = [
+  { shrine: 'memory',      label: '기억 신전',     effectSummary: '에리언의 기억 공명 +1 단계 (1전투 한정).', cooldownMinutes: 60 },
+  { shrine: 'healing',     label: '치유 신전',     effectSummary: '파티 전체 HP/MP 100% 회복.',              cooldownMinutes: 30 },
+  { shrine: 'combat_buff', label: '전투 신전',     effectSummary: '다음 전투 공격력/방어 +15% (1전투).',     cooldownMinutes: 45 },
+  { shrine: 'wisdom',      label: '지혜 신전',     effectSummary: '경험치 +20% (다음 1시간).',                cooldownMinutes: 120 },
+  { shrine: 'teleport',    label: '순간이동 신전', effectSummary: 'fast travel hub 일시 활성화 (1회).',       cooldownMinutes: 240 },
+];
+
+export function getShrineTypeNarrative(shrine: ShrineType): ShrineTypeNarrative | undefined {
+  return SCENARIO_SHRINE_TYPES.find((s) => s.shrine === shrine);
+}
+
+export function listShrineTypes(): readonly ShrineType[] {
+  return ['memory', 'healing', 'combat_buff', 'wisdom', 'teleport'];
+}
