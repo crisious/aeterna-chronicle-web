@@ -11010,3 +11010,33 @@ export function getCosmeticSlotNarrative(slot: CosmeticSlot): CosmeticSlotNarrat
 export function listCosmeticSlots(): readonly CosmeticSlot[] {
   return ['helm', 'armor', 'weapon_skin', 'back', 'aura'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-252: 탈것 속도 등급 SSOT — 4 등급 (walk/trot/gallop/sprint)
+// ════════════════════════════════════════════════════════════════
+
+export type MountSpeedTier = 'walk' | 'trot' | 'gallop' | 'sprint';
+
+export interface MountSpeedTierNarrative {
+  tier: MountSpeedTier;
+  label: string;
+  /** 기본 속도 배율 (1.0 = 도보) */
+  speedMultiplier: number;
+  /** 스태미나 소비 (초당) */
+  staminaPerSecond: number;
+}
+
+export const SCENARIO_MOUNT_SPEED_TIERS: readonly MountSpeedTierNarrative[] = [
+  { tier: 'walk',   label: '걷기',    speedMultiplier: 1.2, staminaPerSecond: 0 },
+  { tier: 'trot',   label: '속보',    speedMultiplier: 1.6, staminaPerSecond: 1 },
+  { tier: 'gallop', label: '구보',    speedMultiplier: 2.2, staminaPerSecond: 3 },
+  { tier: 'sprint', label: '전력질주', speedMultiplier: 3.0, staminaPerSecond: 8 },
+];
+
+export function getMountSpeedTierNarrative(tier: MountSpeedTier): MountSpeedTierNarrative | undefined {
+  return SCENARIO_MOUNT_SPEED_TIERS.find((m) => m.tier === tier);
+}
+
+export function listMountSpeedTiers(): readonly MountSpeedTier[] {
+  return ['walk', 'trot', 'gallop', 'sprint'];
+}
