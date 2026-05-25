@@ -11040,3 +11040,33 @@ export function getMountSpeedTierNarrative(tier: MountSpeedTier): MountSpeedTier
 export function listMountSpeedTiers(): readonly MountSpeedTier[] {
   return ['walk', 'trot', 'gallop', 'sprint'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-253: 아레나 매치 형식 SSOT — 4 형식 (1v1/2v2/3v3/5v5)
+// ════════════════════════════════════════════════════════════════
+
+export type ArenaMatchFormat = '1v1' | '2v2' | '3v3' | '5v5';
+
+export interface ArenaMatchFormatNarrative {
+  format: ArenaMatchFormat;
+  label: string;
+  /** 팀당 인원 */
+  playersPerTeam: number;
+  /** 평균 매치 시간(분) */
+  averageMatchMinutes: number;
+}
+
+export const SCENARIO_ARENA_MATCH_FORMATS: readonly ArenaMatchFormatNarrative[] = [
+  { format: '1v1', label: '1대1 듀얼',  playersPerTeam: 1, averageMatchMinutes: 5  },
+  { format: '2v2', label: '2대2 듀오',  playersPerTeam: 2, averageMatchMinutes: 7  },
+  { format: '3v3', label: '3대3 트리오', playersPerTeam: 3, averageMatchMinutes: 9  },
+  { format: '5v5', label: '5대5 파티',  playersPerTeam: 5, averageMatchMinutes: 12 },
+];
+
+export function getArenaMatchFormatNarrative(format: ArenaMatchFormat): ArenaMatchFormatNarrative | undefined {
+  return SCENARIO_ARENA_MATCH_FORMATS.find((a) => a.format === format);
+}
+
+export function listArenaMatchFormats(): readonly ArenaMatchFormat[] {
+  return ['1v1', '2v2', '3v3', '5v5'];
+}
