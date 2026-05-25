@@ -10242,3 +10242,33 @@ export function getInstanceDungeonDifficultyNarrative(difficulty: InstanceDungeo
 export function listInstanceDungeonDifficulties(): readonly InstanceDungeonDifficulty[] {
   return ['story', 'normal', 'heroic', 'mythic'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-227: 플레이어 칭호 카테고리 SSOT — 5 카테고리
+// ════════════════════════════════════════════════════════════════
+
+export type PlayerTitleCategory = 'achievement' | 'pvp' | 'seasonal' | 'lore' | 'special';
+
+export interface PlayerTitleCategoryNarrative {
+  category: PlayerTitleCategory;
+  label: string;
+  uiColor: string;
+  source: string;
+  permanent: boolean;
+}
+
+export const SCENARIO_PLAYER_TITLE_CATEGORIES: readonly PlayerTitleCategoryNarrative[] = [
+  { category: 'achievement', label: '도전',     uiColor: '#ffb720', source: '도전과제 잠금 해제.',                       permanent: true },
+  { category: 'pvp',         label: 'PvP',     uiColor: '#d04040', source: 'PvP 시즌 종료 시 랭크 기준.',                permanent: false },
+  { category: 'seasonal',    label: '시즌',     uiColor: '#bf5fff', source: '시즌 이벤트 / 누적 challenge 완수.',         permanent: false },
+  { category: 'lore',        label: '세계관',   uiColor: '#5fbf5f', source: '메인 quest / 엔딩 분기 / 4 파편 회수.',      permanent: true },
+  { category: 'special',     label: '특수',     uiColor: '#40b0e0', source: '개발자 부여 / 한정 이벤트 / 베타 참가자.',   permanent: true },
+];
+
+export function getPlayerTitleCategoryNarrative(category: PlayerTitleCategory): PlayerTitleCategoryNarrative | undefined {
+  return SCENARIO_PLAYER_TITLE_CATEGORIES.find((c) => c.category === category);
+}
+
+export function listPermanentTitleCategories(): readonly PlayerTitleCategoryNarrative[] {
+  return SCENARIO_PLAYER_TITLE_CATEGORIES.filter((c) => c.permanent);
+}
