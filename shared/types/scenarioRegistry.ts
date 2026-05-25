@@ -10623,3 +10623,33 @@ export function getChatChannelTypeNarrative(channel: ChatChannelType): ChatChann
 export function listChatChannelTypes(): readonly ChatChannelType[] {
   return ['zone', 'party', 'guild', 'whisper', 'system'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-240: 🎯 신고 사유 SSOT — 5 사유
+// ════════════════════════════════════════════════════════════════
+
+export type ReportReason = 'toxicity' | 'cheating' | 'spam' | 'inappropriate_name' | 'account_abuse';
+
+export interface ReportReasonNarrative {
+  reason: ReportReason;
+  label: string;
+  priority: number;
+  autoActionHint: string;
+  routingDestination: string;
+}
+
+export const SCENARIO_REPORT_REASONS: readonly ReportReasonNarrative[] = [
+  { reason: 'toxicity',           label: '욕설/혐오',     priority: 2, autoActionHint: '24시간 채팅 차단 + 모더레이터 리뷰.',         routingDestination: 'moderation' },
+  { reason: 'cheating',           label: '핵/치트',       priority: 1, autoActionHint: '서버 측 anti-cheat 트리거 + 영구 정지 검토.', routingDestination: 'anti_cheat' },
+  { reason: 'spam',               label: '스팸',         priority: 3, autoActionHint: '신고 횟수 3회 누적 시 자동 mute.',           routingDestination: 'moderation' },
+  { reason: 'inappropriate_name', label: '부적절 이름',   priority: 3, autoActionHint: '강제 닉네임 변경 요구 + 24시간 grace.',      routingDestination: 'moderation' },
+  { reason: 'account_abuse',      label: '계정 도용',     priority: 1, autoActionHint: '계정 보호 모드 즉시 활성화 + 본인 인증 요구.', routingDestination: 'security' },
+];
+
+export function getReportReasonNarrative(reason: ReportReason): ReportReasonNarrative | undefined {
+  return SCENARIO_REPORT_REASONS.find((r) => r.reason === reason);
+}
+
+export function listReportReasonsByPriority(): readonly ReportReasonNarrative[] {
+  return [...SCENARIO_REPORT_REASONS].sort((a, b) => a.priority - b.priority);
+}
