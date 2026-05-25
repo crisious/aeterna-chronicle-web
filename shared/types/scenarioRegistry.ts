@@ -10593,3 +10593,33 @@ export function getDailyResetTimeNarrative(key: DailyResetTimeKey): DailyResetTi
 export function listDailyResetTimes(): readonly DailyResetTimeKey[] {
   return ['dawn', 'morning', 'evening', 'midnight'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-239: 채팅 채널 타입 SSOT — 5 종
+// ════════════════════════════════════════════════════════════════
+
+export type ChatChannelType = 'zone' | 'party' | 'guild' | 'whisper' | 'system';
+
+export interface ChatChannelTypeNarrative {
+  channel: ChatChannelType;
+  label: string;
+  uiColor: string;
+  commandPrefix: string;
+  reachHint: string;
+}
+
+export const SCENARIO_CHAT_CHANNEL_TYPES: readonly ChatChannelTypeNarrative[] = [
+  { channel: 'zone',    label: '지역',     uiColor: '#5fbf5f', commandPrefix: '/z', reachHint: '현재 zone 의 모든 플레이어.' },
+  { channel: 'party',   label: '파티',     uiColor: '#5f9fff', commandPrefix: '/p', reachHint: '파티 멤버만.' },
+  { channel: 'guild',   label: '길드',     uiColor: '#bf5fff', commandPrefix: '/g', reachHint: '길드 회원 전체 (오프라인 포함, 다음 로그인 시 전달).' },
+  { channel: 'whisper', label: '귓속말',   uiColor: '#ff8040', commandPrefix: '/w', reachHint: '지정한 단일 플레이어.' },
+  { channel: 'system',  label: '시스템',   uiColor: '#ffb720', commandPrefix: '',   reachHint: '서버에서 자동 발송 (플레이어 사용 불가).' },
+];
+
+export function getChatChannelTypeNarrative(channel: ChatChannelType): ChatChannelTypeNarrative | undefined {
+  return SCENARIO_CHAT_CHANNEL_TYPES.find((c) => c.channel === channel);
+}
+
+export function listChatChannelTypes(): readonly ChatChannelType[] {
+  return ['zone', 'party', 'guild', 'whisper', 'system'];
+}
