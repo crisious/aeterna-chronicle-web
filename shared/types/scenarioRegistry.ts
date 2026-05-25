@@ -10741,3 +10741,34 @@ export function getAutoPlayLimitNarrative(kind: AutoPlayLimitKind): AutoPlayLimi
 export function listAutoPlayLimits(): readonly AutoPlayLimitKind[] {
   return ['battle_count', 'session_time', 'stamina_floor', 'death_count'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-244: 친구 요청 상태 SSOT — 5 상태 (pending/accepted/declined/blocked/expired)
+// ════════════════════════════════════════════════════════════════
+
+export type FriendRequestState = 'pending' | 'accepted' | 'declined' | 'blocked' | 'expired';
+
+export interface FriendRequestStateNarrative {
+  state: FriendRequestState;
+  label: string;
+  /** 동시 가능한 다음 상태 */
+  nextStates: readonly FriendRequestState[];
+  /** UI 색상 */
+  uiColor: string;
+}
+
+export const SCENARIO_FRIEND_REQUEST_STATES: readonly FriendRequestStateNarrative[] = [
+  { state: 'pending',  label: '대기 중',   nextStates: ['accepted', 'declined', 'expired'], uiColor: '#ffd040' },
+  { state: 'accepted', label: '수락됨',    nextStates: [],                                   uiColor: '#5fd05f' },
+  { state: 'declined', label: '거절됨',    nextStates: [],                                   uiColor: '#a0a0a0' },
+  { state: 'blocked',  label: '차단됨',    nextStates: [],                                   uiColor: '#d04040' },
+  { state: 'expired',  label: '만료됨',    nextStates: [],                                   uiColor: '#808080' },
+];
+
+export function getFriendRequestStateNarrative(state: FriendRequestState): FriendRequestStateNarrative | undefined {
+  return SCENARIO_FRIEND_REQUEST_STATES.find((s) => s.state === state);
+}
+
+export function listFriendRequestStates(): readonly FriendRequestState[] {
+  return ['pending', 'accepted', 'declined', 'blocked', 'expired'];
+}
