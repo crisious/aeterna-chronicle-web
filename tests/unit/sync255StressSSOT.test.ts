@@ -35,7 +35,8 @@ describe('SYNC-255 🎯 5 sprint 누적 stress', () => {
 
   test('getBossEnragePhaseAtHp — HP 임계치 매핑', () => {
     expect(getBossEnragePhaseAtHp(100)).toBe('calm');
-    expect(getBossEnragePhaseAtHp(80)).toBe('agitated');
+    expect(getBossEnragePhaseAtHp(80)).toBe('calm');         // 75 초과 → 아직 calm
+    expect(getBossEnragePhaseAtHp(70)).toBe('agitated');     // 75 이하
     expect(getBossEnragePhaseAtHp(50)).toBe('enraged');
     expect(getBossEnragePhaseAtHp(15)).toBe('desperate');
   });
