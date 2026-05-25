@@ -10808,3 +10808,36 @@ export function getNameplateTagNarrative(tag: NameplateTag): NameplateTagNarrati
 export function listNameplateTagsByPriority(): readonly NameplateTagNarrative[] {
   return [...SCENARIO_NAMEPLATE_TAGS].sort((a, b) => a.priority - b.priority);
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-246: 채팅 슬래시 명령 SSOT — 6 명령 (help/who/party/guild/whisper/report)
+// ════════════════════════════════════════════════════════════════
+
+export type ChatSlashCommand = '/help' | '/who' | '/party' | '/guild' | '/whisper' | '/report';
+
+export interface ChatSlashCommandNarrative {
+  command: ChatSlashCommand;
+  description: string;
+  usage: string;
+  /** 인자 갯수 */
+  argCount: number;
+  /** 결과가 시스템 메시지로만 출력되면 true */
+  systemOnly: boolean;
+}
+
+export const SCENARIO_CHAT_SLASH_COMMANDS: readonly ChatSlashCommandNarrative[] = [
+  { command: '/help',    description: '명령 도움말',       usage: '/help [명령]',         argCount: 1, systemOnly: true  },
+  { command: '/who',     description: '온라인 사용자 목록', usage: '/who',                 argCount: 0, systemOnly: true  },
+  { command: '/party',   description: '파티 채널 전송',     usage: '/party <메시지>',      argCount: 1, systemOnly: false },
+  { command: '/guild',   description: '길드 채널 전송',     usage: '/guild <메시지>',      argCount: 1, systemOnly: false },
+  { command: '/whisper', description: '귓속말',           usage: '/whisper <대상> <메시지>', argCount: 2, systemOnly: false },
+  { command: '/report',  description: '신고',             usage: '/report <대상> <사유>', argCount: 2, systemOnly: true  },
+];
+
+export function getChatSlashCommandNarrative(command: ChatSlashCommand): ChatSlashCommandNarrative | undefined {
+  return SCENARIO_CHAT_SLASH_COMMANDS.find((c) => c.command === command);
+}
+
+export function listChatSlashCommands(): readonly ChatSlashCommand[] {
+  return ['/help', '/who', '/party', '/guild', '/whisper', '/report'];
+}
