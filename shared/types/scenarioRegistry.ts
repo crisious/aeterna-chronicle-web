@@ -10153,3 +10153,32 @@ export function getRewardCurrencyNarrative(currency: RewardCurrencyKind): Reward
 export function listRewardCurrencies(): readonly RewardCurrencyKind[] {
   return ['gold', 'honor', 'seal', 'aether_crystal', 'seasonal_token'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-224: 파티 슬롯 구성 SSOT — 4 구성 (solo/duo/trio/full_party)
+// ════════════════════════════════════════════════════════════════
+
+export type PartyRosterSize = 'solo' | 'duo' | 'trio' | 'full_party';
+
+export interface PartyRosterSizeNarrative {
+  size: PartyRosterSize;
+  label: string;
+  slotCount: number;
+  unlockRequirement: string;
+  modifierSummary: string;
+}
+
+export const SCENARIO_PARTY_ROSTER_SIZES: readonly PartyRosterSizeNarrative[] = [
+  { size: 'solo',       label: '단독',     slotCount: 1, unlockRequirement: '기본 진입.',                                  modifierSummary: '경험치 +30%, 받는 피해 +25%.' },
+  { size: 'duo',        label: '듀오',     slotCount: 2, unlockRequirement: '동료 1명 합류 후 (chapter 1 중반).',           modifierSummary: '받는 피해 -5%, 콤보 기여 +10%.' },
+  { size: 'trio',       label: '트리오',   slotCount: 3, unlockRequirement: '동료 2명 합류 후 (chapter 2).',                modifierSummary: '받는 피해 -10%, 콤보 기여 +20%, 보스 페이즈 -1 가능.' },
+  { size: 'full_party', label: '풀 파티',  slotCount: 4, unlockRequirement: '동료 3명 + 4번 동료 슬롯 잠금 해제 quest.',    modifierSummary: '받는 피해 -15%, 모든 ATB 보조 +5%, 파티 오라 효과 적용.' },
+];
+
+export function getPartyRosterSizeNarrative(size: PartyRosterSize): PartyRosterSizeNarrative | undefined {
+  return SCENARIO_PARTY_ROSTER_SIZES.find((s) => s.size === size);
+}
+
+export function listPartyRosterSizes(): readonly PartyRosterSize[] {
+  return ['solo', 'duo', 'trio', 'full_party'];
+}
