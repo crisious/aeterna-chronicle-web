@@ -950,3 +950,38 @@ Obsidian narrative ↔ 게임 코드 통합 — 5 chapter × 10 도메인 cohesi
 6 동료 × 4 도메인 cohesion + 5 엔딩 + 9 achievements + 4 유물 + 12 신 +
 intro/ending sequences + cinematics + ambient sounds + personal quests.
 
+## 2026-05-24 PROJECT STATUS — 개발 진행 및 플레이 상태 분석
+
+기준: `main` HEAD `ef207f1`, package `1.0.0-rc.2`, 로컬 커밋 수 600.
+문서 갱신 범위: 현재 개발 진행, 플레이 QA 근거, Obsidian 문서 연결 상태를 `04_검증_P0/현재_개발_플레이_상태_2026-05-24.md`로 정리.
+
+- **SYNC-101** NPC 대화 화자 동적 분기 narrative SSOT
+  + 필드 NPC 선택 시 선택한 NPC의 `name/role/id`를 기준으로 대화 화자와 선택지 응답을 생성.
+  + 유령 상인 고로디 선택 시 누아리엘 화자가 노출되던 회귀를 단위 테스트로 고정.
+- **SYNC-102** `SCENARIO_FIELD_NPC_DIALOGUE_TEMPLATES`
+  + quest/shop/dialogue/craft/boss 5종 role default + `npc_ghost_merchant` override.
+  + 고로디의 `거래한다`, `희귀 물건을 얻는다.` 선택지 모두 닫기 가능한 응답 대사 반환.
+- **SYNC-103** `SCENARIO_ZONE_ENTRY_NARRATIVES`
+  + 9개 zone 진입 mood/suggestion narrative를 시나리오 SSOT와 연결.
+- **SYNC-104** `SCENARIO_BGM_NARRATIVES`
+  + zone seed 기반 BGM 42개에 mood/intent/intensity narrative 부여.
+- **SYNC-105** `SCENARIO_AMBIENT_NARRATIVES`
+  + ambient 43개에 category/description narrative 부여.
+
+검증:
+- `npx vitest run --config tests/vitest.config.ts tests/unit/fieldNpcDialogueTemplatesSSOT.test.ts tests/unit/zoneEntryNarrativesSSOT.test.ts tests/unit/bgmNarrativesSSOT.test.ts tests/unit/ambientNarrativesSSOT.test.ts`
+  + 4 files / 22 tests pass.
+- `.ac/play-logs/all-field-npc-dialogue-qa/report.json`
+  + 46 field NPC, 108 choices, 94 response choices, 14 close choices, failures 0, consoleErrors 0, PASS.
+- `.ac/play-logs/20260515-023142/play-log-final.md`
+  + home → login panel → world → era switch → field → ATB battle 진입, API health 200, 신규 console errors 0, PASS.
+
+현재 플레이 상태 판단:
+- 월드맵, 필드 진입, 몬스터 클릭 기반 ATB 전투 진입, 필드 NPC 대화 응답 루프는 자동 QA 근거상 재현 가능.
+- NPC 대화 무반응 계열 이슈는 role template + choice result fallback으로 방어되어 있으며, 고로디 특수 선택지는 전용 회귀 테스트가 존재.
+- 장시간 세션, 전체 save/load, 엔딩 전 구간, 경제/거래 실데이터 풀 플로우는 이번 문서 갱신 범위에서 새로 실행하지 않았으므로 별도 full QA 대상.
+
+주의:
+- `getScenarioRegistryStats()`는 legacy 25 도메인 중심 통계 helper 성격이 남아 있다. SYNC-101~105 runtime narrative 도메인은 직접 export 배열과 전용 테스트를 기준으로 확인한다.
+- 이번 작업은 문서 갱신 중심이며 전체 `npm run verify`는 새로 실행하지 않았다.
+

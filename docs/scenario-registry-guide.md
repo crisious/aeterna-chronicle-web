@@ -1,14 +1,17 @@
 # scenarioRegistry SSOT 사용 가이드
 
 > 작성: 2026-05-22 (SYNC-29 / SYNC-57 갱신 자동 라운드)
+> 갱신: 2026-05-24 (SYNC-105 / 개발 및 플레이 상태 반영)
 > 모듈: `shared/types/scenarioRegistry.ts`
-> 누적: 56 sprint, +395 가드, 175+ SSOT entity, 50+ helpers, 382 회귀 가드
+> 누적 상태: 105 sprint, 55+ core SSOT domains, field NPC 46명, BGM 42개, ambient 43개, 최신 runtime narrative 전용 테스트 22/22 pass
 
 ## 1. 개요
 
 Obsidian 시나리오 문서 (`시나리오/`)와 게임 코드 (`server/src/quest/`, `shared/types/chronoField.ts` 등) narrative 단일 진입점 SSOT.
 
-## 2. 28 SSOT 도메인
+## 2. 대표 SSOT 도메인
+
+이 절은 초도 28개 핵심 도메인과 SYNC-101~105 runtime narrative 확장 도메인을 중심으로 정리한다. SYNC-100 기준 55+ 누적 도메인의 상세 진행 이력은 `progress.md`를 기준으로 한다.
 
 ### 2.1 핵심 도메인 (chapter I+II)
 
@@ -59,6 +62,16 @@ Obsidian 시나리오 문서 (`시나리오/`)와 게임 코드 (`server/src/que
 | SCENARIO_CHOICES | 6 | 분기 선택지 narrative |
 | SCENARIO_FACTIONS | 7 | 세력 (엘파리스/이프리타/제국/교단 등) |
 | SCENARIO_PREREQUISITES | 5 | 챕터 진입 prerequisite 그래프 |
+
+### 2.5 runtime narrative 확장 (SYNC-101~105)
+
+| 도메인 | 개수 | 설명 |
+|---|---:|---|
+| NPC 대화 화자 동적 분기 | 46 field NPC 대상 | 선택한 NPC의 `id/name/role`로 speakerName, opening, result를 생성 |
+| SCENARIO_FIELD_NPC_DIALOGUE_TEMPLATES | 6 templates | quest/shop/dialogue/craft/boss default + `npc_ghost_merchant` override |
+| SCENARIO_ZONE_ENTRY_NARRATIVES | 9 | zone 진입 mood/suggestion narrative |
+| SCENARIO_BGM_NARRATIVES | 42 | BGM ID별 mood/intent/intensity narrative |
+| SCENARIO_AMBIENT_NARRATIVES | 43 | ambient ID별 category/description narrative |
 
 ## 3. 사용 예시
 
@@ -142,7 +155,8 @@ const ch1Route = getRouteByChapter(1);
 import { getScenarioRegistryStats, getSyncCompletionReport } from './scenarioRegistry';
 
 const stats = getScenarioRegistryStats();
-// { companions: 6, zones: 9, ..., totalEntities: 115 }
+// legacy 25 도메인 중심 집계 helper.
+// SYNC-101~105 runtime narrative 도메인은 직접 export 배열과 전용 테스트를 기준으로 확인한다.
 
 const sync = getSyncCompletionReport();
 // { coveragePercent: 100, companions: { synced: 6, planned: 0, orphan: 0 }, ... }
@@ -157,17 +171,21 @@ const sync = getSyncCompletionReport();
 
 ## 5. 회귀 가드 위치
 
-- `tests/unit/scenarioRegistry.test.ts` (382+ 가드)
-- SYNC-S1 ~ SYNC-S60 (각 sprint 별 가드)
+- `tests/unit/scenarioRegistry.test.ts` (legacy + chapter/domain stress)
+- `tests/unit/npcDialogue.test.ts` (NPC 화자 동적 분기, 고로디 회귀)
+- `tests/unit/fieldNpcDialogueTemplatesSSOT.test.ts` (SYNC-102, 7 tests)
+- `tests/unit/zoneEntryNarrativesSSOT.test.ts` (SYNC-103, 5 tests)
+- `tests/unit/bgmNarrativesSSOT.test.ts` (SYNC-104, 5 tests)
+- `tests/unit/ambientNarrativesSSOT.test.ts` (SYNC-105, 5 tests)
 
 ## 6. 확장 절차
 
 1. 새 entity 추가 → `SCENARIO_*` array 에 push
 2. 인터페이스 확장 → 새 필드 추가
 3. 헬퍼 함수 추가 → `getByObsidianId`, `listBy*` 패턴
-4. 회귀 가드 추가 → `tests/unit/scenarioRegistry.test.ts`
-5. `getScenarioRegistryStats` 자동 반영
-6. `buildScenarioIndex` 새 도메인 entry 추가
+4. 회귀 가드 추가 → legacy 도메인은 `scenarioRegistry.test.ts`, runtime 도메인은 전용 `*SSOT.test.ts`
+5. 통계/검색 노출이 필요한 도메인은 `getScenarioRegistryStats` 또는 `buildScenarioIndex` 반영
+6. 플레이 UI와 연결된 도메인은 브라우저 QA 로그에 실제 선택/진입 증거를 남김
 
 ## 7. Obsidian 출처
 
@@ -179,6 +197,9 @@ const sync = getSyncCompletionReport();
 - 01_코어기획/멀티엔딩_플래그_설계.md
 - 01_코어기획/엔딩D_유물_목록.md
 - 01_코어기획/worldmap_design.md
+- 01_코어기획/bgm_ai_music_design.md
+- 월드맵/*
+- 캐릭터/*
 
 ## 8. 변경 영향 매트릭스
 
@@ -189,6 +210,10 @@ const sync = getSyncCompletionReport();
 | 신규 보스 추가 | BOSSES + MILESTONES (보스 quest) | S3, S26, S17 |
 | 신규 quest 추가 (companion) | COMPANIONS.gameNpcId + REPUTATION + questSeeds + 정량 가드 | S15, S22, questCatalog S1 |
 | 엔딩 분기 변경 | ENDINGS + evaluateEnding + evaluateAdvancedEnding | S5, S12, S27 |
+| 필드 NPC 추가/role 변경 | FIELD_NPC_DIALOGUE_TEMPLATES + `npcDialogue` + browser QA | `npcDialogue.test.ts`, `fieldNpcDialogueTemplatesSSOT.test.ts` |
+| zone seed BGM 변경 | BGM_NARRATIVES + zone seed cohesion | `bgmNarrativesSSOT.test.ts` |
+| ambient ID 변경 | AMBIENT_NARRATIVES + category consistency | `ambientNarrativesSSOT.test.ts` |
+| zone 진입 문구 변경 | ZONE_ENTRY_NARRATIVES + chapter/zone cohesion | `zoneEntryNarrativesSSOT.test.ts` |
 
 ---
 

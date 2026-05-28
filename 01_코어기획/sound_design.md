@@ -1,7 +1,7 @@
 # 에테르나 크로니클 — 사운드 디자인
 
 > 작성일: 2026-03-10 | 버전: v1.0
-> 참조: GDD_final.md, story_design.md, bgm_ai_music_design.md
+> 참조: [[01_코어기획/GDD_final|GDD_final]], [[01_코어기획/story_design|story_design]], [[01_코어기획/bgm_ai_music_design|bgm_ai_music_design]]
 
 ---
 
@@ -43,7 +43,7 @@
 
 ### 2.1 지역별 테마
 
-> AI 생성 BGM 프롬프트 상세는 `bgm_ai_music_design.md` 참조
+> AI 생성 BGM 프롬프트 상세는 [[01_코어기획/bgm_ai_music_design|bgm_ai_music_design]] 참조
 
 | 지역 | 테마 키워드 | 주요 악기 | BPM | 키 |
 |------|-----------|---------|-----|-----|
@@ -79,7 +79,7 @@
 
 ### 2.4 AI 생성 BGM 연동
 
-`bgm_ai_music_design.md`의 프롬프트 체계를 기반으로:
+[[01_코어기획/bgm_ai_music_design|bgm_ai_music_design]]의 프롬프트 체계를 기반으로:
 
 | 단계 | 내용 |
 |------|------|
@@ -333,4 +333,4 @@
 ---
 
 *문서 버전: v1.0 | 작성일: 2026-03-10*
-*참조 문서: GDD_final.md v2.2, story_design.md v1.1, bgm_ai_music_design.md*
+*참조 문서: [[01_코어기획/GDD_final|GDD_final]] v2.2, [[01_코어기획/story_design|story_design]] v1.1, [[01_코어기획/bgm_ai_music_design|bgm_ai_music_design]]*

@@ -8,7 +8,7 @@
 [![Tickets](https://img.shields.io/badge/Notion-728%2F728%20Done-success?style=for-the-badge)](#-개발-현황)
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C454%20Images-ff69b4?style=for-the-badge)](#-프로젝트-통계)
-[![Commits](https://img.shields.io/badge/Commits-279%2B-blueviolet?style=for-the-badge)](#-프로젝트-통계)
+[![Commits](https://img.shields.io/badge/Commits-600-blueviolet?style=for-the-badge)](#-프로젝트-통계)
 [![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)](#-코드-품질)
 [![Tutorial Coverage](https://img.shields.io/badge/Tutorial%20Coverage-100%25-brightgreen?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 [![First 30min](https://img.shields.io/badge/First%2030min-%E2%89%A430%3A00-blue?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
@@ -102,7 +102,7 @@
 
 | 항목 | 수치 | 항목 | 수치 |
 |------|------|------|------|
-| Phase | 52 (P0~P52) | 커밋 | 253+ |
+| Phase | 52 (P0~P52) | 커밋 | 600 |
 | Notion 티켓 | 728/728 Done | 문서 | 742+ MD |
 | 클래스 | 6종 | 시즌 | 4개 · 챕터 8개 |
 | 던전 | 69종 ×3난이도 | 몬스터 | 197종 |
@@ -244,7 +244,17 @@ npm run audio:license-check # 라이선스 안전성 확인 (~3s)
 
 ## 📈 개발 현황
 
-**52 Phase 완료 · 728 티켓 전부 Done · 290+ 커밋 · 1,825+ 에셋 · 16-bit 픽셀아트 통일 · v1.0 릴리즈 준비 완료**
+**52 Phase 완료 · 728 티켓 전부 Done · 600 커밋 · 1,825+ 에셋 · 16-bit 픽셀아트 통일 · v1.0 릴리즈 준비 완료**
+
+### 2026-05-24 현재 플레이/SSOT 상태
+
+| 항목 | 상태 |
+|---|---|
+| 최근 개발 | SYNC-101~105: NPC 대화 화자 분기, 필드 NPC 템플릿, zone 진입, BGM, ambient narrative SSOT |
+| 필드 NPC QA | 46 NPC / 108 choices / failures 0 / consoleErrors 0 / PASS |
+| 플레이 로그 | home → world → field → ATB battle 진입 PASS, API health 200 |
+| 최신 대상 테스트 | 4 files / 22 tests pass (`fieldNpcDialogueTemplates`, `zoneEntryNarratives`, `bgmNarratives`, `ambientNarratives`) |
+| 상세 문서 | [`04_검증_P0/현재_개발_플레이_상태_2026-05-24.md`](04_검증_P0/현재_개발_플레이_상태_2026-05-24.md) |
 
 | Phase | 내용 | 요약 |
 |-------|------|------|
