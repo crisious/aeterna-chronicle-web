@@ -1,0 +1,37 @@
+GIMP Palette
+Name: Aeterna Chronicle Core
+Columns: 8
+#
+# Global UI / ether tones
+ 26  26  46 Deep Navy
+ 22  33  62 Panel Navy
+232 232 232 Text Light
+255 215   0 Gold Accent
+137 207 240 Memory Cyan
+ 13  13  26 Abyss Shadow
+231  76  60 HP Red
+ 52 152 219 MP Blue
+# Erebos / ghost merchant pilot tones
+ 45  45  63 Erebos Fog Stone
+ 61  61  79 Erebos Mid Stone
+ 29  29  47 Erebos Deep Stone
+ 92  74 114 Broken Violet
+ 74  58  98 Dark Violet
+160 160 255 Rune Glow
+248 248 255 Ghost White
+147 112 219 Ghost Violet
+# Forest / nature tones
+ 27  67  50 Sylvan Dark Green
+ 45 106  79 Moss Green
+ 82 183 136 Leaf Green
+125 249 255 Fungus Cyan
+# Solaris / fire tones
+194 149 107 Sand
+139  69  19 Red Brown
+255  99  71 Lava Glow
+255 140   0 Solar Orange
+# Metal / utility tones
+192 192 192 Silver
+113 121 126 Steel
+184 134  11 Brass
+105 105 105 Machine Gray

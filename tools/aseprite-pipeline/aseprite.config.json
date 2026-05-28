@@ -1,0 +1,49 @@
+{
+  "sourceRoot": "assets/source/aseprite",
+  "exportRoot": "assets/generated/aseprite",
+  "publishRoot": "client/public/assets/atlas",
+  "categories": {
+    "character": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 2,
+      "sheetType": "rows",
+      "requiredTags": ["idle_D", "walk_D", "attack_melee_D", "cast_D", "hit_D", "death_D"]
+    },
+    "npc": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 2,
+      "sheetType": "rows",
+      "requiredTags": ["idle_D", "talk_D"]
+    },
+    "monster": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 2,
+      "sheetType": "rows",
+      "requiredTags": ["idle", "attack", "hit", "death"]
+    },
+    "vfx": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 2,
+      "sheetType": "horizontal",
+      "requiredTags": ["start", "loop", "end"]
+    },
+    "ui": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "padding": 1,
+      "sheetType": "packed",
+      "requiredTags": []
+    },
+    "tile": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    }
+  }
+}

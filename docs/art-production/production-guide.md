@@ -172,6 +172,21 @@ make assemble      # 조립만
 make catalog       # 카탈로그만
 ```
 
+### 4.4 Aseprite 수동 보정 루프
+
+AI 생성 이미지가 QA를 통과하지 못하거나 NPC/캐릭터 애니메이션의 프레임 일관성이 필요한 경우 Aseprite 원본을 수동 보정 SSOT로 승격합니다. 기존 AI 파이프라인은 seed/reference 생성과 후처리에 유지하고, Aseprite 루프는 사람이 보정한 `.aseprite` 원본을 검증 가능한 PNG/JSON atlas로 만드는 보조 경로입니다.
+
+```
+AI seed/reference
+  → Aseprite 원본 편집 (`assets/source/aseprite`)
+  → Aseprite CLI export (`npm run art:aseprite:export`)
+  → JSON 정규화 (`tools/aseprite-pipeline/normalize-aseprite-json.mjs`)
+  → 자동 검증 (`npm run art:aseprite:validate` + 기존 QA)
+  → 리뷰 후 수동 publish (`client/public/assets/atlas`)
+```
+
+설치 확인은 `npm run art:aseprite:check`로 수행하고, 표준 위치에서 Aseprite를 찾지 못하면 `ASEPRITE_EXE`로 실행 파일 경로를 지정합니다. 자세한 명령과 NPC 파일럿 예시는 [Aseprite Pipeline](../../tools/aseprite-pipeline/README.md)을 참조합니다. 이 스프린트는 자동 publish를 제공하지 않으므로, 검증된 PNG/JSON만 리뷰 후 `client/public/assets/atlas`로 수동 복사합니다.
+
 ---
 
 ## 5) 단계별 가이드

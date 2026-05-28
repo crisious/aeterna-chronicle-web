@@ -73,6 +73,17 @@
 - [ ] 모션당 프레임 수 규격 준수 (idle:4, walk:6, attack:6, cast:5, hit:3, death:5)
 - [ ] 5방향 세트 완결 (D, DL, L, UL, U)
 
+### 2.6 Aseprite Export 검증
+
+- [ ] PNG가 유효한 signature를 가지며 첫 chunk가 `IHDR`, 하나 이상의 `IDAT`, 종료 `IEND`를 포함한다.
+- [ ] 정규화 atlas JSON의 `size`가 PNG 실제 크기와 일치한다.
+- [ ] 모든 frame rectangle이 PNG 경계 안에 있으며 `x + w`, `y + h`가 이미지 크기를 넘지 않는다.
+- [ ] 모든 frame 좌표와 크기(`x`, `y`, `w`, `h`)가 정수이고 카테고리별 프레임 규격과 일치한다.
+- [ ] atlas `count`가 `sprites.length`와 일치한다.
+- [ ] 카테고리 필수 tag가 모두 있고, 각 tag의 `from`/`to` range가 정수이며 실제 frame index 범위 안에 있다.
+- [ ] `npm run art:aseprite:validate -- <category> <png> <normalized-json>` 통과 전에는 publish하지 않는다.
+- [ ] 이 스프린트는 자동 publish가 없으므로 리뷰 통과 후 검증된 PNG/JSON만 `client/public/assets/atlas`로 수동 복사한다.
+
 ---
 
 ## 3) 수동 QA 항목
