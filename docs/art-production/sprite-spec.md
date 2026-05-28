@@ -240,6 +240,21 @@ assets/
     └── effects.json          — 이펙트 통합 atlas
 ```
 
+### 5.1 Aseprite 소스 레이아웃
+
+`assets/source/aseprite`는 사람이 직접 편집하는 그래픽 소스의 SSOT(Single Source of Truth)이다. AI 생성 에셋은 제작 seed/reference로만 사용하며, 게임에서 직접 사용하는 기준 에셋은 `.aseprite`에서 export된 PNG/JSON이다.
+
+| 카테고리 | 소스 경로 | Export 경로 | Publish 경로 |
+|----------|-----------|-------------|--------------|
+| character | `assets/source/aseprite/character/{class}/{name}.aseprite` | `assets/generated/aseprite/character/{name}.png`, `assets/generated/aseprite/character/{name}.json` | `client/public/assets/atlas/{atlas_name}.png`, `client/public/assets/atlas/{atlas_name}.json` |
+| npc | `assets/source/aseprite/npc/{region}/{name}.aseprite` | `assets/generated/aseprite/npc/{name}.png`, `assets/generated/aseprite/npc/{name}.json` | `client/public/assets/atlas/{atlas_name}.png`, `client/public/assets/atlas/{atlas_name}.json` |
+| monster | `assets/source/aseprite/monster/{region}/{name}.aseprite` | `assets/generated/aseprite/monster/{name}.png`, `assets/generated/aseprite/monster/{name}.json` | `client/public/assets/atlas/{atlas_name}.png`, `client/public/assets/atlas/{atlas_name}.json` |
+| vfx | `assets/source/aseprite/vfx/{category}/{name}.aseprite` | `assets/generated/aseprite/vfx/{category}/{name}.png`, `assets/generated/aseprite/vfx/{category}/{name}.json` | `client/public/assets/atlas/effects/{name}.png`, `client/public/assets/atlas/effects/{name}.json` |
+| ui/icon | `assets/source/aseprite/ui/icons/{category}/{name}.aseprite` | `assets/generated/aseprite/ui/icons/{category}/{name}.png`, `assets/generated/aseprite/ui/icons/{category}/{name}.json` | `client/public/assets/atlas/ui/icons/{name}.png`, `client/public/assets/atlas/ui/icons/{name}.json` |
+| tile | `assets/source/aseprite/tile/{tileset}/{name}.aseprite` | `assets/generated/aseprite/tile/{name}.png`, `assets/generated/aseprite/tile/{name}.json` | `client/public/assets/atlas/{atlas_name}.png`, `client/public/assets/atlas/{atlas_name}.json` |
+
+Aseprite 태그 규칙은 `{motion}_{direction}` 형식을 사용한다. 예: `idle_D`, `walk_L`, `attack_melee_U`. NPC처럼 단일 방향만 필요한 에셋은 `idle_D`, `talk_D`를 사용한다.
+
 ---
 
 ## 6) 품질 검증 규칙
