@@ -13,6 +13,7 @@ import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { accessibilityManager, type SubtitleSize } from '../accessibility/AccessibilityManager';
 import { i18n, type SupportedLocale } from '../i18n/i18nManager';
+import { getSettingsLabel } from '../settings/settingsLabels';
 
 // ── 설정 저장 키 ─────────────────────────────────────────────
 
@@ -154,13 +155,14 @@ export class SettingsScene extends Phaser.Scene {
     this._addText(leftX, y, '🔊 사운드', 20, '#aaaacc');
     y += 40;
 
-    this._addSlider(leftX, y, 'BGM 볼륨', this.settings.bgmVolume, (v) => {
+    // SSOT wiring: 설정 라벨은 SCENARIO_SETTINGS_DESCRIPTIONS 단일 출처 (settingsLabels)
+    this._addSlider(leftX, y, getSettingsLabel('audio_bgm'), this.settings.bgmVolume, (v) => {
       this.settings.bgmVolume = v;
       this.sound.setVolume(v);
     });
     y += 50;
 
-    this._addSlider(leftX, y, 'SFX 볼륨', this.settings.sfxVolume, (v) => {
+    this._addSlider(leftX, y, getSettingsLabel('audio_sfx'), this.settings.sfxVolume, (v) => {
       this.settings.sfxVolume = v;
     });
     y += 60;
@@ -189,7 +191,7 @@ export class SettingsScene extends Phaser.Scene {
     });
     y += 40;
 
-    this._addCycleButton(leftX, y, '자막 크기', SUBTITLE_SIZES,
+    this._addCycleButton(leftX, y, getSettingsLabel('accessibility_subtitle'), SUBTITLE_SIZES,
       SUBTITLE_SIZES.indexOf(this.settings.subtitleSize),
       (idx) => {
         this.settings.subtitleSize = SUBTITLE_SIZES[idx];
@@ -199,7 +201,7 @@ export class SettingsScene extends Phaser.Scene {
     );
     y += 40;
 
-    this._addCycleButton(leftX, y, '색약 모드',
+    this._addCycleButton(leftX, y, getSettingsLabel('accessibility_colorblind'),
       COLORBLIND_MODES.map(m => COLORBLIND_LABELS[m] ?? m),
       COLORBLIND_MODES.indexOf(this.settings.colorblindMode),
       (idx) => {

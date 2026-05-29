@@ -6461,7 +6461,7 @@ export const SCENARIO_SETTINGS_DESCRIPTIONS: readonly SettingsDescription[] = [
   { itemKey: 'graphics_quality',    category: 'graphics', label: '그래픽 품질', defaultValue: '중간', description: '저/중간/높음. 저사양 PC 는 저로 설정 권장.' },
   { itemKey: 'graphics_fullscreen', category: 'graphics', label: '전체화면',    defaultValue: '꺼짐', description: '윈도우 / 전체화면 전환. F11 단축키도 동일 작동.' },
   // accessibility
-  { itemKey: 'accessibility_colorblind',    category: 'accessibility', label: '색맹 모드',     defaultValue: '꺼짐', description: '4 SVG 필터 (protanopia / deuteranopia / tritanopia / achromatopsia).' },
+  { itemKey: 'accessibility_colorblind',    category: 'accessibility', label: '색맹 모드',     defaultValue: '꺼짐', description: '4 SVG 필터 (protanopia / deuteranopia / tritanopia / achromatopsia). SettingsScene 라벨 SSOT.' },
   { itemKey: 'accessibility_subtitle',      category: 'accessibility', label: '자막 크기',     defaultValue: '중간', description: '자막 텍스트 크기 — 작음 / 중간 / 큼.' },
   { itemKey: 'accessibility_reduce_motion', category: 'accessibility', label: '모션 감소',     defaultValue: 'OS 따름', description: 'prefers-reduced-motion 우선. 화면 흔들림과 큰 모션 효과를 줄입니다.' },
 ];
