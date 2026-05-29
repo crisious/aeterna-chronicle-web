@@ -11,6 +11,7 @@
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { bindEscClose } from '../utils/uiEsc';
+import { getMapLegendLines } from './mapLegend';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -57,6 +58,7 @@ export class WorldMapUI {
   private selectedZone: WorldZone | null = null;
   private detailPanel: Phaser.GameObjects.Container | null = null;
   private nodeObjs: Array<{ node: Phaser.GameObjects.Container; zone: WorldZone }> = [];
+  private legendObjs: Phaser.GameObjects.GameObject[] = [];
 
   constructor(scene: Phaser.Scene, net: NetworkManager) {
     this.scene = scene;
