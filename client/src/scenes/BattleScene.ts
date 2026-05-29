@@ -31,6 +31,7 @@ import { loadLastEra } from '../time/eraStorage';
 import { getDualTechById } from '../../../shared/types/dualTech';
 import { resolveFieldEncounter } from '../../../shared/types/chronoField';
 import { composeEscapeLog, escapeOutcomeFromResult } from '../combat/escapeNarration';
+import { getCombatPopupColor } from '../combat/combatResultPalette';
 
 // CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
 const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
@@ -1301,10 +1302,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _spawnComboText(x: number, y: number, name: string, bonus: number): void {
+    // SSOT wiring: combo popup 색은 SCENARIO_COMBAT_RESULT_LABELS 단일 출처
     const text = this.add.text(x, y, `⚡ ${name} +${bonus}%`, {
       fontSize: '18px',
       fontFamily: FONT_FAMILY,
-      color: '#ffaa44',
+      color: getCombatPopupColor('combo'),
       stroke: '#000000',
       strokeThickness: 4,
       fontStyle: 'bold',
@@ -1329,11 +1331,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _spawnEchoText(x: number, y: number, dmg: number): void {
-    // B-S4: critEcho 발동 시 보라 "ECHO! +N" 팝업
+    // B-S4: critEcho 발동 시 보라 "ECHO! +N" 팝업 (색은 SSOT crit_echo 단일 출처)
     const text = this.add.text(x + 30, y - 10, `✨ ECHO +${dmg}`, {
       fontSize: '16px',
       fontFamily: FONT_FAMILY,
-      color: '#cc88ff',
+      color: getCombatPopupColor('crit_echo'),
       stroke: '#000000',
       strokeThickness: 3,
       fontStyle: 'bold',
@@ -1358,11 +1360,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _spawnReflectText(x: number, y: number, dmg: number): void {
-    // B-S4: reflect 발동 시 청 "🛡 -N" 팝업 (attacker 위치)
+    // B-S4: reflect 발동 시 청 "🛡 -N" 팝업 (attacker 위치, 색은 SSOT reflect 단일 출처)
     const text = this.add.text(x, y - 30, `🛡 -${dmg}`, {
       fontSize: '17px',
       fontFamily: FONT_FAMILY,
-      color: '#88ccff',
+      color: getCombatPopupColor('reflect'),
       stroke: '#000000',
       strokeThickness: 3,
       fontStyle: 'bold',
@@ -1386,11 +1388,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _spawnMissText(x: number, y: number): void {
-    // B-S2: passive evasion 발동 시 "MISS!" 텍스트
+    // B-S2: passive evasion 발동 시 "MISS!" 텍스트 (색은 SSOT miss 단일 출처)
     const text = this.add.text(x, y, 'MISS!', {
       fontSize: '20px',
       fontFamily: FONT_FAMILY,
-      color: '#aaaaaa',
+      color: getCombatPopupColor('miss'),
       stroke: '#000000',
       strokeThickness: 3,
       fontStyle: 'italic',
