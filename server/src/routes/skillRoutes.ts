@@ -88,7 +88,9 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams; Querystring: { characterLevel?: string } }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: :userId 파라미터를 신뢰하지 않고 인증된 행위자(request.authUserId)를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const query = request.query as Record<string, string>;
     const characterLevel = parseInt(query.characterLevel || '1', 10);
 
@@ -101,7 +103,9 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: :userId 파라미터를 신뢰하지 않고 인증된 행위자(request.authUserId)를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const skills = await getUserSkills(userId);
     return reply.send({ userId, skills, count: skills.length });
   });
@@ -111,10 +115,13 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: UnlockBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, skillCode, characterLevel, characterClass } = request.body;
+    // IDOR 방지: userId 는 body 에서 받지 않고 인증된 행위자(request.authUserId)를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { skillCode, characterLevel, characterClass } = request.body;
 
-    if (!userId || !skillCode || !characterLevel || !characterClass) {
-      return reply.status(400).send({ error: '필수 필드 누락: userId, skillCode, characterLevel, characterClass' });
+    if (!skillCode || !characterLevel || !characterClass) {
+      return reply.status(400).send({ error: '필수 필드 누락: skillCode, characterLevel, characterClass' });
     }
 
     const result = await unlockSkill(userId, skillCode, characterLevel, characterClass);
@@ -130,10 +137,13 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: LevelUpBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, skillCode, characterLevel } = request.body;
+    // IDOR 방지: userId 는 body 에서 받지 않고 인증된 행위자(request.authUserId)를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { skillCode, characterLevel } = request.body;
 
-    if (!userId || !skillCode || !characterLevel) {
-      return reply.status(400).send({ error: '필수 필드 누락: userId, skillCode, characterLevel' });
+    if (!skillCode || !characterLevel) {
+      return reply.status(400).send({ error: '필수 필드 누락: skillCode, characterLevel' });
     }
 
     const result = await levelUpSkill(userId, skillCode, characterLevel);
@@ -149,10 +159,13 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: EquipBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, skillCode, slotIndex, unequip } = request.body;
+    // IDOR 방지: userId 는 body 에서 받지 않고 인증된 행위자(request.authUserId)를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { skillCode, slotIndex, unequip } = request.body;
 
-    if (!userId || !skillCode) {
-      return reply.status(400).send({ error: '필수 필드 누락: userId, skillCode' });
+    if (!skillCode) {
+      return reply.status(400).send({ error: '필수 필드 누락: skillCode' });
     }
 
     if (unequip) {
@@ -180,10 +193,13 @@ export async function skillRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: ResetBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, characterLevel, currentGold } = request.body;
+    // IDOR 방지: userId 는 body 에서 받지 않고 인증된 행위자(request.authUserId)를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { characterLevel, currentGold } = request.body;
 
-    if (!userId || !characterLevel || currentGold === undefined) {
-      return reply.status(400).send({ error: '필수 필드 누락: userId, characterLevel, currentGold' });
+    if (!characterLevel || currentGold === undefined) {
+      return reply.status(400).send({ error: '필수 필드 누락: characterLevel, currentGold' });
     }
 
     const result = await resetSkills(userId, characterLevel, currentGold);

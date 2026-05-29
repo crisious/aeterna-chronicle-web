@@ -15,14 +15,13 @@ import {
 } from '../world/worldBossManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
+// [SECURITY-IDOR] 행위자(playerId)는 body 에서 받지 않고 request.authUserId 로 결정한다.
 
 interface JoinBody {
-  playerId: string;
   playerName: string;
 }
 
 interface DamageBody {
-  playerId: string;
   damage: number;
 }
 
@@ -84,10 +83,14 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: JoinBody }>,
     reply: FastifyReply,
   ) => {
+    // [SECURITY-IDOR] body 의 playerId 대신 인증된 행위자를 참여자로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     try {
-      const { playerId, playerName } = request.body;
-      if (!playerId || !playerName) {
-        return reply.status(400).send({ error: 'playerId, playerName은 필수입니다.' });
+      const { playerName } = request.body;
+      if (!playerName) {
+        return reply.status(400).send({ error: 'playerName은 필수입니다.' });
       }
 
       const boss = getCurrentBoss();
@@ -117,10 +120,14 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: DamageBody }>,
     reply: FastifyReply,
   ) => {
+    // [SECURITY-IDOR] body 의 playerId 대신 인증된 행위자를 기여자로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     try {
-      const { playerId, damage } = request.body;
-      if (!playerId || damage == null) {
-        return reply.status(400).send({ error: 'playerId, damage는 필수입니다.' });
+      const { damage } = request.body;
+      if (damage == null) {
+        return reply.status(400).send({ error: 'damage는 필수입니다.' });
       }
 
       const boss = getCurrentBoss();
@@ -137,7 +144,7 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
 
       if (defeated) {
         const contributions = await calculateContributions(boss.id);
-        const playerContrib = contributions.find((c) => c.playerId === playerId);
+        const playerContrib = contributions.find((c) => c.playerId === userId);
         if (playerContrib) {
           result.loot = (calculateLoot as any)(boss, playerContrib.totalDamage, boss.maxHp);
         }

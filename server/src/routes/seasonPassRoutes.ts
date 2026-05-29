@@ -22,32 +22,25 @@ import {
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
-interface UserIdParams {
-  userId: string;
-}
-
 interface LevelParams {
   level: string;
 }
 
+// userId 는 더 이상 클라이언트에서 받지 않는다(actor = request.authUserId).
 interface ClaimBody {
-  userId: string;
   level: number;
   type: 'free' | 'premium';
 }
 
-interface PurchaseBody {
-  userId: string;
-}
+// 프리미엄 패스 구매 바디 — actor = request.authUserId 이므로 페이로드 없음.
+type PurchaseBody = Record<string, never>;
 
 interface XpBody {
-  userId: string;
   source: string;
   multiplier?: number;
 }
 
 interface AddExpBody {
-  userId: string;
   amount: number;
 }
 
@@ -80,11 +73,14 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
   });
 
   // ── GET /api/season/:userId/progress — 유저 진행도 ────────────
+  // 경로의 :userId 는 신뢰하지 않는다 — 인증된 actor(request.authUserId)의 진행도만 조회.
   fastify.get('/api/season/:userId/progress', async (
-    request: FastifyRequest<{ Params: UserIdParams }>,
+    request: FastifyRequest,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const season = await getCurrentSeason();
     if (!season) {
       return reply.status(404).send({ error: '현재 활성 시즌이 없습니다.' });
@@ -107,14 +103,17 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
 
   // ── POST /api/season/claim/:level — 보상 수령 ────────────────
   fastify.post('/api/season/claim/:level', async (
-    request: FastifyRequest<{ Params: LevelParams; Body: { userId: string; type: 'free' | 'premium' } }>,
+    request: FastifyRequest<{ Params: LevelParams; Body: { type: 'free' | 'premium' } }>,
     reply: FastifyReply,
   ) => {
-    const level = parseInt(request.params.level, 10);
-    const { userId, type } = request.body;
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-    if (!userId || !type || isNaN(level)) {
-      return reply.status(400).send({ error: 'userId, type, level은 필수입니다.' });
+    const level = parseInt(request.params.level, 10);
+    const { type } = request.body;
+
+    if (!type || isNaN(level)) {
+      return reply.status(400).send({ error: 'type, level은 필수입니다.' });
     }
 
     try {
@@ -131,10 +130,8 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     request: FastifyRequest<{ Body: PurchaseBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.body;
-    if (!userId) {
-      return reply.status(400).send({ error: 'userId는 필수입니다.' });
-    }
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const result = await purchasePremiumPass(userId);
@@ -150,10 +147,13 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     request: FastifyRequest<{ Body: XpBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, source, multiplier } = request.body;
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-    if (!userId || !source) {
-      return reply.status(400).send({ error: 'userId와 source는 필수입니다.' });
+    const { source, multiplier } = request.body;
+
+    if (!source) {
+      return reply.status(400).send({ error: 'source는 필수입니다.' });
     }
 
     if (!(source in XP_SOURCES)) {
@@ -188,11 +188,14 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
   });
 
   // ── GET /api/season-pass/progress/:userId ─────────────────────
+  // 경로의 :userId 는 신뢰하지 않는다 — 인증된 actor(request.authUserId)의 진행도만 조회.
   fastify.get('/api/season-pass/progress/:userId', async (
-    request: FastifyRequest<{ Params: UserIdParams }>,
+    request: FastifyRequest,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const now = new Date();
     const currentSeason = await prisma.seasonPass.findFirst({
       where: { isActive: true, startDate: { lte: now }, endDate: { gte: now } },
@@ -218,9 +221,12 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     request: FastifyRequest<{ Body: ClaimBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, level, type } = request.body;
-    if (!userId || level === undefined || !type) {
-      return reply.status(400).send({ error: 'userId, level, type은 필수입니다.' });
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { level, type } = request.body;
+    if (level === undefined || !type) {
+      return reply.status(400).send({ error: 'level, type은 필수입니다.' });
     }
 
     try {
@@ -237,8 +243,8 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     request: FastifyRequest<{ Body: PurchaseBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.body;
-    if (!userId) return reply.status(400).send({ error: 'userId는 필수입니다.' });
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const result = await purchasePremiumPass(userId);
@@ -254,9 +260,12 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
     request: FastifyRequest<{ Body: AddExpBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, amount } = request.body;
-    if (!userId || !amount || amount <= 0) {
-      return reply.status(400).send({ error: 'userId와 양수 amount는 필수입니다.' });
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { amount } = request.body;
+    if (!amount || amount <= 0) {
+      return reply.status(400).send({ error: '양수 amount는 필수입니다.' });
     }
 
     const now = new Date();

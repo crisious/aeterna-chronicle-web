@@ -15,17 +15,21 @@ import type { CommunityEventConfig } from '../event/communityEventEngine';
 import { createCommunityEvent, getEvent, getActiveEvents, cancelEvent, joinEvent, updateScore, getLeaderboard as getEventLeaderboard, getActiveMultipliers, syncEventStatuses } from '../event/communityEventEngine';
 import type { LeaderboardType, ProfileVisibility } from '../social/socialProfile';
 import { getPublicProfile, setProfileVisibility, getLeaderboard, getFriendLeaderboard, getGuildRanking } from '../social/socialProfile';
+import { requireAdmin } from '../admin/authMiddleware';
 
 export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
 
   // ═══ P12-01: SNS 공유 ═══
 
   fastify.post('/api/share', async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = request.body as SharePayload;
-    if (!body.userId || !body.type || !body.resourceId) {
-      return reply.status(400).send({ error: 'userId, type, resourceId 필수' });
+    // IDOR 방지: 공유 소유자는 body.userId 가 아니라 인증된 행위자
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { userId: _ignoredUserId, ...rest } = request.body as SharePayload;
+    if (!rest.type || !rest.resourceId) {
+      return reply.status(400).send({ error: 'type, resourceId 필수' });
     }
-    const result = await createShare(body);
+    const result = await createShare({ ...rest, userId });
     const socialUrls = getSocialShareUrls(result.shareUrl, result.ogMeta.title);
     return { ...result, socialUrls };
   });
@@ -58,8 +62,10 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.type('text/html').send(html);
   });
 
-  fastify.get('/api/share/user/:userId', async (request: FastifyRequest, _reply: FastifyReply) => {
-    const { userId } = request.params as { userId: string };
+  fastify.get('/api/share/user/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 사적 공유 이력은 params.userId 가 아니라 인증된 행위자 본인 것만
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const query = request.query as { limit?: string; offset?: string };
     const shares = await getUserShares(userId, parseInt(query.limit || '20'), parseInt(query.offset || '0'));
     return { shares };
@@ -67,47 +73,75 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
 
   // ═══ P12-02: Discord 봇 ═══
 
-  fastify.post('/api/discord/webhook', async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = request.body as { id: string } & DiscordWebhookConfig;
-    if (!body.id || !body.url) return reply.status(400).send({ error: 'id, url 필수' });
-    registerWebhook(body.id, body);
-    return { success: true };
-  });
+  // GM/관리자성 엔드포인트: 웹훅 등록·삭제·조회, broadcast, 큐 상태는 admin 권한 필요
+  fastify.post(
+    '/api/discord/webhook',
+    { preHandler: requireAdmin('admin', 'discord_register_webhook') },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const body = request.body as { id: string } & DiscordWebhookConfig;
+      if (!body.id || !body.url) return reply.status(400).send({ error: 'id, url 필수' });
+      registerWebhook(body.id, body);
+      return { success: true };
+    },
+  );
 
-  fastify.delete('/api/discord/webhook/:id', async (request: FastifyRequest) => {
-    const { id } = request.params as { id: string };
-    return { removed: unregisterWebhook(id) };
-  });
+  fastify.delete(
+    '/api/discord/webhook/:id',
+    { preHandler: requireAdmin('admin', 'discord_unregister_webhook') },
+    async (request: FastifyRequest) => {
+      const { id } = request.params as { id: string };
+      return { removed: unregisterWebhook(id) };
+    },
+  );
 
-  fastify.get('/api/discord/webhooks', async () => {
-    return { webhooks: getWebhooks() };
-  });
+  fastify.get(
+    '/api/discord/webhooks',
+    { preHandler: requireAdmin('admin', 'discord_list_webhooks') },
+    async () => {
+      return { webhooks: getWebhooks() };
+    },
+  );
 
-  fastify.post('/api/discord/broadcast', async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = request.body as { eventType: DiscordEventType; data: Record<string, any> };
-    if (!body.eventType) return reply.status(400).send({ error: 'eventType 필수' });
-    const result = broadcastEvent(body.eventType, body.data || {});
-    return result;
-  });
+  fastify.post(
+    '/api/discord/broadcast',
+    { preHandler: requireAdmin('admin', 'discord_broadcast') },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const body = request.body as { eventType: DiscordEventType; data: Record<string, any> };
+      if (!body.eventType) return reply.status(400).send({ error: 'eventType 필수' });
+      const result = broadcastEvent(body.eventType, body.data || {});
+      return result;
+    },
+  );
 
-  fastify.get('/api/discord/queue', async () => getQueueStatus());
+  fastify.get(
+    '/api/discord/queue',
+    { preHandler: requireAdmin('admin', 'discord_queue_status') },
+    async () => getQueueStatus(),
+  );
 
   // ═══ P12-03: 스트리머 모드 ═══
 
   fastify.post('/api/streamer/start', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId, settings } = request.body as { userId: string; settings?: Partial<StreamerSettings> };
-    if (!userId) return reply.status(400).send({ error: 'userId 필수' });
+    // IDOR 방지: 스트리머 본인 = 인증된 행위자
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { settings } = request.body as { settings?: Partial<StreamerSettings> };
     const session = await startStreaming(userId, settings);
     return session;
   });
 
-  fastify.post('/api/streamer/stop', async (request: FastifyRequest) => {
-    const { userId } = request.body as { userId: string };
+  fastify.post('/api/streamer/stop', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 인증된 행위자 본인의 스트림만 종료
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     return { stopped: await stopStreaming(userId) };
   });
 
-  fastify.patch('/api/streamer/settings', async (request: FastifyRequest) => {
-    const { userId, settings } = request.body as { userId: string; settings: Partial<StreamerSettings> };
+  fastify.patch('/api/streamer/settings', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 인증된 행위자 본인의 설정만 변경
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { settings } = request.body as { settings: Partial<StreamerSettings> };
     return { settings: updateSettings(userId, settings) };
   });
 
@@ -122,13 +156,19 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return data;
   });
 
-  fastify.post('/api/streamer/spectate/join', async (request: FastifyRequest) => {
-    const { streamerId, spectatorId } = request.body as { streamerId: string; spectatorId: string };
+  fastify.post('/api/streamer/spectate/join', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 관전자 = 인증된 행위자 본인 (spectatorId 신뢰 안 함)
+    const spectatorId = request.authUserId;
+    if (!spectatorId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { streamerId } = request.body as { streamerId: string };
     return { joined: joinSpectate(streamerId, spectatorId) };
   });
 
-  fastify.post('/api/streamer/spectate/leave', async (request: FastifyRequest) => {
-    const { streamerId, spectatorId } = request.body as { streamerId: string; spectatorId: string };
+  fastify.post('/api/streamer/spectate/leave', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 관전자 = 인증된 행위자 본인 (spectatorId 신뢰 안 함)
+    const spectatorId = request.authUserId;
+    if (!spectatorId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { streamerId } = request.body as { streamerId: string };
     return { left: leaveSpectate(streamerId, spectatorId) };
   });
 
@@ -137,16 +177,22 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return { spectators: getSpectators(streamerId) };
   });
 
-  fastify.get('/api/streamer/session/:userId', async (request: FastifyRequest) => {
+  fastify.get('/api/streamer/session/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 세션은 streamKey(비밀)를 포함하므로 본인 세션만 조회 가능
+    const authUserId = request.authUserId;
+    if (!authUserId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { userId } = request.params as { userId: string };
-    return { session: getSession(userId) };
+    if (userId !== authUserId) return reply.status(403).send({ error: '본인 세션만 조회할 수 있습니다.' });
+    return { session: getSession(authUserId) };
   });
 
   // ═══ P12-04: 레퍼럴 ═══
 
   fastify.post('/api/referral/code', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId, maxUses, expiryDays } = request.body as { userId: string; maxUses?: number; expiryDays?: number };
-    if (!userId) return reply.status(400).send({ error: 'userId 필수' });
+    // IDOR 방지: 코드 소유자 = 인증된 행위자
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { maxUses, expiryDays } = request.body as { maxUses?: number; expiryDays?: number };
     const code = await createReferralCode(userId, { maxUses, expiryDays });
     return code;
   });
@@ -158,34 +204,47 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return info;
   });
 
-  fastify.post('/api/referral/redeem', async (request: FastifyRequest) => {
-    const { code, userId } = request.body as { code: string; userId: string };
+  fastify.post('/api/referral/redeem', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 코드를 사용하는 신규 유저 = 인증된 행위자
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { code } = request.body as { code: string };
     return redeemReferralCode(code, userId);
   });
 
-  fastify.post('/api/referral/claim', async (request: FastifyRequest) => {
-    const { rewardId, userId } = request.body as { rewardId: string; userId: string };
+  fastify.post('/api/referral/claim', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 보상 수령자 = 인증된 행위자 (manager 가 보상 소유권 2차 검증)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { rewardId } = request.body as { rewardId: string };
     return { claimed: await claimReward(rewardId, userId) };
   });
 
-  fastify.get('/api/referral/rewards/:userId', async (request: FastifyRequest) => {
-    const { userId } = request.params as { userId: string };
+  fastify.get('/api/referral/rewards/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 사적 보상 목록은 본인 것만
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     return { rewards: await getUserRewards(userId) };
   });
 
-  fastify.get('/api/referral/stats/:userId', async (request: FastifyRequest) => {
-    const { userId } = request.params as { userId: string };
+  fastify.get('/api/referral/stats/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 사적 초대 통계는 본인 것만
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     return getReferralStats(userId);
   });
 
   // ═══ P12-05: UGC 갤러리 ═══
 
   fastify.post('/api/ugc/post', async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = request.body as CreatePostInput;
-    if (!body.authorId || !body.type || !body.title) {
-      return reply.status(400).send({ error: 'authorId, type, title 필수' });
+    // IDOR 방지: 작성자 = 인증된 행위자 (body.authorId 신뢰 안 함)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { authorId: _ignoredAuthorId, ...rest } = request.body as CreatePostInput;
+    if (!rest.type || !rest.title) {
+      return reply.status(400).send({ error: 'type, title 필수' });
     }
-    const post = await createPost(body);
+    const post = await createPost({ ...rest, authorId: userId });
     return post;
   });
 
@@ -196,9 +255,11 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return post;
   });
 
-  fastify.delete('/api/ugc/post/:id', async (request: FastifyRequest) => {
+  fastify.delete('/api/ugc/post/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 삭제 행위자 = 인증된 본인 (manager 가 authorId 일치 2차 검증)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { id } = request.params as { id: string };
-    const { userId } = request.query as { userId: string };
     return { deleted: await deletePost(id, userId) };
   });
 
@@ -207,33 +268,51 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return { posts: await getFeed(query) };
   });
 
-  fastify.post('/api/ugc/like', async (request: FastifyRequest) => {
-    const { postId, userId } = request.body as { postId: string; userId: string };
+  fastify.post('/api/ugc/like', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 좋아요 행위자 = 인증된 행위자
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { postId } = request.body as { postId: string };
     return toggleLike(postId, userId);
   });
 
-  fastify.post('/api/ugc/report', async (request: FastifyRequest) => {
-    const { postId, reporterId, reason, detail } = request.body as {
-      postId: string; reporterId: string; reason: ReportReason; detail?: string;
+  fastify.post('/api/ugc/report', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 신고자 = 인증된 행위자 (reporterId 신뢰 안 함)
+    const reporterId = request.authUserId;
+    if (!reporterId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { postId, reason, detail } = request.body as {
+      postId: string; reason: ReportReason; detail?: string;
     };
     return reportPost(postId, reporterId, reason, detail);
   });
 
-  fastify.patch('/api/ugc/visibility', async (request: FastifyRequest) => {
-    const { postId, isHidden } = request.body as { postId: string; isHidden: boolean };
-    return { updated: await setPostVisibility(postId, isHidden) };
-  });
+  // GM 모더레이션: 임의 게시글 숨김/복원은 moderator 권한 필요
+  fastify.patch(
+    '/api/ugc/visibility',
+    { preHandler: requireAdmin('moderator', 'ugc_set_visibility') },
+    async (request: FastifyRequest) => {
+      const { postId, isHidden } = request.body as { postId: string; isHidden: boolean };
+      return { updated: await setPostVisibility(postId, isHidden) };
+    },
+  );
 
   // ═══ P12-06: 커뮤니티 이벤트 ═══
 
-  fastify.post('/api/community-event', async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = request.body as CommunityEventConfig;
-    if (!body.name || !body.type || !body.startAt || !body.endAt || !body.createdBy) {
-      return reply.status(400).send({ error: 'name, type, startAt, endAt, createdBy 필수' });
-    }
-    const event = await createCommunityEvent(body);
-    return event;
-  });
+  // GM 전용: 커뮤니티 이벤트 생성은 admin 권한 필요. createdBy 는 인증된 GM 으로 강제.
+  fastify.post(
+    '/api/community-event',
+    { preHandler: requireAdmin('admin', 'community_event_create') },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+      const { createdBy: _ignoredCreatedBy, ...rest } = request.body as CommunityEventConfig;
+      if (!rest.name || !rest.type || !rest.startAt || !rest.endAt) {
+        return reply.status(400).send({ error: 'name, type, startAt, endAt 필수' });
+      }
+      const event = await createCommunityEvent({ ...rest, createdBy: userId });
+      return event;
+    },
+  );
 
   fastify.get('/api/community-event/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
@@ -246,23 +325,35 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return { events: await getActiveEvents() };
   });
 
-  fastify.post('/api/community-event/:id/cancel', async (request: FastifyRequest) => {
-    const { id } = request.params as { id: string };
-    return { cancelled: await cancelEvent(id) };
-  });
+  // GM 전용: 이벤트 취소는 admin 권한 필요
+  fastify.post(
+    '/api/community-event/:id/cancel',
+    { preHandler: requireAdmin('admin', 'community_event_cancel') },
+    async (request: FastifyRequest) => {
+      const { id } = request.params as { id: string };
+      return { cancelled: await cancelEvent(id) };
+    },
+  );
 
-  fastify.post('/api/community-event/:id/join', async (request: FastifyRequest) => {
+  fastify.post('/api/community-event/:id/join', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 참여자 = 인증된 행위자 (body.userId 신뢰 안 함)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { id } = request.params as { id: string };
-    const { userId } = request.body as { userId: string };
     return joinEvent(id, userId);
   });
 
-  fastify.post('/api/community-event/:id/score', async (request: FastifyRequest) => {
-    const { id } = request.params as { id: string };
-    const { userId, scoreDelta } = request.body as { userId: string; scoreDelta: number };
-    const newScore = await updateScore(id, userId, scoreDelta);
-    return { score: newScore };
-  });
+  // 점수 권위(authority): 임의 userId 의 점수를 임의 delta 로 조작하는 것을 막기 위해 admin 권한 필요
+  fastify.post(
+    '/api/community-event/:id/score',
+    { preHandler: requireAdmin('admin', 'community_event_score') },
+    async (request: FastifyRequest) => {
+      const { id } = request.params as { id: string };
+      const { userId, scoreDelta } = request.body as { userId: string; scoreDelta: number };
+      const newScore = await updateScore(id, userId, scoreDelta);
+      return { score: newScore };
+    },
+  );
 
   fastify.get('/api/community-event/:id/leaderboard', async (request: FastifyRequest) => {
     const { id } = request.params as { id: string };
@@ -274,22 +365,32 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return getActiveMultipliers();
   });
 
-  fastify.post('/api/community-events/sync', async () => {
-    return syncEventStatuses();
-  });
+  // 시스템/GM 전용: 이벤트 상태 동기화는 admin 권한 필요
+  fastify.post(
+    '/api/community-events/sync',
+    { preHandler: requireAdmin('admin', 'community_event_sync') },
+    async () => {
+      return syncEventStatuses();
+    },
+  );
 
   // ═══ P12-07: 소셜 프로필 + 리더보드 ═══
 
   fastify.get('/api/profile/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 가시성 판정의 viewer 는 query.viewerId 가 아니라 인증된 행위자
+    const viewerId = request.authUserId;
+    if (!viewerId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { userId } = request.params as { userId: string };
-    const { viewerId } = request.query as { viewerId?: string };
     const profile = await getPublicProfile(userId, viewerId);
     if (!profile) return reply.status(404).send({ error: '프로필 없음 또는 비공개' });
     return profile;
   });
 
-  fastify.patch('/api/profile/visibility', async (request: FastifyRequest) => {
-    const { userId, visibility } = request.body as { userId: string; visibility: ProfileVisibility };
+  fastify.patch('/api/profile/visibility', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 본인 프로필 공개 설정만 변경 (body.userId 신뢰 안 함)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { visibility } = request.body as { visibility: ProfileVisibility };
     return { updated: await setProfileVisibility(userId, visibility) };
   });
 
@@ -300,9 +401,11 @@ export async function communityRoutes(fastify: FastifyInstance): Promise<void> {
     return { leaderboard: board };
   });
 
-  fastify.get('/api/leaderboard/:type/friends', async (request: FastifyRequest) => {
+  fastify.get('/api/leaderboard/:type/friends', async (request: FastifyRequest, reply: FastifyReply) => {
+    // IDOR 방지: 친구 리더보드는 인증된 본인의 친구 관계 기준
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { type } = request.params as { type: LeaderboardType };
-    const { userId } = request.query as { userId: string };
     const board = await getFriendLeaderboard(userId, type);
     return { leaderboard: board };
   });

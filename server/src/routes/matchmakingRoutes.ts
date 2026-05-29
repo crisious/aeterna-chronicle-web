@@ -21,7 +21,8 @@ import {
 // ── 요청 타입 ───────────────────────────────────────────────────
 
 interface QueueBody {
-  userId: string;
+  /** SECURITY-IDOR: 클라이언트가 보내더라도 무시한다. actor 는 request.authUserId. */
+  userId?: string;
   queueType: string;
   contentId?: string;
   role: string;
@@ -30,10 +31,12 @@ interface QueueBody {
 }
 
 interface CancelBody {
-  userId: string;
+  /** SECURITY-IDOR: 클라이언트가 보내더라도 무시한다. actor 는 request.authUserId. */
+  userId?: string;
 }
 
 interface StatusParams {
+  /** SECURITY-IDOR: 경로 식별자는 무시한다. actor 는 request.authUserId. */
   userId: string;
 }
 
@@ -51,9 +54,13 @@ export async function matchmakingRoutes(fastify: FastifyInstance): Promise<void>
     reply: FastifyReply,
   ) => {
     try {
-      const { userId, queueType, contentId, role, level, gearScore } = request.body;
+      // SECURITY-IDOR: 큐 등록은 인증된 본인(request.authUserId)만 가능. body.userId 무시.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-      if (!userId || !queueType || !role || level == null || gearScore == null) {
+      const { queueType, contentId, role, level, gearScore } = request.body;
+
+      if (!queueType || !role || level == null || gearScore == null) {
         return reply.status(400).send({ error: '필수 파라미터 누락' });
       }
 
@@ -87,8 +94,9 @@ export async function matchmakingRoutes(fastify: FastifyInstance): Promise<void>
     reply: FastifyReply,
   ) => {
     try {
-      const { userId } = request.body;
-      if (!userId) return reply.status(400).send({ error: 'userId 필수' });
+      // SECURITY-IDOR: 본인 티켓만 취소. body.userId 무시하고 인증 행위자 사용.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
       const cancelled = await cancelQueue(userId);
       if (!cancelled) {
@@ -101,12 +109,15 @@ export async function matchmakingRoutes(fastify: FastifyInstance): Promise<void>
     }
   });
 
-  /** GET /api/matchmaking/status/:userId — 매칭 상태 조회 */
+  /** GET /api/matchmaking/status/:userId — 매칭 상태 조회 (본인 것만) */
   fastify.get('/api/matchmaking/status/:userId', async (
     request: FastifyRequest<{ Params: StatusParams }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // SECURITY-IDOR: 개인 대기 상태는 인증 본인 것만 조회. params.userId 무시.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const status = await getQueueStatus(userId);
     return reply.send(status);
   });

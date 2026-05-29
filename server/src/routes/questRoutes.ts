@@ -24,23 +24,15 @@ interface UserIdParams {
 }
 
 interface AcceptBody {
-  userId: string;
+  // IDOR 방지: userId 는 body 에서 받지 않고 인증된 행위자(request.authUserId)를 사용한다.
   playerLevel: number;
 }
 
 interface ProgressBody {
-  userId: string;
+  // IDOR 방지: userId 는 body 에서 받지 않고 인증된 행위자(request.authUserId)를 사용한다.
   eventType: ObjectiveType;
   target: string;
   count?: number;
-}
-
-interface CompleteBody {
-  userId: string;
-}
-
-interface AbandonBody {
-  userId: string;
 }
 
 interface QuestListQuery {
@@ -109,11 +101,15 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply
   ) => {
     try {
-      const { id } = request.params;
-      const { userId, playerLevel } = request.body;
+      // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-      if (!userId || playerLevel == null) {
-        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'userId, playerLevel 필수' });
+      const { id } = request.params;
+      const { playerLevel } = request.body;
+
+      if (playerLevel == null) {
+        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'playerLevel 필수' });
       }
 
       const result = await acceptQuest(userId, id, playerLevel);
@@ -131,10 +127,14 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply
   ) => {
     try {
-      const { userId, eventType, target, count } = request.body;
+      // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-      if (!userId || !eventType || !target) {
-        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'userId, eventType, target 필수' });
+      const { eventType, target, count } = request.body;
+
+      if (!eventType || !target) {
+        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'eventType, target 필수' });
       }
 
       const results = await updateQuestProgress(userId, eventType, target, count ?? 1);
@@ -148,16 +148,15 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
    * POST /api/quests/:id/complete — 완료 + 보상
    */
   fastify.post('/api/quests/:id/complete', async (
-    request: FastifyRequest<{ Params: QuestIdParams; Body: CompleteBody }>,
+    request: FastifyRequest<{ Params: QuestIdParams }>,
     reply: FastifyReply
   ) => {
     try {
-      const { id } = request.params;
-      const { userId } = request.body;
+      // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-      if (!userId) {
-        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'userId 필수' });
-      }
+      const { id } = request.params;
 
       const result = await completeQuest(userId, id);
       return reply.send(result);
@@ -170,16 +169,15 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
    * POST /api/quests/:id/abandon — 포기
    */
   fastify.post('/api/quests/:id/abandon', async (
-    request: FastifyRequest<{ Params: QuestIdParams; Body: AbandonBody }>,
+    request: FastifyRequest<{ Params: QuestIdParams }>,
     reply: FastifyReply
   ) => {
     try {
-      const { id } = request.params;
-      const { userId } = request.body;
+      // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-      if (!userId) {
-        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'userId 필수' });
-      }
+      const { id } = request.params;
 
       await abandonQuest(userId, id);
       return reply.send({ success: true, message: '퀘스트를 포기했습니다.' });
@@ -195,7 +193,9 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 를 신뢰하지 않고 인증된 행위자 본인의 진행 목록만 조회한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     const activeProgress = await prisma.questProgress.findMany({
       where: { userId, status: 'in_progress' },

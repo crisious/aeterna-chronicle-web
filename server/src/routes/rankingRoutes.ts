@@ -48,13 +48,15 @@ export async function rankingRoutes(fastify: FastifyInstance): Promise<void> {
   /** GET /api/ranking/:category/me — 내 순위 */
   fastify.get('/api/ranking/:category/me', async (
     request: FastifyRequest<{ Params: CategoryParams; Querystring: RankingQuery }>,
+    reply,
   ) => {
     const { category } = request.params;
     const q = request.query;
-    const userId = q.userId;
 
+    // [IDOR] 쿼리의 userId 를 신뢰하지 않고 인증된 행위자를 사용한다.
+    const userId = request.authUserId;
     if (!userId) {
-      return { success: false, error: 'userId 쿼리 파라미터가 필요합니다' };
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
 
     const entry = await rankingManager.getMyRank(userId, category, q.season);
@@ -85,8 +87,14 @@ export async function rankingRoutes(fastify: FastifyInstance): Promise<void> {
   /** GET /api/ranking/history/:userId — 시즌 이력 */
   fastify.get('/api/ranking/history/:userId', async (
     request: FastifyRequest<{ Params: UserIdParams; Querystring: { category?: string } }>,
+    reply,
   ) => {
-    const { userId } = request.params;
+    // [IDOR] params 의 userId 를 신뢰하지 않고 인증된 행위자의 이력만 반환한다.
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+
     const category = (request.query as { category?: string }).category ?? 'level';
 
     const history = await rankingManager.getSeasonHistory(userId, category);
