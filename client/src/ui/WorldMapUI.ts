@@ -77,6 +77,7 @@ export class WorldMapUI {
     this.container.setVisible(true);
     await this._loadZones();
     this._renderMap();
+    this._renderLegend();
 
     // FINDING-A4 ext18/ext24: ESC 닫기 (bindEscClose helper)
     this._escUnbind?.();
@@ -213,6 +214,41 @@ export class WorldMapUI {
       this.container.add(nodeC);
       this.nodeObjs.push({ node: nodeC, zone });
     });
+  }
+
+  // ── 내부: 범례 (SSOT SCENARIO_MAP_LEGEND_ENTRIES) ─────────
+
+  private _renderLegend(): void {
+    // 기존 범례 제거 (재렌더 중복 방지)
+    this.legendObjs.forEach(o => o.destroy());
+    this.legendObjs = [];
+
+    const cx = this.scene.scale.width / 2;
+    const cy = this.scene.scale.height / 2;
+    const pw = 700;
+    const ph = 520;
+
+    // 패널 하단 반투명 범례 바
+    const barH = 30;
+    const barY = cy + ph / 2 - barH / 2 - 6;
+    const bar = this.scene.add.rectangle(cx, barY, pw - 16, barH, 0x05050f, 0.85)
+      .setStrokeStyle(1, 0x3a3a5a);
+    this.container.add(bar);
+    this.legendObjs.push(bar);
+
+    // SSOT 7종 범례를 "{icon} {label}" 로 나열
+    const legendText = getMapLegendLines()
+      .map(e => `${e.icon} ${e.label}`)
+      .join('   ');
+
+    const text = this.scene.add.text(cx - (pw - 40) / 2, barY, legendText, {
+      fontSize: '11px',
+      color: '#c0c0e0',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      wordWrap: { width: pw - 40 },
+    }).setOrigin(0, 0.5);
+    this.container.add(text);
+    this.legendObjs.push(text);
   }
 
   // ── 내부: 존 선택 → 텔레포트 ──────────────────────────────
