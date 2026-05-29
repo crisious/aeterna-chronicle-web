@@ -737,7 +737,8 @@ export class DungeonScene extends Phaser.Scene {
     this.cameras.main.flash(300, 255, 0, 0);
 
     this.time.delayedCall(800, () => {
-      this._showPhaseText('💀 패배...', () => {
+      // SSOT wiring: 패배 연출에 SCENARIO_GAME_OVER_NARRATIVES(universal) 재도전 hint 연결
+      this._showPhaseText(composeDungeonGameOverText('party_wipe'), () => {
         this.scene.start('LobbyScene');
       }, 2000);
     });
@@ -802,7 +803,8 @@ export class DungeonScene extends Phaser.Scene {
     if (this.elapsedSec >= this.config.timeLimitSec) {
       this.phase = 'timeout';
       this._clearEnemyPreviews();
-      this._showPhaseText('⏰ 시간 초과!', () => {
+      // SSOT wiring: 시간초과 연출에도 동일 universal game-over hint 연결
+      this._showPhaseText(composeDungeonGameOverText('time_limit'), () => {
         this.scene.start('LobbyScene');
       }, 2000);
     }
