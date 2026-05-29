@@ -6684,14 +6684,16 @@ export interface CombatResultLabel {
   icon: string;
 }
 
+// popupColor 는 BattleScene 클라 popup 의 실측 색과 일치(SSOT-WIRE-03 정정).
+// 화면이 진실 — SSOT 가 클라 popup 색의 단일 출처가 되도록 실측값으로 맞춤.
 export const SCENARIO_COMBAT_RESULT_LABELS: readonly CombatResultLabel[] = [
   { kind: 'hit',       label: 'HIT',      popupColor: '#ffffff', displayPriority: 5, icon: '' },
-  { kind: 'miss',      label: 'MISS',     popupColor: '#bfbfbf', displayPriority: 3, icon: '✗' },
-  { kind: 'crit',      label: 'CRIT',     popupColor: '#ffb720', displayPriority: 2, icon: '!' },
-  { kind: 'reflect',   label: 'REFLECT',  popupColor: '#5f9fff', displayPriority: 4, icon: '🛡' },
+  { kind: 'miss',      label: 'MISS',     popupColor: '#aaaaaa', displayPriority: 3, icon: '✗' },
+  { kind: 'crit',      label: 'CRIT',     popupColor: '#ffcc00', displayPriority: 2, icon: '!' },
+  { kind: 'reflect',   label: 'REFLECT',  popupColor: '#88ccff', displayPriority: 4, icon: '🛡' },
   { kind: 'evade',     label: 'EVADE',    popupColor: '#a0a0a0', displayPriority: 3, icon: '~' },
-  { kind: 'combo',     label: 'COMBO',    popupColor: '#ff6b40', displayPriority: 1, icon: '⚡' },
-  { kind: 'crit_echo', label: 'CRIT ECHO', popupColor: '#bf5fff', displayPriority: 2, icon: '✨' },
+  { kind: 'combo',     label: 'COMBO',    popupColor: '#ffaa44', displayPriority: 1, icon: '⚡' },
+  { kind: 'crit_echo', label: 'CRIT ECHO', popupColor: '#cc88ff', displayPriority: 2, icon: '✨' },
 ];
 
 export function getCombatResultLabel(kind: CombatResultKind): CombatResultLabel | undefined {
