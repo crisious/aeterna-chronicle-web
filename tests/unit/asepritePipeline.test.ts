@@ -113,7 +113,9 @@ describe('aseprite pipeline config', () => {
   });
 });
 
-describe('aseprite executable finder', () => {
+// Windows 경로(C:\\)·path.delimiter 의존 테스트 — 비-Windows CI(ubuntu)에서는 스킵.
+// aseprite 파이프라인은 Windows dev 도구이며 find-aseprite 는 OS 기본 path 의미로 후보를 구성한다.
+describe.skipIf(process.platform !== 'win32')('aseprite executable finder', () => {
   test('ASEPRITE_EXE takes priority over PATH and default candidates when it exists and can run', async () => {
     const { findAsepriteExecutable } = await import('../../tools/aseprite-pipeline/find-aseprite.mjs');
     const asepriteExe = 'C:\\Tools\\Aseprite\\aseprite.exe';

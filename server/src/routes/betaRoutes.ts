@@ -15,17 +15,17 @@ import { requireAdmin } from '../admin/authMiddleware';
 // ─── 타입 정의 ──────────────────────────────────────────────────
 interface ValidateCodeBody {
   code: string;
-  userId: string;
+  // 보안(IDOR): actor 식별자는 body 가 아니라 인증된 request.authUserId 를 사용한다.
 }
 
 interface FeedbackBody {
-  userId: string;
   type: string;
   title: string;
   description: string;
   priority?: string;
   screenshot?: string;
   metadata?: Record<string, unknown>;
+  // 보안(IDOR): userId 는 body 에서 받지 않고 인증된 request.authUserId 를 사용한다.
 }
 
 interface GenerateBody {
@@ -62,9 +62,14 @@ export async function betaRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 초대 코드 검증 + 사용
   fastify.post<{ Body: ValidateCodeBody }>('/beta/validate-code', async (req, reply) => {
-    const { code, userId } = req.body;
-    if (!code || !userId) {
-      return reply.status(400).send({ ok: false, error: 'code와 userId 필수' });
+    // 보안(IDOR): 행위자는 인증된 토큰의 userId 로 강제(body 의 userId 신뢰 금지)
+    const userId = req.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { code } = req.body;
+    if (!code) {
+      return reply.status(400).send({ ok: false, error: 'code 필수' });
     }
     const result = await betaManager.redeemCode(code, userId);
     if (!result.valid) {
@@ -75,9 +80,14 @@ export async function betaRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 피드백 접수
   fastify.post<{ Body: FeedbackBody }>('/beta/feedback', async (req, reply) => {
-    const { userId, type, title, description, priority, screenshot, metadata } = req.body;
-    if (!userId || !type || !title || !description) {
-      return reply.status(400).send({ ok: false, error: 'userId, type, title, description 필수' });
+    // 보안(IDOR): 피드백 작성자는 인증된 토큰의 userId 로 강제(body 의 userId 신뢰 금지)
+    const userId = req.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { type, title, description, priority, screenshot, metadata } = req.body;
+    if (!type || !title || !description) {
+      return reply.status(400).send({ ok: false, error: 'type, title, description 필수' });
     }
     const validTypes = ['bug', 'feature', 'balance', 'ux', 'other'];
     if (!validTypes.includes(type)) {

@@ -31,12 +31,10 @@ interface UserIdParams {
 }
 
 interface BuyBody {
-  userId: string;
   cosmeticId: string;
 }
 
 interface EquipBody {
-  userId: string;
   cosmeticId: string;
   action: 'equip' | 'unequip';
 }
@@ -67,11 +65,15 @@ export async function cosmeticRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   // ── GET /api/cosmetics/:userId — 유저 보유 코스메틱 ───────────
+  // IDOR 방지: 경로의 :userId 를 신뢰하지 않고 인증된 행위자(request.authUserId)의
+  // 보유 코스메틱만 반환한다. (개인 데이터 조회)
   fastify.get('/api/cosmetics/:userId', async (
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const result = await getPlayerCosmetics(userId);
     return reply.send({ cosmetics: result });
   });
@@ -81,10 +83,14 @@ export async function cosmeticRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: BuyBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, cosmeticId } = request.body;
+    // IDOR 방지: body 의 userId 를 신뢰하지 않고 인증된 행위자를 구매 주체로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-    if (!userId || !cosmeticId) {
-      return reply.status(400).send({ error: 'userId와 cosmeticId는 필수입니다.' });
+    const { cosmeticId } = request.body;
+
+    if (!cosmeticId) {
+      return reply.status(400).send({ error: 'cosmeticId는 필수입니다.' });
     }
 
     try {
@@ -105,10 +111,14 @@ export async function cosmeticRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: EquipBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, cosmeticId, action } = request.body;
+    // IDOR 방지: body 의 userId 를 신뢰하지 않고 인증된 행위자를 장착 주체로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-    if (!userId || !cosmeticId || !action) {
-      return reply.status(400).send({ error: 'userId, cosmeticId, action은 필수입니다.' });
+    const { cosmeticId, action } = request.body;
+
+    if (!cosmeticId || !action) {
+      return reply.status(400).send({ error: 'cosmeticId, action은 필수입니다.' });
     }
 
     try {

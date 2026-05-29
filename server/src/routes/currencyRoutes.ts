@@ -17,7 +17,15 @@ export async function currencyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /api/currency/:userId — 잔액 조회 */
   fastify.get('/api/currency/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId } = request.params as UserIdParams;
+    // SECURITY-IDOR: 잔액은 사적 정보 — 인증된 사용자 본인만 조회 가능 (params.userId 신뢰 금지)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { userId: targetUserId } = request.params as UserIdParams;
+    if (targetUserId !== userId) {
+      return reply.status(403).send({ error: '본인의 잔액만 조회할 수 있습니다.' });
+    }
 
     try {
       const balance = await getBalance(userId);
@@ -30,7 +38,15 @@ export async function currencyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /api/currency/:userId/history — 거래 이력 */
   fastify.get('/api/currency/:userId/history', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId } = request.params as UserIdParams;
+    // SECURITY-IDOR: 거래 이력은 사적 정보 — 인증된 사용자 본인만 조회 가능 (params.userId 신뢰 금지)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { userId: targetUserId } = request.params as UserIdParams;
+    if (targetUserId !== userId) {
+      return reply.status(403).send({ error: '본인의 거래 이력만 조회할 수 있습니다.' });
+    }
     const query = request.query as HistoryQuery;
 
     try {
@@ -48,9 +64,14 @@ export async function currencyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/currency/transfer — 유저간 골드 송금 */
   fastify.post('/api/currency/transfer', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { senderId, receiverId, amount } = request.body as TransferBody;
-    if (!senderId || !receiverId || !amount) {
-      return reply.status(400).send({ error: 'senderId, receiverId, amount 필수' });
+    // SECURITY-IDOR: 송신자는 인증된 사용자로 고정 (body.senderId 신뢰 시 임의 유저 골드 탈취 가능)
+    const senderId = request.authUserId;
+    if (!senderId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { receiverId, amount } = request.body as TransferBody;
+    if (!receiverId || !amount) {
+      return reply.status(400).send({ error: 'receiverId, amount 필수' });
     }
 
     try {

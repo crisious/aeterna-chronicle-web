@@ -10,7 +10,7 @@
  * GET    /api/auction/history/:userId — 유저 거래 내역
  */
 
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { ListingCreateParams, BidParams, ListingSearchParams } from '../auction/auctionManager';
 import { auctionManager } from '../auction/auctionManager';
 
@@ -20,7 +20,7 @@ interface ListingIdParams { listingId: string }
 interface UserIdParams { userId: string }
 
 interface ListBody {
-  sellerId: string;
+  // sellerId 는 신뢰하지 않음 — 인증된 actor(request.authUserId) 사용
   itemId: string;
   slotId: string;
   quantity?: number;
@@ -31,19 +31,19 @@ interface ListBody {
 }
 
 interface BidBody {
+  // bidderId 는 신뢰하지 않음 — 인증된 actor 사용
   listingId: string;
-  bidderId: string;
   amount: number;
 }
 
 interface BuyoutBody {
+  // buyerId 는 신뢰하지 않음 — 인증된 actor 사용
   listingId: string;
-  buyerId: string;
 }
 
 interface CancelBody {
+  // userId 는 신뢰하지 않음 — 인증된 actor 사용
   listingId: string;
-  userId: string;
 }
 
 // ─── 라우트 등록 ────────────────────────────────────────────────
@@ -87,10 +87,15 @@ export async function auctionRoutes(fastify: FastifyInstance): Promise<void> {
   /** POST /api/auction/list — 매물 등록 */
   fastify.post('/api/auction/list', async (
     request: FastifyRequest<{ Body: ListBody }>,
+    reply: FastifyReply,
   ) => {
+    // 인증된 actor 를 판매자로 사용 (body 의 sellerId 신뢰 금지 — IDOR 차단)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const body = request.body;
     const params: ListingCreateParams = {
-      sellerId: body.sellerId,
+      sellerId: userId,
       itemId: body.itemId,
       slotId: body.slotId,
       quantity: body.quantity,
@@ -107,11 +112,16 @@ export async function auctionRoutes(fastify: FastifyInstance): Promise<void> {
   /** POST /api/auction/bid — 입찰 */
   fastify.post('/api/auction/bid', async (
     request: FastifyRequest<{ Body: BidBody }>,
+    reply: FastifyReply,
   ) => {
+    // 인증된 actor 를 입찰자로 사용 (body 의 bidderId 신뢰 금지 — IDOR 차단)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const body = request.body;
     const params: BidParams = {
       listingId: body.listingId,
-      bidderId: body.bidderId,
+      bidderId: userId,
       amount: body.amount,
     };
 
@@ -122,26 +132,41 @@ export async function auctionRoutes(fastify: FastifyInstance): Promise<void> {
   /** POST /api/auction/buyout — 즉시구매 */
   fastify.post('/api/auction/buyout', async (
     request: FastifyRequest<{ Body: BuyoutBody }>,
+    reply: FastifyReply,
   ) => {
-    const { listingId, buyerId } = request.body;
-    const result = await auctionManager.buyout(listingId, buyerId);
+    // 인증된 actor 를 구매자로 사용 (body 의 buyerId 신뢰 금지 — IDOR 차단)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { listingId } = request.body;
+    const result = await auctionManager.buyout(listingId, userId);
     return { success: result.ok, error: result.error, data: result.data };
   });
 
   /** POST /api/auction/cancel — 취소 */
   fastify.post('/api/auction/cancel', async (
     request: FastifyRequest<{ Body: CancelBody }>,
+    reply: FastifyReply,
   ) => {
-    const { listingId, userId } = request.body;
+    // 인증된 actor 만 본인 매물을 취소 가능 (body 의 userId 신뢰 금지 — IDOR 차단)
+    // cancelListing 내부에서 sellerId === userId 소유권 검증 수행
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { listingId } = request.body;
     const result = await auctionManager.cancelListing(listingId, userId);
     return { success: result.ok, error: result.error };
   });
 
-  /** GET /api/auction/history/:userId — 유저 거래 내역 */
+  /** GET /api/auction/history/:userId — 유저 거래 내역 (본인만 조회) */
   fastify.get('/api/auction/history/:userId', async (
     request: FastifyRequest<{ Params: UserIdParams; Querystring: { type?: string } }>,
+    reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // 사적 거래 내역 — params 의 userId 신뢰 금지, 인증된 actor 본인 내역만 반환 (IDOR 차단)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const type = (request.query as { type?: string }).type === 'buying' ? 'buying' : 'selling';
     const history = await auctionManager.getUserHistory(userId, type);
     return { success: true, data: history };

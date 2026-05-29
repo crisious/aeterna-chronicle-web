@@ -19,16 +19,19 @@ import {
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
 interface ProgressQuery {
-  playerId: string;
+  // SECURITY-IDOR: playerId 는 더 이상 actor 로 신뢰하지 않음(request.authUserId 사용). 호환용으로만 허용.
+  playerId?: string;
   weekId?: string;
 }
 
 interface EnterBody {
-  playerId: string;
+  // SECURITY-IDOR: playerId 는 더 이상 actor 로 신뢰하지 않음(request.authUserId 사용). 호환용으로만 허용.
+  playerId?: string;
 }
 
 interface CompleteFloorBody {
-  playerId: string;
+  // SECURITY-IDOR: playerId 는 더 이상 actor 로 신뢰하지 않음(request.authUserId 사용). 호환용으로만 허용.
+  playerId?: string;
   floor: number;
   clearTime: number; // 초
 }
@@ -60,18 +63,18 @@ export async function endlessDungeonRoutes(fastify: FastifyInstance): Promise<vo
 
   /**
    * GET /api/endless-dungeon/progress — 내 진행 상태
-   * ?playerId=xxx&weekId=2026-W11
+   * ?weekId=2026-W11 (actor 는 인증된 request.authUserId)
    */
   fastify.get('/api/endless-dungeon/progress', async (
     request: FastifyRequest<{ Querystring: ProgressQuery }>,
     reply: FastifyReply,
   ) => {
-    const { playerId, weekId } = request.query;
-    if (!playerId) {
-      return reply.status(400).send({ error: 'playerId는 필수입니다.' });
-    }
+    // SECURITY-IDOR: query 의 playerId 를 신뢰하지 않고 인증된 행위자(request.authUserId)만 조회한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { weekId } = request.query;
 
-    const progress = await getPlayerProgress(playerId, weekId);
+    const progress = await getPlayerProgress(userId, weekId);
     return progress;
   });
 
@@ -83,12 +86,11 @@ export async function endlessDungeonRoutes(fastify: FastifyInstance): Promise<vo
     reply: FastifyReply,
   ) => {
     try {
-      const { playerId } = request.body;
-      if (!playerId) {
-        return reply.status(400).send({ error: 'playerId는 필수입니다.' });
-      }
+      // SECURITY-IDOR: body 의 playerId 를 신뢰하지 않고 인증된 행위자(request.authUserId)로 입장한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-      const check = await canEnterEndlessDungeon(playerId);
+      const check = await canEnterEndlessDungeon(userId);
       if (!check.allowed) {
         return reply.status(403).send({ error: check.reason });
       }
@@ -116,9 +118,12 @@ export async function endlessDungeonRoutes(fastify: FastifyInstance): Promise<vo
     reply: FastifyReply,
   ) => {
     try {
-      const { playerId, floor, clearTime } = request.body;
-      if (!playerId || !floor) {
-        return reply.status(400).send({ error: 'playerId, floor는 필수입니다.' });
+      // SECURITY-IDOR: body 의 playerId 를 신뢰하지 않고 인증된 행위자(request.authUserId)로 기록을 제출한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+      const { floor, clearTime } = request.body;
+      if (!floor) {
+        return reply.status(400).send({ error: 'floor는 필수입니다.' });
       }
 
       const floorConfig = generateFloorConfig(floor);
@@ -127,7 +132,7 @@ export async function endlessDungeonRoutes(fastify: FastifyInstance): Promise<vo
 
       // 리더보드 업데이트
       await (leaderboard as any).submit({
-        playerId,
+        playerId: userId,
         playerName: '', // 실제 구현 시 유저 이름 조회
         highestFloor: floor,
         clearTime,

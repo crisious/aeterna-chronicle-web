@@ -29,7 +29,7 @@ interface ZoneParams {
 }
 
 interface BattleResultBody {
-  attackerId: string;       // 공격자(플레이어) ID
+  // attackerId 는 신뢰하지 않는다 — 인증된 행위자(request.authUserId)를 사용한다.
   attackerLevel: number;
   damage: number;
   zoneId: string;
@@ -41,9 +41,8 @@ interface BattleResultBody {
 const battleResultSchema = {
   body: {
     type: 'object' as const,
-    required: ['attackerId', 'attackerLevel', 'damage', 'zoneId', 'instanceId'],
+    required: ['attackerLevel', 'damage', 'zoneId', 'instanceId'],
     properties: {
-      attackerId: { type: 'string' as const },
       attackerLevel: { type: 'number' as const },
       damage: { type: 'number' as const },
       zoneId: { type: 'string' as const },
@@ -165,9 +164,15 @@ export async function monsterRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: MonsterIdParams; Body: BattleResultBody }>,
     reply: FastifyReply,
   ) => {
-    const { attackerId, attackerLevel, damage, zoneId, instanceId } = request.body;
+    // IDOR 방지: 공격자 ID 를 클라이언트가 지정하게 두지 않고 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
 
-    const result = spawnManager.damageMonster(zoneId, instanceId, attackerId, damage, attackerLevel);
+    const { attackerLevel, damage, zoneId, instanceId } = request.body;
+
+    const result = spawnManager.damageMonster(zoneId, instanceId, userId, damage, attackerLevel);
 
     if (!result) {
       return reply.status(404).send({ error: '해당 존에 몬스터 인스턴스를 찾을 수 없습니다.' });
@@ -176,9 +181,9 @@ export async function monsterRoutes(fastify: FastifyInstance): Promise<void> {
     // 사망 시 경험치/골드 지급 처리
     if (result.isDead && result.expReward > 0) {
       try {
-        // 캐릭터 경험치 추가
+        // 캐릭터 경험치 추가 (인증된 행위자 소유 캐릭터)
         const character = await prisma.character.findFirst({
-          where: { userId: attackerId },
+          where: { userId },
         });
         if (character) {
           await prisma.character.update({
@@ -187,10 +192,10 @@ export async function monsterRoutes(fastify: FastifyInstance): Promise<void> {
           });
         }
 
-        // 골드 추가
+        // 골드 추가 (인증된 행위자 계정)
         if (result.goldReward > 0) {
           await prisma.user.update({
-            where: { id: attackerId },
+            where: { id: userId },
             data: { gold: { increment: result.goldReward } },
           });
         }

@@ -6,6 +6,10 @@
  * - POST /api/tutorial/:userId/complete  — 단계 완료
  * - POST /api/tutorial/:userId/skip      — 스킵
  * - POST /api/tutorial/:userId/reset     — 재시청
+ *
+ * [SECURITY-IDOR] 모든 엔드포인트는 특정 유저의 개인 튜토리얼 진행 데이터를 조회/변경한다.
+ * 따라서 params 의 :userId 를 신뢰하지 않고 인증된 행위자(request.authUserId)를 actor 로 사용한다.
+ * (전역 authGate 가 비공개 라우트보다 먼저 실행되어 검증된 userId 를 주입한다.)
  */
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
@@ -36,7 +40,9 @@ export async function tutorialRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.get(
     '/api/tutorial/:userId',
     async (request: FastifyRequest<{ Params: UserIdParams }>, reply: FastifyReply) => {
-      const { userId } = request.params;
+      // [IDOR] params 의 :userId 대신 인증된 행위자를 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -66,7 +72,9 @@ export async function tutorialRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post(
     '/api/tutorial/:userId/complete',
     async (request: FastifyRequest<{ Params: UserIdParams }>, reply: FastifyReply) => {
-      const { userId } = request.params;
+      // [IDOR] params 의 :userId 대신 인증된 행위자를 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -108,7 +116,9 @@ export async function tutorialRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post(
     '/api/tutorial/:userId/skip',
     async (request: FastifyRequest<{ Params: UserIdParams }>, reply: FastifyReply) => {
-      const { userId } = request.params;
+      // [IDOR] params 의 :userId 대신 인증된 행위자를 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -138,7 +148,9 @@ export async function tutorialRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post(
     '/api/tutorial/:userId/reset',
     async (request: FastifyRequest<{ Params: UserIdParams }>, reply: FastifyReply) => {
-      const { userId } = request.params;
+      // [IDOR] params 의 :userId 대신 인증된 행위자를 사용한다.
+      const userId = request.authUserId;
+      if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
       const user = await prisma.user.findUnique({
         where: { id: userId },

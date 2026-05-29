@@ -17,7 +17,6 @@ interface UserIdParams {
 }
 
 interface CheckBody {
-  userId: string;
   type: string;
   value?: number;
   flag?: string;
@@ -70,7 +69,9 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 를 신뢰하지 않고 인증된 행위자만 자신의 달성 목록을 조회
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     const unlocks = await prisma.achievementUnlock.findMany({
       where: { userId },
@@ -100,7 +101,9 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 를 신뢰하지 않고 인증된 행위자의 진행도만 조회
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     const progress = await achievementEngine.getProgress(userId);
 
@@ -120,10 +123,14 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     request: FastifyRequest<{ Body: CheckBody }>,
     reply: FastifyReply
   ) => {
-    const { userId, type, value, flag } = request.body;
+    // IDOR 방지: body 의 userId 를 신뢰하지 않고 인증된 행위자로 체크
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
-    if (!userId || !type) {
-      return reply.status(400).send({ error: 'userId와 type은 필수입니다.' });
+    const { type, value, flag } = request.body;
+
+    if (!type) {
+      return reply.status(400).send({ error: 'type은 필수입니다.' });
     }
 
     const results = await achievementEngine.check({ userId, type, value, flag });
@@ -151,7 +158,10 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     request: FastifyRequest<{ Params: UserIdParams; Body: EquipTitleBody }>,
     reply: FastifyReply
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 를 신뢰하지 않고 인증된 행위자가 자신의 칭호만 장착
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { titleId } = request.body;
 
     if (!titleId) {

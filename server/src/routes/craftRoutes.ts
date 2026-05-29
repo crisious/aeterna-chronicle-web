@@ -5,6 +5,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { craftEngine } from '../craft/craftEngine';
 import { seedRecipes } from '../craft/recipeSeeds';
+import { requireAdmin } from '../admin/authMiddleware';
 
 // ─── 타입 정의 ──────────────────────────────────────────────
 
@@ -17,22 +18,15 @@ interface RecipeIdParams {
 }
 
 interface ExecuteBody {
-  userId: string;
   recipeId: string;
 }
 
 interface EnhanceBody {
-  userId: string;
   itemId: string;
 }
 
 interface DisassembleBody {
-  userId: string;
   itemId: string;
-}
-
-interface UserIdParams {
-  userId: string;
 }
 
 interface CraftLogQuery {
@@ -70,9 +64,12 @@ export async function craftRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: ExecuteBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, recipeId } = request.body;
-    if (!userId || !recipeId) {
-      return reply.status(400).send({ success: false, error: 'userId와 recipeId 필수' });
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+    const { recipeId } = request.body;
+    if (!recipeId) {
+      return reply.status(400).send({ success: false, error: 'recipeId 필수' });
     }
     const result = await craftEngine.executeCraft(userId, recipeId);
     return { success: true, data: result };
@@ -83,9 +80,12 @@ export async function craftRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: EnhanceBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, itemId } = request.body;
-    if (!userId || !itemId) {
-      return reply.status(400).send({ success: false, error: 'userId와 itemId 필수' });
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+    const { itemId } = request.body;
+    if (!itemId) {
+      return reply.status(400).send({ success: false, error: 'itemId 필수' });
     }
     const result = await craftEngine.enhance(userId, itemId);
     return { success: true, data: result };
@@ -96,37 +96,47 @@ export async function craftRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: DisassembleBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, itemId } = request.body;
-    if (!userId || !itemId) {
-      return reply.status(400).send({ success: false, error: 'userId와 itemId 필수' });
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+    const { itemId } = request.body;
+    if (!itemId) {
+      return reply.status(400).send({ success: false, error: 'itemId 필수' });
     }
     const result = await craftEngine.disassemble(userId, itemId);
     return { success: true, data: result };
   });
 
-  // GET /api/craft/log/:userId — 제작 이력
+  // GET /api/craft/log/:userId — 제작 이력 (본인 것만)
   fastify.get('/api/craft/log/:userId', async (
-    request: FastifyRequest<{ Params: UserIdParams; Querystring: CraftLogQuery }>,
-    _reply: FastifyReply,
+    request: FastifyRequest<{ Querystring: CraftLogQuery }>,
+    reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 :userId 를 신뢰하지 않고 인증된 행위자 본인의 이력만 조회
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
     const limit = request.query.limit ? parseInt(request.query.limit, 10) : 50;
     const logs = await craftEngine.getCraftLog(userId, limit);
     return { success: true, data: logs, count: logs.length };
   });
 
-  // GET /api/craft/mastery/:userId — 숙련도
+  // GET /api/craft/mastery/:userId — 숙련도 (본인 것만)
   fastify.get('/api/craft/mastery/:userId', async (
-    request: FastifyRequest<{ Params: UserIdParams }>,
-    _reply: FastifyReply,
+    request: FastifyRequest,
+    reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 :userId 를 신뢰하지 않고 인증된 행위자 본인의 숙련도만 조회
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
     const mastery = await craftEngine.getMastery(userId);
     return { success: true, data: mastery };
   });
 
-  // POST /api/craft/seed — 레시피 시드 실행 (개발용)
-  fastify.post('/api/craft/seed', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  // POST /api/craft/seed — 레시피 시드 실행 (개발/콘텐츠 생성용, 관리자 전용)
+  fastify.post('/api/craft/seed', { preHandler: requireAdmin('admin') }, async (
+    _request: FastifyRequest,
+    _reply: FastifyReply,
+  ) => {
     const result = await seedRecipes();
     return { success: true, data: result };
   });

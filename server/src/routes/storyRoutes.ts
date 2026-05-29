@@ -30,11 +30,12 @@ import {
 
 // ── 요청 타입 ───────────────────────────────────────────────────
 
-interface UserIdParams { userId: string; }
 interface ChapterParams { chapter: string; }
+// 라우트 경로상 :userId 세그먼트는 남아 있으나 actor 로 신뢰하지 않는다(인증 행위자 사용).
+interface UserIdParams { userId: string; }
 
+// IDOR 방지: userId 는 요청에서 받지 않고 인증된 행위자(request.authUserId)를 actor 로 사용한다.
 interface UnlockBody {
-  userId: string;
   level: number;
   completedChapters: number[];
   memoryFragments: number;
@@ -43,20 +44,17 @@ interface UnlockBody {
 }
 
 interface CutsceneTriggerBody {
-  userId: string;
   chapter: number;
   trigger: string;
 }
 
 interface FlagBody {
-  userId: string;
   chapter: number;
   key: string;
   value: string | number | boolean;
 }
 
 interface StatusBody {
-  userId: string;
   chapter: number;
   status: string;
 }
@@ -72,7 +70,9 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const progress = await getChapterProgress(userId);
     return reply.send({ chapters: progress });
   });
@@ -82,10 +82,14 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: ChapterParams; Body: UnlockBody }>,
     reply: FastifyReply,
   ) => {
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const chapter = parseInt(request.params.chapter, 10);
     const body = request.body;
 
-    if (!body.userId || isNaN(chapter)) {
+    if (isNaN(chapter)) {
       return reply.status(400).send({ error: '필수 파라미터 누락' });
     }
 
@@ -97,7 +101,7 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
       tutorialCompleted: body.tutorialCompleted ?? false,
     };
 
-    const result = await unlockChapter(body.userId, chapter, context);
+    const result = await unlockChapter(userId, chapter, context);
     if (!result.success) {
       return reply.status(403).send({ error: result.reason });
     }
@@ -109,8 +113,12 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: StatusBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, chapter, status } = request.body;
-    if (!userId || !chapter || !status) {
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { chapter, status } = request.body;
+    if (!chapter || !status) {
       return reply.status(400).send({ error: '필수 파라미터 누락' });
     }
     if (!['in_progress', 'completed'].includes(status)) {
@@ -125,7 +133,9 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const seen = await getSeenCutscenes(userId);
 
     // 갤러리: 모든 컷씬 데이터 + 시청 여부
@@ -145,8 +155,12 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: CutsceneTriggerBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, chapter, trigger } = request.body;
-    if (!userId || !chapter || !trigger) {
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { chapter, trigger } = request.body;
+    if (!chapter || !trigger) {
       return reply.status(400).send({ error: '필수 파라미터 누락' });
     }
 
@@ -162,8 +176,12 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: FlagBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, chapter, key, value } = request.body;
-    if (!userId || !chapter || !key || value === undefined) {
+    // IDOR 방지: body 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { chapter, key, value } = request.body;
+    if (!chapter || !key || value === undefined) {
       return reply.status(400).send({ error: '필수 파라미터 누락' });
     }
 
@@ -176,7 +194,9 @@ export async function storyRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: UserIdParams; Querystring: FlagsQuery }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // IDOR 방지: params 의 userId 대신 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const query = request.query as FlagsQuery;
     const chapter = query.chapter ? parseInt(query.chapter, 10) : undefined;
     const flags = await getStoryFlags(userId, chapter);
