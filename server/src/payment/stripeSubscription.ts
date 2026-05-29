@@ -137,11 +137,16 @@ export interface RefundParams {
  */
 export async function processStripeRefund(
   params: RefundParams,
+  actorUserId?: string,
 ): Promise<{ refundId: string; crystalDeducted: number }> {
   const { receiptId, reason } = params;
 
   const receipt = await prisma.paymentReceipt.findUnique({ where: { id: receiptId } });
   if (!receipt) throw new Error('영수증을 찾을 수 없습니다.');
+  // SECURITY-IDOR: actorUserId 가 주어지면 본인 영수증만 환불 허용(시스템 호출은 생략).
+  if (actorUserId && receipt.userId !== actorUserId) {
+    throw new Error('본인의 결제만 환불할 수 있습니다.');
+  }
   if (receipt.status !== 'verified') throw new Error('검증 완료된 결제만 환불 가능합니다.');
   if (receipt.platform !== 'stripe') throw new Error('Stripe 결제만 환불 가능합니다.');
 

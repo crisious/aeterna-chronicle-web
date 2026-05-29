@@ -331,6 +331,12 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post('/api/party/:id/reward', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as PartyIdParams;
     const { distribution, rewards, goldTotal } = request.body as RewardBody;
+    // SECURITY-IDOR: 인증된 파티장만 보상 분배 가능 (무인증 임의 파티 골드 지급 차단)
+    // NOTE(경제): goldTotal 을 클라이언트가 결정하는 구조 자체가 골드 발행 취약 — 서버 산정으로 후속 교정 필요.
+    const actorUserId = request.authUserId;
+    if (!actorUserId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
 
     try {
       const party = await prisma.party.findUnique({
@@ -338,6 +344,9 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
         include: { members: true },
       });
       if (!party) return reply.status(404).send({ error: '파티를 찾을 수 없습니다' });
+      if (party.leaderId !== actorUserId) {
+        return reply.status(403).send({ error: '파티장만 보상을 분배할 수 있습니다.' });
+      }
 
       const memberCount = party.members.length;
       const goldPerMember = Math.floor(goldTotal / memberCount);

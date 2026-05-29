@@ -213,10 +213,15 @@ export async function npcRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply
   ) => {
     const { id } = request.params;
-    const { userId, itemId, quantity } = request.body;
+    // SECURITY-IDOR: 구매자는 인증된 사용자로 고정 (body.userId 신뢰 시 타 유저 화폐 강제 차감 가능)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { itemId, quantity } = request.body;
 
-    if (!userId || !itemId || !quantity || quantity < 1) {
-      return reply.status(400).send({ error: 'userId, itemId, quantity(≥1)가 필요합니다.' });
+    if (!itemId || !quantity || quantity < 1) {
+      return reply.status(400).send({ error: 'itemId, quantity(≥1)가 필요합니다.' });
     }
 
     const npc = await prisma.npc.findUnique({ where: { id } });

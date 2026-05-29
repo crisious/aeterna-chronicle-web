@@ -294,6 +294,18 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
       const { id, userId } = request.params;
       const { role } = request.body;
 
+      // SECURITY-IDOR: 길드장만 멤버 역할 변경 가능 (무인증 시 누구나 자신을 leader 로 승격하는 권한 상승)
+      const actorUserId = request.authUserId;
+      if (!actorUserId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      const actor = await prisma.guildMember.findUnique({
+        where: { guildId_userId: { guildId: id, userId: actorUserId } },
+      });
+      if (!actor || actor.role !== 'leader') {
+        return reply.status(403).send({ error: '길드장만 멤버 역할을 변경할 수 있습니다.' });
+      }
+
       const member = await prisma.guildMember.findUnique({
         where: { guildId_userId: { guildId: id, userId } },
       });

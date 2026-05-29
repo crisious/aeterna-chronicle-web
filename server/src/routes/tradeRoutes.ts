@@ -90,8 +90,11 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/trade/accept — 거래 수락 */
   fastify.post('/api/trade/accept', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { tradeId, userId } = request.body as TradeIdBody;
-    if (!tradeId || !userId) return reply.status(400).send({ error: 'tradeId, userId 필수' });
+    const { tradeId } = request.body as TradeIdBody;
+    // SECURITY-IDOR: 행위 주체는 인증된 사용자로 고정 (body.userId 위조 시 타인 명의로 거래 수락/거절/확인/취소 조작 가능)
+    const userId = request.authUserId;
+    if (!tradeId) return reply.status(400).send({ error: 'tradeId 필수' });
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const trade = await prisma.trade.findUnique({ where: { id: tradeId } });
@@ -112,8 +115,11 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/trade/reject — 거래 거절 */
   fastify.post('/api/trade/reject', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { tradeId, userId } = request.body as TradeIdBody;
-    if (!tradeId || !userId) return reply.status(400).send({ error: 'tradeId, userId 필수' });
+    const { tradeId } = request.body as TradeIdBody;
+    // SECURITY-IDOR: 행위 주체는 인증된 사용자로 고정 (body.userId 위조 시 타인 명의로 거래 수락/거절/확인/취소 조작 가능)
+    const userId = request.authUserId;
+    if (!tradeId) return reply.status(400).send({ error: 'tradeId 필수' });
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const trade = await prisma.trade.findUnique({ where: { id: tradeId } });
@@ -186,8 +192,11 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/trade/confirm — 확인(양측 모두 → 거래 완료) */
   fastify.post('/api/trade/confirm', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { tradeId, userId } = request.body as TradeIdBody;
-    if (!tradeId || !userId) return reply.status(400).send({ error: 'tradeId, userId 필수' });
+    const { tradeId } = request.body as TradeIdBody;
+    // SECURITY-IDOR: 행위 주체는 인증된 사용자로 고정 (body.userId 위조 시 타인 명의로 거래 수락/거절/확인/취소 조작 가능)
+    const userId = request.authUserId;
+    if (!tradeId) return reply.status(400).send({ error: 'tradeId 필수' });
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const trade = await prisma.trade.findUnique({ where: { id: tradeId } });
@@ -261,8 +270,11 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/trade/cancel — 거래 취소 */
   fastify.post('/api/trade/cancel', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { tradeId, userId } = request.body as TradeIdBody;
-    if (!tradeId || !userId) return reply.status(400).send({ error: 'tradeId, userId 필수' });
+    const { tradeId } = request.body as TradeIdBody;
+    // SECURITY-IDOR: 행위 주체는 인증된 사용자로 고정 (body.userId 위조 시 타인 명의로 거래 수락/거절/확인/취소 조작 가능)
+    const userId = request.authUserId;
+    if (!tradeId) return reply.status(400).send({ error: 'tradeId 필수' });
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const trade = await prisma.trade.findUnique({ where: { id: tradeId } });

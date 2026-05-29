@@ -48,9 +48,14 @@ export async function currencyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/currency/transfer — 유저간 골드 송금 */
   fastify.post('/api/currency/transfer', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { senderId, receiverId, amount } = request.body as TransferBody;
-    if (!senderId || !receiverId || !amount) {
-      return reply.status(400).send({ error: 'senderId, receiverId, amount 필수' });
+    // SECURITY-IDOR: 송신자는 인증된 사용자로 고정 (body.senderId 신뢰 시 임의 유저 골드 탈취 가능)
+    const senderId = request.authUserId;
+    if (!senderId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { receiverId, amount } = request.body as TransferBody;
+    if (!receiverId || !amount) {
+      return reply.status(400).send({ error: 'receiverId, amount 필수' });
     }
 
     try {

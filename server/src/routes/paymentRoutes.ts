@@ -155,6 +155,11 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: RefundBody }>,
     reply: FastifyReply,
   ) => {
+    // SECURITY-IDOR: 인증된 본인 영수증만 환불 (무인증 임의 receiptId 환불 차단)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
     const { receiptId } = request.body;
 
     if (!receiptId) {
@@ -162,7 +167,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     try {
-      const result = await refundPayment(receiptId);
+      const result = await refundPayment(receiptId, userId);
       return reply.send(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : '환불 처리 실패';
@@ -325,6 +330,11 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: StripeRefundBody }>,
     reply: FastifyReply,
   ) => {
+    // SECURITY-IDOR: 인증된 본인 영수증만 Stripe 환불 (무인증 임의 receiptId 실환불 차단)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
     const { receiptId, reason } = request.body;
 
     if (!receiptId) {
@@ -332,7 +342,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     try {
-      const result = await processStripeRefund({ receiptId, reason });
+      const result = await processStripeRefund({ receiptId, reason }, userId);
       return reply.send(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Stripe 환불 실패';

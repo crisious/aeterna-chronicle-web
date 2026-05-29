@@ -218,12 +218,16 @@ export async function verifyAndGrant(receiptId: string, requestingUserId: string
 }
 
 /** 환불 처리 */
-export async function refundPayment(receiptId: string): Promise<{
+export async function refundPayment(receiptId: string, actorUserId?: string): Promise<{
   crystalDeducted: number;
   remainingCrystal: number;
 }> {
   const receipt = await prisma.paymentReceipt.findUnique({ where: { id: receiptId } });
   if (!receipt) throw new Error('영수증을 찾을 수 없습니다.');
+  // SECURITY-IDOR: actorUserId 가 주어지면 본인 영수증만 환불 허용(시스템 호출은 생략).
+  if (actorUserId && receipt.userId !== actorUserId) {
+    throw new Error('본인의 결제만 환불할 수 있습니다.');
+  }
   if (receipt.status !== 'verified') throw new Error('검증 완료된 결제만 환불 가능합니다.');
 
   // 유저 크리스탈 확인
