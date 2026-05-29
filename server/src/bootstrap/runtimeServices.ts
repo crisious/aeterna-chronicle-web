@@ -19,6 +19,7 @@ import { expireOverdueSanctions } from '../report/reportManager';
 import { purgeExpiredMails } from '../social/mailSystem';
 import { rateLimitMiddleware } from '../security/rateLimiter';
 import { inputValidatorMiddleware } from '../security/inputValidator';
+import { authGate } from '../security/authGate';
 import { registerErrorHandler } from '../error/errorHandler';
 import { opsAlertManager } from '../ops/opsAlertManager';
 
@@ -31,7 +32,10 @@ export async function registerMiddleware(fastify: FastifyInstance): Promise<void
 
   fastify.addHook('preHandler', rateLimitMiddleware);
   fastify.addHook('preHandler', inputValidatorMiddleware);
-  fastify.log.info('Global security middleware registered (rate limiter + input validator)');
+  // SECURITY-IDOR: 전역 인증 게이트 (deny-by-default). 공개 라우트 외에는 유효 토큰을 요구하고
+  // request.authUserId 를 주입한다. rateLimiter/inputValidator 다음에 등록해 동일 순서로 실행.
+  fastify.addHook('preHandler', authGate);
+  fastify.log.info('Global security middleware registered (rate limiter + input validator + auth gate)');
 
   fastify.addHook('onResponse', (req, reply, done) => {
     const latency = reply.elapsedTime ?? 0;

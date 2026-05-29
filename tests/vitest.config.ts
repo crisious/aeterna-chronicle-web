@@ -22,6 +22,13 @@ export default defineConfig({
     ],
     globals: true,
     environment: 'node',
+    // 서버 보안 모듈(jwtManager/authMiddleware/authGate)은 import 시점에 시크릿을 요구한다(fail-fast).
+    // 테스트용 더미 시크릿을 모듈 로드 전에 주입한다. 실제 환경에서는 .env 가 우선한다.
+    env: {
+      JWT_SECRET: process.env.JWT_SECRET ?? 'test-jwt-secret-aeterna',
+      JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET ?? 'test-jwt-refresh-aeterna',
+      JWT_ADMIN_SECRET: process.env.JWT_ADMIN_SECRET ?? 'test-jwt-admin-aeterna',
+    },
     testTimeout: 30000,
     hookTimeout: 15000,
 
