@@ -30,6 +30,7 @@ import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
 import { loadLastEra } from '../time/eraStorage';
 import { getDualTechById } from '../../../shared/types/dualTech';
 import { resolveFieldEncounter } from '../../../shared/types/chronoField';
+import { composeEscapeLog, escapeOutcomeFromResult } from '../combat/escapeNarration';
 
 // CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
 const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
@@ -1077,13 +1078,14 @@ export class BattleScene extends Phaser.Scene {
 
   private _attemptFlee(): void {
     const chance = 0.3 + (this.allySprites.filter(a => !a.isDead).length * 0.1);
-    if (Math.random() < chance) {
-      this.battleUI?.addLog('🏃 도주 성공!');
+    const succeeded = Math.random() < chance;
+    // SSOT wiring: 도주 로그 텍스트는 SCENARIO_ESCAPE_NARRATIVES 단일 출처 (escapeNarration)
+    this.battleUI?.addLog(composeEscapeLog(escapeOutcomeFromResult(succeeded)));
+    if (succeeded) {
       this._closeCommandMenu();
       this.activeCommander = null;
       this.time.delayedCall(500, () => this._exitBattle());
     } else {
-      this.battleUI?.addLog('❌ 도주 실패!');
       this._endTurn();
     }
   }
