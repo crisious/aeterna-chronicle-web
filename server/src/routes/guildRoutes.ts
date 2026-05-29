@@ -16,7 +16,6 @@ import {
 interface GuildCreateBody {
   name: string;
   tag: string;
-  leaderId: string;
   notice?: string;
 }
 
@@ -44,10 +43,6 @@ interface RoleUpdateBody {
   role: string;
 }
 
-interface JoinBody {
-  userId: string;
-}
-
 interface WarCreateBody {
   defenderId: string;
 }
@@ -67,11 +62,10 @@ interface WarParams {
 const guildCreateSchema = {
   body: {
     type: 'object' as const,
-    required: ['name', 'tag', 'leaderId'],
+    required: ['name', 'tag'],
     properties: {
       name: { type: 'string' as const, minLength: 2, maxLength: 20 },
       tag: { type: 'string' as const, minLength: 2, maxLength: 5 },
-      leaderId: { type: 'string' as const, format: 'uuid' },
       notice: { type: 'string' as const, maxLength: 500 },
     },
   },
@@ -84,16 +78,6 @@ const guildUpdateSchema = {
       name: { type: 'string' as const, minLength: 2, maxLength: 20 },
       tag: { type: 'string' as const, minLength: 2, maxLength: 5 },
       notice: { type: 'string' as const, maxLength: 500 },
-    },
-  },
-};
-
-const joinSchema = {
-  body: {
-    type: 'object' as const,
-    required: ['userId'],
-    properties: {
-      userId: { type: 'string' as const, format: 'uuid' },
     },
   },
 };
@@ -133,12 +117,37 @@ const warUpdateSchema = {
 
 export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
 
+  // ─── 권한 헬퍼 ────────────────────────────────────────────────
+  // 인증된 userId 가 해당 길드의 멤버인지(role 포함) 조회. 멤버 아니면 null.
+  async function getGuildMembership(
+    guildId: string,
+    userId: string,
+  ): Promise<{ role: string } | null> {
+    const member = await prisma.guildMember.findUnique({
+      where: { guildId_userId: { guildId, userId } },
+      select: { role: true },
+    });
+    return member;
+  }
+
+  // 인증된 userId 가 길드의 운영진(leader/officer)인지
+  async function isGuildManager(guildId: string, userId: string): Promise<boolean> {
+    const membership = await getGuildMembership(guildId, userId);
+    return membership?.role === 'leader' || membership?.role === 'officer';
+  }
+
   // ── POST /api/guilds — 길드 생성 ──────────────────────────────
   fastify.post<{ Body: GuildCreateBody }>(
     '/api/guilds',
     { schema: guildCreateSchema },
     async (request: FastifyRequest<{ Body: GuildCreateBody }>, reply: FastifyReply) => {
-      const { name, tag, leaderId, notice } = request.body;
+      // SECURITY-IDOR: 길드장은 항상 인증된 사용자여야 한다(body 의 leaderId 신뢰 금지)
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      const { name, tag, notice } = request.body;
+      const leaderId = userId;
 
       // 중복 검사 (name, tag)
       const existing = await prisma.guild.findFirst({
@@ -207,13 +216,20 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
     '/api/guilds/:id',
     { schema: guildUpdateSchema },
     async (request: FastifyRequest<{ Params: GuildIdParams; Body: GuildUpdateBody }>, reply: FastifyReply) => {
+      // SECURITY-IDOR: 인증된 사용자가 해당 길드의 길드장일 때만 정보 수정 허용
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
       const { id } = request.params;
       const { name, tag, notice } = request.body;
 
-      // 리더 확인은 실 인증 미들웨어 연동 전까지 leaderId 직접 비교로 처리
       const guild = await prisma.guild.findUnique({ where: { id } });
       if (!guild) {
         return reply.status(404).send({ error: '길드를 찾을 수 없습니다.' });
+      }
+      if (guild.leaderId !== userId) {
+        return reply.status(403).send({ error: '길드장만 길드 정보를 수정할 수 있습니다.' });
       }
 
       const updated = await prisma.guild.update({
@@ -229,12 +245,15 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
   );
 
   // ── POST /api/guilds/:id/join — 가입 신청 ────────────────────
-  fastify.post<{ Params: GuildIdParams; Body: JoinBody }>(
+  fastify.post<{ Params: GuildIdParams }>(
     '/api/guilds/:id/join',
-    { schema: joinSchema },
-    async (request: FastifyRequest<{ Params: GuildIdParams; Body: JoinBody }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: GuildIdParams }>, reply: FastifyReply) => {
+      // SECURITY-IDOR: 인증된 사용자 본인만 가입(body 의 userId 신뢰 금지)
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
       const { id } = request.params;
-      const { userId } = request.body;
 
       const guild = await prisma.guild.findUnique({
         where: { id },
@@ -267,6 +286,18 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
     '/api/guilds/:id/members/:userId',
     async (request: FastifyRequest<{ Params: MemberParams }>, reply: FastifyReply) => {
       const { id, userId } = request.params;
+
+      // SECURITY-IDOR: 본인 탈퇴는 본인만, 타인 추방은 운영진(leader/officer)만 가능
+      const actorUserId = request.authUserId;
+      if (!actorUserId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      if (actorUserId !== userId) {
+        const actorIsManager = await isGuildManager(id, actorUserId);
+        if (!actorIsManager) {
+          return reply.status(403).send({ error: '본인 탈퇴 또는 길드 운영진만 멤버를 추방할 수 있습니다.' });
+        }
+      }
 
       const member = await prisma.guildMember.findUnique({
         where: { guildId_userId: { guildId: id, userId } },
@@ -329,6 +360,15 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
       const { id } = request.params;
       const { defenderId } = request.body;
 
+      // SECURITY-IDOR: 공격 길드의 운영진(leader/officer)만 전쟁 선포 가능
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      if (!(await isGuildManager(id, userId))) {
+        return reply.status(403).send({ error: '길드 운영진만 전쟁을 선포할 수 있습니다.' });
+      }
+
       if (id === defenderId) {
         return reply.status(400).send({ error: '자기 길드에 전쟁을 선포할 수 없습니다.' });
       }
@@ -370,9 +410,24 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
       const { warId } = request.params;
       const { attackerScore, defenderScore, status } = request.body;
 
+      // SECURITY-IDOR: 인증 필수
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+
       const war = await prisma.guildWar.findUnique({ where: { id: warId } });
       if (!war) {
         return reply.status(404).send({ error: '길드전을 찾을 수 없습니다.' });
+      }
+
+      // 참전 길드(공격/방어)의 운영진만 점수/상태를 수정할 수 있다
+      const [attackerManager, defenderManager] = await Promise.all([
+        isGuildManager(war.attackerId, userId),
+        isGuildManager(war.defenderId, userId),
+      ]);
+      if (!attackerManager && !defenderManager) {
+        return reply.status(403).send({ error: '참전 길드의 운영진만 길드전을 수정할 수 있습니다.' });
       }
 
       const data: Record<string, unknown> = {};
@@ -402,6 +457,15 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const { id } = request.params;
       const { source, multiplier } = request.body;
+
+      // SECURITY-IDOR: 길드 운영진(leader/officer)만 경험치 부여 가능
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      if (!(await isGuildManager(id, userId))) {
+        return reply.status(403).send({ error: '길드 운영진만 경험치를 부여할 수 있습니다.' });
+      }
 
       const validSources: XpSource[] = ['DUNGEON_CLEAR', 'GUILD_QUEST', 'RAID_CLEAR', 'WAR_WIN'];
       if (!validSources.includes(source as XpSource)) {
@@ -454,6 +518,15 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
       const { id } = request.params;
       const { skillCode } = request.body;
 
+      // SECURITY-IDOR: 길드 운영진(leader/officer)만 스킬 업그레이드 가능
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      if (!(await isGuildManager(id, userId))) {
+        return reply.status(403).send({ error: '길드 운영진만 스킬을 업그레이드할 수 있습니다.' });
+      }
+
       if (!skillCode) {
         return reply.status(400).send({ error: 'skillCode 필수' });
       }
@@ -474,7 +547,18 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post<{ Params: GuildIdParams }>(
     '/api/guilds/:id/war/declare',
     async (request, reply) => {
-      const result = await declareGuildWar(request.params.id);
+      const { id } = request.params;
+
+      // SECURITY-IDOR: 길드 운영진(leader/officer)만 전쟁 선포 가능
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+      if (!(await isGuildManager(id, userId))) {
+        return reply.status(403).send({ error: '길드 운영진만 전쟁을 선포할 수 있습니다.' });
+      }
+
+      const result = await declareGuildWar(id);
       if (!result.success) {
         return reply.status(400).send({ error: result.error });
       }
@@ -508,8 +592,29 @@ export async function guildRoutes(fastify: FastifyInstance): Promise<void> {
       const { warId } = request.params;
       const { fortressId, guildId, damage } = request.body;
 
+      // SECURITY-IDOR: 인증된 사용자가 자신이 소속된 길드(guildId) 명의로만 거점 공격 가능
+      const userId = request.authUserId;
+      if (!userId) {
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
+      }
+
       if (!fortressId || !guildId || damage == null) {
         return reply.status(400).send({ error: 'fortressId, guildId, damage 필수' });
+      }
+
+      // body 의 guildId 신뢰 금지: 호출자가 해당 길드의 멤버인지 확인
+      const membership = await getGuildMembership(guildId, userId);
+      if (!membership) {
+        return reply.status(403).send({ error: '소속 길드 명의로만 거점을 공격할 수 있습니다.' });
+      }
+
+      // 해당 길드가 이 전쟁의 참전 길드(공격/방어)인지 확인
+      const war = await prisma.guildWar.findUnique({ where: { id: warId } });
+      if (!war) {
+        return reply.status(404).send({ error: '전쟁을 찾을 수 없습니다' });
+      }
+      if (war.attackerId !== guildId && war.defenderId !== guildId) {
+        return reply.status(403).send({ error: '참전 길드만 거점을 공격할 수 있습니다.' });
       }
 
       const result = await attackFortress(warId, fortressId, guildId, damage);

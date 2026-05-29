@@ -17,7 +17,15 @@ export async function currencyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /api/currency/:userId — 잔액 조회 */
   fastify.get('/api/currency/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId } = request.params as UserIdParams;
+    // SECURITY-IDOR: 잔액은 사적 정보 — 인증된 사용자 본인만 조회 가능 (params.userId 신뢰 금지)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { userId: targetUserId } = request.params as UserIdParams;
+    if (targetUserId !== userId) {
+      return reply.status(403).send({ error: '본인의 잔액만 조회할 수 있습니다.' });
+    }
 
     try {
       const balance = await getBalance(userId);
@@ -30,7 +38,15 @@ export async function currencyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /api/currency/:userId/history — 거래 이력 */
   fastify.get('/api/currency/:userId/history', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId } = request.params as UserIdParams;
+    // SECURITY-IDOR: 거래 이력은 사적 정보 — 인증된 사용자 본인만 조회 가능 (params.userId 신뢰 금지)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { userId: targetUserId } = request.params as UserIdParams;
+    if (targetUserId !== userId) {
+      return reply.status(403).send({ error: '본인의 거래 이력만 조회할 수 있습니다.' });
+    }
     const query = request.query as HistoryQuery;
 
     try {

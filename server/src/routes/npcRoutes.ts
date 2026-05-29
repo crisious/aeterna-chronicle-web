@@ -110,11 +110,12 @@ export async function npcRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply
   ) => {
     const { id } = request.params;
-    const { userId, dialogueNodeId } = request.body;
-
+    // SECURITY-IDOR: 대화 행위자는 인증된 사용자로 고정 (body.userId 신뢰 시 타 유저 호감도 조작 가능)
+    const userId = request.authUserId;
     if (!userId) {
-      return reply.status(400).send({ error: 'userId가 필요합니다.' });
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
+    const { dialogueNodeId } = request.body;
 
     const npc = await prisma.npc.findUnique({ where: { id } });
     if (!npc) {
@@ -157,10 +158,15 @@ export async function npcRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply
   ) => {
     const { id } = request.params;
-    const { userId, itemId } = request.body;
+    // SECURITY-IDOR: 선물 행위자는 인증된 사용자로 고정 (body.userId 신뢰 시 타 유저 호감도 조작 가능)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+    const { itemId } = request.body;
 
-    if (!userId || !itemId) {
-      return reply.status(400).send({ error: 'userId와 itemId가 필요합니다.' });
+    if (!itemId) {
+      return reply.status(400).send({ error: 'itemId가 필요합니다.' });
     }
 
     const npc = await prisma.npc.findUnique({ where: { id } });
@@ -193,7 +199,12 @@ export async function npcRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: AffinityParams }>,
     reply: FastifyReply
   ) => {
-    const { id, userId } = request.params;
+    const { id } = request.params;
+    // SECURITY-IDOR: 사적 호감도 조회는 인증된 사용자 본인 기준으로 고정 (params.userId 신뢰 시 타 유저 진척도 열람 가능)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
 
     const npc = await prisma.npc.findUnique({ where: { id } });
     if (!npc) {
