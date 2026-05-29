@@ -13,17 +13,11 @@ import { dialogueRunner } from '../dialogue/dialogueRunner';
 // ── 요청 타입 정의 ──────────────────────────────────────────────
 
 interface StartBody {
-  userId: string;
   npcId: string;
 }
 
 interface ChooseBody {
-  userId: string;
   choiceId: string;
-}
-
-interface HistoryParams {
-  userId: string;
 }
 
 interface HistoryQuery {
@@ -39,12 +33,18 @@ export async function dialogueRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: StartBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, npcId } = request.body;
+    // 행위자는 인증된 사용자로 고정한다(body 의 userId 신뢰 금지 → IDOR 차단).
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+    }
 
-    if (!userId || !npcId) {
+    const { npcId } = request.body;
+
+    if (!npcId) {
       return reply.status(400).send({
         success: false,
-        error: 'userId와 npcId는 필수입니다.',
+        error: 'npcId는 필수입니다.',
       });
     }
 
@@ -62,12 +62,18 @@ export async function dialogueRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: ChooseBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, choiceId } = request.body;
+    // 행위자는 인증된 사용자로 고정한다(body 의 userId 신뢰 금지 → IDOR 차단).
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+    }
 
-    if (!userId || !choiceId) {
+    const { choiceId } = request.body;
+
+    if (!choiceId) {
       return reply.status(400).send({
         success: false,
-        error: 'userId와 choiceId는 필수입니다.',
+        error: 'choiceId는 필수입니다.',
       });
     }
 
@@ -82,10 +88,15 @@ export async function dialogueRoutes(fastify: FastifyInstance): Promise<void> {
 
   // ── GET /api/dialogue/history/:userId — 대화 이력 ────────────
   fastify.get('/api/dialogue/history/:userId', async (
-    request: FastifyRequest<{ Params: HistoryParams; Querystring: HistoryQuery }>,
-    _reply: FastifyReply,
+    request: FastifyRequest<{ Querystring: HistoryQuery }>,
+    reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    // 사적 데이터(대화 이력) 조회: params 의 userId 를 신뢰하지 않고 인증된 사용자만 조회한다 → IDOR 차단.
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+    }
+
     const limit = parseInt(request.query.limit ?? '50', 10);
 
     const history = await dialogueRunner.getHistory(userId, Math.min(limit, 200));

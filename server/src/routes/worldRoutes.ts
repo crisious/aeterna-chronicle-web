@@ -28,10 +28,6 @@ interface MoveBody {
   targetZoneCode: string;
 }
 
-interface LocationParams {
-  userId: string;
-}
-
 interface TeleportBody {
   userId: string;
   targetZoneCode: string;
@@ -39,10 +35,11 @@ interface TeleportBody {
 
 // ─── 스키마 ─────────────────────────────────────────────────────
 
+// [IDOR] actor 는 request.authUserId 로 강제하므로 body 의 userId 는 요구하지 않는다(전송돼도 무시).
 const moveSchema = {
   body: {
     type: 'object' as const,
-    required: ['userId', 'targetZoneCode'],
+    required: ['targetZoneCode'],
     properties: {
       userId: { type: 'string' as const },
       targetZoneCode: { type: 'string' as const },
@@ -53,7 +50,7 @@ const moveSchema = {
 const teleportSchema = {
   body: {
     type: 'object' as const,
-    required: ['userId', 'targetZoneCode'],
+    required: ['targetZoneCode'],
     properties: {
       userId: { type: 'string' as const },
       targetZoneCode: { type: 'string' as const },
@@ -117,7 +114,10 @@ export async function worldRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 존 이동
   fastify.post('/api/world/move', { schema: moveSchema }, async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId, targetZoneCode } = request.body as MoveBody;
+    // [IDOR] body 의 userId 를 신뢰하지 말고 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { targetZoneCode } = request.body as MoveBody;
     const result = await worldManager.moveToZone(userId, targetZoneCode);
     if (!result.ok) return reply.status(400).send(result);
     return reply.send(result);
@@ -125,7 +125,9 @@ export async function worldRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 현재 위치
   fastify.get('/api/world/location/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId } = request.params as LocationParams;
+    // [IDOR] params 의 userId 를 신뢰하지 말고 인증된 행위자의 위치만 조회한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const location = await worldManager.getPlayerLocation(userId);
     if (!location) return reply.status(404).send({ ok: false, error: '위치 정보가 없습니다.' });
     return reply.send({ ok: true, location });
@@ -133,7 +135,10 @@ export async function worldRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 텔레포트
   fastify.post('/api/world/teleport', { schema: teleportSchema }, async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId, targetZoneCode } = request.body as TeleportBody;
+    // [IDOR] body 의 userId 를 신뢰하지 말고 인증된 행위자를 actor 로 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { targetZoneCode } = request.body as TeleportBody;
     const result = await worldManager.teleportToHub(userId, targetZoneCode);
     if (!result.ok) return reply.status(400).send(result);
     return reply.send(result);

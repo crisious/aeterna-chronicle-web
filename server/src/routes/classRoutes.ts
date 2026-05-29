@@ -5,6 +5,7 @@
 // GET  /api/class/skills/:advancedClass — 전직 스킬 목록
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { prisma } from '../db';
 import { advancementEngine } from '../class/advancementEngine';
 import { enforceClassGate } from '../class/memoryDestroyerGate';
 
@@ -70,6 +71,10 @@ export async function classRoutes(fastify: FastifyInstance): Promise<void> {
     '/api/class/advance',
     async (request, reply) => {
       try {
+        // SECURITY-IDOR: 인증된 행위자만 자기 캐릭터를 전직시킬 수 있다.
+        const userId = request.authUserId;
+        if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+
         const { characterId, baseClass, targetTier, completedQuests } = request.body;
 
         // 필수 파라미터 검증
@@ -85,6 +90,19 @@ export async function classRoutes(fastify: FastifyInstance): Promise<void> {
             success: false,
             error: 'targetTier는 1~3 사이 값이어야 합니다',
           });
+        }
+
+        // SECURITY-IDOR: characterId는 공격자 제어 식별자이므로, 해당 캐릭터가
+        // 인증된 사용자 소유(Character.userId === authUserId)인지 검증한다.
+        const ownedCharacter = await prisma.character.findUnique({
+          where: { id: characterId },
+          select: { userId: true },
+        });
+        if (!ownedCharacter) {
+          return reply.status(404).send({ success: false, error: '캐릭터를 찾을 수 없습니다' });
+        }
+        if (ownedCharacter.userId !== userId) {
+          return reply.status(403).send({ success: false, error: '해당 캐릭터에 대한 권한이 없습니다.' });
         }
 
         // P11-16: 기억파괴자 챕터6 게이트 검증
@@ -150,7 +168,23 @@ export async function classRoutes(fastify: FastifyInstance): Promise<void> {
     '/api/class/gate/:accountId/:classCode',
     async (request, reply) => {
       try {
-        const { accountId, classCode } = request.params;
+        // SECURITY-IDOR: 사적 데이터(계정별 해금 상태) 조회이므로 인증 필수.
+        const userId = request.authUserId;
+        if (!userId) return reply.status(401).send({ success: false, error: '인증이 필요합니다.' });
+
+        const { classCode } = request.params;
+
+        // SECURITY-IDOR: URL의 accountId(공격자 제어)를 신뢰하지 않고, 인증된 사용자의
+        // 캐릭터에서 accountId를 역참조해 actor로 사용한다.
+        const ownChar = await prisma.character.findFirst({
+          where: { userId },
+          select: { accountId: true },
+        });
+        const accountId = ownChar?.accountId;
+        if (!accountId) {
+          return reply.status(404).send({ success: false, error: '계정에 캐릭터가 존재하지 않습니다.' });
+        }
+
         const gateResult = await enforceClassGate(accountId, classCode);
 
         if (gateResult === null) {

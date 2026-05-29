@@ -26,7 +26,6 @@ interface DungeonCodeParams {
 
 interface EnterBody {
   dungeonCode: string;
-  leaderId: string;
   memberIds?: string[];
 }
 
@@ -35,12 +34,7 @@ interface RunIdParams {
 }
 
 interface AdvanceBody {
-  userId: string;
   damageDealt?: number;
-}
-
-interface HistoryParams {
-  userId: string;
 }
 
 // ─── 스키마 ─────────────────────────────────────────────────────
@@ -48,10 +42,9 @@ interface HistoryParams {
 const enterSchema = {
   body: {
     type: 'object' as const,
-    required: ['dungeonCode', 'leaderId'],
+    required: ['dungeonCode'],
     properties: {
       dungeonCode: { type: 'string' as const },
-      leaderId: { type: 'string' as const },
       memberIds: { type: 'array' as const, items: { type: 'string' as const } },
     },
   },
@@ -60,9 +53,7 @@ const enterSchema = {
 const advanceSchema = {
   body: {
     type: 'object' as const,
-    required: ['userId'],
     properties: {
-      userId: { type: 'string' as const },
       damageDealt: { type: 'number' as const },
     },
   },
@@ -95,16 +86,22 @@ export async function dungeonRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 던전 입장
   fastify.post('/api/dungeons/enter', { schema: enterSchema }, async (request: FastifyRequest, reply: FastifyReply) => {
-    const { dungeonCode, leaderId, memberIds } = request.body as EnterBody;
-    const result = await dungeonManager.enter(dungeonCode, leaderId, memberIds ?? []);
+    // SECURITY-IDOR: 리더(actor)는 body 가 아닌 인증된 사용자로 강제한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ ok: false, error: '인증이 필요합니다.' });
+    const { dungeonCode, memberIds } = request.body as EnterBody;
+    const result = await dungeonManager.enter(dungeonCode, userId, memberIds ?? []);
     if (!result.ok) return reply.status(400).send(result);
     return reply.send(result);
   });
 
   // 웨이브 진행
   fastify.post('/api/dungeons/runs/:id/advance', { schema: advanceSchema }, async (request: FastifyRequest, reply: FastifyReply) => {
+    // SECURITY-IDOR: 데미지를 기록할 actor 는 body 가 아닌 인증된 사용자로 강제한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ ok: false, error: '인증이 필요합니다.' });
     const { id } = request.params as RunIdParams;
-    const { userId, damageDealt } = request.body as AdvanceBody;
+    const { damageDealt } = request.body as AdvanceBody;
     const result = await dungeonManager.advanceWave(id, userId, damageDealt ?? 0);
     if (!result.ok) return reply.status(400).send(result);
     return reply.send(result);
@@ -112,15 +109,27 @@ export async function dungeonRoutes(fastify: FastifyInstance): Promise<void> {
 
   // 클리어 처리
   fastify.post('/api/dungeons/runs/:id/clear', async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ ok: false, error: '인증이 필요합니다.' });
     const { id } = request.params as RunIdParams;
+
+    // SECURITY-IDOR: runId 는 공격자 제어값이므로 런 소유자(리더)가 본인인지 검증한다.
+    const run = await prisma.dungeonRun.findUnique({ where: { id }, select: { leaderId: true } });
+    if (!run) return reply.status(404).send({ ok: false, error: '런을 찾을 수 없습니다.' });
+    if (run.leaderId !== userId) {
+      return reply.status(403).send({ ok: false, error: '본인 런이 아닙니다.' });
+    }
+
     const result = await dungeonManager.clear(id);
     if ('ok' in result && !result.ok) return reply.status(400).send(result);
     return reply.send({ ok: true, result });
   });
 
-  // 유저별 클리어 이력
+  // 유저별 클리어 이력 (본인 것만 조회)
   fastify.get('/api/dungeons/history/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId } = request.params as HistoryParams;
+    // SECURITY-IDOR: 사적 데이터이므로 params.userId 를 무시하고 인증된 본인 이력만 반환한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ ok: false, error: '인증이 필요합니다.' });
     const runs = await prisma.dungeonRun.findMany({
       where: { leaderId: userId },
       orderBy: { startedAt: 'desc' },

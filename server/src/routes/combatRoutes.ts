@@ -75,7 +75,7 @@ interface ActiveEffectsParams {
 }
 
 interface RecordSkillBody {
-  playerId: string;
+  // playerId 는 더 이상 신뢰하지 않는다(actor = 인증된 authUserId).
   skillCode: string;
   classId: string;
   hitCount?: number;
@@ -92,8 +92,12 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
   // 상태이상/버프 적용 요청
   fastify.post('/combat/apply-effect', async (
     request: FastifyRequest<{ Body: ApplyEffectBody }>,
-    _reply: FastifyReply,
+    reply: FastifyReply,
   ) => {
+    // 보안(IDOR): actor 는 body 가 아니라 인증된 request.authUserId 를 신뢰한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const {
       effectId, sourceId, targetId,
       applyChance, value, duration, targetResist,
@@ -125,8 +129,12 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
   // 특정 대상의 활성 상태이상/버프 조회
   fastify.get('/combat/active-effects/:targetId', async (
     request: FastifyRequest<{ Params: ActiveEffectsParams }>,
-    _reply: FastifyReply,
+    reply: FastifyReply,
   ) => {
+    // 보안(IDOR): 임의 대상 상태이상 조회 — 최소한 인증을 강제한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { targetId } = request.params;
 
     return {
@@ -158,8 +166,12 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
   // 정화 스킬용: 대상의 모든 디버프 제거
   fastify.post('/combat/purge-debuffs', async (
     request: FastifyRequest<{ Body: { targetId: string } }>,
-    _reply: FastifyReply,
+    reply: FastifyReply,
   ) => {
+    // 보안(IDOR): 디버프 제거 — 최소한 인증을 강제한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { targetId } = request.body;
     const removed = statusEffectManager.purgeDebuffs(targetId);
     return {
@@ -173,12 +185,16 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
   // 스킬 사용 기록 + 콤보 판정
   fastify.post('/combat/record-skill', async (
     request: FastifyRequest<{ Body: RecordSkillBody }>,
-    _reply: FastifyReply,
+    reply: FastifyReply,
   ) => {
-    const { playerId, skillCode, classId, hitCount } = request.body;
+    // 보안(IDOR): 콤보 추적 actor 는 body.playerId 가 아니라 인증된 authUserId 를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { skillCode, classId, hitCount } = request.body;
 
     const result = comboManager.recordSkillUse(
-      playerId,
+      userId,
       skillCode,
       classId,
       hitCount ?? 1,
@@ -197,7 +213,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       hitCount: result.hitCount,
       totalMultiplier: result.totalMultiplier,
       chainLabel: result.chainLabel,
-      hints: comboManager.getNextHint(playerId, classId),
+      hints: comboManager.getNextHint(userId, classId),
     };
   });
 
@@ -508,6 +524,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: CombatActionBody }>,
     reply: FastifyReply,
   ) => {
+    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { combatId, action } = request.body;
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
@@ -603,6 +623,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
+    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { combatId } = request.params;
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
@@ -619,6 +643,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
+    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { combatId } = request.params;
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
@@ -639,6 +667,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
+    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { combatId } = request.params;
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
@@ -662,6 +694,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
+    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { combatId } = request.params;
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
@@ -681,6 +717,10 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
+    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const { combatId } = request.params;
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {

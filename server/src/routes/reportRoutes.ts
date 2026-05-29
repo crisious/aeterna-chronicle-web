@@ -24,7 +24,7 @@ import { requireAdmin, getAdminUser } from '../admin/authMiddleware';
 // ─── 타입 ────────────────────────────────────────────────────────
 
 interface ReportBody {
-  reporterId: string;
+  // reporterId 는 body 에서 받지 않는다 — 인증된 행위자(request.authUserId)를 신고자로 사용한다(IDOR 방지).
   targetId: string;
   type: ReportType;
   description: string;
@@ -64,10 +64,14 @@ interface LiftBody {
 export async function reportRoutes(fastify: FastifyInstance): Promise<void> {
   // ── 유저용: 신고 접수 ──
   fastify.post('/api/report', async (request: FastifyRequest, reply: FastifyReply) => {
+    // 신고자는 공격자 제어 식별자(body.reporterId)가 아니라 인증된 행위자를 사용한다(IDOR 방지).
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
     const body = request.body as ReportBody;
 
-    if (!body.reporterId || !body.targetId || !body.type || !body.description) {
-      return reply.status(400).send({ error: '필수 필드 누락 (reporterId, targetId, type, description)' });
+    if (!body.targetId || !body.type || !body.description) {
+      return reply.status(400).send({ error: '필수 필드 누락 (targetId, type, description)' });
     }
 
     const validTypes: ReportType[] = [
@@ -78,7 +82,13 @@ export async function reportRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     try {
-      const result = await createReport(body);
+      const result = await createReport({
+        reporterId: userId,
+        targetId: body.targetId,
+        type: body.type,
+        description: body.description,
+        evidence: body.evidence,
+      });
       if (result.duplicate) {
         return reply.status(409).send({ error: '동일 대상에 대한 대기 중 신고가 이미 존재합니다.', report: result.report });
       }

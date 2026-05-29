@@ -18,25 +18,23 @@ import { prisma } from '../db';
 
 // ── 타입 정의 ──────────────────────────────────────────────────
 
+// 보안(IDOR): actor 식별자(inviterId/leaderId/userId)는 body 가 아니라
+// 전역 authGate 가 주입한 request.authUserId 를 사용한다. 따라서 body 타입에서 제거.
 interface InviteBody {
   partyId: string;
-  inviterId: string;
   targetUserId: string;
 }
 
 interface InviteResponseBody {
   inviteId: string;
-  userId: string;
 }
 
 interface DisbandBody {
   partyId: string;
-  leaderId: string;
 }
 
 interface KickBody {
   partyId: string;
-  leaderId: string;
   targetUserId: string;
 }
 
@@ -53,7 +51,6 @@ interface PartyIdParams {
 }
 
 interface ReadyBody {
-  userId: string;
   ready: boolean;
 }
 
@@ -78,9 +75,12 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/party/invite — 파티 초대 발송 */
   fastify.post('/api/party/invite', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { partyId, inviterId, targetUserId } = request.body as InviteBody;
-    if (!partyId || !inviterId || !targetUserId) {
-      return reply.status(400).send({ error: 'partyId, inviterId, targetUserId 필수' });
+    // 보안(IDOR): 초대자(actor)는 body 가 아니라 인증된 authUserId 를 사용한다.
+    const inviterId = request.authUserId;
+    if (!inviterId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { partyId, targetUserId } = request.body as InviteBody;
+    if (!partyId || !targetUserId) {
+      return reply.status(400).send({ error: 'partyId, targetUserId 필수' });
     }
 
     try {
@@ -121,8 +121,11 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/party/invite/accept — 초대 수락 */
   fastify.post('/api/party/invite/accept', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { inviteId, userId } = request.body as InviteResponseBody;
-    if (!inviteId || !userId) return reply.status(400).send({ error: 'inviteId, userId 필수' });
+    // 보안(IDOR): 수락자(actor)는 body 가 아니라 인증된 authUserId 를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { inviteId } = request.body as InviteResponseBody;
+    if (!inviteId) return reply.status(400).send({ error: 'inviteId 필수' });
 
     try {
       const invite = await prisma.partyInvite.findUnique({ where: { id: inviteId } });
@@ -155,8 +158,11 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/party/invite/reject — 초대 거절 */
   fastify.post('/api/party/invite/reject', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { inviteId, userId } = request.body as InviteResponseBody;
-    if (!inviteId || !userId) return reply.status(400).send({ error: 'inviteId, userId 필수' });
+    // 보안(IDOR): 거절자(actor)는 body 가 아니라 인증된 authUserId 를 사용한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { inviteId } = request.body as InviteResponseBody;
+    if (!inviteId) return reply.status(400).send({ error: 'inviteId 필수' });
 
     try {
       const invite = await prisma.partyInvite.findUnique({ where: { id: inviteId } });
@@ -175,8 +181,11 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/party/disband — 파티 해산 (리더 전용) */
   fastify.post('/api/party/disband', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { partyId, leaderId } = request.body as DisbandBody;
-    if (!partyId || !leaderId) return reply.status(400).send({ error: 'partyId, leaderId 필수' });
+    // 보안(IDOR): 해산 요청자(actor)는 body 가 아니라 인증된 authUserId 를 사용한다.
+    const leaderId = request.authUserId;
+    if (!leaderId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { partyId } = request.body as DisbandBody;
+    if (!partyId) return reply.status(400).send({ error: 'partyId 필수' });
 
     try {
       const party = await prisma.party.findUnique({ where: { id: partyId } });
@@ -197,9 +206,12 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/party/kick — 멤버 추방 (리더 전용) */
   fastify.post('/api/party/kick', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { partyId, leaderId, targetUserId } = request.body as KickBody;
-    if (!partyId || !leaderId || !targetUserId) {
-      return reply.status(400).send({ error: 'partyId, leaderId, targetUserId 필수' });
+    // 보안(IDOR): 추방 요청자(actor)는 body 가 아니라 인증된 authUserId 를 사용한다.
+    const leaderId = request.authUserId;
+    if (!leaderId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { partyId, targetUserId } = request.body as KickBody;
+    if (!partyId || !targetUserId) {
+      return reply.status(400).send({ error: 'partyId, targetUserId 필수' });
     }
 
     try {
@@ -254,6 +266,9 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /api/party/:id/combat — 파티 전투 상태 조회 */
   fastify.get('/api/party/:id/combat', async (request: FastifyRequest, reply: FastifyReply) => {
+    // 보안(IDOR): 사적 전투 상태 조회 — 인증된 파티 멤버만 열람 가능.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { id } = request.params as PartyIdParams;
 
     try {
@@ -279,6 +294,11 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
       });
 
       if (!party) return reply.status(404).send({ error: '파티를 찾을 수 없습니다' });
+
+      // 본인이 해당 파티의 멤버(또는 리더)인지 검증
+      const isMember = party.leaderId === userId
+        || ((party as any).members as any[]).some(m => m.userId === userId);
+      if (!isMember) return reply.status(403).send({ error: '파티 멤버만 조회할 수 있습니다.' });
 
       const combatState = ((party as any).members as any[]).map(m => {
         const char = m.user.characters[0];
@@ -307,11 +327,18 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/party/:id/ready — 전투 준비 토글 */
   fastify.post('/api/party/:id/ready', async (request: FastifyRequest, reply: FastifyReply) => {
+    // 보안(IDOR): 준비 상태를 토글하는 actor 는 body 가 아니라 인증된 authUserId 를 사용한다.
+    // 자신의 멤버십에만 영향을 주므로 본인 식별자로 강제한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const { id } = request.params as PartyIdParams;
-    const { userId, ready } = request.body as ReadyBody;
-    if (!userId) return reply.status(400).send({ error: 'userId 필수' });
+    const { ready } = request.body as ReadyBody;
 
     try {
+      // 본인이 해당 파티의 멤버인지 확인
+      const membership = await prisma.partyMember.findFirst({ where: { partyId: id, userId } });
+      if (!membership) return reply.status(403).send({ error: '파티 멤버만 준비 상태를 변경할 수 있습니다.' });
+
       await prisma.partyMember.updateMany({
         where: { partyId: id, userId },
         data: { combatReady: ready },
@@ -331,6 +358,12 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post('/api/party/:id/reward', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as PartyIdParams;
     const { distribution, rewards, goldTotal } = request.body as RewardBody;
+    // SECURITY-IDOR: 인증된 파티장만 보상 분배 가능 (무인증 임의 파티 골드 지급 차단)
+    // NOTE(경제): goldTotal 을 클라이언트가 결정하는 구조 자체가 골드 발행 취약 — 서버 산정으로 후속 교정 필요.
+    const actorUserId = request.authUserId;
+    if (!actorUserId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
 
     try {
       const party = await prisma.party.findUnique({
@@ -338,6 +371,9 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
         include: { members: true },
       });
       if (!party) return reply.status(404).send({ error: '파티를 찾을 수 없습니다' });
+      if (party.leaderId !== actorUserId) {
+        return reply.status(403).send({ error: '파티장만 보상을 분배할 수 있습니다.' });
+      }
 
       const memberCount = party.members.length;
       const goldPerMember = Math.floor(goldTotal / memberCount);

@@ -14,9 +14,8 @@ import { getSeasonInfo, previewSeasonReward, claimSeasonReward, SEASON_TIER_REWA
 import type { RawStats } from '../pvp/pvpNormalizer';
 import { normalizeForPvp } from '../pvp/pvpNormalizer';
 
-/** 큐 등록 요청 바디 */
+/** 큐 등록 요청 바디 (userId 는 인증 행위자에서 추출하므로 바디에서 제거) */
 interface QueueBody {
-  userId: string;
   characterId: string;
   socketId: string;
   arenaType?: string;  // ranked | casual | tournament
@@ -33,10 +32,16 @@ export async function registerPvpRoutes(app: FastifyInstance): Promise<void> {
 
   // ─── POST /api/pvp/queue — 매칭 큐 등록 ───────────────────
   app.post<{ Body: QueueBody }>('/api/pvp/queue', async (request, reply) => {
-    const { userId, characterId, socketId, arenaType = 'ranked' } = request.body;
+    // 인증된 행위자만 자신을 큐에 등록할 수 있다 (IDOR 방지: 바디의 userId 신뢰 금지)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
 
-    if (!userId || !characterId || !socketId) {
-      return reply.status(400).send({ error: 'userId, characterId, socketId 필수' });
+    const { characterId, socketId, arenaType = 'ranked' } = request.body;
+
+    if (!characterId || !socketId) {
+      return reply.status(400).send({ error: 'characterId, socketId 필수' });
     }
 
     if (isInQueue(userId)) {
@@ -63,11 +68,11 @@ export async function registerPvpRoutes(app: FastifyInstance): Promise<void> {
   });
 
   // ─── DELETE /api/pvp/queue — 매칭 취소 ────────────────────
-  app.delete<{ Body: { userId: string } }>('/api/pvp/queue', async (request, reply) => {
-    const { userId } = request.body;
-
+  app.delete('/api/pvp/queue', async (request, reply) => {
+    // 인증된 행위자 본인만 큐에서 제거 (IDOR 방지: 바디의 userId 신뢰 금지)
+    const userId = request.authUserId;
     if (!userId) {
-      return reply.status(400).send({ error: 'userId 필수' });
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
 
     const removed = await dequeue(userId);
@@ -166,23 +171,29 @@ export async function registerPvpRoutes(app: FastifyInstance): Promise<void> {
     });
   });
 
-  // ─── GET /api/pvp/season/preview/:userId — 개인 보상 미리보기
-  app.get<{ Params: { userId: string } }>(
-    '/api/pvp/season/preview/:userId',
-    async (request, reply) => {
-      const preview = await previewSeasonReward(request.params.userId);
-      return reply.status(200).send(preview);
-    },
-  );
+  // ─── GET /api/pvp/season/preview — 개인 보상 미리보기 ─────
+  app.get('/api/pvp/season/preview', async (request, reply) => {
+    // 본인 보상만 미리보기 (IDOR 방지: params 의 userId 신뢰 금지)
+    const userId = request.authUserId;
+    if (!userId) {
+      return reply.status(401).send({ error: '인증이 필요합니다.' });
+    }
+
+    const preview = await previewSeasonReward(userId);
+    return reply.status(200).send(preview);
+  });
 
   // ─── POST /api/pvp/season/claim — 시즌 보상 수령 ─────────
-  app.post<{ Body: { userId: string; season?: number } }>(
+  app.post<{ Body: { season?: number } }>(
     '/api/pvp/season/claim',
     async (request, reply) => {
-      const { userId, season } = request.body;
+      // 본인만 시즌 보상 수령 (IDOR 방지: 바디의 userId 신뢰 금지)
+      const userId = request.authUserId;
       if (!userId) {
-        return reply.status(400).send({ error: 'userId 필수' });
+        return reply.status(401).send({ error: '인증이 필요합니다.' });
       }
+
+      const { season } = request.body;
 
       const result = await claimSeasonReward(userId, season);
       if (!result.success) {
