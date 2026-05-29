@@ -2,11 +2,14 @@
  * saveRoutes.ts — 세이브/체크포인트 REST API (P6-11)
  *
  * 엔드포인트:
- *   GET    /api/save/:userId          — 전체 슬롯 조회
- *   POST   /api/save/:slot            — 수동 세이브
- *   POST   /api/save/load/:slot       — 세이브 로드
- *   DELETE /api/save/:slot            — 슬롯 삭제
- *   POST   /api/save/auto             — 자동 세이브 (서버 내부 트리거)
+ *   GET    /api/save/:userId          — 전체 슬롯 조회 (본인만)
+ *   POST   /api/save/:slot            — 수동 세이브 (본인만)
+ *   POST   /api/save/load/:slot       — 세이브 로드 (본인만)
+ *   DELETE /api/save/:slot            — 슬롯 삭제 (본인만)
+ *   POST   /api/save/auto             — 자동 세이브 (본인만)
+ *
+ * SECURITY-IDOR: 세이브는 항상 인증된 사용자(request.authUserId) 본인 것만 접근한다.
+ * 기존에는 params/body 의 userId 를 신뢰해 임의 유저 세이브 열람/덮어쓰기/삭제가 가능했다.
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -26,47 +29,40 @@ interface UserIdParams { userId: string; }
 interface SlotParams { slot: string; }
 
 interface ManualSaveBody {
-  userId: string;
   data: SaveData;
   label?: string;
 }
 
-interface LoadBody {
-  userId: string;
-}
-
 interface AutoSaveBody {
-  userId: string;
   data: SaveData;
-}
-
-interface DeleteBody {
-  userId: string;
 }
 
 // ── 라우트 등록 ─────────────────────────────────────────────────
 
 export async function saveRoutes(fastify: FastifyInstance): Promise<void> {
 
-  /** GET /api/save/:userId — 전체 슬롯 목록 */
+  /** GET /api/save/:userId — 전체 슬롯 목록 (본인만) */
   fastify.get('/api/save/:userId', async (
     request: FastifyRequest<{ Params: UserIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { userId } = request.params;
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const slots = await getAllSaves(userId);
     return reply.send({ saves: slots });
   });
 
-  /** POST /api/save/:slot — 수동 세이브 */
+  /** POST /api/save/:slot — 수동 세이브 (본인만) */
   fastify.post('/api/save/:slot', async (
     request: FastifyRequest<{ Params: SlotParams; Body: ManualSaveBody }>,
     reply: FastifyReply,
   ) => {
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const slot = parseInt(request.params.slot, 10);
-    const { userId, data, label } = request.body;
+    const { data, label } = request.body;
 
-    if (!userId || !data) {
+    if (!data) {
       return reply.status(400).send({ error: '필수 파라미터 누락' });
     }
 
@@ -77,17 +73,14 @@ export async function saveRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.send({ slot, status: 'saved' });
   });
 
-  /** POST /api/save/load/:slot — 세이브 로드 */
+  /** POST /api/save/load/:slot — 세이브 로드 (본인만) */
   fastify.post('/api/save/load/:slot', async (
-    request: FastifyRequest<{ Params: SlotParams; Body: LoadBody }>,
+    request: FastifyRequest<{ Params: SlotParams }>,
     reply: FastifyReply,
   ) => {
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const slot = parseInt(request.params.slot, 10);
-    const { userId } = request.body;
-
-    if (!userId) {
-      return reply.status(400).send({ error: 'userId 필수' });
-    }
 
     const data = await loadSave(userId, slot);
     if (!data) {
@@ -96,17 +89,14 @@ export async function saveRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.send({ slot, data });
   });
 
-  /** DELETE /api/save/:slot — 슬롯 삭제 */
+  /** DELETE /api/save/:slot — 슬롯 삭제 (본인만) */
   fastify.delete('/api/save/:slot', async (
-    request: FastifyRequest<{ Params: SlotParams; Body: DeleteBody }>,
+    request: FastifyRequest<{ Params: SlotParams }>,
     reply: FastifyReply,
   ) => {
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
     const slot = parseInt(request.params.slot, 10);
-    const { userId } = request.body;
-
-    if (!userId) {
-      return reply.status(400).send({ error: 'userId 필수' });
-    }
 
     const result = await deleteSave(userId, slot);
     if (!result.success) {
@@ -115,13 +105,15 @@ export async function saveRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.send({ slot, status: 'deleted' });
   });
 
-  /** POST /api/save/auto — 자동 세이브 (내부 트리거) */
+  /** POST /api/save/auto — 자동 세이브 (본인만) */
   fastify.post('/api/save/auto', async (
     request: FastifyRequest<{ Body: AutoSaveBody }>,
     reply: FastifyReply,
   ) => {
-    const { userId, data } = request.body;
-    if (!userId || !data) {
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    const { data } = request.body;
+    if (!data) {
       return reply.status(400).send({ error: '필수 파라미터 누락' });
     }
 
