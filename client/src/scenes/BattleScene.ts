@@ -32,6 +32,7 @@ import { getDualTechById } from '../../../shared/types/dualTech';
 import { resolveFieldEncounter } from '../../../shared/types/chronoField';
 import { composeEscapeLog, escapeOutcomeFromResult } from '../combat/escapeNarration';
 import { getCombatPopupColor } from '../combat/combatResultPalette';
+import { formatDamageTypeTag, getDamageTypePopupColor } from '../combat/damageTypeNarration';
 
 // CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
 const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
@@ -1189,6 +1190,8 @@ export class BattleScene extends Phaser.Scene {
 
     // 이펙트
     this._spawnDamageNumber(target.sprite.x, target.sprite.y, dmg, 'normal');
+    // SSOT-WIRE-07: 속성 스킬은 데미지 위에 element 태그 표시 (SCENARIO_DAMAGE_TYPE_NARRATIVES 단일 출처)
+    this._spawnElementTag(target.sprite.x, target.sprite.y, skill.element);
     this._showHitVFX(target.sprite.x, target.sprite.y);
     // FINDING-A4 ext11: 설정 + reduce-motion 검사
     if (isScreenShakeEnabled()) this.cameras.main.shake(80, 0.003);
@@ -1467,6 +1470,43 @@ export class BattleScene extends Phaser.Scene {
 
     // EffectManager 연동 (풀링)
     this.effectManager?.spawnDamageText(x, y, value, type === 'critical');
+  }
+
+  /**
+   * SSOT-WIRE-07: 속성 스킬 데미지 위에 element 태그(이모지 + 라벨)를 띄운다.
+   * 색/라벨은 SCENARIO_DAMAGE_TYPE_NARRATIVES 단일 출처. 무속성(physical 귀결)은 미표시.
+   */
+  private _spawnElementTag(x: number, y: number, element: string | undefined): void {
+    const tag = formatDamageTypeTag(element);
+    if (!tag) {
+      return;
+    }
+    const text = this.add.text(x, y - 26, tag, {
+      fontSize: '13px',
+      fontFamily: FONT_FAMILY,
+      color: getDamageTypePopupColor(element),
+      stroke: '#000000',
+      strokeThickness: 3,
+      fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(9050).setAlpha(0).setScale(0.7);
+    this.tweens.add({
+      targets: text,
+      scale: 1.0,
+      alpha: 1,
+      y: y - 38,
+      duration: 220,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: text,
+          y: y - 70,
+          alpha: 0,
+          duration: 500,
+          delay: 350,
+          onComplete: () => text.destroy(),
+        });
+      },
+    });
   }
 
   // ─── 히트 VFX ────────────────────────────────────────────────
