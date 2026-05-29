@@ -24,22 +24,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Cache server node_modules
-        uses: actions/cache@v4
-        with:
-          path: server/node_modules
-          key: server-modules-${{ runner.os }}-${{ hashFiles('server/package-lock.json', 'server/package.json') }}
-          restore-keys: |
-            server-modules-${{ runner.os }}-
-
-      - name: Install server dependencies
-        working-directory: server
+      # npm workspaces 모노레포 — 루트 락파일 하나로 전 워크스페이스 설치
+      - name: Install dependencies
         run: npm ci
 
+      # server 타입체크는 @prisma/client 생성 타입에 의존
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+
       - name: TypeScript type check (server)
-        working-directory: server
-        run: npx tsc --noEmit
+        run: npm run typecheck:server
 
   # ── 2. 클라이언트 타입 체크 ────────────────────────────────────
   client-check:
@@ -54,22 +50,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Cache client node_modules
-        uses: actions/cache@v4
-        with:
-          path: client/node_modules
-          key: client-modules-${{ runner.os }}-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
-          restore-keys: |
-            client-modules-${{ runner.os }}-
-
-      - name: Install client dependencies
-        working-directory: client
+      - name: Install dependencies
         run: npm ci
 
       - name: TypeScript type check (client)
-        working-directory: client
-        run: npx tsc --noEmit
+        run: npm run typecheck:client
 
   # ── 3. 테스트 (Vitest) ────────────────────────────────────────
   test:
@@ -93,6 +80,9 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://aeterna_test:aeterna_test_pw@localhost:5432/aeterna_chronicle_test
+      JWT_SECRET: ci-test-jwt-secret
+      JWT_REFRESH_SECRET: ci-test-jwt-refresh-secret
+      JWT_ADMIN_SECRET: ci-test-jwt-admin-secret
 
     steps:
       - name: Checkout
@@ -102,29 +92,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Cache root node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: root-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', 'package.json') }}
-          restore-keys: |
-            root-modules-${{ runner.os }}-
-
-      - name: Cache server node_modules
-        uses: actions/cache@v4
-        with:
-          path: server/node_modules
-          key: server-modules-${{ runner.os }}-${{ hashFiles('server/package-lock.json', 'server/package.json') }}
-          restore-keys: |
-            server-modules-${{ runner.os }}-
-
-      - name: Install root dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Install server dependencies
-        working-directory: server
-        run: npm ci
+      - name: Generate Prisma client
+        run: npm run prisma:generate
 
-      - name: Run Vitest
-        run: npx vitest run --reporter=verbose
+      # 라이브 서버(:3000) 의존 e2e(chapter1/social)는 CI 인프라 미제공으로 제외.
+      # unit + contract + integration 으로 검증.
+      - name: Run Vitest (unit + contract + integration)
+        run: npx vitest run --config tests/vitest.config.ts tests/unit/ tests/contract/ tests/integration/ admin-dashboard/src/__tests__/ --reporter=verbose
