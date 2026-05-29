@@ -19,6 +19,7 @@ import { playSfx, UI_SFX, COMBAT_VOICE, playRandomVoice } from '../utils/SFXHelp
 import type { CombatUnit } from '../combat/CombatManager';
 import type { BattleSceneData } from './BattleScene';
 import { classSkills } from '../data/classSkills';
+import { composeDungeonGameOverText } from '../gameplay/dungeonGameOverNarration';
 
 // ── 타입 ────────────────────────────────────────────────────
 
