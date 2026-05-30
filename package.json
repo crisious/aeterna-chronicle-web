@@ -59,7 +59,7 @@
     "seed:check": "npm --prefix server run seed:check",
     "seed:reset": "npx prisma db push --force-reset && npm run seed",
     "seed:staging": "npm --prefix server run seed:staging",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run test:integration && npm run data:validate && npm run build",
     "qa": "npm run qa:auto",
     "qa:auto": "node scripts/browser-use-qa/run-stack.mjs",
     "qa:auto:full": "node scripts/browser-use-qa/run-stack.mjs --verify",

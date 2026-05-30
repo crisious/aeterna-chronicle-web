@@ -14,8 +14,7 @@
     "seed": "ts-node --transpile-only --project tsconfig.json ../tools/seed/masterSeed.ts",
     "seed:dry": "ts-node --transpile-only --project tsconfig.json ../tools/seed/masterSeed.ts --dry-run",
     "seed:check": "ts-node --transpile-only --project tsconfig.json ../tools/seed/integrityCheck.ts",
-    "seed:staging": "ts-node --project tsconfig.json ../tools/staging/seed.ts",
-    "test:e2e": "node --experimental-vm-modules node_modules/.bin/jest --config ../tests/jest.config.ts --testPathPattern=tests/e2e"
+    "seed:staging": "ts-node --project tsconfig.json ../tools/staging/seed.ts"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",

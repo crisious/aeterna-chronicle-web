@@ -20,10 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       # npm workspaces 모노레포 — 루트 락파일 하나로 전 워크스페이스 설치
@@ -46,10 +46,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -88,10 +88,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -104,3 +104,7 @@ jobs:
       # unit + contract + integration 으로 검증.
       - name: Run Vitest (unit + contract + integration)
         run: npx vitest run --config tests/vitest.config.ts tests/unit/ tests/contract/ tests/integration/ admin-dashboard/src/__tests__/ --reporter=verbose
+
+      # 콘텐츠 데이터 무결성(스키마/참조/밸런스 outlier) — errors=0 시 통과
+      - name: Validate game data (data-validator)
+        run: npm run data:validate
