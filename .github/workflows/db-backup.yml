@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.schedule != '0 18 * * 0'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.schedule == '0 18 * * 0' || inputs.weekly
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
