@@ -108,6 +108,7 @@ export class DeathReviveSystem {
     // 서버에 사망 알림 → 페널티 계산
     let penalty: DeathPenalty;
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — characterRoutes 에 POST /api/characters/death 없음(현재: POST/GET /api/characters, GET/DELETE /api/characters/:id). 서버 사망 라우트 추가 시 정렬 필요.
       penalty = await this.net.post<DeathPenalty>('/api/characters/death', {
         characterId: this.characterId,
       });
@@ -258,6 +259,7 @@ export class DeathReviveSystem {
 
   private async _selectRevive(option: ReviveOption): Promise<void> {
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — characterRoutes 에 POST /api/characters/revive 없음(현재: POST/GET /api/characters, GET/DELETE /api/characters/:id). 서버 부활 라우트 추가 시 정렬 필요.
       await this.net.post('/api/characters/revive', {
         characterId: this.characterId,
         reviveType: option.id,

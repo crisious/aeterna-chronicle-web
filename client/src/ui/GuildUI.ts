@@ -189,6 +189,7 @@ export class GuildUI {
   private async loadGuildInfo(): Promise<void> {
     try {
       // 내 길드 정보 가져오기
+      // TODO(path-align): 서버 엔드포인트 미구현 — '내 길드' 조회 라우트(GET /api/guild/my)가 guildRoutes 에 없음
       const resp = await this.net.httpGet<{ guild?: any }>(`/api/guild/my?userId=${this.net.getUserId()}`);
       if (resp.guild) {
         this.guildInfo = resp.guild;
@@ -252,6 +253,7 @@ export class GuildUI {
   private async loadMembers(): Promise<void> {
     if (!this.guildInfo) return;
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — 멤버 목록 조회 라우트(GET /api/guilds/:id/members)가 guildRoutes 에 없음
       const resp = await this.net.httpGet<{ members?: any[] }>(`/api/guild/${this.guildInfo.id}/members`);
       this.members = resp.members ?? [];
       this.showMembers();
@@ -292,7 +294,7 @@ export class GuildUI {
   private async loadSkills(): Promise<void> {
     if (!this.guildInfo) return;
     try {
-      const resp = await this.net.httpGet<{ skills?: any[] }>(`/api/guild/${this.guildInfo.id}/skills`);
+      const resp = await this.net.httpGet<{ skills?: any[] }>(`/api/guilds/${this.guildInfo.id}/skills`);
       this.skills = resp.skills ?? [];
       this.showSkills();
     } catch (err) {
@@ -325,7 +327,7 @@ export class GuildUI {
 
   private async loadSearch(): Promise<void> {
     try {
-      const resp = await this.net.httpGet<{ guilds?: any[] }>('/api/guild?page=1&limit=15');
+      const resp = await this.net.httpGet<{ guilds?: any[] }>('/api/guilds?page=1&limit=15');
       this.searchResults = resp.guilds ?? [];
       this.showSearch();
     } catch (err) {
@@ -361,7 +363,7 @@ export class GuildUI {
 
   private async createGuild(): Promise<void> {
     try {
-      await this.net.httpPost('/api/guild', {
+      await this.net.httpPost('/api/guilds', {
         name: '새 길드', tag: 'NEW', leaderId: this.net.getUserId(),
       });
       this.loadGuildInfo();
@@ -372,7 +374,7 @@ export class GuildUI {
 
   private async joinGuild(guildId: string): Promise<void> {
     try {
-      await this.net.httpPost(`/api/guild/${guildId}/join`, { userId: this.net.getUserId() });
+      await this.net.httpPost(`/api/guilds/${guildId}/join`, { userId: this.net.getUserId() });
       this.switchTab('info');
     } catch (err) {
       console.error('[GuildUI] 가입 실패:', err);
@@ -382,7 +384,7 @@ export class GuildUI {
   private async leaveGuild(): Promise<void> {
     if (!this.guildInfo) return;
     try {
-      await this.net.httpPost(`/api/guild/${this.guildInfo.id}/leave`, { userId: this.net.getUserId() });
+      await this.net.httpDelete(`/api/guilds/${this.guildInfo.id}/members/${this.net.getUserId()}`);
       this.guildInfo = null;
       this.isInGuild = false;
       this.showNoGuild();
@@ -394,7 +396,8 @@ export class GuildUI {
   private async upgradeSkill(skillId: string): Promise<void> {
     if (!this.guildInfo) return;
     try {
-      await this.net.httpPost(`/api/guild/${this.guildInfo.id}/skills/${skillId}/upgrade`, {});
+      // 서버 핸들러(guildRoutes.ts skills/upgrade)는 body 키로 skillCode 를 사용한다
+      await this.net.httpPost(`/api/guilds/${this.guildInfo.id}/skills/upgrade`, { skillCode: skillId });
       this.loadSkills();
     } catch (err) {
       console.error('[GuildUI] 스킬 업그레이드 실패:', err);

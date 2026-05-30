@@ -162,7 +162,7 @@ export class GuildRaidUI {
   public async loadRaidList(): Promise<void> {
     this.viewState = 'list';
     try {
-      const resp = await this.net.httpGet<{ raids?: any[] }>('/api/raid');
+      const resp = await this.net.httpGet<{ raids?: any[] }>('/api/raids/bosses');
       this.raids = resp.raids ?? [];
       this.showList();
     } catch (err) {
@@ -200,7 +200,8 @@ export class GuildRaidUI {
 
   private async enterRaid(raidId: string): Promise<void> {
     try {
-      const resp = await this.net.httpPost<{ raid: any; participants?: any[] }>(`/api/raid/${raidId}/join`, { userId: this.net.getUserId() });
+      // TODO(path-align): 서버는 session 기반 — raidId 가 sessionId 가 아니며 먼저 POST /api/raids/sessions 로 세션 생성 필요.
+      const resp = await this.net.httpPost<{ raid: any; participants?: any[] }>(`/api/raids/sessions/${raidId}/join`, { userId: this.net.getUserId() });
       this.currentRaid = resp.raid;
       this.participants = resp.participants ?? [];
       this.viewState = 'lobby';
@@ -213,7 +214,7 @@ export class GuildRaidUI {
   private async loadLobby(): Promise<void> {
     if (!this.currentRaid) return;
     try {
-      const resp = await this.net.httpGet<{ participants?: any[] }>(`/api/raid/${this.currentRaid.id}/status`);
+      const resp = await this.net.httpGet<{ participants?: any[] }>(`/api/raids/sessions/${this.currentRaid.id}`);
       this.participants = resp.participants ?? [];
       this.showLobby();
     } catch (err) {
@@ -315,6 +316,7 @@ export class GuildRaidUI {
   private async toggleReady(): Promise<void> {
     if (!this.currentRaid) return;
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — raidRoutes 에 준비 상태 토글(ready) 라우트 없음.
       await this.net.httpPost(`/api/raid/${this.currentRaid.id}/ready`, { userId: this.net.getUserId() });
     } catch (err) {
       console.error('[GuildRaidUI] 준비 실패:', err);
@@ -324,6 +326,7 @@ export class GuildRaidUI {
   private async startRaid(): Promise<void> {
     if (!this.currentRaid) return;
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — raidRoutes 에 레이드 시작(start) 라우트 없음.
       await this.net.httpPost(`/api/raid/${this.currentRaid.id}/start`, { userId: this.net.getUserId() });
       this.viewState = 'battle';
     } catch (err) {
@@ -334,6 +337,7 @@ export class GuildRaidUI {
   private async leaveRaid(): Promise<void> {
     if (!this.currentRaid) return;
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — raidRoutes 에 세션 나가기(leave) 라우트 없음.
       await this.net.httpPost(`/api/raid/${this.currentRaid.id}/leave`, { userId: this.net.getUserId() });
       this.currentRaid = null;
       this.viewState = 'list';
