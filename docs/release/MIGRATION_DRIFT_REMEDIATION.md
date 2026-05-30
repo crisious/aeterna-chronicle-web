@@ -1,6 +1,33 @@
 # Prisma 마이그레이션 드리프트 복구 가이드
 
-> 작성: 2026-05-29 · 상태: **검증 완료(정적), 적용은 DB 환경 필요**
+> 작성: 2026-05-29 · **갱신: 2026-05-31 — ✅ 해소(0015 마이그레이션 생성 + 실 DB 검증)**
+
+## ✅ 적용 결과 (2026-05-31)
+
+옵션 A(추가 마이그레이션)를 실제 Postgres로 수행·검증해 드리프트를 해소했다.
+
+- **`server/prisma/migrations/migration_lock.toml`** 신설 (`provider = "postgresql"` — 누락되어 있었음).
+- **`server/prisma/migrations/0015_sync_schema_drift/migration.sql`** 신설 — `prisma migrate diff --from-migrations(0001~0014) --to-schema-datamodel` 으로 생성한 누락 **74 테이블** 추가분.
+- **검증**: 빈 DB 에 `prisma migrate deploy`(0001~0015 전체) → **정확히 110 테이블** 재현. 이후 `migrate diff --from-migrations --to-schema-datamodel --exit-code` → **"No difference detected"**(드리프트 0).
+- **0012 번호 중복**: `migrate deploy` 가 디렉터리명 사전순으로 정상 적용함을 실증(비차단). 리네임은 기존 환경 `_prisma_migrations` 와 어긋나므로 **수행하지 않음**.
+
+### ⚠️ 기존 환경(dev/staging/prod, db push 로 구축됨) 베이스라인 — 1회 필요
+이미 테이블이 존재하는 환경은 `migrate deploy` 가 0001~0015 를 재적용하려다 "이미 존재" 충돌이 난다. 최초 1회 baseline 처리:
+```bash
+# 기존 환경 DATABASE_URL 기준 — 모든 마이그레이션을 '적용됨'으로 표시(SQL 재실행 안 함)
+for m in 0001_initial 0002_guild_system 0003_pvp_arena 0004_shop_season_pass \
+  0005_ending_system 0006_raid_system 0007_achievement_system 0008_class_advancement \
+  0009_craft_system 0010_npc_system 0011_social_system 0012_dungeon_world_system \
+  0012_monster_system 0013_codex_notification_system 0014_guild_level_war_pvp_normalize \
+  0015_sync_schema_drift; do
+  npx prisma migrate resolve --applied "$m" --schema server/prisma/schema.prisma
+done
+```
+> **신규 환경**(빈 DB)은 베이스라인 불필요 — `migrate deploy` 만으로 110 테이블 생성(검증 완료).
+
+---
+
+## (이하 원래 분석 기록)
 
 ## 1. 확인된 문제 (배포 차단급)
 
