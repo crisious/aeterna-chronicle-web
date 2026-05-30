@@ -108,3 +108,13 @@ jobs:
       # 콘텐츠 데이터 무결성(스키마/참조/밸런스 outlier) — errors=0 시 통과
       - name: Validate game data (data-validator)
         run: npm run data:validate
+
+      # 마이그레이션 ↔ schema 드리프트 가드: db push 로만 추가돼 마이그레이션이 누락된 모델을 차단.
+      # migrate diff 가 0001~ 마이그레이션을 shadow(=CI postgres)에 재생 후 schema.prisma 와 비교, 차이 시 exit 2 → 실패.
+      - name: Validate no migration drift
+        run: >-
+          npx prisma migrate diff
+          --from-migrations server/prisma/migrations
+          --to-schema-datamodel server/prisma/schema.prisma
+          --shadow-database-url "postgresql://aeterna_test:aeterna_test_pw@localhost:5432/aeterna_chronicle_test"
+          --exit-code
