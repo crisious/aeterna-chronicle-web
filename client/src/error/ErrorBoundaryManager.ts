@@ -35,7 +35,10 @@ export class ErrorBoundaryManager {
   private isOnline = true;
   private reportEndpoint: string;
 
-  constructor(reportEndpoint = '/api/error/report') {
+  // TODO(path-align): 서버 /api/errors 는 { errorType, message, stack?, scene?, userAgent?, timestamp?, metadata? } payload 를 기대한다.
+  // 현재 sendReport 는 CrashReport({ id, severity, context, recovered, ... }) 를 그대로 POST 하므로 필수 필드 errorType 누락 — payload 매핑 필요.
+  // (이 파일은 main 이 사용하는 ErrorBoundary.ts 와 별개의 미배선 모듈임)
+  constructor(reportEndpoint = '/api/errors') {
     this.reportEndpoint = reportEndpoint;
     this.setupGlobalHandlers();
     this.setupOfflineDetection();

@@ -187,7 +187,9 @@ export class EnhancementSystem {
     if (!this.enhanceInfo || !this.selectedItem) return;
 
     try {
-      const result = await this.net.post<EnhancementResult>('/api/enhance', {
+      // 경로 정렬: 서버 craftRoutes 의 'POST /api/craft/enhance' 에 맞춤.
+      // 서버 핸들러는 body.itemId 만 사용하며 행위자는 authUserId 로 식별(IDOR 방지)함.
+      const result = await this.net.post<EnhancementResult>('/api/craft/enhance', {
         characterId: this.characterId,
         itemId: this.selectedItem.id,
       });

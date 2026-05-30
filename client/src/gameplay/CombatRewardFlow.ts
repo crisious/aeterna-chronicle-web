@@ -257,6 +257,7 @@ export class CombatRewardFlow {
 
   private async _applyStatAllocation(alloc: StatAllocation): Promise<void> {
     try {
+      // TODO(path-align): 서버 엔드포인트 미구현 — characterRoutes 에 스탯 갱신(POST /api/characters/stats) 라우트가 없음. 서버 구현 후 경로/메서드 확정 필요.
       await this.net.post('/api/characters/stats', {
         characterId: this.characterId,
         allocation: alloc,

@@ -93,6 +93,7 @@ export class QuestFlowManager {
   processEvent(event: QuestEvent): void {
     // 서버에서 진행률을 관리하지만 클라이언트 HUD도 즉시 업데이트
     // 서버 동기화는 주기적 refresh로 보정
+    // TODO(path-align): 서버는 PATCH /api/quests/:id/progress (questId 필요). processEvent 스코프에 questId 없음 — 호출 보존.
     this.net.post('/api/quests/progress', {
       characterId: this.characterId,
       eventType: event.type,
