@@ -35,7 +35,7 @@ jobs:
       packages: write
     steps:
       - name: 소스 체크아웃
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Docker Buildx 설정
         uses: docker/setup-buildx-action@v3
