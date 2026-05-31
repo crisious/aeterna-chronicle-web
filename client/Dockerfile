@@ -12,7 +12,7 @@ RUN cd client && npm install
 COPY client/tsconfig.json client/vite.config.ts ./client/
 COPY client/src/ ./client/src/
 COPY client/index.html ./client/
-COPY client/public/ ./client/public/ 2>/dev/null || true
+COPY client/public/ ./client/public/
 RUN cd client && npx vite build
 
 # Stage 2: nginx 서빙
