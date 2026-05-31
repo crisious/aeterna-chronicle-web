@@ -13,6 +13,11 @@ COPY client/tsconfig.json client/vite.config.ts ./client/
 COPY client/src/ ./client/src/
 COPY client/index.html ./client/
 COPY client/public/ ./client/public/
+# client/public/assets/{generated,resources} 는 repo 루트 assets/generated(≈532MB)·unity-client 를
+# 가리키는 git symlink. 대용량 생성 에셋/Unity 리소스는 CDN(S3/CloudFront — assets.yml)으로 별도 배포하며
+# 이미지에 번들하지 않는다. vite 의 publicDir 복사가 symlink 타겟을 stat 하다 ENOENT 로 실패하지 않도록
+# 빈 타겟 디렉터리를 만든다(작은 atlas/bg 등 실파일은 그대로 번들됨).
+RUN mkdir -p assets/generated unity-client/Assets/Resources
 RUN cd client && npx vite build
 
 # Stage 2: nginx 서빙
