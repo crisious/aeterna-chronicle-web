@@ -10,6 +10,30 @@
 > 진행: 에테르나 팀 자동 스프린트 (9명 AI 에이전트 협업)
 > 상태: 개발 중 (Phase 4 — 구현) · 단계: Build
 
+---
+
+> ── 보안·인프라 하드닝 스프린트 (2026-05-30~31) ──
+> 상세: [`docs/release/release_notes_v1.0-rc.3_security-infra-hardening.md`](docs/release/release_notes_v1.0-rc.3_security-infra-hardening.md) · PR #173~#187 (15건, main 머지·CI 녹색)
+
+#### Security
+- **서버 IDOR 전면 하드닝** (#174) — 전역 인증 게이트(deny-by-default) + ~160 엔드포인트 소유권 치환 + GM 11종 `requireAdmin`. 무인증/타 유저 식별자 신뢰(48파일 감사 ~154 IDOR) 차단.
+- **combat 세션 소유권** (#183) — combatId 기반 8개 엔드포인트 세션 소유자 검증.
+- **경제 취약(골드 발행) 해소** (#185) — `/api/party/:id/reward` 의 클라이언트 `goldTotal` 신뢰 제거, 전투 종료(파티 승리) 시 서버 산정값 자동 지급.
+
+#### Fixed
+- **CI 부활** (#176) — `package-lock.json` 미추적 + 워크스페이스 `npm ci` + `prisma generate` 누락으로 한 번도 통과 못 하던 CI 복구.
+- **마이그레이션 드리프트** (#180) — 110 모델 vs 36 마이그레이션 테이블(74 누락)을 `0015_sync_schema_drift` 로 해소 (실 Postgres `migrate deploy` → 110 테이블 검증).
+- **k8s server-green/blue Service** (#186) — `production.yml`·ingress 참조 대상 Service 매니페스트 누락 보완.
+
+#### Changed
+- **CI 강화** — Node 24/22 정렬(#178, #182) · 게이트 하이그닌 + data-validator CI 연결(#179) · 마이그레이션 드리프트 회귀 가드(#181).
+- **README** Getting Started — Node 22 · 루트 `npm ci` · `migrate deploy` (#187).
+
+#### Removed
+- **dead UI/매니저 16파일** (#184, ~5.3K LOC) — 미배선 GuildUI/GuildRaidUI 등 + gameplay 매니저 체인 + ErrorBoundaryManager 제거.
+
+---
+
 ### Added
 - **에테르나 크로니클 verify-core 시나리오 3종 실배선 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Verify-Core-Scenarios, 2026-05-01) — 진채봉 Editor 합본 정리
   - 직전 회고 *Build-Catchup §1 P0 A4 P1* 직접 해소 — 기존 `scripts/dev-cycle/verify-core.mjs`가 골격만 있고 battle/save/map 3 시나리오 모두 unknown FAIL 상태였던 적자(赤字)를 청산하옵나이다.
