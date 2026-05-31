@@ -17,7 +17,7 @@ on:
 
 env:
   UNITY_VERSION: '2022.3.20f1'
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   PYTHON_VERSION: '3.11'
   DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
   ASSET_CATALOG: 'assets/catalog.json'
