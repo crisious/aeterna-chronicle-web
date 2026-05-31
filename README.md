@@ -116,20 +116,20 @@
 ## 🚀 Getting Started
 
 ```bash
-# 사전 요구: PostgreSQL 16 + Redis + Node.js 20+
+# 사전 요구: PostgreSQL 16 + Redis + Node.js 22+ (스크립트가 --experimental-strip-types 사용)
 cp .env.example .env          # DATABASE_URL 수정
+npm ci                        # 루트 1회 — npm workspaces 로 server/client/admin 전부 설치 (package-lock.json 커밋됨)
 
-# 서버
-cd server && npm install
-npx prisma generate && npx prisma db push
-npm run seed                   # DB 시딩 (1118건 — 18단계)
+# 서버 (위 npm ci 로 의존성 설치 완료)
+cd server && npm run prisma:generate
+npx prisma migrate deploy      # 정식 마이그레이션 → 110 테이블 (dev 빠른 동기화: npx prisma db push)
+npm run seed                   # DB 시딩 (18단계)
 npx tsc --noEmitOnError false
 cp ../shared/proto/game.proto dist/shared/proto/
 node dist/server/src/server.js # → http://localhost:3000
 
 # 클라이언트 (새 터미널)
-cd client && npm install
-npm run dev                    # → http://localhost:5173 (Vite proxy → :3000)
+cd client && npm run dev       # → http://localhost:5173 (Vite proxy → :3000)
 ```
 
 > **Windows 사용자**: repo 의 git symlink 가 텍스트 파일로 저장되어 Vite 가 asset 을 못 찾는 문제가 있습니다.
