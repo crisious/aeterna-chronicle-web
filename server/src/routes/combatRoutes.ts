@@ -20,6 +20,7 @@ import {
 } from '../combat/combatEngine';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';
+import { grantCombatGold, clearCombatReward } from '../combat/rewardGranter';
 import { prisma } from '../db';
 import { extractUserIdFromRequest } from '../security/jwtManager';
 import { resolvePassiveModifiers } from '../skill/passiveResolver';
@@ -658,6 +659,11 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     const result = engine.processTick();
+    // SECURITY/경제: 전투 종료(파티 승리) 시 서버 산정 골드를 자동 지급 (클라이언트 goldTotal 신뢰 제거)
+    if (result.combatEnded && result.winner === 'party' && result.rewards) {
+      const partyIds = engine.getSnapshot().filter((p) => p.team === 'party').map((p) => p.id);
+      await grantCombatGold(combatId, partyIds, result.rewards);
+    }
     return result;
   });
 
@@ -711,6 +717,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const stats = engine.getStatistics();
     combatInstanceManager.remove(combatId);
     combatOwners.delete(combatId);
+    clearCombatReward(combatId);
 
     return {
       success: true,
