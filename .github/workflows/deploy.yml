@@ -100,9 +100,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: ${{ inputs.environment || 'production' }}
-          description: |
-            서버: ${{ env.SERVER_IMAGE }}:${{ github.sha }}
-            클라이언트: ${{ env.CLIENT_IMAGE }}:${{ github.sha }}
+          # GitHub DeploymentStatus.description 은 최대 140자 — 이미지/sha 상세는 step summary + deployment ref 에 기록됨
+          description: '에테르나 server·client 이미지 빌드·푸시 완료'
 
       - name: 배포 완료 요약
         run: |
