@@ -90,6 +90,15 @@ interface CombosByClassParams {
 export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
   // ── POST /combat/apply-effect ─────────────────────────────
   // 상태이상/버프 적용 요청
+  // SECURITY-IDOR: HTTP /combat/start 로 생성된 세션의 소유자(userId)를 추적.
+  // combatId 는 추측 불가한 uuid 지만, 누출 시 타 유저가 세션을 조작/열람하지 못하도록 소유권을 강제(defense-in-depth).
+  // 소유자 미기록(소켓 등 다른 경로로 생성된) 세션은 허용해 기존 흐름을 보존한다.
+  const combatOwners = new Map<string, string>();
+  const isCombatOwner = (combatId: string, userId: string | undefined): boolean => {
+    const owner = combatOwners.get(combatId);
+    return !owner || owner === userId;
+  };
+
   fastify.post('/combat/apply-effect', async (
     request: FastifyRequest<{ Body: ApplyEffectBody }>,
     reply: FastifyReply,
@@ -501,6 +510,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
         pending: r.pending,
       }));
 
+      // SECURITY-IDOR: 세션 소유자 = /combat/start 를 호출한 인증 사용자
+      combatOwners.set(engine.combatId, userId);
+
       return {
         success: true,
         combatId: engine.combatId,
@@ -524,7 +536,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Body: CombatActionBody }>,
     reply: FastifyReply,
   ) => {
-    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    // 보안(IDOR): 인증 강제 + 본인 세션 소유권 검증(combatOwners, 아래 engine 조회 후)
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
@@ -532,6 +544,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
     }
 
     const accepted = engine.submitAction(action);
@@ -565,6 +580,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
     }
 
     const accepted = engine.submitDualTech(actorIdA, actorIdB, techId, targetId);
@@ -603,6 +621,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
     }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
+    }
 
     const accepted = engine.submitTripleTech(actorIds, techId, targetId);
     if (!accepted) {
@@ -623,7 +644,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
-    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    // 보안(IDOR): 인증 강제 + 본인 세션 소유권 검증(combatOwners, 아래 engine 조회 후)
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
@@ -631,6 +652,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
     }
 
     const result = engine.processTick();
@@ -643,7 +667,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
-    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    // 보안(IDOR): 인증 강제 + 본인 세션 소유권 검증(combatOwners, 아래 engine 조회 후)
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
@@ -651,6 +675,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
     }
 
     return {
@@ -667,7 +694,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
-    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    // 보안(IDOR): 인증 강제 + 본인 세션 소유권 검증(combatOwners, 아래 engine 조회 후)
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
@@ -676,10 +703,14 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
     }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
+    }
 
     // 통계 생성 후 제거
     const stats = engine.getStatistics();
     combatInstanceManager.remove(combatId);
+    combatOwners.delete(combatId);
 
     return {
       success: true,
@@ -694,7 +725,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
-    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    // 보안(IDOR): 인증 강제 + 본인 세션 소유권 검증(combatOwners, 아래 engine 조회 후)
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
@@ -702,6 +733,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
     }
 
     return {
@@ -717,7 +751,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     request: FastifyRequest<{ Params: CombatIdParams }>,
     reply: FastifyReply,
   ) => {
-    // 보안: 전투 세션 모델에 소유자 필드가 없어 최소한 인증만 강제. (세션 소유권 추가검토 필요)
+    // 보안(IDOR): 인증 강제 + 본인 세션 소유권 검증(combatOwners, 아래 engine 조회 후)
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
@@ -725,6 +759,9 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     const engine = combatInstanceManager.get(combatId);
     if (!engine) {
       return reply.status(404).send({ error: '전투를 찾을 수 없습니다.' });
+    }
+    if (!isCombatOwner(combatId, userId)) {
+      return reply.status(403).send({ error: '본인 전투 세션이 아닙니다.' });
     }
 
     const replay = engine.getReplay();
