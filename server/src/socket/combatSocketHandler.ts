@@ -13,6 +13,7 @@ import {
 import { combatReconnectManager } from '../combat/combatReconnectManager';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';
+import { grantCombatGold, clearCombatReward } from '../combat/rewardGranter';
 
 // ─── 이벤트 페이로드 타입 ──────────────────────────────────────
 
@@ -99,6 +100,13 @@ function startTickLoop(combatId: string, engine: CombatEngine, io: Server): void
 
     // 전투 종료 시
     if (result.combatEnded) {
+      // SECURITY/경제: 파티 승리 시 서버 산정 골드 자동 지급 (HTTP /combat/:id/tick 과 동일, combatId 당 1회)
+      if (result.winner === 'party' && result.rewards) {
+        const partyIds = engine.getSnapshot().filter((p) => p.team === 'party').map((p) => p.id);
+        grantCombatGold(combatId, partyIds, result.rewards).catch((e) =>
+          console.error('[combatSocket] 보상 지급 실패:', e),
+        );
+      }
       io.to(`combat:${combatId}`).emit('combat:end', {
         combatId,
         winner: result.winner,
@@ -111,7 +119,10 @@ function startTickLoop(combatId: string, engine: CombatEngine, io: Server): void
       activeTickLoops.delete(combatId);
 
       // 60초 후 인스턴스 정리
-      setTimeout(() => combatInstanceManager.remove(combatId), 60_000);
+      setTimeout(() => {
+        combatInstanceManager.remove(combatId);
+        clearCombatReward(combatId);
+      }, 60_000);
     }
   }, engine.getTickIntervalMs());
 

@@ -54,13 +54,6 @@ interface ReadyBody {
   ready: boolean;
 }
 
-interface RewardBody {
-  userId: string;
-  distribution: 'equal' | 'contribution' | 'leader';
-  rewards: Array<{ itemId: string; quantity: number }>;
-  goldTotal: number;
-}
-
 // ── 유틸 ──────────────────────────────────────────────────────
 
 function errMsg(err: unknown): string {
@@ -354,53 +347,7 @@ export async function partyRoutes(fastify: FastifyInstance): Promise<void> {
     }
   });
 
-  /** POST /api/party/:id/reward — 파티 보상 분배 */
-  fastify.post('/api/party/:id/reward', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as PartyIdParams;
-    const { distribution, rewards, goldTotal } = request.body as RewardBody;
-    // SECURITY-IDOR: 인증된 파티장만 보상 분배 가능 (무인증 임의 파티 골드 지급 차단)
-    // NOTE(경제): goldTotal 을 클라이언트가 결정하는 구조 자체가 골드 발행 취약 — 서버 산정으로 후속 교정 필요.
-    const actorUserId = request.authUserId;
-    if (!actorUserId) {
-      return reply.status(401).send({ error: '인증이 필요합니다.' });
-    }
-
-    try {
-      const party = await prisma.party.findUnique({
-        where: { id },
-        include: { members: true },
-      });
-      if (!party) return reply.status(404).send({ error: '파티를 찾을 수 없습니다' });
-      if (party.leaderId !== actorUserId) {
-        return reply.status(403).send({ error: '파티장만 보상을 분배할 수 있습니다.' });
-      }
-
-      const memberCount = party.members.length;
-      const goldPerMember = Math.floor(goldTotal / memberCount);
-
-      const distributions = ((party as any).members as any[]).map(m => ({
-        userId: m.userId,
-        gold: distribution === 'leader' && m.userId === party.leaderId
-          ? goldTotal
-          : goldPerMember,
-        items: distribution === 'equal'
-          ? rewards.map(r => ({ ...r, quantity: Math.floor(r.quantity / memberCount) }))
-          : [],
-      }));
-
-      // 골드 분배 트랜잭션
-      await prisma.$transaction(
-        distributions.map(d =>
-          prisma.character.updateMany({
-            where: { userId: d.userId, isActive: true },
-            data: { gold: { increment: d.gold } },
-          }),
-        ),
-      );
-
-      return reply.send({ success: true, distributions });
-    } catch (err: unknown) {
-      return reply.status(400).send({ error: errMsg(err) });
-    }
-  });
+  // [제거됨] POST /api/party/:id/reward — 클라이언트 goldTotal 을 신뢰해 골드를 지급(골드 발행 취약)했음.
+  // 보상은 이제 전투 종료(파티 승리) 시 서버가 rewardEngine 산정값으로 파티 캐릭터에 자동 지급한다.
+  // 참조: server/src/combat/rewardGranter.ts (grantCombatGold) — combatRoutes /tick + combatSocketHandler.
 }
