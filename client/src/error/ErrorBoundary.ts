@@ -131,7 +131,7 @@ export class ErrorBoundary {
     const currentScene = this._getCurrentSceneKey();
     const report: ErrorReport = {
       errorType: 'runtime',
-      message: event.message || 'Unknown runtime error',
+      message: this._deriveErrorMessage(event),
       stack: event.error?.stack,
       scene: currentScene,
       userAgent: navigator?.userAgent,
@@ -163,6 +163,26 @@ export class ErrorBoundary {
 
     this._queueError(report);
   };
+
+  /**
+   * window 'error' 이벤트에서 의미 있는(비어 있지 않은) 메시지를 도출한다.
+   * event.message 가 비는 경우(일부 런타임 예외, 비-Error throw 등)에도
+   * 에러 종류/위치/스택 첫 프레임으로 진단 가능한 메시지를 만들어
+   * 서버 리포트(errorType/message 필수)가 유실되지 않게 한다.
+   */
+  private _deriveErrorMessage(event: ErrorEvent): string {
+    if (event.message && event.message.trim()) return event.message;
+    const err = event.error;
+    if (err instanceof Error) {
+      const name = err.name || 'Error';
+      if (err.message && err.message.trim()) return `${name}: ${err.message}`;
+      const firstFrame = err.stack?.split('\n')[1]?.trim();
+      return firstFrame ? `${name} (${firstFrame})` : name;
+    }
+    if (err != null) return `Non-Error thrown: ${String(err)}`;
+    if (event.filename) return `Unknown error at ${event.filename}:${event.lineno}:${event.colno}`;
+    return 'Unknown runtime error';
+  }
 
   // ── private: 네트워크 모니터 ──
 
@@ -251,6 +271,15 @@ export class ErrorBoundary {
   // ── private: 에러 리포팅 (서버 전송) ──
 
   private _queueError(report: ErrorReport): void {
+    // 서버 /api/errors 는 errorType/message 가 비면 400 으로 거부한다.
+    // 빈 리포트가 조용히 유실되지 않도록 최소값을 보장한다(진단 가능성 유지).
+    if (!report.message || !report.message.trim()) {
+      report.message = 'Unknown error (메시지 없음)';
+    }
+    if (!report.errorType) {
+      report.errorType = 'unknown';
+    }
+
     this.errorQueue.push(report);
 
     // 큐 크기 제한 (메모리 보호)
