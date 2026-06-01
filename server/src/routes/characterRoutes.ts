@@ -118,6 +118,10 @@ export async function characterRoutes(fastify: FastifyInstance): Promise<void> {
           classId,
           hp: stats.hp,
           mp: stats.mp,
+          // 신규 캐릭터는 클래스 기본 스탯으로 풀 HP/MP 시작.
+          // maxHp/maxMp 를 빠뜨리면 schema 기본값(200/100)이 남아 hp>maxHp 불일치(체력바 250%)가 발생한다.
+          maxHp: stats.hp,
+          maxMp: stats.mp,
         },
       });
 
