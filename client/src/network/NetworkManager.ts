@@ -333,7 +333,7 @@ export interface SocketEvents {
 
 const DEFAULT_CONFIG: NetworkConfig = {
   serverUrl: (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_SERVER_URL)
-    || window.location.origin,
+    || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'),
   maxReconnectAttempts: 10,
   reconnectIntervalMs: 3000,
   restTimeoutMs: 15_000,
