@@ -863,7 +863,12 @@ class NetworkManager {
       signal: AbortSignal.timeout(this.config.restTimeoutMs),
     });
 
-    if (response.status === 401 && !retried && this._refreshToken) {
+    // /api/auth/refresh 자신의 401 에는 토큰 갱신 재시도를 하지 않는다.
+    // (그러지 않으면 refresh 401 → refreshAuth() → refresh 재요청(retried=false) → 401 → …
+    //  무한 재귀가 발생해 MainMenuScene 이 "기존 세션 확인 중..." 상태에서 영영 멈춘다.)
+    const isRefreshCall = url.includes('/api/auth/refresh');
+
+    if (response.status === 401 && !retried && !isRefreshCall && this._refreshToken) {
       const refreshed = await this.refreshAuth();
       if (refreshed) {
         // 갱신된 토큰으로 재시도
