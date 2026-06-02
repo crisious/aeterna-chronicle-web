@@ -132,7 +132,11 @@ afterEach(() => {
 });
 
 describe('browser compatibility bootstrap', () => {
-  test('Safari WebKit은 WebGL 사용 가능해도 Canvas 호환 모드로 강제한다', () => {
+  // 회귀 가드 — 과거엔 Safari/WebKit 을 WebGL 가용 여부와 무관하게 Canvas 로 강제했다.
+  // 그러나 Canvas 2D 폴백 렌더러에 null 컨텍스트 drawImage 크래시가 있어,
+  // WebGL 이 멀쩡한 Safari 사용자까지 "예기치 않은 오류 — Cannot read properties of
+  // null (reading 'drawImage')" 로 죽었다. 수정 후엔 WebGL 가용 시 엔진 무관하게 WebGL 을 쓴다.
+  test('Safari WebKit은 WebGL 가용 시 WebGL 렌더러를 쓴다 (Canvas 강제 안 함 — drawImage 크래시 회귀 가드)', () => {
     const { body, documentMock } = createDocumentMock(true);
 
     stubGlobal('document', documentMock as unknown as Document);
@@ -154,7 +158,40 @@ describe('browser compatibility bootstrap', () => {
 
     const caps = detectAndApply();
 
+    // WebGL2 가 가용하므로 Safari 라도 WebGL 렌더러를 쓴다(Canvas 강제 금지).
+    expect(caps.renderer).toBe('webgl');
+    expect(caps.webglVersion).toBe(2);
+    // backdrop-filter·color-mix 모두 지원하므로 호환 모드는 normal.
+    expect(caps.compatMode).toBe('normal');
+    expect(body.getAttribute('data-renderer')).toBe('webgl');
+    // 엔진 판별 자체는 그대로 webkit 으로 표기(CSS 폴백 시트가 참조).
+    expect(body.getAttribute('data-browser')).toBe('webkit');
+  });
+
+  test('Safari WebKit은 WebGL 부재 시에만 Canvas 폴백으로 내려간다', () => {
+    const { body, documentMock } = createDocumentMock(false);
+
+    stubGlobal('document', documentMock as unknown as Document);
+    stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15',
+      platform: 'MacIntel',
+      maxTouchPoints: 0,
+    } as Navigator);
+    stubGlobal('CSS', {
+      supports: (prop: string, value: string) => {
+        if (prop === '-webkit-touch-callout') return true;
+        if (prop === 'backdrop-filter' || prop === '-webkit-backdrop-filter') return value === 'blur(4px)';
+        if (prop === 'color') return value.startsWith('color-mix');
+        if (prop === 'height') return value === '100dvh';
+        return false;
+      },
+    } as CSS);
+    stubGlobal('sessionStorage', createStorageMock() as Storage);
+
+    const caps = detectAndApply();
+
     expect(caps.renderer).toBe('canvas');
+    expect(caps.webglVersion).toBe(0);
     expect(caps.compatMode).toBe('canvas');
     expect(body.getAttribute('data-renderer')).toBe('canvas');
     expect(body.getAttribute('data-browser')).toBe('webkit');
