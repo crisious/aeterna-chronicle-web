@@ -1001,7 +1001,7 @@ export class LobbyScene extends Phaser.Scene {
   private async _acceptQuestFromPanel(quest: QuestData, source: QuestPanelSource): Promise<void> {
     if (source === 'server' && this.characterData?.characterId) {
       try {
-        await networkManager.acceptQuest(quest.id, this.characterData.characterId);
+        await networkManager.acceptQuest(quest.id, this.characterData.level ?? 1);
       } catch {
         this._showNotification('서버 수주 실패: 로컬 진행 처리');
         return;
