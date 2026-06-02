@@ -2031,10 +2031,12 @@ export class BattleScene extends Phaser.Scene {
     }
 
     try {
+      // 서버 전투 계약: 파티 캐릭터 DB id 배열 + zoneId(서버가 zone 의 DB 몬스터를 해결).
+      // characterId 는 세션의 활성 캐릭터(networkManager.activeCharacterId)를 우선 사용한다.
+      const characterId = this._initData.characterId ?? networkManager.activeCharacterId ?? networkManager.userId ?? '';
       const result = await networkManager.combatStart({
-        characterId: this._initData.characterId ?? networkManager.userId ?? '',
+        partyCharacterIds: characterId ? [characterId] : [],
         zoneId: this._initData.zoneId,
-        monsterId: this._initData.monsterId,
         // CHRONO-S8: 현재 시대 전달 → 서버가 ATB SpeedTier 매핑 자동 적용
         eraId: this._initData.eraId,
       });

@@ -321,6 +321,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
 
   private _selectExistingCharacter(char: CharacterData): void {
+    networkManager.setActiveCharacter(char.id);
     this.scene.start('LobbyScene', {
       characterId: char.id,
       characterName: char.name,
@@ -562,6 +563,7 @@ export class CharacterSelectScene extends Phaser.Scene {
 
       if (this.nameInput) { this.nameInput.remove(); this.nameInput = null; }
 
+      networkManager.setActiveCharacter(char.id);
       this.scene.start('LobbyScene', {
         characterId: char.id,
         characterName: char.name,

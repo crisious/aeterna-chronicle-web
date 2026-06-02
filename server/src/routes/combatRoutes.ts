@@ -278,6 +278,8 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
     autoMode?: boolean;
     /** CHRONO-S7: 시대 기반 ATB SpeedTier 적용 (ancient/present/ruined_future) */
     eraId?: string;
+    /** zone id — monsterIds 미지정 시 서버가 이 zone(monsters.location)의 DB 몬스터로 전투를 구성한다. */
+    zoneId?: string;
   }
 
   const toFiniteNumber = (value: number | undefined, fallback: number): number => (
@@ -294,7 +296,7 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(401).send({ error: '인증이 필요합니다.' });
     }
 
-    const { partyCharacterIds, monsterIds, party, monsters, autoMode, eraId } = request.body;
+    const { partyCharacterIds, monsterIds, party, monsters, autoMode, eraId, zoneId } = request.body;
     const legacyPayload = Array.isArray(party) || Array.isArray(monsters);
     const effectivePartyCharacterIds = partyCharacterIds?.length
       ? partyCharacterIds
@@ -312,8 +314,8 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
       return reply.status(400).send({ error: '레거시 전투 페이로드의 party/monsters 배열이 유효하지 않습니다.' });
     }
 
-    if (!legacyPayload && !monsterIds?.length) {
-      return reply.status(400).send({ error: '파티 캐릭터 ID와 몬스터 ID 모두 필요합니다.' });
+    if (!legacyPayload && !monsterIds?.length && !zoneId) {
+      return reply.status(400).send({ error: '파티 캐릭터 ID와 (몬스터 ID 또는 zoneId) 가 필요합니다.' });
     }
 
     try {
@@ -448,11 +450,27 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           });
         }
       } else {
+        // monsterIds 가 없으면 zone 기반으로 DB 몬스터를 해결한다.
+        // (클라 하드코딩 id ↔ 시나리오 인카운터 id ↔ DB 몬스터 id 가 분열돼 있어,
+        //  서버가 monsters.location = zoneId 로 직접 조회하는 것이 유일하게 정합적인 경로다.)
+        let effectiveMonsterIds = monsterIds ?? [];
+        if (!effectiveMonsterIds.length && zoneId) {
+          const zoneMonsters = await prisma.monster.findMany({
+            where: { location: zoneId, isActive: true },
+            orderBy: { level: 'asc' },
+            take: 3,
+          });
+          effectiveMonsterIds = zoneMonsters.map((m) => m.id);
+        }
+        if (!effectiveMonsterIds.length) {
+          return reply.status(400).send({ error: '전투에 사용할 몬스터를 찾을 수 없습니다(zoneId/monsterIds).' });
+        }
+
         // DB에서 몬스터 조회
         const dbMonsters = await prisma.monster.findMany({
-          where: { id: { in: monsterIds ?? [] }, isActive: true },
+          where: { id: { in: effectiveMonsterIds }, isActive: true },
         });
-        if (dbMonsters.length !== monsterIds?.length) {
+        if (dbMonsters.length !== effectiveMonsterIds.length) {
           return reply.status(400).send({ error: '존재하지 않거나 비활성 몬스터가 포함되어 있습니다.' });
         }
 
