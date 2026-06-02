@@ -69,12 +69,15 @@ export interface CreateCharacterRequest {
 // ── 전투 타입 ─────────────────────────────────────────────────
 
 export interface CombatStartRequest {
-  characterId: string;
+  /** 서버 계약: 파티 캐릭터 DB id 배열. */
+  partyCharacterIds: string[];
+  /** zone id — monsterIds 미지정 시 서버가 이 zone 의 DB 몬스터로 전투를 구성한다. */
   zoneId?: string;
-  dungeonId?: string;
-  monsterId?: string;
+  /** 명시적 DB 몬스터 id 배열(선택). 없으면 서버가 zoneId 로 해결. */
+  monsterIds?: string[];
   /** CHRONO-S8: 현재 시대 (ancient/present/ruined_future) — 서버 ATB tier 적용 */
   eraId?: string;
+  autoMode?: boolean;
 }
 
 export interface CombatActionRequest {
@@ -358,6 +361,8 @@ class NetworkManager {
   private _refreshToken: string | null = null;
   private _userId: string | null = null;
   private _username: string | null = null;
+  /** 현재 플레이 중인 캐릭터의 DB id(서버 전투/존 API 의 파티 식별자). 캐릭터 선택/생성 시 설정. */
+  private _activeCharacterId: string | null = null;
 
   constructor(config?: Partial<NetworkConfig>) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -403,6 +408,9 @@ class NetworkManager {
   get isAuthenticated(): boolean { return !!this._token; }
   get userId(): string | null { return this._userId; }
   get username(): string | null { return this._username; }
+  /** 현재 플레이 캐릭터 DB id. 서버 전투 partyCharacterIds 등에 사용. */
+  get activeCharacterId(): string | null { return this._activeCharacterId; }
+  setActiveCharacter(characterId: string | null): void { this._activeCharacterId = characterId; }
 
   // ── 연결 상태 ───────────────────────────────────────────────
 

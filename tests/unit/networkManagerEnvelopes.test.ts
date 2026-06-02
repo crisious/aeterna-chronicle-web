@@ -85,4 +85,30 @@ describe('NetworkManager — 서버 응답 봉투 언래핑', () => {
     const body = JSON.parse(String(init.body));
     expect(body.playerLevel).toBe(7);
   });
+
+  test('setActiveCharacter/activeCharacterId: 세션 활성 캐릭터 id 보관', () => {
+    networkManager.setActiveCharacter('char-xyz');
+    expect(networkManager.activeCharacterId).toBe('char-xyz');
+    networkManager.setActiveCharacter(null);
+    expect(networkManager.activeCharacterId).toBeNull();
+  });
+
+  test('combatStart: 서버 계약(partyCharacterIds 배열 + zoneId)으로 전송 (단수 characterId/monsterId 아님)', async () => {
+    const fetchMock = vi.fn(async () => ({
+      status: 200,
+      ok: true,
+      json: async () => ({ success: true, combatId: 'x' }),
+      text: async () => '{}',
+    } as unknown as Response));
+    vi.stubGlobal('fetch', fetchMock);
+    await networkManager.combatStart({ partyCharacterIds: ['c1'], zoneId: 'erebos_outskirts', eraId: 'present' });
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const body = JSON.parse(String(init.body));
+    expect(Array.isArray(body.partyCharacterIds)).toBe(true);
+    expect(body.partyCharacterIds).toEqual(['c1']);
+    expect(body.zoneId).toBe('erebos_outskirts');
+    // 구 계약의 단수 필드를 보내지 않는다(서버가 무시해 항상 400 나던 원인)
+    expect(body.characterId).toBeUndefined();
+    expect(body.monsterId).toBeUndefined();
+  });
 });
