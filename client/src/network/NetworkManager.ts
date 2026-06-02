@@ -581,9 +581,25 @@ class NetworkManager {
   // ── 인벤토리 API (P25-04) ──────────────────────────────────
 
   async getInventory(characterId: string): Promise<InventoryItem[]> {
-    const res = await this.get<{ items?: InventoryItem[]; slots?: InventoryItem[] } | InventoryItem[]>(`/api/inventory/${characterId}`);
-    if (Array.isArray(res)) return res;
-    return (res as any)?.items ?? (res as any)?.slots ?? [];
+    const res = await this.get<unknown>(`/api/inventory/${characterId}`);
+    const rows = Array.isArray(res)
+      ? res
+      : ((res as { items?: unknown[]; slots?: unknown[] })?.items ?? (res as { slots?: unknown[] })?.slots ?? []);
+    // 서버는 { ...slot, item: { name, type, grade, stats } } 중첩 형태로 반환한다.
+    // 클라 InventoryItem(평탄: name/type/rarity/stats)으로 정규화한다(rarity ← item.grade).
+    // 정규화하지 않으면 InventoryUI 가 item.rarity(undefined).toUpperCase() 로 크래시한다.
+    return (rows as Array<Record<string, any>>).map((row) => {
+      const it = row?.item as Record<string, any> | undefined | null;
+      return {
+        id: String(row?.id ?? ''),
+        itemId: String(row?.itemId ?? ''),
+        name: String(it?.name ?? row?.name ?? row?.itemCode ?? row?.itemId ?? '???'),
+        type: String(it?.type ?? row?.type ?? ''),
+        quantity: Number(row?.quantity ?? 1),
+        rarity: String(it?.grade ?? row?.rarity ?? 'common'),
+        stats: (it?.stats ?? row?.stats ?? undefined) as Record<string, number> | undefined,
+      };
+    });
   }
 
   async equipItem(characterId: string, slotId: string): Promise<{ success: boolean }> {
