@@ -570,8 +570,10 @@ class NetworkManager {
     return (res as { quests?: QuestData[] })?.quests ?? [];
   }
 
-  async acceptQuest(questId: string, characterId: string): Promise<QuestData> {
-    return this.post<QuestData>(`/api/quests/${questId}/accept`, { characterId });
+  async acceptQuest(questId: string, playerLevel: number): Promise<QuestData> {
+    // 서버는 인증된 actor 를 사용하고 본문에서 { playerLevel } 만 받는다(characterId 미사용).
+    // playerLevel 을 보내지 않으면 400 'playerLevel 필수' 로 수주가 항상 실패한다.
+    return this.post<QuestData>(`/api/quests/${questId}/accept`, { playerLevel });
   }
 
   async completeQuest(questId: string, characterId: string): Promise<{ quest: QuestData; rewards: unknown }> {

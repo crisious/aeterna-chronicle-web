@@ -71,4 +71,18 @@ describe('NetworkManager — 서버 응답 봉투 언래핑', () => {
     expect(inv[0].rarity).toBe('common');
     expect(() => inv[0].rarity.toUpperCase()).not.toThrow();
   });
+
+  test('acceptQuest: 서버 필수값 playerLevel 을 요청 본문에 포함해 전송', async () => {
+    const fetchMock = vi.fn(async () => ({
+      status: 201,
+      ok: true,
+      json: async () => ({ id: 'quest-1' }),
+      text: async () => '{}',
+    } as unknown as Response));
+    vi.stubGlobal('fetch', fetchMock);
+    await networkManager.acceptQuest('quest-1', 7);
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const body = JSON.parse(String(init.body));
+    expect(body.playerLevel).toBe(7);
+  });
 });
