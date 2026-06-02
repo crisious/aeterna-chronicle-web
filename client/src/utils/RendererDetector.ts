@@ -134,6 +134,27 @@ function probeFeatures(): {
 }
 
 /**
+ * 렌더러 결정 (순수 함수 — 테스트 가능).
+ *
+ * 규칙:
+ *  - URL override 가 있으면 그대로 따른다(?renderer=webgl|canvas).
+ *  - 그 외에는 WebGL 이 실제로 가용하면 엔진(Safari/WebKit/iOS 포함) 무관하게 WebGL 사용.
+ *  - WebGL 이 진짜로 없을 때(version 0)만 Canvas 2D 폴백.
+ *
+ * 주의: 과거엔 Safari/WebKit·iOS 를 WebGL 가용 여부와 무관하게 Canvas 로 강제했으나,
+ * Canvas 2D 폴백 렌더러에 null 컨텍스트 drawImage 크래시("예기치 않은 오류")가 있어
+ * WebGL 이 멀쩡한 Safari 사용자까지 크래시했다. 실제 컨텍스트 손실은 런타임에서
+ * attachContextLossHandler 가 처리한다.
+ */
+export function decideRenderer(
+  webglVersion: 0 | 1 | 2,
+  rendererOverride: RendererMode | null,
+): RendererMode {
+  if (rendererOverride) return rendererOverride;
+  return webglVersion === 0 ? 'canvas' : 'webgl';
+}
+
+/**
  * 메인 검출 + body 속성 일괄 부여
  * main.ts 부트스트랩에서 가장 먼저 호출
  */
@@ -144,11 +165,7 @@ export function detectAndApply(): RendererCapabilities {
   const isIOSSafari = detectIOSSafari();
   const features = probeFeatures();
 
-  const shouldForceCanvas =
-    rendererOverride === 'canvas' ||
-    webgl.version === 0 ||
-    (rendererOverride !== 'webgl' && (engine === 'webkit' || isIOSSafari));
-  const renderer: RendererMode = shouldForceCanvas ? 'canvas' : 'webgl';
+  const renderer: RendererMode = decideRenderer(webgl.version, rendererOverride);
 
   let compatMode: CompatMode = 'normal';
   if (renderer === 'canvas') {
