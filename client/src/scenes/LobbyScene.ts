@@ -815,10 +815,10 @@ export class LobbyScene extends Phaser.Scene {
       items.forEach((item: any, i: number) => {
         if (i >= 8) return; // 최대 8개 표시
         const y = headerY + 30 + i * 36;
-        const itemName = item.item?.name ?? item.itemCode ?? item.itemId ?? '???';
+        const itemName = item.name ?? item.item?.name ?? item.itemCode ?? item.itemId ?? '???';
         const qty = item.quantity ?? 1;
         const equipped = item.isEquipped ? '장착중' : '';
-        const rarity = item.item?.rarity ?? '';
+        const rarity = item.rarity ?? item.item?.rarity ?? '';
 
         // 등급별 색상
         const rarityColors: Record<string, string> = {

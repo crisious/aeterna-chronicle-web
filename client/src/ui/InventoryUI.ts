@@ -348,7 +348,7 @@ export class InventoryUI {
     };
 
     addLine(item.name, '#ffffff', '16px');
-    addLine(`[${item.rarity.toUpperCase()}] ${item.type}`, '#aaaacc', '12px');
+    addLine(`[${(item.rarity ?? 'common').toUpperCase()}] ${item.type}`, '#aaaacc', '12px');
     addLine(`수량: ${item.quantity}`, '#cccccc');
 
     if (item.stats) {

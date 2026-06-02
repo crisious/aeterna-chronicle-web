@@ -51,4 +51,24 @@ describe('NetworkManager — 서버 응답 봉투 언래핑', () => {
     const quests = await networkManager.getQuests('char-1');
     expect(quests).toEqual([]);
   });
+
+  test('getInventory: 서버 중첩({...slot, item:{name,grade}})을 평탄 InventoryItem 으로 정규화(rarity←grade)', async () => {
+    mockJson({ success: true, data: [{ id: 's1', itemId: 'i1', quantity: 3, item: { name: '수련용 장검', type: 'weapon', grade: 'rare', stats: { attack: 10 } } }] });
+    const inv = await networkManager.getInventory('char-1');
+    expect(inv).toHaveLength(1);
+    expect(inv[0].name).toBe('수련용 장검');
+    expect(inv[0].rarity).toBe('rare');
+    expect(inv[0].type).toBe('weapon');
+    expect(inv[0].quantity).toBe(3);
+    // rarity 는 항상 string → InventoryUI 의 .toUpperCase() 크래시 방지
+    expect(typeof inv[0].rarity).toBe('string');
+    expect(() => inv[0].rarity.toUpperCase()).not.toThrow();
+  });
+
+  test('getInventory: item 이 null 이어도 rarity 는 기본값 string(크래시 금지)', async () => {
+    mockJson({ success: true, data: [{ id: 's2', itemId: 'i2', quantity: 1, item: null }] });
+    const inv = await networkManager.getInventory('char-1');
+    expect(inv[0].rarity).toBe('common');
+    expect(() => inv[0].rarity.toUpperCase()).not.toThrow();
+  });
 });
