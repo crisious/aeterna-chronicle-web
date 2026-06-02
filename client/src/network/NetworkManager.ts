@@ -563,8 +563,11 @@ class NetworkManager {
   // ── 퀘스트 API (P25-04) ────────────────────────────────────
 
   async getQuests(characterId: string): Promise<QuestData[]> {
-    const res = await this.get<QuestData[] | QuestData>('/api/quests', { characterId });
-    return Array.isArray(res) ? res : [];
+    // 서버 GET /api/quests 는 { quests, pagination } 봉투로 응답한다(배열 아님).
+    // 봉투를 풀지 않으면 항상 빈 목록이 되어 퀘스트 패널/추적 HUD 가 영구 공백.
+    const res = await this.get<{ quests?: QuestData[] } | QuestData[]>('/api/quests', { characterId });
+    if (Array.isArray(res)) return res;
+    return (res as { quests?: QuestData[] })?.quests ?? [];
   }
 
   async acceptQuest(questId: string, characterId: string): Promise<QuestData> {
@@ -600,7 +603,10 @@ class NetworkManager {
   }
 
   async getZones(): Promise<ZoneInfo[]> {
-    return this.get<ZoneInfo[]>('/api/world/zones');
+    // 서버 GET /api/world/zones 는 { ok, zones } 봉투로 응답한다(배열 아님).
+    // 봉투를 풀지 않으면 호출부(WorldMapUI._loadZones)의 .find() 가 TypeError 로 throw → 서버 존 병합 실패.
+    const res = await this.get<{ ok?: boolean; zones?: ZoneInfo[] } | ZoneInfo[]>('/api/world/zones');
+    return Array.isArray(res) ? res : (res?.zones ?? []);
   }
 
   // CHRONO-S107/S114: 시대별 필드 encounter 조회 (bgmTrack/ambientEffect 포함)
