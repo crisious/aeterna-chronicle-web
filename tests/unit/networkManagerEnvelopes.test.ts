@@ -111,4 +111,12 @@ describe('NetworkManager — 서버 응답 봉투 언래핑', () => {
     expect(body.characterId).toBeUndefined();
     expect(body.monsterId).toBeUndefined();
   });
+
+  test('combatEnd: 서버 end 응답 형태({success, combatId, statistics}) 그대로 반환 (CombatResult 아님)', async () => {
+    mockJson({ success: true, combatId: 'cb-1', statistics: { totalTicks: 12, totalDamage: 340 } });
+    const res = await networkManager.combatEnd('cb-1');
+    expect(res.success).toBe(true);
+    expect(res.combatId).toBe('cb-1');
+    expect(res.statistics).toEqual({ totalTicks: 12, totalDamage: 340 });
+  });
 });

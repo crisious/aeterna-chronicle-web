@@ -119,6 +119,18 @@ export interface CombatResult {
   chainBonusApplied?: boolean;
 }
 
+/**
+ * 서버 POST /combat/:combatId/end 의 실제 응답 형태.
+ * combat:result 소켓 이벤트(CombatResult — victory/expGained 등)와는 다른 형태이며,
+ * end 라우트는 강제 종료 후 { success, combatId, statistics } 만 반환한다.
+ * (보상/승패는 combat:tick·combat:result·/tick 결과가 정식 소스 — end 응답을 보상에 쓰지 말 것.)
+ */
+export interface CombatEndResult {
+  success: boolean;
+  combatId: string;
+  statistics?: Record<string, unknown> | null;
+}
+
 // ── 퀘스트 타입 ───────────────────────────────────────────────
 
 export interface QuestData {
@@ -552,8 +564,9 @@ class NetworkManager {
     return this.get<CombatState>(`/combat/${combatId}/state`);
   }
 
-  async combatEnd(combatId: string): Promise<CombatResult> {
-    return this.post<CombatResult>(`/combat/${combatId}/end`, { combatId });
+  async combatEnd(combatId: string): Promise<CombatEndResult> {
+    // 서버 end 라우트는 { success, combatId, statistics } 를 반환한다(CombatResult 아님).
+    return this.post<CombatEndResult>(`/combat/${combatId}/end`, { combatId });
   }
 
   async combatLog(combatId: string): Promise<{ log: string[] }> {
