@@ -107,7 +107,11 @@ export async function worldRoutes(fastify: FastifyInstance): Promise<void> {
     const validEra = isChronoEraId(eraId) ? eraId : 'present';
     const encounter = resolveFieldEncounter(code, validEra);
     if (!encounter) {
-      return reply.status(404).send({ ok: false, error: `${code}/${validEra} encounter 정의 없음` });
+      // 필드 인카운터는 시대별 선택적 ambient 데이터다. 미정의는 "리소스 없음(404)"이 아니라
+      // "데이터 없음"으로 보는 것이 정합적이다(존 자체는 존재). 404 로 응답하면 클라
+      // WorldScene.fetchZoneEncounter 가 매 존 선택마다 콘솔 404 소음을 남긴다. 200+null 로 응답하면
+      // 클라가 !resp.encounter 분기로 '필드 데이터 미정의'를 그대로 표시한다(동작 동일, 소음 제거).
+      return reply.send({ ok: true, encounter: null });
     }
     return reply.send({ ok: true, encounter });
   });
