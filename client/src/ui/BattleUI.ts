@@ -145,12 +145,32 @@ export class BattleUI {
     this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 340, 86, 0x000000, 0.35)
       .setDepth(110);
 
-    this.logText = this.scene.add.text(LOG_X, LOG_Y + 4, '', {
+    this._makeLogText();
+  }
+
+  /** 로그 Text 게임오브젝트 생성(배경 제외) — 파괴 시 재생성용으로 분리 */
+  private _makeLogText(): void {
+    this.logText = this.scene.add.text(LOG_X, LOG_Y + 4, this.logLines.join('\n'), {
       fontSize: '11px',
       color: '#aaaaaa',
       lineSpacing: 2,
       wordWrap: { width: 320 },
     }).setDepth(111);
+  }
+
+  /**
+   * logText 가 setText 가능한 상태인지 검사.
+   * Phaser Text 는 내부 CanvasTexture 의 Frame.data 가 살아있어야 setText→updateText→
+   * Frame.updateUVs(this.data.drawImage) 가 동작한다. 씬 전환/텍스처 정리 등으로 프레임이
+   * destroy 되면 data 가 null 이 되어 "Cannot read properties of null (reading 'drawImage')"
+   * 크래시가 난다. 이를 사전 차단한다.
+   */
+  private _isLogTextUsable(): boolean {
+    const t = this.logText as unknown as {
+      scene?: unknown;
+      frame?: { data?: unknown } | null;
+    } | undefined;
+    return !!(t && t.scene && t.frame && t.frame.data);
   }
 
   /** 전투 로그에 한 줄 추가 */
@@ -159,7 +179,22 @@ export class BattleUI {
     if (this.logLines.length > LOG_MAX_LINES) {
       this.logLines.shift();
     }
-    this.logText.setText(this.logLines.join('\n'));
+
+    // 프레임/텍스처가 파괴된 경우 재생성해 크래시 방지(전투 로그는 비치명적 UI)
+    if (!this._isLogTextUsable()) {
+      this._makeLogText();
+    }
+
+    try {
+      this.logText.setText(this.logLines.join('\n'));
+    } catch (err) {
+      // 그래도 실패하면 1회 재생성 후 재시도 — 끝내 실패하면 조용히 무시(게임 진행 유지)
+      console.warn('[BattleUI] logText.setText 실패 — 재생성 시도:', err);
+      try {
+        this._makeLogText();
+        this.logText.setText(this.logLines.join('\n'));
+      } catch { /* 로그 갱신 포기(비치명적) */ }
+    }
   }
 
   // ─── 미니 상태창 ─────────────────────────────────────────────
