@@ -112,6 +112,39 @@ describe('NetworkManager — 서버 응답 봉투 언래핑', () => {
     expect(body.monsterId).toBeUndefined();
   });
 
+  test('combatStart: 클라 zoneId(aether_plains)를 서버 존 코드(erebos_outskirts)로 매핑해 전송 (400 "몬스터 없음" 회귀 가드)', async () => {
+    // 서버 /combat/start 는 monster.location = zoneId 로 DB 몬스터를 해결한다(combatRoutes.ts:457-466).
+    // 클라 id('aether_plains')를 그대로 보내면 0건 매칭 → 400 "전투에 사용할 몬스터를 찾을 수 없습니다".
+    // 반드시 서버 코드('erebos_outskirts')로 매핑해 보내야 한다(getZoneInfo/fetchZoneEncounter 와 동일 변환).
+    const fetchMock = vi.fn(async () => ({
+      status: 200, ok: true,
+      json: async () => ({ success: true, combatId: 'x' }),
+      text: async () => '{}',
+    } as unknown as Response));
+    vi.stubGlobal('fetch', fetchMock);
+    await networkManager.combatStart({ partyCharacterIds: ['c1'], zoneId: 'aether_plains', eraId: 'present' });
+    const body = JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body));
+    expect(body.zoneId).toBe('erebos_outskirts');
+    expect(body.partyCharacterIds).toEqual(['c1']);
+  });
+
+  test('combatStart: 매핑에 없는 zoneId(이미 서버 코드/던전 코드)는 그대로 통과', async () => {
+    const fetchMock = vi.fn(async () => ({ status: 200, ok: true, json: async () => ({}), text: async () => '{}' } as unknown as Response));
+    vi.stubGlobal('fetch', fetchMock);
+    await networkManager.combatStart({ partyCharacterIds: ['c1'], zoneId: 'erebos_outskirts' });
+    const body = JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body));
+    expect(body.zoneId).toBe('erebos_outskirts');
+  });
+
+  test('combatStart: zoneId 미지정이면 zoneId 키를 추가하지 않는다(monsterIds 경로 보존)', async () => {
+    const fetchMock = vi.fn(async () => ({ status: 200, ok: true, json: async () => ({}), text: async () => '{}' } as unknown as Response));
+    vi.stubGlobal('fetch', fetchMock);
+    await networkManager.combatStart({ partyCharacterIds: ['c1'], monsterIds: ['m1'] });
+    const body = JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body));
+    expect(body.zoneId).toBeUndefined();
+    expect(body.monsterIds).toEqual(['m1']);
+  });
+
   test('combatEnd: 서버 end 응답 형태({success, combatId, statistics}) 그대로 반환 (CombatResult 아님)', async () => {
     mockJson({ success: true, combatId: 'cb-1', statistics: { totalTicks: 12, totalDamage: 340 } });
     const res = await networkManager.combatEnd('cb-1');

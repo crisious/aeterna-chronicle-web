@@ -196,6 +196,15 @@ const CLIENT_ZONE_API_CODE_MAP: Record<string, string> = {
   crystal_cave: 'silvanhome_crystal',
 };
 
+/**
+ * 클라이언트 zoneId(예: 'aether_plains')를 서버 존 코드(예: 'erebos_outskirts')로 변환한다.
+ * 매핑에 없는 id 는 그대로 통과(이미 서버 코드이거나 던전 코드인 경우).
+ * 존 상세/인카운터/전투 시작 등 **모든** 서버 호출이 이 변환을 거쳐야 코드 분열로 인한 404/400 을 막는다.
+ */
+function toApiZoneCode(zoneId: string): string {
+  return CLIENT_ZONE_API_CODE_MAP[zoneId] ?? zoneId;
+}
+
 const CLIENT_ZONE_FALLBACKS: Record<string, ZoneInfo> = {
   aether_plains: {
     id: 'aether_plains',
@@ -528,7 +537,11 @@ class NetworkManager {
   // ── 전투 API (P25-05) ──────────────────────────────────────
 
   async combatStart(req: CombatStartRequest): Promise<CombatState> {
-    return this.post<CombatState>('/combat/start', req);
+    // 서버는 zoneId 로 DB 몬스터(monster.location = zoneId)를 해결한다. 클라 zoneId(예: 'aether_plains')는
+    // 서버 코드(예: 'erebos_outskirts')로 매핑해야 한다. 미매핑 전송 시 "몬스터를 찾을 수 없습니다" 400 으로
+    // 서버 권위 전투가 시작되지 못한다(getZoneInfo/fetchZoneEncounter 와 동일한 변환을 적용).
+    const mapped = req.zoneId ? { ...req, zoneId: toApiZoneCode(req.zoneId) } : req;
+    return this.post<CombatState>('/combat/start', mapped);
   }
 
   async combatAction(req: CombatActionRequest): Promise<CombatState> {
@@ -636,7 +649,7 @@ class NetworkManager {
   // ── 존 / NPC API (P25-04) ──────────────────────────────────
 
   async getZoneInfo(zoneId: string): Promise<ZoneInfo> {
-    const apiCode = CLIENT_ZONE_API_CODE_MAP[zoneId] ?? zoneId;
+    const apiCode = toApiZoneCode(zoneId);
     const raw = await this.get<ZoneInfo | ServerZoneDetailResponse>(`/api/world/zones/${apiCode}`);
     return normalizeZoneInfo(zoneId, raw);
   }
@@ -663,7 +676,7 @@ class NetworkManager {
     };
     error?: string;
   }> {
-    const apiCode = CLIENT_ZONE_API_CODE_MAP[zoneId] ?? zoneId;
+    const apiCode = toApiZoneCode(zoneId);
     return this.get(`/api/world/zones/${apiCode}/encounter`, { eraId });
   }
 
