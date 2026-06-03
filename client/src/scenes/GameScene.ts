@@ -214,6 +214,13 @@ export class GameScene extends Phaser.Scene {
       this.hudOrchestrator.init();
     } catch (e) { console.warn('[GameScene] HUDOrchestrator 초기화 실패:', e); }
 
+    // 퀘스트 트래커의 "월드맵 열기" 버튼 → 월드맵 진입.
+    // ESC 키(createInputs)와 동일 동작을 1-클릭으로 제공해, 메인 퀘스트
+    // "말라투스 성소 진입"의 진행 방법을 모르는 사용자가 곧바로 목적지로 이동하게 한다.
+    this.events.on('ui.event.quest.open_map', () => {
+      this.scene.start('WorldScene');
+    });
+
     try {
       const telemetryNetworkShim = {
         emit: (event: string, data: unknown) => networkManager.emit(event, data),
