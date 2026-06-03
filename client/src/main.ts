@@ -27,6 +27,8 @@ import {
     detectAndApply,
     attachContextLossHandler,
     logCapabilities,
+    getRendererOverride,
+    choosePhaserRenderer,
 } from './utils/RendererDetector';
 import type { ChronoEraId } from './time/ChronoTimeline';
 
@@ -50,8 +52,15 @@ if ((import.meta as { env?: { DEV?: boolean } }).env?.DEV) logCapabilities(caps)
  *
  * GDD Phase 1 스펙: 1280x720 픽셀 (최소 해상도), 탑다운 RPG.
  */
-// WebGL 미지원 시 Canvas2D 강제 — 크래시 방지
-const phaserRendererType = caps.renderer === 'canvas' ? Phaser.CANVAS : Phaser.AUTO;
+// 렌더러 타입: 명시적 ?renderer=canvas 일 때만 Canvas 강제. 그 외에는 Phaser.AUTO 가
+// 실제 게임 캔버스에서 WebGL 가용성을 직접 검사하도록 위임한다.
+// (detectWebGL 의 throwaway-canvas probe 가 일부 브라우저에서 false-negative 를 내
+//  Canvas 모드로 떨어뜨리면, Safari 2D 캔버스 메모리 고갈 → CanvasTexture.draw null
+//  context drawImage 크래시가 났다. AUTO 는 실제 캔버스 기준이라 이를 회피한다.)
+const phaserRendererType =
+    choosePhaserRenderer(getRendererOverride()) === 'canvas-forced'
+        ? Phaser.CANVAS
+        : Phaser.AUTO;
 
 const config: Phaser.Types.Core.GameConfig = {
     type: phaserRendererType,
@@ -127,6 +136,19 @@ game.events.once(Phaser.Core.Events.READY, () => {
     const canvas = game.canvas;
     accessibilityManager.init(canvas instanceof HTMLCanvasElement ? canvas : undefined);
 
+    // Phaser.AUTO 가 실제로 고른 렌더러로 body[data-renderer]/[data-compat-mode] 동기화.
+    // detectWebGL 의 사전 추정과 Phaser 의 실제 선택이 어긋날 수 있으므로(특히 probe
+    // false-negative), CSS 호환 시트가 잘못된 폴백을 켜지 않도록 실측값으로 바로잡는다.
+    const actualRenderer: 'canvas' | 'webgl' =
+        game.renderer && game.renderer.type === Phaser.CANVAS ? 'canvas' : 'webgl';
+    if (typeof document !== 'undefined' && document.body) {
+        document.body.setAttribute('data-renderer', actualRenderer);
+        if (actualRenderer === 'webgl' && caps.compatMode === 'canvas') {
+            // 사전엔 canvas 폴백으로 판단했으나 실제로 WebGL 을 쓰게 됐다 → 호환 모드 해제.
+            document.body.setAttribute('data-compat-mode', 'normal');
+        }
+    }
+
     // FINDING-A4 fix part 1: WCAG 2.1.1 Keyboard — 캔버스 키보드 focus 가능하게.
     // Phaser 기본 tabIndex=-1 이라 Tab/Arrow/Enter 가 캔버스에 도달 못 함.
     if (canvas instanceof HTMLCanvasElement) {
@@ -138,7 +160,7 @@ game.events.once(Phaser.Core.Events.READY, () => {
     // FocusManager singleton 이 정의돼 있었으나 init() wiring 누락 상태.
     focusManager.init();
 
-    if (canvas instanceof HTMLCanvasElement && caps.renderer === 'webgl') {
+    if (canvas instanceof HTMLCanvasElement && actualRenderer === 'webgl') {
         attachContextLossHandler(canvas);
     }
 
