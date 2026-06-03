@@ -462,6 +462,29 @@ export async function combatRoutes(fastify: FastifyInstance): Promise<void> {
           });
           effectiveMonsterIds = zoneMonsters.map((m) => m.id);
         }
+        // 폴백: monster.location 시드는 대부분 구(舊) 지역명(twilight_forest 등)이라 Zone.code(erebos_outskirts 등)와
+        // 일치하는 행이 거의 없다. location 직매칭이 0건이면 그 zone 의 levelRange 로 레벨이 맞는 몬스터를 풀에서 선택해
+        // 모든 존이 서버 권위 전투를 시작할 수 있게 한다. (location 정렬 시드가 채워지면 위 블록이 우선한다.)
+        if (!effectiveMonsterIds.length && zoneId) {
+          const zone = await prisma.zone.findUnique({ where: { code: zoneId } });
+          const lr = (zone?.levelRange ?? null) as { min?: number; max?: number } | null;
+          const min = typeof lr?.min === 'number' ? lr.min : 1;
+          const max = typeof lr?.max === 'number' ? lr.max : Math.max(min, 10);
+          let pool = await prisma.monster.findMany({
+            where: { level: { gte: min, lte: max }, isActive: true },
+            orderBy: { level: 'asc' },
+            take: 3,
+          });
+          // 레벨대에 정확히 맞는 몬스터가 없으면 max 이하에서 가장 가까운 것으로 보강.
+          if (!pool.length) {
+            pool = await prisma.monster.findMany({
+              where: { level: { lte: max }, isActive: true },
+              orderBy: { level: 'desc' },
+              take: 3,
+            });
+          }
+          effectiveMonsterIds = pool.map((m) => m.id);
+        }
         if (!effectiveMonsterIds.length) {
           return reply.status(400).send({ error: '전투에 사용할 몬스터를 찾을 수 없습니다(zoneId/monsterIds).' });
         }
