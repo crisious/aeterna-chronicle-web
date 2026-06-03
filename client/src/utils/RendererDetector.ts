@@ -31,7 +31,7 @@ export interface RendererCapabilities {
 
 const CANVAS_FALLBACK_REASON_KEY = 'aeterna:renderer-fallback-reason';
 
-function getRendererOverride(): RendererMode | null {
+export function getRendererOverride(): RendererMode | null {
   if (typeof window === 'undefined') {
     return null;
   }
@@ -152,6 +152,33 @@ export function decideRenderer(
 ): RendererMode {
   if (rendererOverride) return rendererOverride;
   return webglVersion === 0 ? 'canvas' : 'webgl';
+}
+
+/** Phaser 렌더러 선택 결과 — main.ts 가 Phaser.CANVAS/Phaser.AUTO 로 매핑한다. */
+export type PhaserRendererChoice = 'canvas-forced' | 'auto';
+
+/**
+ * Phaser 게임에 넘길 렌더러 타입 결정 (순수 함수 — 테스트 가능).
+ *
+ * 규칙:
+ *  - 사용자가 명시적으로 ?renderer=canvas 를 줬을 때만 Canvas 를 강제('canvas-forced').
+ *  - 그 외에는 항상 'auto' → Phaser.AUTO 가 **실제 게임 캔버스**에서 WebGL 가용성을
+ *    직접 검사해 WebGL/Canvas 를 고른다(가용 시 WebGL, 진짜 없을 때만 Canvas 폴백).
+ *
+ * 왜 detectWebGL 의 결과로 Phaser.CANVAS 를 강제하지 않나:
+ *  detectWebGL 은 throwaway <canvas> 에 getContext('webgl2'|'webgl') 를 한 번 시도하는
+ *  probe 라, 일부 브라우저(Safari 등)에서 실제로는 WebGL 이 멀쩡한데도 false-negative(0)
+ *  를 낸다. 그걸 믿고 Phaser.CANVAS 를 강제하면, Canvas 모드가 게임 캔버스+모든 텍스처+
+ *  모든 Text 를 2D 캔버스로 만들어 Safari 의 2D 캔버스 메모리 한도를 넘기고, 이후
+ *  canvas.getContext('2d') 가 null 을 반환 → Phaser CanvasTexture.draw 의 가드 없는
+ *  this.context.drawImage 에서 "Cannot read properties of null (reading 'drawImage')"
+ *  크래시("예기치 않은 오류")가 난다. Phaser.AUTO 는 실제 캔버스 기준이라 이 false-negative
+ *  를 회피한다. 실제 컨텍스트 손실은 attachContextLossHandler 가 런타임에 처리한다.
+ */
+export function choosePhaserRenderer(
+  rendererOverride: RendererMode | null,
+): PhaserRendererChoice {
+  return rendererOverride === 'canvas' ? 'canvas-forced' : 'auto';
 }
 
 /**
