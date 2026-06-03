@@ -144,7 +144,7 @@ export class ErrorBoundary {
     };
 
     this._queueError(report);
-    this._showRecoveryScreen(report.message, currentScene);
+    this._showRecoveryScreen(report.message, currentScene, report.stack);
   };
 
   private _handleUnhandledRejection = (event: PromiseRejectionEvent): void => {
@@ -325,8 +325,14 @@ export class ErrorBoundary {
   }
 
   /** 복구 화면 표시 (씬 에러 시) */
-  private _showRecoveryScreen(message: string, scene?: string): void {
+  private _showRecoveryScreen(message: string, scene?: string, stack?: string): void {
     if (!this.game) return;
+
+    // 진단용: 마지막 에러 스택을 전역에 노출(자동화/browse 에서 window.__lastErrorStack 으로 수집).
+    try {
+      (window as unknown as { __lastErrorStack?: string }).__lastErrorStack = stack;
+      if (stack) console.error('[ErrorBoundary] 크래시 스택:\n' + stack);
+    } catch { /* ignore */ }
 
     // 기존 오버레이 제거
     this._removeOverlay('error-overlay');
@@ -344,9 +350,15 @@ export class ErrorBoundary {
       <div style="text-align:center; max-width:500px; padding:20px;">
         <h2 style="color:#ff6b6b; margin-bottom:16px;">⚠ 예기치 않은 오류</h2>
         <p style="color:#ccc; margin-bottom:8px;">씬: ${scene ?? 'unknown'}</p>
-        <p style="color:#888; font-size:12px; margin-bottom:24px; word-break:break-all;">
+        <p style="color:#888; font-size:12px; margin-bottom:12px; word-break:break-all;">
           ${message.substring(0, 200)}
         </p>
+        ${stack ? `<pre style="
+          text-align:left; max-width:560px; max-height:200px; overflow:auto;
+          margin:0 auto 24px; padding:10px; background:#111; color:#9fd;
+          font-size:11px; line-height:1.4; border:1px solid #333; border-radius:4px;
+          white-space:pre-wrap; word-break:break-all;
+        ">${stack.substring(0, 1500).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c] as string))}</pre>` : ''}
         <button id="error-retry-btn" style="
           padding:12px 32px; background:#4a90d9; color:white; border:none;
           border-radius:4px; cursor:pointer; font-size:14px; margin-right:8px;
