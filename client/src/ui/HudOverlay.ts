@@ -1,5 +1,11 @@
 import * as Phaser from 'phaser';
 
+import { buildQuestRowHtml, type QuestItem } from './questRowView';
+
+// 하위 호환: 기존 `import { QuestItem } from './HudOverlay'` 경로 유지.
+// 실제 정의/렌더 로직은 phaser-free 모듈 questRowView 에 있다(node 테스트 가능).
+export type { QuestItem };
+
 type InputMode = 'keyboard' | 'gamepad';
 
 export interface HudStatusProps {
@@ -23,17 +29,6 @@ export interface QuickSlotData {
   stackCount: number;
   isUsable: boolean;
   hotkey: string;
-}
-
-export interface QuestItem {
-  questId: string;
-  title: string;
-  objectiveText: string;
-  progressCurrent: number;
-  progressTarget: number;
-  isMainQuest: boolean;
-  isCompleted: boolean;
-  distanceMeters?: number;
 }
 
 export interface DialogueChoice {
@@ -263,6 +258,13 @@ export class HudOverlay {
         const choiceId = choice.dataset.choiceId ?? '';
         this.scene.events.emit('ui.event.dialogue.choice_confirm', { choiceId });
       }
+
+      // 퀘스트 "월드맵 열기" 버튼 → GameScene 이 수신해 WorldScene 진입.
+      const mapBtn = target.closest<HTMLButtonElement>('[data-map-zone-id]');
+      if (mapBtn) {
+        const zoneId = mapBtn.dataset.mapZoneId ?? '';
+        this.scene.events.emit('ui.event.quest.open_map', { zoneId });
+      }
     });
   }
 
@@ -375,7 +377,7 @@ export class HudOverlay {
     // Quest hash: 변경 감지용. 퀘스트 데이터가 동일하면 DOM 재생성 skip
     const questHash = this.quests
       .slice(0, 3)
-      .map((q) => `${q.questId}:${q.progressCurrent}/${q.progressTarget}:${q.isCompleted}:${q.distanceMeters ?? ''}`)
+      .map((q) => `${q.questId}:${q.progressCurrent}/${q.progressTarget}:${q.isCompleted}:${q.distanceMeters ?? ''}:${q.actionHint ?? ''}:${q.mapZoneId ?? ''}`)
       .join('|');
 
     if (questHash === this.lastQuestHash) {
@@ -390,15 +392,8 @@ export class HudOverlay {
       const row = document.createElement('div');
       row.className = 'hud-quest-row';
 
-      const progress = `${quest.progressCurrent}/${quest.progressTarget}`;
-      const typeBadge = quest.isMainQuest ? 'MAIN' : 'SUB';
-      const distance = quest.distanceMeters !== undefined ? ` · ${quest.distanceMeters}m` : '';
-
-      row.innerHTML = `
-        <div class="hud-quest-title">[${typeBadge}] ${quest.title}</div>
-        <div class="hud-quest-body">${quest.objectiveText}</div>
-        <div class="hud-quest-progress">${progress}${distance}</div>
-      `;
+      // 행 내부 HTML 은 phaser-free 순수 빌더가 생성(questRowView, 단위 테스트 대상).
+      row.innerHTML = buildQuestRowHtml(quest);
 
       if (quest.isCompleted) {
         row.classList.add('hud-quest-complete');
@@ -452,6 +447,10 @@ export class HudOverlay {
     .hud-quest-title { font-size:12px; font-weight:700; }
     .hud-quest-body, .hud-quest-progress { font-size:12px; opacity:0.92; }
     .hud-quest-complete { opacity:0.7; }
+    .hud-quest-action { font-size:12px; margin-top:4px; color:#ffd27f; font-weight:600; line-height:1.35; }
+    .hud-quest-map-btn { margin-top:6px; padding:5px 10px; font-size:12px; font-weight:700; color:#0b1422; background:#ffd27f; border:none; border-radius:6px; cursor:pointer; pointer-events:auto; }
+    .hud-quest-map-btn:hover { background:#ffe1a3; }
+    .hud-quest-map-btn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
     #hud-dialogue { position:absolute; left:50%; transform:translateX(-50%); bottom:122px; width:820px; padding:12px; display:none; pointer-events:auto; }
     #hud-dialogue-speaker { font-size:14px; font-weight:700; margin-bottom:6px; }
     #hud-dialogue-body { font-size:18px; line-height:1.45; min-height:56px; }
@@ -526,7 +525,9 @@ export function makeDefaultQuests(): QuestItem[] {
       progressTarget: 3,
       isMainQuest: true,
       isCompleted: false,
-      distanceMeters: 340
+      distanceMeters: 340,
+      actionHint: 'ESC로 월드맵을 열고 «말라투스 성소» 지역을 선택해 진입하세요.',
+      mapZoneId: 'malatus_sanctuary'
     },
     {
       questId: 'Q-SUB-2-02',
