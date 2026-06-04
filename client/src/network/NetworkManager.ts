@@ -8,6 +8,8 @@
 
 import { io, Socket } from 'socket.io-client';
 
+import type { QuestGuide, QuestObjectiveInput } from '../../../shared/types/scenarioRegistry';
+
 // ── 타입 정의 ─────────────────────────────────────────────────
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error';
@@ -140,6 +142,22 @@ export interface QuestData {
   status: 'available' | 'active' | 'complete' | 'turned_in';
   objectives: Array<{ desc: string; current: number; target: number }>;
   rewards: { exp: number; gold: number; items?: string[] };
+}
+
+/** GET /api/quests/:userId/active 응답의 진행 중 퀘스트 1건(서버가 guide 부착). */
+export interface ActiveQuestData {
+  questId: string;
+  status: string;
+  progress: Array<{ objectiveIndex: number; current: number; target: number; completed: boolean }>;
+  quest: {
+    id: string;
+    code: string;
+    name: string;
+    type: string;
+    objectives: QuestObjectiveInput[];
+  } | null;
+  /** 서버가 progress-aware 로 계산해 부착한 진행 가이드(SYNC-258). */
+  guide?: QuestGuide;
 }
 
 // ── 인벤토리 타입 ─────────────────────────────────────────────
@@ -602,6 +620,18 @@ class NetworkManager {
     const res = await this.get<{ quests?: QuestData[] } | QuestData[]>('/api/quests', { characterId });
     if (Array.isArray(res)) return res;
     return (res as { quests?: QuestData[] })?.quests ?? [];
+  }
+
+  /**
+   * 진행 중(active) 퀘스트 목록 + 서버 부착 가이드.
+   * 서버 /active 는 경로의 userId 를 무시하고 인증 행위자 본인 진행만 반환하므로,
+   * 경로 param 은 보유 userId(없으면 'me')를 채워 보낸다(IDOR 안전).
+   */
+  async getActiveQuests(): Promise<ActiveQuestData[]> {
+    const uid = this.userId ?? 'me';
+    const res = await this.get<{ active?: ActiveQuestData[] } | ActiveQuestData[]>(`/api/quests/${encodeURIComponent(uid)}/active`);
+    if (Array.isArray(res)) return res;
+    return (res as { active?: ActiveQuestData[] })?.active ?? [];
   }
 
   async acceptQuest(questId: string, playerLevel: number): Promise<QuestData> {

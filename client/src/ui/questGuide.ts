@@ -12,6 +12,8 @@ import {
   type QuestGuide,
   type QuestObjectiveInput,
 } from '../../../shared/types/scenarioRegistry';
+import type { QuestItem } from './questRowView';
+import type { ActiveQuestData } from '../network/NetworkManager';
 
 export interface QuestGuideFields {
   actionHint?: string;
@@ -36,4 +38,35 @@ export function deriveQuestGuideFields(objectives: readonly QuestObjectiveInput[
 export function questGuideToFields(guide?: QuestGuide | null): QuestGuideFields {
   if (!guide) return {};
   return guideToFields(guide);
+}
+
+/**
+ * 서버 active 퀘스트(진행도 + 부착 guide)를 HUD 퀘스트 행(QuestItem)으로 변환.
+ * objectiveText 는 현재(첫 미완료) objective 의 서사 description, 진행도는 그 objective 의 current/target,
+ * actionHint/mapZoneId 는 서버 guide(없으면 objectives 로 직접 파생)에서 채운다.
+ * quest 가 없으면(상세 누락) null 을 반환 → 호출부에서 걸러낸다.
+ */
+export function activeQuestToQuestItem(active: ActiveQuestData): QuestItem | null {
+  const q = active.quest;
+  if (!q) return null;
+  const objectives = q.objectives ?? [];
+  const progress = active.progress ?? [];
+  const isDone = (i: number) => progress.find((p) => p.objectiveIndex === i)?.completed === true;
+  const firstIncomplete = objectives.findIndex((_, i) => !isDone(i));
+  const curIdx = firstIncomplete === -1 ? 0 : firstIncomplete;
+  const cur = objectives[curIdx];
+  const curProg = progress.find((p) => p.objectiveIndex === curIdx);
+  const fields = active.guide
+    ? questGuideToFields(active.guide)
+    : deriveQuestGuideFields(objectives.map((o, i) => ({ ...o, completed: isDone(i) })));
+  return {
+    questId: q.code,
+    title: q.name,
+    objectiveText: (cur?.description ?? '').trim() || q.name,
+    progressCurrent: curProg?.current ?? 0,
+    progressTarget: curProg?.target ?? cur?.count ?? 1,
+    isMainQuest: q.type === 'main',
+    isCompleted: active.status === 'completed',
+    ...fields,
+  };
 }

@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
-import { deriveQuestGuideFields, questGuideToFields } from '../../client/src/ui/questGuide';
+import { deriveQuestGuideFields, questGuideToFields, activeQuestToQuestItem } from '../../client/src/ui/questGuide';
 import { buildQuestGuide } from '../../shared/types/scenarioRegistry';
+import type { ActiveQuestData } from '../../client/src/network/NetworkManager';
 
 /**
  * 유닛 테스트 — questGuide 표현 레이어(wiring). SSOT buildQuestGuide(SYNC-258)를 QuestItem
@@ -31,5 +32,63 @@ describe('questGuide wiring', () => {
     expect(f.mapZoneId).toBe('mob_time_wraith'); // kill 도 opensMap=true
     expect(questGuideToFields(null)).toEqual({});
     expect(questGuideToFields(undefined)).toEqual({});
+  });
+});
+
+describe('activeQuestToQuestItem — 서버 active 퀘스트 → HUD 행', () => {
+  const makeActive = (over: Partial<ActiveQuestData> = {}): ActiveQuestData => ({
+    questId: 'q1',
+    status: 'in_progress',
+    progress: [
+      { objectiveIndex: 0, current: 1, target: 1, completed: true },
+      { objectiveIndex: 1, current: 2, target: 5, completed: false },
+    ],
+    quest: {
+      id: 'uuid-1',
+      code: 'MQ_CH02',
+      name: '두 번째 기억',
+      type: 'main',
+      objectives: [
+        { type: 'talk', description: '완료된 대화', target: 'npc_a' },
+        { type: 'kill', description: '시간 망령 5마리 처치', target: 'mob_time_wraith', count: 5 },
+      ],
+    },
+    guide: buildQuestGuide([
+      { type: 'talk', description: '완료된 대화', target: 'npc_a', completed: true },
+      { type: 'kill', description: '시간 망령 5마리 처치', target: 'mob_time_wraith', completed: false },
+    ]),
+    ...over,
+  });
+
+  test('현재(첫 미완료) objective 기준으로 매핑한다', () => {
+    const item = activeQuestToQuestItem(makeActive())!;
+    expect(item.questId).toBe('MQ_CH02');
+    expect(item.title).toBe('두 번째 기억');
+    expect(item.isMainQuest).toBe(true);
+    expect(item.isCompleted).toBe(false);
+    expect(item.objectiveText).toBe('시간 망령 5마리 처치'); // 두 번째(미완료) objective
+    expect(item.progressCurrent).toBe(2);
+    expect(item.progressTarget).toBe(5);
+    expect(item.actionHint).toContain('시간 망령 5마리 처치');
+    expect(item.mapZoneId).toBe('mob_time_wraith'); // kill 은 opensMap
+  });
+
+  test('quest 상세가 null 이면 null 반환(호출부에서 제외)', () => {
+    expect(activeQuestToQuestItem(makeActive({ quest: null }))).toBeNull();
+  });
+
+  test('guide 미부착이어도 objectives 로 직접 파생', () => {
+    const a = makeActive({ guide: undefined });
+    const item = activeQuestToQuestItem(a)!;
+    expect(item.actionHint).toContain('시간 망령 5마리 처치');
+  });
+
+  test('비-main 타입은 isMainQuest=false', () => {
+    const item = activeQuestToQuestItem(makeActive({
+      quest: { id: 'u', code: 'SQ_X', name: '심부름', type: 'sub', objectives: [{ type: 'collect', description: '약초 채집', target: 'herb', count: 3 }] },
+      progress: [{ objectiveIndex: 0, current: 0, target: 3, completed: false }],
+    }))!;
+    expect(item.isMainQuest).toBe(false);
+    expect(item.progressTarget).toBe(3);
   });
 });
