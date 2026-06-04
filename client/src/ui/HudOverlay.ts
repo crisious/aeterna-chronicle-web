@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 import { buildQuestRowHtml, type QuestItem } from './questRowView';
+import { deriveQuestGuideFields } from './questGuide';
 
 // 하위 호환: 기존 `import { QuestItem } from './HudOverlay'` 경로 유지.
 // 실제 정의/렌더 로직은 phaser-free 모듈 questRowView 에 있다(node 테스트 가능).
@@ -516,7 +517,10 @@ export function makeDefaultSlots(): QuickSlotData[] {
 }
 
 export function makeDefaultQuests(): QuestItem[] {
-  return [
+  // actionHint/mapZoneId 는 더 이상 퀘스트별로 하드코딩하지 않는다(SYNC-258).
+  // 각 퀘스트의 현재 objective {type,description,target} 로부터 buildQuestGuide 가 일관되게 파생한다 →
+  // 어떤 퀘스트를 추가해도 objective 만 있으면 자동으로 진행 안내가 붙는다("모든 퀘스트에 가이드").
+  const rows: Array<QuestItem & { objective: { type: string; description: string; target?: string } }> = [
     {
       questId: 'Q-MAIN-2-01',
       title: '말라투스 성소 진입',
@@ -526,8 +530,7 @@ export function makeDefaultQuests(): QuestItem[] {
       isMainQuest: true,
       isCompleted: false,
       distanceMeters: 340,
-      actionHint: 'ESC로 월드맵을 열고 «말라투스 성소» 지역을 선택해 진입하세요.',
-      mapZoneId: 'malatus_sanctuary'
+      objective: { type: 'explore', description: '«말라투스 성소» 지역에 진입', target: 'malatus_sanctuary' },
     },
     {
       questId: 'Q-SUB-2-02',
@@ -537,7 +540,8 @@ export function makeDefaultQuests(): QuestItem[] {
       progressTarget: 3,
       isMainQuest: false,
       isCompleted: false,
-      distanceMeters: 120
+      distanceMeters: 120,
+      objective: { type: 'collect', description: '서리이끼 수액 3병 수집', target: 'frostmoss_sap' },
     },
     {
       questId: 'Q-SUB-2-03',
@@ -546,7 +550,9 @@ export function makeDefaultQuests(): QuestItem[] {
       progressCurrent: 1,
       progressTarget: 1,
       isMainQuest: false,
-      isCompleted: true
-    }
+      isCompleted: true,
+      objective: { type: 'talk', description: '경계 초소에 위협 보고 전달', target: 'npc_kaiel' },
+    },
   ];
+  return rows.map(({ objective, ...item }) => ({ ...item, ...deriveQuestGuideFields([objective]) }));
 }
