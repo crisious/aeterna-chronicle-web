@@ -159,7 +159,11 @@ const monsters = [
     expReward: 1,
     goldReward: 1,
     behavior: { aggro_range: 0 },
-    location: 'erebos_outskirts',
+    // QA 픽스처는 실제 플레이어 존(Zone.code)을 점유하면 안 된다. erebos_outskirts 로 두면
+    // combatRoutes where:{location:zoneId} 직매칭에 L1 QA 슬라임이 끼어 '최저 3마리' 인카운터를
+    // 오염시킨다(#209 로 erebos_outskirts 는 실 몬스터 보유). null=어느 존에도 미소속 →
+    // primary 경로에서 빠지고, QA 단독 DB 에선 #208 levelRange 폴백(location 무시)이 집어 전투는 유지.
+    location: null,
   },
   {
     id: 'MON_TEST_001',
@@ -177,7 +181,11 @@ const monsters = [
     expReward: 1,
     goldReward: 1,
     behavior: { aggro_range: 0 },
-    location: 'erebos_outskirts',
+    // QA 픽스처는 실제 플레이어 존(Zone.code)을 점유하면 안 된다. erebos_outskirts 로 두면
+    // combatRoutes where:{location:zoneId} 직매칭에 L1 QA 슬라임이 끼어 '최저 3마리' 인카운터를
+    // 오염시킨다(#209 로 erebos_outskirts 는 실 몬스터 보유). null=어느 존에도 미소속 →
+    // primary 경로에서 빠지고, QA 단독 DB 에선 #208 levelRange 폴백(location 무시)이 집어 전투는 유지.
+    location: null,
   },
 ];
 
