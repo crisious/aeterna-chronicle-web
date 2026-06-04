@@ -7,7 +7,7 @@
  * - 이모지 삽입, 시스템 메시지 스타일 분리
  * - 스크롤 이력 + 최신 고정
  * - chatSocketHandler 연동
- * - GameHUD 하단 연동
+ * - HUD 하단 연동
  */
 
 import * as Phaser from 'phaser';

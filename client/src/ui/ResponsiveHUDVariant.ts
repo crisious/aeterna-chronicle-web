@@ -2,7 +2,7 @@
  * 반응형 HUD 변형 인터페이스 — 에셋 단계 stub (계섬월 Staff Engineer)
  *
  * 토픽: HUD·메뉴·전투 UI 모바일 변형
- * 정합: 기존 GameHUD.ts / BattleUI.ts / DialogueUI.ts 어댑터로 작용 — 침투 최소화.
+ * 정합: 기존 HudOverlay.ts / BattleUI.ts / DialogueUI.ts 어댑터로 작용 — 침투 최소화.
  *
  * 4종 변형 슬롯: hud / battle / menu / dialogue.
  * 각 변형은 데스크탑 레이아웃을 변환만 함 — 별도 신규 컴포넌트 신설 금지(이중 SSOT 회피).
