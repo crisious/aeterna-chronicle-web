@@ -10,6 +10,7 @@ import * as Phaser from 'phaser';
 import {
   HudOverlay,
   HudStatusProps,
+  QuestItem,
   QuickSlotData,
   makeDefaultQuests,
   makeDefaultSlots,
@@ -19,6 +20,8 @@ import {
   resolveNpcDialogueChoice,
   type NpcDialogueSource,
 } from '../gameplay/npcDialogue';
+import { activeQuestToQuestItem } from '../ui/questGuide';
+import { networkManager } from '../network/NetworkManager';
 
 // ── HUDOrchestrator ───────────────────────────────────────────
 
@@ -59,9 +62,29 @@ export class HUDOrchestrator {
     this.quickSlots = makeDefaultSlots();
     this.hud.setStatus(this.hudStatus);
     this.hud.setQuickSlots(this.quickSlots, 'keyboard');
+    // 데모 목업을 먼저(동기) 그려 HUD 가 빈 채로 뜨지 않게 하고, 실 active 퀘스트를 비동기로 덮어쓴다.
     this.hud.setQuests(makeDefaultQuests());
+    void this.loadQuests();
 
     this.bindEvents();
+  }
+
+  /**
+   * 진행 중(active) 퀘스트를 서버에서 가져와 HUD 에 반영한다(서버가 부착한 진행 가이드 포함).
+   * 진행 중 퀘스트가 0개이거나 로드 실패면 데모 목업을 그대로 둔다 — 회귀 없이 단조 개선.
+   */
+  async loadQuests(): Promise<void> {
+    try {
+      const active = await networkManager.getActiveQuests();
+      const items = active
+        .map(activeQuestToQuestItem)
+        .filter((it): it is QuestItem => it !== null);
+      if (items.length > 0) {
+        this.hud.setQuests(items);
+      }
+    } catch (err) {
+      console.warn('[HUDOrchestrator] active 퀘스트 로드 실패 — 데모 목업 유지:', err);
+    }
   }
 
   /**

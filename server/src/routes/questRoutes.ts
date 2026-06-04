@@ -217,10 +217,18 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
     });
     const questMap = new Map(quests.map((q) => [q.id, q]));
 
-    const result = activeProgress.map((qp) => ({
-      ...qp,
-      quest: questMap.get(qp.questId) ?? null,
-    }));
+    const result = activeProgress.map((qp) => {
+      const quest = questMap.get(qp.questId) ?? null;
+      // progress-aware 가이드(SYNC-258): objective 별 완료 플래그를 진행도에서 병합해
+      // buildQuestGuide 가 "첫 미완료 objective"를 현재 안내로 고르게 한다(진행에 따라 안내가 따라감).
+      const objectives = ((quest?.objectives as unknown) as QuestObjectiveInput[]) ?? [];
+      const progress = ((qp.progress as unknown) as Array<{ objectiveIndex: number; completed?: boolean }>) ?? [];
+      const merged = objectives.map((o, i) => ({
+        ...o,
+        completed: progress.find((p) => p.objectiveIndex === i)?.completed ?? false,
+      }));
+      return { ...qp, quest, guide: buildQuestGuide(merged) };
+    });
 
     return reply.send({ active: result, count: result.length });
   });
