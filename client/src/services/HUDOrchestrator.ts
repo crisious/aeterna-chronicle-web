@@ -71,7 +71,10 @@ export class HUDOrchestrator {
 
   /**
    * 진행 중(active) 퀘스트를 서버에서 가져와 HUD 에 반영한다(서버가 부착한 진행 가이드 포함).
-   * 진행 중 퀘스트가 0개이거나 로드 실패면 데모 목업을 그대로 둔다 — 회귀 없이 단조 개선.
+   *
+   * 로드 성공 시 결과를 그대로 반영한다 — 진행 중 퀘스트가 0개면 **빈 목록**으로(가짜 데모 제거,
+   * 수주 UX 정직성). 로드 실패(네트워크/인증)일 때만 init 이 그려둔 데모 목업을 유지한다
+   * ('로드 못함'과 '수주한 게 없음'을 구분).
    */
   async loadQuests(): Promise<void> {
     try {
@@ -79,9 +82,7 @@ export class HUDOrchestrator {
       const items = active
         .map(activeQuestToQuestItem)
         .filter((it): it is QuestItem => it !== null);
-      if (items.length > 0) {
-        this.hud.setQuests(items);
-      }
+      this.hud.setQuests(items);
     } catch (err) {
       console.warn('[HUDOrchestrator] active 퀘스트 로드 실패 — 데모 목업 유지:', err);
     }
