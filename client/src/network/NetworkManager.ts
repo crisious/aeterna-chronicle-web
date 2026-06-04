@@ -636,6 +636,17 @@ class NetworkManager {
     return (res as { active?: ActiveQuestData[] })?.active ?? [];
   }
 
+  /**
+   * 완료(turned_in)된 퀘스트의 quest id 목록. 로비 보드가 이미 끝낸 퀘스트를 '완료됨'으로 표시.
+   * /active 와 동일하게 경로 userId 는 무시되고 authUserId 본인 완료만 반환(IDOR 안전).
+   */
+  async getCompletedQuestIds(): Promise<string[]> {
+    const uid = this.userId ?? 'me';
+    const res = await this.get<{ completed?: string[] } | string[]>(`/api/quests/${encodeURIComponent(uid)}/completed`);
+    if (Array.isArray(res)) return res;
+    return (res as { completed?: string[] })?.completed ?? [];
+  }
+
   async acceptQuest(questId: string, playerLevel: number): Promise<QuestData> {
     // 서버는 인증된 actor 를 사용하고 본문에서 { playerLevel } 만 받는다(characterId 미사용).
     // playerLevel 을 보내지 않으면 400 'playerLevel 필수' 로 수주가 항상 실패한다.

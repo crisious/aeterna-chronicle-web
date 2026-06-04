@@ -876,12 +876,14 @@ export class LobbyScene extends Phaser.Scene {
     }
 
     try {
-      // 카탈로그(수주 가능)에 진행 중(active) 상태를 오버레이 → 수주한 퀘스트는 '진행중'+실 진행도로 표시.
-      const [catalog, active] = await Promise.all([
+      // 카탈로그(수주 가능)에 진행 중(active) + 완료(turned_in) 상태를 오버레이 →
+      // 수주한 퀘스트는 '진행중'+실 진행도, 이미 끝낸 퀘스트는 '완료됨'(다시 [수주] 안 뜸).
+      const [catalog, active, completedIds] = await Promise.all([
         networkManager.getQuests(characterId),
         networkManager.getActiveQuests().catch(() => []),
+        networkManager.getCompletedQuestIds().catch(() => []),
       ]);
-      const quests = mergeActiveQuestStatus(catalog, active);
+      const quests = mergeActiveQuestStatus(catalog, active, completedIds);
       this._showQuestPanel(quests, 'server');
       this._showNotification(`퀘스트: ${quests.length}개 표시`);
     } catch {

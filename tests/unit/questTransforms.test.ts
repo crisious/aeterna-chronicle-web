@@ -81,4 +81,15 @@ describe('mergeActiveQuestStatus', () => {
   test('active 가 비면 카탈로그 그대로', () => {
     expect(mergeActiveQuestStatus(catalog, [])).toEqual(catalog);
   });
+
+  test('완료 목록(completedIds)의 퀘스트는 status=turned_in, 나머지는 그대로', () => {
+    const merged = mergeActiveQuestStatus(catalog, [], ['b']);
+    expect(merged.find((q) => q.id === 'b')!.status).toBe('turned_in');
+    expect(merged.find((q) => q.id === 'a')!.status).toBe('available'); // 미완료·미수주
+  });
+
+  test('active 가 completed 보다 우선(재수주한 repeatable 은 진행 중으로)', () => {
+    const merged = mergeActiveQuestStatus(catalog, [mkActive('a', 1, 3)], ['a']);
+    expect(merged.find((q) => q.id === 'a')!.status).toBe('active');
+  });
 });

@@ -46,27 +46,36 @@ export function rawQuestRowToQuestData(row: RawQuestRow): QuestData {
 }
 
 /**
- * 진행 중(active) 상태를 카탈로그에 오버레이한다.
- * 수주한 퀘스트는 status='active'(전 objective 달성 시 'complete') + 실 진행도(current/target)로 바뀐다.
- * 매칭 키는 quest row id. active 가 없으면 카탈로그 항목을 그대로 둔다.
+ * 진행 중(active) + 완료(turned_in) 상태를 카탈로그에 오버레이한다.
+ * - 수주한 퀘스트: status='active'(전 objective 달성 시 'complete') + 실 진행도(current/target).
+ * - 완료한 퀘스트(진행 중 아님): status='turned_in' — 보드가 다시 [수주] 를 노출하지 않게 한다.
+ * 매칭 키는 quest row id. active 우선(재수주 가능한 repeatable 은 진행 중이 우선).
  */
-export function mergeActiveQuestStatus(catalog: QuestData[], active: ActiveQuestData[]): QuestData[] {
+export function mergeActiveQuestStatus(
+  catalog: QuestData[],
+  active: ActiveQuestData[],
+  completedIds: readonly string[] = [],
+): QuestData[] {
   const activeById = new Map<string, ActiveQuestData>();
   for (const a of active) {
     if (a.quest?.id) activeById.set(a.quest.id, a);
   }
+  const completed = new Set(completedIds);
   return catalog.map((q) => {
     const a = activeById.get(q.id);
-    if (!a || !a.quest) return q;
-    const objectives = (a.quest.objectives ?? []).map((o, i) => {
-      const p = a.progress.find((pp) => pp.objectiveIndex === i);
-      return {
-        desc: o.description ?? '',
-        current: p?.current ?? 0,
-        target: p?.target ?? o.count ?? 1,
-      };
-    });
-    const allDone = objectives.length > 0 && objectives.every((o) => o.current >= o.target);
-    return { ...q, status: allDone ? 'complete' : 'active', objectives };
+    if (a && a.quest) {
+      const objectives = (a.quest.objectives ?? []).map((o, i) => {
+        const p = a.progress.find((pp) => pp.objectiveIndex === i);
+        return {
+          desc: o.description ?? '',
+          current: p?.current ?? 0,
+          target: p?.target ?? o.count ?? 1,
+        };
+      });
+      const allDone = objectives.length > 0 && objectives.every((o) => o.current >= o.target);
+      return { ...q, status: allDone ? 'complete' : 'active', objectives };
+    }
+    if (completed.has(q.id)) return { ...q, status: 'turned_in' };
+    return q;
   });
 }

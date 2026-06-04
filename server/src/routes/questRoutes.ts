@@ -232,4 +232,24 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
 
     return reply.send({ active: result, count: result.length });
   });
+
+  /**
+   * GET /api/quests/:userId/completed — 완료(turned_in)된 퀘스트 ID 목록
+   * 로비 보드가 이미 끝낸 퀘스트를 '완료됨'으로 표시(다시 [수주] 노출 방지)하는 데 쓴다.
+   */
+  fastify.get('/api/quests/:userId/completed', async (
+    request: FastifyRequest<{ Params: UserIdParams }>,
+    reply: FastifyReply
+  ) => {
+    // IDOR 방지: params 의 userId 를 신뢰하지 않고 인증된 행위자 본인의 완료 목록만 조회한다.
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const done = await prisma.questProgress.findMany({
+      where: { userId, status: 'completed' },
+      select: { questId: true },
+    });
+    const completed = done.map((d) => d.questId);
+    return reply.send({ completed, count: completed.length });
+  });
 }
