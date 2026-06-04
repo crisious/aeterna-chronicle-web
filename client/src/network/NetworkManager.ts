@@ -9,6 +9,7 @@
 import { io, Socket } from 'socket.io-client';
 
 import type { QuestGuide, QuestObjectiveInput } from '../../../shared/types/scenarioRegistry';
+import { rawQuestRowToQuestData, type RawQuestRow } from './questTransforms';
 
 // ── 타입 정의 ─────────────────────────────────────────────────
 
@@ -615,11 +616,12 @@ class NetworkManager {
   // ── 퀘스트 API (P25-04) ────────────────────────────────────
 
   async getQuests(characterId: string): Promise<QuestData[]> {
-    // 서버 GET /api/quests 는 { quests, pagination } 봉투로 응답한다(배열 아님).
-    // 봉투를 풀지 않으면 항상 빈 목록이 되어 퀘스트 패널/추적 HUD 가 영구 공백.
-    const res = await this.get<{ quests?: QuestData[] } | QuestData[]>('/api/quests', { characterId });
-    if (Array.isArray(res)) return res;
-    return (res as { quests?: QuestData[] })?.quests ?? [];
+    // 서버 GET /api/quests 는 { quests, pagination } 봉투로 가공 전 DB 행을 반환한다.
+    // 봉투를 풀고 각 행을 QuestData 계약(objectives:{desc,current,target}, rewards:{exp,gold,items})으로
+    // 정직하게 매핑한다 — 안 하면 LobbyScene 퀘스트 보드가 undefined 필드로 깨진다(타입 거짓말 제거).
+    const res = await this.get<{ quests?: RawQuestRow[] } | RawQuestRow[]>('/api/quests', { characterId });
+    const rows = Array.isArray(res) ? res : (res?.quests ?? []);
+    return rows.map(rawQuestRowToQuestData);
   }
 
   /**

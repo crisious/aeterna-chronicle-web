@@ -13,6 +13,7 @@ import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
 import { networkManager } from '../network/NetworkManager';
 import type { QuestData } from '../network/NetworkManager';
+import { mergeActiveQuestStatus } from '../network/questTransforms';
 import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
 
 // ── 타입 ────────────────────────────────────────────────────
@@ -875,8 +876,12 @@ export class LobbyScene extends Phaser.Scene {
     }
 
     try {
-      const quests = await networkManager.getQuests(characterId);
-      console.log('[Lobby] 퀘스트:', quests);
+      // 카탈로그(수주 가능)에 진행 중(active) 상태를 오버레이 → 수주한 퀘스트는 '진행중'+실 진행도로 표시.
+      const [catalog, active] = await Promise.all([
+        networkManager.getQuests(characterId),
+        networkManager.getActiveQuests().catch(() => []),
+      ]);
+      const quests = mergeActiveQuestStatus(catalog, active);
       this._showQuestPanel(quests, 'server');
       this._showNotification(`퀘스트: ${quests.length}개 표시`);
     } catch {
