@@ -13,6 +13,7 @@ import {
   abandonQuest,
   QuestError
 } from '../quest/questEngine';
+import { buildQuestGuide, type QuestObjectiveInput } from '../../../shared/types/scenarioRegistry';
 
 // ─── 요청 타입 정의 ─────────────────────────────────────────────
 interface QuestIdParams {
@@ -87,8 +88,15 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
       prisma.quest.count({ where }),
     ]);
 
+    // 각 퀘스트에 objective 파생 가이드를 부착한다(SYNC-258). objectives({type,target,count,description})는
+    // 시드 그대로 DB(JSON)에 저장돼 있으므로, 모든 퀘스트가 서버 권위 가이드를 갖게 된다.
+    const questsWithGuide = quests.map((q) => ({
+      ...q,
+      guide: buildQuestGuide(((q.objectives as unknown) as QuestObjectiveInput[]) ?? []),
+    }));
+
     return reply.send({
-      quests,
+      quests: questsWithGuide,
       pagination: { page: pageNum, limit: limitNum, total, pages: Math.ceil(total / limitNum) },
     });
   });

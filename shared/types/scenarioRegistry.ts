@@ -11200,3 +11200,138 @@ export function getPveDungeonTierNarrative(tier: PveDungeonTier): PveDungeonTier
 export function listPveDungeonTiers(): readonly PveDungeonTier[] {
   return ['novice', 'veteran', 'heroic', 'mythic'];
 }
+
+// ════════════════════════════════════════════════════════════════
+// SYNC-258: 퀘스트 objective 가이드 narrative — 5 종 (kill/collect/talk/explore/craft)
+// 모든 퀘스트의 objective {type,description} 를 "어떻게 진행하는지" 행동 가이드로 파생한다.
+// id→이름 해석은 파이프라인에 없고(불가) 사람이 읽는 텍스트는 description 에 이미 baked-in 이므로,
+// type 별 행동 템플릿의 {what} 토큰에 description 을 치환하는 방식으로 71개 전 퀘스트를 커버한다.
+// ════════════════════════════════════════════════════════════════
+
+export type QuestObjectiveKind = 'kill' | 'collect' | 'talk' | 'explore' | 'craft';
+
+export interface QuestObjectiveGuideNarrative {
+  kind: QuestObjectiveKind;
+  /** UI 배지/라벨 */
+  label: string;
+  /** 행동 아이콘 (이모지) */
+  icon: string;
+  /** 가이드 문구 템플릿 — {what} 토큰에 objective.description 를 치환 */
+  guideTemplate: string;
+  /** 이 종류가 월드맵 이동을 동반하는가 ("월드맵 열기" 버튼 노출 여부) */
+  opensMap: boolean;
+}
+
+export const SCENARIO_QUEST_OBJECTIVE_GUIDES: readonly QuestObjectiveGuideNarrative[] = [
+  {
+    kind: 'explore',
+    label: '탐험',
+    icon: '🗺',
+    guideTemplate: '월드맵(ESC)을 열어 목표 지역으로 이동하세요 — {what}',
+    opensMap: true,
+  },
+  {
+    kind: 'talk',
+    label: '대화',
+    icon: '💬',
+    guideTemplate: '목표 지역에서 해당 NPC를 찾아 대화하세요 — {what}',
+    opensMap: true,
+  },
+  {
+    kind: 'kill',
+    label: '토벌',
+    icon: '⚔',
+    guideTemplate: '목표 지역으로 이동해 전투에서 대상을 처치하세요 — {what}',
+    opensMap: true,
+  },
+  {
+    kind: 'collect',
+    label: '수집',
+    icon: '📦',
+    guideTemplate: '필드 탐색·전투 보상으로 필요한 아이템을 모으세요 — {what}',
+    opensMap: true,
+  },
+  {
+    kind: 'craft',
+    label: '제작',
+    icon: '🔨',
+    guideTemplate: '제작대에서 필요한 재료로 아이템을 제작하세요 — {what}',
+    opensMap: false,
+  },
+];
+
+export function getQuestObjectiveGuideNarrative(kind: QuestObjectiveKind): QuestObjectiveGuideNarrative | undefined {
+  return SCENARIO_QUEST_OBJECTIVE_GUIDES.find((g) => g.kind === kind);
+}
+
+export function listQuestObjectiveKinds(): readonly QuestObjectiveKind[] {
+  return ['kill', 'collect', 'talk', 'explore', 'craft'];
+}
+
+/** buildQuestGuide 입력 — 퀘스트 시드/DB 의 objective 1건 (필요 필드만). */
+export interface QuestObjectiveInput {
+  type: string;
+  description?: string;
+  target?: string;
+  count?: number;
+  /** 진행 완료 여부(있으면 첫 미완료 objective 를 현재 안내 대상으로 고른다). */
+  completed?: boolean;
+}
+
+/** buildQuestGuide 출력 — 한 퀘스트에 대한 파생 가이드. */
+export interface QuestGuide {
+  /** 현재(첫 미완료) objective 의 한 줄 행동 안내. objective 가 전혀 없으면 ''. */
+  actionHint: string;
+  /** 현재 안내가 월드맵 이동을 동반하는가. */
+  opensMap: boolean;
+  /** 월드맵 버튼/존 포커싱에 실을 현재 objective 의 target. opensMap 일 때만. */
+  mapTarget?: string;
+  /** objective 별 가이드 단계 전체(가이드 패널 등 확장용). */
+  steps: QuestGuideStep[];
+}
+
+export interface QuestGuideStep {
+  kind: QuestObjectiveKind | 'unknown';
+  icon: string;
+  text: string;
+  completed: boolean;
+}
+
+const UNKNOWN_OBJECTIVE_ICON = '•';
+
+function questGuideLine(obj: QuestObjectiveInput): { kind: QuestObjectiveKind | 'unknown'; icon: string; text: string } {
+  const what = (obj.description ?? '').trim() || '목표 확인';
+  const narrative = getQuestObjectiveGuideNarrative(obj.type as QuestObjectiveKind);
+  if (!narrative) {
+    // 미지의 objective 타입(이론상 없음 — questCatalog 가 5종으로 강제) → description 만 안내.
+    return { kind: 'unknown', icon: UNKNOWN_OBJECTIVE_ICON, text: what };
+  }
+  return { kind: narrative.kind, icon: narrative.icon, text: narrative.guideTemplate.replace('{what}', what) };
+}
+
+/**
+ * 퀘스트 objectives 를 행동 가이드로 파생한다 (순수 함수, DOM/Phaser 비의존).
+ * actionHint 는 첫 "미완료" objective(완료정보가 없으면 첫 objective)를 대상으로 한다.
+ * 모든 퀘스트가 ≥1 objective 를 가지므로(questCatalog 불변식), 빈 배열만 아니면 항상
+ * 비어있지 않은 actionHint 를 만든다 → "모든 퀘스트에 가이드" 보장의 핵심.
+ */
+export function buildQuestGuide(objectives: readonly QuestObjectiveInput[]): QuestGuide {
+  const steps: QuestGuideStep[] = objectives.map((o) => ({
+    ...questGuideLine(o),
+    completed: o.completed === true,
+  }));
+  if (steps.length === 0) {
+    return { actionHint: '', opensMap: false, steps: [] };
+  }
+  const firstIncomplete = objectives.findIndex((o) => o.completed !== true);
+  const idx = firstIncomplete === -1 ? 0 : firstIncomplete;
+  const current = objectives[idx];
+  const narrative = getQuestObjectiveGuideNarrative(current.type as QuestObjectiveKind);
+  const opensMap = narrative?.opensMap ?? false;
+  return {
+    actionHint: steps[idx].text,
+    opensMap,
+    mapTarget: opensMap ? (current.target || undefined) : undefined,
+    steps,
+  };
+}
