@@ -23,7 +23,9 @@ interface ZoneSeed {
 
 // ─── 시드 데이터 ────────────────────────────────────────────────
 
-const ZONE_SEEDS: ZoneSeed[] = [
+// export: 몬스터 location↔Zone.code 무결성 테스트(tests/unit/monsterLocationZoneIntegrity)가
+// 실제 존 SSOT 로 검증할 수 있도록 공개. 선언 후 .push() 로 보강되지만 참조는 안정적이다.
+export const ZONE_SEEDS: ZoneSeed[] = [
   // ═══ 아르겐티움 (수도) — Lv.1-15 ═════════════════════════════
   {
     code: 'argentium_plaza',

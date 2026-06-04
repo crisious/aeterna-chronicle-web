@@ -73,7 +73,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 15, goldReward: 5,
     behavior: { aggro_range: 5, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 15,
+    location: 'argentium_market', respawnTime: 15,
     lore: '황혼의 숲 초입에 서식하는 작은 슬라임. 이끼를 양분 삼아 살아가며, 위협을 느끼면 산성 점액을 뿜는다.',
   },
   {
@@ -89,7 +89,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 25, goldReward: 8,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 20,
+    location: 'argentium_market', respawnTime: 20,
     lore: '황혼의 숲에 무리 지어 사는 소형 고블린. 약삭빠르고 교활하지만 겁이 많아 체력이 떨어지면 도주한다.',
   },
   {
@@ -105,7 +105,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 35, goldReward: 10,
     behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 25,
+    location: 'argentium_market', respawnTime: 25,
     lore: '어둡고 습한 곳에서 자라난 독버섯의 포자체. 움직이는 존재에 반응해 맹독 포자를 뿌린다.',
   },
   {
@@ -121,7 +121,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 40, goldReward: 12,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 20,
+    location: 'argentium_market', respawnTime: 20,
     lore: '숲의 포식자. 무리를 이뤄 사냥하며, 한 마리가 포효하면 근처의 동료가 합류한다.',
   },
   {
@@ -137,7 +137,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 30, goldReward: 15,
     behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 30, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 30,
+    location: 'argentium_market', respawnTime: 30,
     lore: '에테르 에너지를 먹고 자란 초자연적 나비. 날개의 수정 가루는 연금술 재료로 귀하게 쓰인다.',
   },
   {
@@ -153,7 +153,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 55, goldReward: 18,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'twilight_forest', respawnTime: 30,
+    location: 'argentium_plaza', respawnTime: 30,
     lore: '에테르 오염으로 변이된 고목의 정령. 느리지만 강인하며 체력이 낮아지면 광폭화한다.',
   },
   {
@@ -169,7 +169,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 45, goldReward: 14,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 20,
+    location: 'argentium_sewer', respawnTime: 20,
     lore: '어둠 속에서 날아다니는 대형 박쥐. 초음파로 먹잇감을 혼란시킨 뒤 피를 빨아들인다.',
   },
   {
@@ -186,7 +186,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 65, goldReward: 20,
     behavior: { aggro_range: 3, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 35,
+    location: 'silvanhome_entrance', respawnTime: 35,
     lore: '숲 바닥에 위장해 있다가 다가오는 생물을 감아 올리는 식물형 몬스터. 이동은 못 하지만 사정거리 내에서는 치명적.',
   },
   {
@@ -202,7 +202,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 75, goldReward: 25,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 25, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 25,
+    location: 'silvanhome_entrance', respawnTime: 25,
     lore: '에테르를 불꽃으로 변환하는 능력을 가진 영리한 여우. 환영을 만들어 적을 혼란시키고 도주에 능하다.',
   },
   {
@@ -218,7 +218,7 @@ const twilightForestNormals: MonsterSeed[] = [
     ],
     expReward: 85, goldReward: 28,
     behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 30,
+    location: 'silvanhome_entrance', respawnTime: 30,
     lore: '수백 마리의 반딧불이가 하나의 의지로 뭉친 집합 생명체. 개별로는 약하지만 합쳐지면 강렬한 빛을 발사한다.',
   },
 ];
@@ -239,7 +239,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 60, goldReward: 18,
     behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'kronos_city', respawnTime: 15,
+    location: 'argentium_plaza', respawnTime: 15,
     lore: '크로노스 시 하수구에 서식하는 변이 쥐떼. 에테르 오염으로 비정상적으로 공격적이 되었다.',
   },
   {
@@ -255,7 +255,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 80, goldReward: 25,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'kronos_city', respawnTime: 40,
+    location: 'argentium_tower', respawnTime: 40,
     lore: '시간 왜곡으로 무너진 건물 잔해가 에테르에 의해 형태를 갖춘 존재. 느리지만 방어력이 높다.',
   },
   {
@@ -271,7 +271,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 95, goldReward: 35,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'kronos_city', respawnTime: 30,
+    location: 'britallia_port', respawnTime: 30,
     lore: '시간의 틈에서 빠져나온 인간형 존재. 과거와 현재가 뒤섞인 모습으로 떠돌며, 에테르 반응에 이끌린다.',
   },
   {
@@ -288,7 +288,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 100, goldReward: 30,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'kronos_city', respawnTime: 25,
+    location: 'britallia_port', respawnTime: 25,
     lore: '크로노스의 고대 시계탑 부품이 에테르로 오염되어 자의식을 갖게 된 기계 괴물.',
   },
   {
@@ -304,7 +304,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 110, goldReward: 35,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'kronos_city', respawnTime: 20,
+    location: 'britallia_port', respawnTime: 20,
     lore: '시간의 뒤틀림 속에서 사라진 시민들의 잔류 사념. 물리 공격에 저항하지만 빛 속성에 취약하다.',
   },
   {
@@ -320,7 +320,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 115, goldReward: 38,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'kronos_city', respawnTime: 30,
+    location: 'britallia_port', respawnTime: 30,
     lore: '크로노스 성의 경비 인형이 오래된 에테르 명령을 수행하며 배회한다. 침입자로 인식한 모든 것을 공격한다.',
   },
   {
@@ -336,7 +336,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 125, goldReward: 40,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'kronos_city', respawnTime: 35,
+    location: 'britallia_port', respawnTime: 35,
     lore: '제어를 벗어난 순수 에테르 에너지 덩어리. 불안정하며 근처의 마력을 빨아들이고 폭발한다.',
   },
   {
@@ -352,7 +352,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 135, goldReward: 42,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'kronos_city', respawnTime: 25,
+    location: 'britallia_port', respawnTime: 25,
     lore: '시간 에너지를 날개에 축적한 맹금. 순간적으로 시간을 멈춰 먹잇감을 덮치는 최상위 포식자.',
   },
   {
@@ -368,7 +368,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 140, goldReward: 45,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'kronos_city', respawnTime: 35,
+    location: 'britallia_blackmarket', respawnTime: 35,
     lore: '크로노스 지하 하수도에 서식하는 대형 악어. 차가운 하수에 적응해 얼음 속성을 지니게 되었다.',
   },
   {
@@ -385,7 +385,7 @@ const kronosCityNormals: MonsterSeed[] = [
     ],
     expReward: 155, goldReward: 50,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'kronos_city', respawnTime: 40,
+    location: 'britallia_blackmarket', respawnTime: 40,
     lore: '크로노스 광장의 시간 조각상이 에테르 폭주로 깨어난 것. 시간 속성 공격이 강력하다.',
   },
 ];
@@ -406,7 +406,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 120, goldReward: 38,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 25,
+    location: 'silvanhome_mist', respawnTime: 25,
     lore: '에테리아 마을 주변에 떠도는 순수 에테르 정령. 보통은 온순하지만 위협을 느끼면 반격한다.',
   },
   {
@@ -422,7 +422,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 140, goldReward: 45,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'aetheria_village', respawnTime: 30,
+    location: 'silvanhome_sanctum', respawnTime: 30,
     lore: '과거 전쟁의 기억이 에테르에 각인되어 형태를 갖춘 잔상. 끊임없이 전투를 반복한다.',
   },
   {
@@ -439,7 +439,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 150, goldReward: 48,
     behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 35,
+    location: 'erebos_outskirts', respawnTime: 35,
     lore: '에테르를 양분으로 빨아들이는 거대 식물. 마법사의 마나를 흡수해 성장한다.',
   },
   {
@@ -455,7 +455,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 165, goldReward: 52,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 30,
+    location: 'erebos_outskirts', respawnTime: 30,
     lore: '에테리아 탑의 빛 에너지가 형상화된 환수. 아름답지만 영역을 침범하면 가차없이 공격한다.',
   },
   {
@@ -471,7 +471,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 170, goldReward: 55,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 25,
+    location: 'erebos_outskirts', respawnTime: 25,
     lore: '다른 생물의 기억을 탈취해 자신의 힘으로 삼는 어둠의 존재. 기억을 잃은 자들의 원흉.',
   },
   {
@@ -487,7 +487,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 180, goldReward: 58,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'aetheria_village', respawnTime: 30,
+    location: 'erebos_outskirts', respawnTime: 30,
     lore: '에테르 전기를 체내에 축적하는 거대 두꺼비. 방전 시 주변 모든 것에 감전 피해를 입힌다.',
   },
   {
@@ -503,7 +503,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 185, goldReward: 60,
     behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 25,
+    location: 'erebos_outskirts', respawnTime: 25,
     lore: '투명한 얼음으로 이루어진 거미. 거미줄에 닿으면 순식간에 얼어붙으며, 빛에 반사되어 찾기 어렵다.',
   },
   {
@@ -519,7 +519,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 190, goldReward: 62,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 20,
+    location: 'erebos_center', respawnTime: 20,
     lore: '에테리아 마을 상공을 배회하는 하피. 날카로운 발톱과 바람을 조종하는 능력이 위협적이다.',
   },
   {
@@ -536,7 +536,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 200, goldReward: 65,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'aetheria_village', respawnTime: 35,
+    location: 'erebos_center', respawnTime: 35,
     lore: '과거의 기사가 시간에 갇혀 떠도는 잔영. 실체와 환영을 분리하는 교묘한 전투술을 구사한다.',
   },
   {
@@ -552,7 +552,7 @@ const aetheriaVillageNormals: MonsterSeed[] = [
     ],
     expReward: 215, goldReward: 70,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'aetheria_village', respawnTime: 40,
+    location: 'erebos_cathedral', respawnTime: 40,
     lore: '에테르 에너지가 폭풍처럼 소용돌이치는 상위 정령. 영역에 들어서면 에테르 폭풍이 몰아친다.',
   },
 ];
@@ -573,7 +573,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 195, goldReward: 65,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'shadow_fortress', respawnTime: 30,
+    location: 'erebos_outskirts', respawnTime: 30,
     lore: '그림자 군주에게 충성하는 암흑 기사. 어둠의 힘으로 무장하여 요새를 수호한다.',
   },
   {
@@ -590,7 +590,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 220, goldReward: 72,
     behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'shadow_fortress', respawnTime: 30,
+    location: 'erebos_center', respawnTime: 30,
     lore: '독안개를 뿜어내는 마녀. 원거리에서 저주를 날리며, 위험해지면 안개 속으로 사라진다.',
   },
   {
@@ -606,7 +606,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 240, goldReward: 78,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'shadow_fortress', respawnTime: 40,
+    location: 'erebos_cathedral', respawnTime: 40,
     lore: '요새 성벽에 숨어있는 석상 괴물. 침입자가 지나가면 깨어나 덮친다. 방어력이 극도로 높다.',
   },
   {
@@ -622,7 +622,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 260, goldReward: 85,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 25, enrage_hp_pct: 0 },
-    location: 'shadow_fortress', respawnTime: 25,
+    location: 'erebos_catacomb', respawnTime: 25,
     lore: '그림자 속에서 출현하는 암살자. 빠른 속도와 치명적 일격이 특징이며, 위기 시 연막을 치고 도주한다.',
   },
   {
@@ -639,7 +639,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 280, goldReward: 90,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'shadow_fortress', respawnTime: 30,
+    location: 'erebos_catacomb', respawnTime: 30,
     lore: '사령술로 부활한 고대 전사의 해골. 생전의 전투 기술을 고스란히 간직하고 있다.',
   },
   {
@@ -655,7 +655,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 300, goldReward: 95,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 25 },
-    location: 'shadow_fortress', respawnTime: 25,
+    location: 'erebos_catacomb', respawnTime: 25,
     lore: '그림자 요새의 화염 늑대. 뜨거운 숨결과 불타는 발톱으로 침입자를 몰아낸다.',
   },
   {
@@ -672,7 +672,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 320, goldReward: 100,
     behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'shadow_fortress', respawnTime: 35,
+    location: 'erebos_catacomb', respawnTime: 35,
     lore: '보이지 않는 실로 인형들을 조종하는 저주받은 마술사. 인형을 방패로 쓰다 폭파시키는 전술을 구사한다.',
   },
   {
@@ -689,7 +689,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 340, goldReward: 110,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'shadow_fortress', respawnTime: 40,
+    location: 'solaris_mine', respawnTime: 40,
     lore: '요새의 미궁에 갇힌 미노타우로스. 혼돈의 에너지로 강화되어 과거보다 훨씬 강력해졌다.',
   },
   {
@@ -706,7 +706,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 360, goldReward: 115,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'shadow_fortress', respawnTime: 45,
+    location: 'solaris_temple', respawnTime: 45,
     lore: '순수한 어둠 에너지가 결정화된 존재. 이동은 느리지만 암흑 속성 공격이 극도로 강력하다.',
   },
   {
@@ -723,7 +723,7 @@ const shadowFortressNormals: MonsterSeed[] = [
     ],
     expReward: 380, goldReward: 120,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'shadow_fortress', respawnTime: 40,
+    location: 'solaris_temple', respawnTime: 40,
     lore: '그림자 요새의 최심부를 지키는 망령. 죽음의 선고로 일정 시간 후 대상을 즉사시키려 한다.',
   },
 ];
@@ -744,7 +744,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 350, goldReward: 100,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'crystal_cavern', respawnTime: 40,
+    location: 'solaris_mine', respawnTime: 40,
     lore: '수정 동굴의 에테르가 광석에 스며들어 탄생한 골렘. 극도로 단단하지만 공명 주파수에 취약하다.',
   },
   {
@@ -760,7 +760,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 370, goldReward: 110,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'crystal_cavern', respawnTime: 30,
+    location: 'solaris_temple', respawnTime: 30,
     lore: '수정 사이를 미끄러지듯 이동하는 대형 뱀. 빛을 굴절시켜 무지개 광선을 쏜다.',
   },
   {
@@ -777,7 +777,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 400, goldReward: 120,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'crystal_cavern', respawnTime: 45,
+    location: 'northland_village', respawnTime: 45,
     lore: '동굴 깊은 곳에 거주하는 거대 트롤. 재생 능력이 있어 불 속성이 아니면 쓰러뜨리기 어렵다.',
   },
   {
@@ -793,7 +793,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 420, goldReward: 130,
     behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'crystal_cavern', respawnTime: 30,
+    location: 'northland_village', respawnTime: 30,
     lore: '수정을 파먹고 에테르를 축적하는 갑충. 단단한 외골격 아래에 순수 마나를 품고 있다.',
   },
   {
@@ -809,7 +809,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 450, goldReward: 140,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'crystal_cavern', respawnTime: 35,
+    location: 'northland_village', respawnTime: 35,
     lore: '동굴 박쥐의 왕. 수정으로 된 날개에서 초음파를 증폭시켜 치명적인 충격파를 발산한다.',
   },
   {
@@ -825,7 +825,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 470, goldReward: 148,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'crystal_cavern', respawnTime: 40,
+    location: 'northland_cave', respawnTime: 40,
     lore: '동굴 최심부 용암 지대에서 올라온 화염 정령. 주변 온도를 극도로 올려 접근 자체가 위험하다.',
   },
   {
@@ -842,7 +842,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 480, goldReward: 152,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'crystal_cavern', respawnTime: 40,
+    location: 'northland_cave', respawnTime: 40,
     lore: '동굴의 얼음 구간을 지배하는 빙결 정령. 주변 모든 것을 얼려버리는 절대영도의 힘을 지녔다.',
   },
   {
@@ -859,7 +859,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 500, goldReward: 160,
     behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'crystal_cavern', respawnTime: 35,
+    location: 'northland_cave', respawnTime: 35,
     lore: '동굴의 보석을 껍질로 삼은 거대 전갈. 보석 갑옷의 방어력이 압도적이다.',
   },
   {
@@ -875,7 +875,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 520, goldReward: 168,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'crystal_cavern', respawnTime: 40,
+    location: 'northland_peak', respawnTime: 40,
     lore: '수정 동굴 전체와 공명하는 고위 정령. 동굴 자체를 무기로 사용하며 파동으로 공격한다.',
   },
   {
@@ -892,7 +892,7 @@ const crystalCavernNormals: MonsterSeed[] = [
     ],
     expReward: 550, goldReward: 175,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'crystal_cavern', respawnTime: 45,
+    location: 'northland_peak', respawnTime: 45,
     lore: '차원의 균열에서 기어나온 에테르 벌레. 공간을 뒤틀어 순간이동하며 예측 불가능한 공격을 한다.',
   },
 ];
@@ -913,7 +913,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 500, goldReward: 155,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'void_abyss', respawnTime: 35,
+    location: 'abyss_gate', respawnTime: 35,
     lore: '허공의 심연에서 뻗어 나온 거대한 촉수. 본체는 보이지 않으며, 닿는 모든 것을 허공으로 끌어들인다.',
   },
   {
@@ -930,7 +930,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 550, goldReward: 170,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'void_abyss', respawnTime: 30,
+    location: 'abyss_gate', respawnTime: 30,
     lore: '차원 사이를 떠도는 존재. 위상을 전환해 물리 공격을 무시하고, 차원 칼날로 공간을 베어낸다.',
   },
   {
@@ -947,7 +947,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 580, goldReward: 180,
     behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'void_abyss', respawnTime: 40,
+    location: 'abyss_sunken_streets', respawnTime: 40,
     lore: '허공에 떠도는 거대한 눈알. 멸망의 시선에 닿은 자는 정신이 녹아내리며, 레이저는 모든 것을 관통한다.',
   },
   {
@@ -963,7 +963,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 600, goldReward: 190,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'void_abyss', respawnTime: 45,
+    location: 'abyss_sunken_streets', respawnTime: 45,
     lore: '모든 것을 분해하는 혼돈의 슬라임. 닿는 물질의 분자 구조를 해체하여 흡수한다.',
   },
   {
@@ -980,7 +980,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 650, goldReward: 200,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 40,
+    location: 'abyss_library', respawnTime: 40,
     lore: '시공간의 균열을 지키는 파수꾼. 시간을 자유롭게 조작하며 침입자를 시간의 감옥에 가둔다.',
   },
   {
@@ -996,7 +996,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 680, goldReward: 210,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'void_abyss', respawnTime: 35,
+    location: 'abyss_trial_hall', respawnTime: 35,
     lore: '허공의 심연에 둥둥 떠다니는 반투명 해파리. 전기를 축적한 촉수에 닿으면 막대한 감전 피해를 입는다.',
   },
   {
@@ -1013,7 +1013,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 720, goldReward: 220,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 45,
+    location: 'abyss_trial_hall', respawnTime: 45,
     lore: '모든 기억을 잃고 허공을 떠도는 기사. 망각의 검에 베이면 전투 중 획득한 버프가 사라진다.',
   },
   {
@@ -1030,7 +1030,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 750, goldReward: 230,
     behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 10, enrage_hp_pct: 25 },
-    location: 'void_abyss', respawnTime: 40,
+    location: 'abyss_core', respawnTime: 40,
     lore: '허공의 심연에 거대한 둥지를 틀고 있는 거미 여왕. 새끼를 소환하고 맹독으로 먹잇감을 마비시킨다.',
   },
   {
@@ -1047,7 +1047,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 800, goldReward: 250,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 50,
+    location: 'abyss_core', respawnTime: 50,
     lore: '어린 에테르 드래곤. 성체에는 한참 못 미치지만 이미 에테르 브레스를 사용할 수 있는 위험한 존재.',
   },
   {
@@ -1065,7 +1065,7 @@ const voidAbyssNormals: MonsterSeed[] = [
     ],
     expReward: 850, goldReward: 280,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'void_abyss', respawnTime: 55,
+    location: 'abyss_core', respawnTime: 55,
     lore: '세계의 종말을 예언하며 허공을 떠도는 사도. 그의 선언이 울려퍼지면 주변 모든 생명이 약해진다.',
   },
 ];
@@ -1089,7 +1089,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 200, goldReward: 80,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'twilight_forest', respawnTime: 120,
+    location: 'silvanhome_entrance', respawnTime: 120,
     lore: '황혼의 숲을 수호하는 고대 엔트. 숲을 해치는 자에게만 반응하며, 분노 시 대지가 뒤흔들린다.',
   },
   {
@@ -1107,7 +1107,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 220, goldReward: 90,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'twilight_forest', respawnTime: 150,
+    location: 'silvanhome_entrance', respawnTime: 150,
     lore: '늑대 무리의 알파. 달빛을 받으면 더욱 강해지며, 포효로 동료 늑대를 전장에 불러낸다.',
   },
   {
@@ -1125,7 +1125,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 250, goldReward: 95,
     behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'twilight_forest', respawnTime: 180,
+    location: 'silvanhome_entrance', respawnTime: 180,
     lore: '황혼의 숲 깊은 곳에 둥지를 튼 거미 여왕. 독안개로 시야를 가리고 거미줄로 사냥감을 포획한다.',
   },
   // 크로노스 시가지 (3)
@@ -1145,7 +1145,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 350, goldReward: 120,
     behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'kronos_city', respawnTime: 180,
+    location: 'britallia_port', respawnTime: 180,
     lore: '크로노스 시계탑의 최종 수호자. 시간을 자유롭게 조종하여 전투를 유리하게 이끈다.',
   },
   {
@@ -1163,7 +1163,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 280, goldReward: 95,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'kronos_city', respawnTime: 150,
+    location: 'britallia_port', respawnTime: 150,
     lore: '하수구 쥐떼의 지배자. 역병을 품은 거대한 쥐로, 브레스 한 번에 주변이 오염된다.',
   },
   {
@@ -1181,7 +1181,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 380, goldReward: 130,
     behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'kronos_city', respawnTime: 200,
+    location: 'britallia_blackmarket', respawnTime: 200,
     lore: '고대 전쟁에서 버려진 전쟁기계가 에테르로 재가동되었다. 오작동으로 아군과 적을 구분하지 못한다.',
   },
   // 에테리아 마을 (4)
@@ -1200,7 +1200,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 400, goldReward: 140,
     behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'aetheria_village', respawnTime: 180,
+    location: 'erebos_outskirts', respawnTime: 180,
     lore: '에테리아 마을을 수호하는 고위 정령. 마을에 적의를 품은 자에게만 반응하는 심판자.',
   },
   {
@@ -1218,7 +1218,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 430, goldReward: 150,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'aetheria_village', respawnTime: 200,
+    location: 'erebos_center', respawnTime: 200,
     lore: '과거 전쟁의 장군이 에테르에 의해 부활한 망령. 부하 병사를 소환하며 전장을 지휘한다.',
   },
   {
@@ -1237,7 +1237,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 460, goldReward: 155,
     behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 180,
+    location: 'erebos_center', respawnTime: 180,
     lore: '기억을 조종하는 마녀. 대상의 가장 고통스러운 기억을 끌어내 무기로 사용한다.',
   },
   {
@@ -1255,7 +1255,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 480, goldReward: 160,
     behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'aetheria_village', respawnTime: 200,
+    location: 'erebos_cathedral', respawnTime: 200,
     lore: '에테리아 상공을 비행하는 폭풍의 그리폰. 번개를 몸에 두르고 급강하하는 공격은 일격필살에 가깝다.',
   },
   // 그림자 요새 (3)
@@ -1275,7 +1275,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 600, goldReward: 200,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'shadow_fortress', respawnTime: 240,
+    location: 'erebos_catacomb', respawnTime: 240,
     lore: '그림자 군단의 장군. 수백의 암흑 기사를 지휘하며, 분신을 만들어 전략적으로 싸운다.',
   },
   {
@@ -1293,7 +1293,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 650, goldReward: 220,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'shadow_fortress', respawnTime: 270,
+    location: 'solaris_temple', respawnTime: 270,
     lore: '죽음을 넘어선 기사단장. 불사의 맹세로 한 번은 쓰러져도 다시 일어나며 사신의 낫을 휘두른다.',
   },
   {
@@ -1311,7 +1311,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 700, goldReward: 240,
     behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'shadow_fortress', respawnTime: 300,
+    location: 'solaris_temple', respawnTime: 300,
     lore: '그림자 요새 최심부에서 마왕을 보좌하는 화염 악마. 지옥의 화염을 다루는 무시무시한 존재.',
   },
   // 수정 동굴 (4)
@@ -1330,7 +1330,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 700, goldReward: 230,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'crystal_cavern', respawnTime: 240,
+    location: 'northland_village', respawnTime: 240,
     lore: '수정 동굴의 지배자. 몸 전체가 최고급 수정으로 이루어져 있으며 방어력이 압도적이다.',
   },
   {
@@ -1348,7 +1348,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 750, goldReward: 250,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'crystal_cavern', respawnTime: 270,
+    location: 'northland_cave', respawnTime: 270,
     lore: '동굴 최심부 용암 호수에서 올라온 소형 드래곤. 성체 드래곤만큼은 아니지만 충분히 위협적이다.',
   },
   {
@@ -1366,7 +1366,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 800, goldReward: 270,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'crystal_cavern', respawnTime: 240,
+    location: 'northland_peak', respawnTime: 240,
     lore: '수정 동굴 전체와 공명하는 대정령. 동굴이 곧 그의 몸이며 어디서든 에테르를 끌어 모은다.',
   },
   {
@@ -1385,7 +1385,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 850, goldReward: 280,
     behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'crystal_cavern', respawnTime: 270,
+    location: 'northland_peak', respawnTime: 270,
     lore: '동굴 심연의 빙결 호수를 지배하는 나가. 뱀 같은 하반신과 얼음 창술이 위협적이다.',
   },
   // 허공의 심연 (3)
@@ -1405,7 +1405,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 1000, goldReward: 350,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'void_abyss', respawnTime: 300,
+    location: 'abyss_trial_hall', respawnTime: 300,
     lore: '허공의 심연에서 심판을 집행하는 존재. 차원을 단절시켜 도주를 막고 대검으로 처형한다.',
   },
   {
@@ -1423,7 +1423,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 1100, goldReward: 380,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 300,
+    location: 'abyss_core', respawnTime: 300,
     lore: '시간의 흐름을 감시하는 초월적 존재. 시간을 자유롭게 조종하여 과거와 미래를 무기로 삼는다.',
   },
   {
@@ -1442,7 +1442,7 @@ const eliteMonsters: MonsterSeed[] = [
     ],
     expReward: 1200, goldReward: 400,
     behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'void_abyss', respawnTime: 360,
+    location: 'abyss_core', respawnTime: 360,
     lore: '에테르 드래곤의 근위병. 성체 드래곤의 명령에 따라 심연의 입구를 지키는 최강의 용인족.',
   },
 ];
@@ -1466,7 +1466,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 500, goldReward: 200,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'twilight_forest', respawnTime: 600,
+    location: 'silvanhome_entrance', respawnTime: 600,
     lore: '황혼의 숲 던전 최심부를 지키는 고대 트렌트. HP 30% 이하에서 광폭화하며 뿌리로 전장을 뒤덮는다.',
   },
   {
@@ -1484,7 +1484,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 480, goldReward: 190,
     behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'twilight_forest', respawnTime: 600,
+    location: 'silvanhome_entrance', respawnTime: 600,
     lore: '달빛이 물리적 형태를 얻은 수호령. 순결한 자에게는 관대하지만, 탐욕스러운 자에게는 가차없다.',
   },
   {
@@ -1503,7 +1503,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 800, goldReward: 350,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'kronos_city', respawnTime: 600,
+    location: 'britallia_blackmarket', respawnTime: 600,
     lore: '크로노스 시계탑 최상층의 시간 병기. 시간 정지와 가속을 번갈아 사용하며 전장을 지배한다.',
   },
   {
@@ -1522,7 +1522,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 850, goldReward: 380,
     behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'kronos_city', respawnTime: 600,
+    location: 'britallia_blackmarket', respawnTime: 600,
     lore: '크로노스 하수도 최심부에 서식하는 거대 해수. 하수도 전체를 얼려버릴 수 있는 빙결 능력을 지녔다.',
   },
   {
@@ -1541,7 +1541,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 1200, goldReward: 500,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'aetheria_village', respawnTime: 600,
+    location: 'erebos_cathedral', respawnTime: 600,
     lore: '에테리아 탑의 최상층에서 세계를 심판하는 천사형 존재. 에테르의 균형을 지키는 것이 사명.',
   },
   {
@@ -1560,7 +1560,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 1150, goldReward: 480,
     behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'aetheria_village', respawnTime: 600,
+    location: 'erebos_cathedral', respawnTime: 600,
     lore: '모든 기억을 지배하려는 어둠의 군주. 대상의 기억을 빼앗아 자신의 힘으로 변환한다.',
   },
   {
@@ -1580,7 +1580,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 2000, goldReward: 800,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'shadow_fortress', respawnTime: 900,
+    location: 'solaris_temple', respawnTime: 900,
     lore: '그림자 요새의 지배자. 절대 암흑으로 전장을 뒤덮고 보이지 않는 곳에서 공격하는 교활한 보스.',
   },
   {
@@ -1599,7 +1599,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 1900, goldReward: 780,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'shadow_fortress', respawnTime: 900,
+    location: 'solaris_temple', respawnTime: 900,
     lore: '그림자 요새 화염 구역의 지배자. 지옥의 화염을 주무르며 일대를 불바다로 만든다.',
   },
   {
@@ -1618,7 +1618,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 3000, goldReward: 1200,
     behavior: { aggro_range: 12, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'crystal_cavern', respawnTime: 900,
+    location: 'northland_peak', respawnTime: 900,
     lore: '수정 동굴 최심부의 폭군. 몸 전체가 순도 100% 에테르 수정으로 구성되어 물리 공격이 거의 통하지 않는다.',
   },
   {
@@ -1637,7 +1637,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 2800, goldReward: 1100,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'crystal_cavern', respawnTime: 900,
+    location: 'northland_peak', respawnTime: 900,
     lore: '동굴 용암 호수의 주인. 성체 화염 드래곤으로, 멸망의 브레스 한 번에 전장이 불바다가 된다.',
   },
   {
@@ -1657,7 +1657,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 5000, goldReward: 2000,
     behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 1200,
+    location: 'abyss_core', respawnTime: 1200,
     lore: '허공의 심연 최종 보스. 존재 자체를 소거하는 힘을 지닌 심판관으로, 종말의 파동은 전장 전체를 파괴한다.',
   },
   {
@@ -1676,7 +1676,7 @@ const dungeonBosses: MonsterSeed[] = [
     ],
     expReward: 4800, goldReward: 1900,
     behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'void_abyss', respawnTime: 1200,
+    location: 'abyss_core', respawnTime: 1200,
     lore: '시간의 끝에서 모든 것을 종결시키려는 존재. 시간을 되감아 HP를 회복하는 치명적 능력이 있다.',
   },
 ];
@@ -1700,7 +1700,7 @@ const fieldBosses: MonsterSeed[] = [
     ],
     expReward: 1500, goldReward: 600,
     behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'twilight_forest', respawnTime: 1800,
+    location: 'silvanhome_mist', respawnTime: 1800,
     lore: '황혼의 숲 한가운데에 우뚝 선 고대의 거목 보스. 숲 전체를 뒤흔드는 대지 진동이 특기.',
   },
   {
@@ -1719,7 +1719,7 @@ const fieldBosses: MonsterSeed[] = [
     ],
     expReward: 2500, goldReward: 1000,
     behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'kronos_city', respawnTime: 2400,
+    location: 'britallia_arena', respawnTime: 2400,
     lore: '크로노스 시가지에 돌연 출현하는 거대한 시계 형태의 필드 보스. 시간을 왜곡시켜 전투를 지배한다.',
   },
   {
@@ -1739,7 +1739,7 @@ const fieldBosses: MonsterSeed[] = [
     ],
     expReward: 3500, goldReward: 1500,
     behavior: { aggro_range: 25, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 },
-    location: 'shadow_fortress', respawnTime: 3000,
+    location: 'solaris_temple', respawnTime: 3000,
     lore: '그림자 요새 외곽에 출현하는 다두 히드라. 머리를 잘라도 재생하며, 다수의 머리로 동시 공격한다.',
   },
   {
@@ -1758,7 +1758,7 @@ const fieldBosses: MonsterSeed[] = [
     ],
     expReward: 4500, goldReward: 2000,
     behavior: { aggro_range: 25, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'crystal_cavern', respawnTime: 3600,
+    location: 'northland_peak', respawnTime: 3600,
     lore: '수정 동굴의 최강 필드 보스. 다이아몬드 갑각은 거의 무적에 가까우며 보석 폭풍으로 전장을 유린한다.',
   },
   {
@@ -1778,7 +1778,7 @@ const fieldBosses: MonsterSeed[] = [
     ],
     expReward: 8000, goldReward: 3500,
     behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 5400,
+    location: 'abyss_core', respawnTime: 5400,
     lore: '허공의 심연 전체를 지배하는 왕. 차원을 분쇄하고 존재 자체를 부정하는 궁극의 필드 보스.',
   },
 ];
@@ -1799,7 +1799,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 680, goldReward: 210,
     behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 35,
+    location: 'mist_sea_lighthouse', respawnTime: 35,
     lore: '안개해 수면에 떠다니는 반투명 해파리. 촉수에 닿으면 기억이 흐려지며 독소가 스며든다.',
   },
   {
@@ -1815,7 +1815,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 700, goldReward: 215,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 25,
+    location: 'mist_sea_archipelago', respawnTime: 25,
     lore: '안개 속을 비행하며 지나가는 자의 기억 조각을 훔치는 변이 갈매기. 울음소리에 기억이 흔들린다.',
   },
   {
@@ -1831,7 +1831,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 720, goldReward: 220,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 30,
+    location: 'mist_sea_archipelago', respawnTime: 30,
     lore: '안개해 수중에 서식하는 거대 뱀장어. 전기를 축적한 몸으로 물 위의 적까지 감전시킨다.',
   },
   {
@@ -1847,7 +1847,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 740, goldReward: 228,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 40,
+    location: 'mist_sea_archipelago', respawnTime: 40,
     lore: '12인의 봉인이 깨지며 흩어진 봉인석 파편. 에테르 에너지를 머금고 공격적으로 변했다.',
   },
   {
@@ -1864,7 +1864,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 760, goldReward: 235,
     behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 35,
+    location: 'mist_sea_archipelago', respawnTime: 35,
     lore: '안개해 바닥에 뿌리내린 거대 산호. 지나가는 생물의 기억을 빨아먹고 망각 포자를 뿌린다.',
   },
   {
@@ -1881,7 +1881,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 780, goldReward: 242,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 30,
+    location: 'mist_sea_archipelago', respawnTime: 30,
     lore: '안개해에서 조난된 선원들의 원혼. 기억을 잃고 영원히 항해하며, 살아있는 자를 동료로 삼으려 한다.',
   },
   {
@@ -1898,7 +1898,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 800, goldReward: 250,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 30,
+    location: 'mist_sea_spire', respawnTime: 30,
     lore: '안개해 심층에서 올라온 거대 갑오징어. 먹물로 시야를 가리고 빙결 촉수로 사냥감을 얼린다.',
   },
   {
@@ -1915,7 +1915,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 830, goldReward: 260,
     behavior: { aggro_range: 10, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'mist_sea', respawnTime: 40,
+    location: 'mist_sea_spire', respawnTime: 40,
     lore: '12인의 봉인자가 남긴 자동 감시 장치. 봉인을 해치려는 자를 감지하면 무차별 공격한다.',
   },
   {
@@ -1932,7 +1932,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 860, goldReward: 270,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 30,
+    location: 'mist_sea_abyss', respawnTime: 30,
     lore: '안개해 수면을 질주하는 유령 말. 아름다운 외형으로 유인한 뒤 등에 탄 자를 심해로 끌고 간다.',
   },
   {
@@ -1949,7 +1949,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 900, goldReward: 285,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'mist_sea', respawnTime: 40,
+    location: 'mist_sea_abyss', respawnTime: 40,
     lore: '레테의 잔류 의식이 안개에 스며들어 형상화된 존재. 기억을 먹고 자라며 점점 강해진다.',
   },
   {
@@ -1965,7 +1965,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 710, goldReward: 218,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 28,
+    location: 'mist_sea_archipelago', respawnTime: 28,
     lore: '안개 위를 활공하는 거대 가오리. 꼬리의 독가시에 찔리면 기억이 한동안 흐릿해진다.',
   },
   {
@@ -1982,7 +1982,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 770, goldReward: 240,
     behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'mist_sea', respawnTime: 40,
+    location: 'mist_sea_archipelago', respawnTime: 40,
     lore: '봉인의 첨탑을 수호하던 골렘. 봉인이 약해지면서 제어를 잃고 근처 모든 것을 공격한다.',
   },
   {
@@ -1998,7 +1998,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 810, goldReward: 252,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 32,
+    location: 'mist_sea_spire', respawnTime: 32,
     lore: '안개해 심층을 누비는 거대 바다뱀. 물린 자는 점차 기억을 잃어간다.',
   },
   {
@@ -2015,7 +2015,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 835, goldReward: 258,
     behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 30,
+    location: 'mist_sea_spire', respawnTime: 30,
     lore: '안개해에 살던 인어가 레테의 영향으로 변이한 존재. 아름다운 노래로 선원을 유인한다.',
   },
   {
@@ -2031,7 +2031,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 850, goldReward: 265,
     behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 25,
+    location: 'mist_sea_spire', respawnTime: 25,
     lore: '안개해 상공을 지배하는 거대 갈매기. 날개에 번개를 두르고 급강하하며 배를 공격한다.',
   },
   {
@@ -2048,7 +2048,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 870, goldReward: 272,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 32,
+    location: 'mist_sea_abyss', respawnTime: 32,
     lore: '안개해에 가라앉은 고대 함대의 병사가 레테의 힘으로 부활한 것. 녹슨 무기로도 치명적이다.',
   },
   {
@@ -2064,7 +2064,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 890, goldReward: 280,
     behavior: { aggro_range: 7, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 },
-    location: 'mist_sea', respawnTime: 35,
+    location: 'mist_sea_abyss', respawnTime: 35,
     lore: '안개 자체가 에테르로 뭉쳐 형태를 갖춘 원소 생물. 불안정하여 가끔 자폭한다.',
   },
   {
@@ -2081,7 +2081,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 920, goldReward: 295,
     behavior: { aggro_range: 3, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'mist_sea', respawnTime: 40,
+    location: 'mist_sea_abyss', respawnTime: 40,
     lore: '침몰한 배의 보물 상자로 위장한 미믹. 보물에 끌려 다가오면 거대한 이빨로 물어뜯는다.',
   },
   {
@@ -2098,7 +2098,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 950, goldReward: 305,
     behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
-    location: 'mist_sea', respawnTime: 45,
+    location: 'mist_sea_abyss', respawnTime: 45,
     lore: '수백 년간 안개해를 떠돈 고대 거북이. 등에 산호와 이끼가 자라 섬처럼 보인다.',
   },
   {
@@ -2115,7 +2115,7 @@ const mistSeaNormals: MonsterSeed[] = [
     ],
     expReward: 980, goldReward: 320,
     behavior: { aggro_range: 8, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'mist_sea', respawnTime: 45,
+    location: 'mist_sea_abyss', respawnTime: 45,
     lore: '레테의 분신이 낳은 유충. 봉인석의 에너지를 갉아먹으며 성장하며, 성체가 되면 보스급이 된다.',
   },
 ];
@@ -2139,7 +2139,7 @@ const mistSeaElites: MonsterSeed[] = [
     ],
     expReward: 1300, goldReward: 420,
     behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'mist_sea', respawnTime: 300,
+    location: 'mist_sea_spire', respawnTime: 300,
     lore: '안개해 상공을 비행하는 소형 드래곤. 안개와 폭풍을 동시에 다루며 배를 전복시킨다.',
   },
   {
@@ -2158,7 +2158,7 @@ const mistSeaElites: MonsterSeed[] = [
     ],
     expReward: 1400, goldReward: 450,
     behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 300,
+    location: 'mist_sea_abyss', respawnTime: 300,
     lore: '봉인자 후손 마을의 정예 수호병. 침입자를 봉인의 에너지로 심판한다.',
   },
   {
@@ -2177,7 +2177,7 @@ const mistSeaElites: MonsterSeed[] = [
     ],
     expReward: 1500, goldReward: 480,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 300,
+    location: 'mist_sea_abyss', respawnTime: 300,
     lore: '안개해에 침몰한 고대 함대의 제독. 죽어서도 함대를 지휘하며 유령 함포를 쏜다.',
   },
   {
@@ -2195,7 +2195,7 @@ const mistSeaElites: MonsterSeed[] = [
     ],
     expReward: 1600, goldReward: 510,
     behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'mist_sea', respawnTime: 300,
+    location: 'mist_sea_abyss', respawnTime: 300,
     lore: '레테의 힘으로 태어난 기억 포식자. 주변 생물의 기억을 대량으로 흡수해 자신의 힘으로 변환한다.',
   },
   {
@@ -2214,7 +2214,7 @@ const mistSeaElites: MonsterSeed[] = [
     ],
     expReward: 1800, goldReward: 550,
     behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 360,
+    location: 'mist_sea_abyss', respawnTime: 360,
     lore: '봉인석을 깨뜨리며 커가는 거대 인형. 레테의 의지로 봉인을 물리적으로 파괴하려는 병기.',
   },
 ];
@@ -2238,7 +2238,7 @@ const mistSeaDungeonBosses: MonsterSeed[] = [
     ],
     expReward: 4000, goldReward: 1500,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'mist_sea', respawnTime: 900,
+    location: 'mist_sea_spire', respawnTime: 900,
     lore: '기억의 등대를 지키는 봉인자 메모리아의 기억이 실체화된 보스. 기억을 조작해 환각을 보여준다.',
   },
   {
@@ -2257,7 +2257,7 @@ const mistSeaDungeonBosses: MonsterSeed[] = [
     ],
     expReward: 4500, goldReward: 1800,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 900,
+    location: 'mist_sea_abyss', respawnTime: 900,
     lore: '안개해 최대 침몰 함대의 함장. 레테의 힘으로 부활해 영원히 항해를 계속한다.',
   },
   {
@@ -2276,7 +2276,7 @@ const mistSeaDungeonBosses: MonsterSeed[] = [
     ],
     expReward: 5000, goldReward: 2000,
     behavior: { aggro_range: 15, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 900,
+    location: 'mist_sea_abyss', respawnTime: 900,
     lore: '봉인 균열을 지키도록 프로그래밍된 고대 가디언. 봉인이 손상될수록 폭주하며 아군조차 공격한다.',
   },
   {
@@ -2296,7 +2296,7 @@ const mistSeaDungeonBosses: MonsterSeed[] = [
     ],
     expReward: 5500, goldReward: 2200,
     behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 },
-    location: 'mist_sea', respawnTime: 900,
+    location: 'mist_sea_abyss', respawnTime: 900,
     lore: '안개해 심층을 지배하는 거대 해마. 대해일을 일으켜 전장 전체를 물바다로 만든다.',
   },
   {
@@ -2316,7 +2316,7 @@ const mistSeaDungeonBosses: MonsterSeed[] = [
     ],
     expReward: 6000, goldReward: 2500,
     behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'mist_sea', respawnTime: 1200,
+    location: 'mist_sea_abyss', respawnTime: 1200,
     lore: '레테의 잔류 의식이 물리적 형태를 취한 분신. 챕터 6 보스전의 대상이며 기억 파괴로만 완전히 소멸시킬 수 있다.',
   },
 ];
@@ -2346,7 +2346,7 @@ const mistSeaRaidBosses: MonsterSeed[] = [
     ],
     expReward: 25000, goldReward: 12000,
     behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
-    location: 'mist_sea', respawnTime: 86400,
+    location: 'mist_sea_abyss', respawnTime: 86400,
     lore: '안개해 전체를 감싸는 거대한 안개의 의지체. 3페이즈로 형태가 변하며, 최종 형태에서는 안개해 자체가 무기가 된다. 12인 레이드 필수.',
   },
   {
@@ -2371,7 +2371,7 @@ const mistSeaRaidBosses: MonsterSeed[] = [
     ],
     expReward: 28000, goldReward: 14000,
     behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
-    location: 'mist_sea', respawnTime: 86400,
+    location: 'mist_sea_abyss', respawnTime: 86400,
     lore: '안개해 최심부에 잠든 고대 크라켄. 봉인 해제로 깨어나 수면 위까지 촉수를 뻗친다. 촉수를 먼저 처리하지 않으면 본체에 접근 불가.',
   },
   {
@@ -2396,7 +2396,7 @@ const mistSeaRaidBosses: MonsterSeed[] = [
     ],
     expReward: 30000, goldReward: 15000,
     behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
-    location: 'mist_sea', respawnTime: 86400,
+    location: 'mist_sea_abyss', respawnTime: 86400,
     lore: '봉인의 첨탑 최심부에서 레테의 귀환을 준비하는 궁극의 파수꾼. 3페이즈에서 레테의 화신으로 변신하며, 기억 파괴 스킬 없이는 최종 페이즈 돌파 불가.',
   },
 ];
@@ -2422,7 +2422,7 @@ const raidBosses: MonsterSeed[] = [
     ],
     expReward: 20000, goldReward: 10000,
     behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 },
-    location: 'void_abyss', respawnTime: 86400,
+    location: 'abyss_core', respawnTime: 86400,
     lore: '에테르나 크로니클 세계의 최강 드래곤. 에테르 에너지 그 자체가 형상화된 존재로, 세계를 초기화할 수 있는 힘을 가졌다.',
   },
   {
@@ -2443,7 +2443,7 @@ const raidBosses: MonsterSeed[] = [
     ],
     expReward: 18000, goldReward: 9000,
     behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 },
-    location: 'void_abyss', respawnTime: 86400,
+    location: 'abyss_core', respawnTime: 86400,
     lore: '시간을 관장하는 신적 존재. 과거·현재·미래를 동시에 공격하며, 시간 역행으로 전투를 원점 복귀시킨다.',
   },
   {
@@ -2464,7 +2464,7 @@ const raidBosses: MonsterSeed[] = [
     ],
     expReward: 22000, goldReward: 12000,
     behavior: { aggro_range: 50, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 },
-    location: 'void_abyss', respawnTime: 86400,
+    location: 'abyss_core', respawnTime: 86400,
     lore: '모든 혼돈의 근원이자 세계를 멸망시키려는 최종 보스. 종말의 검 한 번에 파티가 전멸할 수 있다.',
   },
 ];
@@ -2491,6 +2491,9 @@ export async function seedMonsters(): Promise<{ created: number; updated: number
     ...fieldBosses,             // 5
     ...raidBosses,              // 3
     ...mistSeaRaidBosses,       // 3  [P8-08]
+    ...memoryAbyssNormals,      // 20 [P11-18] — seedMonsters 누락분 복구(getAllMonsterSeeds 와 동일 집합)
+    ...memoryAbyssElites,       // 5  [P11-18]
+    ...memoryAbyssDungeonBosses,// 5  [P11-18]
     ...temporalRiftNormals,     // 20 [P14-18]
     ...temporalRiftElites,      // 5  [P14-18]
     ...temporalRiftBosses,      // 5  [P14-18]
@@ -2556,84 +2559,84 @@ export async function seedMonsters(): Promise<{ created: number; updated: number
 // ─── 지역 8: 기억의 심연 (memory_abyss) Lv.90~100 ──── P11-18 ───
 
 const memoryAbyssNormals: MonsterSeed[] = [
-  { code: 'mob_abyss_angler', name: '심연 아귀', type: 'normal', element: 'dark', level: 90, hp: 18000, attack: 520, defense: 280, speed: 55, skills: [{ name: '심연 조명', damage: 480, cooldown: 8, element: 'dark', effectType: 'blind' }], dropTable: [{ itemId: 'item_abyss_scale', rate: 0.35, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 380, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'memory_abyss', respawnTime: 45, lore: '심연의 어둠 속에서 빛으로 먹이를 유인하는 변이 아귀.' },
-  { code: 'mob_time_jellyfish', name: '시간 해파리', type: 'normal', element: 'time', level: 91, hp: 14000, attack: 580, defense: 200, speed: 70, skills: [{ name: '시간 촉수', damage: 520, cooldown: 7, element: 'time', effectType: 'slow' }], dropTable: [{ itemId: 'item_time_jelly', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4300, goldReward: 390, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 40, lore: '시간의 파편을 촉수에 감고 떠다니는 심해 해파리.' },
-  { code: 'mob_memory_eel', name: '기억 장어', type: 'normal', element: 'psychic', level: 90, hp: 15000, attack: 500, defense: 250, speed: 80, skills: [{ name: '기억 방전', damage: 460, cooldown: 6, element: 'psychic', effectType: 'confuse' }], dropTable: [{ itemId: 'item_memory_fang', rate: 0.32, minQty: 1, maxQty: 2 }], expReward: 4100, goldReward: 370, behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 5, enrage_hp_pct: 25 }, location: 'memory_abyss', respawnTime: 42, lore: '기억의 전류를 뿜는 심연의 전기 장어.' },
-  { code: 'mob_coral_golem', name: '기억 산호 골렘', type: 'normal', element: 'earth', level: 92, hp: 25000, attack: 420, defense: 400, speed: 30, skills: [{ name: '산호 충격파', damage: 550, cooldown: 12, element: 'earth', effectType: 'stun' }], dropTable: [{ itemId: 'item_memory_coral', rate: 0.28, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 420, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'memory_abyss', respawnTime: 60, lore: '기억이 결정화된 산호가 의지를 가진 골렘.' },
-  { code: 'mob_void_crab', name: '공허 게', type: 'normal', element: 'void', level: 91, hp: 20000, attack: 460, defense: 380, speed: 35, skills: [{ name: '공허 집게', damage: 500, cooldown: 9, element: 'void', effectType: 'armor_break' }], dropTable: [{ itemId: 'item_void_shell', rate: 0.30, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 400, behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'memory_abyss', respawnTime: 50, lore: '공허 에너지를 흡수하는 거대 심해 게.' },
-  { code: 'mob_warp_squid', name: '왜곡 오징어', type: 'normal', element: 'time', level: 93, hp: 16000, attack: 560, defense: 220, speed: 90, skills: [{ name: '시공 먹물', damage: 440, cooldown: 6, element: 'time', effectType: 'blind' }], dropTable: [{ itemId: 'item_warp_ink', rate: 0.35, minQty: 1, maxQty: 4 }], expReward: 4400, goldReward: 410, behavior: { aggro_range: 15, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 38, lore: '시공간을 뒤틀어 이동하는 심해 오징어.' },
-  { code: 'mob_forgotten_wraith', name: '잊혀진 망령', type: 'normal', element: 'dark', level: 92, hp: 13000, attack: 600, defense: 180, speed: 85, skills: [{ name: '망각의 손길', damage: 580, cooldown: 8, element: 'dark', effectType: 'silence' }], dropTable: [{ itemId: 'item_wraith_essence', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 4300, goldReward: 400, behavior: { aggro_range: 16, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 40 }, location: 'memory_abyss', respawnTime: 55, lore: '대망각에 의해 잊혀진 영혼이 심연에서 배회한다.' },
-  { code: 'mob_pressure_serpent', name: '수압 독사', type: 'normal', element: 'water', level: 94, hp: 17000, attack: 540, defense: 260, speed: 75, skills: [{ name: '수압 분사', damage: 520, cooldown: 7, element: 'water', effectType: 'knockback' }], dropTable: [{ itemId: 'item_pressure_venom', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 430, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 30 }, location: 'memory_abyss', respawnTime: 45, lore: '극심한 수압을 무기로 사용하는 심해 독사.' },
-  { code: 'mob_chrono_barnacle', name: '시간 따개비 군체', type: 'normal', element: 'time', level: 90, hp: 22000, attack: 380, defense: 420, speed: 15, skills: [{ name: '시간 고착', damage: 350, cooldown: 10, element: 'time', effectType: 'root' }], dropTable: [{ itemId: 'item_chrono_shard', rate: 0.40, minQty: 2, maxQty: 5 }], expReward: 4000, goldReward: 360, behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 90, lore: '시간이 굳어버린 따개비 군체. 접근하면 시간을 고착시킨다.' },
-  { code: 'mob_memory_leech', name: '기억 거머리', type: 'normal', element: 'psychic', level: 91, hp: 12000, attack: 480, defense: 200, speed: 65, skills: [{ name: '기억 흡수', damage: 400, cooldown: 5, element: 'psychic', effectType: 'mana_drain' }], dropTable: [{ itemId: 'item_memory_blood', rate: 0.38, minQty: 1, maxQty: 3 }], expReward: 4100, goldReward: 370, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 30, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 35, lore: '기억을 빨아먹는 심해 거머리. 기억술사에게 특히 위협적이다.' },
-  { code: 'mob_abyss_urchin', name: '심연 성게', type: 'normal', element: 'earth', level: 93, hp: 19000, attack: 440, defense: 450, speed: 10, skills: [{ name: '가시 사출', damage: 500, cooldown: 4, element: 'earth', effectType: 'bleed' }], dropTable: [{ itemId: 'item_abyss_spine', rate: 0.35, minQty: 2, maxQty: 4 }], expReward: 4400, goldReward: 400, behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'memory_abyss', respawnTime: 70, lore: '에테르 결정 가시를 발사하는 거대 심해 성게.' },
-  { code: 'mob_echo_manta', name: '메아리 만타', type: 'normal', element: 'psychic', level: 94, hp: 16000, attack: 520, defense: 280, speed: 88, skills: [{ name: '기억 반향', damage: 480, cooldown: 8, element: 'psychic', effectType: 'confuse' }], dropTable: [{ itemId: 'item_echo_fin', rate: 0.28, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 420, behavior: { aggro_range: 18, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 40, lore: '기억의 메아리를 증폭시키는 거대 만타레이.' },
-  { code: 'mob_temporal_polyp', name: '시간 폴립', type: 'normal', element: 'time', level: 92, hp: 14500, attack: 500, defense: 300, speed: 20, skills: [{ name: '시간 포자', damage: 460, cooldown: 6, element: 'time', effectType: 'slow' }], dropTable: [{ itemId: 'item_temporal_spore', rate: 0.33, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 390, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'memory_abyss', respawnTime: 60, lore: '시간 포자를 방출하는 심연의 산호 폴립.' },
-  { code: 'mob_abyssal_mimic', name: '심연 미믹', type: 'normal', element: 'dark', level: 95, hp: 20000, attack: 550, defense: 320, speed: 60, skills: [{ name: '위장 습격', damage: 650, cooldown: 15, element: 'dark', effectType: 'stun' }], dropTable: [{ itemId: 'item_mimic_treasure', rate: 0.15, minQty: 1, maxQty: 1 }, { itemId: 'item_abyss_scale', rate: 0.50, minQty: 2, maxQty: 5 }], expReward: 5000, goldReward: 600, behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 50 }, location: 'memory_abyss', respawnTime: 120, lore: '보물 상자로 위장하는 심연의 포식자.' },
-  { code: 'mob_drift_phantom', name: '표류 유령', type: 'normal', element: 'void', level: 93, hp: 11000, attack: 620, defense: 150, speed: 95, skills: [{ name: '공허 관통', damage: 600, cooldown: 9, element: 'void', effectType: 'defense_ignore' }], dropTable: [{ itemId: 'item_phantom_cloth', rate: 0.22, minQty: 1, maxQty: 2 }], expReward: 4300, goldReward: 400, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 50, lore: '시간과 공간의 틈새를 표류하는 유령.' },
-  { code: 'mob_memory_starfish', name: '기억 불가사리', type: 'normal', element: 'psychic', level: 91, hp: 21000, attack: 400, defense: 350, speed: 25, skills: [{ name: '기억 재생', damage: 0, cooldown: 20, element: 'psychic', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_memory_arm', rate: 0.30, minQty: 1, maxQty: 3 }], expReward: 4100, goldReward: 380, behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 65, lore: '잘려도 기억과 함께 재생하는 심해 불가사리.' },
-  { code: 'mob_brine_elemental', name: '염수 정령', type: 'normal', element: 'water', level: 94, hp: 18000, attack: 500, defense: 300, speed: 50, skills: [{ name: '염수 분출', damage: 500, cooldown: 7, element: 'water', effectType: 'corrosion' }], dropTable: [{ itemId: 'item_brine_crystal', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4400, goldReward: 410, behavior: { aggro_range: 11, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'memory_abyss', respawnTime: 48, lore: '고농도 염수가 의지를 가진 정령.' },
-  { code: 'mob_chrono_nautilus', name: '시간 앵무조개', type: 'normal', element: 'time', level: 95, hp: 23000, attack: 480, defense: 380, speed: 40, skills: [{ name: '시간 나선', damage: 540, cooldown: 10, element: 'time', effectType: 'slow' }], dropTable: [{ itemId: 'item_chrono_shell', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 4600, goldReward: 440, behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'memory_abyss', respawnTime: 55, lore: '나선형 껍질 안에 시간이 응축된 고대 앵무조개.' },
-  { code: 'mob_void_anemone', name: '공허 말미잘', type: 'normal', element: 'void', level: 92, hp: 15000, attack: 530, defense: 270, speed: 5, skills: [{ name: '공허 흡입', damage: 470, cooldown: 6, element: 'void', effectType: 'pull' }], dropTable: [{ itemId: 'item_void_petal', rate: 0.35, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 390, behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'memory_abyss', respawnTime: 75, lore: '공허 에너지로 먹이를 끌어당기는 심해 말미잘.' },
-  { code: 'mob_forgotten_diver', name: '잊혀진 잠수부', type: 'normal', element: 'dark', level: 95, hp: 17000, attack: 560, defense: 300, speed: 60, skills: [{ name: '망각의 작살', damage: 580, cooldown: 8, element: 'dark', effectType: 'bleed' }], dropTable: [{ itemId: 'item_rusted_helm', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 4500, goldReward: 420, behavior: { aggro_range: 13, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 35 }, location: 'memory_abyss', respawnTime: 50, lore: '심연에서 기억을 잃고 배회하는 고대 잠수부의 유해.' },
+  { code: 'mob_abyss_angler', name: '심연 아귀', type: 'normal', element: 'dark', level: 90, hp: 18000, attack: 520, defense: 280, speed: 55, skills: [{ name: '심연 조명', damage: 480, cooldown: 8, element: 'dark', effectType: 'blind' }], dropTable: [{ itemId: 'item_abyss_scale', rate: 0.35, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 380, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'rift_frozen_battlefield', respawnTime: 45, lore: '심연의 어둠 속에서 빛으로 먹이를 유인하는 변이 아귀.' },
+  { code: 'mob_time_jellyfish', name: '시간 해파리', type: 'normal', element: 'time', level: 91, hp: 14000, attack: 580, defense: 200, speed: 70, skills: [{ name: '시간 촉수', damage: 520, cooldown: 7, element: 'time', effectType: 'slow' }], dropTable: [{ itemId: 'item_time_jelly', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4300, goldReward: 390, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 40, lore: '시간의 파편을 촉수에 감고 떠다니는 심해 해파리.' },
+  { code: 'mob_memory_eel', name: '기억 장어', type: 'normal', element: 'psychic', level: 90, hp: 15000, attack: 500, defense: 250, speed: 80, skills: [{ name: '기억 방전', damage: 460, cooldown: 6, element: 'psychic', effectType: 'confuse' }], dropTable: [{ itemId: 'item_memory_fang', rate: 0.32, minQty: 1, maxQty: 2 }], expReward: 4100, goldReward: 370, behavior: { aggro_range: 14, patrol: true, flee_hp_pct: 5, enrage_hp_pct: 25 }, location: 'rift_frozen_battlefield', respawnTime: 42, lore: '기억의 전류를 뿜는 심연의 전기 장어.' },
+  { code: 'mob_coral_golem', name: '기억 산호 골렘', type: 'normal', element: 'earth', level: 92, hp: 25000, attack: 420, defense: 400, speed: 30, skills: [{ name: '산호 충격파', damage: 550, cooldown: 12, element: 'earth', effectType: 'stun' }], dropTable: [{ itemId: 'item_memory_coral', rate: 0.28, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 420, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_reverse_forest', respawnTime: 60, lore: '기억이 결정화된 산호가 의지를 가진 골렘.' },
+  { code: 'mob_void_crab', name: '공허 게', type: 'normal', element: 'void', level: 91, hp: 20000, attack: 460, defense: 380, speed: 35, skills: [{ name: '공허 집게', damage: 500, cooldown: 9, element: 'void', effectType: 'armor_break' }], dropTable: [{ itemId: 'item_void_shell', rate: 0.30, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 400, behavior: { aggro_range: 9, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'rift_reverse_forest', respawnTime: 50, lore: '공허 에너지를 흡수하는 거대 심해 게.' },
+  { code: 'mob_warp_squid', name: '왜곡 오징어', type: 'normal', element: 'time', level: 93, hp: 16000, attack: 560, defense: 220, speed: 90, skills: [{ name: '시공 먹물', damage: 440, cooldown: 6, element: 'time', effectType: 'blind' }], dropTable: [{ itemId: 'item_warp_ink', rate: 0.35, minQty: 1, maxQty: 4 }], expReward: 4400, goldReward: 410, behavior: { aggro_range: 15, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 38, lore: '시공간을 뒤틀어 이동하는 심해 오징어.' },
+  { code: 'mob_forgotten_wraith', name: '잊혀진 망령', type: 'normal', element: 'dark', level: 92, hp: 13000, attack: 600, defense: 180, speed: 85, skills: [{ name: '망각의 손길', damage: 580, cooldown: 8, element: 'dark', effectType: 'silence' }], dropTable: [{ itemId: 'item_wraith_essence', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 4300, goldReward: 400, behavior: { aggro_range: 16, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 40 }, location: 'rift_reverse_forest', respawnTime: 55, lore: '대망각에 의해 잊혀진 영혼이 심연에서 배회한다.' },
+  { code: 'mob_pressure_serpent', name: '수압 독사', type: 'normal', element: 'water', level: 94, hp: 17000, attack: 540, defense: 260, speed: 75, skills: [{ name: '수압 분사', damage: 520, cooldown: 7, element: 'water', effectType: 'knockback' }], dropTable: [{ itemId: 'item_pressure_venom', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 430, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 30 }, location: 'rift_core', respawnTime: 45, lore: '극심한 수압을 무기로 사용하는 심해 독사.' },
+  { code: 'mob_chrono_barnacle', name: '시간 따개비 군체', type: 'normal', element: 'time', level: 90, hp: 22000, attack: 380, defense: 420, speed: 15, skills: [{ name: '시간 고착', damage: 350, cooldown: 10, element: 'time', effectType: 'root' }], dropTable: [{ itemId: 'item_chrono_shard', rate: 0.40, minQty: 2, maxQty: 5 }], expReward: 4000, goldReward: 360, behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_frozen_battlefield', respawnTime: 90, lore: '시간이 굳어버린 따개비 군체. 접근하면 시간을 고착시킨다.' },
+  { code: 'mob_memory_leech', name: '기억 거머리', type: 'normal', element: 'psychic', level: 91, hp: 12000, attack: 480, defense: 200, speed: 65, skills: [{ name: '기억 흡수', damage: 400, cooldown: 5, element: 'psychic', effectType: 'mana_drain' }], dropTable: [{ itemId: 'item_memory_blood', rate: 0.38, minQty: 1, maxQty: 3 }], expReward: 4100, goldReward: 370, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 30, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 35, lore: '기억을 빨아먹는 심해 거머리. 기억술사에게 특히 위협적이다.' },
+  { code: 'mob_abyss_urchin', name: '심연 성게', type: 'normal', element: 'earth', level: 93, hp: 19000, attack: 440, defense: 450, speed: 10, skills: [{ name: '가시 사출', damage: 500, cooldown: 4, element: 'earth', effectType: 'bleed' }], dropTable: [{ itemId: 'item_abyss_spine', rate: 0.35, minQty: 2, maxQty: 4 }], expReward: 4400, goldReward: 400, behavior: { aggro_range: 5, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_reverse_forest', respawnTime: 70, lore: '에테르 결정 가시를 발사하는 거대 심해 성게.' },
+  { code: 'mob_echo_manta', name: '메아리 만타', type: 'normal', element: 'psychic', level: 94, hp: 16000, attack: 520, defense: 280, speed: 88, skills: [{ name: '기억 반향', damage: 480, cooldown: 8, element: 'psychic', effectType: 'confuse' }], dropTable: [{ itemId: 'item_echo_fin', rate: 0.28, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 420, behavior: { aggro_range: 18, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 }, location: 'rift_core', respawnTime: 40, lore: '기억의 메아리를 증폭시키는 거대 만타레이.' },
+  { code: 'mob_temporal_polyp', name: '시간 폴립', type: 'normal', element: 'time', level: 92, hp: 14500, attack: 500, defense: 300, speed: 20, skills: [{ name: '시간 포자', damage: 460, cooldown: 6, element: 'time', effectType: 'slow' }], dropTable: [{ itemId: 'item_temporal_spore', rate: 0.33, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 390, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_reverse_forest', respawnTime: 60, lore: '시간 포자를 방출하는 심연의 산호 폴립.' },
+  { code: 'mob_abyssal_mimic', name: '심연 미믹', type: 'normal', element: 'dark', level: 95, hp: 20000, attack: 550, defense: 320, speed: 60, skills: [{ name: '위장 습격', damage: 650, cooldown: 15, element: 'dark', effectType: 'stun' }], dropTable: [{ itemId: 'item_mimic_treasure', rate: 0.15, minQty: 1, maxQty: 1 }, { itemId: 'item_abyss_scale', rate: 0.50, minQty: 2, maxQty: 5 }], expReward: 5000, goldReward: 600, behavior: { aggro_range: 4, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 50 }, location: 'rift_core', respawnTime: 120, lore: '보물 상자로 위장하는 심연의 포식자.' },
+  { code: 'mob_drift_phantom', name: '표류 유령', type: 'normal', element: 'void', level: 93, hp: 11000, attack: 620, defense: 150, speed: 95, skills: [{ name: '공허 관통', damage: 600, cooldown: 9, element: 'void', effectType: 'defense_ignore' }], dropTable: [{ itemId: 'item_phantom_cloth', rate: 0.22, minQty: 1, maxQty: 2 }], expReward: 4300, goldReward: 400, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 50, lore: '시간과 공간의 틈새를 표류하는 유령.' },
+  { code: 'mob_memory_starfish', name: '기억 불가사리', type: 'normal', element: 'psychic', level: 91, hp: 21000, attack: 400, defense: 350, speed: 25, skills: [{ name: '기억 재생', damage: 0, cooldown: 20, element: 'psychic', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_memory_arm', rate: 0.30, minQty: 1, maxQty: 3 }], expReward: 4100, goldReward: 380, behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 65, lore: '잘려도 기억과 함께 재생하는 심해 불가사리.' },
+  { code: 'mob_brine_elemental', name: '염수 정령', type: 'normal', element: 'water', level: 94, hp: 18000, attack: 500, defense: 300, speed: 50, skills: [{ name: '염수 분출', damage: 500, cooldown: 7, element: 'water', effectType: 'corrosion' }], dropTable: [{ itemId: 'item_brine_crystal', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4400, goldReward: 410, behavior: { aggro_range: 11, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_core', respawnTime: 48, lore: '고농도 염수가 의지를 가진 정령.' },
+  { code: 'mob_chrono_nautilus', name: '시간 앵무조개', type: 'normal', element: 'time', level: 95, hp: 23000, attack: 480, defense: 380, speed: 40, skills: [{ name: '시간 나선', damage: 540, cooldown: 10, element: 'time', effectType: 'slow' }], dropTable: [{ itemId: 'item_chrono_shell', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 4600, goldReward: 440, behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'rift_core', respawnTime: 55, lore: '나선형 껍질 안에 시간이 응축된 고대 앵무조개.' },
+  { code: 'mob_void_anemone', name: '공허 말미잘', type: 'normal', element: 'void', level: 92, hp: 15000, attack: 530, defense: 270, speed: 5, skills: [{ name: '공허 흡입', damage: 470, cooldown: 6, element: 'void', effectType: 'pull' }], dropTable: [{ itemId: 'item_void_petal', rate: 0.35, minQty: 1, maxQty: 3 }], expReward: 4200, goldReward: 390, behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 75, lore: '공허 에너지로 먹이를 끌어당기는 심해 말미잘.' },
+  { code: 'mob_forgotten_diver', name: '잊혀진 잠수부', type: 'normal', element: 'dark', level: 95, hp: 17000, attack: 560, defense: 300, speed: 60, skills: [{ name: '망각의 작살', damage: 580, cooldown: 8, element: 'dark', effectType: 'bleed' }], dropTable: [{ itemId: 'item_rusted_helm', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 4500, goldReward: 420, behavior: { aggro_range: 13, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 35 }, location: 'rift_core', respawnTime: 50, lore: '심연에서 기억을 잃고 배회하는 고대 잠수부의 유해.' },
 ];
 
 const memoryAbyssElites: MonsterSeed[] = [
-  { code: 'elite_leviathan_spawn', name: '레비아탄 아종', type: 'elite', element: 'water', level: 96, hp: 85000, attack: 780, defense: 450, speed: 65, skills: [{ name: '해일 돌진', damage: 900, cooldown: 12, element: 'water', effectType: 'knockback' }, { name: '수압 붕괴', damage: 1200, cooldown: 20, element: 'water', effectType: 'stun' }], dropTable: [{ itemId: 'item_leviathan_scale', rate: 0.20, minQty: 1, maxQty: 1 }, { itemId: 'item_abyss_gem', rate: 0.10, minQty: 1, maxQty: 1 }], expReward: 15000, goldReward: 2000, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'memory_abyss', respawnTime: 300, lore: '심연 괴수 레비아탄의 아종. 원종보다 작지만 여전히 위협적이다.' },
-  { code: 'elite_chrono_hydra', name: '시간 히드라', type: 'elite', element: 'time', level: 97, hp: 95000, attack: 720, defense: 400, speed: 50, skills: [{ name: '시간 분열', damage: 800, cooldown: 15, element: 'time', effectType: 'clone' }, { name: '시간역행 재생', damage: 0, cooldown: 25, element: 'time', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_hydra_chrono_heart', rate: 0.15, minQty: 1, maxQty: 1 }, { itemId: 'item_time_jelly', rate: 0.40, minQty: 2, maxQty: 4 }], expReward: 16000, goldReward: 2200, behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'memory_abyss', respawnTime: 360, lore: '머리를 자르면 시간을 역행시켜 재생하는 히드라.' },
-  { code: 'elite_memory_kraken', name: '기억 크라켄', type: 'elite', element: 'psychic', level: 97, hp: 100000, attack: 750, defense: 380, speed: 55, skills: [{ name: '기억 촉수 난무', damage: 700, cooldown: 10, element: 'psychic', effectType: 'confuse' }, { name: '정신 지배', damage: 600, cooldown: 18, element: 'psychic', effectType: 'charm' }], dropTable: [{ itemId: 'item_kraken_tentacle', rate: 0.18, minQty: 1, maxQty: 2 }, { itemId: 'item_memory_coral', rate: 0.35, minQty: 2, maxQty: 3 }], expReward: 16500, goldReward: 2300, behavior: { aggro_range: 22, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'memory_abyss', respawnTime: 400, lore: '기억을 조종하는 거대 크라켄. 촉수에 닿으면 기억이 뒤섞인다.' },
-  { code: 'elite_void_whale', name: '공허 고래', type: 'elite', element: 'void', level: 98, hp: 120000, attack: 680, defense: 500, speed: 40, skills: [{ name: '공허 포식', damage: 1500, cooldown: 30, element: 'void', effectType: 'instant_kill_chance' }, { name: '심연의 노래', damage: 400, cooldown: 12, element: 'void', effectType: 'sleep' }], dropTable: [{ itemId: 'item_void_ambergris', rate: 0.12, minQty: 1, maxQty: 1 }, { itemId: 'item_void_shell', rate: 0.40, minQty: 3, maxQty: 5 }], expReward: 18000, goldReward: 2500, behavior: { aggro_range: 25, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'memory_abyss', respawnTime: 500, lore: '심연을 유영하는 공허 고래. 그 입은 차원의 균열이다.' },
-  { code: 'elite_temporal_lord', name: '시간의 군주', type: 'elite', element: 'time', level: 99, hp: 110000, attack: 800, defense: 420, speed: 70, skills: [{ name: '시간 정지', damage: 0, cooldown: 25, element: 'time', effectType: 'freeze_all' }, { name: '시간 가속', damage: 900, cooldown: 8, element: 'time', effectType: 'haste_self' }], dropTable: [{ itemId: 'item_temporal_crown', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'item_chrono_shard', rate: 0.45, minQty: 3, maxQty: 6 }], expReward: 20000, goldReward: 3000, behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'memory_abyss', respawnTime: 600, lore: '심연에서 시간을 지배하는 고대 존재. 봉인 12인 중 하나였을지도 모른다.' },
+  { code: 'elite_leviathan_spawn', name: '레비아탄 아종', type: 'elite', element: 'water', level: 96, hp: 85000, attack: 780, defense: 450, speed: 65, skills: [{ name: '해일 돌진', damage: 900, cooldown: 12, element: 'water', effectType: 'knockback' }, { name: '수압 붕괴', damage: 1200, cooldown: 20, element: 'water', effectType: 'stun' }], dropTable: [{ itemId: 'item_leviathan_scale', rate: 0.20, minQty: 1, maxQty: 1 }, { itemId: 'item_abyss_gem', rate: 0.10, minQty: 1, maxQty: 1 }], expReward: 15000, goldReward: 2000, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'rift_core', respawnTime: 300, lore: '심연 괴수 레비아탄의 아종. 원종보다 작지만 여전히 위협적이다.' },
+  { code: 'elite_chrono_hydra', name: '시간 히드라', type: 'elite', element: 'time', level: 97, hp: 95000, attack: 720, defense: 400, speed: 50, skills: [{ name: '시간 분열', damage: 800, cooldown: 15, element: 'time', effectType: 'clone' }, { name: '시간역행 재생', damage: 0, cooldown: 25, element: 'time', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_hydra_chrono_heart', rate: 0.15, minQty: 1, maxQty: 1 }, { itemId: 'item_time_jelly', rate: 0.40, minQty: 2, maxQty: 4 }], expReward: 16000, goldReward: 2200, behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_core', respawnTime: 360, lore: '머리를 자르면 시간을 역행시켜 재생하는 히드라.' },
+  { code: 'elite_memory_kraken', name: '기억 크라켄', type: 'elite', element: 'psychic', level: 97, hp: 100000, attack: 750, defense: 380, speed: 55, skills: [{ name: '기억 촉수 난무', damage: 700, cooldown: 10, element: 'psychic', effectType: 'confuse' }, { name: '정신 지배', damage: 600, cooldown: 18, element: 'psychic', effectType: 'charm' }], dropTable: [{ itemId: 'item_kraken_tentacle', rate: 0.18, minQty: 1, maxQty: 2 }, { itemId: 'item_memory_coral', rate: 0.35, minQty: 2, maxQty: 3 }], expReward: 16500, goldReward: 2300, behavior: { aggro_range: 22, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_core', respawnTime: 400, lore: '기억을 조종하는 거대 크라켄. 촉수에 닿으면 기억이 뒤섞인다.' },
+  { code: 'elite_void_whale', name: '공허 고래', type: 'elite', element: 'void', level: 98, hp: 120000, attack: 680, defense: 500, speed: 40, skills: [{ name: '공허 포식', damage: 1500, cooldown: 30, element: 'void', effectType: 'instant_kill_chance' }, { name: '심연의 노래', damage: 400, cooldown: 12, element: 'void', effectType: 'sleep' }], dropTable: [{ itemId: 'item_void_ambergris', rate: 0.12, minQty: 1, maxQty: 1 }, { itemId: 'item_void_shell', rate: 0.40, minQty: 3, maxQty: 5 }], expReward: 18000, goldReward: 2500, behavior: { aggro_range: 25, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'rift_core', respawnTime: 500, lore: '심연을 유영하는 공허 고래. 그 입은 차원의 균열이다.' },
+  { code: 'elite_temporal_lord', name: '시간의 군주', type: 'elite', element: 'time', level: 99, hp: 110000, attack: 800, defense: 420, speed: 70, skills: [{ name: '시간 정지', damage: 0, cooldown: 25, element: 'time', effectType: 'freeze_all' }, { name: '시간 가속', damage: 900, cooldown: 8, element: 'time', effectType: 'haste_self' }], dropTable: [{ itemId: 'item_temporal_crown', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'item_chrono_shard', rate: 0.45, minQty: 3, maxQty: 6 }], expReward: 20000, goldReward: 3000, behavior: { aggro_range: 20, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 600, lore: '심연에서 시간을 지배하는 고대 존재. 봉인 12인 중 하나였을지도 모른다.' },
 ];
 
 const memoryAbyssDungeonBosses: MonsterSeed[] = [
-  { code: 'boss_abyss_guardian', name: '심연의 수호자', type: 'boss', element: 'water', level: 95, hp: 250000, attack: 900, defense: 550, speed: 50, skills: [{ name: '심연 격류', damage: 1200, cooldown: 15, element: 'water', effectType: 'knockback' }, { name: '수압 감옥', damage: 800, cooldown: 20, element: 'water', effectType: 'root' }, { name: '심해 분노', damage: 1800, cooldown: 30, element: 'water', effectType: 'area_damage' }], dropTable: [{ itemId: 'item_abyss_guardian_core', rate: 0.10, minQty: 1, maxQty: 1 }, { itemId: 'item_abyss_gem', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 30000, goldReward: 5000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'memory_abyss', respawnTime: 0, lore: '기억의 심연 입구를 수호하는 고대 기계 거인.' },
-  { code: 'boss_chrono_serpent', name: '시간 대뱀 우로보로스', type: 'boss', element: 'time', level: 97, hp: 300000, attack: 950, defense: 480, speed: 65, skills: [{ name: '시간 삼키기', damage: 2000, cooldown: 25, element: 'time', effectType: 'time_reverse' }, { name: '꼬리의 시작', damage: 1100, cooldown: 12, element: 'time', effectType: 'area_damage' }, { name: '영원의 고리', damage: 0, cooldown: 40, element: 'time', effectType: 'invincible_5s' }], dropTable: [{ itemId: 'item_ouroboros_fang', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'item_chrono_shell', rate: 0.30, minQty: 2, maxQty: 3 }], expReward: 35000, goldReward: 6000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'memory_abyss', respawnTime: 0, lore: '자신의 꼬리를 물고 시간을 순환시키는 대뱀.' },
-  { code: 'boss_memory_colossus', name: '기억의 거신', type: 'boss', element: 'psychic', level: 98, hp: 350000, attack: 1000, defense: 600, speed: 30, skills: [{ name: '기억 소거', damage: 1500, cooldown: 18, element: 'psychic', effectType: 'skill_seal' }, { name: '대망각의 재림', damage: 2500, cooldown: 45, element: 'psychic', effectType: 'area_damage' }, { name: '기억 흡수', damage: 800, cooldown: 15, element: 'psychic', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_colossus_memory', rate: 0.06, minQty: 1, maxQty: 1 }, { itemId: 'item_memory_coral', rate: 0.35, minQty: 3, maxQty: 5 }], expReward: 40000, goldReward: 7000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'memory_abyss', respawnTime: 0, lore: '대망각 3,200년 전의 기억이 응축된 거신. 접근하면 기억이 소거된다.' },
-  { code: 'boss_void_empress', name: '공허의 여제', type: 'boss', element: 'void', level: 99, hp: 380000, attack: 1050, defense: 520, speed: 55, skills: [{ name: '차원 분쇄', damage: 2200, cooldown: 22, element: 'void', effectType: 'defense_ignore' }, { name: '공허의 왕좌', damage: 0, cooldown: 30, element: 'void', effectType: 'summon_adds' }, { name: '존재 소멸', damage: 3000, cooldown: 60, element: 'void', effectType: 'instant_kill_chance' }], dropTable: [{ itemId: 'item_void_empress_crown', rate: 0.05, minQty: 1, maxQty: 1 }, { itemId: 'item_void_ambergris', rate: 0.20, minQty: 1, maxQty: 2 }], expReward: 45000, goldReward: 8000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'memory_abyss', respawnTime: 0, lore: '심연 최심부에서 공허를 지배하는 여제. 봉인 12인에 의해 가둬졌으나 깨어났다.' },
-  { code: 'boss_leviathan_prime', name: '시조 레비아탄', type: 'boss', element: 'dark', level: 100, hp: 500000, attack: 1200, defense: 650, speed: 45, skills: [{ name: '심연 포효', damage: 2800, cooldown: 20, element: 'dark', effectType: 'fear' }, { name: '시간 잠식', damage: 1800, cooldown: 15, element: 'time', effectType: 'slow' }, { name: '세계 삼키기', damage: 4000, cooldown: 90, element: 'dark', effectType: 'area_damage' }, { name: '심연 재생', damage: 0, cooldown: 30, element: 'dark', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_leviathan_heart', rate: 0.03, minQty: 1, maxQty: 1 }, { itemId: 'item_leviathan_scale', rate: 0.30, minQty: 2, maxQty: 4 }, { itemId: 'item_abyss_guardian_core', rate: 0.15, minQty: 1, maxQty: 1 }], expReward: 60000, goldReward: 12000, behavior: { aggro_range: 40, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'memory_abyss', respawnTime: 0, lore: '기억의 심연 최종 보스. 대망각 이전부터 심연에 잠들어 있던 원초의 괴수.' },
+  { code: 'boss_abyss_guardian', name: '심연의 수호자', type: 'boss', element: 'water', level: 95, hp: 250000, attack: 900, defense: 550, speed: 50, skills: [{ name: '심연 격류', damage: 1200, cooldown: 15, element: 'water', effectType: 'knockback' }, { name: '수압 감옥', damage: 800, cooldown: 20, element: 'water', effectType: 'root' }, { name: '심해 분노', damage: 1800, cooldown: 30, element: 'water', effectType: 'area_damage' }], dropTable: [{ itemId: 'item_abyss_guardian_core', rate: 0.10, minQty: 1, maxQty: 1 }, { itemId: 'item_abyss_gem', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 30000, goldReward: 5000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_core', respawnTime: 0, lore: '기억의 심연 입구를 수호하는 고대 기계 거인.' },
+  { code: 'boss_chrono_serpent', name: '시간 대뱀 우로보로스', type: 'boss', element: 'time', level: 97, hp: 300000, attack: 950, defense: 480, speed: 65, skills: [{ name: '시간 삼키기', damage: 2000, cooldown: 25, element: 'time', effectType: 'time_reverse' }, { name: '꼬리의 시작', damage: 1100, cooldown: 12, element: 'time', effectType: 'area_damage' }, { name: '영원의 고리', damage: 0, cooldown: 40, element: 'time', effectType: 'invincible_5s' }], dropTable: [{ itemId: 'item_ouroboros_fang', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'item_chrono_shell', rate: 0.30, minQty: 2, maxQty: 3 }], expReward: 35000, goldReward: 6000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_core', respawnTime: 0, lore: '자신의 꼬리를 물고 시간을 순환시키는 대뱀.' },
+  { code: 'boss_memory_colossus', name: '기억의 거신', type: 'boss', element: 'psychic', level: 98, hp: 350000, attack: 1000, defense: 600, speed: 30, skills: [{ name: '기억 소거', damage: 1500, cooldown: 18, element: 'psychic', effectType: 'skill_seal' }, { name: '대망각의 재림', damage: 2500, cooldown: 45, element: 'psychic', effectType: 'area_damage' }, { name: '기억 흡수', damage: 800, cooldown: 15, element: 'psychic', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_colossus_memory', rate: 0.06, minQty: 1, maxQty: 1 }, { itemId: 'item_memory_coral', rate: 0.35, minQty: 3, maxQty: 5 }], expReward: 40000, goldReward: 7000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'rift_core', respawnTime: 0, lore: '대망각 3,200년 전의 기억이 응축된 거신. 접근하면 기억이 소거된다.' },
+  { code: 'boss_void_empress', name: '공허의 여제', type: 'boss', element: 'void', level: 99, hp: 380000, attack: 1050, defense: 520, speed: 55, skills: [{ name: '차원 분쇄', damage: 2200, cooldown: 22, element: 'void', effectType: 'defense_ignore' }, { name: '공허의 왕좌', damage: 0, cooldown: 30, element: 'void', effectType: 'summon_adds' }, { name: '존재 소멸', damage: 3000, cooldown: 60, element: 'void', effectType: 'instant_kill_chance' }], dropTable: [{ itemId: 'item_void_empress_crown', rate: 0.05, minQty: 1, maxQty: 1 }, { itemId: 'item_void_ambergris', rate: 0.20, minQty: 1, maxQty: 2 }], expReward: 45000, goldReward: 8000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 0, lore: '심연 최심부에서 공허를 지배하는 여제. 봉인 12인에 의해 가둬졌으나 깨어났다.' },
+  { code: 'boss_leviathan_prime', name: '시조 레비아탄', type: 'boss', element: 'dark', level: 100, hp: 500000, attack: 1200, defense: 650, speed: 45, skills: [{ name: '심연 포효', damage: 2800, cooldown: 20, element: 'dark', effectType: 'fear' }, { name: '시간 잠식', damage: 1800, cooldown: 15, element: 'time', effectType: 'slow' }, { name: '세계 삼키기', damage: 4000, cooldown: 90, element: 'dark', effectType: 'area_damage' }, { name: '심연 재생', damage: 0, cooldown: 30, element: 'dark', effectType: 'heal_self' }], dropTable: [{ itemId: 'item_leviathan_heart', rate: 0.03, minQty: 1, maxQty: 1 }, { itemId: 'item_leviathan_scale', rate: 0.30, minQty: 2, maxQty: 4 }, { itemId: 'item_abyss_guardian_core', rate: 0.15, minQty: 1, maxQty: 1 }], expReward: 60000, goldReward: 12000, behavior: { aggro_range: 40, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 0, lore: '기억의 심연 최종 보스. 대망각 이전부터 심연에 잠들어 있던 원초의 괴수.' },
 ];
 
 // ─── P14-18: 시간의 균열 (temporal_rift) 몬스터 30종 ─────────────
 // 일반 20 + 엘리트 5 + 보스 5 | Lv.85~100 | 시간/공간 왜곡 테마
 
 const temporalRiftNormals: MonsterSeed[] = [
-  { code: 'MON_TR_001', name: '시간 파편 슬라임', type: 'normal', element: 'time', level: 85, hp: 12000, attack: 280, defense: 150, speed: 30, skills: [{ name: '시간 점액', damage: 350, cooldown: 6, element: 'time', effectType: 'slow' }, { name: '파편 분열', damage: 200, cooldown: 12, element: 'time', effectType: 'clone' }], dropTable: [{ itemId: 'MAT_TEMPORAL_SLIME', rate: 0.55, minQty: 1, maxQty: 3 }, { itemId: 'MAT_TIME_DUST', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 800, behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 20, lore: '시간의 균열에서 응축된 왜곡 에너지가 슬라임 형태를 취한 존재. 만지면 시간이 느려진다.' },
-  { code: 'MON_TR_002', name: '균열 감시자', type: 'normal', element: 'arcane', level: 86, hp: 13500, attack: 300, defense: 160, speed: 35, skills: [{ name: '시공 레이저', damage: 380, cooldown: 7, element: 'arcane', effectType: 'damage' }, { name: '경고 신호', damage: 0, cooldown: 15, element: 'arcane', effectType: 'call_reinforcement' }], dropTable: [{ itemId: 'MAT_RIFT_LENS', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_ARCANE_CIRCUIT', rate: 0.25, minQty: 1, maxQty: 1 }], expReward: 4800, goldReward: 850, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 22, lore: '균열을 감시하는 기계형 존재. 침입자를 발견하면 즉시 동료를 호출한다.' },
-  { code: 'MON_TR_003', name: '시간 방랑자', type: 'normal', element: 'time', level: 86, hp: 11000, attack: 320, defense: 130, speed: 50, skills: [{ name: '깜빡임 이동', damage: 300, cooldown: 5, element: 'time', effectType: 'teleport' }, { name: '시간 베기', damage: 420, cooldown: 8, element: 'time', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_WANDERER_CLOTH', rate: 0.45, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TIME_DUST', rate: 0.35, minQty: 1, maxQty: 3 }], expReward: 4600, goldReward: 820, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 20, lore: '시간 속에서 길을 잃은 방랑자의 잔영. 순간이동을 반복하며 공격한다.' },
-  { code: 'MON_TR_004', name: '공간 왜곡체', type: 'normal', element: 'void', level: 87, hp: 14000, attack: 290, defense: 180, speed: 25, skills: [{ name: '공간 수축', damage: 400, cooldown: 8, element: 'void', effectType: 'pull' }, { name: '왜곡 폭발', damage: 500, cooldown: 14, element: 'void', effectType: 'area_damage' }], dropTable: [{ itemId: 'MAT_DISTORTION_CORE', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.45, minQty: 1, maxQty: 3 }], expReward: 5000, goldReward: 880, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'temporal_rift', respawnTime: 25, lore: '공간이 뒤틀린 곳에서 태어난 비정형 존재. 주변 공간을 수축시켜 적을 끌어당긴다.' },
-  { code: 'MON_TR_005', name: '패러독스 박쥐', type: 'normal', element: 'time', level: 87, hp: 9500, attack: 340, defense: 110, speed: 65, skills: [{ name: '인과 역전 파동', damage: 360, cooldown: 6, element: 'time', effectType: 'reflect' }, { name: '초음파 시간파', damage: 280, cooldown: 4, element: 'time', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_PARADOX_WING', rate: 0.50, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TIME_DUST', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4700, goldReward: 830, behavior: { aggro_range: 15, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 18, lore: '과거와 현재를 동시에 존재하는 박쥐. 공격을 인과율로 되돌린다.' },
-  { code: 'MON_TR_006', name: '시계태엽 골렘', type: 'normal', element: 'earth', level: 88, hp: 18000, attack: 260, defense: 250, speed: 18, skills: [{ name: '톱니 분쇄', damage: 500, cooldown: 10, element: 'earth', effectType: 'armor_break' }, { name: '태엽 감기', damage: 0, cooldown: 20, element: 'neutral', effectType: 'buff_self_attack' }], dropTable: [{ itemId: 'MAT_CLOCKWORK_GEAR', rate: 0.45, minQty: 1, maxQty: 3 }, { itemId: 'MAT_TEMPORAL_STEEL', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 5200, goldReward: 900, behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'temporal_rift', respawnTime: 30, lore: '시간의 균열에서 발견된 고대 시계 장치가 스스로 움직이는 골렘.' },
-  { code: 'MON_TR_007', name: '차원 틈새 거미', type: 'normal', element: 'void', level: 88, hp: 13000, attack: 310, defense: 140, speed: 45, skills: [{ name: '차원 거미줄', damage: 250, cooldown: 5, element: 'void', effectType: 'root' }, { name: '공간 이빨', damage: 420, cooldown: 8, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_DIMENSION_SILK', rate: 0.50, minQty: 1, maxQty: 3 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 5100, goldReward: 890, behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 22, lore: '차원의 틈새에 거미줄을 치는 거미. 거미줄에 걸리면 차원 사이에 갇힌다.' },
-  { code: 'MON_TR_008', name: '에코 유령', type: 'normal', element: 'psychic', level: 89, hp: 10500, attack: 350, defense: 100, speed: 55, skills: [{ name: '잔향 공격', damage: 380, cooldown: 5, element: 'psychic', effectType: 'damage' }, { name: '기억 간섭', damage: 300, cooldown: 10, element: 'psychic', effectType: 'confuse' }], dropTable: [{ itemId: 'MAT_ECHO_ESSENCE', rate: 0.45, minQty: 1, maxQty: 2 }, { itemId: 'MAT_GHOST_FRAGMENT', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 5300, goldReward: 920, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 25, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 20, lore: '시간의 균열에 남겨진 과거의 잔향. 죽은 모험가들의 기억이 형체를 갖춘 유령.' },
-  { code: 'MON_TR_009', name: '크로노 스콜피온', type: 'normal', element: 'time', level: 89, hp: 15000, attack: 330, defense: 200, speed: 35, skills: [{ name: '시간독 침', damage: 300, cooldown: 6, element: 'time', effectType: 'dot_time' }, { name: '시간 집게', damage: 450, cooldown: 10, element: 'time', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_CHRONO_STINGER', rate: 0.40, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_VENOM', rate: 0.50, minQty: 1, maxQty: 3 }], expReward: 5400, goldReward: 930, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'temporal_rift', respawnTime: 25, lore: '시간의 독을 품은 전갈. 독에 쏘이면 상처 주변의 시간만 가속되어 급격히 노화한다.' },
-  { code: 'MON_TR_010', name: '차원 표류자', type: 'normal', element: 'void', level: 90, hp: 14500, attack: 340, defense: 170, speed: 40, skills: [{ name: '차원 전이 공격', damage: 440, cooldown: 7, element: 'void', effectType: 'teleport_attack' }, { name: '공간 절단', damage: 520, cooldown: 12, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_DRIFTER_ESSENCE', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.35, minQty: 2, maxQty: 3 }], expReward: 5600, goldReward: 950, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 22, lore: '수많은 차원을 떠도는 표류자. 어느 시간대에서 왔는지 알 수 없다.' },
-  { code: 'MON_TR_011', name: '시간 결정체', type: 'normal', element: 'time', level: 90, hp: 16000, attack: 280, defense: 230, speed: 20, skills: [{ name: '시간 동결파', damage: 350, cooldown: 8, element: 'time', effectType: 'freeze' }, { name: '결정 폭파', damage: 600, cooldown: 15, element: 'time', effectType: 'area_damage' }], dropTable: [{ itemId: 'MAT_TIME_CRYSTAL', rate: 0.35, minQty: 1, maxQty: 2 }, { itemId: 'MAT_CHRONO_SHARD', rate: 0.45, minQty: 1, maxQty: 3 }], expReward: 5700, goldReward: 960, behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'temporal_rift', respawnTime: 28, lore: '시간 에너지가 결정화된 존재. 파괴되면 주변 시간이 동결된다.' },
-  { code: 'MON_TR_012', name: '왜곡 하운드', type: 'normal', element: 'void', level: 91, hp: 13500, attack: 360, defense: 145, speed: 60, skills: [{ name: '공간 도약', damage: 400, cooldown: 5, element: 'void', effectType: 'dash' }, { name: '왜곡 이빨', damage: 480, cooldown: 8, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_HOUND_FANG', rate: 0.45, minQty: 1, maxQty: 2 }, { itemId: 'MAT_DISTORTION_CORE', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 5900, goldReward: 980, behavior: { aggro_range: 15, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 20, lore: '공간을 뛰어넘어 사냥하는 왜곡된 사냥개. 무리 지어 다닌다.' },
-  { code: 'MON_TR_013', name: '미래 잔영 기사', type: 'normal', element: 'time', level: 91, hp: 15500, attack: 370, defense: 190, speed: 38, skills: [{ name: '예지 참격', damage: 480, cooldown: 7, element: 'time', effectType: 'unavoidable' }, { name: '시간 방패', damage: 0, cooldown: 15, element: 'time', effectType: 'barrier' }], dropTable: [{ itemId: 'MAT_FUTURE_STEEL', rate: 0.35, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TEMPORAL_STEEL', rate: 0.25, minQty: 1, maxQty: 1 }], expReward: 6000, goldReward: 1000, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'temporal_rift', respawnTime: 25, lore: '미래에서 온 기사의 잔영. 적의 공격을 예지하여 완벽히 회피한다.' },
-  { code: 'MON_TR_014', name: '역행 마법사', type: 'normal', element: 'arcane', level: 92, hp: 12500, attack: 400, defense: 130, speed: 42, skills: [{ name: '역행 화살', damage: 500, cooldown: 6, element: 'arcane', effectType: 'rewind_position' }, { name: '시간 폭풍', damage: 600, cooldown: 14, element: 'time', effectType: 'area_damage' }], dropTable: [{ itemId: 'MAT_REWIND_ORB', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_ARCANE_CIRCUIT', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 6200, goldReward: 1020, behavior: { aggro_range: 14, patrol: false, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 22, lore: '시간을 역행시키는 마법을 사용하는 마법사. 적의 위치를 과거로 되돌린다.' },
-  { code: 'MON_TR_015', name: '차원 흡수체', type: 'normal', element: 'void', level: 92, hp: 17000, attack: 310, defense: 210, speed: 28, skills: [{ name: '차원 흡수', damage: 350, cooldown: 8, element: 'void', effectType: 'drain_mana' }, { name: '공간 압축', damage: 550, cooldown: 12, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_ABSORBER_MEMBRANE', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.40, minQty: 2, maxQty: 4 }], expReward: 6300, goldReward: 1050, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'temporal_rift', respawnTime: 28, lore: '주변 차원의 에너지를 흡수하여 성장하는 기생체. 마나를 빨아들인다.' },
-  { code: 'MON_TR_016', name: '시공 워처', type: 'normal', element: 'time', level: 93, hp: 15000, attack: 380, defense: 175, speed: 44, skills: [{ name: '시공 관측', damage: 420, cooldown: 6, element: 'time', effectType: 'reveal' }, { name: '시간 감속 장벽', damage: 300, cooldown: 10, element: 'time', effectType: 'slow_area' }], dropTable: [{ itemId: 'MAT_WATCHER_EYE', rate: 0.30, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 6500, goldReward: 1080, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 25, lore: '시공간을 관측하는 눈 형태의 존재. 은신도 무력화하며 주변 시간을 감속시킨다.' },
-  { code: 'MON_TR_017', name: '균열 정령', type: 'normal', element: 'arcane', level: 93, hp: 13000, attack: 390, defense: 150, speed: 48, skills: [{ name: '균열 방출', damage: 480, cooldown: 7, element: 'arcane', effectType: 'damage' }, { name: '차원 회피', damage: 0, cooldown: 12, element: 'void', effectType: 'phase_shift' }], dropTable: [{ itemId: 'MAT_RIFT_SPIRIT_CORE', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_ECHO_ESSENCE', rate: 0.40, minQty: 1, maxQty: 3 }], expReward: 6600, goldReward: 1100, behavior: { aggro_range: 11, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 22, lore: '균열 자체가 의지를 가진 정령. 물리 공격이 잘 통하지 않는다.' },
-  { code: 'MON_TR_018', name: '크로노 가고일', type: 'normal', element: 'time', level: 94, hp: 18000, attack: 350, defense: 240, speed: 30, skills: [{ name: '시간 석화', damage: 0, cooldown: 15, element: 'time', effectType: 'petrify' }, { name: '돌 강타', damage: 550, cooldown: 8, element: 'earth', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_CHRONO_STONE', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TEMPORAL_STEEL', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 6800, goldReward: 1120, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'temporal_rift', respawnTime: 30, lore: '시간이 멈춘 석상이 균열의 에너지로 깨어난다. 적을 석화시키는 시선을 가졌다.' },
-  { code: 'MON_TR_019', name: '차원 해파리', type: 'normal', element: 'void', level: 94, hp: 11500, attack: 410, defense: 120, speed: 35, skills: [{ name: '차원 감전', damage: 460, cooldown: 5, element: 'void', effectType: 'paralyze' }, { name: '촉수 휘감기', damage: 380, cooldown: 8, element: 'void', effectType: 'root' }], dropTable: [{ itemId: 'MAT_DIMENSION_JELLY', rate: 0.50, minQty: 1, maxQty: 3 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 6900, goldReward: 1140, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'temporal_rift', respawnTime: 20, lore: '차원 사이를 떠다니는 투명한 해파리. 촉수에 닿으면 차원 사이에 감전된다.' },
-  { code: 'MON_TR_020', name: '시간 포식자 유충', type: 'normal', element: 'time', level: 95, hp: 16000, attack: 400, defense: 185, speed: 40, skills: [{ name: '시간 포식', damage: 500, cooldown: 7, element: 'time', effectType: 'steal_buff' }, { name: '성장 가속', damage: 0, cooldown: 20, element: 'time', effectType: 'evolve_self' }], dropTable: [{ itemId: 'MAT_DEVOURER_LARVA', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 7200, goldReward: 1200, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'temporal_rift', respawnTime: 25, lore: '시간 포식자의 유충. 적의 버프를 흡수하며 전투 중 성장한다. 방치하면 엘리트급으로 변한다.' },
+  { code: 'MON_TR_001', name: '시간 파편 슬라임', type: 'normal', element: 'time', level: 85, hp: 12000, attack: 280, defense: 150, speed: 30, skills: [{ name: '시간 점액', damage: 350, cooldown: 6, element: 'time', effectType: 'slow' }, { name: '파편 분열', damage: 200, cooldown: 12, element: 'time', effectType: 'clone' }], dropTable: [{ itemId: 'MAT_TEMPORAL_SLIME', rate: 0.55, minQty: 1, maxQty: 3 }, { itemId: 'MAT_TIME_DUST', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4500, goldReward: 800, behavior: { aggro_range: 6, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_mirror_city', respawnTime: 20, lore: '시간의 균열에서 응축된 왜곡 에너지가 슬라임 형태를 취한 존재. 만지면 시간이 느려진다.' },
+  { code: 'MON_TR_002', name: '균열 감시자', type: 'normal', element: 'arcane', level: 86, hp: 13500, attack: 300, defense: 160, speed: 35, skills: [{ name: '시공 레이저', damage: 380, cooldown: 7, element: 'arcane', effectType: 'damage' }, { name: '경고 신호', damage: 0, cooldown: 15, element: 'arcane', effectType: 'call_reinforcement' }], dropTable: [{ itemId: 'MAT_RIFT_LENS', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_ARCANE_CIRCUIT', rate: 0.25, minQty: 1, maxQty: 1 }], expReward: 4800, goldReward: 850, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_mirror_city', respawnTime: 22, lore: '균열을 감시하는 기계형 존재. 침입자를 발견하면 즉시 동료를 호출한다.' },
+  { code: 'MON_TR_003', name: '시간 방랑자', type: 'normal', element: 'time', level: 86, hp: 11000, attack: 320, defense: 130, speed: 50, skills: [{ name: '깜빡임 이동', damage: 300, cooldown: 5, element: 'time', effectType: 'teleport' }, { name: '시간 베기', damage: 420, cooldown: 8, element: 'time', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_WANDERER_CLOTH', rate: 0.45, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TIME_DUST', rate: 0.35, minQty: 1, maxQty: 3 }], expReward: 4600, goldReward: 820, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 }, location: 'rift_mirror_city', respawnTime: 20, lore: '시간 속에서 길을 잃은 방랑자의 잔영. 순간이동을 반복하며 공격한다.' },
+  { code: 'MON_TR_004', name: '공간 왜곡체', type: 'normal', element: 'void', level: 87, hp: 14000, attack: 290, defense: 180, speed: 25, skills: [{ name: '공간 수축', damage: 400, cooldown: 8, element: 'void', effectType: 'pull' }, { name: '왜곡 폭발', damage: 500, cooldown: 14, element: 'void', effectType: 'area_damage' }], dropTable: [{ itemId: 'MAT_DISTORTION_CORE', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.45, minQty: 1, maxQty: 3 }], expReward: 5000, goldReward: 880, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'rift_mirror_city', respawnTime: 25, lore: '공간이 뒤틀린 곳에서 태어난 비정형 존재. 주변 공간을 수축시켜 적을 끌어당긴다.' },
+  { code: 'MON_TR_005', name: '패러독스 박쥐', type: 'normal', element: 'time', level: 87, hp: 9500, attack: 340, defense: 110, speed: 65, skills: [{ name: '인과 역전 파동', damage: 360, cooldown: 6, element: 'time', effectType: 'reflect' }, { name: '초음파 시간파', damage: 280, cooldown: 4, element: 'time', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_PARADOX_WING', rate: 0.50, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TIME_DUST', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 4700, goldReward: 830, behavior: { aggro_range: 15, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'rift_mirror_city', respawnTime: 18, lore: '과거와 현재를 동시에 존재하는 박쥐. 공격을 인과율로 되돌린다.' },
+  { code: 'MON_TR_006', name: '시계태엽 골렘', type: 'normal', element: 'earth', level: 88, hp: 18000, attack: 260, defense: 250, speed: 18, skills: [{ name: '톱니 분쇄', damage: 500, cooldown: 10, element: 'earth', effectType: 'armor_break' }, { name: '태엽 감기', damage: 0, cooldown: 20, element: 'neutral', effectType: 'buff_self_attack' }], dropTable: [{ itemId: 'MAT_CLOCKWORK_GEAR', rate: 0.45, minQty: 1, maxQty: 3 }, { itemId: 'MAT_TEMPORAL_STEEL', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 5200, goldReward: 900, behavior: { aggro_range: 7, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_frozen_battlefield', respawnTime: 30, lore: '시간의 균열에서 발견된 고대 시계 장치가 스스로 움직이는 골렘.' },
+  { code: 'MON_TR_007', name: '차원 틈새 거미', type: 'normal', element: 'void', level: 88, hp: 13000, attack: 310, defense: 140, speed: 45, skills: [{ name: '차원 거미줄', damage: 250, cooldown: 5, element: 'void', effectType: 'root' }, { name: '공간 이빨', damage: 420, cooldown: 8, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_DIMENSION_SILK', rate: 0.50, minQty: 1, maxQty: 3 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 5100, goldReward: 890, behavior: { aggro_range: 9, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_frozen_battlefield', respawnTime: 22, lore: '차원의 틈새에 거미줄을 치는 거미. 거미줄에 걸리면 차원 사이에 갇힌다.' },
+  { code: 'MON_TR_008', name: '에코 유령', type: 'normal', element: 'psychic', level: 89, hp: 10500, attack: 350, defense: 100, speed: 55, skills: [{ name: '잔향 공격', damage: 380, cooldown: 5, element: 'psychic', effectType: 'damage' }, { name: '기억 간섭', damage: 300, cooldown: 10, element: 'psychic', effectType: 'confuse' }], dropTable: [{ itemId: 'MAT_ECHO_ESSENCE', rate: 0.45, minQty: 1, maxQty: 2 }, { itemId: 'MAT_GHOST_FRAGMENT', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 5300, goldReward: 920, behavior: { aggro_range: 12, patrol: true, flee_hp_pct: 25, enrage_hp_pct: 0 }, location: 'rift_frozen_battlefield', respawnTime: 20, lore: '시간의 균열에 남겨진 과거의 잔향. 죽은 모험가들의 기억이 형체를 갖춘 유령.' },
+  { code: 'MON_TR_009', name: '크로노 스콜피온', type: 'normal', element: 'time', level: 89, hp: 15000, attack: 330, defense: 200, speed: 35, skills: [{ name: '시간독 침', damage: 300, cooldown: 6, element: 'time', effectType: 'dot_time' }, { name: '시간 집게', damage: 450, cooldown: 10, element: 'time', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_CHRONO_STINGER', rate: 0.40, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_VENOM', rate: 0.50, minQty: 1, maxQty: 3 }], expReward: 5400, goldReward: 930, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_frozen_battlefield', respawnTime: 25, lore: '시간의 독을 품은 전갈. 독에 쏘이면 상처 주변의 시간만 가속되어 급격히 노화한다.' },
+  { code: 'MON_TR_010', name: '차원 표류자', type: 'normal', element: 'void', level: 90, hp: 14500, attack: 340, defense: 170, speed: 40, skills: [{ name: '차원 전이 공격', damage: 440, cooldown: 7, element: 'void', effectType: 'teleport_attack' }, { name: '공간 절단', damage: 520, cooldown: 12, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_DRIFTER_ESSENCE', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.35, minQty: 2, maxQty: 3 }], expReward: 5600, goldReward: 950, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 }, location: 'rift_frozen_battlefield', respawnTime: 22, lore: '수많은 차원을 떠도는 표류자. 어느 시간대에서 왔는지 알 수 없다.' },
+  { code: 'MON_TR_011', name: '시간 결정체', type: 'normal', element: 'time', level: 90, hp: 16000, attack: 280, defense: 230, speed: 20, skills: [{ name: '시간 동결파', damage: 350, cooldown: 8, element: 'time', effectType: 'freeze' }, { name: '결정 폭파', damage: 600, cooldown: 15, element: 'time', effectType: 'area_damage' }], dropTable: [{ itemId: 'MAT_TIME_CRYSTAL', rate: 0.35, minQty: 1, maxQty: 2 }, { itemId: 'MAT_CHRONO_SHARD', rate: 0.45, minQty: 1, maxQty: 3 }], expReward: 5700, goldReward: 960, behavior: { aggro_range: 6, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 30 }, location: 'rift_frozen_battlefield', respawnTime: 28, lore: '시간 에너지가 결정화된 존재. 파괴되면 주변 시간이 동결된다.' },
+  { code: 'MON_TR_012', name: '왜곡 하운드', type: 'normal', element: 'void', level: 91, hp: 13500, attack: 360, defense: 145, speed: 60, skills: [{ name: '공간 도약', damage: 400, cooldown: 5, element: 'void', effectType: 'dash' }, { name: '왜곡 이빨', damage: 480, cooldown: 8, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_HOUND_FANG', rate: 0.45, minQty: 1, maxQty: 2 }, { itemId: 'MAT_DISTORTION_CORE', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 5900, goldReward: 980, behavior: { aggro_range: 15, patrol: true, flee_hp_pct: 10, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 20, lore: '공간을 뛰어넘어 사냥하는 왜곡된 사냥개. 무리 지어 다닌다.' },
+  { code: 'MON_TR_013', name: '미래 잔영 기사', type: 'normal', element: 'time', level: 91, hp: 15500, attack: 370, defense: 190, speed: 38, skills: [{ name: '예지 참격', damage: 480, cooldown: 7, element: 'time', effectType: 'unavoidable' }, { name: '시간 방패', damage: 0, cooldown: 15, element: 'time', effectType: 'barrier' }], dropTable: [{ itemId: 'MAT_FUTURE_STEEL', rate: 0.35, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TEMPORAL_STEEL', rate: 0.25, minQty: 1, maxQty: 1 }], expReward: 6000, goldReward: 1000, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_reverse_forest', respawnTime: 25, lore: '미래에서 온 기사의 잔영. 적의 공격을 예지하여 완벽히 회피한다.' },
+  { code: 'MON_TR_014', name: '역행 마법사', type: 'normal', element: 'arcane', level: 92, hp: 12500, attack: 400, defense: 130, speed: 42, skills: [{ name: '역행 화살', damage: 500, cooldown: 6, element: 'arcane', effectType: 'rewind_position' }, { name: '시간 폭풍', damage: 600, cooldown: 14, element: 'time', effectType: 'area_damage' }], dropTable: [{ itemId: 'MAT_REWIND_ORB', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_ARCANE_CIRCUIT', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 6200, goldReward: 1020, behavior: { aggro_range: 14, patrol: false, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 22, lore: '시간을 역행시키는 마법을 사용하는 마법사. 적의 위치를 과거로 되돌린다.' },
+  { code: 'MON_TR_015', name: '차원 흡수체', type: 'normal', element: 'void', level: 92, hp: 17000, attack: 310, defense: 210, speed: 28, skills: [{ name: '차원 흡수', damage: 350, cooldown: 8, element: 'void', effectType: 'drain_mana' }, { name: '공간 압축', damage: 550, cooldown: 12, element: 'void', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_ABSORBER_MEMBRANE', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.40, minQty: 2, maxQty: 4 }], expReward: 6300, goldReward: 1050, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_reverse_forest', respawnTime: 28, lore: '주변 차원의 에너지를 흡수하여 성장하는 기생체. 마나를 빨아들인다.' },
+  { code: 'MON_TR_016', name: '시공 워처', type: 'normal', element: 'time', level: 93, hp: 15000, attack: 380, defense: 175, speed: 44, skills: [{ name: '시공 관측', damage: 420, cooldown: 6, element: 'time', effectType: 'reveal' }, { name: '시간 감속 장벽', damage: 300, cooldown: 10, element: 'time', effectType: 'slow_area' }], dropTable: [{ itemId: 'MAT_WATCHER_EYE', rate: 0.30, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.25, minQty: 1, maxQty: 2 }], expReward: 6500, goldReward: 1080, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 25, lore: '시공간을 관측하는 눈 형태의 존재. 은신도 무력화하며 주변 시간을 감속시킨다.' },
+  { code: 'MON_TR_017', name: '균열 정령', type: 'normal', element: 'arcane', level: 93, hp: 13000, attack: 390, defense: 150, speed: 48, skills: [{ name: '균열 방출', damage: 480, cooldown: 7, element: 'arcane', effectType: 'damage' }, { name: '차원 회피', damage: 0, cooldown: 12, element: 'void', effectType: 'phase_shift' }], dropTable: [{ itemId: 'MAT_RIFT_SPIRIT_CORE', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_ECHO_ESSENCE', rate: 0.40, minQty: 1, maxQty: 3 }], expReward: 6600, goldReward: 1100, behavior: { aggro_range: 11, patrol: true, flee_hp_pct: 15, enrage_hp_pct: 0 }, location: 'rift_reverse_forest', respawnTime: 22, lore: '균열 자체가 의지를 가진 정령. 물리 공격이 잘 통하지 않는다.' },
+  { code: 'MON_TR_018', name: '크로노 가고일', type: 'normal', element: 'time', level: 94, hp: 18000, attack: 350, defense: 240, speed: 30, skills: [{ name: '시간 석화', damage: 0, cooldown: 15, element: 'time', effectType: 'petrify' }, { name: '돌 강타', damage: 550, cooldown: 8, element: 'earth', effectType: 'damage' }], dropTable: [{ itemId: 'MAT_CHRONO_STONE', rate: 0.40, minQty: 1, maxQty: 2 }, { itemId: 'MAT_TEMPORAL_STEEL', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 6800, goldReward: 1120, behavior: { aggro_range: 8, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_core', respawnTime: 30, lore: '시간이 멈춘 석상이 균열의 에너지로 깨어난다. 적을 석화시키는 시선을 가졌다.' },
+  { code: 'MON_TR_019', name: '차원 해파리', type: 'normal', element: 'void', level: 94, hp: 11500, attack: 410, defense: 120, speed: 35, skills: [{ name: '차원 감전', damage: 460, cooldown: 5, element: 'void', effectType: 'paralyze' }, { name: '촉수 휘감기', damage: 380, cooldown: 8, element: 'void', effectType: 'root' }], dropTable: [{ itemId: 'MAT_DIMENSION_JELLY', rate: 0.50, minQty: 1, maxQty: 3 }, { itemId: 'MAT_VOID_RESIDUE', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 6900, goldReward: 1140, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 20, enrage_hp_pct: 0 }, location: 'rift_core', respawnTime: 20, lore: '차원 사이를 떠다니는 투명한 해파리. 촉수에 닿으면 차원 사이에 감전된다.' },
+  { code: 'MON_TR_020', name: '시간 포식자 유충', type: 'normal', element: 'time', level: 95, hp: 16000, attack: 400, defense: 185, speed: 40, skills: [{ name: '시간 포식', damage: 500, cooldown: 7, element: 'time', effectType: 'steal_buff' }, { name: '성장 가속', damage: 0, cooldown: 20, element: 'time', effectType: 'evolve_self' }], dropTable: [{ itemId: 'MAT_DEVOURER_LARVA', rate: 0.35, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 7200, goldReward: 1200, behavior: { aggro_range: 10, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_core', respawnTime: 25, lore: '시간 포식자의 유충. 적의 버프를 흡수하며 전투 중 성장한다. 방치하면 엘리트급으로 변한다.' },
 ];
 
 const temporalRiftElites: MonsterSeed[] = [
-  { code: 'MON_TR_ELITE_001', name: '시간 조율사 크로논', type: 'elite', element: 'time', level: 95, hp: 85000, attack: 650, defense: 380, speed: 55, skills: [{ name: '시간 가속/감속 전환', damage: 0, cooldown: 12, element: 'time', effectType: 'toggle_haste_slow' }, { name: '크로노 스트라이크', damage: 850, cooldown: 8, element: 'time', effectType: 'damage' }, { name: '시간 되감기', damage: 0, cooldown: 30, element: 'time', effectType: 'heal_self_50pct' }], dropTable: [{ itemId: 'ITEM_CHRONO_TUNER_GEAR', rate: 0.15, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.45, minQty: 2, maxQty: 4 }], expReward: 15000, goldReward: 2200, behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'temporal_rift', respawnTime: 360, lore: '시간의 흐름을 자유자재로 조율하는 엘리트 존재. 전투 중 시간 가속과 감속을 번갈아 사용한다.' },
-  { code: 'MON_TR_ELITE_002', name: '공간 찢는 자 보이드렌', type: 'elite', element: 'void', level: 96, hp: 90000, attack: 700, defense: 350, speed: 60, skills: [{ name: '공간 절단', damage: 900, cooldown: 7, element: 'void', effectType: 'defense_ignore' }, { name: '차원 포탈 소환', damage: 0, cooldown: 20, element: 'void', effectType: 'summon_portal' }, { name: '차원 붕괴', damage: 1200, cooldown: 25, element: 'void', effectType: 'area_damage' }], dropTable: [{ itemId: 'ITEM_VOIDREND_CLAW', rate: 0.12, minQty: 1, maxQty: 1 }, { itemId: 'MAT_DISTORTION_CORE', rate: 0.40, minQty: 2, maxQty: 3 }], expReward: 16000, goldReward: 2400, behavior: { aggro_range: 16, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'temporal_rift', respawnTime: 400, lore: '공간을 물리적으로 찢어 무기로 사용하는 존재. 방어력을 무시하는 공격이 특징이다.' },
-  { code: 'MON_TR_ELITE_003', name: '패러독스 드래곤', type: 'elite', element: 'time', level: 97, hp: 100000, attack: 750, defense: 400, speed: 50, skills: [{ name: '패러독스 브레스', damage: 1000, cooldown: 10, element: 'time', effectType: 'area_damage' }, { name: '인과율 역전', damage: 0, cooldown: 25, element: 'time', effectType: 'reflect_all' }, { name: '시간 비늘', damage: 0, cooldown: 30, element: 'time', effectType: 'invincible_3s' }], dropTable: [{ itemId: 'ITEM_PARADOX_SCALE', rate: 0.10, minQty: 1, maxQty: 1 }, { itemId: 'MAT_DRAGON_CHRONO_FANG', rate: 0.35, minQty: 1, maxQty: 2 }], expReward: 18000, goldReward: 2800, behavior: { aggro_range: 22, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'temporal_rift', respawnTime: 500, lore: '시간의 역설에서 탄생한 드래곤. 과거와 미래의 자신이 동시에 존재한다.' },
-  { code: 'MON_TR_ELITE_004', name: '차원 수확자 리퍼', type: 'elite', element: 'dark', level: 98, hp: 95000, attack: 800, defense: 360, speed: 65, skills: [{ name: '차원 낫', damage: 1100, cooldown: 8, element: 'dark', effectType: 'life_steal' }, { name: '시간 정지 영역', damage: 0, cooldown: 25, element: 'time', effectType: 'freeze_area' }, { name: '수확', damage: 2000, cooldown: 40, element: 'dark', effectType: 'execute_below_20pct' }], dropTable: [{ itemId: 'ITEM_REAPER_SCYTHE_SHARD', rate: 0.10, minQty: 1, maxQty: 1 }, { itemId: 'MAT_DARK_CHRONO_ESSENCE', rate: 0.40, minQty: 2, maxQty: 4 }], expReward: 19000, goldReward: 3000, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'temporal_rift', respawnTime: 480, lore: '차원 사이에서 영혼을 수확하는 사신. HP 20% 이하의 적에게 즉사급 피해를 준다.' },
-  { code: 'MON_TR_ELITE_005', name: '시간 수호자의 그림자', type: 'elite', element: 'time', level: 99, hp: 110000, attack: 780, defense: 420, speed: 58, skills: [{ name: '시간 수호자의 검', damage: 950, cooldown: 6, element: 'time', effectType: 'damage' }, { name: '시간 정지', damage: 0, cooldown: 20, element: 'time', effectType: 'freeze_all' }, { name: '기억 소환', damage: 0, cooldown: 35, element: 'psychic', effectType: 'summon_past_self' }], dropTable: [{ itemId: 'ITEM_SHADOW_GUARDIAN_BLADE', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'MAT_GUARDIAN_MEMORY', rate: 0.35, minQty: 1, maxQty: 2 }], expReward: 20000, goldReward: 3200, behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'temporal_rift', respawnTime: 600, lore: '시간 수호자의 과거 잔영이 왜곡되어 탄생한 그림자. 원본의 힘을 일부 계승했다.' },
+  { code: 'MON_TR_ELITE_001', name: '시간 조율사 크로논', type: 'elite', element: 'time', level: 95, hp: 85000, attack: 650, defense: 380, speed: 55, skills: [{ name: '시간 가속/감속 전환', damage: 0, cooldown: 12, element: 'time', effectType: 'toggle_haste_slow' }, { name: '크로노 스트라이크', damage: 850, cooldown: 8, element: 'time', effectType: 'damage' }, { name: '시간 되감기', damage: 0, cooldown: 30, element: 'time', effectType: 'heal_self_50pct' }], dropTable: [{ itemId: 'ITEM_CHRONO_TUNER_GEAR', rate: 0.15, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TIME_CRYSTAL', rate: 0.45, minQty: 2, maxQty: 4 }], expReward: 15000, goldReward: 2200, behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_core', respawnTime: 360, lore: '시간의 흐름을 자유자재로 조율하는 엘리트 존재. 전투 중 시간 가속과 감속을 번갈아 사용한다.' },
+  { code: 'MON_TR_ELITE_002', name: '공간 찢는 자 보이드렌', type: 'elite', element: 'void', level: 96, hp: 90000, attack: 700, defense: 350, speed: 60, skills: [{ name: '공간 절단', damage: 900, cooldown: 7, element: 'void', effectType: 'defense_ignore' }, { name: '차원 포탈 소환', damage: 0, cooldown: 20, element: 'void', effectType: 'summon_portal' }, { name: '차원 붕괴', damage: 1200, cooldown: 25, element: 'void', effectType: 'area_damage' }], dropTable: [{ itemId: 'ITEM_VOIDREND_CLAW', rate: 0.12, minQty: 1, maxQty: 1 }, { itemId: 'MAT_DISTORTION_CORE', rate: 0.40, minQty: 2, maxQty: 3 }], expReward: 16000, goldReward: 2400, behavior: { aggro_range: 16, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_core', respawnTime: 400, lore: '공간을 물리적으로 찢어 무기로 사용하는 존재. 방어력을 무시하는 공격이 특징이다.' },
+  { code: 'MON_TR_ELITE_003', name: '패러독스 드래곤', type: 'elite', element: 'time', level: 97, hp: 100000, attack: 750, defense: 400, speed: 50, skills: [{ name: '패러독스 브레스', damage: 1000, cooldown: 10, element: 'time', effectType: 'area_damage' }, { name: '인과율 역전', damage: 0, cooldown: 25, element: 'time', effectType: 'reflect_all' }, { name: '시간 비늘', damage: 0, cooldown: 30, element: 'time', effectType: 'invincible_3s' }], dropTable: [{ itemId: 'ITEM_PARADOX_SCALE', rate: 0.10, minQty: 1, maxQty: 1 }, { itemId: 'MAT_DRAGON_CHRONO_FANG', rate: 0.35, minQty: 1, maxQty: 2 }], expReward: 18000, goldReward: 2800, behavior: { aggro_range: 22, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'rift_core', respawnTime: 500, lore: '시간의 역설에서 탄생한 드래곤. 과거와 미래의 자신이 동시에 존재한다.' },
+  { code: 'MON_TR_ELITE_004', name: '차원 수확자 리퍼', type: 'elite', element: 'dark', level: 98, hp: 95000, attack: 800, defense: 360, speed: 65, skills: [{ name: '차원 낫', damage: 1100, cooldown: 8, element: 'dark', effectType: 'life_steal' }, { name: '시간 정지 영역', damage: 0, cooldown: 25, element: 'time', effectType: 'freeze_area' }, { name: '수확', damage: 2000, cooldown: 40, element: 'dark', effectType: 'execute_below_20pct' }], dropTable: [{ itemId: 'ITEM_REAPER_SCYTHE_SHARD', rate: 0.10, minQty: 1, maxQty: 1 }, { itemId: 'MAT_DARK_CHRONO_ESSENCE', rate: 0.40, minQty: 2, maxQty: 4 }], expReward: 19000, goldReward: 3000, behavior: { aggro_range: 20, patrol: true, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 480, lore: '차원 사이에서 영혼을 수확하는 사신. HP 20% 이하의 적에게 즉사급 피해를 준다.' },
+  { code: 'MON_TR_ELITE_005', name: '시간 수호자의 그림자', type: 'elite', element: 'time', level: 99, hp: 110000, attack: 780, defense: 420, speed: 58, skills: [{ name: '시간 수호자의 검', damage: 950, cooldown: 6, element: 'time', effectType: 'damage' }, { name: '시간 정지', damage: 0, cooldown: 20, element: 'time', effectType: 'freeze_all' }, { name: '기억 소환', damage: 0, cooldown: 35, element: 'psychic', effectType: 'summon_past_self' }], dropTable: [{ itemId: 'ITEM_SHADOW_GUARDIAN_BLADE', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'MAT_GUARDIAN_MEMORY', rate: 0.35, minQty: 1, maxQty: 2 }], expReward: 20000, goldReward: 3200, behavior: { aggro_range: 18, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 600, lore: '시간 수호자의 과거 잔영이 왜곡되어 탄생한 그림자. 원본의 힘을 일부 계승했다.' },
 ];
 
 const temporalRiftBosses: MonsterSeed[] = [
-  { code: 'MON_TR_BOSS_001', name: '균열의 감시자 아이온', type: 'boss', element: 'time', level: 92, hp: 280000, attack: 850, defense: 500, speed: 45, skills: [{ name: '시간 감옥', damage: 0, cooldown: 20, element: 'time', effectType: 'stun_all_3s' }, { name: '크로노 블레이드', damage: 1300, cooldown: 10, element: 'time', effectType: 'damage' }, { name: '시간 분열', damage: 0, cooldown: 40, element: 'time', effectType: 'split_boss' }], dropTable: [{ itemId: 'EQUIP_AION_TIMEPIECE', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'MAT_AION_CORE', rate: 0.25, minQty: 1, maxQty: 1 }], expReward: 30000, goldReward: 5000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'temporal_rift', respawnTime: 0, lore: '시간의 균열 첫 번째 구역을 지키는 감시자. 50%에서 과거/미래 자신으로 분열한다.' },
-  { code: 'MON_TR_BOSS_002', name: '역행자 모비우스', type: 'boss', element: 'arcane', level: 94, hp: 320000, attack: 900, defense: 480, speed: 50, skills: [{ name: '시간 역행', damage: 0, cooldown: 30, element: 'time', effectType: 'reverse_all_position' }, { name: '인과의 사슬', damage: 1100, cooldown: 12, element: 'arcane', effectType: 'chain_damage' }, { name: '무한 루프', damage: 800, cooldown: 25, element: 'time', effectType: 'repeat_last_attack' }], dropTable: [{ itemId: 'EQUIP_MOBIUS_RING', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'MAT_MOBIUS_STRIP', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 35000, goldReward: 6000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'temporal_rift', respawnTime: 0, lore: '인과율을 무시하고 시간을 역행하는 존재. 전투를 "되감기"하여 같은 패턴을 반복시킨다.' },
-  { code: 'MON_TR_BOSS_003', name: '차원 파쇄자 프랙처', type: 'boss', element: 'void', level: 96, hp: 360000, attack: 950, defense: 520, speed: 55, skills: [{ name: '차원 파쇄', damage: 1500, cooldown: 15, element: 'void', effectType: 'defense_ignore' }, { name: '공간 소멸', damage: 2000, cooldown: 35, element: 'void', effectType: 'area_damage' }, { name: '다차원 분신', damage: 0, cooldown: 45, element: 'void', effectType: 'summon_mirror_3' }], dropTable: [{ itemId: 'EQUIP_FRACTURE_GAUNTLET', rate: 0.06, minQty: 1, maxQty: 1 }, { itemId: 'MAT_FRACTURE_SHARD', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 40000, goldReward: 7000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'temporal_rift', respawnTime: 0, lore: '차원을 물리적으로 파쇄하는 무력의 화신. 3개의 분신을 동시에 상대해야 한다.' },
-  { code: 'MON_TR_BOSS_004', name: '크로노스의 분신', type: 'boss', element: 'time', level: 98, hp: 420000, attack: 1050, defense: 580, speed: 48, skills: [{ name: '시간 지배', damage: 0, cooldown: 25, element: 'time', effectType: 'slow_all_50pct' }, { name: '영겁의 일격', damage: 2500, cooldown: 20, element: 'time', effectType: 'damage' }, { name: '시간 역류', damage: 0, cooldown: 45, element: 'time', effectType: 'heal_full' }, { name: '종말의 시계', damage: 3000, cooldown: 60, element: 'time', effectType: 'wipe_mechanic' }], dropTable: [{ itemId: 'EQUIP_CHRONOS_FRAGMENT', rate: 0.05, minQty: 1, maxQty: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 50000, goldReward: 9000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'temporal_rift', respawnTime: 0, lore: '시간의 신 크로노스의 분신. 25%에서 전체 회복 기믹이 있으며 "종말의 시계" 전멸기를 시전한다.' },
-  { code: 'MON_TR_BOSS_005', name: '시간 포식자 템포보어', type: 'boss', element: 'dark', level: 100, hp: 500000, attack: 1200, defense: 600, speed: 55, skills: [{ name: '시간 포식', damage: 1800, cooldown: 12, element: 'dark', effectType: 'steal_all_buffs' }, { name: '차원 붕괴', damage: 2800, cooldown: 25, element: 'void', effectType: 'area_damage' }, { name: '존재 소거', damage: 4000, cooldown: 60, element: 'dark', effectType: 'instant_kill_phase' }, { name: '시공 흡수', damage: 0, cooldown: 30, element: 'time', effectType: 'absorb_heal' }], dropTable: [{ itemId: 'EQUIP_TEMPOVORE_HEART', rate: 0.03, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TEMPOVORE_FANG', rate: 0.25, minQty: 1, maxQty: 2 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.15, minQty: 1, maxQty: 1 }], expReward: 65000, goldReward: 12000, behavior: { aggro_range: 40, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'temporal_rift', respawnTime: 0, lore: '시간 자체를 포식하는 균열의 최종 보스. 과거·현재·미래를 삼켜 존재를 소거한다. 8인 레이드 권장.' },
+  { code: 'MON_TR_BOSS_001', name: '균열의 감시자 아이온', type: 'boss', element: 'time', level: 92, hp: 280000, attack: 850, defense: 500, speed: 45, skills: [{ name: '시간 감옥', damage: 0, cooldown: 20, element: 'time', effectType: 'stun_all_3s' }, { name: '크로노 블레이드', damage: 1300, cooldown: 10, element: 'time', effectType: 'damage' }, { name: '시간 분열', damage: 0, cooldown: 40, element: 'time', effectType: 'split_boss' }], dropTable: [{ itemId: 'EQUIP_AION_TIMEPIECE', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'MAT_AION_CORE', rate: 0.25, minQty: 1, maxQty: 1 }], expReward: 30000, goldReward: 5000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 25 }, location: 'rift_reverse_forest', respawnTime: 0, lore: '시간의 균열 첫 번째 구역을 지키는 감시자. 50%에서 과거/미래 자신으로 분열한다.' },
+  { code: 'MON_TR_BOSS_002', name: '역행자 모비우스', type: 'boss', element: 'arcane', level: 94, hp: 320000, attack: 900, defense: 480, speed: 50, skills: [{ name: '시간 역행', damage: 0, cooldown: 30, element: 'time', effectType: 'reverse_all_position' }, { name: '인과의 사슬', damage: 1100, cooldown: 12, element: 'arcane', effectType: 'chain_damage' }, { name: '무한 루프', damage: 800, cooldown: 25, element: 'time', effectType: 'repeat_last_attack' }], dropTable: [{ itemId: 'EQUIP_MOBIUS_RING', rate: 0.08, minQty: 1, maxQty: 1 }, { itemId: 'MAT_MOBIUS_STRIP', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 35000, goldReward: 6000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 20 }, location: 'rift_core', respawnTime: 0, lore: '인과율을 무시하고 시간을 역행하는 존재. 전투를 "되감기"하여 같은 패턴을 반복시킨다.' },
+  { code: 'MON_TR_BOSS_003', name: '차원 파쇄자 프랙처', type: 'boss', element: 'void', level: 96, hp: 360000, attack: 950, defense: 520, speed: 55, skills: [{ name: '차원 파쇄', damage: 1500, cooldown: 15, element: 'void', effectType: 'defense_ignore' }, { name: '공간 소멸', damage: 2000, cooldown: 35, element: 'void', effectType: 'area_damage' }, { name: '다차원 분신', damage: 0, cooldown: 45, element: 'void', effectType: 'summon_mirror_3' }], dropTable: [{ itemId: 'EQUIP_FRACTURE_GAUNTLET', rate: 0.06, minQty: 1, maxQty: 1 }, { itemId: 'MAT_FRACTURE_SHARD', rate: 0.30, minQty: 1, maxQty: 2 }], expReward: 40000, goldReward: 7000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 15 }, location: 'rift_core', respawnTime: 0, lore: '차원을 물리적으로 파쇄하는 무력의 화신. 3개의 분신을 동시에 상대해야 한다.' },
+  { code: 'MON_TR_BOSS_004', name: '크로노스의 분신', type: 'boss', element: 'time', level: 98, hp: 420000, attack: 1050, defense: 580, speed: 48, skills: [{ name: '시간 지배', damage: 0, cooldown: 25, element: 'time', effectType: 'slow_all_50pct' }, { name: '영겁의 일격', damage: 2500, cooldown: 20, element: 'time', effectType: 'damage' }, { name: '시간 역류', damage: 0, cooldown: 45, element: 'time', effectType: 'heal_full' }, { name: '종말의 시계', damage: 3000, cooldown: 60, element: 'time', effectType: 'wipe_mechanic' }], dropTable: [{ itemId: 'EQUIP_CHRONOS_FRAGMENT', rate: 0.05, minQty: 1, maxQty: 1 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.20, minQty: 1, maxQty: 1 }], expReward: 50000, goldReward: 9000, behavior: { aggro_range: 30, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 0, lore: '시간의 신 크로노스의 분신. 25%에서 전체 회복 기믹이 있으며 "종말의 시계" 전멸기를 시전한다.' },
+  { code: 'MON_TR_BOSS_005', name: '시간 포식자 템포보어', type: 'boss', element: 'dark', level: 100, hp: 500000, attack: 1200, defense: 600, speed: 55, skills: [{ name: '시간 포식', damage: 1800, cooldown: 12, element: 'dark', effectType: 'steal_all_buffs' }, { name: '차원 붕괴', damage: 2800, cooldown: 25, element: 'void', effectType: 'area_damage' }, { name: '존재 소거', damage: 4000, cooldown: 60, element: 'dark', effectType: 'instant_kill_phase' }, { name: '시공 흡수', damage: 0, cooldown: 30, element: 'time', effectType: 'absorb_heal' }], dropTable: [{ itemId: 'EQUIP_TEMPOVORE_HEART', rate: 0.03, minQty: 1, maxQty: 1 }, { itemId: 'MAT_TEMPOVORE_FANG', rate: 0.25, minQty: 1, maxQty: 2 }, { itemId: 'MAT_CHRONOS_ESSENCE', rate: 0.15, minQty: 1, maxQty: 1 }], expReward: 65000, goldReward: 12000, behavior: { aggro_range: 40, patrol: false, flee_hp_pct: 0, enrage_hp_pct: 10 }, location: 'rift_core', respawnTime: 0, lore: '시간 자체를 포식하는 균열의 최종 보스. 과거·현재·미래를 삼켜 존재를 소거한다. 8인 레이드 권장.' },
 ];
 
 /** 몬스터 시드 데이터 배열 (외부 참조용) */
