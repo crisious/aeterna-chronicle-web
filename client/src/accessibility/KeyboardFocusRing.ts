@@ -33,6 +33,12 @@ export interface KeyboardFocusRingOptions extends FocusNavOptions {
   onFocus?: (item: FocusRingItem, index: number) => void;
   /** 라벨 announce 콜백(AccessibilityManager.announce 등). */
   announce?: (label: string) => void;
+  /**
+   * Enter/Space 를 링이 직접 activateCurrent 로 바인딩할지. 기본 true.
+   * false 면 소비자가 자체 핸들러에서 activateCurrent() 를 호출한다(예: 대화 — 타이핑 중엔
+   * Enter 가 스킵, 선택지에선 선택이라 상태 분기가 필요한 경우 더블파이어 방지용).
+   */
+  bindActivate?: boolean;
 }
 
 type KeyHandler = (event: KeyboardEvent) => void;
@@ -107,8 +113,10 @@ export class KeyboardFocusRing {
       e.preventDefault?.();
       this.move(e.shiftKey ? 'prev' : 'next');
     });
-    on('keydown-ENTER', () => this.activateCurrent());
-    on('keydown-SPACE', () => this.activateCurrent());
+    if (this.opts.bindActivate !== false) {
+      on('keydown-ENTER', () => this.activateCurrent());
+      on('keydown-SPACE', () => this.activateCurrent());
+    }
   }
 
   private updateHighlight(): void {

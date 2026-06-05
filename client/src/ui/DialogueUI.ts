@@ -11,6 +11,8 @@
 import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { bindEscClose } from '../utils/uiEsc';
+import { KeyboardFocusRing } from '../accessibility/KeyboardFocusRing';
+import { pushUiModal, popUiModal } from '../accessibility/uiModalLock';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -73,6 +75,11 @@ export class DialogueUI {
   private typingTimer?: Phaser.Time.TimerEvent;
   private isTyping = false;
 
+  // 전키보드 UI: 선택지 포커스 링(Enter 는 링이 안 잡고 아래 핸들러가 isTyping 분기) + 모달락.
+  private focusRing?: KeyboardFocusRing;
+  private _modalPushed = false;
+  private _dlgKeyHandlers: Array<[string, (e: KeyboardEvent) => void]> = [];
+
   constructor(scene: Phaser.Scene, net: NetworkManager) {
     this.scene = scene;
     this.net = net;
@@ -92,6 +99,27 @@ export class DialogueUI {
     // FINDING-A4 ext19/ext24: ESC 닫기 (bindEscClose helper)
     this._escUnbind?.();
     this._escUnbind = bindEscClose(this.scene, () => this.close());
+
+    // 전키보드 UI: 모달락 + 선택지 포커스 링(화살표 이동만; Enter 는 아래 핸들러가 isTyping 분기).
+    if (!this._modalPushed) {
+      pushUiModal();
+      this._modalPushed = true;
+    }
+    this.focusRing?.destroy();
+    this.focusRing = new KeyboardFocusRing(this.scene, { columns: 1, bindActivate: false });
+    // Enter/Space: 타이핑 중이면 스킵(_advance), 선택지에 포커스 있으면 선택, 없으면(무선택지) 진행.
+    const onAdvanceOrSelect = (): void => {
+      if (this.isTyping) { this._advance(); return; }
+      if (this.focusRing && this.focusRing.currentIndex >= 0) this.focusRing.activateCurrent();
+      else this._advance();
+    };
+    const kb = this.scene.input.keyboard;
+    if (kb) {
+      for (const ev of ['keydown-ENTER', 'keydown-SPACE']) {
+        kb.on(ev, onAdvanceOrSelect);
+        this._dlgKeyHandlers.push([ev, onAdvanceOrSelect]);
+      }
+    }
 
     // 서버에서 대화 데이터 로드
     try {
@@ -116,6 +144,7 @@ export class DialogueUI {
   private _escUnbind: (() => void) | null = null;
 
   close(): void {
+    if (!this.visible) return;
     this.visible = false;
     this.container.setVisible(false);
     this._stopTyping();
@@ -123,6 +152,18 @@ export class DialogueUI {
     this._escUnbind?.();
     this._escUnbind = null;
     this.currentNode = null;
+    // 전키보드 UI 정리: Enter/Space 핸들러 제거 + 링 파괴 + 모달락 해제.
+    const kb = this.scene.input.keyboard;
+    if (kb) {
+      for (const [ev, fn] of this._dlgKeyHandlers) kb.off(ev, fn);
+    }
+    this._dlgKeyHandlers = [];
+    this.focusRing?.destroy();
+    this.focusRing = undefined;
+    if (this._modalPushed) {
+      popUiModal();
+      this._modalPushed = false;
+    }
   }
 
   isOpen(): boolean { return this.visible; }
@@ -182,6 +223,8 @@ export class DialogueUI {
   // ── 내부: 노드 표시 ──────────────────────────────────────
 
   private _showNode(node: DialogueNode): void {
+    // 노드 전환·타이핑 시작 시점엔 선택지가 없으므로 링을 비운다(타이핑 중 Enter=스킵).
+    this.focusRing?.setItems([]);
     this.currentNode = node;
     this.choiceContainer.removeAll(true);
 
@@ -249,6 +292,8 @@ export class DialogueUI {
   private _renderChoices(choices: DialogueChoice[]): void {
     this.choiceContainer.removeAll(true);
 
+    const ringItems: Array<{ target: Phaser.GameObjects.Text; activate: () => void; label: string }> = [];
+
     choices.forEach((choice, i) => {
       const color = choice.disabled ? '#555566' : '#aaddff';
       const btn = this.scene.add.text(0, i * 28, `▸ ${choice.text}`, {
@@ -260,6 +305,7 @@ export class DialogueUI {
           .on('pointerover', () => btn.setColor('#ffffff'))
           .on('pointerout', () => btn.setColor(color))
           .on('pointerdown', () => this._selectChoice(choice));
+        ringItems.push({ target: btn, activate: () => this._selectChoice(choice), label: choice.text });
       }
 
       if (choice.hint) {
@@ -271,6 +317,9 @@ export class DialogueUI {
 
       this.choiceContainer.add(btn);
     });
+
+    // 전키보드 UI: 활성(비-disabled) 선택지를 링에 설정. 화살표로 이동, Enter(open 의 핸들러)로 선택.
+    this.focusRing?.setItems(ringItems);
   }
 
   // ── 내부: 선택/진행 ──────────────────────────────────────
