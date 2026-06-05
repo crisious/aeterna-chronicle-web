@@ -14,6 +14,7 @@ import { SceneManager } from './SceneManager';
 import { accessibilityManager, type SubtitleSize } from '../accessibility/AccessibilityManager';
 import { i18n, type SupportedLocale } from '../i18n/i18nManager';
 import { getSettingsLabel } from '../settings/settingsLabels';
+import { networkManager } from '../network/NetworkManager';
 
 // ── 설정 저장 키 ─────────────────────────────────────────────
 
@@ -281,6 +282,38 @@ export class SettingsScene extends Phaser.Scene {
       this._addText(rightX - 30, ky, kb.key, 14, '#cccccc');
       ky += 28;
     }
+
+    // ── 피드백 보내기 (FeedbackForm 오버레이 launch) ──
+    // FeedbackForm 은 서버 라우트(/beta/feedback)·관리자 대시보드까지 완비된 기능이며,
+    // 여기 진입점으로 도달 가능해진다. launch 후 이 씬은 pause(입력 양보) → 닫으면 resume.
+    let feedbackHighlighted = false;
+    const feedbackBtn = this.add.text(width / 2, height - 100, '📝 피드백 보내기', {
+      fontSize: '18px',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      color: '#88ccff',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    const openFeedback = () => {
+      const env = (import.meta as unknown as { env?: Record<string, string> }).env;
+      this.scene.launch('FeedbackForm', {
+        apiUrl: env?.VITE_API_URL ?? 'http://localhost:3000',
+        userId: networkManager.getUserId() ?? 'anonymous',
+        gameVersion: env?.VITE_GAME_VERSION ?? '1.0.0',
+        parentSceneKey: 'SettingsScene',
+      });
+      this.scene.pause();
+    };
+    feedbackBtn.on('pointerdown', openFeedback);
+    const feedbackBtnIndex = this.settingsItems.length;
+    feedbackBtn.on('pointerover', () => this._setSettingsIndex(feedbackBtnIndex));
+    this.settingsItems.push({
+      setHighlighted: (b) => {
+        feedbackHighlighted = b;
+        feedbackBtn.setColor(b ? '#ffffff' : '#88ccff');
+        feedbackBtn.setFontStyle(b ? 'bold' : 'normal');
+      },
+      activate: openFeedback,
+    });
+    void feedbackHighlighted;
 
     // ── 뒤로가기 버튼 ──
     let backHighlighted = false;

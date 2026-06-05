@@ -29,6 +29,8 @@ interface FeedbackFormConfig {
   apiUrl: string;
   userId: string;
   gameVersion: string;
+  /** 오버레이로 launch 한 부모 씬 — 닫을 때 resume 한다(없으면 stop 만). */
+  parentSceneKey?: string;
 }
 
 // ─── 메타데이터 자동 수집 ───────────────────────────────────────
@@ -118,20 +120,29 @@ export class FeedbackForm extends Phaser.Scene {
       { key: 'other', label: '기타', emoji: '📌' },
     ];
 
+    // 키보드 포커스 링 대상: 타입×5 + 제출 + 닫기 (DOM 입력은 Tab+타이핑으로 별도 접근).
+    const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+
     types.forEach((t, i) => {
       const x = -200 + i * 90;
-      const btn = this.add.text(x, -220, `${t.emoji} ${t.label}`, {
+      const baseLabel = `${t.emoji} ${t.label}`;
+      const btn = this.add.text(x, -220, baseLabel, {
         fontSize: '14px',
         color: this.selectedType === t.key ? '#4a9eff' : '#888888',
         backgroundColor: this.selectedType === t.key ? '#2a2a4e' : '#1a1a2e',
         padding: { x: 8, y: 4 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-      btn.on('pointerdown', () => {
+      const selectType = () => {
         this.selectedType = t.key;
         this.scene.restart(this.config);
-      });
+      };
+      btn.on('pointerdown', selectType);
       this.formContainer.add(btn);
+      focusables.push({
+        setFocused: (a) => btn.setText(a ? `▶${baseLabel}` : baseLabel),
+        activate: selectType,
+      });
     });
 
     // HTML DOM 입력 요소 생성 (Phaser 위에 오버레이)
@@ -147,6 +158,10 @@ export class FeedbackForm extends Phaser.Scene {
 
     submitBtn.on('pointerdown', () => void this.handleSubmit());
     this.formContainer.add(submitBtn);
+    focusables.push({
+      setFocused: (a) => submitBtn.setText(a ? '▶ ✅ 제출' : '✅ 제출'),
+      activate: () => void this.handleSubmit(),
+    });
 
     // 닫기 버튼
     const closeBtn = this.add.text(220, -270, '✕', {
@@ -156,6 +171,47 @@ export class FeedbackForm extends Phaser.Scene {
 
     closeBtn.on('pointerdown', () => this.closeFeedbackForm());
     this.formContainer.add(closeBtn);
+    focusables.push({
+      setFocused: (a) => closeBtn.setColor(a ? '#ffffff' : '#ff4444'),
+      activate: () => this.closeFeedbackForm(),
+    });
+
+    // 키보드 안내
+    this.formContainer.add(this.add.text(0, 270, '방향키+Enter: 버튼  ·  Tab: 입력칸  ·  Esc: 닫기', {
+      fontSize: '11px', color: '#666688',
+    }).setOrigin(0.5));
+
+    this._setupKeyboardNav(focusables);
+  }
+
+  // 타입5/제출/닫기 Phaser 버튼의 키보드 포커스 링. DOM 입력(제목/설명)에 포커스가 있으면
+  // (활성 요소가 INPUT/TEXTAREA) 방향키·Enter 를 양보해 타이핑·커서이동과 충돌하지 않는다.
+  private _setupKeyboardNav(
+    focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }>,
+  ): void {
+    if (focusables.length === 0) return;
+    let idx = 0;
+    const sync = () => focusables.forEach((f, i) => f.setFocused(i === idx));
+    sync();
+    const typing = () => {
+      const ae = typeof document !== 'undefined' ? document.activeElement : null;
+      const tag = ae?.tagName;
+      return tag === 'INPUT' || tag === 'TEXTAREA';
+    };
+    const move = (delta: number) => {
+      if (typing()) return;
+      idx = (idx + delta + focusables.length) % focusables.length;
+      sync();
+    };
+    const onActivate = () => { if (!typing()) focusables[idx]?.activate(); };
+    const kb = this.input.keyboard;
+    kb?.on('keydown-LEFT', () => move(-1));
+    kb?.on('keydown-UP', () => move(-1));
+    kb?.on('keydown-RIGHT', () => move(1));
+    kb?.on('keydown-DOWN', () => move(1));
+    kb?.on('keydown-ENTER', onActivate);
+    kb?.on('keydown-SPACE', onActivate);
+    // 씬 stop 시 keyboard listener 자동 정리(sub-scene). 별도 off 불필요.
   }
 
   /** HTML 입력 요소 생성 */
@@ -186,6 +242,13 @@ export class FeedbackForm extends Phaser.Scene {
     }
     (titleInput.node as HTMLInputElement).addEventListener('input', (e) => {
       this.titleText = (e.target as HTMLInputElement).value;
+    });
+    // 제목칸(단일행)에서 Enter → 제출 (WCAG 2.1.1, CharacterSelect 이름칸과 동일 패턴).
+    (titleInput.node as HTMLInputElement).addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        void this.handleSubmit();
+      }
     });
 
     // 설명 입력
@@ -261,8 +324,10 @@ export class FeedbackForm extends Phaser.Scene {
     }
   }
 
-  /** 폼 닫기 */
+  /** 폼 닫기 — 오버레이로 launch 한 부모 씬이 있으면 resume 한다. */
   private closeFeedbackForm(): void {
-    this.scene.stop('FeedbackForm');
+    const parent = this.config?.parentSceneKey;
+    if (parent) this.scene.resume(parent);
+    this.scene.stop();
   }
 }

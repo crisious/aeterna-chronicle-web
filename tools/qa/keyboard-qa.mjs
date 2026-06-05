@@ -309,6 +309,47 @@ async function run() {
     await page.screenshot({ path: join(SHOTS, '10-world-travel.png') });
   } catch (e) { record('world-travel-suite', false, `예외: ${e.message}`); }
 
+  // ── FeedbackForm 배선·키보드: SettingsScene → 피드백 항목 → launch+pause → 폼 키보드 → ESC resume ──
+  try {
+    await page.goto(`${BASE}/?${RENDER}`, { waitUntil: 'domcontentloaded' });
+    await waitForGame(page);
+    await page.evaluate(() => {
+      const g = window.__aeternaGame;
+      for (const s of g.scene.getScenes(true)) if (s.scene.key !== 'SettingsScene') g.scene.stop(s.scene.key);
+      if (!g.scene.isActive('SettingsScene')) g.scene.start('SettingsScene');
+    });
+    await sleep(700);
+    // 피드백 항목으로 이동(UP×2: idx0 → back → feedback) 후 ENTER
+    await pressN(page, 'ArrowUp', 2, 130);
+    await page.keyboard.press('Enter');
+    await sleep(700);
+    const fbActive = await page.evaluate(() => window.__aeternaGame.scene.isActive('FeedbackForm'));
+    const setPaused = await page.evaluate(() => window.__aeternaGame.scene.isPaused('SettingsScene'));
+    record('feedback-launch', fbActive && setPaused, `FeedbackForm active=${fbActive}, Settings paused=${setPaused}`);
+    await page.screenshot({ path: join(SHOTS, '11-feedback.png') });
+
+    const fbFocus = () => page.evaluate(() => {
+      const sc = window.__aeternaGame.scene.getScene('FeedbackForm');
+      const c = sc && sc.formContainer;
+      if (!c || !c.list) return null;
+      const m = c.list.find((o) => o.type === 'Text' && typeof o.text === 'string' && o.text.includes('▶'));
+      return m ? { text: m.text, x: Math.round(m.x) } : null;
+    });
+    const ff0 = await fbFocus();
+    await pressN(page, 'ArrowRight', 1, 130);
+    const ff1 = await fbFocus();
+    record('feedback-form-nav', !!ff0 && !!ff1 && ff0.x !== ff1.x, `▶ ${JSON.stringify(ff0)} -> ${JSON.stringify(ff1)}`);
+
+    await page.keyboard.press('Escape');
+    await sleep(500);
+    const fbClosed = await page.evaluate(() => !window.__aeternaGame.scene.isActive('FeedbackForm'));
+    const setResumed = await page.evaluate(() => {
+      const g = window.__aeternaGame;
+      return g.scene.isActive('SettingsScene') && !g.scene.isPaused('SettingsScene');
+    });
+    record('feedback-esc-resume', fbClosed && setResumed, `폼 닫힘=${fbClosed}, Settings resume=${setResumed}`);
+  } catch (e) { record('feedback-suite', false, `예외: ${e.message}`); }
+
   // ── BattleScene (#223): ATB 라 커맨드 메뉴가 '열렸을 때만' 키보드 nav 가능 ──
   // 진입 직후엔 게이지 미충전 → activeCommander 없음. 메뉴 활성까지 대기 후 nav 검증.
   try {
