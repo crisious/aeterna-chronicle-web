@@ -290,6 +290,25 @@ async function run() {
     record('lobby-quest-esc', !(await panelOpen()), 'ESC 닫힘');
   } catch (e) { record('lobby-panels-suite', false, `예외: ${e.message}`); }
 
+  // ── WorldScene 키보드 시간이동: ENTER(정보 패널) → ENTER(이동) → GameScene 전환 ──
+  // 정보 패널의 [시간 이동] 버튼은 pointerdown 전용이라, 키보드는 2단계 ENTER 경로로 진입.
+  try {
+    await page.goto(`${BASE}/?debugScene=world&${RENDER}`, { waitUntil: 'domcontentloaded' });
+    await waitForGame(page);
+    await sleep(800);
+    const infoOpen = () => page.evaluate(() => !!window.__aeternaGame.scene.getScene('WorldScene')?.infoPanel);
+    await page.keyboard.press('Enter');
+    await sleep(300);
+    const opened = await infoOpen();
+    record('world-zone-info-open', opened, opened ? '1차 ENTER 로 정보 패널 오픈' : '패널 미오픈');
+    await page.keyboard.press('Enter');
+    await sleep(1500); // 마커 트윈 600 + 페이드 300 + 씬 전환 여유
+    const scenesAfter = await activeScenes(page);
+    record('world-zone-travel', scenesAfter.includes('GameScene'),
+      `2차 ENTER 후 active=${scenesAfter.join(',')} (GameScene 기대)`);
+    await page.screenshot({ path: join(SHOTS, '10-world-travel.png') });
+  } catch (e) { record('world-travel-suite', false, `예외: ${e.message}`); }
+
   // ── BattleScene (#223): ATB 라 커맨드 메뉴가 '열렸을 때만' 키보드 nav 가능 ──
   // 진입 직후엔 게이지 미충전 → activeCommander 없음. 메뉴 활성까지 대기 후 nav 검증.
   try {

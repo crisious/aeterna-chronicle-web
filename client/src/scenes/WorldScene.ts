@@ -175,10 +175,17 @@ export class WorldScene extends Phaser.Scene {
       if (len === 0) return;
       this._highlightZone((this.zoneIndex + 1) % len);
     };
+    // 2단계 ENTER: 정보 패널이 없으면 열고(확인), 현재 존의 패널이 이미 열려 있으면 시간 이동.
+    // (정보 패널의 [시간 이동] 버튼은 pointerdown 전용이라 키보드로는 이 경로로 진입한다.)
     const onSelect = () => {
       const zoneIdx = this.navigableZoneIndices[this.zoneIndex];
       const zone = WORLD_ZONES[zoneIdx];
-      if (zone) this._onZoneClick(zone);
+      if (!zone) return;
+      if (this.infoPanel && this.selectedZone?.id === zone.id) {
+        this._travelToZone(zone);
+      } else {
+        this._onZoneClick(zone);
+      }
     };
     const onEsc = () => this.scene.start('LobbyScene');
 
@@ -418,8 +425,9 @@ export class WorldScene extends Phaser.Scene {
       encounterLine.setText(`🛡 ${enc.ambientLine} — ${monsters} (최대 ${enc.maxSpawn}체)${bossTag}`);
     }).catch(() => encounterLine.setText('필드 데이터 미정의'));
 
-    const enterBtn = this.add.text(288, 30, '[ 시간 이동 ]', {
-      fontSize: '15px',
+    // ▶ + (Enter) 힌트: 패널이 열린 상태에서 한 번 더 ENTER 누르면 이동한다는 키보드 단서.
+    const enterBtn = this.add.text(288, 30, '▶ [ 시간 이동 ] (Enter)', {
+      fontSize: '14px',
       color: '#88ff88',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
