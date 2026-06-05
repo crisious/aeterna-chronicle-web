@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { validateP2w } from '../shop/p2wGuard';
 import { extractUserIdFromRequest } from '../security/jwtManager';
+import { inventoryManager } from '../inventory/inventoryManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────
 
@@ -184,5 +185,76 @@ export async function shopRoutes(fastify: FastifyInstance): Promise<void> {
     ]);
 
     return reply.send({ purchases, total, page: parseInt(page, 10), limit: take });
+  });
+
+  // ── GET /api/shop/consumables — 타운 소비 상점 목록 (gold 소비 아이템) ──
+  // 프리미엄 ShopItem(crystal·코스메틱)과 분리된 gold 소비 아이템(포션/스크롤) 상점.
+  fastify.get('/api/shop/consumables', async (
+    request: FastifyRequest<{ Querystring: { characterLevel?: string } }>,
+    reply: FastifyReply
+  ) => {
+    const lvl = parseInt(request.query.characterLevel ?? '999', 10) || 999;
+    const items = await prisma.item.findMany({
+      where: { type: 'consumable', isActive: true, price: { gt: 0 }, level: { lte: lvl } },
+      orderBy: [{ price: 'asc' }],
+      select: { code: true, name: true, description: true, price: true, subType: true, grade: true, stackable: true },
+    });
+    return reply.send({ items });
+  });
+
+  // ── POST /api/shop/buy — 소비 아이템 구매 (gold 차감 + 인벤토리 지급) ──
+  // 프리미엄 /api/shop/purchase 와 별개. gold 출처는 특정 캐릭터(소유권 검증), 인벤토리는 user.
+  fastify.post('/api/shop/buy', async (
+    request: FastifyRequest<{ Body: { itemCode?: string; characterId?: string; quantity?: number } }>,
+    reply: FastifyReply
+  ) => {
+    const userId = await extractUserIdFromRequest(request);
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    const { itemCode, characterId } = request.body;
+    const quantity = Math.max(1, Math.min(99, request.body.quantity ?? 1));
+    if (!itemCode || !characterId) {
+      return reply.status(400).send({ error: 'itemCode, characterId는 필수입니다.' });
+    }
+
+    // 소유권 검증 — 본인 캐릭터의 gold 만 차감
+    const character = await prisma.character.findFirst({
+      where: { id: characterId, userId },
+      select: { id: true, gold: true },
+    });
+    if (!character) return reply.status(404).send({ error: '캐릭터를 찾을 수 없습니다.' });
+
+    // 소비 아이템만 구매 가능 (gold)
+    const item = await prisma.item.findUnique({ where: { code: itemCode } });
+    if (!item || !item.isActive) return reply.status(404).send({ error: '판매 중인 아이템이 아닙니다.' });
+    if (item.type !== 'consumable') return reply.status(400).send({ error: '소비 상점에서 판매하지 않는 아이템입니다.' });
+    if (item.price <= 0) return reply.status(400).send({ error: '구매 불가 아이템입니다.' });
+
+    const cost = item.price * quantity;
+    if (character.gold < cost) {
+      return reply.status(400).send({ error: '골드가 부족합니다.', required: cost, current: character.gold });
+    }
+
+    // gold 차감(트랜잭션) 후 인벤토리 지급. addItem 은 자체 스택/용량 검사.
+    const updated = await prisma.character.update({
+      where: { id: character.id },
+      data: { gold: { decrement: cost } },
+      select: { gold: true },
+    });
+    let grant: { success: boolean; message: string };
+    try {
+      grant = await inventoryManager.addItem(userId, itemCode, quantity);
+    } catch {
+      // 지급 중 예외 → gold 롤백
+      await prisma.character.update({ where: { id: character.id }, data: { gold: { increment: cost } } });
+      return reply.status(500).send({ error: '아이템 지급 처리 중 오류가 발생했습니다.' });
+    }
+    if (!grant.success) {
+      // 지급 실패(용량 초과 등) → gold 롤백
+      await prisma.character.update({ where: { id: character.id }, data: { gold: { increment: cost } } });
+      return reply.status(400).send({ error: grant.message });
+    }
+
+    return reply.send({ success: true, itemCode, quantity, gold: updated.gold });
   });
 }

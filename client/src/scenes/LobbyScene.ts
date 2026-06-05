@@ -515,8 +515,8 @@ export class LobbyScene extends Phaser.Scene {
     switch (npc.id) {
       case 'merchant':
         this._showNotification(`🛒 ${npc.name}: 상점을 열었습니다. (아이템 ${80}종 판매 중)`);
-        // P38: 인라인 ShopPanel 사용 중 (독립 ShopUI 분리는 후속 리팩터링)
-        this._showShopPanel(npc);
+        // P38: 인라인 ShopPanel — 소비 상점 API(gold) 연동(async)
+        void this._showShopPanel(npc);
         break;
       case 'blacksmith':
         this._showNotification(`🔨 ${npc.name}: 장비 강화 서비스를 준비합니다.`);
@@ -539,7 +539,7 @@ export class LobbyScene extends Phaser.Scene {
     }
   }
 
-  private _showShopPanel(npc: NpcEntry): void {
+  private async _showShopPanel(npc: NpcEntry): Promise<void> {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
     this._registerModalPanel(panel);
@@ -549,41 +549,40 @@ export class LobbyScene extends Phaser.Scene {
       fontSize: '18px', color: '#44cc88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
 
-    const shopItems = [
-      { name: '체력 포션 (소)', price: 50, desc: 'HP 100 회복' },
-      { name: '체력 포션 (중)', price: 150, desc: 'HP 300 회복' },
-      { name: '마나 포션 (소)', price: 80, desc: 'MP 80 회복' },
-      { name: '해독제', price: 60, desc: '독 상태 해제' },
-      { name: '귀환 스크롤', price: 200, desc: '마을로 귀환' },
+    // 서버 소비 상점(gold 아이템) 목록 fetch. 오프라인/실패 시 fallback 으로 렌더는 유지.
+    type ShopRow = { code: string; name: string; price: number };
+    const FALLBACK: ShopRow[] = [
+      { code: 'CON_HP_S', name: 'HP 포션 (소)', price: 20 },
+      { code: 'CON_HP_M', name: 'HP 포션 (중)', price: 60 },
+      { code: 'CON_MP_S', name: 'MP 포션 (소)', price: 25 },
+      { code: 'CON_HP_L', name: 'HP 포션 (대)', price: 150 },
+      { code: 'CON_MP_M', name: 'MP 포션 (중)', price: 70 },
     ];
+    let shopItems: ShopRow[];
+    try {
+      const level = this.characterData?.level ?? 1;
+      const resp = await networkManager.get<{ items?: ShopRow[] }>(`/api/shop/consumables?characterLevel=${level}`);
+      const items = (resp?.items ?? []).slice(0, 8);
+      shopItems = items.length > 0 ? items : FALLBACK;
+    } catch {
+      shopItems = FALLBACK;
+    }
 
-    // 마우스(pointerdown)와 키보드(ENTER)가 공유하는 구매 동작
-    const buy = async (item: { name: string; price: number; desc: string }): Promise<void> => {
+    // 마우스(pointerdown)와 키보드(ENTER)가 공유하는 구매 동작 (gold 차감 + 인벤토리 지급).
+    const buy = async (item: ShopRow): Promise<void> => {
       try {
-        // 서버 상점 API로 구매 요청
-        const shopItems_res = await networkManager.get('/api/shop/items') as any;
-        const serverItem = (shopItems_res?.items ?? shopItems_res ?? [])
-          .find((si: any) => si.name === item.name);
-        // 서버 상점에 해당 아이템이 없으면 purchase 가 호출되지 않으므로 거짓 '구매 성공' 표시 금지.
-        if (!serverItem) {
-          this._showNotification(`구매 불가: 상점에서 ${item.name}을(를) 찾을 수 없습니다.`);
-          playSfx(this, UI_SFX.CLICK);
-          return;
-        }
-        await networkManager.post('/api/shop/purchase', {
-          userId: this.characterData?.characterId,
-          itemId: serverItem.id,
+        const resp = await networkManager.post<{ gold?: number }>('/api/shop/buy', {
+          itemCode: item.code,
+          characterId: this.characterData?.characterId,
+          quantity: 1,
         });
         playSfx(this, UI_SFX.GOLD_GAIN);
-        this._showNotification(`${item.name}을(를) 구매했습니다!`);
-        this._fetchGold(); // 골드 갱신
+        this._showNotification(`${item.name} 구매 완료!${typeof resp?.gold === 'number' ? ` (남은 골드 ${resp.gold}G)` : ''}`);
+        this._fetchGold(); // 골드 HUD 갱신
       } catch (err: any) {
         const msg = err?.message ?? '구매 실패';
-        if (msg.includes('잔액')) {
-          this._showNotification('골드가 부족합니다!');
-        } else {
-          this._showNotification(`구매 실패: ${msg}`);
-        }
+        if (msg.includes('골드')) this._showNotification('골드가 부족합니다!');
+        else this._showNotification(`구매 실패: ${msg}`);
         playSfx(this, UI_SFX.CLICK);
       }
     };
