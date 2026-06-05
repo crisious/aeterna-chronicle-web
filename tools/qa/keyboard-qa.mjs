@@ -336,6 +336,29 @@ async function run() {
     record('skill-close', !(await skillOpen()), `닫힘 후 isOpen=${await skillOpen()}`);
   } catch (e) { record('skill-suite', false, `예외: ${e.message}`); }
 
+  // ── 회귀(#리뷰): 모달 공존 시 하위 인라인 패널 양보 — 상점 위에 스킬트리 강제 공존 후 상점 ▶ 불변 ──
+  try {
+    await page.goto(`${BASE}/?debugScene=lobby&${RENDER}`, { waitUntil: 'domcontentloaded' });
+    await waitForGame(page);
+    await sleep(700);
+    const marked = () => page.evaluate(() => {
+      const p = window.__aeternaGame.scene.getScene('LobbyScene').dialoguePanel;
+      if (!p || !p.list) return null;
+      const m = p.list.find((o) => o.type === 'Text' && typeof o.text === 'string' && o.text.includes('▶'));
+      return m ? { text: m.text, x: Math.round(m.x), y: Math.round(m.y) } : null;
+    });
+    await page.evaluate(() => window.__aeternaGame.scene.getScene('LobbyScene')._showShopPanel({ id: 'merchant', name: '상인', role: '상점' }));
+    await sleep(300);
+    const shopBefore = await marked();
+    // uiModal(스킬트리) 강제 공존(실사용에선 nav 가드가 막지만, 방어층 검증용)
+    await page.evaluate(() => { void window.__aeternaGame.scene.getScene('LobbyScene')._openSkillTree(); });
+    await sleep(1300);
+    await pressN(page, 'ArrowDown', 1, 140); // 스킬트리가 소비 → 상점은 양보해야
+    const shopAfter = await marked();
+    const yielded = !!shopBefore && !!shopAfter && shopBefore.x === shopAfter.x && shopBefore.y === shopAfter.y;
+    record('modal-coexist-yield', yielded, `상점 ▶ ${JSON.stringify(shopBefore)} == ${JSON.stringify(shopAfter)} (양보)`);
+  } catch (e) { record('modal-coexist-suite', false, `예외: ${e.message}`); }
+
   // ── WorldScene 키보드 시간이동: ENTER(정보 패널) → ENTER(이동) → GameScene 전환 ──
   // 정보 패널의 [시간 이동] 버튼은 pointerdown 전용이라, 키보드는 2단계 ENTER 경로로 진입.
   try {
