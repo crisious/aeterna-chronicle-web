@@ -136,6 +136,9 @@ export class KeyboardFocusRing {
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    // 패널 open/close 로 링을 반복 생성·파괴해도 once 리스너가 쌓이지 않게 제거.
+    this.scene.events.off(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
+    this.scene.events.off(Phaser.Scenes.Events.DESTROY, this.destroy, this);
     const kb = this.scene.input?.keyboard;
     if (kb) {
       for (const [ev, fn] of this.handlers) kb.off(ev, fn);

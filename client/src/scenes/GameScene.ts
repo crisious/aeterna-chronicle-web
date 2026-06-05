@@ -7,6 +7,7 @@
 
 import * as Phaser from 'phaser';
 import { networkManager, ZoneInfo } from '../network/NetworkManager';
+import { isUiModalOpen } from '../accessibility/uiModalLock';
 import { HUDOrchestrator } from '../services/HUDOrchestrator';
 import { TelemetryEmitter } from '../services/TelemetryEmitter';
 import { CombatEffectManager } from '../services/CombatEffectManager';
@@ -602,6 +603,9 @@ export class GameScene extends Phaser.Scene {
       if (!this.player || !this.wasdKeys || !this.cursors) return;
       const moveSpeed = 300;
       this.player.setVelocity(0);
+
+      // 모달 패널(인벤토리 등)이 열려 있으면 화살표/WASD 를 패널 포커스 이동에 양보(이동 정지).
+      if (isUiModalOpen()) return;
 
       const isLeft = this.cursors.left?.isDown || this.wasdKeys.left?.isDown;
       const isRight = this.cursors.right?.isDown || this.wasdKeys.right?.isDown;
