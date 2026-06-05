@@ -85,3 +85,29 @@ describe('buildQuestRowHtml — 안내 요소 조건부 렌더', () => {
     expect(html).not.toContain('data-map-zone-id');
   });
 });
+
+describe('buildQuestRowHtml — XSS 이스케이프 (결과가 innerHTML 로 라이브 DOM 주입됨)', () => {
+  test('title/objectiveText/actionHint/mapZoneId 의 HTML 특수문자를 엔티티로 이스케이프한다', () => {
+    const malicious: QuestItem = {
+      questId: 'Q-X',
+      title: '<img src=x onerror=alert(1)>',
+      objectiveText: '"><script>alert(2)</script>',
+      progressCurrent: 0,
+      progressTarget: 1,
+      isMainQuest: false,
+      isCompleted: false,
+      actionHint: 'go & <b>here</b>',
+      mapZoneId: '" onmouseover="alert(3)',
+    };
+    const html = buildQuestRowHtml(malicious);
+    // 원시 페이로드가 태그/속성으로 살아있으면 안 된다(탈출 차단).
+    expect(html).not.toContain('<img src=x');
+    expect(html).not.toContain('<script>');
+    expect(html).not.toContain('" onmouseover="alert(3)"'); // 따옴표 탈출이 막혔는지
+    // 속성 값의 따옴표가 엔티티로 치환됐는지(속성 경계 보존).
+    expect(html).toContain('data-map-zone-id="&quot; onmouseover=&quot;alert(3)"');
+    // 본문·안내의 <, & 가 엔티티로.
+    expect(html).toContain('&lt;img');
+    expect(html).toContain('&amp;');
+  });
+});

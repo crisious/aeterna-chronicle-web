@@ -161,10 +161,16 @@ export async function updateQuestProgress(
     where: { userId, status: 'in_progress' },
   });
 
+  // N+1 제거: 진행 중 퀘스트들의 quest 정의를 단일 배치 조회로 가져온다
+  // (이전엔 퀘스트마다 findUnique → 활성 퀘스트 수만큼 직렬 쿼리).
+  const questIds = [...new Set(activeProgresses.map((qp) => qp.questId))];
+  const quests = await prisma.quest.findMany({ where: { id: { in: questIds } } });
+  const questById = new Map(quests.map((q) => [q.id, q]));
+
   const results: Array<{ questId: string; progress: ProgressEntry[]; allComplete: boolean }> = [];
 
   for (const qp of activeProgresses) {
-    const quest = await prisma.quest.findUnique({ where: { id: qp.questId } });
+    const quest = questById.get(qp.questId);
     if (!quest) continue;
 
     const objectives = quest.objectives as unknown as QuestObjective[];
