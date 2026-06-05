@@ -12,6 +12,8 @@ import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { bindEscClose } from '../utils/uiEsc';
 import { getMapLegendLines } from './mapLegend';
+import { KeyboardFocusRing } from '../accessibility/KeyboardFocusRing';
+import { pushUiModal, popUiModal } from '../accessibility/uiModalLock';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -60,6 +62,10 @@ export class WorldMapUI {
   private nodeObjs: Array<{ node: Phaser.GameObjects.Container; zone: WorldZone }> = [];
   private legendObjs: Phaser.GameObjects.GameObject[] = [];
 
+  // 전키보드 UI: 포커스 링(메인=해금 존 노드 ↔ detail=텔레포트) + 모달락 균형 플래그.
+  private focusRing?: KeyboardFocusRing;
+  private _modalPushed = false;
+
   constructor(scene: Phaser.Scene, net: NetworkManager) {
     this.scene = scene;
     this.net = net;
@@ -82,14 +88,44 @@ export class WorldMapUI {
     // FINDING-A4 ext18/ext24: ESC 닫기 (bindEscClose helper)
     this._escUnbind?.();
     this._escUnbind = bindEscClose(this.scene, () => this.close());
+
+    // 전키보드 UI: 모달락 + 포커스 링(해금 존 노드). detail 열리면 텔레포트로 전환.
+    if (!this._modalPushed) {
+      pushUiModal();
+      this._modalPushed = true;
+    }
+    this.focusRing?.destroy();
+    this.focusRing = new KeyboardFocusRing(this.scene, { columns: 1 });
+    this._syncMainRing();
   }
 
   close(): void {
+    if (!this.visible) return;
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
     this._escUnbind?.();
     this._escUnbind = null;
+    this.focusRing?.destroy();
+    this.focusRing = undefined;
+    if (this._modalPushed) {
+      popUiModal();
+      this._modalPushed = false;
+    }
+  }
+
+  /** 메인 포커스 그룹(해금된, 현재 존 아닌 노드)으로 링 동기화. */
+  private _syncMainRing(): void {
+    if (!this.focusRing) return;
+    this.focusRing.setItems(
+      this.nodeObjs
+        .filter((no) => no.zone.unlocked && no.zone.id !== this.currentZoneId)
+        .map((no) => ({
+          target: no.node,
+          activate: () => this._selectZone(no.zone),
+          label: no.zone.name,
+        })),
+    );
   }
 
   // FINDING-A4 ext24: bindEscClose unbind 참조
@@ -214,6 +250,9 @@ export class WorldMapUI {
       this.container.add(nodeC);
       this.nodeObjs.push({ node: nodeC, zone });
     });
+
+    // 동적 재생성된 노드를 링에 반영(detail 미열림 시).
+    if (this.focusRing && !this.detailPanel) this._syncMainRing();
   }
 
   // ── 내부: 범례 (SSOT SCENARIO_MAP_LEGEND_ENTRIES) ─────────
@@ -290,6 +329,11 @@ export class WorldMapUI {
     this.detailPanel.add(tpBtn);
 
     this.container.add(this.detailPanel);
+
+    // 키보드: detail 동안 링을 텔레포트 버튼으로 전환(닫기는 ESC=패널 닫힘).
+    this.focusRing?.setItems([
+      { target: tpBtn, activate: () => void this._teleport(zone), label: `${zone.name} 텔레포트` },
+    ]);
   }
 
   private async _teleport(zone: WorldZone): Promise<void> {
@@ -305,6 +349,8 @@ export class WorldMapUI {
   private _closeDetail(): void {
     if (this.detailPanel) { this.detailPanel.destroy(); this.detailPanel = null; }
     this.selectedZone = null;
+    // detail 닫히면 메인(존 노드) 링으로 복귀(패널이 아직 열려있을 때만).
+    if (this.visible) this._syncMainRing();
   }
 
   destroy(): void {

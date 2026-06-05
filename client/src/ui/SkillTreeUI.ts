@@ -14,6 +14,8 @@ import * as Phaser from 'phaser';
 import { NetworkManager } from '../network/NetworkManager';
 import { formatPassiveEffect, STATUS_COLOR } from '../skills/passiveEffectFormatter';
 import { bindEscClose } from '../utils/uiEsc';
+import { KeyboardFocusRing } from '../accessibility/KeyboardFocusRing';
+import { pushUiModal, popUiModal } from '../accessibility/uiModalLock';
 import { getCombosUsingSkill } from '../skills/comboMirror';
 import { formatBranchLabel, getBranchGroupClient, getBranchSiblingsClient } from '../skills/branchMirror';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
@@ -146,6 +148,11 @@ export class SkillTreeUI {
   private treeContainer!: Phaser.GameObjects.Container;
   private detailPanel: Phaser.GameObjects.Container | null = null;
 
+  // 전키보드 UI: 포커스 링(메인=스킬 노드 ↔ detail=업그레이드/닫기) + 모달락 + 노드 추적.
+  private focusRing?: KeyboardFocusRing;
+  private _modalPushed = false;
+  private _skillNodes: Array<{ bg: Phaser.GameObjects.Rectangle; skill: SkillDef }> = [];
+
   constructor(scene: Phaser.Scene, net: NetworkManager) {
     this.scene = scene;
     this.net = net;
@@ -169,15 +176,43 @@ export class SkillTreeUI {
     // FINDING-A4 ext16/ext24: ESC 닫기 (bindEscClose helper)
     this._escUnbind?.();
     this._escUnbind = bindEscClose(this.scene, () => this.close());
+
+    // 전키보드 UI: 모달락 + 포커스 링(스킬 노드). detail 열리면 업그레이드/닫기로 전환.
+    if (!this._modalPushed) {
+      pushUiModal();
+      this._modalPushed = true;
+    }
+    this.focusRing?.destroy();
+    this.focusRing = new KeyboardFocusRing(this.scene, { columns: 1 });
+    this._syncMainRing();
   }
 
   close(): void {
+    if (!this.visible) return;
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
     playSfx(this.scene, UI_SFX.CLOSE);
     this._escUnbind?.();
     this._escUnbind = null;
+    this.focusRing?.destroy();
+    this.focusRing = undefined;
+    if (this._modalPushed) {
+      popUiModal();
+      this._modalPushed = false;
+    }
+  }
+
+  /** 메인 포커스 그룹(스킬 노드)으로 링 동기화. */
+  private _syncMainRing(): void {
+    if (!this.focusRing) return;
+    this.focusRing.setItems(
+      this._skillNodes.map((n) => ({
+        target: n.bg,
+        activate: () => this._showSkillDetail(n.skill),
+        label: n.skill.name,
+      })),
+    );
   }
 
   // FINDING-A4 ext24: bindEscClose unbind 참조
@@ -237,6 +272,7 @@ export class SkillTreeUI {
 
   private _renderTree(): void {
     this.treeContainer.removeAll(true);
+    this._skillNodes = [];
 
     const nodeSize = 60;
     const gapY = 80;
@@ -301,7 +337,11 @@ export class SkillTreeUI {
       }).setOrigin(0, 0.5).setAlpha(alpha);
 
       this.treeContainer.add([nodeBg, icon, label, nameT]);
+      this._skillNodes.push({ bg: nodeBg, skill });
     });
+
+    // 동적 재생성된 노드를 링에 반영(detail 미열림 시).
+    if (this.focusRing && !this.detailPanel) this._syncMainRing();
   }
 
   // ── 내부: 스킬 상세 ──────────────────────────────────────
@@ -375,6 +415,8 @@ export class SkillTreeUI {
     const canUpgrade = skill.unlocked && skill.currentLevel < skill.maxLevel && this.skillPoints > 0;
     const canUnlock = !skill.unlocked && this.characterLevel >= skill.unlockLevel && this.skillPoints > 0;
 
+    const detailItems: Array<{ target: Phaser.GameObjects.Text; activate: () => void; label: string }> = [];
+
     if (canUpgrade || canUnlock) {
       const label = canUnlock ? '[ 해금 ]' : '[ 업그레이드 ]';
       const btn = this.scene.add.text(cx, cy + ph / 2 - 40, label, {
@@ -382,14 +424,19 @@ export class SkillTreeUI {
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         .on('pointerdown', () => this._upgradeSkill(skill));
       this.detailPanel.add(btn);
+      detailItems.push({ target: btn, activate: () => void this._upgradeSkill(skill), label: canUnlock ? '해금' : '업그레이드' });
     }
 
     const closeBtn = this.scene.add.text(cx + pw / 2 - 20, cy - ph / 2 + 6, '✕', {
       fontSize: '14px', color: '#ff6666',
     }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this._closeDetail());
     this.detailPanel.add(closeBtn);
+    detailItems.push({ target: closeBtn, activate: () => this._closeDetail(), label: '상세 닫기' });
 
     this.container.add(this.detailPanel);
+
+    // 키보드: detail 동안 링을 업그레이드/닫기로 전환.
+    this.focusRing?.setItems(detailItems);
   }
 
   private async _upgradeSkill(skill: SkillDef): Promise<void> {
@@ -414,6 +461,8 @@ export class SkillTreeUI {
 
   private _closeDetail(): void {
     if (this.detailPanel) { this.detailPanel.destroy(); this.detailPanel = null; }
+    // detail 닫히면 메인(스킬 노드) 링으로 복귀(패널이 아직 열려있을 때만).
+    if (this.visible) this._syncMainRing();
   }
 
   destroy(): void { this._closeDetail(); this.container.destroy(); }
