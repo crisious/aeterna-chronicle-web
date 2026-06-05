@@ -187,6 +187,9 @@ export class BattleScene extends Phaser.Scene {
   private cmdMenuTexts: Phaser.GameObjects.Text[] = [];
   private cmdMenuIndex = 0;
   private cmdSubMenu: Phaser.GameObjects.Container | null = null;
+  // 전키보드 UI: 서브메뉴(마법/아이템) 선택을 키보드로. update-폴링 패턴(커맨드 메뉴와 동일).
+  private subMenuItems: Array<{ text: Phaser.GameObjects.Text; action: () => void; label: string }> = [];
+  private subMenuIndex = 0;
 
   // 상태 패널
   private statusPanelContainer: Phaser.GameObjects.Container | null = null;
@@ -892,6 +895,8 @@ export class BattleScene extends Phaser.Scene {
   private _closeSubMenu(): void {
     this.cmdSubMenu?.destroy();
     this.cmdSubMenu = null;
+    this.subMenuItems = [];
+    this.subMenuIndex = 0;
   }
 
   // ─── 커맨드 실행 ──────────────────────────────────────────────
@@ -1096,6 +1101,8 @@ export class BattleScene extends Phaser.Scene {
 
   private _showMagicSubMenu(): void {
     this._closeSubMenu();
+    this.subMenuItems = [];
+    this.subMenuIndex = 0;
     const skills = this.skillSlots.filter(s => s.currentCooldown <= 0);
 
     const menuH = Math.max(80, skills.length * 24 + 30);
@@ -1115,25 +1122,30 @@ export class BattleScene extends Phaser.Scene {
           color: (this.activeCommander?.unit.mp ?? 0) >= skill.mpCost ? '#88ccff' : '#555555',
         }).setInteractive({ useHandCursor: true });
 
-        t.on('pointerdown', () => {
+        const doSkill = (): void => {
           if ((this.activeCommander?.unit.mp ?? 0) < skill.mpCost) return;
           this._closeSubMenu();
           this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
             if (this.activeCommander) this._performSkill(this.activeCommander, target, skill);
             this._endTurn();
           });
-        });
+        };
+        t.on('pointerdown', doSkill);
+        this.subMenuItems.push({ text: t, action: doSkill, label });
 
         container.add(t);
       });
     }
 
-    // ESC로 닫기
+    // ESC로 닫기 / 키보드 선택(update 폴링)
     this.cmdSubMenu = container;
+    this._highlightSubMenu();
   }
 
   private _showItemSubMenu(): void {
     this._closeSubMenu();
+    this.subMenuItems = [];
+    this.subMenuIndex = 0;
 
     const container = this.add.container(CMD_MENU_X, UI_PANEL_Y - 90).setDepth(210);
     const bg = this.add.rectangle(100, 40, 220, 80, 0x0a0a3e, 0.95)
@@ -1141,10 +1153,11 @@ export class BattleScene extends Phaser.Scene {
     container.add(bg);
 
     // 간이: 포션만 표시
-    const t = this.add.text(80, 40, '🧪 포션 (HP +100)', { fontSize: '13px', fontFamily: FONT_FAMILY, color: '#88ff88' })
+    const label = '🧪 포션 (HP +100)';
+    const t = this.add.text(80, 40, label, { fontSize: '13px', fontFamily: FONT_FAMILY, color: '#88ff88' })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
-    t.on('pointerdown', () => {
+    const doItem = (): void => {
       this._closeSubMenu();
       if (!this.activeCommander) return;
       // 아군 대상 선택
@@ -1155,10 +1168,20 @@ export class BattleScene extends Phaser.Scene {
         playSfx(this, 'sfx_combat_magic_heal', 0.5);
         this._endTurn();
       });
-    });
+    };
+    t.on('pointerdown', doItem);
+    this.subMenuItems.push({ text: t, action: doItem, label });
     container.add(t);
 
     this.cmdSubMenu = container;
+    this._highlightSubMenu();
+  }
+
+  /** 서브메뉴 선택 표시(▶ prefix) — 커맨드 메뉴 _highlightCommand 와 동형. */
+  private _highlightSubMenu(): void {
+    this.subMenuItems.forEach((it, i) => {
+      it.text.setText(i === this.subMenuIndex ? `▶ ${it.label}` : `  ${it.label}`);
+    });
   }
 
   private _performSkill(attacker: UnitSprite, target: UnitSprite, skill: SkillSlot): void {
@@ -1248,8 +1271,22 @@ export class BattleScene extends Phaser.Scene {
       return;
     }
 
-    // 서브메뉴가 열려있으면 ESC로 닫기
+    // 서브메뉴(마법/아이템): 위/아래 선택 + Enter 실행 + ESC 닫기
     if (this.cmdSubMenu) {
+      const n = this.subMenuItems.length;
+      if (n > 0) {
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+          this.subMenuIndex = (this.subMenuIndex - 1 + n) % n;
+          this._highlightSubMenu();
+        }
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
+          this.subMenuIndex = (this.subMenuIndex + 1) % n;
+          this._highlightSubMenu();
+        }
+        if (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) {
+          this.subMenuItems[this.subMenuIndex]?.action();
+        }
+      }
       if (this.escKey && Phaser.Input.Keyboard.JustDown(this.escKey)) {
         this._closeSubMenu();
         if (this.activeCommander) this._openCommandMenu(this.activeCommander);
