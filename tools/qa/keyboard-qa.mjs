@@ -290,6 +290,52 @@ async function run() {
     record('lobby-quest-esc', !(await panelOpen()), 'ESC 닫힘');
   } catch (e) { record('lobby-panels-suite', false, `예외: ${e.message}`); }
 
+  // ── SkillTree 배선·키보드: Lobby nav '🌳 스킬' → 패널 오픈 → 노드 nav → ENTER detail → ESC 닫기 ──
+  try {
+    await page.goto(`${BASE}/?debugScene=lobby&${RENDER}`, { waitUntil: 'domcontentloaded' });
+    await waitForGame(page);
+    await sleep(700);
+    const skillOpen = () => page.evaluate(() => {
+      const ui = window.__aeternaGame.scene.getScene('LobbyScene').skillTreeUI;
+      return !!(ui && ui.isOpen && ui.isOpen());
+    });
+    const ringIndex = () => page.evaluate(() => {
+      const ui = window.__aeternaGame.scene.getScene('LobbyScene').skillTreeUI;
+      return ui && ui.focusRing ? ui.focusRing.index : -1;
+    });
+    const detailOpen = () => page.evaluate(() => {
+      const ui = window.__aeternaGame.scene.getScene('LobbyScene').skillTreeUI;
+      return !!(ui && ui.detailPanel);
+    });
+    const navIdx = () => page.evaluate(() => window.__aeternaGame.scene.getScene('LobbyScene').navIndex);
+
+    // 실제 키보드 경로: 하단 nav '🌳 스킬'(idx3)로 ArrowRight 이동 후 ENTER
+    await pressN(page, 'ArrowRight', 3, 130);
+    await page.keyboard.press('Enter');
+    await sleep(1300); // _openSkillTree 비동기(스킬포인트 fetch)
+    record('skill-open', await skillOpen(), `skillTreeUI.isOpen=${await skillOpen()}`);
+    await page.screenshot({ path: join(SHOTS, '12-skilltree.png') });
+
+    // 노드 ring 이동 + lobby nav 양보(navIndex 불변)
+    const r0 = await ringIndex();
+    const nav0 = await navIdx();
+    await pressN(page, 'ArrowDown', 2, 140);
+    const r1 = await ringIndex();
+    const nav1 = await navIdx();
+    record('skill-node-nav', typeof r1 === 'number' && r1 !== r0, `ring index ${r0} -> ${r1}`);
+    record('skill-lobby-yield', nav0 === nav1, `lobby navIndex ${nav0}==${nav1} (uiModal 양보)`);
+
+    // ENTER → 스킬 detail
+    await page.keyboard.press('Enter');
+    await sleep(400);
+    record('skill-detail', await detailOpen(), `detailPanel=${await detailOpen()}`);
+
+    // ESC → 패널 닫기(bindEscClose → close)
+    await page.keyboard.press('Escape');
+    await sleep(400);
+    record('skill-close', !(await skillOpen()), `닫힘 후 isOpen=${await skillOpen()}`);
+  } catch (e) { record('skill-suite', false, `예외: ${e.message}`); }
+
   // ── WorldScene 키보드 시간이동: ENTER(정보 패널) → ENTER(이동) → GameScene 전환 ──
   // 정보 패널의 [시간 이동] 버튼은 pointerdown 전용이라, 키보드는 2단계 ENTER 경로로 진입.
   try {
