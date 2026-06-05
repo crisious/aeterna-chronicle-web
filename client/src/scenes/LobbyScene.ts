@@ -375,16 +375,21 @@ export class LobbyScene extends Phaser.Scene {
       idx = (idx + delta + focusables.length) % focusables.length;
       sync();
     };
-    const onUp = () => move(-1);
-    const onDown = () => move(1);
+    const onPrev = () => move(-1);
+    const onNext = () => move(1);
     const onActivate = () => focusables[idx]?.activate();
-    this.input.keyboard?.on('keydown-UP', onUp);
-    this.input.keyboard?.on('keydown-DOWN', onDown);
+    // 세로 리스트(상점·인벤토리)·가로 버튼 쌍(파티·스토리) 모두 자연스럽게 — 4방향 화살표 모두 이동에 바인딩.
+    this.input.keyboard?.on('keydown-UP', onPrev);
+    this.input.keyboard?.on('keydown-LEFT', onPrev);
+    this.input.keyboard?.on('keydown-DOWN', onNext);
+    this.input.keyboard?.on('keydown-RIGHT', onNext);
     this.input.keyboard?.on('keydown-ENTER', onActivate);
     this.input.keyboard?.on('keydown-SPACE', onActivate);
     panel.on('destroy', () => {
-      this.input.keyboard?.off('keydown-UP', onUp);
-      this.input.keyboard?.off('keydown-DOWN', onDown);
+      this.input.keyboard?.off('keydown-UP', onPrev);
+      this.input.keyboard?.off('keydown-LEFT', onPrev);
+      this.input.keyboard?.off('keydown-DOWN', onNext);
+      this.input.keyboard?.off('keydown-RIGHT', onNext);
       this.input.keyboard?.off('keydown-ENTER', onActivate);
       this.input.keyboard?.off('keydown-SPACE', onActivate);
     });
@@ -628,6 +633,10 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+    this._attachPanelKeyboardNav(panel, [{
+      setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); },
+      activate: () => panel.destroy(),
+    }]);
   }
 
   private _showPartyPanel(npc: NpcEntry): void {
@@ -643,21 +652,28 @@ export class LobbyScene extends Phaser.Scene {
       fontSize: '13px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       align: 'center',
     }).setOrigin(0.5));
+    const doCreate = () => { panel.destroy(); this._showNotification('파티를 생성했습니다!'); };
     const createBtn = this.add.text(-80, 50, '[ 파티 생성 ]', {
       fontSize: '13px', color: '#88ff88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    createBtn.on('pointerdown', () => { panel.destroy(); this._showNotification('파티를 생성했습니다!'); });
+    createBtn.on('pointerdown', doCreate);
     panel.add(createBtn);
+    const doSearch = () => { panel.destroy(); this._showNotification('현재 모집 중인 파티가 없습니다.'); };
     const searchBtn = this.add.text(80, 50, '[ 파티 검색 ]', {
       fontSize: '13px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    searchBtn.on('pointerdown', () => { panel.destroy(); this._showNotification('현재 모집 중인 파티가 없습니다.'); });
+    searchBtn.on('pointerdown', doSearch);
     panel.add(searchBtn);
     const closeBtn = this.add.text(0, 90, '[ 닫기 ]', {
       fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+    this._attachPanelKeyboardNav(panel, [
+      { setFocused: (a) => { createBtn.setText(a ? '▶ [ 파티 생성 ]' : '[ 파티 생성 ]'); createBtn.setColor(a ? '#ffffff' : '#88ff88'); }, activate: doCreate },
+      { setFocused: (a) => { searchBtn.setText(a ? '▶ [ 파티 검색 ]' : '[ 파티 검색 ]'); searchBtn.setColor(a ? '#ffffff' : '#88ccff'); }, activate: doSearch },
+      { setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); }, activate: () => panel.destroy() },
+    ]);
   }
 
   private _showStoryPanel(npc: NpcEntry): void {
@@ -679,19 +695,24 @@ export class LobbyScene extends Phaser.Scene {
       fontSize: '12px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       align: 'center', wordWrap: { width: 440 },
     }).setOrigin(0.5));
+    const doStart = () => {
+      panel.destroy();
+      this.scene.start('WorldScene', this.characterData);
+    };
     const startBtn = this.add.text(-80, 80, '[ 챕터 1 시작 ]', {
       fontSize: '13px', color: '#ffcc44', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    startBtn.on('pointerdown', () => {
-      panel.destroy();
-      this.scene.start('WorldScene', this.characterData);
-    });
+    startBtn.on('pointerdown', doStart);
     panel.add(startBtn);
     const closeBtn = this.add.text(80, 80, '[ 닫기 ]', {
       fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+    this._attachPanelKeyboardNav(panel, [
+      { setFocused: (a) => { startBtn.setText(a ? '▶ [ 챕터 1 시작 ]' : '[ 챕터 1 시작 ]'); startBtn.setColor(a ? '#ffffff' : '#ffcc44'); }, activate: doStart },
+      { setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); }, activate: () => panel.destroy() },
+    ]);
   }
 
   // ── 하단 네비게이션 ──────────────────────────────────────
@@ -989,6 +1010,10 @@ export class LobbyScene extends Phaser.Scene {
       (a, b) => (QUEST_STATUS_ORDER[a.status] ?? 9) - (QUEST_STATUS_ORDER[b.status] ?? 9),
     );
     const visibleQuests = sortedQuests.slice(0, 4);
+
+    // 키보드 포커스 링: 액션 가능 퀘스트(수주/완료) + [새로고침] + [닫기]
+    const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+
     if (visibleQuests.length === 0) {
       panel.add(this.add.text(0, 0, '표시할 퀘스트가 없습니다.', {
         fontSize: '13px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
@@ -1025,23 +1050,33 @@ export class LobbyScene extends Phaser.Scene {
       }));
 
       const actionText = this._getQuestActionText(quest.status);
+      const actionable = quest.status === 'available' || quest.status === 'complete';
       const actionBtn = this.add.text(210, y + 30, actionText, {
         fontSize: '12px',
-        color: quest.status === 'turned_in' || quest.status === 'active' ? '#777777' : '#88ff88',
+        color: actionable ? '#88ff88' : '#777777',
         fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-      }).setInteractive({ useHandCursor: quest.status === 'available' || quest.status === 'complete' });
+      }).setInteractive({ useHandCursor: actionable });
 
-      if (quest.status === 'available') {
-        actionBtn.on('pointerdown', async () => {
+      if (actionable) {
+        // 마우스(pointerdown)·키보드(ENTER) 공유 액션. done 가드로 중복 실행/라벨 깨짐 방지.
+        let done = false;
+        const doneText = quest.status === 'available' ? '[ 진행중 ]' : '[ 완료됨 ]';
+        const act = async () => {
+          if (done) return;
+          done = true;
           playSfx(this, UI_SFX.CONFIRM);
-          await this._acceptQuestFromPanel(quest, source);
-          actionBtn.setText('[ 진행중 ]').setColor('#777777').disableInteractive();
-        });
-      } else if (quest.status === 'complete') {
-        actionBtn.on('pointerdown', async () => {
-          playSfx(this, UI_SFX.CONFIRM);
-          await this._completeQuestFromPanel(quest, source);
-          actionBtn.setText('[ 완료됨 ]').setColor('#777777').disableInteractive();
+          if (quest.status === 'available') await this._acceptQuestFromPanel(quest, source);
+          else await this._completeQuestFromPanel(quest, source);
+          actionBtn.setText(doneText).setColor('#777777').disableInteractive();
+        };
+        actionBtn.on('pointerdown', act);
+        focusables.push({
+          setFocused: (a) => {
+            if (done) return; // 활성 후 라벨 고정
+            actionBtn.setText(a ? `▶ ${actionText}` : actionText);
+            actionBtn.setColor(a ? '#ffffff' : '#88ff88');
+          },
+          activate: () => void act(),
         });
       }
       panel.add(actionBtn);
@@ -1053,24 +1088,32 @@ export class LobbyScene extends Phaser.Scene {
       }).setOrigin(0.5));
     }
 
-    const refreshBtn = this.add.text(-80, panelH / 2 - 26, '[ 새로고침 ]', {
-      fontSize: '13px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    refreshBtn.on('pointerdown', () => {
+    const doRefresh = () => {
       playSfx(this, UI_SFX.CLICK);
       panel.destroy();
       void this._showQuests();
-    });
+    };
+    const refreshBtn = this.add.text(-80, panelH / 2 - 26, '[ 새로고침 ]', {
+      fontSize: '13px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    refreshBtn.on('pointerdown', doRefresh);
     panel.add(refreshBtn);
 
+    const doClose = () => {
+      playSfx(this, UI_SFX.CANCEL);
+      panel.destroy();
+    };
     const closeBtn = this.add.text(90, panelH / 2 - 26, '[ 닫기 ]', {
       fontSize: '13px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => {
-      playSfx(this, UI_SFX.CANCEL);
-      panel.destroy();
-    });
+    closeBtn.on('pointerdown', doClose);
     panel.add(closeBtn);
+
+    focusables.push(
+      { setFocused: (a) => { refreshBtn.setText(a ? '▶ [ 새로고침 ]' : '[ 새로고침 ]'); refreshBtn.setColor(a ? '#ffffff' : '#88ccff'); }, activate: doRefresh },
+      { setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); }, activate: doClose },
+    );
+    this._attachPanelKeyboardNav(panel, focusables);
   }
 
   private _getQuestActionText(status: QuestData['status']): string {

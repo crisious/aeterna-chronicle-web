@@ -204,9 +204,11 @@ async function run() {
       const panel = sc && sc.dialoguePanel;
       if (!panel || !panel.list) return null;
       const m = panel.list.find((o) => o.type === 'Text' && typeof o.text === 'string' && o.text.includes('▶'));
-      return m ? { text: m.text, y: Math.round(m.y) } : null;
+      return m ? { text: m.text, x: Math.round(m.x), y: Math.round(m.y) } : null;
     }, sceneKey);
     const panelOpen = () => page.evaluate(() => !!window.__aeternaGame.scene.getScene('LobbyScene').dialoguePanel);
+    // 포커스 이동 판정: ▶ 마커가 다른 버튼으로 옮겨졌는지(세로=y변화, 가로=x변화 모두 포착).
+    const moved = (a, b) => !!a && !!b && (a.x !== b.x || a.y !== b.y);
 
     // 상점 패널 직접 오픈 후 키보드 구동
     await page.evaluate(() => {
@@ -218,7 +220,7 @@ async function run() {
     const sf0 = await markedFocus('LobbyScene');
     await pressN(page, 'ArrowDown', 1, 120);
     const sf1 = await markedFocus('LobbyScene');
-    record('lobby-shop-nav', !!sf0 && !!sf1 && sf0.y !== sf1.y, `▶ ${JSON.stringify(sf0)} -> ${JSON.stringify(sf1)}`);
+    record('lobby-shop-nav', moved(sf0, sf1), `▶ ${JSON.stringify(sf0)} -> ${JSON.stringify(sf1)}`);
 
     await pressN(page, 'ArrowDown', 4, 120); // idx1 → idx5([닫기]); 구매5+닫기1=6 focusable
     const sfClose = await markedFocus('LobbyScene');
@@ -241,8 +243,51 @@ async function run() {
     const if0 = await markedFocus('LobbyScene');
     await pressN(page, 'ArrowDown', 1, 120);
     const if1 = await markedFocus('LobbyScene');
-    record('lobby-inventory-nav', !!if0 && !!if1 && if0.y !== if1.y, `▶ ${JSON.stringify(if0)} -> ${JSON.stringify(if1)}`);
+    record('lobby-inventory-nav', moved(if0, if1), `▶ ${JSON.stringify(if0)} -> ${JSON.stringify(if1)}`);
     await page.screenshot({ path: join(SHOTS, '08-lobby-inventory.png') });
+
+    // 형제 인라인 패널(강화/파티/스토리) — 직접 오픈 → nav(가능 시) → ESC 닫기
+    const npc = { id: 'tester', name: '테스터', role: '서비스' };
+    const siblings = [
+      { name: 'enhance', method: '_showEnhancePanel', single: true },
+      { name: 'party', method: '_showPartyPanel', single: false },
+      { name: 'story', method: '_showStoryPanel', single: false },
+    ];
+    for (const sp of siblings) {
+      await page.evaluate(({ m, npc }) => {
+        window.__aeternaGame.scene.getScene('LobbyScene')[m](npc);
+      }, { m: sp.method, npc });
+      await sleep(250);
+      const open = await panelOpen();
+      const f0 = await markedFocus('LobbyScene');
+      await pressN(page, 'ArrowDown', 1, 120);
+      const f1 = await markedFocus('LobbyScene');
+      const navOk = sp.single ? !!f0 : moved(f0, f1);
+      record(`lobby-${sp.name}`, open && navOk, `open=${open} ▶ ${JSON.stringify(f0)}->${JSON.stringify(f1)}`);
+      await page.keyboard.press('Escape');
+      await sleep(200);
+      record(`lobby-${sp.name}-esc`, !(await panelOpen()), 'ESC 닫힘');
+    }
+
+    // 퀘스트 패널 — 액션 가능(수주/완료) 퀘스트 포함, nav + 닫기까지 도달
+    await page.evaluate(() => {
+      window.__aeternaGame.scene.getScene('LobbyScene')._showQuestPanel([
+        { id: 'q1', name: '첫 의뢰', description: '슬라임 처치', status: 'available',
+          objectives: [{ desc: '슬라임', current: 0, target: 3 }], rewards: { exp: 100, gold: 50, items: [] } },
+        { id: 'q2', name: '완료 대기', description: '보고하기', status: 'complete',
+          objectives: [{ desc: '보고', current: 1, target: 1 }], rewards: { exp: 200, gold: 80, items: ['은검'] } },
+      ], 'local');
+    });
+    await sleep(300);
+    const qOpen = await panelOpen();
+    const q0 = await markedFocus('LobbyScene');
+    await pressN(page, 'ArrowDown', 1, 120);
+    const q1 = await markedFocus('LobbyScene');
+    record('lobby-quest-nav', qOpen && moved(q0, q1), `open=${qOpen} ▶ ${JSON.stringify(q0)}->${JSON.stringify(q1)}`);
+    await page.screenshot({ path: join(SHOTS, '09-lobby-quest.png') });
+    await page.keyboard.press('Escape');
+    await sleep(200);
+    record('lobby-quest-esc', !(await panelOpen()), 'ESC 닫힘');
   } catch (e) { record('lobby-panels-suite', false, `예외: ${e.message}`); }
 
   // ── BattleScene (#223): ATB 라 커맨드 메뉴가 '열렸을 때만' 키보드 nav 가능 ──
