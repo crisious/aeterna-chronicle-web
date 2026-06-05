@@ -10,6 +10,7 @@
 import * as Phaser from 'phaser';
 import { networkManager } from '../network/NetworkManager';
 import { loadingProgress } from '../ui/LoadingProgress';
+import { KeyboardFocusRing } from '../accessibility/KeyboardFocusRing';
 
 // ── 상수 ────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ export class MainMenuScene extends Phaser.Scene {
   private menuLabels: string[] = [];
   private menuActions: (() => void)[] = [];
   private menuHighlightIndex = 0;
+  private focusRing?: KeyboardFocusRing;
   private titleText!: Phaser.GameObjects.Text;
   private subtitleText!: Phaser.GameObjects.Text;
   private particleTimer?: Phaser.Time.TimerEvent;
@@ -130,28 +132,26 @@ export class MainMenuScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setAlpha(0)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => this._setMenuHighlight(i))
+        .on('pointerover', () => this.focusRing?.focus(i))
         .on('pointerdown', def.action);
 
       this.menuItems.push(btn);
     });
 
-    // FINDING-A4 part 2: 키보드 navigation (Arrow Up/Down + Enter)
-    // WCAG 2.1.1 — 모든 기능을 키보드로 작동 가능해야.
-    this.input.keyboard?.on('keydown-UP', () => {
-      const next = (this.menuHighlightIndex + this.menuItems.length - 1) % this.menuItems.length;
-      this._setMenuHighlight(next);
+    // FINDING-A4 part 2 / 전키보드 UI: 메뉴 키보드 네비게이션을 KeyboardFocusRing 으로 일반화
+    // (Arrow Up/Down + Enter/Space + Tab). WCAG 2.1.1 — 모든 기능 키보드 작동.
+    // 메뉴는 _setMenuHighlight(텍스트 색·▶ prefix)로 자체 표시하므로 링 내장 하이라이트는 끔.
+    this.focusRing = new KeyboardFocusRing(this, {
+      highlight: false,
+      onFocus: (_item, i) => this._setMenuHighlight(i),
     });
-    this.input.keyboard?.on('keydown-DOWN', () => {
-      const next = (this.menuHighlightIndex + 1) % this.menuItems.length;
-      this._setMenuHighlight(next);
-    });
-    this.input.keyboard?.on('keydown-ENTER', () => {
-      this.menuActions[this.menuHighlightIndex]?.();
-    });
-    this.input.keyboard?.on('keydown-SPACE', () => {
-      this.menuActions[this.menuHighlightIndex]?.();
-    });
+    this.focusRing.setItems(
+      this.menuItems.map((btn, i) => ({
+        target: btn,
+        activate: () => this.menuActions[i]?.(),
+        label: this.menuLabels[i],
+      })),
+    );
 
     // 페이드 인 시퀀스
     this.tweens.add({ targets: this.titleText, alpha: 1, duration: 800, ease: 'Power2' });
