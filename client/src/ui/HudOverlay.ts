@@ -457,6 +457,10 @@ export class HudOverlay {
     #hud-dialogue-body { font-size:18px; line-height:1.45; min-height:56px; }
     #hud-dialogue-choices { margin-top:8px; display:flex; flex-direction:column; gap:6px; }
     .hud-dialogue-choice { text-align:left; font-size:14px; padding:8px; border-radius:8px; border:1px solid #2c3f5a; background:#1a2536; color:#fff; cursor:pointer; }
+    .hud-dialogue-choice:hover:not(:disabled) { background:#243349; }
+    /* 전키보드 UI: HUD 의 네이티브 버튼(퀵슬롯·대화선택지·아바타)은 Tab 포커스+Enter 로 이미
+       작동하나 포커스 표시가 없었다. 키보드 사용자가 현재 포커스를 보도록 outline 부여(맵버튼과 동일). */
+    .hud-slot:focus-visible, .hud-dialogue-choice:focus-visible, #hud-avatar:focus-visible { outline:2px solid #fff; outline-offset:2px; }
   </style>
 
   <div id="hud-status" class="hud-panel" role="group" aria-label="Status">
