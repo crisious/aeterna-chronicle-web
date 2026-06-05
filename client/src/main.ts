@@ -9,6 +9,7 @@ import { DungeonScene } from './scenes/DungeonScene';
 import { EndingScene } from './scenes/EndingScene';
 import { SettingsScene } from './scenes/SettingsScene';
 import { CutsceneScene } from './scenes/CutsceneScene';
+import { FeedbackForm } from './ui/FeedbackForm';
 import { sceneManager } from './scenes/SceneManager';
 import { errorBoundary } from './error/ErrorBoundary';
 import { accessibilityManager } from './accessibility/AccessibilityManager';
@@ -109,6 +110,7 @@ const config: Phaser.Types.Core.GameConfig = {
         EndingScene,
         SettingsScene,
         CutsceneScene,
+        FeedbackForm, // 오버레이 sub-scene — SettingsScene 에서 launch
     ],
     pixelArt: true,
 };
