@@ -12,6 +12,8 @@ import * as Phaser from 'phaser';
 import { NetworkManager, InventoryItem } from '../network/NetworkManager';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
 import { bindEscClose } from '../utils/uiEsc';
+import { KeyboardFocusRing } from '../accessibility/KeyboardFocusRing';
+import { pushUiModal, popUiModal } from '../accessibility/uiModalLock';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -55,6 +57,9 @@ export class InventoryUI {
   private net: NetworkManager;
   private container: Phaser.GameObjects.Container;
   private slots: ItemSlot[] = [];
+  private focusRing?: KeyboardFocusRing;
+  /** 모달락 push/pop 균형 보장(이중 open/close 방어). */
+  private _modalPushed = false;
   private items: InventoryItem[] = [];
   private filteredItems: InventoryItem[] = [];
 
@@ -95,15 +100,38 @@ export class InventoryUI {
     // FINDING-A4 ext22/ext24: ESC 닫기 (bindEscClose helper)
     this._escUnbind?.();
     this._escUnbind = bindEscClose(this.scene, () => this.close());
+
+    // 전키보드 UI: 6×6열 그리드를 화살표/Tab 으로 순회, Enter 로 슬롯 활성(_onSlotClick).
+    // 모달락으로 하부 GameScene 이동을 정지(화살표 충돌 방지). 슬롯 bg 는 생성 1회라 안정.
+    if (!this._modalPushed) {
+      pushUiModal();
+      this._modalPushed = true;
+    }
+    this.focusRing?.destroy();
+    this.focusRing = new KeyboardFocusRing(this.scene, { columns: COLS, highlightColor: 0xffcc44 });
+    this.focusRing.setItems(
+      this.slots.map((s, i) => ({
+        target: s.bg,
+        activate: () => this._onSlotClick(i),
+        label: s.item?.name,
+      })),
+    );
   }
 
   close(): void {
+    if (!this.visible) return;
     this.visible = false;
     this.container.setVisible(false);
     this._closeDetail();
     playSfx(this.scene, UI_SFX.CLOSE);
     this._escUnbind?.();
     this._escUnbind = null;
+    this.focusRing?.destroy();
+    this.focusRing = undefined;
+    if (this._modalPushed) {
+      popUiModal();
+      this._modalPushed = false;
+    }
   }
 
   // FINDING-A4 ext24: bindEscClose unbind 참조
