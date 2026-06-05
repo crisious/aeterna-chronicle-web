@@ -1,0 +1,249 @@
+// 전키보드 UI P6 라이브 QA 드라이버 — 헤드리스 Chromium 으로 실 게임(localhost:5173)을
+// 키보드만으로 구동해 #218~227 작업을 검증한다. 마우스 클릭 없이 키 이벤트만 사용.
+//
+// 검증 축:
+//  1) 컷오버 엔진(#225) + 설정 UI(#226/#227): SettingsScene 에서 키보드로 '키보드 전용'
+//     토글까지 이동→Enter→실제 <canvas> pointerEvents 가 'none' 으로 바뀌는지(마우스 차단).
+//  2) 설정 이식(#227): settingsItems 개수가 이식분만큼 늘었는지 + 키보드 nav 로 인덱스 이동.
+//  3) 씬별 키보드 nav: MainMenu/Lobby/World/Battle 에서 방향키로 선택 인덱스가 바뀌는지 +
+//     크래시(콘솔 에러) 0 + 스크린샷.
+//
+// 실행: node tools/qa/keyboard-qa.mjs   (클라이언트 dev 서버가 5173 에 떠 있어야 함)
+
+import { chromium } from 'playwright';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const BASE = 'http://localhost:5173';
+// 헤드리스 Chromium 은 WebGL 프레임버퍼가 없어 Phaser WebGL 부팅이 실패한다
+// (Framebuffer Unsupported). renderer=canvas 로 Canvas 2D 렌더러를 강제.
+const RENDER = 'renderer=canvas';
+const HERE = dirname(fileURLToPath(import.meta.url));
+const SHOTS = join(HERE, 'shots');
+mkdirSync(SHOTS, { recursive: true });
+
+const results = [];
+const record = (name, pass, detail) => {
+  results.push({ name, pass, detail });
+  const icon = pass === true ? 'PASS' : pass === false ? 'FAIL' : 'INFO';
+  console.log(`[${icon}] ${name} — ${detail}`);
+};
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function waitForGame(page, timeoutMs = 20000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const ready = await page.evaluate(() => {
+      const g = window.__aeternaGame;
+      return !!(g && g.scene && g.scene.getScenes(true).length > 0);
+    });
+    if (ready) return true;
+    await sleep(200);
+  }
+  return false;
+}
+
+const activeScenes = (page) =>
+  page.evaluate(() => (window.__aeternaGame?.scene.getScenes(true) || []).map((s) => s.scene.key));
+
+// 특정 씬만 남기고 나머지 active 씬을 stop → 키보드 핸들러 중첩 방지
+async function isolateScene(page, key, data) {
+  await page.evaluate(({ key, data }) => {
+    const g = window.__aeternaGame;
+    for (const s of g.scene.getScenes(true)) {
+      if (s.scene.key !== key) g.scene.stop(s.scene.key);
+    }
+    if (!g.scene.isActive(key)) g.scene.start(key, data || {});
+  }, { key, data });
+  await sleep(600);
+}
+
+// 씬 인스턴스의 (TS-private) 숫자 프로퍼티를 런타임에 읽는다
+const readProp = (page, sceneKey, prop) =>
+  page.evaluate(({ sceneKey, prop }) => {
+    const sc = window.__aeternaGame?.scene.getScene(sceneKey);
+    return sc ? sc[prop] : undefined;
+  }, { sceneKey, prop });
+
+const canvasPointerEvents = (page) =>
+  page.evaluate(() => {
+    const c = document.querySelector('canvas');
+    return c ? (c.style.pointerEvents || '') : '<no-canvas>';
+  });
+
+async function pressN(page, key, n, gapMs = 90) {
+  for (let i = 0; i < n; i++) {
+    await page.keyboard.press(key);
+    await sleep(gapMs);
+  }
+}
+
+// JustDown 폴링(update 루프) 입력용 — 키를 여러 프레임 눌러 유지해 down-edge 가
+// 확실히 한 번 폴링되게 한다(Playwright press 는 너무 빨라 폴링이 놓칠 수 있음).
+async function holdPressN(page, key, n, holdMs = 160, gapMs = 160) {
+  for (let i = 0; i < n; i++) {
+    await page.keyboard.down(key);
+    await sleep(holdMs);
+    await page.keyboard.up(key);
+    await sleep(gapMs);
+  }
+}
+
+async function run() {
+  const browser = await chromium.launch({
+    headless: true,
+    // Canvas 렌더러 강제로 충분하지만, 텍스처 경로가 WebGL 을 건드릴 경우 대비해
+    // SwiftShader 소프트웨어 GL 을 함께 켠다.
+    args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
+  });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+
+  const consoleErrors = [];
+  page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+  page.on('pageerror', (e) => consoleErrors.push(`pageerror: ${e.message}`));
+
+  // ── 부팅 ──────────────────────────────────────────────
+  await page.goto(`${BASE}/?${RENDER}`, { waitUntil: 'domcontentloaded' });
+  const booted = await waitForGame(page);
+  record('boot', booted, booted ? `active=${(await activeScenes(page)).join(',')}` : '게임 부팅 실패(20s)');
+  if (!booted) { await browser.close(); return finish(consoleErrors); }
+  await page.screenshot({ path: join(SHOTS, '01-mainmenu.png') });
+
+  // ── MainMenu 키보드 nav (#218 레퍼런스) ──────────────────
+  try {
+    const before = await readProp(page, 'MainMenuScene', 'menuHighlightIndex');
+    await pressN(page, 'ArrowDown', 2);
+    const after = await readProp(page, 'MainMenuScene', 'menuHighlightIndex');
+    record('mainmenu-nav', typeof after === 'number' && after !== before,
+      `menuHighlightIndex ${before} -> ${after}`);
+  } catch (e) { record('mainmenu-nav', false, `예외: ${e.message}`); }
+
+  // ── SettingsScene: 이식(#227) + 컷오버 엔진(#225/#226) end-to-end ──
+  try {
+    await isolateScene(page, 'SettingsScene');
+    const onSettings = (await activeScenes(page)).includes('SettingsScene');
+    record('settings-enter', onSettings, `active=${(await activeScenes(page)).join(',')}`);
+    await page.screenshot({ path: join(SHOTS, '02-settings.png') });
+
+    const itemCount = await page.evaluate(() => {
+      const sc = window.__aeternaGame?.scene.getScene('SettingsScene');
+      return Array.isArray(sc?.settingsItems) ? sc.settingsItems.length : -1;
+    });
+    // 이식 전 7항목(슬라이더2+언어+화면흔들림+자막+색맹+뒤로) → 이식 후 키보드전용+7종+ = 15 기대
+    record('settings-migration-count', itemCount >= 14,
+      `settingsItems=${itemCount} (이식분 포함 14+ 기대)`);
+
+    // 키보드 nav 로 '키보드 전용' 토글(삽입 순서상 index 6)까지 이동
+    const KEYBOARD_ONLY_IDX = 6;
+    // settingsIndex 0 에서 시작 → ArrowDown 으로 이동, 인덱스 추적
+    await page.evaluate(() => { /* ensure focus on document */ });
+    const idx0 = await readProp(page, 'SettingsScene', 'settingsIndex');
+    await pressN(page, 'ArrowDown', KEYBOARD_ONLY_IDX);
+    const idxN = await readProp(page, 'SettingsScene', 'settingsIndex');
+    record('settings-nav', idxN === (idx0 + KEYBOARD_ONLY_IDX),
+      `settingsIndex ${idx0} -> ${idxN} (기대 ${idx0 + KEYBOARD_ONLY_IDX})`);
+
+    // 이동한 항목이 '키보드 전용' 토글인지 확인 후 Enter → 컷오버
+    const pe0 = await canvasPointerEvents(page);
+    await page.keyboard.press('Enter');
+    await sleep(300);
+    const pe1 = await canvasPointerEvents(page);
+    // 다시 Enter → 복귀
+    await page.keyboard.press('Enter');
+    await sleep(300);
+    const pe2 = await canvasPointerEvents(page);
+
+    record('cutover-engine', pe1 === 'none' && pe0 !== 'none',
+      `canvas.pointerEvents: 초기='${pe0}' → 토글ON='${pe1}' → 토글OFF='${pe2}' (ON 시 'none' 기대)`);
+    await page.screenshot({ path: join(SHOTS, '03-settings-after-toggle.png') });
+  } catch (e) { record('settings-suite', false, `예외: ${e.message}`); }
+
+  // ── debugScene 직접 진입 씬들 ───────────────────────────
+  const sceneProbes = [
+    { url: `${BASE}/?debugScene=lobby&${RENDER}`, key: 'LobbyScene', prop: 'navIndex', shot: '04-lobby.png', navKey: 'ArrowRight' },
+    { url: `${BASE}/?debugScene=world&${RENDER}`, key: 'WorldScene', prop: 'zoneIndex', shot: '05-world.png', navKey: 'ArrowDown' },
+  ];
+
+  for (const probe of sceneProbes) {
+    try {
+      const errBefore = consoleErrors.length;
+      await page.goto(probe.url, { waitUntil: 'domcontentloaded' });
+      const ok = await waitForGame(page);
+      await sleep(800);
+      const scenes = await activeScenes(page);
+      const onScene = scenes.includes(probe.key);
+      record(`${probe.key}-enter`, ok && onScene, `active=${scenes.join(',')}`);
+
+      const before = await readProp(page, probe.key, probe.prop);
+      await pressN(page, probe.navKey, 3, 120);
+      const after = await readProp(page, probe.key, probe.prop);
+      const navWorked = typeof after === 'number' && typeof before === 'number' && after !== before;
+      record(`${probe.key}-nav`, navWorked,
+        `${probe.prop} ${before} -> ${after} (${probe.navKey}×3)`);
+
+      const newErrors = consoleErrors.slice(errBefore);
+      record(`${probe.key}-no-crash`, newErrors.length === 0,
+        newErrors.length === 0 ? '콘솔 에러 0' : `에러 ${newErrors.length}건: ${newErrors[0]?.slice(0, 120)}`);
+
+      await page.screenshot({ path: join(SHOTS, probe.shot) });
+    } catch (e) { record(`${probe.key}-suite`, false, `예외: ${e.message}`); }
+  }
+
+  // ── BattleScene (#223): ATB 라 커맨드 메뉴가 '열렸을 때만' 키보드 nav 가능 ──
+  // 진입 직후엔 게이지 미충전 → activeCommander 없음. 메뉴 활성까지 대기 후 nav 검증.
+  try {
+    const errBefore = consoleErrors.length;
+    await page.goto(`${BASE}/?debugScene=battle&${RENDER}`, { waitUntil: 'domcontentloaded' });
+    const ok = await waitForGame(page);
+    const scenes = await activeScenes(page);
+    record('BattleScene-enter', ok && scenes.includes('BattleScene'), `active=${scenes.join(',')}`);
+
+    // ATB 게이지가 차서 커맨드 메뉴(activeCommander + cmdMenuContainer)가 열릴 때까지 폴링(최대 15s)
+    let menuOpen = false;
+    const t0 = Date.now();
+    while (Date.now() - t0 < 15000) {
+      menuOpen = await page.evaluate(() => {
+        const s = window.__aeternaGame?.scene.getScene('BattleScene');
+        return !!(s && s.activeCommander && s.cmdMenuContainer);
+      });
+      if (menuOpen) break;
+      await sleep(400);
+    }
+    record('battle-cmdmenu-open', menuOpen,
+      menuOpen ? `커맨드 메뉴 활성(${Math.round((Date.now() - t0) / 100) / 10}s)` : '15s 내 커맨드 메뉴 미활성');
+
+    await page.screenshot({ path: join(SHOTS, '06-battle.png') });
+
+    if (menuOpen) {
+      // BattleScene 은 JustDown 폴링이라 키를 눌러 유지(holdPress)해야 down-edge 가 잡힌다.
+      const before = await readProp(page, 'BattleScene', 'cmdMenuIndex');
+      await holdPressN(page, 'ArrowDown', 2);
+      const after = await readProp(page, 'BattleScene', 'cmdMenuIndex');
+      record('BattleScene-nav', typeof after === 'number' && after !== before,
+        `cmdMenuIndex ${before} -> ${after} (ArrowDown 홀드×2, 커맨드 메뉴 활성)`);
+    } else {
+      record('BattleScene-nav', null, '커맨드 메뉴 미활성으로 nav 검증 보류(게이팅 정상 동작)');
+    }
+
+    const newErrors = consoleErrors.slice(errBefore);
+    record('BattleScene-no-crash', newErrors.length === 0,
+      newErrors.length === 0 ? '콘솔 에러 0' : `에러 ${newErrors.length}건: ${newErrors[0]?.slice(0, 120)}`);
+  } catch (e) { record('BattleScene-suite', false, `예외: ${e.message}`); }
+
+  await browser.close();
+  return finish(consoleErrors);
+}
+
+function finish(consoleErrors) {
+  const pass = results.filter((r) => r.pass === true).length;
+  const fail = results.filter((r) => r.pass === false).length;
+  const summary = { pass, fail, total: results.length, consoleErrorCount: consoleErrors.length, results, consoleErrors };
+  writeFileSync(join(SHOTS, 'report.json'), JSON.stringify(summary, null, 2));
+  console.log(`\n=== 키보드 QA 요약: PASS=${pass} FAIL=${fail} / ${results.length} (콘솔에러 ${consoleErrors.length}) ===`);
+  console.log(`스크린샷+리포트: ${SHOTS}`);
+  process.exitCode = fail > 0 ? 1 : 0;
+}
+
+run().catch((e) => { console.error('드라이버 치명 오류:', e); process.exitCode = 2; });
