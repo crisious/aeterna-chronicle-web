@@ -357,6 +357,39 @@ export class LobbyScene extends Phaser.Scene {
     });
   }
 
+  // 인라인 모달 패널용 키보드 nav 공통 헬퍼 — 검증된 대화 패널 패턴(▶highlight + 방향키 + ENTER)을
+  // 일반화한다. focusables 를 위→아래 순서로 UP/DOWN 이동, ENTER/SPACE 로 activate.
+  // 모달 열림 동안 글로벌 로비 nav 는 dialoguePanel 가드로 이미 양보하므로 충돌하지 않으며
+  // (ESC 닫기도 글로벌 onEsc 가 담당), 패널 destroy 시 키 핸들러를 자동 정리한다.
+  // 오펀 KeyboardFocusRing 클래스(InventoryUI/ShopUI 등)를 되살리는 대신, 실제 도달 가능한
+  // 인라인 패널에 직접 키보드를 입히는 경로(회귀 위험 최소).
+  private _attachPanelKeyboardNav(
+    panel: Phaser.GameObjects.Container,
+    focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }>,
+  ): void {
+    if (focusables.length === 0) return;
+    let idx = 0;
+    const sync = () => focusables.forEach((f, i) => f.setFocused(i === idx));
+    sync();
+    const move = (delta: number) => {
+      idx = (idx + delta + focusables.length) % focusables.length;
+      sync();
+    };
+    const onUp = () => move(-1);
+    const onDown = () => move(1);
+    const onActivate = () => focusables[idx]?.activate();
+    this.input.keyboard?.on('keydown-UP', onUp);
+    this.input.keyboard?.on('keydown-DOWN', onDown);
+    this.input.keyboard?.on('keydown-ENTER', onActivate);
+    this.input.keyboard?.on('keydown-SPACE', onActivate);
+    panel.on('destroy', () => {
+      this.input.keyboard?.off('keydown-UP', onUp);
+      this.input.keyboard?.off('keydown-DOWN', onDown);
+      this.input.keyboard?.off('keydown-ENTER', onActivate);
+      this.input.keyboard?.off('keydown-SPACE', onActivate);
+    });
+  }
+
   // FINDING-A4 ext7: NPC 키보드 highlight ring 동기화
   private _setNpcIndex(i: number): void {
     if (TOWN_NPCS[i] === undefined) return;
@@ -512,6 +545,36 @@ export class LobbyScene extends Phaser.Scene {
       { name: '귀환 스크롤', price: 200, desc: '마을로 귀환' },
     ];
 
+    // 마우스(pointerdown)와 키보드(ENTER)가 공유하는 구매 동작
+    const buy = async (item: { name: string; price: number; desc: string }): Promise<void> => {
+      try {
+        // 서버 상점 API로 구매 요청
+        const shopItems_res = await networkManager.get('/api/shop/items') as any;
+        const serverItem = (shopItems_res?.items ?? shopItems_res ?? [])
+          .find((si: any) => si.name === item.name);
+        if (serverItem) {
+          await networkManager.post('/api/shop/purchase', {
+            userId: this.characterData?.characterId,
+            itemId: serverItem.id,
+          });
+        }
+        playSfx(this, UI_SFX.GOLD_GAIN);
+        this._showNotification(`${item.name}을(를) 구매했습니다!`);
+        this._fetchGold(); // 골드 갱신
+      } catch (err: any) {
+        const msg = err?.message ?? '구매 실패';
+        if (msg.includes('잔액')) {
+          this._showNotification('골드가 부족합니다!');
+        } else {
+          this._showNotification(`구매 실패: ${msg}`);
+        }
+        playSfx(this, UI_SFX.CLICK);
+      }
+    };
+
+    // 키보드 포커스 링: [구매]×5 + [닫기]
+    const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+
     shopItems.forEach((item, i) => {
       const y = -80 + i * 40;
       panel.add(this.add.text(-200, y, item.name, {
@@ -523,32 +586,12 @@ export class LobbyScene extends Phaser.Scene {
       const buyBtn = this.add.text(180, y, '[구매]', {
         fontSize: '12px', color: '#88ff88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       }).setInteractive({ useHandCursor: true });
-      buyBtn.on('pointerdown', async () => {
-        try {
-          // 서버 상점 API로 구매 요청
-          const shopItems_res = await networkManager.get('/api/shop/items') as any;
-          const serverItem = (shopItems_res?.items ?? shopItems_res ?? [])
-            .find((si: any) => si.name === item.name);
-          if (serverItem) {
-            await networkManager.post('/api/shop/purchase', {
-              userId: this.characterData?.characterId,
-              itemId: serverItem.id,
-            });
-          }
-          playSfx(this, UI_SFX.GOLD_GAIN);
-          this._showNotification(`${item.name}을(를) 구매했습니다!`);
-          this._fetchGold(); // 골드 갱신
-        } catch (err: any) {
-          const msg = err?.message ?? '구매 실패';
-          if (msg.includes('잔액')) {
-            this._showNotification('골드가 부족합니다!');
-          } else {
-            this._showNotification(`구매 실패: ${msg}`);
-          }
-          playSfx(this, UI_SFX.CLICK);
-        }
-      });
+      buyBtn.on('pointerdown', () => void buy(item));
       panel.add(buyBtn);
+      focusables.push({
+        setFocused: (a) => { buyBtn.setText(a ? '▶[구매]' : '[구매]'); buyBtn.setColor(a ? '#ffffff' : '#88ff88'); },
+        activate: () => void buy(item),
+      });
     });
 
     const closeBtn = this.add.text(0, 140, '[ 닫기 ]', {
@@ -556,6 +599,12 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+    focusables.push({
+      setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); },
+      activate: () => panel.destroy(),
+    });
+
+    this._attachPanelKeyboardNav(panel, focusables);
   }
 
   private _showEnhancePanel(npc: NpcEntry): void {
@@ -796,6 +845,9 @@ export class LobbyScene extends Phaser.Scene {
     const panel = this.add.container(width / 2, height / 2);
     this._registerModalPanel(panel);
 
+    // 키보드 포커스 링: 아이템 행(읽기 전용 highlight) + [닫기]
+    const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+
     const panelH = Math.min(400, 120 + items.length * 36);
     const bg = this.add.rectangle(0, 0, 520, panelH, 0x0a0a1a, 0.95)
       .setStrokeStyle(2, 0xcc8844);
@@ -837,9 +889,15 @@ export class LobbyScene extends Phaser.Scene {
         };
         const nameColor = rarityColors[rarity] ?? '#ffffff';
 
-        panel.add(this.add.text(-220, y, itemName, {
+        const nameText = this.add.text(-220, y, itemName, {
           fontSize: '13px', color: nameColor, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-        }));
+        });
+        panel.add(nameText);
+        // 인라인 인벤토리는 아이템 액션이 없으므로(마우스도 동일) 행은 읽기 전용 highlight 만 — 액션 no-op.
+        focusables.push({
+          setFocused: (a) => nameText.setText(a ? `▶ ${itemName}` : itemName),
+          activate: () => { /* 아이템 액션 없음 */ },
+        });
         panel.add(this.add.text(80, y, `×${qty}`, {
           fontSize: '13px', color: '#ffcc44', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
         }));
@@ -860,14 +918,18 @@ export class LobbyScene extends Phaser.Scene {
     const closeBtn = this.add.text(0, panelH / 2 - 25, '[ 닫기 ]', {
       fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => {
+    const doClose = () => {
       playSfx(this, UI_SFX.CANCEL);
-      panel.destroy();
-      this.dialoguePanel = null;
-    });
+      panel.destroy(); // _registerModalPanel destroy hook 가 dialoguePanel = null 처리
+    };
+    closeBtn.on('pointerdown', doClose);
     panel.add(closeBtn);
+    focusables.push({
+      setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); },
+      activate: doClose,
+    });
 
-    this.dialoguePanel = panel;
+    this._attachPanelKeyboardNav(panel, focusables);
   }
 
   private async _showQuests(): Promise<void> {

@@ -191,6 +191,60 @@ async function run() {
     } catch (e) { record(`${probe.key}-suite`, false, `예외: ${e.message}`); }
   }
 
+  // ── LobbyScene 인라인 패널(상점/인벤토리) 키보드 — 실제 도달 경로 검증 ──
+  // ui/*.ts 패널 클래스는 오펀이고 실제 화면은 LobbyScene 인라인. 서버/로그인 우회를 위해
+  // 패널 메서드를 직접 호출하고, ▶ 마커가 붙은 텍스트의 y 좌표 변화로 포커스 이동을 확인.
+  try {
+    await page.goto(`${BASE}/?debugScene=lobby&${RENDER}`, { waitUntil: 'domcontentloaded' });
+    await waitForGame(page);
+    await sleep(700);
+
+    const markedFocus = (sceneKey) => page.evaluate((k) => {
+      const sc = window.__aeternaGame.scene.getScene(k);
+      const panel = sc && sc.dialoguePanel;
+      if (!panel || !panel.list) return null;
+      const m = panel.list.find((o) => o.type === 'Text' && typeof o.text === 'string' && o.text.includes('▶'));
+      return m ? { text: m.text, y: Math.round(m.y) } : null;
+    }, sceneKey);
+    const panelOpen = () => page.evaluate(() => !!window.__aeternaGame.scene.getScene('LobbyScene').dialoguePanel);
+
+    // 상점 패널 직접 오픈 후 키보드 구동
+    await page.evaluate(() => {
+      window.__aeternaGame.scene.getScene('LobbyScene')._showShopPanel({ id: 'merchant', name: '상인', role: '상점' });
+    });
+    await sleep(300);
+    record('lobby-shop-open', await panelOpen(), '상점 패널 직접 오픈');
+
+    const sf0 = await markedFocus('LobbyScene');
+    await pressN(page, 'ArrowDown', 1, 120);
+    const sf1 = await markedFocus('LobbyScene');
+    record('lobby-shop-nav', !!sf0 && !!sf1 && sf0.y !== sf1.y, `▶ ${JSON.stringify(sf0)} -> ${JSON.stringify(sf1)}`);
+
+    await pressN(page, 'ArrowDown', 4, 120); // idx1 → idx5([닫기]); 구매5+닫기1=6 focusable
+    const sfClose = await markedFocus('LobbyScene');
+    record('lobby-shop-reach-close', !!sfClose && sfClose.text.includes('닫기'), `focus=${JSON.stringify(sfClose)}`);
+    await page.keyboard.press('Enter');
+    await sleep(300);
+    record('lobby-shop-close-via-enter', !(await panelOpen()), 'ENTER 로 [닫기] 활성→패널 닫힘');
+    await page.screenshot({ path: join(SHOTS, '07-lobby-shop.png') });
+
+    // 인벤토리 패널 직접 오픈(모의 아이템) 후 키보드 구동
+    await page.evaluate(() => {
+      window.__aeternaGame.scene.getScene('LobbyScene')._showInventoryPanel([
+        { name: '체력 포션', quantity: 3, rarity: 'common' },
+        { name: '강철 검', quantity: 1, rarity: 'rare', isEquipped: true },
+        { name: '마나 결정', quantity: 5, rarity: 'epic' },
+      ]);
+    });
+    await sleep(300);
+    record('lobby-inventory-open', await panelOpen(), '인벤토리 패널 직접 오픈');
+    const if0 = await markedFocus('LobbyScene');
+    await pressN(page, 'ArrowDown', 1, 120);
+    const if1 = await markedFocus('LobbyScene');
+    record('lobby-inventory-nav', !!if0 && !!if1 && if0.y !== if1.y, `▶ ${JSON.stringify(if0)} -> ${JSON.stringify(if1)}`);
+    await page.screenshot({ path: join(SHOTS, '08-lobby-inventory.png') });
+  } catch (e) { record('lobby-panels-suite', false, `예외: ${e.message}`); }
+
   // ── BattleScene (#223): ATB 라 커맨드 메뉴가 '열렸을 때만' 키보드 nav 가능 ──
   // 진입 직후엔 게이지 미충전 → activeCommander 없음. 메뉴 활성까지 대기 후 nav 검증.
   try {
