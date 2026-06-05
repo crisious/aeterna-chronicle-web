@@ -309,8 +309,15 @@ def c37():
     return ok, f"AccessibilityManager.ts 색맹모드 {len(found)}/3: {','.join(found)}"
 
 def c38():
-    ok = file_exists(CLIENT / "src/ui/AccessibilitySettingsPanel.ts")
-    return ok, "AccessibilitySettingsPanel.ts 존재" if ok else "AccessibilitySettingsPanel.ts 없음"
+    # 접근성 설정 UI 는 도달 가능한 SettingsScene 으로 통합됨.
+    # (과거 미연결 dead 씬 AccessibilitySettingsPanel.ts 는 삭제 — SettingsScene 의 a11y 세터로 이식)
+    f = CLIENT / "src/scenes/SettingsScene.ts"
+    if not f.is_file():
+        return False, "SettingsScene.ts 없음"
+    setters = ["setHighContrast", "setReduceMotion", "setKeyboardOnlyMode", "setUiScale", "setScreenReaderEnabled"]
+    found = [s for s in setters if grep_exists(f, s)]
+    ok = len(found) == len(setters)
+    return ok, f"SettingsScene a11y 컨트롤 {len(found)}/{len(setters)}: {','.join(found)}"
 
 def c39():
     n = count_files(TESTS / "unit", "*.test.ts")
@@ -454,7 +461,7 @@ def main():
         (36, "UI/클라이언트", "main.ts 전 씬 등록", c36),
         # 접근성/QA
         (37, "접근성/QA", "AccessibilityManager + 색맹 3종", c37),
-        (38, "접근성/QA", "AccessibilitySettingsPanel.ts", c38),
+        (38, "접근성/QA", "SettingsScene a11y 컨트롤 이식", c38),
         (39, "접근성/QA", "유닛 테스트 10파일+", c39),
         (40, "접근성/QA", "통합 테스트 6파일+", c40),
         (41, "접근성/QA", "E2E 테스트 11파일+", c41),
