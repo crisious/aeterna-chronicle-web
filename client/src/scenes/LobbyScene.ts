@@ -894,6 +894,28 @@ export class LobbyScene extends Phaser.Scene {
     }
   }
 
+  // 인벤토리 아이템 사용/장착 (서버 /api/inventory/use·/equip — slotId 소유권은 authUserId 로 검증).
+  private async _useOrEquipItem(slotId: string, itemType: string, itemName: string): Promise<void> {
+    const userId = networkManager.getUserId() ?? this.characterData?.characterId;
+    if (!userId || !slotId) { this._showNotification('처리할 수 없는 아이템입니다.'); return; }
+    try {
+      if (itemType === 'consumable') {
+        await networkManager.useItem(userId, slotId);
+        this._showNotification(`${itemName} 사용!`);
+      } else if (itemType === 'weapon' || itemType === 'armor' || itemType === 'accessory') {
+        await networkManager.equipItem(userId, slotId);
+        this._showNotification(`${itemName} 장착!`);
+      } else {
+        this._showNotification(`${itemName}: 사용/장착할 수 없는 아이템`);
+        return;
+      }
+      playSfx(this, UI_SFX.CLICK);
+      void this._showInventory(); // 사용/장착 후 인벤토리 갱신(재fetch·재렌더)
+    } catch (err: any) {
+      this._showNotification(`실패: ${err?.message ?? '처리 불가'}`);
+    }
+  }
+
   private _showInventoryPanel(items: any[]): void {
     // 기존 패널 제거
     if (this.dialoguePanel) {
@@ -941,6 +963,8 @@ export class LobbyScene extends Phaser.Scene {
         const qty = item.quantity ?? 1;
         const equipped = item.isEquipped ? '장착중' : '';
         const rarity = item.rarity ?? item.item?.rarity ?? '';
+        const slotId = item.id ?? item.slotId ?? '';
+        const itemType = item.item?.type ?? item.type ?? '';
 
         // 등급별 색상
         const rarityColors: Record<string, string> = {
@@ -953,10 +977,12 @@ export class LobbyScene extends Phaser.Scene {
           fontSize: '13px', color: nameColor, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
         });
         panel.add(nameText);
-        // 인라인 인벤토리는 아이템 액션이 없으므로(마우스도 동일) 행은 읽기 전용 highlight 만 — 액션 no-op.
+        // ENTER → 소비템은 사용, 장비는 장착. (마우스: 행 클릭으로도 동일)
+        nameText.setInteractive({ useHandCursor: true });
+        nameText.on('pointerdown', () => void this._useOrEquipItem(slotId, itemType, itemName));
         focusables.push({
           setFocused: (a) => nameText.setText(a ? `▶ ${itemName}` : itemName),
-          activate: () => { /* 아이템 액션 없음 */ },
+          activate: () => void this._useOrEquipItem(slotId, itemType, itemName),
         });
         panel.add(this.add.text(80, y, `×${qty}`, {
           fontSize: '13px', color: '#ffcc44', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
