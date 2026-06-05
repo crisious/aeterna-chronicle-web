@@ -15,6 +15,8 @@ import { networkManager } from '../network/NetworkManager';
 import type { QuestData } from '../network/NetworkManager';
 import { mergeActiveQuestStatus } from '../network/questTransforms';
 import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
+import { SkillTreeUI, type ClassId } from '../ui/SkillTreeUI';
+import { isUiModalOpen } from '../accessibility/uiModalLock';
 
 // ── 타입 ────────────────────────────────────────────────────
 
@@ -121,6 +123,7 @@ export class LobbyScene extends Phaser.Scene {
   // ArrowLeft/Right → group='nav', ArrowUp/Down → group='npc' 자동 전환
   private focusGroup: 'nav' | 'npc' = 'nav';
   private npcIndex = 0;
+  private skillTreeUI?: SkillTreeUI; // 스킬 트리 패널(지연 생성). uiModalLock 사용.
   private npcHighlightRing: Phaser.GameObjects.Arc | null = null;
   private minimapContainer!: Phaser.GameObjects.Container;
   private connectionIndicator!: Phaser.GameObjects.Text;
@@ -719,11 +722,13 @@ export class LobbyScene extends Phaser.Scene {
 
   private _drawNavButtons(w: number, h: number): void {
     const btnY = h - 40;
+    // 5개 균등 배치 (i+1)/6
     const buttons = [
-      { label: '🗺️ 월드맵', x: w * 0.2, action: () => this.scene.start('WorldScene', this.characterData) },
-      { label: '⚔️ 던전', x: w * 0.4, action: () => this.scene.start('DungeonScene', this.characterData) },
-      { label: '🎒 인벤토리', x: w * 0.6, action: () => this._showInventory() },
-      { label: '📜 퀘스트', x: w * 0.8, action: () => this._showQuests() },
+      { label: '🗺️ 월드맵', x: w / 6, action: () => this.scene.start('WorldScene', this.characterData) },
+      { label: '⚔️ 던전', x: (w * 2) / 6, action: () => this.scene.start('DungeonScene', this.characterData) },
+      { label: '🎒 인벤토리', x: (w * 3) / 6, action: () => this._showInventory() },
+      { label: '🌳 스킬', x: (w * 4) / 6, action: () => void this._openSkillTree() },
+      { label: '📜 퀘스트', x: (w * 5) / 6, action: () => this._showQuests() },
     ];
 
     this.navButtonItems = [];
@@ -749,14 +754,14 @@ export class LobbyScene extends Phaser.Scene {
 
     const len = this.navButtonItems.length;
     const onLeft = () => {
-      if (this.dialoguePanel) return; // FINDING-A4 ext8: 다이얼로그 모달 모드 — handler 양보
+      if (this.dialoguePanel || isUiModalOpen()) return; // FINDING-A4 ext8: 다이얼로그 모달 모드 — handler 양보
       if (len === 0) return;
       this.focusGroup = 'nav';
       if (this.npcHighlightRing) this.npcHighlightRing.setVisible(false);
       this._setNavIndex((this.navIndex + len - 1) % len);
     };
     const onRight = () => {
-      if (this.dialoguePanel) return;
+      if (this.dialoguePanel || isUiModalOpen()) return;
       if (len === 0) return;
       this.focusGroup = 'nav';
       if (this.npcHighlightRing) this.npcHighlightRing.setVisible(false);
@@ -764,19 +769,19 @@ export class LobbyScene extends Phaser.Scene {
     };
     // FINDING-A4 ext7: ArrowUp/Down → NPC group 활성 + cycle
     const onUp = () => {
-      if (this.dialoguePanel) return;
+      if (this.dialoguePanel || isUiModalOpen()) return;
       if (TOWN_NPCS.length === 0) return;
       this.focusGroup = 'npc';
       this._setNpcIndex((this.npcIndex + TOWN_NPCS.length - 1) % TOWN_NPCS.length);
     };
     const onDown = () => {
-      if (this.dialoguePanel) return;
+      if (this.dialoguePanel || isUiModalOpen()) return;
       if (TOWN_NPCS.length === 0) return;
       this.focusGroup = 'npc';
       this._setNpcIndex((this.npcIndex + 1) % TOWN_NPCS.length);
     };
     const onActivate = () => {
-      if (this.dialoguePanel) return; // 다이얼로그 자체 handler 가 처리
+      if (this.dialoguePanel || isUiModalOpen()) return; // 다이얼로그 자체 handler 가 처리
       // FINDING-A4 ext7: focus group 별 activate 분기
       if (this.focusGroup === 'npc') {
         const npc = TOWN_NPCS[this.npcIndex];
@@ -793,6 +798,7 @@ export class LobbyScene extends Phaser.Scene {
       }
     };
     const onEsc = () => {
+      if (isUiModalOpen()) return; // 스킬 트리 등 uiModal 은 자체 ESC(bindEscClose)가 처리
       // 다이얼로그 패널 열려있으면 닫기, 아니면 캐릭터 선택 복귀
       if (this.dialoguePanel) {
         this.dialoguePanel.destroy();
@@ -839,6 +845,29 @@ export class LobbyScene extends Phaser.Scene {
   }
 
   // ── P25-04: 인벤토리 / 퀘스트 표시 ─────────────────────
+
+  // ── 스킬 트리 (SkillTreeUI 패널 — 서버 API 연동, 전키보드) ──
+  private async _openSkillTree(): Promise<void> {
+    const userId = networkManager.getUserId() ?? this.characterData?.characterId;
+    if (!userId) { this._showNotification('로그인이 필요합니다.'); return; }
+    // characterClass → ClassId (6 클래스 검증, 아니면 fallback)
+    const VALID: ClassId[] = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
+    const raw = this.characterData?.characterClass ?? '';
+    const classId: ClassId = (VALID as string[]).includes(raw) ? (raw as ClassId) : 'ether_knight';
+    const level = this.characterData?.level ?? 1;
+    // 잔여 스킬 포인트 fetch (실패 시 0)
+    let points = 0;
+    try {
+      const resp = await networkManager.get<{ points?: number; skillPoints?: number; remaining?: number }>(`/api/skills/points/${userId}`);
+      points = resp?.points ?? resp?.skillPoints ?? resp?.remaining ?? 0;
+    } catch { /* fallback 0 */ }
+    if (!this.skillTreeUI) {
+      this.skillTreeUI = new SkillTreeUI(this, networkManager);
+      // 씬 종료 시 모달락(uiModalLock) 누수 방지 — 열려 있으면 닫는다.
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.skillTreeUI?.close());
+    }
+    void this.skillTreeUI.open(userId, classId, level, points);
+  }
 
   private async _showInventory(): Promise<void> {
     const userId = networkManager.getUserId();
