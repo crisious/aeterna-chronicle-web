@@ -45,6 +45,16 @@ export interface SkillDef {
 
 export type ClassId = 'ether_knight' | 'memory_weaver' | 'shadow_weaver' | 'memory_breaker' | 'time_guardian' | 'void_wanderer';
 
+// 서버 계약 shape (skillEngine.getSkillTree / getUserSkills). Skill 은 code(고유키)·mpCost·cooldown(초)·
+// requiredLevel 을 쓰며, 보유는 PlayerSkill(level) + 중첩 skill. SkillDef 로 매핑해 렌더한다.
+interface ServerSkill {
+  id: string; code: string; name: string; description: string; class: string;
+  tier: number; type: string; mpCost: number; cooldown: number; maxLevel: number;
+  requiredLevel: number; icon: string | null;
+  effect?: { type: string; value: number; duration?: number } | null;
+}
+interface ServerPlayerSkill { skillId: string; level: number; isEquipped?: boolean; skill: ServerSkill | null; }
+
 const CLASS_NAMES: Record<ClassId, string> = {
   ether_knight: '에테르 나이트',
   memory_weaver: '메모리 위버',
@@ -152,6 +162,7 @@ export class SkillTreeUI {
   private focusRing?: KeyboardFocusRing;
   private _modalPushed = false;
   private _skillNodes: Array<{ bg: Phaser.GameObjects.Rectangle; skill: SkillDef }> = [];
+  private _mainRingIndex = 0; // detail 진입 전 메인 링 포커스 인덱스(복귀 시 복원)
 
   constructor(scene: Phaser.Scene, net: NetworkManager) {
     this.scene = scene;
@@ -204,15 +215,18 @@ export class SkillTreeUI {
   }
 
   /** 메인 포커스 그룹(스킬 노드)으로 링 동기화. */
-  private _syncMainRing(): void {
+  private _syncMainRing(restoreIndex = -1): void {
     if (!this.focusRing) return;
-    this.focusRing.setItems(
-      this._skillNodes.map((n) => ({
-        target: n.bg,
-        activate: () => this._showSkillDetail(n.skill),
-        label: n.skill.name,
-      })),
-    );
+    const items = this._skillNodes.map((n) => ({
+      target: n.bg,
+      activate: () => this._showSkillDetail(n.skill),
+      label: n.skill.name,
+    }));
+    this.focusRing.setItems(items, false); // 자동 첫포커스 끄고 아래에서 복원
+    if (items.length > 0) {
+      const i = restoreIndex >= 0 && restoreIndex < items.length ? restoreIndex : 0;
+      this.focusRing.focus(i);
+    }
   }
 
   // FINDING-A4 ext24: bindEscClose unbind 참조
@@ -223,10 +237,39 @@ export class SkillTreeUI {
   // ── 내부: 스킬 로드 ──────────────────────────────────────
 
   private async _loadSkills(): Promise<void> {
-    // 서버에서 스킬 상태 fetch (미구현 시 default fallback)
+    // 클래스 전체 트리(tier1~4 그룹) + 보유 스킬(level) 을 합쳐 SkillDef 로 매핑.
+    // 서버 PlayerSkill/Skill shape 을 평탄 SkillDef 로 변환하지 않으면 tier=undefined → NaN 좌표가 된다.
     try {
-      const resp = await this.net.get<{ skills: SkillDef[] }>(`/api/skills/${this.characterId}`);
-      this.skills = resp.skills ?? DEFAULT_SKILLS[this.classId];
+      const [treeResp, ownedResp] = await Promise.all([
+        this.net.get<{ tree?: Record<string, ServerSkill[]> }>(`/api/skills/tree/${this.classId}`),
+        this.net.get<{ skills: ServerPlayerSkill[] }>(`/api/skills/${this.characterId}`),
+      ]);
+      const t = treeResp?.tree ?? {};
+      const allTree = [...(t.tier1 ?? []), ...(t.tier2 ?? []), ...(t.tier3 ?? []), ...(t.tier4 ?? [])];
+      const owned = new Map(
+        (ownedResp?.skills ?? []).filter((ps) => ps.skill).map((ps) => [ps.skill!.code, ps]),
+      );
+      const mapped: SkillDef[] = allTree.map((s) => {
+        const ps = owned.get(s.code);
+        return {
+          id: s.code, // 서버 unlock/levelup 의 skillCode = code, 브랜치/콤보 lookup 도 code 키
+          name: s.name,
+          description: s.description,
+          icon: s.icon ?? '✨',
+          manaCost: s.mpCost,
+          cooldownMs: (s.cooldown ?? 0) * 1000, // 서버 cooldown 단위 = 초
+          maxLevel: s.maxLevel,
+          currentLevel: ps?.level ?? 0,
+          unlocked: !!ps,
+          unlockLevel: s.requiredLevel,
+          tier: s.tier,
+          classId: s.class,
+          type: s.type,
+          effect: (s.effect ?? null) as SkillDef['effect'],
+        };
+      });
+      // 트리 데이터가 비면(미시드 등) 클래스 기본 트리로 fallback.
+      this.skills = mapped.length > 0 ? mapped : [...DEFAULT_SKILLS[this.classId]];
     } catch {
       this.skills = [...DEFAULT_SKILLS[this.classId]];
     }
@@ -298,14 +341,17 @@ export class SkillTreeUI {
       this.treeContainer.add(line);
     }
 
-    // 스킬 노드
+    // 스킬 노드 — 같은 tier 에 여러 스킬(분기)이 있으면 가로로 분산해 겹침 방지.
     this.skills.forEach((skill) => {
+      const tierSkills = this.skills.filter((s) => s.tier === skill.tier);
+      const within = tierSkills.indexOf(skill);
+      const x = centerX + (within - (tierSkills.length - 1) / 2) * (nodeSize + 14);
       const y = skill.tier * gapY;
       const canUnlock = this.characterLevel >= skill.unlockLevel;
       const bgColor = skill.unlocked ? CLASS_COLORS[this.classId] : (canUnlock ? 0x3a3a5e : 0x1a1a2e);
       const alpha = skill.unlocked ? 1.0 : (canUnlock ? 0.7 : 0.3);
 
-      const nodeBg = this.scene.add.rectangle(centerX, y, nodeSize, nodeSize, bgColor, alpha)
+      const nodeBg = this.scene.add.rectangle(x, y, nodeSize, nodeSize, bgColor, alpha)
         .setStrokeStyle(2, skill.unlocked ? 0xffffff : 0x4a4a6a)
         .setInteractive({ useHandCursor: true })
         .on('pointerdown', () => {
@@ -318,23 +364,23 @@ export class SkillTreeUI {
       const iconKey = `icon_skill_${String(skillIdx).padStart(3, '0')}`;
       let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
       if (this.scene.textures.exists(iconKey)) {
-        icon = this.scene.add.image(centerX, y - 2, iconKey)
+        icon = this.scene.add.image(x, y - 2, iconKey)
           .setDisplaySize(nodeSize - 12, nodeSize - 12)
           .setOrigin(0.5)
           .setAlpha(alpha);
       } else {
-        icon = this.scene.add.text(centerX, y - 6, skill.icon, {
+        icon = this.scene.add.text(x, y - 6, skill.icon, {
           fontSize: '22px',
         }).setOrigin(0.5).setAlpha(alpha);
       }
 
-      const label = this.scene.add.text(centerX, y + 18, `Lv.${skill.currentLevel}/${skill.maxLevel}`, {
+      const label = this.scene.add.text(x, y + 18, `Lv.${skill.currentLevel}/${skill.maxLevel}`, {
         fontSize: '9px', color: '#cccccc',
       }).setOrigin(0.5).setAlpha(alpha);
 
-      const nameT = this.scene.add.text(centerX + nodeSize / 2 + 10, y, skill.name, {
-        fontSize: '11px', color: '#aaaacc',
-      }).setOrigin(0, 0.5).setAlpha(alpha);
+      const nameT = this.scene.add.text(x, y + 30, skill.name, {
+        fontSize: '10px', color: '#aaaacc',
+      }).setOrigin(0.5).setAlpha(alpha);
 
       this.treeContainer.add([nodeBg, icon, label, nameT]);
       this._skillNodes.push({ bg: nodeBg, skill });
@@ -347,6 +393,9 @@ export class SkillTreeUI {
   // ── 내부: 스킬 상세 ──────────────────────────────────────
 
   private _showSkillDetail(skill: SkillDef): void {
+    // detail 진입 전 메인 링 포커스 위치 저장(키보드·마우스 모두 해당 스킬 노드 인덱스로).
+    const nodeIdx = this._skillNodes.findIndex((n) => n.skill === skill);
+    if (nodeIdx >= 0) this._mainRingIndex = nodeIdx;
     this._closeDetail();
 
     const cx = this.scene.scale.width / 2 + 260;
@@ -473,8 +522,8 @@ export class SkillTreeUI {
 
   private _closeDetail(): void {
     if (this.detailPanel) { this.detailPanel.destroy(); this.detailPanel = null; }
-    // detail 닫히면 메인(스킬 노드) 링으로 복귀(패널이 아직 열려있을 때만).
-    if (this.visible) this._syncMainRing();
+    // detail 닫히면 메인(스킬 노드) 링으로 복귀 — 진입 전 포커스 위치 복원.
+    if (this.visible) this._syncMainRing(this._mainRingIndex);
   }
 
   destroy(): void { this._closeDetail(); this.container.destroy(); }

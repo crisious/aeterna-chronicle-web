@@ -332,6 +332,7 @@ export class LobbyScene extends Phaser.Scene {
       this.npcSprites.push(container);
 
       body.on('pointerdown', () => {
+        if (this.dialoguePanel || isUiModalOpen()) return; // 모달 떠 있으면 NPC 대화 중복 개방 차단
         playSfx(this, UI_SFX.CLICK);
         this._openNpcDialogue(npc);
       });
@@ -374,13 +375,15 @@ export class LobbyScene extends Phaser.Scene {
     let idx = 0;
     const sync = () => focusables.forEach((f, i) => f.setFocused(i === idx));
     sync();
+    // 상위 uiModal(스킬트리 등 KeyboardFocusRing)이 떠 있으면 하위 인라인 패널 키 입력을 양보 — 이중발화 방지.
     const move = (delta: number) => {
+      if (isUiModalOpen()) return;
       idx = (idx + delta + focusables.length) % focusables.length;
       sync();
     };
     const onPrev = () => move(-1);
     const onNext = () => move(1);
-    const onActivate = () => focusables[idx]?.activate();
+    const onActivate = () => { if (isUiModalOpen()) return; focusables[idx]?.activate(); };
     // 세로 리스트(상점·인벤토리)·가로 버튼 쌍(파티·스토리) 모두 자연스럽게 — 4방향 화살표 모두 이동에 바인딩.
     this.input.keyboard?.on('keydown-UP', onPrev);
     this.input.keyboard?.on('keydown-LEFT', onPrev);
@@ -478,9 +481,10 @@ export class LobbyScene extends Phaser.Scene {
     closeBtn.on('pointerover', () => { dialogueIndex = 1; renderDialogueChoice(); });
     closeBtn.on('pointerdown', doClose);
 
-    const onDialogLeft = () => { dialogueIndex = 0; renderDialogueChoice(); };
-    const onDialogRight = () => { dialogueIndex = 1; renderDialogueChoice(); };
-    const onDialogActivate = () => (dialogueIndex === 0 ? doAccept() : doClose());
+    // 상위 uiModal 떠 있으면 양보(심층 방어 — 마우스 진입 가드와 상호 보완).
+    const onDialogLeft = () => { if (isUiModalOpen()) return; dialogueIndex = 0; renderDialogueChoice(); };
+    const onDialogRight = () => { if (isUiModalOpen()) return; dialogueIndex = 1; renderDialogueChoice(); };
+    const onDialogActivate = () => { if (isUiModalOpen()) return; dialogueIndex === 0 ? doAccept() : doClose(); };
 
     this.input.keyboard?.on('keydown-LEFT', onDialogLeft);
     this.input.keyboard?.on('keydown-RIGHT', onDialogRight);
@@ -560,12 +564,16 @@ export class LobbyScene extends Phaser.Scene {
         const shopItems_res = await networkManager.get('/api/shop/items') as any;
         const serverItem = (shopItems_res?.items ?? shopItems_res ?? [])
           .find((si: any) => si.name === item.name);
-        if (serverItem) {
-          await networkManager.post('/api/shop/purchase', {
-            userId: this.characterData?.characterId,
-            itemId: serverItem.id,
-          });
+        // 서버 상점에 해당 아이템이 없으면 purchase 가 호출되지 않으므로 거짓 '구매 성공' 표시 금지.
+        if (!serverItem) {
+          this._showNotification(`구매 불가: 상점에서 ${item.name}을(를) 찾을 수 없습니다.`);
+          playSfx(this, UI_SFX.CLICK);
+          return;
         }
+        await networkManager.post('/api/shop/purchase', {
+          userId: this.characterData?.characterId,
+          itemId: serverItem.id,
+        });
         playSfx(this, UI_SFX.GOLD_GAIN);
         this._showNotification(`${item.name}을(를) 구매했습니다!`);
         this._fetchGold(); // 골드 갱신
@@ -740,6 +748,8 @@ export class LobbyScene extends Phaser.Scene {
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         .on('pointerover', () => this._setNavIndex(i))
         .on('pointerdown', () => {
+          // 키보드 onActivate 와 동일 가드 — 모달/패널이 떠 있으면 마우스로 두 번째 표면을 열지 않음.
+          if (this.dialoguePanel || isUiModalOpen()) return;
           playSfx(this, UI_SFX.CLICK);
           def.action();
         });
@@ -858,8 +868,9 @@ export class LobbyScene extends Phaser.Scene {
     // 잔여 스킬 포인트 fetch (실패 시 0)
     let points = 0;
     try {
-      const resp = await networkManager.get<{ points?: number; skillPoints?: number; remaining?: number }>(`/api/skills/points/${userId}`);
-      points = resp?.points ?? resp?.skillPoints ?? resp?.remaining ?? 0;
+      // 서버 응답 필드는 remainingPoints. characterLevel 쿼리로 총 포인트 계산(미전달 시 서버 기본 1).
+      const resp = await networkManager.get<{ remainingPoints?: number }>(`/api/skills/points/${userId}?characterLevel=${level}`);
+      points = resp?.remainingPoints ?? 0;
     } catch { /* fallback 0 */ }
     if (!this.skillTreeUI) {
       this.skillTreeUI = new SkillTreeUI(this, networkManager);
