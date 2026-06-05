@@ -101,6 +101,11 @@ const COLORBLIND_LABELS: Record<string, string> = {
   tritanopia: '청색약',
 };
 
+// UI 스케일 이산 단계 — DisplayScaler.VALID_SCALES 와 정합. 연속 슬라이더가 아니라
+// 유효 스냅 값만 노출하므로 cycle 버튼으로 표시(LEFT/RIGHT 로 단계 이동).
+const UI_SCALE_VALUES = [0.75, 1.0, 1.25, 1.5, 2.0];
+const UI_SCALE_LABELS = ['75%', '100%', '125%', '150%', '200%'];
+
 // ── 키바인드 표시용 ──────────────────────────────────────────
 
 const KEYBINDS = [
@@ -221,6 +226,50 @@ export class SettingsScene extends Phaser.Scene {
         accessibilityManager.setKeyboardOnlyMode(v);
       },
     );
+    y += 40;
+
+    // 이하 a11y 컨트롤은 과거 미연결 dead 씬 AccessibilitySettingsPanel 에만 있던 것을
+    // 도달 가능한 이 화면으로 이식한 것(초기값 출처는 AccessibilityManager, localStorage 영속).
+    this._addToggle(leftX, y, '고대비 모드', accessibilityManager.getSettings().highContrast, (v) => {
+      accessibilityManager.setHighContrast(v);
+    });
+    y += 40;
+
+    this._addToggle(leftX, y, '모션 감소', accessibilityManager.getSettings().reduceMotion, (v) => {
+      accessibilityManager.setReduceMotion(v);
+    });
+    y += 40;
+
+    this._addToggle(leftX, y, '자막 표시', accessibilityManager.getSettings().subtitlesEnabled, (v) => {
+      accessibilityManager.setSubtitlesEnabled(v);
+    });
+    y += 50;
+
+    // subtitleBgOpacity 는 0.0~1.0 비율 → _addSlider(퍼센트 슬라이더) 에 그대로 적합.
+    this._addSlider(leftX, y, '자막 배경 불투명도', accessibilityManager.getSettings().subtitleBgOpacity, (v) => {
+      accessibilityManager.setSubtitleBgOpacity(v);
+    });
+    y += 50;
+
+    this._addToggle(leftX, y, '키보드 내비게이션', accessibilityManager.getSettings().keyboardNavEnabled, (v) => {
+      accessibilityManager.setKeyboardNavEnabled(v);
+    });
+    y += 40;
+
+    this._addToggle(leftX, y, '스크린리더 지원', accessibilityManager.getSettings().screenReaderEnabled, (v) => {
+      accessibilityManager.setScreenReaderEnabled(v);
+    });
+    y += 40;
+
+    // uiScale 은 유효 스냅 값(VALID_SCALES)만 → cycle 버튼. 현재값에 가장 가까운 단계로 초기화.
+    {
+      const cur = accessibilityManager.getSettings().uiScale;
+      const startIdx = UI_SCALE_VALUES.reduce(
+        (best, v, i) => (Math.abs(v - cur) < Math.abs(UI_SCALE_VALUES[best] - cur) ? i : best), 0);
+      this._addCycleButton(leftX, y, 'UI 스케일', UI_SCALE_LABELS, startIdx, (idx) => {
+        accessibilityManager.setUiScale(UI_SCALE_VALUES[idx]);
+      });
+    }
     y += 60;
 
     // ── 키바인드 섹션 (우측) ──
