@@ -157,6 +157,8 @@ export class SkillTreeUI {
   private pointsText!: Phaser.GameObjects.Text;
   private treeContainer!: Phaser.GameObjects.Container;
   private detailPanel: Phaser.GameObjects.Container | null = null;
+  private resetBtn!: Phaser.GameObjects.Text;
+  private _resetArmed = false; // 2-press 확인(전 스킬 삭제이므로)
 
   // 전키보드 UI: 포커스 링(메인=스킬 노드 ↔ detail=업그레이드/닫기) + 모달락 + 노드 추적.
   private focusRing?: KeyboardFocusRing;
@@ -217,11 +219,19 @@ export class SkillTreeUI {
   /** 메인 포커스 그룹(스킬 노드)으로 링 동기화. */
   private _syncMainRing(restoreIndex = -1): void {
     if (!this.focusRing) return;
-    const items = this._skillNodes.map((n) => ({
-      target: n.bg,
-      activate: () => this._showSkillDetail(n.skill),
-      label: n.skill.name,
-    }));
+    // 재sync(렌더/detail 닫힘) 시 리셋 확인 상태 해제
+    this._resetArmed = false;
+    if (this.resetBtn) this.resetBtn.setText('🔄 스킬 리셋').setColor('#ffaa66');
+    const items: Array<{ target: Phaser.GameObjects.GameObject & { getBounds(): Phaser.Geom.Rectangle }; activate: () => void; label: string }> =
+      this._skillNodes.map((n) => ({
+        target: n.bg,
+        activate: () => this._showSkillDetail(n.skill),
+        label: n.skill.name,
+      }));
+    // 리셋 버튼을 링 마지막에 — 키보드로 도달 가능하게
+    if (this.resetBtn) {
+      items.push({ target: this.resetBtn, activate: () => this._onResetButton(), label: '스킬 리셋' });
+    }
     this.focusRing.setItems(items, false); // 자동 첫포커스 끄고 아래에서 복원
     if (items.length > 0) {
       const i = restoreIndex >= 0 && restoreIndex < items.length ? restoreIndex : 0;
@@ -309,6 +319,43 @@ export class SkillTreeUI {
       fontSize: '18px', color: '#ff6666',
     }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.close());
     this.container.add(closeBtn);
+
+    // 스킬 리셋(respec) — 전 스킬 삭제 + 골드 차감(서버 권위). 2-press 확인.
+    this.resetBtn = this.scene.add.text(cx, cy + ph / 2 - 22, '🔄 스킬 리셋', {
+      fontSize: '13px', color: '#ffaa66', backgroundColor: '#2a2a4e', padding: { x: 10, y: 4 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).on('pointerdown', () => this._onResetButton());
+    this.container.add(this.resetBtn);
+  }
+
+  // ── 스킬 리셋(respec) ────────────────────────────────────
+  private _onResetButton(): void {
+    if (!this._resetArmed) {
+      this._resetArmed = true;
+      this.resetBtn.setText('⚠ 정말 리셋? (다시 선택)').setColor('#ff5555');
+      return;
+    }
+    void this._doReset();
+  }
+
+  private async _doReset(): Promise<void> {
+    this._resetArmed = false;
+    this.resetBtn.setText('🔄 스킬 리셋').setColor('#ffaa66');
+    try {
+      // characterLevel/currentGold 는 서버가 무시(DB 권위값 사용)하나 라우트가 존재를 요구한다.
+      await this.net.post('/api/skills/reset', { characterLevel: this.characterLevel, currentGold: 0 });
+      playSfx(this.scene, UI_SFX.CONFIRM);
+      // 리셋 후 보유 스킬·포인트 재조회
+      await this._loadSkills();
+      try {
+        const pts = await this.net.get<{ remainingPoints?: number }>(`/api/skills/points/${this.characterId}?characterLevel=${this.characterLevel}`);
+        if (typeof pts?.remainingPoints === 'number') this.skillPoints = pts.remainingPoints;
+      } catch { /* 유지 */ }
+      this.pointsText.setText(`스킬 포인트: ${this.skillPoints}`);
+      this._renderTree();
+    } catch (e) {
+      console.error('[SkillTreeUI] reset failed', e);
+      this.resetBtn.setText('🔄 리셋 실패').setColor('#ff5555');
+    }
   }
 
   // ── 내부: 트리 렌더 ──────────────────────────────────────

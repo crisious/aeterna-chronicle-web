@@ -279,22 +279,25 @@ export async function unequipSkill(
 
 export async function resetSkills(
   userId: string,
-  characterLevel: number,
-  currentGold: number,
+  _clientLevel: number,  // 보안: 클라 값 무시 — DB 권위 레벨/골드 사용(위조 방지, #237 과 동일)
+  _clientGold: number,
 ): Promise<{ success: boolean; cost?: number; error?: string }> {
+  // 비용은 DB 권위 캐릭터 레벨로 계산(클라가 낮은 레벨로 헐값 리셋하는 위조 차단)
+  const characterLevel = await getAuthoritativeLevel(userId);
   const cost = RESET_BASE_COST + characterLevel * RESET_COST_PER_LEVEL;
-  if (currentGold < cost) {
-    return { success: false, error: `골드 부족 (필요: ${cost}, 보유: ${currentGold})` };
+
+  // 골드 검증은 클라가 보낸 currentGold 가 아니라 실제 DB 골드로(음수 잔액·헐값 리셋 차단)
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { gold: true } });
+  if (!user) return { success: false, error: '존재하지 않는 사용자' };
+  if (user.gold < cost) {
+    return { success: false, error: `골드 부족 (필요: ${cost}, 보유: ${user.gold})` };
   }
 
-  // 모든 플레이어 스킬 삭제
-  await prisma.playerSkill.deleteMany({ where: { userId } });
-
-  // 골드 차감 (User 테이블 업데이트)
-  await prisma.user.update({
-    where: { id: userId },
-    data: { gold: { decrement: cost } },
-  });
+  // 스킬 전체 삭제 + 골드 차감 원자적 처리
+  await prisma.$transaction([
+    prisma.playerSkill.deleteMany({ where: { userId } }),
+    prisma.user.update({ where: { id: userId }, data: { gold: { decrement: cost } } }),
+  ]);
 
   return { success: true, cost };
 }
