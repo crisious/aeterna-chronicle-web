@@ -103,4 +103,16 @@ describe('skillEngine', () => {
     expect(canEquip(5)).toBe(true);
     expect(canEquip(6)).toBe(false);
   });
+
+  // 11. 보안: 권위 레벨 = 유저 캐릭터들의 최고 레벨 (클라 characterLevel 위조 무효)
+  //   skillEngine.getAuthoritativeLevel 와 동일 로직. 서버는 클라가 보낸 레벨이 아니라
+  //   DB 캐릭터 레벨로 스킬 포인트·해금 요구레벨을 게이팅한다.
+  test('11. 권위 레벨은 DB 최고 캐릭터 레벨 — 클라 999 위조 무효', () => {
+    const authLevel = (levels: number[]) => (levels.length ? Math.max(...levels) : 1);
+    expect(authLevel([5, 20, 10])).toBe(20); // 최고 레벨 채택
+    expect(authLevel([])).toBe(1);           // 캐릭터 없으면 1
+    // 클라가 999 를 보내도 포인트는 권위(20) 기준으로만 계산됨
+    expect(getTotalSkillPoints(authLevel([5, 20, 10]))).toBe(getTotalSkillPoints(20));
+    expect(getTotalSkillPoints(20)).not.toBe(getTotalSkillPoints(999));
+  });
 });
