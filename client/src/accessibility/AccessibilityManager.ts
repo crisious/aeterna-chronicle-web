@@ -42,6 +42,8 @@ export interface AccessibilitySettings {
   screenReaderEnabled: boolean;
   /** 모션 감소 모드 */
   reduceMotion: boolean;
+  /** 키보드 전용 모드 — 켜면 게임 캔버스의 포인터(마우스·터치) 입력을 비활성(키보드만). */
+  keyboardOnlyMode: boolean;
 }
 
 /** 포커스 가능 UI 요소 */
@@ -108,6 +110,7 @@ const DEFAULT_SETTINGS: AccessibilitySettings = {
   keyboardNavEnabled: false,
   screenReaderEnabled: false,
   reduceMotion: false,
+  keyboardOnlyMode: false,
 };
 
 // ─── SVG 필터 정의 (색맹 시뮬레이션) ────────────────────────────
@@ -708,6 +711,23 @@ export class AccessibilityManager {
     this.saveSettings();
   }
 
+  /** 키보드 전용 모드 토글 — 게임 캔버스의 포인터 입력을 비활성/복원. */
+  setKeyboardOnlyMode(enabled: boolean): void {
+    this.settings.keyboardOnlyMode = enabled;
+    this.applyKeyboardOnlyMode();
+    this.saveSettings();
+  }
+
+  /**
+   * 키보드 전용 모드 적용 — 게임 캔버스에 pointer-events:none 을 걸어 마우스·터치 클릭을 막는다.
+   * 키보드(document 레벨)는 영향 없음. DOM HUD(별도 div)는 키보드로도 조작 가능하므로 캔버스만 차단.
+   * P0~P4 로 전 표면 키보드 패리티가 완비된 뒤의 컷오버 — 토글 기본 OFF 라 미사용자 회귀 0.
+   */
+  private applyKeyboardOnlyMode(): void {
+    if (!this.gameCanvas) return;
+    this.gameCanvas.style.pointerEvents = this.settings.keyboardOnlyMode ? 'none' : '';
+  }
+
   /** 모션 감소 CSS 적용 */
   private applyReduceMotion(): void {
     const root = document.documentElement;
@@ -761,6 +781,7 @@ export class AccessibilityManager {
     this.applyHighContrast();
     this.applyUiScale();
     this.applyReduceMotion();
+    this.applyKeyboardOnlyMode();
     this.applyAriaLabels();
     if (this.subtitleOverlay) {
       this.subtitleOverlay.style.display = this.settings.subtitlesEnabled ? 'block' : 'none';

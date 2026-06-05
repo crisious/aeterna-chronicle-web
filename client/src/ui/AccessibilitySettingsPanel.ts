@@ -144,6 +144,10 @@ export class AccessibilitySettingsPanel extends Phaser.Scene {
     this.createToggleRow('모션 감소', this.currentSettings.reduceMotion, (v) => {
       accessibilityManager.setReduceMotion(v);
     });
+    // 전키보드 UI: 켜면 게임 캔버스 포인터(마우스·터치) 비활성 — 모든 조작을 키보드로.
+    this.createToggleRow('키보드 전용 모드 (마우스 끄기)', this.currentSettings.keyboardOnlyMode, (v) => {
+      accessibilityManager.setKeyboardOnlyMode(v);
+    });
 
     // 닫기 / 초기화 버튼
     this.rowY += 10;
