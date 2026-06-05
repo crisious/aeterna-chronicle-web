@@ -12,6 +12,8 @@ import * as Phaser from 'phaser';
 import { NetworkManager, InventoryItem } from '../network/NetworkManager';
 import { playSfx, UI_SFX } from '../utils/SFXHelper';
 import { bindEscClose } from '../utils/uiEsc';
+import { KeyboardFocusRing } from '../accessibility/KeyboardFocusRing';
+import { pushUiModal, popUiModal } from '../accessibility/uiModalLock';
 
 // ── 타입 ──────────────────────────────────────────────────────
 
@@ -33,6 +35,8 @@ export interface ShopItem {
 interface ShopRow {
   container: Phaser.GameObjects.Container;
   item: ShopItem | InventoryItem;
+  /** 거래 가격(키보드 활성화 시 _showConfirm 에 전달). */
+  price: number;
 }
 
 const RARITY_COLORS: Record<string, string> = {
@@ -65,6 +69,10 @@ export class ShopUI {
   // 확인 다이얼로그
   private confirmDialog: Phaser.GameObjects.Container | null = null;
 
+  // 전키보드 UI: 포커스 링(메인=탭+행 ↔ confirm=확인/취소 전환) + 모달락 균형 플래그.
+  private focusRing?: KeyboardFocusRing;
+  private _modalPushed = false;
+
   constructor(scene: Phaser.Scene, net: NetworkManager) {
     this.scene = scene;
     this.net = net;
@@ -88,15 +96,45 @@ export class ShopUI {
     // FINDING-A4 ext17/ext24: ESC 닫기 (bindEscClose helper)
     this._escUnbind?.();
     this._escUnbind = bindEscClose(this.scene, () => this.close());
+
+    // 전키보드 UI: 모달락 + 포커스 링. 메인(탭+행) 동기화. confirm 열리면 링이 확인/취소로 전환.
+    if (!this._modalPushed) {
+      pushUiModal();
+      this._modalPushed = true;
+    }
+    this.focusRing?.destroy();
+    this.focusRing = new KeyboardFocusRing(this.scene, { columns: 1 });
+    this._syncMainRing();
   }
 
   close(): void {
+    if (!this.visible) return;
     this.visible = false;
     this.container.setVisible(false);
     this._closeConfirm();
     playSfx(this.scene, UI_SFX.CLOSE);
     this._escUnbind?.();
     this._escUnbind = null;
+    this.focusRing?.destroy();
+    this.focusRing = undefined;
+    if (this._modalPushed) {
+      popUiModal();
+      this._modalPushed = false;
+    }
+  }
+
+  /** 메인 포커스 그룹(탭 + 아이템 행)으로 링을 동기화. 렌더·탭전환·confirm 닫힘 후 호출. */
+  private _syncMainRing(): void {
+    if (!this.focusRing) return;
+    this.focusRing.setItems([
+      { target: this.tabBuyBtn, activate: () => void this._switchTab('buy'), label: '구매 탭' },
+      { target: this.tabSellBtn, activate: () => void this._switchTab('sell'), label: '판매 탭' },
+      ...this.rows.map((r) => ({
+        target: r.container,
+        activate: () => this._showConfirm(r.item, r.price),
+        label: r.item.name,
+      })),
+    ]);
   }
 
   // FINDING-A4 ext24: bindEscClose unbind 참조
@@ -217,8 +255,11 @@ export class ShopUI {
 
       rowC.add([rowBg, name, priceText, actionBtn]);
       this.listContainer.add(rowC);
-      this.rows.push({ container: rowC, item });
+      this.rows.push({ container: rowC, item, price: priceVal });
     });
+
+    // 동적 재생성된 행을 링에 반영(탭 전환·거래 후). confirm 열려있으면 그쪽 링 유지.
+    if (this.focusRing && !this.confirmDialog) this._syncMainRing();
   }
 
   // ── 내부: 확인 다이얼로그 ─────────────────────────────────
@@ -241,28 +282,37 @@ export class ShopUI {
     }).setOrigin(0.5);
     this.confirmDialog.add(msg);
 
-    // 확인
+    // 확인/취소 동작 — pointerdown 과 키보드 링이 공유.
+    const doYes = async (): Promise<void> => {
+      playSfx(this.scene, UI_SFX.CONFIRM);
+      await this._executeTrade(item, price);
+      this._closeConfirm();
+    };
+    const doNo = (): void => {
+      playSfx(this.scene, UI_SFX.CANCEL);
+      this._closeConfirm();
+    };
+
     const yesBtn = this.scene.add.text(cx - 50, cy + 30, '[ 확인 ]', {
       fontSize: '14px', color: '#55cc55', backgroundColor: '#2a2a4e', padding: { x: 8, y: 4 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-      .on('pointerdown', async () => {
-        playSfx(this.scene, UI_SFX.CONFIRM);
-        await this._executeTrade(item, price);
-        this._closeConfirm();
-      });
+      .on('pointerdown', () => void doYes());
     this.confirmDialog.add(yesBtn);
 
-    // 취소
     const noBtn = this.scene.add.text(cx + 50, cy + 30, '[ 취소 ]', {
       fontSize: '14px', color: '#ff6666', backgroundColor: '#2a2a4e', padding: { x: 8, y: 4 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        playSfx(this.scene, UI_SFX.CANCEL);
-        this._closeConfirm();
-      });
+      .on('pointerdown', doNo);
     this.confirmDialog.add(noBtn);
 
     this.container.add(this.confirmDialog);
+
+    // 키보드: confirm 동안 링을 확인/취소로 전환(취소에 기본 포커스 — 오발주 방지).
+    this.focusRing?.setItems([
+      { target: yesBtn, activate: () => void doYes(), label: '확인' },
+      { target: noBtn, activate: doNo, label: '취소' },
+    ], false);
+    this.focusRing?.focus(1);
   }
 
   private _closeConfirm(): void {
@@ -270,6 +320,8 @@ export class ShopUI {
       this.confirmDialog.destroy();
       this.confirmDialog = null;
     }
+    // confirm 닫히면 메인(탭+행) 링으로 복귀(패널이 아직 열려있을 때만).
+    if (this.visible) this._syncMainRing();
   }
 
   private async _executeTrade(item: ShopItem | InventoryItem, _price: number): Promise<void> {
