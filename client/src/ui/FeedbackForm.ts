@@ -3,6 +3,8 @@
  * 버그/기능/밸런스 리포트 + 스크린샷 첨부 + 메타데이터 자동수집
  */
 import Phaser from 'phaser';
+import { networkManager } from '../network/NetworkManager';
+import { showCompatToast } from '../utils/RendererDetector';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 interface FeedbackPayload {
@@ -305,20 +307,15 @@ export class FeedbackForm extends Phaser.Scene {
     }
 
     try {
-      const res = await fetch(`${this.config.apiUrl}/beta/feedback`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        console.log('[FeedbackForm] 피드백 전송 성공');
-        this.closeFeedbackForm();
-      } else {
-        console.error('[FeedbackForm] 피드백 전송 실패:', res.status);
-      }
+      // NetworkManager 경유로 전송 — Authorization: Bearer 토큰 자동 부착.
+      // /beta/feedback 은 비공개 라우트라 raw fetch(토큰 없음)는 항상 401 이었다.
+      await networkManager.post('/beta/feedback', payload);
+      showCompatToast('피드백이 전송되었습니다. 감사합니다!');
+      this.closeFeedbackForm();
     } catch (err) {
+      // 실패를 침묵하지 않고 사용자에게 알린다(폼은 열린 채라 재시도 가능).
       console.error('[FeedbackForm] 피드백 전송 오류:', err);
+      showCompatToast('피드백 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.');
     } finally {
       this.isSubmitting = false;
     }
