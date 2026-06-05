@@ -210,6 +210,17 @@ export class SettingsScene extends Phaser.Scene {
         applyColorblindMode(this.settings.colorblindMode);
       },
     );
+    y += 40;
+
+    // 전키보드 UI 컷오버 토글: 켜면 게임 캔버스 포인터(마우스·터치)를 비활성 — 모든 조작을 키보드로.
+    // 상태 출처는 AccessibilityManager(localStorage 영속)이며, 키보드 nav 는 document 레벨이라
+    // 이 토글을 켠 뒤에도 설정 화면을 계속 키보드로 조작할 수 있다(잠김 없음).
+    this._addToggle(leftX, y, '키보드 전용 (마우스 끄기)',
+      accessibilityManager.getSettings().keyboardOnlyMode,
+      (v) => {
+        accessibilityManager.setKeyboardOnlyMode(v);
+      },
+    );
     y += 60;
 
     // ── 키바인드 섹션 (우측) ──
