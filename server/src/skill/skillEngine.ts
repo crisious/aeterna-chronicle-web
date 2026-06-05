@@ -65,9 +65,28 @@ async function getUsedSkillPoints(userId: string): Promise<number> {
   return playerSkills.reduce((sum, ps) => sum + ps.level, 0);
 }
 
-/** 잔여 스킬 포인트 조회 */
-export async function getRemainingSkillPoints(userId: string, characterLevel: number): Promise<number> {
-  const total = getTotalSkillPoints(characterLevel);
+/**
+ * DB 권위 캐릭터 레벨 — 보안: 클라이언트가 보낸 characterLevel 을 신뢰하지 않는다(위조 방지).
+ * 스킬은 per-user 풀이고 레벨은 per-character 이므로, 유저 캐릭터들의 최고 레벨을 권위값으로 사용.
+ */
+async function getAuthoritativeLevel(userId: string): Promise<number> {
+  const top = await prisma.character.findFirst({
+    where: { userId },
+    orderBy: { level: 'desc' },
+    select: { level: true },
+  });
+  return top?.level ?? 1;
+}
+
+/** 유저가 실제 보유한 캐릭터 클래스 집합 — 클라가 보낸 characterClass 신뢰 방지용. */
+async function getUserClasses(userId: string): Promise<Set<string>> {
+  const chars = await prisma.character.findMany({ where: { userId }, select: { classId: true } });
+  return new Set(chars.map((c) => c.classId));
+}
+
+/** 잔여 스킬 포인트 조회 — characterLevel 인자는 보안상 무시하고 DB 권위 레벨을 쓴다. */
+export async function getRemainingSkillPoints(userId: string, _clientLevel?: number): Promise<number> {
+  const total = getTotalSkillPoints(await getAuthoritativeLevel(userId));
   const used = await getUsedSkillPoints(userId);
   return total - used;
 }
@@ -77,8 +96,8 @@ export async function getRemainingSkillPoints(userId: string, characterLevel: nu
 export async function unlockSkill(
   userId: string,
   skillCode: string,
-  characterLevel: number,
-  characterClass: string,
+  _clientLevel: number, // 보안: 클라 값 무시 — DB 권위 레벨/클래스 사용
+  _clientClass: string,
 ): Promise<{ success: boolean; error?: string }> {
   // 0. 이슈 6 fix: user 존재 검증 — orphan player_skills 차단 + 명확한 400 에러
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
@@ -88,12 +107,14 @@ export async function unlockSkill(
   const skill = await prisma.skill.findUnique({ where: { code: skillCode } });
   if (!skill) return { success: false, error: '존재하지 않는 스킬' };
 
-  // 2. 클래스 일치 확인
-  if (skill.class !== characterClass) {
-    return { success: false, error: '해당 클래스의 스킬이 아님' };
+  // 2. 클래스 일치 확인 — 보안: 클라 characterClass 가 아니라 유저가 실제 보유한 캐릭터 클래스로 검증.
+  const userClasses = await getUserClasses(userId);
+  if (!userClasses.has(skill.class)) {
+    return { success: false, error: '해당 클래스의 캐릭터가 없음' };
   }
 
-  // 3. 레벨 요구사항 확인
+  // 3. 레벨 요구사항 확인 — 보안: DB 권위 레벨 사용(클라 위조 방지).
+  const characterLevel = await getAuthoritativeLevel(userId);
   if (characterLevel < skill.requiredLevel) {
     return { success: false, error: `레벨 ${skill.requiredLevel} 필요 (현재 ${characterLevel})` };
   }
@@ -120,8 +141,8 @@ export async function unlockSkill(
     }
   }
 
-  // 6. 스킬 포인트 확인 (해금 = 1포인트)
-  const remaining = await getRemainingSkillPoints(userId, characterLevel);
+  // 6. 스킬 포인트 확인 (해금 = 1포인트) — 권위 레벨 기반
+  const remaining = await getRemainingSkillPoints(userId);
   if (remaining < 1) {
     return { success: false, error: '스킬 포인트 부족' };
   }
@@ -160,7 +181,7 @@ export async function unlockSkill(
 export async function levelUpSkill(
   userId: string,
   skillCode: string,
-  characterLevel: number,
+  _clientLevel: number, // 보안: 클라 값 무시 — getRemainingSkillPoints 가 DB 권위 레벨 사용
 ): Promise<{ success: boolean; newLevel?: number; error?: string }> {
   const skill = await prisma.skill.findUnique({ where: { code: skillCode } });
   if (!skill) return { success: false, error: '존재하지 않는 스킬' };
@@ -174,8 +195,8 @@ export async function levelUpSkill(
     return { success: false, error: `이미 최대 레벨 (${skill.maxLevel})` };
   }
 
-  // 포인트 확인
-  const remaining = await getRemainingSkillPoints(userId, characterLevel);
+  // 포인트 확인 — 권위 레벨 기반(getRemainingSkillPoints 내부에서 DB 조회)
+  const remaining = await getRemainingSkillPoints(userId);
   if (remaining < 1) {
     return { success: false, error: '스킬 포인트 부족' };
   }
