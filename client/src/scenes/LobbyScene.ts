@@ -68,6 +68,15 @@ const QUEST_STATUS_STYLE: Record<QuestData['status'], { label: string; color: st
   turned_in: { label: '완료됨', color: '#888888' },
 };
 
+// 보드는 앞 4개만 노출하므로(slice), actionable(진행중·완료가능·수주가능)을 완료됨보다 먼저
+// 정렬해 이미 끝낸 퀘스트가 수주 가능 퀘스트를 가리지 않게 한다.
+const QUEST_STATUS_ORDER: Record<QuestData['status'], number> = {
+  active: 0,
+  complete: 1,
+  available: 2,
+  turned_in: 3,
+};
+
 const FALLBACK_QUESTS: QuestData[] = [
   {
     id: 'chrono_echoes',
@@ -913,7 +922,11 @@ export class LobbyScene extends Phaser.Scene {
       fontSize: '18px', color: '#ffdd66', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
 
-    const visibleQuests = quests.slice(0, 4);
+    // 상태순(actionable 우선) 안정 정렬 후 앞 4개 — turned_in 이 수주 가능 퀘스트를 가리지 않도록.
+    const sortedQuests = [...quests].sort(
+      (a, b) => (QUEST_STATUS_ORDER[a.status] ?? 9) - (QUEST_STATUS_ORDER[b.status] ?? 9),
+    );
+    const visibleQuests = sortedQuests.slice(0, 4);
     if (visibleQuests.length === 0) {
       panel.add(this.add.text(0, 0, '표시할 퀘스트가 없습니다.', {
         fontSize: '13px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
