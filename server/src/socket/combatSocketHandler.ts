@@ -14,6 +14,14 @@ import { combatReconnectManager } from '../combat/combatReconnectManager';
 import type { ElementType } from '../combat/damageCalculator';
 import type { DropEntry } from '../combat/rewardEngine';
 import { grantCombatGold, clearCombatReward } from '../combat/rewardGranter';
+import { prisma } from '../db';
+
+/** SECURITY-IDOR: socket.data.userId 가 characterId 를 소유하는지(전투 행동권 바인딩 게이트). */
+async function ownsCharacter(userId: string | undefined, characterId: string): Promise<boolean> {
+  if (!userId || !characterId) return false;
+  const c = await prisma.character.findFirst({ where: { id: characterId, userId }, select: { id: true } });
+  return c !== null;
+}
 
 // ─── 이벤트 페이로드 타입 ──────────────────────────────────────
 
@@ -178,15 +186,16 @@ function registerParticipantSocket(
 // ─── 소켓 핸들러 등록 ──────────────────────────────────────────
 
 export function setupCombatSocketHandler(io: Server): void {
-  // SECURITY-TODO(잔여): combat:start/join/action 의 actorId/participantId 바인딩이 socket.data.userId
-  // 소유 캐릭터인지 검증 보강 필요(현재 canControl 만, 최초 바인딩 출처 무검증). 단 (a) 데미지·발동
-  // 가능여부는 combatEngine 이 서버 산정해 value 권위는 이미 충족, (b) 라이브 클라는 이 소켓이 아니라
-  // HTTP /combat/start 를 사용(dead-on-client)이라 우선순위 낮음. 정식 수정 = HTTP combatRoutes 처럼
-  // payload party 를 캐릭터 id+소유검증→서버 스탯 도출로 재작성.
+  // SECURITY: combat:start/join 의 참가자-소켓 바인딩(전투 행동권)은 이제 socket.data.userId 소유
+  // 캐릭터일 때만 등록한다(ownsCharacter 게이트) → 타인 캐릭터 제어권 선점 차단. canControl 신뢰사슬의
+  // 최초 바인딩 출처가 검증됨. damage 발동 가능여부는 combatEngine 이 서버 산정(value 권위 충족).
+  // SECURITY-TODO(잔여, 큰 작업): combat:start 의 party 스탯/골드 수령자(p.id)는 여전히 클라값 —
+  // HTTP combatRoutes 처럼 payload party 를 캐릭터 id+소유검증→서버 스탯(CLASS_BASE) 도출로 재작성 필요.
+  // 단 라이브 클라는 HTTP /combat/start 사용(dead-on-client)이라 우선순위 낮음.
   io.on('connection', (socket: Socket) => {
 
     // ── combat:start — 전투 시작 ───────────────────────────
-    socket.on('combat:start', (payload: CombatStartPayload, callback?: (resp: any) => void) => {
+    socket.on('combat:start', async (payload: CombatStartPayload, callback?: (resp: any) => void) => {
       try {
         const engine = combatInstanceManager.create({
           autoMode: payload.autoMode ?? false,
@@ -205,10 +214,15 @@ export function setupCombatSocketHandler(io: Server): void {
         // 전투 시작
         engine.start();
 
-        // 소켓 룸 참여
+        // 소켓 룸 참여. SECURITY-IDOR: 이 소켓은 본인 소유 캐릭터에만 전투 행동권을 바인딩한다
+        // (이전엔 party 의 모든 id 를 바인딩해 타인 캐릭터까지 제어 가능했음). 타 파티원은 각자 combat:join.
+        // SECURITY-TODO(잔여): party 스탯/골드 수령자(p.id)는 여전히 클라값 — 서버권위 party(HTTP /combat/start
+        // 처럼 캐릭터 id+소유검증→서버 스탯 도출)는 별도 큰 작업. 현재는 행동권 바인딩만 소유게이트.
         socket.join(`combat:${engine.combatId}`);
         for (const p of payload.party) {
-          registerParticipantSocket(io, socket, engine.combatId, p.id);
+          if (await ownsCharacter(socket.data.userId, p.id)) {
+            registerParticipantSocket(io, socket, engine.combatId, p.id);
+          }
         }
 
         // 틱 루프 시작
@@ -231,14 +245,15 @@ export function setupCombatSocketHandler(io: Server): void {
     });
 
     // ── combat:join — 기존 전투 참관 ───────────────────────
-    socket.on('combat:join', (payload: CombatQueryPayload) => {
+    socket.on('combat:join', async (payload: CombatQueryPayload) => {
       const engine = combatInstanceManager.get(payload.combatId);
       if (!engine) {
         socket.emit('combat:error', { error: '전투를 찾을 수 없습니다.' });
         return;
       }
       socket.join(`combat:${payload.combatId}`);
-      const recovery = payload.participantId
+      // SECURITY-IDOR: 본인 소유 캐릭터일 때만 전투 행동권 바인딩(타 참가자 제어권 선점 차단). 미소유면 관전만.
+      const recovery = payload.participantId && (await ownsCharacter(socket.data.userId, payload.participantId))
         ? registerParticipantSocket(io, socket, payload.combatId, payload.participantId)
         : { reconnected: false };
       socket.emit('combat:state', {
