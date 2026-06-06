@@ -190,6 +190,9 @@ export class BattleScene extends Phaser.Scene {
   private cmdMenuTexts: Phaser.GameObjects.Text[] = [];
   private cmdMenuIndex = 0;
   private cmdSubMenu: Phaser.GameObjects.Container | null = null;
+  // UX(#4): 행동 주체(activeCommander) sprite 위 펄싱 화살표 — 다인 파티에서 '내 턴' 가시화.
+  private activeIndicator: Phaser.GameObjects.Text | null = null;
+  private activeIndicatorTween: Phaser.Tweens.Tween | null = null;
   // 전키보드 UI: 서브메뉴(마법/아이템) 선택을 키보드로. update-폴링 패턴(커맨드 메뉴와 동일).
   private subMenuItems: Array<{ text: Phaser.GameObjects.Text; action: () => void; label: string }> = [];
   private subMenuIndex = 0;
@@ -549,6 +552,10 @@ export class BattleScene extends Phaser.Scene {
           this._triggerFirstTripleTech();
         }
       });
+      // UX(#6): 숫자키 1~6 → 스킬바 슬롯 직접 사용(스킬바가 그려둔 1~6 단축키 라벨이 실제 동작하도록).
+      ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((key, i) => {
+        this.input.keyboard!.on(`keydown-${key}`, () => this._useSkill(i));
+      });
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -836,6 +843,9 @@ export class BattleScene extends Phaser.Scene {
     this.activeCommander = us;
     this.cmdMenuIndex = 0;
 
+    // UX(#4): 행동 주체 sprite 위에 펄싱 화살표(누구 턴인지 sprite 레벨 가시화)
+    this._showActiveIndicator(us);
+
     // 기존 메뉴 제거
     this._closeCommandMenu();
 
@@ -894,6 +904,30 @@ export class BattleScene extends Phaser.Scene {
     this.cmdMenuContainer?.destroy();
     this.cmdMenuContainer = null;
     this.cmdMenuTexts = [];
+  }
+
+  // UX(#4): 행동 주체 sprite 위 펄싱 화살표 표시/제거
+  private _showActiveIndicator(us: UnitSprite): void {
+    this._clearActiveIndicator();
+    const spriteH = us.sprite.displayHeight ?? 60;
+    const arrow = this.add.text(us.sprite.x, us.sprite.y - spriteH / 2 - 30, '▼', {
+      fontSize: '20px', fontFamily: FONT_FAMILY, color: '#ffee44',
+      stroke: '#000000', strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(160);
+    this.activeIndicator = arrow;
+    this.activeIndicatorTween = this.tweens.add({
+      targets: arrow,
+      y: arrow.y - 6,
+      alpha: { from: 1, to: 0.5 },
+      duration: 480, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+    });
+  }
+
+  private _clearActiveIndicator(): void {
+    this.activeIndicatorTween?.remove();
+    this.activeIndicatorTween = null;
+    this.activeIndicator?.destroy();
+    this.activeIndicator = null;
   }
 
   private _closeSubMenu(): void {
@@ -1002,6 +1036,7 @@ export class BattleScene extends Phaser.Scene {
       this.activeCommander.atb = 0;
     }
     this.activeCommander = null;
+    this._clearActiveIndicator(); // UX(#4)
     this._closeCommandMenu();
     this._closeSubMenu();
   }
@@ -1099,6 +1134,32 @@ export class BattleScene extends Phaser.Scene {
     } else {
       this._endTurn();
     }
+  }
+
+  // ─── UX(#6): 스킬바 슬롯 직접 사용 (클릭/숫자키 → 타겟 선택) ───────
+  /**
+   * 스킬바 슬롯 idx 를 직접 사용한다. BattleUI 슬롯 클릭(_useSkill 호출) + 숫자키 1~6 의 진입점.
+   * 이전엔 이 메서드가 없어(grep 0건) 클릭/핫키가 전부 silent no-op 이었다(거짓 어포던스).
+   * 본인 턴(activeCommander)이고 타겟 선택 중이 아닐 때만 동작 — 매직 서브메뉴 doSkill 과 동일 경로.
+   */
+  private _useSkill(idx: number): void {
+    if (!this.activeCommander || this.targetSelectMode) return;
+    const skill = this.skillSlots[idx];
+    if (!skill) return;
+    if (skill.currentCooldown > 0) {
+      this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`);
+      return;
+    }
+    if ((this.activeCommander.unit.mp ?? 0) < skill.mpCost) {
+      this.battleUI?.addLog(`💧 MP 부족 — ${skill.name}(MP ${skill.mpCost})`);
+      return;
+    }
+    this._closeCommandMenu();
+    this._closeSubMenu();
+    this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
+      if (this.activeCommander) this._performSkill(this.activeCommander, target, skill);
+      this._endTurn();
+    });
   }
 
   // ─── 마법/아이템 서브메뉴 ────────────────────────────────────
@@ -1598,14 +1659,25 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _killUnit(us: UnitSprite): void {
-    us.isDead = true;
-    us.sprite.setAlpha(0.2);
+    us.isDead = true; // 전투 종료 판정은 이 플래그로 즉시 — 아래 트윈은 표시뿐이라 로직 무영향
     this.battleUI?.addLog(`💀 ${us.unit.name} 쓰러짐!`);
+    playSfx(this, us.isAlly ? COMBAT_VOICE.DEATH : 'sfx_combat_enemy_death', us.isAlly ? 0.7 : 0.5);
 
+    // UX(#5): 사망 연출 트윈(이전엔 setAlpha(0.2) 즉시 — 처치 피드백 약함). 깜빡임/shake 없이 mild.
+    const spr = us.sprite;
+    us.nameText.setAlpha(0); // 이름 숨김(적 HP 바는 _updateEnemyHpBars 가 isDead 로 숨김)
     if (us.isAlly) {
-      playSfx(this, COMBAT_VOICE.DEATH, 0.7);
+      // 아군: 그레이 tint + 옆으로 쓰러짐
+      if (spr instanceof Phaser.GameObjects.Image) spr.setTint(0x555555);
+      this.tweens.add({ targets: spr, angle: 90, alpha: 0.35, duration: 350, ease: 'Quad.easeIn' });
     } else {
-      playSfx(this, 'sfx_combat_enemy_death', 0.5);
+      // 적: 축소 + 회전 + 페이드아웃(보스는 더 느리게, 회전 없이 무게감)
+      this.tweens.add({
+        targets: spr,
+        scaleX: spr.scaleX * 0.3, scaleY: spr.scaleY * 0.3,
+        angle: us.isBoss ? 0 : 30, alpha: 0,
+        duration: us.isBoss ? 650 : 340, ease: 'Back.easeIn',
+      });
     }
   }
 
