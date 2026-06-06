@@ -16,7 +16,7 @@ import { raidManager } from '../raid/raidManager';
 import { isGuildMember } from '../guild/guildMembership';
 import { prisma } from '../db';
 import { computePhysicalDamage } from '../combat/characterCombatStats';
-import { resolveOwnedSkillMultiplier } from '../combat/skillResolver';
+import { resolveOwnedSkill } from '../combat/skillResolver';
 import { allowAction, DAMAGE_ACTION_PROFILE } from '../security/actionRateLimiter';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
@@ -204,12 +204,18 @@ export function setupRaidSocketHandlers(io: Server): void {
         });
         if (!character) return socket.emit('raid:error', { message: '활성 캐릭터가 없습니다.' });
 
-        // 스킬 배율: skillId 가 있으면 서버가 소유·active 검증 후 Skill.damageScale 적용(위조 차단). 미지정=기본공격.
+        // 스킬 배율 + 쿨다운: skillId 가 있으면 서버가 소유·active 검증 후 Skill.damageScale 적용(위조 차단)
+        // + Skill.cooldown(초) 동안 재사용 금지(연사 차단). 미지정=기본공격. mpCost 는 per-session MP 풀 후속.
         let skillMultiplier = 1.0;
         if (data.skillId) {
-          const mult = await resolveOwnedSkillMultiplier(userId, data.skillId);
-          if (mult === null) return socket.emit('raid:error', { message: '사용할 수 없는 스킬입니다.' });
-          skillMultiplier = mult;
+          const resolved = await resolveOwnedSkill(userId, data.skillId);
+          if (!resolved) return socket.emit('raid:error', { message: '사용할 수 없는 스킬입니다.' });
+          // 쿨다운: allowAction(window=cooldown초, max=1) 재사용 → 1회/쿨다운 (#248 rate-limiter 재사용)
+          if (resolved.cooldown > 0 &&
+              !(await allowAction(userId, `skillcd:${data.skillId}`, Math.ceil(resolved.cooldown), 1))) {
+            return socket.emit('raid:error', { message: '스킬 쿨다운 중입니다.' });
+          }
+          skillMultiplier = resolved.multiplier;
         }
 
         const damage = computePhysicalDamage(
