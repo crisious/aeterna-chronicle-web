@@ -200,12 +200,13 @@ export function setupRaidSocketHandlers(io: Server): void {
         if (!session) return socket.emit('raid:error', { message: '세션을 찾을 수 없습니다.' });
         const character = await prisma.character.findFirst({
           where: { userId, isActive: true },
-          select: { classId: true, level: true },
+          select: { classId: true, level: true, maxMp: true },
         });
         if (!character) return socket.emit('raid:error', { message: '활성 캐릭터가 없습니다.' });
 
-        // 스킬 배율 + 쿨다운: skillId 가 있으면 서버가 소유·active 검증 후 Skill.damageScale 적용(위조 차단)
-        // + Skill.cooldown(초) 동안 재사용 금지(연사 차단). 미지정=기본공격. mpCost 는 per-session MP 풀 후속.
+        // 스킬 배율 + 쿨다운 + MP: skillId 가 있으면 서버가 소유·active 검증 후 Skill.damageScale 적용(위조
+        // 차단) + Skill.cooldown(초) 재사용 금지(연사 차단) + Skill.mpCost 를 per-session MP 풀에서 차감
+        // (combatEngine ManaManager 재사용, syncTimer 로 회복). 미지정=기본공격(MP/쿨다운 무관).
         let skillMultiplier = 1.0;
         if (data.skillId) {
           const resolved = await resolveOwnedSkill(userId, data.skillId);
@@ -215,6 +216,10 @@ export function setupRaidSocketHandlers(io: Server): void {
               !(await allowAction(userId, `skillcd:${data.skillId}`, Math.ceil(resolved.cooldown), 1))) {
             return socket.emit('raid:error', { message: '스킬 쿨다운 중입니다.' });
           }
+          // MP 차감(서버 권위): 부족하면 거부. mpOk===null 은 비참가자(applyDamage 도 거부).
+          const mpOk = raidManager.consumeSkillMp(data.sessionId, userId, character.maxMp, resolved.mpCost);
+          if (mpOk === null) return socket.emit('raid:error', { message: '참가자가 아닙니다.' });
+          if (mpOk === false) return socket.emit('raid:error', { message: 'MP가 부족합니다.' });
           skillMultiplier = resolved.multiplier;
         }
 

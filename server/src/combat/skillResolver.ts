@@ -5,8 +5,7 @@
  * (b) 공격 가능한 active/ultimate 스킬인지 검증하고 Skill.damageScale(배율)·cooldown(초)을 반환한다.
  * 배율/쿨다운을 클라가 정하지 못하게 해, 임의 고배율 위조·연사를 차단한다.
  *
- * SECURITY-TODO(후속): mpCost 차감은 raid 에 per-session MP 풀(combatEngine 의 manaManager 미러 —
- * 참가자별 currentMp 추적·차감·턴 회복)이 필요한 큰 작업이라 분리. 현재는 배율 + 쿨다운까지 보장한다.
+ * mpCost 는 raid 의 per-session MP 풀(ManaManager)이 차감한다(combatEngine 동일 클래스 재사용).
  */
 import { prisma } from '../db';
 
@@ -15,10 +14,12 @@ export interface ResolvedSkill {
   multiplier: number;
   /** Skill.cooldown — 재사용 대기(초). 0 이면 쿨다운 없음 */
   cooldown: number;
+  /** Skill.mpCost — MP 소모량 */
+  mpCost: number;
 }
 
 /**
- * userId 가 소유한 active/ultimate 스킬이면 {multiplier, cooldown} 반환, 아니면 null.
+ * userId 가 소유한 active/ultimate 스킬이면 {multiplier, cooldown, mpCost} 반환, 아니면 null.
  * (미소유 / passive 스킬 → null → 호출자가 거부)
  */
 export async function resolveOwnedSkill(
@@ -28,8 +29,12 @@ export async function resolveOwnedSkill(
   if (!userId || !skillId) return null;
   const playerSkill = await prisma.playerSkill.findFirst({
     where: { userId, skillId },
-    include: { skill: { select: { type: true, damageScale: true, cooldown: true } } },
+    include: { skill: { select: { type: true, damageScale: true, cooldown: true, mpCost: true } } },
   });
   if (!playerSkill || playerSkill.skill.type === 'passive') return null;
-  return { multiplier: playerSkill.skill.damageScale, cooldown: playerSkill.skill.cooldown };
+  return {
+    multiplier: playerSkill.skill.damageScale,
+    cooldown: playerSkill.skill.cooldown,
+    mpCost: playerSkill.skill.mpCost,
+  };
 }
