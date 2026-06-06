@@ -1,5 +1,6 @@
 import type { Server, Socket } from 'socket.io';
 import { redisClient, redisConnected } from '../redis';
+import { prisma } from '../db';
 import type { DialogueChoiceTelemetryEvent} from '../telemetry/dialogueTelemetryServer';
 import { handleDialogueTelemetry } from '../telemetry/dialogueTelemetryServer';
 import {
@@ -29,10 +30,9 @@ export async function setupSocketHandlers(io: Server) {
     io.on('connection', (socket: Socket) => {
         console.log(`[Socket] User connected: ${socket.id}`);
 
-        // SECURITY-TODO(잔여): joinRoom/playerMove/playerAction 의 characterId 가 socket.data.userId 소유
-        // 캐릭터인지 prisma 로 검증 후에만 Redis userState 기록·브로드캐스트해야 위치/온라인/액션 사칭이
-        // 닫힌다. value sink 는 없고(좌표·presence 만), 라이브 클라는 dead NetworkService 만 이 이벤트를
-        // emit 하므로 우선순위 낮음 — 별도 후속에서 캐릭터 소유검증 추가.
+        // SECURITY-IDOR: joinRoom 에서 characterId 가 socket.data.userId(핸드셰이크 인증) 소유 캐릭터인지
+        // prisma 로 검증하고, 검증된 값을 socket.data.characterId 에 캐시한다. playerMove/playerAction 은
+        // 클라가 보낸 characterId 를 신뢰하지 않고 이 캐시값으로 고정해, 타 캐릭터 위치/액션 사칭 브로드캐스트를 차단한다.
 
         /**
          * 특정 맵(던전/마을) Room 입장 처리
@@ -59,12 +59,24 @@ export async function setupSocketHandlers(io: Server) {
                     characterId = jsonData.characterId;
                 }
 
+                // SECURITY-IDOR: 본인 소유 캐릭터로만 입장 허용(타 캐릭터 명의 위치/온라인 위조 차단)
+                const userId = socket.data.userId;
+                if (!userId) return;
+                const owned = await prisma.character.findFirst({
+                    where: { id: characterId, userId },
+                    select: { id: true },
+                });
+                if (!owned) {
+                    console.warn(`[Socket] joinRoom 거부: ${userId} 가 소유하지 않은 캐릭터 ${characterId}`);
+                    return;
+                }
+                socket.data.characterId = characterId; // 이후 playerMove/playerAction actor 고정용
+
                 socket.join(roomId);
                 console.log(`[Socket] Character ${characterId} joined Room ${roomId}`);
 
                 // Redis에 현재 사용자의 위치 및 상태 저장
                 if (redisConnected()) {
-                    (socket as any)._characterId = characterId;
                     await redisClient.hSet(`userState:${characterId}`, {
                         socketId: socket.id,
                         roomId: roomId,
@@ -97,6 +109,10 @@ export async function setupSocketHandlers(io: Server) {
             }
             lastMoveTimestamps.set(socket.id, now);
 
+            // SECURITY-IDOR: joinRoom 에서 검증·캐시한 캐릭터만 이동 가능(미입장이면 무시)
+            const verifiedCharacterId = socket.data.characterId as string | undefined;
+            if (!verifiedCharacterId) return;
+
             let moveData: { characterId: string; x: number; y: number; state: string };
 
             if (isBinary(data)) {
@@ -109,6 +125,9 @@ export async function setupSocketHandlers(io: Server) {
             } else {
                 moveData = data as { characterId: string; x: number; y: number; state: string };
             }
+
+            // 클라가 보낸 characterId 를 신뢰하지 않고 검증된 캐릭터로 고정(타 캐릭터 명의 이동패킷 위조 차단)
+            moveData.characterId = verifiedCharacterId;
 
             const currentRoom = Array.from(socket.rooms).find(room => room !== socket.id);
 
@@ -128,6 +147,10 @@ export async function setupSocketHandlers(io: Server) {
          */
         socket.on('playerAction', (data: unknown) => {
             const _apmStart = performance.now();
+            // SECURITY-IDOR: joinRoom 에서 검증·캐시한 캐릭터만 액션 가능(미입장이면 무시)
+            const verifiedCharacterId = socket.data.characterId as string | undefined;
+            if (!verifiedCharacterId) return;
+
             let actionData: { characterId: string; actionType: string; targetId?: string };
 
             if (isBinary(data)) {
@@ -140,6 +163,9 @@ export async function setupSocketHandlers(io: Server) {
             } else {
                 actionData = data as { characterId: string; actionType: string; targetId?: string };
             }
+
+            // 클라가 보낸 characterId 를 신뢰하지 않고 검증된 캐릭터로 고정(타 캐릭터 명의 액션 위조 차단)
+            actionData.characterId = verifiedCharacterId;
 
             const currentRoom = Array.from(socket.rooms).find(room => room !== socket.id);
             if (currentRoom) {
@@ -172,9 +198,9 @@ export async function setupSocketHandlers(io: Server) {
                 // rate limit 맵 정리
                 lastMoveTimestamps.delete(socket.id);
 
-                // Redis 내 유저 상태 정리
+                // Redis 내 유저 상태 정리 (joinRoom 에서 검증·캐시한 캐릭터 기준)
                 if (redisConnected()) {
-                    await redisClient.del(`userState:${(socket as any)._characterId ?? socket.id}`);
+                    await redisClient.del(`userState:${socket.data.characterId ?? socket.id}`);
                     console.log(`[Socket] Redis userState cleaned for ${socket.id}`);
                 }
             } catch (err) {
