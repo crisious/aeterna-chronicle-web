@@ -13,6 +13,7 @@
 import type { Server, Socket } from 'socket.io';
 import type { LootResult } from '../raid/raidManager';
 import { raidManager } from '../raid/raidManager';
+import { isGuildMember } from '../guild/guildMembership';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 
@@ -21,16 +22,15 @@ function raidRoom(sessionId: string): string {
 }
 
 // ─── 소켓 페이로드 타입 ─────────────────────────────────────────
+// SECURITY-IDOR: actor userId 는 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를 쓴다.
 
 interface RaidCreatePayload {
   bossId: string;
-  userId: string;
   guildId?: string;
 }
 
 interface RaidJoinPayload {
   sessionId: string;
-  userId: string;
   role?: string;
 }
 
@@ -40,7 +40,6 @@ interface RaidStartPayload {
 
 interface RaidDamagePayload {
   sessionId: string;
-  userId: string;
   damage: number;
 }
 
@@ -88,10 +87,16 @@ export function setupRaidSocketHandlers(io: Server): void {
      */
     socket.on('raid:create', async (data: RaidCreatePayload) => {
       try {
+        const userId = socket.data.userId; // SECURITY-IDOR: 생성자 = 인증 사용자
+        if (!userId) return socket.emit('raid:error', { message: '인증이 필요합니다.' });
+        // 길드 레이드면 본인이 그 길드원일 때만 guildId 부여(타 길드 명의 차단), 아니면 무소속.
+        const guildId = data.guildId && (await isGuildMember(data.guildId, userId))
+          ? data.guildId
+          : undefined;
         const session = await raidManager.createSession(
           data.bossId,
-          data.userId,
-          data.guildId,
+          userId,
+          guildId,
         );
 
         const room = raidRoom(session.sessionId);
@@ -118,9 +123,11 @@ export function setupRaidSocketHandlers(io: Server): void {
      */
     socket.on('raid:join', async (data: RaidJoinPayload) => {
       try {
+        const userId = socket.data.userId; // SECURITY-IDOR: 참가자 = 인증 사용자
+        if (!userId) return socket.emit('raid:error', { message: '인증이 필요합니다.' });
         const session = await raidManager.joinSession(
           data.sessionId,
-          data.userId,
+          userId,
           data.role,
         );
 
@@ -130,7 +137,7 @@ export function setupRaidSocketHandlers(io: Server): void {
         // 참가 알림 — Room 전체에 브로드캐스트
         io.to(room).emit('raid:playerJoined', {
           sessionId: data.sessionId,
-          userId: data.userId,
+          userId,
           role: data.role ?? 'dps',
           totalParticipants: session.participants.size,
         });
@@ -144,6 +151,13 @@ export function setupRaidSocketHandlers(io: Server): void {
      */
     socket.on('raid:start', async (data: RaidStartPayload) => {
       try {
+        const userId = socket.data.userId;
+        if (!userId) return socket.emit('raid:error', { message: '인증이 필요합니다.' });
+        // SECURITY: 세션 참가자만 시작 가능(타인 세션 강제 시작 차단)
+        const existing = raidManager.getSession(data.sessionId);
+        if (!existing || !existing.participants.has(userId)) {
+          return socket.emit('raid:error', { message: '세션 참가자만 시작할 수 있습니다.' });
+        }
         const session = await raidManager.startSession(data.sessionId);
         const room = raidRoom(data.sessionId);
 
@@ -165,9 +179,11 @@ export function setupRaidSocketHandlers(io: Server): void {
      */
     socket.on('raid:damage', async (data: RaidDamagePayload) => {
       try {
+        const userId = socket.data.userId; // SECURITY-IDOR: 데미지 기여자 = 인증 사용자(비참가자 거부 실효화)
+        if (!userId) return socket.emit('raid:error', { message: '인증이 필요합니다.' });
         const result = await raidManager.applyDamage(
           data.sessionId,
-          data.userId,
+          userId,
           data.damage,
         );
 

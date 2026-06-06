@@ -12,6 +12,10 @@
  */
 import { prisma } from '../db';
 import { addGuildXp } from './guildLevelManager';
+import { clampValue } from '../security/valueGuard';
+
+/** SECURITY: 단일 거점 공격의 per-hit 상한(거점 maxHp 비율) — 1회 즉시 점령 차단. */
+const GUILDWAR_MAX_DAMAGE_RATIO = 0.25;
 
 // ─── 거점 정의 ──────────────────────────────────────────────
 
@@ -231,6 +235,12 @@ export async function attackFortress(
   const fort = state[fortressId];
   if (!fort) return { success: false, error: '존재하지 않는 거점' };
 
+  // 데미지 위생처리(SECURITY): 클라 damage 의 NaN(거점 HP 가 NaN 으로 영구 오염되는 DoS)·Infinity(즉시
+  // 점령)·음수(HP 회복/owner 리셋 악용)·1회 즉시 점령을 차단. 풀 서버권위(공격 참가자 스탯 기반 산정)는
+  // 후속 과제 — 여기선 per-hit 거점 maxHp 비율 캡까지.
+  const safeDamage = clampValue(damage, fort.maxHp * GUILDWAR_MAX_DAMAGE_RATIO);
+  if (safeDamage === null) return { success: false, error: '유효하지 않은 데미지 값' };
+
   // 이미 자기 길드가 점령한 거점
   if (fort.owner === attackerGuildId) {
     return { success: false, error: '이미 점령한 거점' };
@@ -243,7 +253,7 @@ export async function attackFortress(
     fort.hp = Math.round(fort.maxHp * 0.5); // 절반 HP로 복구
   }
 
-  fort.hp = Math.max(0, fort.hp - damage);
+  fort.hp = Math.max(0, fort.hp - safeDamage);
 
   if (fort.hp <= 0) {
     fort.owner = attackerGuildId;

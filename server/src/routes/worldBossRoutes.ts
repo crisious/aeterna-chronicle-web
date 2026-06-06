@@ -13,6 +13,10 @@ import {
   calculateContributions,
   calculateLoot,
 } from '../world/worldBossManager';
+import { clampValue } from '../security/valueGuard';
+
+/** SECURITY: 단일 데미지 기여의 per-hit 상한(보스 maxHp 비율) — 1회 솔로 처치 차단. */
+const WORLDBOSS_MAX_DAMAGE_RATIO = 0.25;
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 // [SECURITY-IDOR] 행위자(playerId)는 body 에서 받지 않고 request.authUserId 로 결정한다.
@@ -126,18 +130,22 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
 
     try {
       const { damage } = request.body;
-      if (damage == null) {
-        return reply.status(400).send({ error: 'damage는 필수입니다.' });
+      const boss = getCurrentBoss();
+      // 데미지 위생처리(SECURITY): 클라 damage 의 NaN/Infinity·음수(보스 HP 회복 악용)·1회 솔로 처치를
+      // 차단. 기여도가 실골드 전리품(calculateLoot)을 결정하므로 무방비 시 무한 파밍·즉시 처치가 가능했다.
+      // 풀 서버권위(전투 산정)는 후속 과제 — 여기선 maxHp 비율 per-hit 캡까지.
+      const safeDamage = clampValue(damage, boss.maxHp * WORLDBOSS_MAX_DAMAGE_RATIO);
+      if (safeDamage === null) {
+        return reply.status(400).send({ error: '유효하지 않은 damage 값입니다.' });
       }
 
-      const boss = getCurrentBoss();
-      const damageResult = await (hpPool as any).applyDamage(boss.id, damage) as any;
+      const damageResult = await (hpPool as any).applyDamage(boss.id, safeDamage) as any;
       const remainingHp = typeof damageResult === 'number' ? damageResult : damageResult?.remainingHp ?? 0;
       const defeated = remainingHp <= 0;
 
       const result: Record<string, unknown> = {
         bossId: boss.id,
-        damage,
+        damage: safeDamage,
         remainingHp: Math.max(0, remainingHp),
         defeated,
       };

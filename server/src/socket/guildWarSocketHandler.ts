@@ -17,6 +17,7 @@ import {
   getWarStatus,
   getWarState,
 } from '../guild/guildWarEngine';
+import { isGuildMember } from '../guild/guildMembership';
 
 /** 전쟁별 Room 이름 */
 function warRoom(warId: string): string {
@@ -28,6 +29,11 @@ export function setupGuildWarSocketHandlers(io: Server): void {
 
     /** 길드전 선포 */
     socket.on('guildwar:declare', async (data: { guildId: string }) => {
+      const userId = socket.data.userId;
+      // SECURITY-IDOR: 선포 주체가 그 길드 소속일 때만 허용(타 길드 명의 선전포고 차단)
+      if (!userId || !data.guildId || !(await isGuildMember(data.guildId, userId))) {
+        return socket.emit('guildwar:declare:result', { success: false, error: '길드 권한이 없습니다.' });
+      }
       const result = await declareWar(data.guildId);
       socket.emit('guildwar:declare:result', result);
 
@@ -73,6 +79,13 @@ export function setupGuildWarSocketHandlers(io: Server): void {
       guildId: string;
       damage: number;
     }) => {
+      const userId = socket.data.userId;
+      // SECURITY-IDOR: 공격 주체가 그 길드 소속일 때만 허용(타 길드 명의 거점공격 차단).
+      // damage 값 위생처리는 attackFortress(guildWarEngine) 진입부에서 수행.
+      // SECURITY-TODO: data.guildId 가 warId 전쟁의 attacker/defender 중 하나인지 구조검증 추가 권장.
+      if (!userId || !data.guildId || !(await isGuildMember(data.guildId, userId))) {
+        return socket.emit('guildwar:error', { message: '길드 권한이 없습니다.' });
+      }
       const result = await attackFortress(data.warId, data.fortressId, data.guildId, data.damage);
 
       // 전체 참가자에게 거점 상태 브로드캐스트

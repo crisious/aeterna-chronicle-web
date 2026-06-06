@@ -1,5 +1,5 @@
 import type { Server, Socket } from 'socket.io';
-import { prisma } from '../db';
+import { isGuildMember } from '../guild/guildMembership';
 
 // ─── 길드 소켓 이벤트 타입 ──────────────────────────────────────
 
@@ -9,14 +9,6 @@ interface GuildChatPayload {
   // SECURITY-TODO: nickname 은 표시 라벨이라 유지하되 서버 조회값 대체 권장(식별자 아님).
   nickname: string;
   message: string;
-}
-
-/** socket.data.userId 가 guildId 의 길드원인지 검증(룸 도청/사칭 차단). */
-async function isGuildMember(guildId: string, userId: string): Promise<boolean> {
-  const member = await prisma.guildMember.findUnique({
-    where: { guildId_userId: { guildId, userId } },
-  });
-  return member !== null;
 }
 
 interface GuildNotification {
