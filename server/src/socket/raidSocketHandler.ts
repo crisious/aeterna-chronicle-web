@@ -16,6 +16,7 @@ import { raidManager } from '../raid/raidManager';
 import { isGuildMember } from '../guild/guildMembership';
 import { prisma } from '../db';
 import { computePhysicalDamage } from '../combat/characterCombatStats';
+import { allowAction, DAMAGE_ACTION_PROFILE } from '../security/actionRateLimiter';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 
@@ -183,6 +184,10 @@ export function setupRaidSocketHandlers(io: Server): void {
       try {
         const userId = socket.data.userId; // SECURITY-IDOR: 데미지 기여자 = 인증 사용자(비참가자 거부 실효화)
         if (!userId) return socket.emit('raid:error', { message: '인증이 필요합니다.' });
+        // SECURITY(호출빈도): 서버 산정 damage 라도 초당 반복호출로 DPS 초과 가능 → 1인당 빈도 제한.
+        if (!(await allowAction(userId, 'raid:damage', DAMAGE_ACTION_PROFILE.windowSec, DAMAGE_ACTION_PROFILE.maxPerWindow))) {
+          return socket.emit('raid:error', { message: '데미지 입력이 너무 빠릅니다.' });
+        }
 
         // SECURITY(서버 권위 damage): 클라가 보낸 damage 를 신뢰하지 않는다. 공격자 캐릭터의 클래스/레벨에서
         // ATK 를 서버가 도출하고 보스 방어력으로 damageCalculator(메인 전투 동일 공식) 산정한다.
