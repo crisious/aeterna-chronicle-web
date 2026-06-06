@@ -16,6 +16,7 @@ import { raidManager } from '../raid/raidManager';
 import { isGuildMember } from '../guild/guildMembership';
 import { prisma } from '../db';
 import { computePhysicalDamage } from '../combat/characterCombatStats';
+import { resolveOwnedSkillMultiplier } from '../combat/skillResolver';
 import { allowAction, DAMAGE_ACTION_PROFILE } from '../security/actionRateLimiter';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
@@ -44,6 +45,8 @@ interface RaidStartPayload {
 interface RaidDamagePayload {
   // SECURITY: damage 는 클라가 보내지 않는다 — 서버가 공격자 스탯×보스 방어로 산정.
   sessionId: string;
+  // 선택: 사용할 스킬 id. 서버가 소유·active 검증 후 Skill.damageScale(배율)을 적용한다(미지정=기본공격).
+  skillId?: string;
 }
 
 // ─── 핸들러 등록 ────────────────────────────────────────────────
@@ -200,9 +203,19 @@ export function setupRaidSocketHandlers(io: Server): void {
           select: { classId: true, level: true },
         });
         if (!character) return socket.emit('raid:error', { message: '활성 캐릭터가 없습니다.' });
+
+        // 스킬 배율: skillId 가 있으면 서버가 소유·active 검증 후 Skill.damageScale 적용(위조 차단). 미지정=기본공격.
+        let skillMultiplier = 1.0;
+        if (data.skillId) {
+          const mult = await resolveOwnedSkillMultiplier(userId, data.skillId);
+          if (mult === null) return socket.emit('raid:error', { message: '사용할 수 없는 스킬입니다.' });
+          skillMultiplier = mult;
+        }
+
         const damage = computePhysicalDamage(
           { classId: character.classId, level: character.level },
           session.bossDefense,
+          skillMultiplier,
         );
 
         const result = await raidManager.applyDamage(

@@ -101,14 +101,24 @@ export function setupDungeonSocketHandlers(io: Server): void {
         if (typeof ack === 'function') ack({ ok: false, error: '입력이 너무 빠릅니다.' });
         return;
       }
-      // [SECURITY] 서버 권위 damageDealt: 클라 값 대신 공격자 캐릭터 ATK 로 산정(리더보드 전용, 던전
-      // 몬스터 방어는 별도 조회 생략하고 def 0 기준 기본공격). 보상은 DB 산정이라 무관. (raid #246 동일 패턴)
+      // [SECURITY] 서버 권위 damageDealt: 클라 값 대신 공격자 캐릭터 ATK × 현재 웨이브 몬스터 방어로 산정
+      // (리더보드 전용, 보상은 DB). 현재 웨이브의 첫 몬스터(code) 방어를 반영하고, 없으면 def 0. (raid #246 패턴)
+      const run = dungeonManager.getRunStatus(runId);
+      const waveMonsters = run?.waves.find((w) => w.wave === run.currentWave)?.monsters ?? [];
+      let monsterDef = 0;
+      if (waveMonsters.length > 0) {
+        const mon = await prisma.monster.findUnique({
+          where: { code: waveMonsters[0].monsterId },
+          select: { defense: true },
+        });
+        monsterDef = mon?.defense ?? 0;
+      }
       const character = await prisma.character.findFirst({
         where: { userId, isActive: true },
         select: { classId: true, level: true },
       });
       const damage = character
-        ? computePhysicalDamage({ classId: character.classId, level: character.level }, 0)
+        ? computePhysicalDamage({ classId: character.classId, level: character.level }, monsterDef)
         : 0;
       const result = await dungeonManager.advanceWave(runId, userId, damage);
       if (typeof ack === 'function') ack(result);
