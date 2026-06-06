@@ -17,19 +17,20 @@ import { prisma } from '../db';
 // ── 타입 ──────────────────────────────────────────────────────
 
 interface TradeRequestBody {
-  requesterId: string;
+  // SECURITY-IDOR: 개시 주체(requesterId)는 body 가 아니라 request.authUserId 로 고정한다.
+  // body 에서는 상대방(targetId)만 받는다.
   targetId: string;
 }
 
 interface TradeIdBody {
+  // SECURITY-IDOR: 행위 주체(userId)는 body 에서 받지 않고 request.authUserId 를 사용한다.
   tradeId: string;
-  userId: string;
 }
 
 interface TradeOfferBody {
+  // SECURITY-IDOR: 오퍼 등록 주체(userId)는 body 가 아니라 request.authUserId 로 고정한다.
   tradeId: string;
-  userId: string;
-  items: Array<{ itemId: string; quantity: number }>;
+  items?: Array<{ itemId: string; quantity: number }>;
   gold: number;
 }
 
@@ -38,7 +39,7 @@ interface TradeIdParams {
 }
 
 interface TradeHistoryQuery {
-  userId: string;
+  // SECURITY-IDOR: 조회 대상(userId)은 query 가 아니라 request.authUserId 로 고정한다.
   page?: string;
   limit?: string;
 }
@@ -57,8 +58,11 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/trade/request — 거래 요청 */
   fastify.post('/api/trade/request', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { requesterId, targetId } = request.body as TradeRequestBody;
-    if (!requesterId || !targetId) return reply.status(400).send({ error: 'requesterId, targetId 필수' });
+    const { targetId } = request.body as TradeRequestBody;
+    // SECURITY-IDOR: 개시 주체는 인증된 사용자로 고정 (body.requesterId 위조 시 타인 명의 거래 개시·슬롯 점유 DoS 가능)
+    const requesterId = request.authUserId;
+    if (!requesterId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+    if (!targetId) return reply.status(400).send({ error: 'targetId 필수' });
     if (requesterId === targetId) return reply.status(400).send({ error: '자기 자신과 거래할 수 없습니다' });
 
     try {
@@ -141,8 +145,12 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** POST /api/trade/offer — 아이템/골드 등록 */
   fastify.post('/api/trade/offer', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { tradeId, userId, items, gold } = request.body as TradeOfferBody;
-    if (!tradeId || !userId) return reply.status(400).send({ error: 'tradeId, userId 필수' });
+    const { tradeId, items, gold } = request.body as TradeOfferBody;
+    // SECURITY-IDOR: 등록 주체는 인증된 사용자로 고정 (body.userId 위조 시 상대 참여자 명의로
+    // 그 사람의 자산을 건 오퍼를 등록·변조 가능 → confirm 단계 자산 탈취 조작)
+    const userId = request.authUserId;
+    if (!tradeId) return reply.status(400).send({ error: 'tradeId 필수' });
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const trade = await prisma.trade.findUnique({ where: { id: tradeId } });
@@ -164,8 +172,8 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
         }
       }
 
-      // 아이템 보유 확인
-      for (const item of items) {
+      // 아이템 보유 확인 (items 미전달 = 골드만 거는 오퍼 → 빈 배열로 처리)
+      for (const item of items ?? []) {
         const inv = await prisma.inventoryItem.findFirst({
           where: { userId, itemId: item.itemId, quantity: { gte: item.quantity } },
         });
@@ -239,6 +247,13 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
             });
           }
 
+          // SECURITY-TODO(후속 배치): 아래 inventorySlot.update 는 client 가 offer 에 넣은
+          // item.slotId 를 소유자 제약 없이 신뢰한다(where 에 userId 없음). 더해 offer 는
+          // items 를 {itemId,quantity} 로 저장하는데 여기선 item.slotId 를 읽어 필드 불일치 —
+          // 현재 slotId 는 항상 undefined 라 교환이 사실상 no-op(선재 기능 버그)이지만, 데이터흐름을
+          // 고칠 때 반드시 (a) offer 단계에서 slotId 의 실제 소유를 inventorySlot 기준 검증,
+          // (b) updateMany({ where:{ id, userId: 소유자 } }) + 영향행수 0 시 롤백으로 막아야 한다.
+          // 그렇지 않으면 임의 slotId 주입으로 타인 슬롯을 탈취하는 IDOR 가 열린다.
           // 아이템 교환: requester의 아이템 → target에게
           for (const item of requesterOffer.items ?? []) {
             await tx.inventorySlot.update({
@@ -300,10 +315,16 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
   /** GET /api/trade/:id — 거래 상태 조회 */
   fastify.get('/api/trade/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as TradeIdParams;
+    // SECURITY-IDOR: 참여자만 조회 가능 (id 만 알면 타인 거래의 오퍼 내역·골드·양측 ID 가 노출됐었음)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
       const trade = await prisma.trade.findUnique({ where: { id } });
       if (!trade) return reply.status(404).send({ error: '거래를 찾을 수 없습니다' });
+      if (trade.requesterId !== userId && trade.targetId !== userId) {
+        return reply.status(403).send({ error: '거래 참여자만 조회할 수 있습니다' });
+      }
       return reply.send({ trade });
     } catch (err: unknown) {
       return reply.status(500).send({ error: errMsg(err) });
@@ -312,8 +333,10 @@ export async function tradeRoutes(fastify: FastifyInstance): Promise<void> {
 
   /** GET /api/trade/history — 거래 이력 조회 */
   fastify.get('/api/trade/history', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { userId, page: pageStr, limit: limitStr } = request.query as TradeHistoryQuery;
-    if (!userId) return reply.status(400).send({ error: 'userId 필수' });
+    const { page: pageStr, limit: limitStr } = request.query as TradeHistoryQuery;
+    // SECURITY-IDOR: 본인 이력만 조회 (query.userId 위조 시 타인의 거래 이력 전체 열람 가능했음)
+    const userId = request.authUserId;
+    if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     const page = pageStr ? parseInt(pageStr, 10) : 1;
     const limit = limitStr ? Math.min(parseInt(limitStr, 10), 50) : 20;
