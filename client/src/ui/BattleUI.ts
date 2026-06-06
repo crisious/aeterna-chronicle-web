@@ -247,17 +247,11 @@ export class BattleUI {
       fontSize: '10px', color: '#ff8888',
       backgroundColor: '#222222', padding: { x: 4, y: 2 },
     }).setDepth(112).setInteractive({ useHandCursor: true });
+    // UX(#2): 단일 도주 경로로 위임. 이전엔 여기서 50% 고정확률 + scene.start('GameScene') 직행으로
+    // BattleScene._attemptFlee(생존자 기반 확률·escapeNarration 로그·_exitBattle 의 combatEnd 서버정리/
+    // returnScene 복귀)를 통째로 우회해, 서버 전투가 안 닫히고 던전 등으로 복귀 못 하는 버그였다.
     this.fleeBtn.on('pointerdown', () => {
-      this.addLog('🏃 도주 시도...');
-      // 50% 확률 도주
-      if (Math.random() < 0.5) {
-        this.addLog('✅ 도주 성공!');
-        this.scene.time.delayedCall(500, () => {
-          this.scene.scene.start('GameScene');
-        });
-      } else {
-        this.addLog('❌ 도주 실패!');
-      }
+      (this.scene as unknown as { _attemptFlee?: () => void })._attemptFlee?.();
     });
   }
 
