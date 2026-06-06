@@ -804,7 +804,11 @@ class NetworkManager {
 
     this.socket = io(url, {
       reconnection: false,
-      auth: this._token ? { token: this._token } : undefined,
+      // 재연결/토큰만료 견고화: 함수형 auth 로 매 핸드셰이크(재연결 포함)마다 최신 _token 을 재조회한다.
+      // 정적 객체({token})는 소켓 인스턴스에 토큰을 동결해, 15분 만료 후 attemptReconnect 가 만료토큰을
+      // 그대로 재전송하는 문제가 있었다. 서버 socketAuthGate 는 토큰 없으면 'unauthorized' 로 거부하고,
+      // 그 메시지를 connect_error 가 잡아 refreshAuth → 새 소켓 재연결한다.
+      auth: (cb: (data: { token?: string }) => void) => cb({ token: this._token ?? undefined }),
     });
 
     this.socket.on('connect', () => {

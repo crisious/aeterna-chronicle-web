@@ -1,12 +1,22 @@
 import type { Server, Socket } from 'socket.io';
+import { prisma } from '../db';
 
 // ─── 길드 소켓 이벤트 타입 ──────────────────────────────────────
 
 interface GuildChatPayload {
   guildId: string;
-  userId: string;
+  // SECURITY-IDOR: 발신 actor userId 는 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를 쓴다.
+  // SECURITY-TODO: nickname 은 표시 라벨이라 유지하되 서버 조회값 대체 권장(식별자 아님).
   nickname: string;
   message: string;
+}
+
+/** socket.data.userId 가 guildId 의 길드원인지 검증(룸 도청/사칭 차단). */
+async function isGuildMember(guildId: string, userId: string): Promise<boolean> {
+  const member = await prisma.guildMember.findUnique({
+    where: { guildId_userId: { guildId, userId } },
+  });
+  return member !== null;
 }
 
 interface GuildNotification {
@@ -28,28 +38,34 @@ export function setupGuildSocketHandlers(io: Server): void {
 
     /**
      * 길드 Room 입장 — 길드 채팅/알림 수신을 위해 Room에 조인
+     * SECURITY-IDOR: 인증된 본인이 그 길드의 멤버일 때만 조인을 허용한다(이전에는 임의 guildId 룸에
+     * 조인해 타 길드 채팅/알림을 도청할 수 있었다).
      */
-    socket.on('guild:join', (data: { guildId: string }) => {
-      const room = guildRoom(data.guildId);
-      socket.join(room);
-      console.log(`[Guild Socket] ${socket.id} joined ${room}`);
+    socket.on('guild:join', async (data: { guildId: string }) => {
+      const userId = socket.data.userId;
+      if (!userId || !data.guildId) return;
+      if (!(await isGuildMember(data.guildId, userId))) return;
+      socket.join(guildRoom(data.guildId));
     });
 
     /**
      * 길드 Room 퇴장
      */
     socket.on('guild:leave', (data: { guildId: string }) => {
-      const room = guildRoom(data.guildId);
-      socket.leave(room);
-      console.log(`[Guild Socket] ${socket.id} left ${room}`);
+      if (!data.guildId) return;
+      socket.leave(guildRoom(data.guildId));
     });
 
     /**
      * 길드 채팅 — 같은 길드 Room 멤버에게 브로드캐스트
+     * SECURITY-IDOR: 발신 actor = socket.data.userId, 그리고 그 유저가 해당 길드원일 때만 발신 허용
+     * (이전에는 payload.userId 로 타인 사칭 + 비길드원이 임의 길드에 채팅 주입 가능).
      */
-    socket.on('guild:chat', (payload: GuildChatPayload) => {
-      const { guildId, userId, nickname, message } = payload;
-      if (!guildId || !userId || !message) return;
+    socket.on('guild:chat', async (payload: GuildChatPayload) => {
+      const userId = socket.data.userId;
+      const { guildId, nickname, message } = payload;
+      if (!userId || !guildId || !message) return;
+      if (!(await isGuildMember(guildId, userId))) return;
 
       const chatMessage = {
         guildId,
@@ -63,19 +79,10 @@ export function setupGuildSocketHandlers(io: Server): void {
       io.to(guildRoom(guildId)).emit('guild:chat', chatMessage);
     });
 
-    /**
-     * 길드 알림 — 가입/탈퇴/전쟁 등 이벤트 브로드캐스트
-     * (서버 내부에서도 호출 가능하도록 io 인스턴스 활용)
-     */
-    socket.on('guild:notification', (payload: GuildNotification) => {
-      const { guildId } = payload;
-      if (!guildId) return;
-
-      io.to(guildRoom(guildId)).emit('guild:notification', {
-        ...payload,
-        timestamp: new Date().toISOString(),
-      });
-    });
+    // 보안: 클라이언트가 직접 emit 하던 'guild:notification' 리스너를 제거했다.
+    // 이전에는 임의 클라가 'war_declared'/'role_changed' 등 시스템 알림을 위조해 길드 룸에
+    // 브로드캐스트할 수 있었다. 정당한 길드 알림은 서버 내부의 emitGuildNotification(아래)으로만 발생한다.
+    // (client/src grep 결과 guild:notification 을 emit 하는 클라이언트 없음)
   });
 }
 

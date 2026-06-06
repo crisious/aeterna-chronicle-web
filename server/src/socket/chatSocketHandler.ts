@@ -23,7 +23,7 @@ import {
 // ─── 페이로드 타입 ──────────────────────────────────────────────
 
 interface ChatAuthPayload {
-  userId: string;
+  // SECURITY-IDOR: actor userId 는 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를 쓴다.
   nickname: string;
 }
 
@@ -75,13 +75,19 @@ export function setupChatSocketHandlers(io: Server): void {
     let currentUserId: string | null = null;
 
     // ── 인증 (chat 네임스페이스 재사용) ──────────────────────────
+    // SECURITY-IDOR: actor 는 핸드셰이크 인증값(socket.data.userId)으로 고정. 이전에는 payload.userId 를
+    // 신뢰해, 임의 유저를 사칭하면 이후 모든 chat:send/whisper/join 이 그 명의로 발신되는 신뢰사슬 루트였다.
     socket.on('chat:auth', (payload: ChatAuthPayload) => {
-      currentUserId = payload.userId;
-      chatUserMap.set(payload.userId, { socketId: socket.id, nickname: payload.nickname });
-      chatSocketUserMap.set(socket.id, payload.userId);
+      const userId = socket.data.userId;
+      if (!userId) return;
+      currentUserId = userId;
+      // SECURITY-TODO: nickname 도 서버(유저/캐릭터) 조회값으로 대체 권장 — 현재는 표시명 스푸핑 여지가
+      // 남는다(식별자가 아니라 표시 라벨이라 영향은 낮음; 모더레이션/뮤트는 userId 기준).
+      chatUserMap.set(userId, { socketId: socket.id, nickname: payload.nickname });
+      chatSocketUserMap.set(socket.id, userId);
 
       // 기본 월드 채널 자동 입장
-      joinChannel(payload.userId, 'world');
+      joinChannel(userId, 'world');
       socket.join('chat:world');
     });
 

@@ -9,39 +9,33 @@ import {
 
 // ─── 소켓 이벤트 페이로드 타입 ──────────────────────────────────
 
-interface AuthPayload {
-  userId: string;
-}
+// SECURITY-IDOR: actor 신원(userId/inviterId)은 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를
+// 사용한다. 아래 인터페이스에는 정당한 'target/상대' id 와 부가 데이터만 남긴다.
 
 interface FriendRequestPayload {
-  userId: string;
   friendId: string;
 }
 
 interface FriendAcceptPayload {
-  userId: string;
   friendId: string;
 }
 
 interface PartyInvitePayload {
   partyId: string;
-  inviterId: string;
   targetUserId: string;
 }
 
 interface PartyJoinPayload {
   partyId: string;
-  userId: string;
 }
 
 interface PartyLeavePayload {
   partyId: string;
-  userId: string;
 }
 
 interface PartyChatPayload {
   partyId: string;
-  userId: string;
+  // SECURITY-TODO: nickname 은 표시 라벨이라 유지하되 서버 조회값으로 대체 권장(스푸핑 여지, 식별자 아님).
   nickname: string;
   message: string;
 }
@@ -82,8 +76,10 @@ export function setupSocialSocketHandlers(io: Server): void {
   io.on('connection', (socket: Socket) => {
 
     // ── 인증 & 온라인 등록 ──
-    socket.on('social:auth', async (data: AuthPayload) => {
-      const { userId } = data;
+    // SECURITY-IDOR: actor 는 socket.data.userId(핸드셰이크 인증)로 고정. 이전에는 data.userId 를
+    // 신뢰해 임의 유저를 사칭하면 이후 emitToUser 라우팅·온라인상태가 전부 그 명의가 되는 루트였다.
+    socket.on('social:auth', async () => {
+      const userId = socket.data.userId;
       if (!userId) return;
 
       userSocketMap.set(userId, socket.id);
@@ -93,7 +89,6 @@ export function setupSocialSocketHandlers(io: Server): void {
 
       // 친구들에게 온라인 알림 브로드캐스트
       socket.broadcast.emit('friend:online', { userId });
-      console.log(`[Social] ${userId} 온라인 (socket: ${socket.id})`);
     });
 
     // ── 연결 해제 → 오프라인 처리 ──
@@ -113,7 +108,9 @@ export function setupSocialSocketHandlers(io: Server): void {
 
     /** 친구 요청 */
     socket.on('friend:request', async (data: FriendRequestPayload) => {
-      const { userId, friendId } = data;
+      const userId = socket.data.userId; // SECURITY-IDOR: 요청 주체 = 인증 사용자
+      if (!userId) return;
+      const { friendId } = data;
       try {
         const result = await sendFriendRequest(userId, friendId);
         // 요청 받은 유저에게 실시간 알림
@@ -130,7 +127,9 @@ export function setupSocialSocketHandlers(io: Server): void {
 
     /** 친구 요청 수락 */
     socket.on('friend:accept', async (data: FriendAcceptPayload) => {
-      const { userId, friendId } = data;
+      const userId = socket.data.userId; // SECURITY-IDOR: 수락 주체 = 인증 사용자
+      if (!userId) return;
+      const { friendId } = data;
       try {
         await acceptFriendRequest(userId, friendId);
         // 요청한 유저에게 수락 알림
@@ -150,7 +149,9 @@ export function setupSocialSocketHandlers(io: Server): void {
 
     /** 파티 초대 전송 */
     socket.on('party:invite', (data: PartyInvitePayload) => {
-      const { partyId, inviterId, targetUserId } = data;
+      const inviterId = socket.data.userId; // SECURITY-IDOR: 초대 주체 = 인증 사용자
+      if (!inviterId) return;
+      const { partyId, targetUserId } = data;
       emitToUser(io, targetUserId, 'party:invite', {
         partyId,
         inviterId,
@@ -159,29 +160,34 @@ export function setupSocialSocketHandlers(io: Server): void {
 
     /** 파티 Room 참가 */
     socket.on('party:join', async (data: PartyJoinPayload) => {
-      const { partyId, userId } = data;
+      const userId = socket.data.userId; // SECURITY-IDOR: 참가 주체 = 인증 사용자
+      if (!userId) return;
+      const { partyId } = data;
       const room = partyRoom(partyId);
       socket.join(room);
 
       // 파티원에게 알림
       io.to(room).emit('party:join', { userId, partyId });
-      console.log(`[Social] ${userId} joined party room ${partyId}`);
     });
 
     /** 파티 Room 탈퇴 */
     socket.on('party:leave', (data: PartyLeavePayload) => {
-      const { partyId, userId } = data;
+      const userId = socket.data.userId; // SECURITY-IDOR: 탈퇴 주체 = 인증 사용자
+      if (!userId) return;
+      const { partyId } = data;
       const room = partyRoom(partyId);
 
       io.to(room).emit('party:leave', { userId, partyId });
       socket.leave(room);
-      console.log(`[Social] ${userId} left party room ${partyId}`);
     });
 
     /** 파티 채팅 */
+    // SECURITY-IDOR: 발신 actor = socket.data.userId. nickname 은 표시 라벨로 SECURITY-TODO(서버조회 권장).
     socket.on('party:chat', (payload: PartyChatPayload) => {
-      const { partyId, userId, nickname, message } = payload;
-      if (!partyId || !userId || !message) return;
+      const userId = socket.data.userId;
+      if (!userId) return;
+      const { partyId, nickname, message } = payload;
+      if (!partyId || !message) return;
 
       const chatMessage = {
         partyId,
