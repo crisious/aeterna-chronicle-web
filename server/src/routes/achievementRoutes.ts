@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
 import { achievementEngine } from '../achievement/achievementEngine';
 import { redisClient, redisConnected } from '../redis';
+import { requireAdmin } from '../admin/authMiddleware';
 
 // ─── 타입 정의 ──────────────────────────────────────────────
 
@@ -118,12 +119,16 @@ export async function achievementRoutes(fastify: FastifyInstance): Promise<void>
     return reply.send({ userId, summary, progress });
   });
 
-  // ── POST /api/achievements/check — 수동 체크 트리거 ────────
-  fastify.post('/api/achievements/check', async (
+  // ── POST /api/achievements/check — 수동 체크 트리거(admin/debug 전용) ──
+  // 보안: 클라가 임의 {type,value,flag} 로 호출하면 value 가 진행 카운터에 그대로 incrBy 되어
+  // count/threshold 업적 + 연동 칭호를 무한 자가지급할 수 있다(#241 시즌 add-exp 와 동일 클래스).
+  // 정당한 업적 진행은 서버 내부 호출(codexManager → achievementEngine.check, value 서버결정)로만
+  // 발생하며 클라는 이 엔드포인트를 호출하지 않으므로, admin/디버그 전용으로 게이트한다.
+  // (소켓 트윈 achievement:check 도 동일 sink 라 achievementSocketHandler.ts 에서 함께 제거함)
+  fastify.post('/api/achievements/check', { preHandler: requireAdmin('admin') as any }, async (
     request: FastifyRequest<{ Body: CheckBody }>,
     reply: FastifyReply
   ) => {
-    // IDOR 방지: body 의 userId 를 신뢰하지 않고 인증된 행위자로 체크
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
