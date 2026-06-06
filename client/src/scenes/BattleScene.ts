@@ -146,6 +146,9 @@ interface UnitSprite {
   atbBar?: Phaser.GameObjects.Graphics;
   isAlly: boolean;
   isDead: boolean;
+  /** UX: 적 머리 위 HP 바(보스는 더 큼). _spawnEnemies 에서 생성, _updateEnemyHpBars 가 매프레임 갱신. */
+  enemyHpBar?: Phaser.GameObjects.Graphics;
+  isBoss?: boolean;
 }
 
 // 커맨드 메뉴 항목
@@ -644,6 +647,7 @@ export class BattleScene extends Phaser.Scene {
 
     // 상태 패널 갱신
     this._updateStatusPanel();
+    this._updateEnemyHpBars();
 
     // 전투 종료 판정
     this._checkBattleEnd();
@@ -1505,8 +1509,8 @@ export class BattleScene extends Phaser.Scene {
       },
     });
 
-    // EffectManager 연동 (풀링)
-    this.effectManager?.spawnDamageText(x, y, value, type === 'critical');
+    // UX(#3): EffectManager.spawnDamageText 이중 스폰 제거. 위 인라인 팝업(crit 금색 30px💥 + FF6 2단 트윈)과
+    // 같은 좌표/depth 에 다른 색(#FF4444 28px)으로 한 번 더 떠올라 겹침/깜빡임 + 색 불일치였다. 인라인만 유지.
   }
 
   /**
@@ -1720,10 +1724,15 @@ export class BattleScene extends Phaser.Scene {
         sprite.setName(`enemy_${unit.id}_eratint`);
       }
 
+      // UX(#1): 적 머리 위 HP 바 — ATB RPG 의 가장 기본 정보(이전엔 적 HP 가시화 0%). _updateEnemyHpBars 갱신.
+      const enemyHpBar = this.add.graphics().setDepth(51);
+
       const us: UnitSprite = {
         unit, sprite, nameText,
         atb: Phaser.Math.Between(0, 20),
         isAlly: false, isDead: false,
+        isBoss,
+        enemyHpBar,
       };
       this.enemySprites.push(us);
     });
@@ -1814,6 +1823,37 @@ export class BattleScene extends Phaser.Scene {
       entry.atb.fillStyle(atbRatio >= 1 ? 0x44ff44 : 0x4488ff, 1);
       entry.atb.fillRect(atbBarX - STATUS_PANEL_X, barY - STATUS_PANEL_Y, ATB_BAR_W * atbRatio, ATB_BAR_H);
     });
+  }
+
+  // ─── UX(#1): 적 머리 위 HP 바 ─────────────────────────────────
+  /** 적/보스 sprite 위에 HP 바를 매프레임 그린다. 적 HP 가시화로 "몇 대 더?" 판단 + 보스전 페이싱. */
+  private _updateEnemyHpBars(): void {
+    for (const us of this.enemySprites) {
+      const g = us.enemyHpBar;
+      if (!g) continue;
+      g.clear();
+      if (us.isDead) continue; // 사망 시 바 숨김
+
+      const ratio = us.unit.maxHp > 0 ? Math.max(0, Math.min(1, us.unit.hp / us.unit.maxHp)) : 0;
+      const w = us.isBoss ? 140 : 64;
+      const h = us.isBoss ? 8 : 5;
+      const spriteH = us.sprite.displayHeight ?? 60;
+      const x = us.sprite.x - w / 2;
+      const y = us.sprite.y - spriteH / 2 - (us.isBoss ? 30 : 22); // 이름 라벨 위
+
+      // 외곽 + 배경
+      g.fillStyle(0x000000, 0.55);
+      g.fillRect(x - 1, y - 1, w + 2, h + 2);
+      g.fillStyle(0x331111, 1);
+      g.fillRect(x, y, w, h);
+      // 잔여 HP(적=빨강 계열, 위험 구간에서 색 변화 — 색약 대비 tick 병행)
+      const col = ratio > 0.5 ? 0xee5555 : ratio > 0.25 ? 0xffaa33 : 0xff2222;
+      g.fillStyle(col, 1);
+      g.fillRect(x, y, w * ratio, h);
+      // 25/50/75% tick(색약 redundancy + 마무리 판단)
+      g.fillStyle(0x000000, 0.5);
+      for (const t of [0.25, 0.5, 0.75]) g.fillRect(Math.round(x + w * t), y, 1, h);
+    }
   }
 
   // ─── 전투 종료 판정 ──────────────────────────────────────────
