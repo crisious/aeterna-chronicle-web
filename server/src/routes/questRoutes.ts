@@ -114,11 +114,14 @@ export async function questRoutes(fastify: FastifyInstance): Promise<void> {
       if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
       const { id } = request.params;
-      const { playerLevel } = request.body;
-
-      if (playerLevel == null) {
-        return reply.status(400).send({ error: 'BAD_REQUEST', message: 'playerLevel 필수' });
-      }
+      // 보안: 클라가 보낸 playerLevel 을 신뢰하지 않는다(위조로 요구레벨 게이팅 우회 방지).
+      // DB 캐릭터 레벨(유저 캐릭터 최고)을 권위값으로 사용. (#237/#240 과 동일 원칙)
+      const character = await prisma.character.findFirst({
+        where: { userId },
+        orderBy: { level: 'desc' },
+        select: { level: true },
+      });
+      const playerLevel = character?.level ?? 1;
 
       const result = await acceptQuest(userId, id, playerLevel);
       return reply.status(201).send(result);

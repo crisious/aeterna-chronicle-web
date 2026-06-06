@@ -11,6 +11,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../db';
+import { requireAdmin } from '../admin/authMiddleware';
 import {
   getCurrentSeason,
   addSeasonXp,
@@ -256,7 +257,10 @@ export async function seasonPassRoutes(fastify: FastifyInstance): Promise<void> 
   });
 
   // ── POST /api/season-pass/add-exp ─────────────────────────────
-  fastify.post('/api/season-pass/add-exp', async (
+  // 보안: 클라가 임의 amount 로 시즌 XP 를 적립하면 자유트랙 보상(골드/크리스탈)을 무한
+  // 과지급받을 수 있다. 정당한 XP 적립은 source 기반 POST /api/season-pass/xp(서버가 금액 결정)
+  // 로만 발생하며, 이 임의-amount 엔드포인트는 admin/디버그 전용으로 게이트한다(클라 미사용).
+  fastify.post('/api/season-pass/add-exp', { preHandler: requireAdmin('admin') as any }, async (
     request: FastifyRequest<{ Body: AddExpBody }>,
     reply: FastifyReply,
   ) => {
