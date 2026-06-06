@@ -17,8 +17,10 @@ import { prisma } from '../db';
 
 // ── 페이로드 타입 ───────────────────────────────────────────────
 
+// SECURITY-IDOR: actor userId 는 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를 사용한다.
+// (이전에는 임의 userId 로 큐 등록·그 userId 룸 조인=타인 매칭알림 도청·타인 큐 취소·강제 수락이 가능했다)
+
 interface QueuePayload {
-  userId: string;
   queueType: string;
   contentId?: string;
   role: string;
@@ -26,12 +28,7 @@ interface QueuePayload {
   gearScore: number;
 }
 
-interface CancelPayload {
-  userId: string;
-}
-
 interface AcceptPayload {
-  userId: string;
   partyId: string;
 }
 
@@ -58,16 +55,17 @@ export function setupMatchmakingSocketHandlers(io: Server): void {
     /** 큐 등록 */
     socket.on('matchmaking:queue', async (payload: QueuePayload) => {
       try {
-        if (!payload.userId || !payload.queueType || !payload.role) {
+        const userId = socket.data.userId; // SECURITY-IDOR: 큐 등록 주체 = 인증 사용자
+        if (!userId || !payload.queueType || !payload.role) {
           socket.emit('matchmaking:error', { error: '필수 파라미터 누락' });
           return;
         }
 
-        // userId 기반 룸 가입 (매칭 알림 수신용)
-        await socket.join(payload.userId);
+        // 본인 userId 기반 룸 가입 (매칭 알림 수신용 — 타인 룸 조인=도청 차단)
+        await socket.join(userId);
 
         const req: QueueRequest = {
-          userId: payload.userId,
+          userId,
           queueType: payload.queueType as QueueRequest['queueType'],
           contentId: payload.contentId,
           role: payload.role as QueueRequest['role'],
@@ -84,9 +82,11 @@ export function setupMatchmakingSocketHandlers(io: Server): void {
     });
 
     /** 큐 취소 */
-    socket.on('matchmaking:cancel', async (payload: CancelPayload) => {
+    socket.on('matchmaking:cancel', async () => {
       try {
-        const cancelled = await cancelQueue(payload.userId);
+        const userId = socket.data.userId; // SECURITY-IDOR: 본인 큐만 취소
+        if (!userId) return;
+        const cancelled = await cancelQueue(userId);
         socket.emit('matchmaking:cancelled', { success: cancelled });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -97,9 +97,10 @@ export function setupMatchmakingSocketHandlers(io: Server): void {
     /** 매칭 수락 → 전원 수락 확인 → 던전 입장 트리거 */
     socket.on('matchmaking:accept', async (payload: AcceptPayload) => {
       try {
-        const { userId, partyId } = payload;
+        const userId = socket.data.userId; // SECURITY-IDOR: 수락 주체 = 인증 사용자(타인 명의 강제수락 차단)
+        const { partyId } = payload;
         if (!userId || !partyId) {
-          socket.emit('matchmaking:error', { error: 'userId와 partyId는 필수입니다' });
+          socket.emit('matchmaking:error', { error: 'partyId는 필수입니다' });
           return;
         }
 

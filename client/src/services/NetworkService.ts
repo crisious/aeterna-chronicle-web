@@ -70,6 +70,9 @@ export class NetworkService {
     this.connectionState = 'connecting';
 
     try {
+      // SECURITY-TODO: 이 NetworkService 소켓은 현재 dead code(호출부 없음)다. 부활시킬 경우 서버
+      // socketAuthGate(deny-by-default) 통과를 위해 NetworkManager 처럼 auth:(cb)=>cb({token}) 핸드셰이크
+      // 토큰 주입이 반드시 필요하다(아니면 연결 거부됨).
       this.socket = io(url, { reconnectionAttempts: 3 });
 
       this.socket.on('connect', () => {

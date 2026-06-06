@@ -17,18 +17,20 @@ export function setupNotificationSocketHandlers(io: Server): void {
   io.on('connection', (socket: Socket) => {
 
     /**
-     * 알림 구독: 유저별 룸에 자동 조인
-     * 클라이언트에서 인증 후 userId와 함께 호출
+     * 알림 구독: 인증된 본인 룸에만 조인
+     * SECURITY-IDOR: 클라가 보낸 data.userId 를 신뢰하면 임의 유저 룸(user:*)에 조인해 타인의
+     * 모든 개인 알림 스트림(알림/거래/우편 푸시)을 도청할 수 있었다. socket.data.userId(핸드셰이크
+     * 인증값, socketAuthGate)만 사용한다.
      */
-    socket.on('notification:subscribe', async (data: { userId: string }) => {
-      if (!data.userId) return;
+    socket.on('notification:subscribe', async () => {
+      const userId = socket.data.userId;
+      if (!userId) return;
 
-      // 유저 전용 룸 조인
-      socket.join(`user:${data.userId}`);
-      console.log(`[Notification] ${data.userId} 알림 구독 (socket: ${socket.id})`);
+      // 본인 전용 룸 조인
+      socket.join(`user:${userId}`);
 
       // 접속 시 미읽음 배지 수 전송
-      const unreadCount = await notificationManager.getUnreadCount(data.userId);
+      const unreadCount = await notificationManager.getUnreadCount(userId);
       socket.emit('notification:badge', { unreadCount });
     });
   });

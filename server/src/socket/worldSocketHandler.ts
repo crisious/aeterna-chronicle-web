@@ -18,13 +18,13 @@ function zoneRoom(zoneCode: string): string {
 
 // ─── 소켓 페이로드 타입 ─────────────────────────────────────────
 
+// SECURITY-IDOR: actor userId 는 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를 쓴다.
+// (이전에는 payload.userId 로 타인 명의 존이동/위치 위조가 가능했다)
 interface WorldMovePayload {
-  userId: string;
   targetZoneCode: string;
 }
 
 interface WorldTeleportPayload {
-  userId: string;
   targetZoneCode: string;
 }
 
@@ -35,15 +35,13 @@ const userCurrentZone = new Map<string, string>();
 function isZoneTransitionPayload(payload: unknown): payload is WorldMovePayload {
   if (!payload || typeof payload !== 'object') return false;
   const data = payload as Partial<WorldMovePayload>;
-  return typeof data.userId === 'string'
-    && data.userId.trim().length > 0
-    && typeof data.targetZoneCode === 'string'
+  return typeof data.targetZoneCode === 'string'
     && data.targetZoneCode.trim().length > 0;
 }
 
 function ackInvalidPayload(ack: ((res: unknown) => void) | undefined): void {
   if (typeof ack === 'function') {
-    ack({ ok: false, error: 'userId, targetZoneCode는 필수입니다.' });
+    ack({ ok: false, error: 'targetZoneCode는 필수입니다.' });
   }
 }
 
@@ -53,12 +51,13 @@ export function setupWorldSocketHandlers(io: Server): void {
   io.on('connection', (socket: Socket) => {
     // ── 존 이동 ──
     socket.on('world:move', async (payload: WorldMovePayload, ack?: (res: unknown) => void) => {
-      if (!isZoneTransitionPayload(payload)) {
+      const userId = socket.data.userId; // SECURITY-IDOR: 이동 주체 = 인증 사용자
+      if (!userId || !isZoneTransitionPayload(payload)) {
         ackInvalidPayload(ack);
         return;
       }
 
-      const { userId, targetZoneCode } = payload;
+      const { targetZoneCode } = payload;
 
       try {
         // 이동 전 현재 존 퇴장 브로드캐스트
@@ -93,12 +92,13 @@ export function setupWorldSocketHandlers(io: Server): void {
 
     // ── 텔레포트 ──
     socket.on('world:teleport', async (payload: WorldTeleportPayload, ack?: (res: unknown) => void) => {
-      if (!isZoneTransitionPayload(payload)) {
+      const userId = socket.data.userId; // SECURITY-IDOR: 텔레포트 주체 = 인증 사용자
+      if (!userId || !isZoneTransitionPayload(payload)) {
         ackInvalidPayload(ack);
         return;
       }
 
-      const { userId, targetZoneCode } = payload;
+      const { targetZoneCode } = payload;
 
       try {
         // 이전 존 퇴장
@@ -129,8 +129,16 @@ export function setupWorldSocketHandlers(io: Server): void {
     });
 
     // ── 연결 해제 시 퇴장 처리 ──
+    // socket.data.userId(인증값)로 현재 존을 정리한다. 이전에는 socket↔userId 역매핑이 없어
+    // userCurrentZone 와 zone-leave 브로드캐스트가 누락돼 좀비 존 상태가 잔존했다.
     socket.on('disconnect', () => {
-      // 소켓 ID로 userId 역추적은 별도 매핑 필요 — 현재는 Room 자동 정리에 의존
+      const userId = socket.data.userId;
+      if (!userId) return;
+      const prevZone = userCurrentZone.get(userId);
+      if (prevZone) {
+        socket.to(zoneRoom(prevZone)).emit('world:leave', { userId, zoneCode: prevZone });
+        userCurrentZone.delete(userId);
+      }
     });
   });
 }

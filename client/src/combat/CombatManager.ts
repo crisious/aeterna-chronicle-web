@@ -10,6 +10,7 @@
 
 import { io, Socket } from 'socket.io-client';
 import type { StatusEffectData } from './StatusEffectRenderer';
+import { networkManager } from '../network/NetworkManager';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -166,6 +167,10 @@ export class CombatManager {
       this.socket = io(serverUrl, {
         transports: ['websocket'],
         autoConnect: true,
+        // 서버 socketAuthGate 핸드셰이크 인증(deny-by-default) 통과용 토큰 주입. 함수형 auth 로
+        // 최신 토큰 전송. reconnection:false 로 미인증 거부 시 무한 재연결 루프를 방지한다.
+        reconnection: false,
+        auth: (cb: (data: { token?: string }) => void) => cb({ token: networkManager.token ?? undefined }),
       });
 
       this.socket.on('connect', () => {

@@ -11,6 +11,7 @@ import { Server } from 'socket.io';
 import { registerRoutes, registerSocketHandlers } from './featureRegistry';
 import { registerMiddleware, initInfraServices, initTickManager, initSpawnManager, startSchedulers } from './runtimeServices';
 import { registerShutdownHandlers } from './shutdownManager';
+import { socketAuthGate } from '../security/socketAuthGate';
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
@@ -40,6 +41,10 @@ export async function bootstrap(): Promise<void> {
 
     // 5. Socket.io 바인딩 + 핸들러 등록
     const io = new Server(fastify.server, { cors: { origin: ALLOWED_ORIGINS } });
+    // 5-0. 핸드셰이크 인증 미들웨어 (deny-by-default). 모든 connection 핸들러 등록보다 먼저 둬야
+    //      인증되지 않은 소켓이 존재할 수 있는 창을 없앤다. io.use 는 connection 보다 항상 먼저 실행된다.
+    //      검증된 userId 는 socket.data.userId 에 주입되어 핸들러가 클라 payload 대신 actor 로 사용한다.
+    io.use((socket, next) => { void socketAuthGate(socket, next); });
     // 기능별 소켓 모듈이 기본 namespace에 connection listener를 나눠 등록한다.
     // 등록 모듈 수가 Node 기본 limit(10)을 넘는 것이 정상 구조라, 누수 오탐 경고를 방지한다.
     io.setMaxListeners(64);
