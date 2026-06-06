@@ -18,6 +18,8 @@ import {
   getWarState,
 } from '../guild/guildWarEngine';
 import { isGuildMember } from '../guild/guildMembership';
+import { prisma } from '../db';
+import { computePhysicalDamage } from '../combat/characterCombatStats';
 
 /** 전쟁별 Room 이름 */
 function warRoom(warId: string): string {
@@ -73,20 +75,26 @@ export function setupGuildWarSocketHandlers(io: Server): void {
     });
 
     /** 거점 공격 */
+    // [SECURITY] damage 는 클라가 보내지 않는다 — 서버가 공격자 캐릭터 스탯으로 산정(거점은 방어 없음 → def 0).
     socket.on('guildwar:capture', async (data: {
       warId: string;
       fortressId: string;
       guildId: string;
-      damage: number;
     }) => {
       const userId = socket.data.userId;
       // SECURITY-IDOR: 공격 주체가 그 길드 소속일 때만 허용(타 길드 명의 거점공격 차단).
-      // damage 값 위생처리는 attackFortress(guildWarEngine) 진입부에서 수행.
       // SECURITY-TODO: data.guildId 가 warId 전쟁의 attacker/defender 중 하나인지 구조검증 추가 권장.
       if (!userId || !data.guildId || !(await isGuildMember(data.guildId, userId))) {
         return socket.emit('guildwar:error', { message: '길드 권한이 없습니다.' });
       }
-      const result = await attackFortress(data.warId, data.fortressId, data.guildId, data.damage);
+      // 서버 권위 damage: 공격자 캐릭터 ATK 로 산정(거점 방어 0). attackFortress 의 clampValue 는 backstop 유지.
+      const character = await prisma.character.findFirst({
+        where: { userId, isActive: true },
+        select: { classId: true, level: true },
+      });
+      if (!character) return socket.emit('guildwar:error', { message: '활성 캐릭터가 없습니다.' });
+      const damage = computePhysicalDamage({ classId: character.classId, level: character.level }, 0);
+      const result = await attackFortress(data.warId, data.fortressId, data.guildId, damage);
 
       // 전체 참가자에게 거점 상태 브로드캐스트
       io.to(warRoom(data.warId)).emit('guildwar:fortress:update', {

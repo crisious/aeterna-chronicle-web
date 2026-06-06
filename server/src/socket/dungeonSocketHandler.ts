@@ -12,10 +12,8 @@
 import type { Server, Socket } from 'socket.io';
 import type { DungeonClearResult, DungeonWave } from '../dungeon/dungeonManager';
 import { dungeonManager } from '../dungeon/dungeonManager';
-import { clampValue } from '../security/valueGuard';
-
-/** SECURITY: 단일 웨이브 보고 damageDealt 의 절대 상한(리더보드 인플레/NaN 차단). */
-const DUNGEON_MAX_DAMAGE_PER_WAVE = 10_000_000;
+import { prisma } from '../db';
+import { computePhysicalDamage } from '../combat/characterCombatStats';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 
@@ -39,8 +37,8 @@ interface DungeonEnterPayload {
 }
 
 interface DungeonWavePayload {
+  // SECURITY: damageDealt 는 클라가 보내지 않는다 — 서버가 공격자 캐릭터 ATK 로 산정(리더보드 전용).
   runId: string;
-  damageDealt?: number;
 }
 
 interface DungeonClearPayload {
@@ -92,14 +90,21 @@ export function setupDungeonSocketHandlers(io: Server): void {
     // ── 웨이브 진행 ──
     socket.on('dungeon:wave', async (payload: DungeonWavePayload, ack?: (res: unknown) => void) => {
       const userId = socket.data.userId; // SECURITY-IDOR: 진행 주체 = 인증 사용자
-      const { runId, damageDealt } = payload;
+      const { runId } = payload;
       if (!userId || !isRunParticipant(runId, userId)) {
         if (typeof ack === 'function') ack({ ok: false, error: 'run 참가자가 아닙니다.' });
         return;
       }
-      // damageDealt 위생처리(리더보드 인플레/NaN/음수 차단). 보상은 DB 산정이라 무관.
-      const safeDamage = clampValue(damageDealt ?? 0, DUNGEON_MAX_DAMAGE_PER_WAVE) ?? 0;
-      const result = await dungeonManager.advanceWave(runId, userId, safeDamage);
+      // [SECURITY] 서버 권위 damageDealt: 클라 값 대신 공격자 캐릭터 ATK 로 산정(리더보드 전용, 던전
+      // 몬스터 방어는 별도 조회 생략하고 def 0 기준 기본공격). 보상은 DB 산정이라 무관. (raid #246 동일 패턴)
+      const character = await prisma.character.findFirst({
+        where: { userId, isActive: true },
+        select: { classId: true, level: true },
+      });
+      const damage = character
+        ? computePhysicalDamage({ classId: character.classId, level: character.level }, 0)
+        : 0;
+      const result = await dungeonManager.advanceWave(runId, userId, damage);
       if (typeof ack === 'function') ack(result);
     });
 
