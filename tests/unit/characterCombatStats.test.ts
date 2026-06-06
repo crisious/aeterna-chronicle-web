@@ -37,4 +37,10 @@ describe('characterCombatStats (서버 권위 damage)', () => {
     const lvl60 = computePhysicalDamage({ classId: 'ether_knight', level: 60 }, 5);
     expect(lvl60).toBeGreaterThan(lvl1);
   });
+
+  test('computePhysicalDamage — 스킬 배율 높을수록 강함', () => {
+    const basic = computePhysicalDamage({ classId: 'memory_breaker', level: 50 }, 10, 1.0);
+    const skill = computePhysicalDamage({ classId: 'memory_breaker', level: 50 }, 10, 2.0);
+    expect(skill).toBeGreaterThan(basic); // 배율 2.0 은 1.0 보다 항상 큼(분산/크리 무관)
+  });
 });
