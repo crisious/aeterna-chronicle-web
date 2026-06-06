@@ -20,6 +20,7 @@ import {
 import { isGuildMember } from '../guild/guildMembership';
 import { prisma } from '../db';
 import { computePhysicalDamage } from '../combat/characterCombatStats';
+import { allowAction, DAMAGE_ACTION_PROFILE } from '../security/actionRateLimiter';
 
 /** 전쟁별 Room 이름 */
 function warRoom(warId: string): string {
@@ -86,6 +87,10 @@ export function setupGuildWarSocketHandlers(io: Server): void {
       // SECURITY-TODO: data.guildId 가 warId 전쟁의 attacker/defender 중 하나인지 구조검증 추가 권장.
       if (!userId || !data.guildId || !(await isGuildMember(data.guildId, userId))) {
         return socket.emit('guildwar:error', { message: '길드 권한이 없습니다.' });
+      }
+      // SECURITY(호출빈도): 반복호출 거점공격 DPS 초과 차단.
+      if (!(await allowAction(userId, 'guildwar:capture', DAMAGE_ACTION_PROFILE.windowSec, DAMAGE_ACTION_PROFILE.maxPerWindow))) {
+        return socket.emit('guildwar:error', { message: '공격이 너무 빠릅니다.' });
       }
       // 서버 권위 damage: 공격자 캐릭터 ATK 로 산정(거점 방어 0). attackFortress 의 clampValue 는 backstop 유지.
       const character = await prisma.character.findFirst({

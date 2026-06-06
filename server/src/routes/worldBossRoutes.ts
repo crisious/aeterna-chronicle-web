@@ -15,6 +15,7 @@ import {
 } from '../world/worldBossManager';
 import { prisma } from '../db';
 import { computePhysicalDamage } from '../combat/characterCombatStats';
+import { allowAction, DAMAGE_ACTION_PROFILE } from '../security/actionRateLimiter';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 // [SECURITY-IDOR] 행위자(playerId)는 body 에서 받지 않고 request.authUserId 로 결정한다.
@@ -122,6 +123,11 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
     // [SECURITY-IDOR] body 의 playerId 대신 인증된 행위자를 기여자로 사용한다.
     const userId = request.authUserId;
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
+
+    // SECURITY(호출빈도): 서버 산정 damage 라도 반복호출로 기여도/전리품 파밍 가능 → 1인당 빈도 제한.
+    if (!(await allowAction(userId, 'worldboss:damage', DAMAGE_ACTION_PROFILE.windowSec, DAMAGE_ACTION_PROFILE.maxPerWindow))) {
+      return reply.status(429).send({ error: '요청이 너무 빠릅니다.', code: 'RATE_LIMITED' });
+    }
 
     try {
       const boss = getCurrentBoss();

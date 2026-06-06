@@ -14,6 +14,7 @@ import type { DungeonClearResult, DungeonWave } from '../dungeon/dungeonManager'
 import { dungeonManager } from '../dungeon/dungeonManager';
 import { prisma } from '../db';
 import { computePhysicalDamage } from '../combat/characterCombatStats';
+import { allowAction, DAMAGE_ACTION_PROFILE } from '../security/actionRateLimiter';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 
@@ -93,6 +94,11 @@ export function setupDungeonSocketHandlers(io: Server): void {
       const { runId } = payload;
       if (!userId || !isRunParticipant(runId, userId)) {
         if (typeof ack === 'function') ack({ ok: false, error: 'run 참가자가 아닙니다.' });
+        return;
+      }
+      // SECURITY(호출빈도): 반복호출 웨이브 진행/리더보드 인플레 차단.
+      if (!(await allowAction(userId, 'dungeon:wave', DAMAGE_ACTION_PROFILE.windowSec, DAMAGE_ACTION_PROFILE.maxPerWindow))) {
+        if (typeof ack === 'function') ack({ ok: false, error: '입력이 너무 빠릅니다.' });
         return;
       }
       // [SECURITY] 서버 권위 damageDealt: 클라 값 대신 공격자 캐릭터 ATK 로 산정(리더보드 전용, 던전
