@@ -10,6 +10,7 @@
 import { prisma } from '../db';
 import type { Prisma } from '@prisma/client';
 import { clampValue } from '../security/valueGuard';
+import { ManaManager } from '../combat/skillSystem';
 
 /** SECURITY: 단일 raid:damage 호출의 per-hit 상한(보스 maxHp 비율) — 1회 솔로 처치 차단. */
 const RAID_MAX_DAMAGE_RATIO = 0.25;
@@ -47,6 +48,8 @@ interface ActiveSession {
   currentHp: number;
   /** 보스 방어력 — 서버 권위 damage 산정(computePhysicalDamage)용. createSession 에서 보스 시드값 저장. */
   bossDefense: number;
+  /** 참가자별 MP 풀(스킬 mpCost 차감용). combatEngine 과 동일한 ManaManager 재사용, syncTimer 로 tickRegen. */
+  mana: ManaManager;
   participants: Map<string, RaidParticipant>;
   mechanics: MechanicDef[];
   triggeredMechanics: Set<number>; // 이미 발동된 hpPercent 집합
@@ -127,6 +130,7 @@ export class RaidManager {
       maxHp: boss.maxHp,
       currentHp: boss.maxHp,
       bossDefense: boss.defense,
+      mana: new ManaManager(),
       participants: new Map([
         [creatorUserId, { userId: creatorUserId, damage: 0, role: 'dps' }],
       ]),
@@ -187,9 +191,10 @@ export class RaidManager {
       data: { status: 'fighting', startedAt: new Date() },
     });
 
-    // 주기적 DB 동기화 타이머 시작
+    // 주기적 DB 동기화 + MP 자연회복 타이머 시작
     session.syncTimer = setInterval(() => {
       void this.syncToDb(sessionId);
+      session.mana.tickRegen(); // combatEngine 과 동일한 틱당 MP 회복(max 의 1%)
     }, DB_SYNC_INTERVAL_MS);
 
     // 타임아웃 자동 실패 타이머
@@ -376,6 +381,20 @@ export class RaidManager {
     } catch (err) {
       console.error(`[Raid] DB 동기화 실패 (${sessionId}):`, err);
     }
+  }
+
+  /**
+   * 스킬 MP 소모(서버 권위). 참가자 MP 가 미초기화면 maxMp 로 1회 init 후 차감한다.
+   * @returns true=소모 성공, false=MP 부족, null=세션 없음/참가자 아님
+   */
+  consumeSkillMp(sessionId: string, userId: string, maxMp: number, cost: number): boolean | null {
+    const session = this.sessions.get(sessionId);
+    if (!session || !session.participants.has(userId)) return null;
+    // 첫 스킬 사용 시 캐릭터 maxMp 로 풀 초기화(lazy)
+    if (session.mana.getMax(userId) === 0) {
+      session.mana.init(userId, maxMp, maxMp);
+    }
+    return session.mana.consume(userId, cost);
   }
 
   /** 세션 조회 (읽기 전용) */
