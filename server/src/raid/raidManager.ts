@@ -9,6 +9,10 @@
  */
 import { prisma } from '../db';
 import type { Prisma } from '@prisma/client';
+import { clampValue } from '../security/valueGuard';
+
+/** SECURITY: 단일 raid:damage 호출의 per-hit 상한(보스 maxHp 비율) — 1회 솔로 처치 차단. */
+const RAID_MAX_DAMAGE_RATIO = 0.25;
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -208,8 +212,12 @@ export class RaidManager {
     const participant = session.participants.get(userId);
     if (!participant) throw new Error('참가자가 아닙니다.');
 
-    // 데미지 적용
-    const actualDamage = Math.max(0, damage);
+    // 데미지 위생처리(SECURITY): 클라 damage 의 NaN/Infinity(HP 가 NaN 으로 오염되는 DoS·즉시 클리어)·
+    // 음수·1회 솔로 처치(maxHp 통째 차감)를 차단한다. actor(userId)는 호출부에서 socket.data.userId 로
+    // 고정되어 위 참가자 검증이 실효한다. 풀 서버권위(공격자 스탯 기반 데미지 산정) + 호출빈도/세션
+    // 누적 상한은 후속 과제(SECURITY-TODO) — 여기선 per-hit maxHp 비율 캡까지만.
+    const actualDamage = clampValue(damage, session.maxHp * RAID_MAX_DAMAGE_RATIO);
+    if (actualDamage === null) throw new Error('유효하지 않은 데미지 값입니다.');
     session.currentHp = Math.max(0, session.currentHp - actualDamage);
     participant.damage += actualDamage;
 
