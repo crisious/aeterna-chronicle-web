@@ -13,20 +13,15 @@ import {
   calculateContributions,
   calculateLoot,
 } from '../world/worldBossManager';
-import { clampValue } from '../security/valueGuard';
-
-/** SECURITY: 단일 데미지 기여의 per-hit 상한(보스 maxHp 비율) — 1회 솔로 처치 차단. */
-const WORLDBOSS_MAX_DAMAGE_RATIO = 0.25;
+import { prisma } from '../db';
+import { computePhysicalDamage } from '../combat/characterCombatStats';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 // [SECURITY-IDOR] 행위자(playerId)는 body 에서 받지 않고 request.authUserId 로 결정한다.
+// [SECURITY] damage 도 body 에서 받지 않는다 — 서버가 공격자 캐릭터 스탯×보스 방어로 산정.
 
 interface JoinBody {
   playerName: string;
-}
-
-interface DamageBody {
-  damage: number;
 }
 
 // ─── 라우트 등록 ────────────────────────────────────────────────
@@ -121,7 +116,7 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
    * POST /api/world-boss/damage — 데미지 기여
    */
   fastify.post('/api/world-boss/damage', async (
-    request: FastifyRequest<{ Body: DamageBody }>,
+    request: FastifyRequest,
     reply: FastifyReply,
   ) => {
     // [SECURITY-IDOR] body 의 playerId 대신 인증된 행위자를 기여자로 사용한다.
@@ -129,15 +124,19 @@ export async function worldBossRoutes(fastify: FastifyInstance): Promise<void> {
     if (!userId) return reply.status(401).send({ error: '인증이 필요합니다.' });
 
     try {
-      const { damage } = request.body;
       const boss = getCurrentBoss();
-      // 데미지 위생처리(SECURITY): 클라 damage 의 NaN/Infinity·음수(보스 HP 회복 악용)·1회 솔로 처치를
-      // 차단. 기여도가 실골드 전리품(calculateLoot)을 결정하므로 무방비 시 무한 파밍·즉시 처치가 가능했다.
-      // 풀 서버권위(전투 산정)는 후속 과제 — 여기선 maxHp 비율 per-hit 캡까지.
-      const safeDamage = clampValue(damage, boss.maxHp * WORLDBOSS_MAX_DAMAGE_RATIO);
-      if (safeDamage === null) {
-        return reply.status(400).send({ error: '유효하지 않은 damage 값입니다.' });
-      }
+      // [SECURITY] 서버 권위 damage: 클라가 보낸 damage 를 신뢰하지 않는다. 기여도가 실골드 전리품
+      // (calculateLoot)을 결정하므로, 공격자 캐릭터 클래스/레벨에서 ATK 를 도출하고 보스 방어로
+      // damageCalculator(메인 전투 동일 공식) 산정한다. (raid #246 과 동일 패턴)
+      const character = await prisma.character.findFirst({
+        where: { userId, isActive: true },
+        select: { classId: true, level: true },
+      });
+      if (!character) return reply.status(400).send({ error: '활성 캐릭터가 없습니다.' });
+      const safeDamage = computePhysicalDamage(
+        { classId: character.classId, level: character.level },
+        boss.defense,
+      );
 
       const damageResult = await (hpPool as any).applyDamage(boss.id, safeDamage) as any;
       const remainingHp = typeof damageResult === 'number' ? damageResult : damageResult?.remainingHp ?? 0;
