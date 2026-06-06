@@ -14,6 +14,8 @@ import type { Server, Socket } from 'socket.io';
 import type { LootResult } from '../raid/raidManager';
 import { raidManager } from '../raid/raidManager';
 import { isGuildMember } from '../guild/guildMembership';
+import { prisma } from '../db';
+import { computePhysicalDamage } from '../combat/characterCombatStats';
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 
@@ -39,8 +41,8 @@ interface RaidStartPayload {
 }
 
 interface RaidDamagePayload {
+  // SECURITY: damage 는 클라가 보내지 않는다 — 서버가 공격자 스탯×보스 방어로 산정.
   sessionId: string;
-  damage: number;
 }
 
 // ─── 핸들러 등록 ────────────────────────────────────────────────
@@ -181,10 +183,27 @@ export function setupRaidSocketHandlers(io: Server): void {
       try {
         const userId = socket.data.userId; // SECURITY-IDOR: 데미지 기여자 = 인증 사용자(비참가자 거부 실효화)
         if (!userId) return socket.emit('raid:error', { message: '인증이 필요합니다.' });
+
+        // SECURITY(서버 권위 damage): 클라가 보낸 damage 를 신뢰하지 않는다. 공격자 캐릭터의 클래스/레벨에서
+        // ATK 를 서버가 도출하고 보스 방어력으로 damageCalculator(메인 전투 동일 공식) 산정한다.
+        // (참가자 검증은 applyDamage 내부 participants.get 가 socket.data.userId 로 실효)
+        // SECURITY-TODO: skillId 기반 스킬 배율은 후속(현재는 기본 공격 1.0). damageCalculator 의 크리/분산 포함.
+        const session = raidManager.getSession(data.sessionId);
+        if (!session) return socket.emit('raid:error', { message: '세션을 찾을 수 없습니다.' });
+        const character = await prisma.character.findFirst({
+          where: { userId, isActive: true },
+          select: { classId: true, level: true },
+        });
+        if (!character) return socket.emit('raid:error', { message: '활성 캐릭터가 없습니다.' });
+        const damage = computePhysicalDamage(
+          { classId: character.classId, level: character.level },
+          session.bossDefense,
+        );
+
         const result = await raidManager.applyDamage(
           data.sessionId,
           userId,
-          data.damage,
+          damage,
         );
 
         // 개인 데미지 확인 응답

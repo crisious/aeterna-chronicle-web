@@ -45,6 +45,8 @@ interface ActiveSession {
   guildId: string | null;
   maxHp: number;
   currentHp: number;
+  /** 보스 방어력 — 서버 권위 damage 산정(computePhysicalDamage)용. createSession 에서 보스 시드값 저장. */
+  bossDefense: number;
   participants: Map<string, RaidParticipant>;
   mechanics: MechanicDef[];
   triggeredMechanics: Set<number>; // 이미 발동된 hpPercent 집합
@@ -124,6 +126,7 @@ export class RaidManager {
       guildId: guildId ?? null,
       maxHp: boss.maxHp,
       currentHp: boss.maxHp,
+      bossDefense: boss.defense,
       participants: new Map([
         [creatorUserId, { userId: creatorUserId, damage: 0, role: 'dps' }],
       ]),
