@@ -8,6 +8,10 @@
  */
 import { prisma } from '../db';
 import { getCurrentSeason } from './matchmaker';
+import { clampValue } from '../security/valueGuard';
+
+/** SECURITY: 저장 점수의 절대 상한(레코드 위생; ELO 는 점수가 아닌 레이팅으로 계산됨). */
+const PVP_MAX_SCORE = 1_000_000;
 
 // ─── 장비 스코어 평준화 ─────────────────────────────────────
 /** 아레나 표준 스코어 */
@@ -95,22 +99,37 @@ export async function finishMatch(
   winnerId: string,
   player1Score: number,
   player2Score: number,
+  submitterId: string,
 ): Promise<{ winnerChange: number; loserChange: number }> {
   const match = await prisma.pvpMatch.findUnique({ where: { id: matchId } });
   if (!match) throw new Error(`매치를 찾을 수 없습니다: ${matchId}`);
+
+  // SECURITY-IDOR: 결과 제출자와 승자가 모두 이 매치의 실제 참가자여야 한다. 이전에는 winnerId 를
+  // 무검증 신뢰해, 비참가자가 임의 winnerId 로 ELO 를 조작(자기 승리 위조)할 수 있었다.
+  const participants = [match.player1Id, match.player2Id];
+  if (!participants.includes(submitterId)) {
+    throw new Error('매치 참가자만 결과를 제출할 수 있습니다.');
+  }
+  if (!participants.includes(winnerId)) {
+    throw new Error('승자는 매치 참가자여야 합니다.');
+  }
 
   const loserId = match.player1Id === winnerId ? match.player2Id : match.player1Id;
   const now = new Date();
   const startedAt = match.startedAt ?? now;
   const duration = Math.round((now.getTime() - startedAt.getTime()) / 1000);
 
+  // 저장 점수 위생처리(NaN/음수/초대형 거부 → 0 또는 상한)
+  const safeP1Score = clampValue(player1Score, PVP_MAX_SCORE) ?? 0;
+  const safeP2Score = clampValue(player2Score, PVP_MAX_SCORE) ?? 0;
+
   // 매치 레코드 업데이트
   await prisma.pvpMatch.update({
     where: { id: matchId },
     data: {
       winnerId,
-      player1Score,
-      player2Score,
+      player1Score: safeP1Score,
+      player2Score: safeP2Score,
       status: 'finished',
       duration,
       endedAt: now,

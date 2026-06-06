@@ -178,6 +178,11 @@ function registerParticipantSocket(
 // ─── 소켓 핸들러 등록 ──────────────────────────────────────────
 
 export function setupCombatSocketHandler(io: Server): void {
+  // SECURITY-TODO(잔여): combat:start/join/action 의 actorId/participantId 바인딩이 socket.data.userId
+  // 소유 캐릭터인지 검증 보강 필요(현재 canControl 만, 최초 바인딩 출처 무검증). 단 (a) 데미지·발동
+  // 가능여부는 combatEngine 이 서버 산정해 value 권위는 이미 충족, (b) 라이브 클라는 이 소켓이 아니라
+  // HTTP /combat/start 를 사용(dead-on-client)이라 우선순위 낮음. 정식 수정 = HTTP combatRoutes 처럼
+  // payload party 를 캐릭터 id+소유검증→서버 스탯 도출로 재작성.
   io.on('connection', (socket: Socket) => {
 
     // ── combat:start — 전투 시작 ───────────────────────────
