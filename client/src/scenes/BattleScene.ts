@@ -1262,6 +1262,12 @@ export class BattleScene extends Phaser.Scene {
       comboBonus = 1 + combo.damageBonus / 100;
       this._spawnComboText(attacker.sprite.x, attacker.sprite.y - 60, combo.name, combo.damageBonus);
       this.battleUI?.addLog(`⚡ 콤보: ${combo.name}! +${combo.damageBonus}%`);
+      // UX(#8): ComboUI 중앙 "COMBO!" 연출 배선(이전엔 작은 _spawnComboText 팝업뿐, 354줄 ComboUI dead)
+      this.comboUI?.showComboAchieved({
+        comboName: combo.name,
+        damageBonus: combo.damageBonus,
+        bonusDescription: `+${combo.damageBonus}% 데미지`,
+      });
       // 콤보 발동 후 이력 리셋 (재사용 방지)
       this._unitSkillHistory.set(attacker.unit.id, []);
     }
@@ -2559,6 +2565,7 @@ export class BattleScene extends Phaser.Scene {
         if (this.chainCount > 0 && turnNow > this.chainExpireTick) {
           this.chainCount = 0;
           this.chainLabel?.setVisible(false).setAlpha(1);
+          this.comboUI?.updateHitCount(0, 1.0); // UX(#8): 체인 만료 시 ComboUI 카운터 숨김
         } else if (this.chainCount > 0 && this.chainLabel?.visible) {
           // CHRONO-S84: 만료 임박 (2 tick 이내) 시 alpha 깜빡 시각 효과
           const remaining = this.chainExpireTick - turnNow;
@@ -2583,6 +2590,8 @@ export class BattleScene extends Phaser.Scene {
               .setStroke('#000000', isMax ? 4 : 2)
               .setFontSize(isMax ? 18 : 14)
               .setVisible(true);
+            // UX(#8): ComboUI 히트 카운터/체인 게이지 배선(354줄 ComboUI 의 '쌓이는 맛' 복원)
+            this.comboUI?.updateHitCount(this.chainCount, 1 + this.chainCount * 0.1);
             // CHRONO-S100: chain 막 4 통과 (prev<4 && 현재>=4) 도달 시 알림 효과
             if (prevChain < 4 && this.chainCount >= 4) {
               playSfx(this, 'sfx_ui_level_up', 0.9);
