@@ -12,6 +12,7 @@ import {
   encodePvpResult,
 } from '../../../shared/codec/gameCodec';
 import { startMatch, finishMatch } from '../pvp/arenaHandler';
+import { prisma } from '../db';
 
 /** 매치별 준비 상태 추적 (matchId → Set<userId>) */
 const readyMap = new Map<string, Set<string>>();
@@ -27,8 +28,14 @@ export function setupPvpSocketHandlers(io: Server): void {
      * pvp:ready — 플레이어 준비 완료
      * 양쪽 모두 준비되면 fighting 상태로 전환
      */
-    socket.on('pvp:ready', async (data: { matchId: string; userId: string }) => {
-      const { matchId, userId } = data;
+    socket.on('pvp:ready', async (data: { matchId: string }) => {
+      const { matchId } = data;
+      const userId = socket.data.userId; // SECURITY-IDOR: 준비 주체 = 인증 사용자
+      if (!userId || !matchId) return;
+
+      // SECURITY-IDOR: 이 매치의 실제 참가자만 ready 등록 허용(타인 명의 ready·매치 점유 차단)
+      const match = await prisma.pvpMatch.findUnique({ where: { id: matchId } });
+      if (!match || (match.player1Id !== userId && match.player2Id !== userId)) return;
 
       // 소켓 매핑 저장
       if (!matchSockets.has(matchId)) {
@@ -100,9 +107,15 @@ export function setupPvpSocketHandlers(io: Server): void {
       player2Score: number;
     }) => {
       const { matchId, winnerId, player1Score, player2Score } = data;
+      const submitterId = socket.data.userId; // SECURITY-IDOR: 제출 주체 = 인증 사용자
+      if (!submitterId) {
+        socket.emit('pvp:error', { matchId, error: '인증이 필요합니다.' });
+        return;
+      }
 
       try {
-        const eloResult = await finishMatch(matchId, winnerId, player1Score, player2Score);
+        // finishMatch 가 submitterId·winnerId 모두 매치 참가자인지 구조검증한다(ELO 조작 차단).
+        const eloResult = await finishMatch(matchId, winnerId, player1Score, player2Score, submitterId);
 
         // Protobuf 인코딩으로 결과 전송
         const resultBuf = encodePvpResult({

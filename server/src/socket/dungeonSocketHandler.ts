@@ -12,6 +12,10 @@
 import type { Server, Socket } from 'socket.io';
 import type { DungeonClearResult, DungeonWave } from '../dungeon/dungeonManager';
 import { dungeonManager } from '../dungeon/dungeonManager';
+import { clampValue } from '../security/valueGuard';
+
+/** SECURITY: 단일 웨이브 보고 damageDealt 의 절대 상한(리더보드 인플레/NaN 차단). */
+const DUNGEON_MAX_DAMAGE_PER_WAVE = 10_000_000;
 
 // ─── Room 이름 헬퍼 ─────────────────────────────────────────────
 
@@ -19,17 +23,23 @@ function dungeonRoom(runId: string): string {
   return `dungeon:${runId}`;
 }
 
+/** SECURITY-IDOR: socket.data.userId 가 해당 run 의 리더/멤버인지 검증. */
+function isRunParticipant(runId: string, userId: string): boolean {
+  const run = dungeonManager.getRunStatus(runId);
+  if (!run) return false;
+  return run.leaderId === userId || run.members.some((m) => m.userId === userId);
+}
+
 // ─── 소켓 페이로드 타입 ─────────────────────────────────────────
+// SECURITY-IDOR: actor(leaderId/userId)는 payload 가 아니라 socket.data.userId(핸드셰이크 인증)를 쓴다.
 
 interface DungeonEnterPayload {
   dungeonCode: string;
-  leaderId: string;
   memberIds?: string[];
 }
 
 interface DungeonWavePayload {
   runId: string;
-  userId: string;
   damageDealt?: number;
 }
 
@@ -65,7 +75,10 @@ export function setupDungeonSocketHandlers(io: Server): void {
   io.on('connection', (socket: Socket) => {
     // ── 던전 입장 ──
     socket.on('dungeon:enter', async (payload: DungeonEnterPayload, ack?: (res: unknown) => void) => {
-      const { dungeonCode, leaderId, memberIds } = payload;
+      const leaderId = socket.data.userId; // SECURITY-IDOR: 리더 = 인증 사용자
+      if (!leaderId) { if (typeof ack === 'function') ack({ ok: false, error: '인증이 필요합니다.' }); return; }
+      const { dungeonCode, memberIds } = payload;
+      // SECURITY-TODO: memberIds 동행자 본인 동의/캐릭터 검증(현 manager 는 레벨만 확인).
       const result = await dungeonManager.enter(dungeonCode, leaderId, memberIds ?? []);
 
       if (result.ok) {
@@ -78,21 +91,37 @@ export function setupDungeonSocketHandlers(io: Server): void {
 
     // ── 웨이브 진행 ──
     socket.on('dungeon:wave', async (payload: DungeonWavePayload, ack?: (res: unknown) => void) => {
-      const { runId, userId, damageDealt } = payload;
-      const result = await dungeonManager.advanceWave(runId, userId, damageDealt ?? 0);
+      const userId = socket.data.userId; // SECURITY-IDOR: 진행 주체 = 인증 사용자
+      const { runId, damageDealt } = payload;
+      if (!userId || !isRunParticipant(runId, userId)) {
+        if (typeof ack === 'function') ack({ ok: false, error: 'run 참가자가 아닙니다.' });
+        return;
+      }
+      // damageDealt 위생처리(리더보드 인플레/NaN/음수 차단). 보상은 DB 산정이라 무관.
+      const safeDamage = clampValue(damageDealt ?? 0, DUNGEON_MAX_DAMAGE_PER_WAVE) ?? 0;
+      const result = await dungeonManager.advanceWave(runId, userId, safeDamage);
       if (typeof ack === 'function') ack(result);
     });
 
     // ── 클리어 ──
     socket.on('dungeon:clear', async (payload: DungeonClearPayload, ack?: (res: unknown) => void) => {
+      const userId = socket.data.userId;
       const { runId } = payload;
+      // SECURITY-IDOR: run 참가자만 클리어 처리(타인 run 조작 차단)
+      if (!userId || !isRunParticipant(runId, userId)) {
+        if (typeof ack === 'function') ack({ ok: false, error: 'run 참가자가 아닙니다.' });
+        return;
+      }
       const result = await dungeonManager.clear(runId);
       if (typeof ack === 'function') ack(result);
     });
 
     // ── 실패/포기 ──
     socket.on('dungeon:fail', async (payload: DungeonFailPayload) => {
+      const userId = socket.data.userId;
       const { runId, reason } = payload;
+      // SECURITY-IDOR: run 참가자만 실패/포기 처리(타인 run 강제 abandon DoS 차단)
+      if (!userId || !isRunParticipant(runId, userId)) return;
       if (reason === 'abandon') {
         await dungeonManager.abandon(runId);
       } else {

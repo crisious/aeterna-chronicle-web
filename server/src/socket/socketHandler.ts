@@ -29,6 +29,11 @@ export async function setupSocketHandlers(io: Server) {
     io.on('connection', (socket: Socket) => {
         console.log(`[Socket] User connected: ${socket.id}`);
 
+        // SECURITY-TODO(잔여): joinRoom/playerMove/playerAction 의 characterId 가 socket.data.userId 소유
+        // 캐릭터인지 prisma 로 검증 후에만 Redis userState 기록·브로드캐스트해야 위치/온라인/액션 사칭이
+        // 닫힌다. value sink 는 없고(좌표·presence 만), 라이브 클라는 dead NetworkService 만 이 이벤트를
+        // emit 하므로 우선순위 낮음 — 별도 후속에서 캐릭터 소유검증 추가.
+
         /**
          * 특정 맵(던전/마을) Room 입장 처리
          * 바이너리(Protobuf) 수신 시 decode, JSON fallback 지원
