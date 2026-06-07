@@ -42,6 +42,9 @@ export class BattleUI {
   private cooldownOverlays: Phaser.GameObjects.Rectangle[] = [];
   private slotKeyLabels: Phaser.GameObjects.Text[] = [];
   private skillSlots: SkillSlot[];
+  // UX(rank14): 활성 commander 의 현재 MP(내 턴 아니면 null) — BattleScene 이 매프레임 push.
+  //   누르기 전에 MP부족/내턴아님 슬롯을 dim 해 '왜 안 되는지'를 선제 표시(쿨다운만 표시하던 비대칭 해소).
+  private _availableMp: number | null = null;
 
   // 전투 로그
   private logLines: string[] = [];
@@ -298,8 +301,13 @@ export class BattleUI {
 
   // ─── 프레임 업데이트 ─────────────────────────────────────────
 
+  /** UX(rank14): 활성 commander MP(내 턴 아니면 null)를 매프레임 받아 슬롯 사용가능성 표시. */
+  setSkillAvailability(mp: number | null): void {
+    this._availableMp = mp;
+  }
+
   update(_delta: number): void {
-    // 쿨다운 오버레이 알파 보간 (매 프레임)
+    // 슬롯 오버레이: 쿨다운(보간) > MP부족/내턴아님(고정 dim) > 사용가능(투명) 순으로 '왜 못 쓰는지' 표시
     for (let i = 0; i < SKILL_COUNT; i++) {
       const slot = this.skillSlots[i];
       if (!slot) continue;
@@ -307,6 +315,9 @@ export class BattleUI {
       if (slot.currentCooldown > 0) {
         const ratio = slot.currentCooldown / slot.cooldown;
         overlay.setAlpha(ratio * 0.6);
+      } else if (slot.mpCost > 0 && (this._availableMp === null || this._availableMp < slot.mpCost)) {
+        // 액티브 스킬인데 MP 부족 또는 내 턴이 아님 → 회색 dim(마법 서브메뉴의 회색 처리와 동일 의미)
+        overlay.setAlpha(0.45);
       } else {
         overlay.setAlpha(0);
       }
