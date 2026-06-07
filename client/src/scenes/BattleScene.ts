@@ -19,7 +19,8 @@ import { BattleUI } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
 import { computeCritEchoDamage, computeReflectDamage, rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
 import { COMBO_MIRROR } from '../skills/comboMirror';
-import { StatusEffectRenderer } from '../combat/StatusEffectRenderer';
+import { StatusEffectRenderer, type StatusEffectData } from '../combat/StatusEffectRenderer';
+import { resolveStatusCategory } from '../combat/statusEffectCategory';
 import { ComboUI } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
 import { isScreenShakeEnabled } from './SettingsScene';
@@ -221,6 +222,8 @@ export class BattleScene extends Phaser.Scene {
   // P6-04/05: 상태이상 렌더러 + 콤보 UI
   private statusEffectRenderer?: StatusEffectRenderer;
   private comboUI?: ComboUI;
+  // UX(#7): targetId → 활성 상태이상 목록 누적기. 서버 combat:effectApplied(단건)를 모아 updateEffects 에 전달.
+  private _unitEffects = new Map<string, StatusEffectData[]>();
 
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
@@ -1934,6 +1937,56 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
+  // ─── UX(#7): 상태이상 시각화 배선 ─────────────────────────────
+  private _findUnitSprite(unitId: string): UnitSprite | undefined {
+    return this.allySprites.find(u => u.unit.id === unitId)
+      ?? this.enemySprites.find(u => u.unit.id === unitId);
+  }
+
+  /** 누적된 효과 목록을 sprite 좌표로 렌더. */
+  private _renderUnitEffects(targetId: string): void {
+    const us = this._findUnitSprite(targetId);
+    const list = this._unitEffects.get(targetId);
+    if (!us || !list) return;
+    this.statusEffectRenderer?.updateEffects(targetId, list, us.sprite.x, us.sprite.y);
+  }
+
+  /**
+   * 서버 combat:effectApplied 단건을 누적 + 렌더. 이전엔 존재하지 않는 applyEffect 를 (as any) 로 불러
+   * silent no-op 이라 독/화상/버프 등 상태이상이 시각적 전무였다. effectId→카테고리로 isDebuff 판정.
+   */
+  private _applyStatusEffect(targetId: string, effectId: string, value: number): void {
+    if (!targetId || !effectId) return;
+    const isDebuff = resolveStatusCategory(effectId, false) !== 'buff';
+    const duration = Number.isFinite(value) && value > 0 ? value : 3;
+    const list = this._unitEffects.get(targetId) ?? [];
+    const existing = list.find(e => e.effectId === effectId);
+    if (existing) {
+      existing.stacks += 1;
+      existing.remainingDuration = Math.max(existing.remainingDuration, duration);
+    } else {
+      list.push({ effectId, name: effectId, icon: '', isDebuff, stacks: 1, remainingDuration: duration });
+    }
+    this._unitEffects.set(targetId, list);
+    this._renderUnitEffects(targetId);
+  }
+
+  /** 매 서버 tick: 지속시간 감소 + 만료 제거 + 재렌더(자연 만료). */
+  private _decayStatusEffects(): void {
+    for (const [targetId, list] of [...this._unitEffects]) {
+      for (const e of list) e.remainingDuration -= 1;
+      const alive = list.filter(e => e.remainingDuration > 0);
+      const us = this._findUnitSprite(targetId);
+      if (alive.length === 0) {
+        this._unitEffects.delete(targetId);
+        this.statusEffectRenderer?.updateEffects(targetId, [], us?.sprite.x ?? 0, us?.sprite.y ?? 0);
+      } else {
+        this._unitEffects.set(targetId, alive);
+        if (us) this.statusEffectRenderer?.updateEffects(targetId, alive, us.sprite.x, us.sprite.y);
+      }
+    }
+  }
+
   // ─── 전투 종료 판정 ──────────────────────────────────────────
 
   private _checkBattleEnd(): void {
@@ -2478,6 +2531,7 @@ export class BattleScene extends Phaser.Scene {
       if (d.combatId === this.serverCombatId) {
         const turn = d.turn ?? d.tick ?? 0;
         this.battleUI?.addLog(`[서버] 턴 ${turn}`);
+        this._decayStatusEffects(); // UX(#7): 매 tick 상태이상 지속시간 감소 + 만료 제거
         // CHRONO-S83: 전투 종료 시 협공 통계 보고
         if (d.combatEnded && d.combatStats) {
           const cs = d.combatStats;
@@ -2639,7 +2693,8 @@ export class BattleScene extends Phaser.Scene {
     const unsub3 = networkManager.on('combat:effectApplied', (data) => {
       const d = data as { combatId: string; targetId: string; effectId: string; value: number };
       if (d.combatId === this.serverCombatId) {
-        (this.statusEffectRenderer as any)?.applyEffect?.(d.targetId, d.effectId, d.value);
+        // UX(#7): 깨진 applyEffect(as any no-op) → 누적기 경유 실제 렌더
+        this._applyStatusEffect(d.targetId, d.effectId, d.value);
       }
     });
 
