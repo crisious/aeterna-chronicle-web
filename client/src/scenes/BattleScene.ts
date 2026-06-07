@@ -244,6 +244,9 @@ export class BattleScene extends Phaser.Scene {
   private _battleTornDown = false;
   // UX(rank13): 방어 만료 타이머 토큰 — 재방어 시 이전 타이머의 조기 복원을 무효화(최신만 유효).
   private _defendCounter = 0;
+  // UX(rank16): 아군 위급(최저 HP<25%) 화면 가장자리 비네트 + 진입 엣지 1회 경고음.
+  private _dangerVignette?: Phaser.GameObjects.Graphics;
+  private _allyInDanger = false;
   private serverCombatId: string | null = null;
   // UX(#13): 전투 중 연결 끊김 — '재연결 중' 배지 + ATB 정지(입력/진행 잠금).
   private connectionBadge?: Phaser.GameObjects.Text;
@@ -387,6 +390,8 @@ export class BattleScene extends Phaser.Scene {
     // 소켓·리스너 해제를 여기로 모아 죽은 씬에 묶인 핸들러가 다음 전투 이벤트를 처리하는 누수를 차단.
     this._exiting = false;
     this._battleTornDown = false;
+    this._dangerVignette = undefined; // 인스턴스 재사용 시 이전 전투의 destroy 된 그래픽 참조 잔존 방지
+    this._allyInDanger = false;
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this._teardownBattle());
 
     const { width: scW, height: scH } = this.cameras.main;
@@ -822,6 +827,13 @@ export class BattleScene extends Phaser.Scene {
       us.defendIcon?.setPosition(us.sprite.x, us.sprite.y - 70);
     }
 
+    // UX(rank16): 아군 위급(살아있는 아군 중 HP<25% 존재) 감지 — 진입 엣지에 1회 경고음 + 가장자리 비네트.
+    //   실시간 ATB 라 작은 상태패널 색 변화를 놓치면 전멸 가능. 색/소리 신호라 reduce-motion 무관(펄스만 모션 게이트).
+    const danger = this.allySprites.some(a => !a.isDead && a.unit.maxHp > 0 && a.unit.hp / a.unit.maxHp < 0.25);
+    if (danger && !this._allyInDanger) playSfx(this, 'sfx_ui_error', 0.4); // 진입 엣지에서만 1회
+    this._allyInDanger = danger;
+    this._updateDangerVignette();
+
     // 스킬 쿨다운 감소
     for (const skill of this.skillSlots) {
       if (skill.currentCooldown > 0) {
@@ -875,6 +887,27 @@ export class BattleScene extends Phaser.Scene {
         this._openCommandMenu(next);
       }
     }
+  }
+
+  /**
+   * UX(rank16): 아군 위급 시 화면 가장자리 붉은 비네트. 첫 위급 진입에 lazy 생성(가장자리로 진해지는
+   * 테두리 근사). 위급 중엔 alpha 펄스(reduce-motion 이면 정적 — 색 신호는 유지). 회복 시 alpha 0.
+   */
+  private _updateDangerVignette(): void {
+    if (this._allyInDanger && !this._dangerVignette) {
+      const { width, height } = this.cameras.main;
+      const g = this.add.graphics().setDepth(390).setScrollFactor(0);
+      for (const b of [{ inset: 0, lw: 6, a: 0.5 }, { inset: 9, lw: 10, a: 0.28 }, { inset: 22, lw: 16, a: 0.13 }]) {
+        g.lineStyle(b.lw, 0xff0000, b.a);
+        g.strokeRect(b.inset, b.inset, width - b.inset * 2, height - b.inset * 2);
+      }
+      this._dangerVignette = g;
+    }
+    if (!this._dangerVignette) return;
+    const alpha = this._allyInDanger
+      ? (isScreenShakeEnabled() ? 0.5 + 0.5 * Math.abs(Math.sin(this.time.now / 350)) : 0.85)
+      : 0;
+    this._dangerVignette.setAlpha(alpha);
   }
 
   private _isATBTimelineFrozen(): boolean {
