@@ -233,6 +233,10 @@ export class BattleScene extends Phaser.Scene {
 
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
+  // 라이프사이클 가드(견고성): 중복 종료(combatEnd/scene.start)·중복 teardown 방지.
+  // Phaser 는 씬 인스턴스를 재사용(scene.start→같은 인스턴스 create 재실행)하므로 create() 에서 반드시 리셋.
+  private _exiting = false;
+  private _battleTornDown = false;
   private serverCombatId: string | null = null;
   // UX(#13): 전투 중 연결 끊김 — '재연결 중' 배지 + ATB 정지(입력/진행 잠금).
   private connectionBadge?: Phaser.GameObjects.Text;
@@ -371,6 +375,13 @@ export class BattleScene extends Phaser.Scene {
   }
 
   create(): void {
+    // 라이프사이클 정리(견고성): 인스턴스 재사용 대비 가드 리셋 + 단일 정리 진입점 등록.
+    // SHUTDOWN 은 _exitBattle 의 scene.start 뿐 아니라 외부 전환 등 '모든' 종료에서 발생하므로,
+    // 소켓·리스너 해제를 여기로 모아 죽은 씬에 묶인 핸들러가 다음 전투 이벤트를 처리하는 누수를 차단.
+    this._exiting = false;
+    this._battleTornDown = false;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this._teardownBattle());
+
     const { width: scW, height: scH } = this.cameras.main;
 
     // ── 배경 ───────────────────────────────────────────────
@@ -2814,18 +2825,35 @@ export class BattleScene extends Phaser.Scene {
       }
     });
 
-    this.socketCleanups = [unsub1, unsub2, unsub3];
+    // push(= 가 아니라): _setupConnectionBadge 가 먼저 push 한 unsub 을 덮어쓰지 않도록 보강(순서 독립).
+    this.socketCleanups.push(unsub1, unsub2, unsub3);
+  }
+
+  /**
+   * 전투 씬의 로컬 자원 정리(멱등). 소켓 리스너 해제 + CombatManager orphan 소켓 disconnect +
+   * 인디케이터/트윈 제거. SHUTDOWN(모든 종료 경로) 과 _exitBattle 양쪽에서 호출되며 1회만 실행된다.
+   */
+  private _teardownBattle(): void {
+    if (this._battleTornDown) return;
+    this._battleTornDown = true;
+    this.socketCleanups.forEach((fn) => { try { fn(); } catch { /* 멱등 */ } });
+    this.socketCleanups = [];
+    try { this.combatManager?.destroy(); } catch { /* 이미 정리됨 */ }
+    this._clearActiveIndicator();
   }
 
   private async _exitBattle(): Promise<void> {
+    // 재진입 가드(rank12): 결과/패배/도주 버튼 연타 시 combatEnd 중복 + 다중 scene.start 레이스 방지.
+    if (this._exiting) return;
+    this._exiting = true;
+
     if (this.serverCombatId) {
       try {
         await networkManager.combatEnd(this.serverCombatId);
       } catch { /* 이미 종료되었을 수 있음 */ }
     }
 
-    this.socketCleanups.forEach((fn) => fn());
-    this.socketCleanups = [];
+    this._teardownBattle();
 
     if (this._initData.returnScene) {
       const allyState = this.allySprites.map(a => ({ hp: a.unit.hp, mp: a.unit.mp }));
