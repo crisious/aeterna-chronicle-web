@@ -152,6 +152,11 @@ interface UnitSprite {
   isBoss?: boolean;
   /** UX(#9): 표시용 HP 보간값 — 실제 hp 로 lerp 해 바가 부드럽게 드레인(즉시 점프 방지). */
   displayedHp?: number;
+  /** UX(rank13): 방어 상태. baseDefense=방어 전 원본(스냅샷 복원용), defendToken=최신 방어만 복원 유효. */
+  isDefending?: boolean;
+  baseDefense?: number;
+  defendToken?: number;
+  defendIcon?: Phaser.GameObjects.Text;
 }
 
 // 커맨드 메뉴 항목
@@ -237,6 +242,8 @@ export class BattleScene extends Phaser.Scene {
   // Phaser 는 씬 인스턴스를 재사용(scene.start→같은 인스턴스 create 재실행)하므로 create() 에서 반드시 리셋.
   private _exiting = false;
   private _battleTornDown = false;
+  // UX(rank13): 방어 만료 타이머 토큰 — 재방어 시 이전 타이머의 조기 복원을 무효화(최신만 유효).
+  private _defendCounter = 0;
   private serverCombatId: string | null = null;
   // UX(#13): 전투 중 연결 끊김 — '재연결 중' 배지 + ATB 정지(입력/진행 잠금).
   private connectionBadge?: Phaser.GameObjects.Text;
@@ -776,6 +783,8 @@ export class BattleScene extends Phaser.Scene {
     for (const us of this.allySprites) {
       if (us.isDead) {
         us.sprite.setAlpha(0.3);
+        us.defendIcon?.destroy(); // UX(rank13): 방어 중 사망 시 아이콘 정리
+        us.defendIcon = undefined;
         continue;
       }
       if (us.atb >= ATB_MAX) {
@@ -791,6 +800,8 @@ export class BattleScene extends Phaser.Scene {
         }
         us.sprite.setAlpha(0.7);
       }
+      // UX(rank13/17): 방어 아이콘이 sprite(부유 트윈) 를 매프레임 추종 — 허공 고정 방지.
+      us.defendIcon?.setPosition(us.sprite.x, us.sprite.y - 70);
     }
 
     // 스킬 쿨다운 감소
@@ -1161,6 +1172,8 @@ export class BattleScene extends Phaser.Scene {
       playSfx(this, 'sfx_hit_flesh', isCritical ? 0.7 : 0.55);
       playRandomVoice(this, [...COMBAT_VOICE.HIT], 0.5);
     }
+    // UX(rank13): 방어 중 피격 — 데미지는 2배 방어로 이미 경감됨. guard-block 음으로 '막았다' 신호.
+    if (target.isDefending) playSfx(this, 'sfx_combat_guard_block', 0.4);
 
     // 로그
     const critLabel = isCritical ? ' 💥크리티컬!' : '';
@@ -1176,14 +1189,31 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _performDefend(us: UnitSprite): void {
-    // 방어: 다음 피격 데미지 50% 감소 (간이 구현)
-    us.unit.defense = (us.unit.defense ?? 0) + Math.round(us.unit.defense ?? 10);
+    // 방어: 일정 시간 방어력 2배. UX(rank13) 버그픽스 — 이전엔 defense += round(defense) 적용 +
+    // defense -= round(defense/2) 복원이라, 사이에 defense 가 바뀌거나 3초 내 재방어 시 누적/드리프트했다.
+    // baseDefense 스냅샷 + 항상 base 기준 계산 + 토큰 복원으로 멱등화(원본으로 정확히 되돌림).
+    if (!us.isDefending) us.baseDefense = us.unit.defense ?? 0; // 방어 중이 아닐 때만 원본 캡처(2배값 재캡처 차단)
+    us.isDefending = true;
+    const base = us.baseDefense ?? 0;
+    us.unit.defense = base > 0 ? base * 2 : 10;
     this.battleUI?.addLog(`🛡 ${us.unit.name} 방어 태세!`);
     playSfx(this, 'sfx_combat_guard_block', 0.5);
 
-    // 1턴 후 방어력 복귀
+    // 머리 위 방어 아이콘 — 자체 수명이 복원 타이밍과 정확히 일치(StatusEffectRenderer 는 combat:tick 의존이라
+    // 로컬 전투에서 안 줄어드는 미스매치가 있어 자체 관리). 위치는 아군 update 루프가 매프레임 추종.
+    if (!us.defendIcon) {
+      us.defendIcon = this.add.text(us.sprite.x, us.sprite.y - 70, '🛡', { fontSize: '20px' })
+        .setOrigin(0.5).setDepth(8000);
+    }
+
+    const token = ++this._defendCounter;
+    us.defendToken = token;
     this.time.delayedCall(3000, () => {
-      us.unit.defense = Math.max(0, (us.unit.defense ?? 0) - Math.round((us.unit.defense ?? 10) / 2));
+      if (us.defendToken !== token) return; // 더 최신 방어가 있으면 이 타이머는 무효(조기 복원 방지)
+      if (!us.isDead) us.unit.defense = us.baseDefense ?? us.unit.defense; // 스냅샷 복원 — 드리프트 없음
+      us.isDefending = false;
+      us.defendIcon?.destroy();
+      us.defendIcon = undefined;
     });
   }
 
