@@ -209,6 +209,8 @@ export class BattleScene extends Phaser.Scene {
   private targetSelectMode = false;
   private targetSelectCallback: ((target: UnitSprite) => void) | null = null;
   private targetCursor: Phaser.GameObjects.Graphics | null = null;
+  // UX(#12): 타겟 커서의 예상 데미지/KILL 미리보기 텍스트(확정 전 마무리 판단).
+  private targetPreviewText?: Phaser.GameObjects.Text;
   private targetCandidates: UnitSprite[] = [];
   private targetIndex = 0;
 
@@ -1000,7 +1002,7 @@ export class BattleScene extends Phaser.Scene {
     if (!this.targetSelectMode || this.targetCandidates.length === 0) return;
 
     const target = this.targetCandidates[this.targetIndex];
-    if (!target) return;
+    if (!target) { this.targetPreviewText?.setVisible(false); return; }
 
     this.targetCursor?.lineStyle(2, 0xffff00, 1);
     this.targetCursor?.strokeTriangle(
@@ -1008,11 +1010,31 @@ export class BattleScene extends Phaser.Scene {
       target.sprite.x - 8, target.sprite.y - 60,
       target.sprite.x + 8, target.sprite.y - 60,
     );
+
+    // UX(#12): 적 타겟이면 예상 기본공격 데미지 + KILL 미리보기(확정 전이라 실행과 무관·안전).
+    // 적 HP 바(#1)와 결합해 '마무리 가능' 적이 한눈에. (스킬 배율은 후속 — 현재는 기본공격 기대값)
+    if (!target.isAlly && this.activeCommander) {
+      const expected = Math.max(1, (this.activeCommander.unit.attack ?? 0) - (target.unit.defense ?? 0));
+      const isKill = target.unit.hp <= expected;
+      if (!this.targetPreviewText) {
+        this.targetPreviewText = this.add.text(0, 0, '', {
+          fontSize: '11px', fontFamily: FONT_FAMILY, stroke: '#000000', strokeThickness: 3,
+        }).setOrigin(0.5).setDepth(8002);
+      }
+      this.targetPreviewText
+        .setText(isKill ? `~${expected} 💀KILL` : `~${expected}`)
+        .setColor(isKill ? '#ff5555' : '#ffffff')
+        .setPosition(target.sprite.x, target.sprite.y - 72)
+        .setVisible(true);
+    } else {
+      this.targetPreviewText?.setVisible(false);
+    }
   }
 
   private _confirmTarget(target: UnitSprite): void {
     this.targetSelectMode = false;
     this.targetCursor?.clear();
+    this.targetPreviewText?.setVisible(false); // UX(#12)
     this.targetSelectCallback?.(target);
     this.targetSelectCallback = null;
 
@@ -1026,6 +1048,7 @@ export class BattleScene extends Phaser.Scene {
   private _cancelTargetSelect(): void {
     this.targetSelectMode = false;
     this.targetCursor?.clear();
+    this.targetPreviewText?.setVisible(false); // UX(#12)
     this.targetSelectCallback = null;
     for (const c of this.targetCandidates) {
       c.sprite.removeAllListeners('pointerdown');
@@ -1091,9 +1114,9 @@ export class BattleScene extends Phaser.Scene {
       if (attacker.unit.hp <= 0) this._killUnit(attacker);
     }
 
-    // 히트 이펙트 + 화면 흔들림 (FINDING-A4 ext11: 설정 + reduce-motion 검사)
-    this._showHitVFX(target.sprite.x, target.sprite.y);
-    if (isScreenShakeEnabled()) this.cameras.main.shake(100, 0.005);
+    // 히트 이펙트 + 화면 흔들림 (FINDING-A4 ext11: 설정 + reduce-motion 검사). UX(#10): 크리 분기 + 크리 시 shake 강화
+    this._showHitVFX(target.sprite.x, target.sprite.y, { crit: isCritical });
+    if (isScreenShakeEnabled()) this.cameras.main.shake(isCritical ? 160 : 100, isCritical ? 0.009 : 0.005);
 
     // SFX + Voice
     if (attacker.isAlly) {
@@ -1294,7 +1317,7 @@ export class BattleScene extends Phaser.Scene {
     this._spawnDamageNumber(target.sprite.x, target.sprite.y, dmg, 'normal');
     // SSOT-WIRE-07: 속성 스킬은 데미지 위에 element 태그 표시 (SCENARIO_DAMAGE_TYPE_NARRATIVES 단일 출처)
     this._spawnElementTag(target.sprite.x, target.sprite.y, skill.element);
-    this._showHitVFX(target.sprite.x, target.sprite.y);
+    this._showHitVFX(target.sprite.x, target.sprite.y, { element: skill.element }); // UX(#10): 속성색 고정
     // FINDING-A4 ext11: 설정 + reduce-motion 검사
     if (isScreenShakeEnabled()) this.cameras.main.shake(80, 0.003);
 
@@ -1627,22 +1650,42 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 히트 VFX ────────────────────────────────────────────────
 
-  private _showHitVFX(x: number, y: number): void {
-    // 간단한 원형 이펙트로 대체 (VFX 스프라이트 시트 문제 회피)
-    const colors = [0xff4444, 0xffaa00, 0xffffff, 0x44aaff];
-    const color = colors[Phaser.Math.Between(0, colors.length - 1)];
-    
-    const circle = this.add.circle(x, y, 8, color, 0.8)
-      .setDepth(8000);
+  /**
+   * UX(#10): 히트 VFX 타입별 분기. 이전엔 랜덤 4색 원이라 물리/마법/크리/속성이 전부 동일했다.
+   * - 속성: damageTypeNarration 색으로 고정(랜덤 제거)
+   * - 크리: 큰 금빛 버스트 + 추가 링 + 방사 파티클(가장 중요한 '크리 터지는 맛'). shake 는 호출부 게이트.
+   * - 기본(물리/무속성): 흰색 일관 버스트.
+   */
+  private _showHitVFX(x: number, y: number, opts?: { crit?: boolean; element?: string }): void {
+    const crit = opts?.crit ?? false;
+    const ELEM_COLOR: Record<string, number> = {
+      fire: 0xff5533, water: 0x4499ff, wind: 0x66dd88, earth: 0xcc9955, light: 0xffee88, dark: 0xaa66dd,
+    };
+    const elementColor = opts?.element ? ELEM_COLOR[opts.element] : undefined;
+    const baseColor = crit ? 0xffe066 : (elementColor ?? 0xffffff);
 
+    const circle = this.add.circle(x, y, crit ? 14 : 8, baseColor, 0.85).setDepth(8000);
     this.tweens.add({
-      targets: circle,
-      scaleX: 3, scaleY: 3,
-      alpha: 0,
-      duration: 300,
-      ease: 'Sine.easeOut',
-      onComplete: () => circle.destroy(),
+      targets: circle, scaleX: crit ? 4 : 3, scaleY: crit ? 4 : 3, alpha: 0,
+      duration: crit ? 380 : 300, ease: 'Sine.easeOut', onComplete: () => circle.destroy(),
     });
+
+    if (crit) {
+      // 크리 임팩트: 확장 링 + 방사 파티클 6개
+      const ring = this.add.circle(x, y, 10).setStrokeStyle(3, 0xffe066, 1).setDepth(8001);
+      this.tweens.add({
+        targets: ring, scaleX: 5, scaleY: 5, alpha: 0, duration: 360, ease: 'Quad.easeOut',
+        onComplete: () => ring.destroy(),
+      });
+      for (let i = 0; i < 6; i++) {
+        const ang = (Math.PI * 2 / 6) * i;
+        const p = this.add.circle(x, y, 3, 0xffd700, 1).setDepth(8001);
+        this.tweens.add({
+          targets: p, x: x + Math.cos(ang) * 36, y: y + Math.sin(ang) * 36, alpha: 0,
+          duration: 320, ease: 'Quad.easeOut', onComplete: () => p.destroy(),
+        });
+      }
+    }
   }
 
   // ─── 스프라이트 연출 ──────────────────────────────────────────
