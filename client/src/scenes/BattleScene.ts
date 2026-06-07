@@ -211,6 +211,8 @@ export class BattleScene extends Phaser.Scene {
   private targetCursor: Phaser.GameObjects.Graphics | null = null;
   // UX(#12): 타겟 커서의 예상 데미지/KILL 미리보기 텍스트(확정 전 마무리 판단).
   private targetPreviewText?: Phaser.GameObjects.Text;
+  // UX(#12-ext): 타겟 선택 진입 시점의 펜딩 스킬(있으면 미리보기를 스킬 공식으로 산정, 없으면 기본공격).
+  private _previewSkill?: SkillSlot;
   private targetCandidates: UnitSprite[] = [];
   private targetIndex = 0;
 
@@ -984,12 +986,13 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 타겟 선택 모드 ──────────────────────────────────────────
 
-  private _enterTargetSelect(candidates: UnitSprite[], callback: (target: UnitSprite) => void): void {
+  private _enterTargetSelect(candidates: UnitSprite[], callback: (target: UnitSprite) => void, previewSkill?: SkillSlot): void {
     this._closeCommandMenu();
     this.targetSelectMode = true;
     this.targetCandidates = candidates;
     this.targetIndex = 0;
     this.targetSelectCallback = callback;
+    this._previewSkill = previewSkill; // UX(#12-ext): 스킬 경로면 미리보기를 스킬 데미지로 계산
 
     // 마우스 클릭 타겟팅
     for (const c of candidates) {
@@ -1016,10 +1019,16 @@ export class BattleScene extends Phaser.Scene {
       target.sprite.x + 8, target.sprite.y - 60,
     );
 
-    // UX(#12): 적 타겟이면 예상 기본공격 데미지 + KILL 미리보기(확정 전이라 실행과 무관·안전).
-    // 적 HP 바(#1)와 결합해 '마무리 가능' 적이 한눈에. (스킬 배율은 후속 — 현재는 기본공격 기대값)
+    // UX(#12): 적 타겟이면 예상 데미지 + KILL 미리보기(확정 전이라 실행과 무관·안전).
+    // 적 HP 바(#1)와 결합해 '마무리 가능' 적이 한눈에.
+    // UX(#12-ext): 펜딩 스킬이 있으면 스킬 공식(방어 무시 damage + attack×scale)으로, 없으면 기본공격(attack−defense).
+    //   _performSkill 의 baseDmg 와 동일 — 분산(0.9~1.1)·콤보는 미반영한 기대값(타겟 시점엔 미정).
     if (!target.isAlly && this.activeCommander) {
-      const expected = Math.max(1, (this.activeCommander.unit.attack ?? 0) - (target.unit.defense ?? 0));
+      const atk = this.activeCommander.unit.attack ?? 0;
+      const skill = this._previewSkill;
+      const expected = skill
+        ? Math.max(1, Math.round(skill.damage + atk * (skill.damageScale ?? 1)))
+        : Math.max(1, atk - (target.unit.defense ?? 0));
       const isKill = target.unit.hp <= expected;
       if (!this.targetPreviewText) {
         this.targetPreviewText = this.add.text(0, 0, '', {
@@ -1040,6 +1049,7 @@ export class BattleScene extends Phaser.Scene {
     this.targetSelectMode = false;
     this.targetCursor?.clear();
     this.targetPreviewText?.setVisible(false); // UX(#12)
+    this._previewSkill = undefined; // UX(#12-ext)
     this.targetSelectCallback?.(target);
     this.targetSelectCallback = null;
 
@@ -1054,6 +1064,7 @@ export class BattleScene extends Phaser.Scene {
     this.targetSelectMode = false;
     this.targetCursor?.clear();
     this.targetPreviewText?.setVisible(false); // UX(#12)
+    this._previewSkill = undefined; // UX(#12-ext)
     this.targetSelectCallback = null;
     for (const c of this.targetCandidates) {
       c.sprite.removeAllListeners('pointerdown');
@@ -1195,7 +1206,7 @@ export class BattleScene extends Phaser.Scene {
     this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
       if (this.activeCommander) this._performSkill(this.activeCommander, target, skill);
       this._endTurn();
-    });
+    }, skill); // UX(#12-ext): 스킬 데미지 미리보기
   }
 
   // ─── 마법/아이템 서브메뉴 ────────────────────────────────────
@@ -1204,7 +1215,9 @@ export class BattleScene extends Phaser.Scene {
     this._closeSubMenu();
     this.subMenuItems = [];
     this.subMenuIndex = 0;
-    const skills = this.skillSlots.filter(s => s.currentCooldown <= 0);
+    // UX(#12-ext): 쿨다운 중 스킬을 filter 로 숨기지 않고 전부 표시(회색+⏳). 이전엔 목록에서 사라져
+    //   "내 스킬 어디 갔지?" 혼란 + 핫키 경로(_useSkill)는 로그를 주는데 서브메뉴는 침묵 — 비대칭 해소.
+    const skills = this.skillSlots;
 
     const menuH = Math.max(80, skills.length * 24 + 30);
     const container = this.add.container(CMD_MENU_X, UI_PANEL_Y - menuH - 4).setDepth(210);
@@ -1213,23 +1226,31 @@ export class BattleScene extends Phaser.Scene {
     container.add(bg);
 
     if (skills.length === 0) {
-      const t = this.add.text(80, 50, '사용 가능한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: FONT_FAMILY }).setOrigin(0.5);
+      const t = this.add.text(80, 50, '보유한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: FONT_FAMILY }).setOrigin(0.5);
       container.add(t);
     } else {
       skills.forEach((skill, i) => {
-        const label = `${skill.name} (MP:${skill.mpCost})`;
+        const onCd = skill.currentCooldown > 0;
+        const noMp = (this.activeCommander?.unit.mp ?? 0) < skill.mpCost;
+        const usable = !onCd && !noMp;
+        // 쿨다운 중이면 남은 초(올림)를, 아니면 MP 코스트를 표기
+        const label = onCd
+          ? `${skill.name} ⏳${Math.ceil(skill.currentCooldown)}s`
+          : `${skill.name} (MP:${skill.mpCost})`;
         const t = this.add.text(10, 15 + i * 24, label, {
           fontSize: '13px', fontFamily: FONT_FAMILY,
-          color: (this.activeCommander?.unit.mp ?? 0) >= skill.mpCost ? '#88ccff' : '#555555',
+          color: usable ? '#88ccff' : '#555555',
         }).setInteractive({ useHandCursor: true });
 
         const doSkill = (): void => {
-          if ((this.activeCommander?.unit.mp ?? 0) < skill.mpCost) return;
+          // 사용 불가 사유를 로그로 알림(핫키 _useSkill 과 동일 메시지 — 두 경로 일관)
+          if (onCd) { this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`); return; }
+          if (noMp) { this.battleUI?.addLog(`💧 MP 부족 — ${skill.name}(MP ${skill.mpCost})`); return; }
           this._closeSubMenu();
           this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
             if (this.activeCommander) this._performSkill(this.activeCommander, target, skill);
             this._endTurn();
-          });
+          }, skill); // UX(#12-ext): 스킬 데미지 미리보기
         };
         t.on('pointerdown', doSkill);
         this.subMenuItems.push({ text: t, action: doSkill, label });
