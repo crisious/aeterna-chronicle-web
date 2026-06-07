@@ -150,6 +150,8 @@ interface UnitSprite {
   /** UX: 적 머리 위 HP 바(보스는 더 큼). _spawnEnemies 에서 생성, _updateEnemyHpBars 가 매프레임 갱신. */
   enemyHpBar?: Phaser.GameObjects.Graphics;
   isBoss?: boolean;
+  /** UX(#9): 표시용 HP 보간값 — 실제 hp 로 lerp 해 바가 부드럽게 드레인(즉시 점프 방지). */
+  displayedHp?: number;
 }
 
 // 커맨드 메뉴 항목
@@ -654,6 +656,9 @@ export class BattleScene extends Phaser.Scene {
 
     // 적 AI (ATB가 찬 적은 자동 행동)
     this._processEnemyAI();
+
+    // UX(#9): HP 표시값을 실제 hp 로 부드럽게 보간(드레인)
+    this._lerpDisplayedHp(delta);
 
     // 상태 패널 갱신
     this._updateStatusPanel();
@@ -1873,19 +1878,20 @@ export class BattleScene extends Phaser.Scene {
       const baseX = STATUS_PANEL_X;
       const baseY = STATUS_PANEL_Y + i * 20;
 
-      // HP/MP 텍스트 업데이트
+      // HP/MP 텍스트 업데이트 (숫자는 실제 hp 로 즉시 — FF식 '숫자는 점프, 바는 드레인')
       const hpRatio = us.unit.hp / us.unit.maxHp;
       entry.hp.setText(`HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
       entry.mp.setText(`MP ${Math.max(0, us.unit.mp)}/${us.unit.maxMp}`);
       entry.hp.setColor(hpRatio < 0.25 ? '#ff4444' : '#ffcc44');
 
-      // HP 바 (compact, under text row)
+      // HP 바 — UX(#9): displayedHp(보간값)로 부드럽게 드레인
+      const drainRatio = Math.max(0, (us.displayedHp ?? us.unit.hp) / us.unit.maxHp);
       const barY = baseY + 14;
       const hpBarX = baseX + 160;
       this.statusPanelGraphics!.fillStyle(0x222244, 1);
       this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W, 4);
       this.statusPanelGraphics!.fillStyle(hpRatio < 0.25 ? 0xff4444 : 0xffcc44, 1);
-      this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W * Math.max(0, hpRatio), 4);
+      this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W * drainRatio, 4);
 
       // MP 바
       const mpRatio = us.unit.maxMp > 0 ? us.unit.mp / us.unit.maxMp : 0;
@@ -1906,6 +1912,20 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  // UX(#9): 모든 유닛의 displayedHp 를 실제 hp 로 부드럽게 보간(~200ms 추종). 바는 이 값으로 드레인.
+  private _lerpDisplayedHp(delta: number): void {
+    const t = Math.min(1, delta / 200);
+    for (const us of this.allySprites) this._lerpUnitHp(us, t);
+    for (const us of this.enemySprites) this._lerpUnitHp(us, t);
+  }
+
+  private _lerpUnitHp(us: UnitSprite, t: number): void {
+    const target = Math.max(0, us.unit.hp);
+    if (us.displayedHp === undefined) { us.displayedHp = target; return; }
+    us.displayedHp += (target - us.displayedHp) * t;
+    if (Math.abs(us.displayedHp - target) < 0.5) us.displayedHp = target;
+  }
+
   // ─── UX(#1): 적 머리 위 HP 바 ─────────────────────────────────
   /** 적/보스 sprite 위에 HP 바를 매프레임 그린다. 적 HP 가시화로 "몇 대 더?" 판단 + 보스전 페이싱. */
   private _updateEnemyHpBars(): void {
@@ -1915,7 +1935,7 @@ export class BattleScene extends Phaser.Scene {
       g.clear();
       if (us.isDead) continue; // 사망 시 바 숨김
 
-      const ratio = us.unit.maxHp > 0 ? Math.max(0, Math.min(1, us.unit.hp / us.unit.maxHp)) : 0;
+      const ratio = us.unit.maxHp > 0 ? Math.max(0, Math.min(1, (us.displayedHp ?? us.unit.hp) / us.unit.maxHp)) : 0;
       const w = us.isBoss ? 140 : 64;
       const h = us.isBoss ? 8 : 5;
       const spriteH = us.sprite.displayHeight ?? 60;
