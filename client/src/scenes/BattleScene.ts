@@ -586,6 +586,10 @@ export class BattleScene extends Phaser.Scene {
       ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((key, i) => {
         this.input.keyboard!.on(`keydown-${key}`, () => this._useSkill(i));
       });
+      // UX(rank18): 전투 페이싱 컨트롤 키보드 등가 — A=AUTO 토글, F=속도 cycle, M=ATB 모드 cycle.
+      this.input.keyboard.on('keydown-A', () => this._toggleAuto());
+      this.input.keyboard.on('keydown-F', () => this._cycleSpeed());
+      this.input.keyboard.on('keydown-M', () => this._cycleAtbMode());
     }
 
     // ── 전투 UI (스킬바, 로그) ────────────────────────────────
@@ -609,60 +613,72 @@ export class BattleScene extends Phaser.Scene {
       this.battleUI?.addLog('[로컬] 비로그인 전투 모드');
     }
 
-    // ── Auto / Speed 버튼 ──────────────────────────────────
-    this.autoButton = this.add.text(scW - 220, UI_PANEL_Y + 20, 'AUTO: OFF', {
+    // ── Auto / Speed / ATB모드 버튼 ─────────────────────────
+    // UX(rank18): 콜백을 명명 메서드로 추출해 마우스 클릭과 키보드 핫키(A/F/M)가 단일 진입점 공유.
+    //   라벨에 핫키 힌트 병기('전키보드 UI' 목표 — 전투 페이싱 컨트롤도 키보드 등가).
+    this.autoButton = this.add.text(scW - 220, UI_PANEL_Y + 20, 'AUTO: OFF (A)', {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#888888',
       backgroundColor: '#222244',
       padding: { x: 6, y: 3 },
     }).setDepth(200).setInteractive({ useHandCursor: true });
+    this.autoButton.on('pointerdown', () => this._toggleAuto());
 
-    this.autoButton.on('pointerdown', () => {
-      this.autoMode = !this.autoMode;
-      this.autoButton!.setText(this.autoMode ? 'AUTO: ON' : 'AUTO: OFF');
-      this.autoButton!.setColor(this.autoMode ? '#44ff44' : '#888888');
-      if (this.autoMode) {
-        this._closeCommandMenu();
-        this._closeSubMenu();
-        if (this.activeCommander) {
-          this.commandQueue.unshift(this.activeCommander);
-          this.activeCommander = null;
-        }
-      }
-    });
-
-    this.speedButton = this.add.text(scW - 100, UI_PANEL_Y + 20, '1x', {
+    this.speedButton = this.add.text(scW - 100, UI_PANEL_Y + 20, '1x (F)', {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#88ccff',
       backgroundColor: '#222244',
       padding: { x: 6, y: 3 },
     }).setDepth(200).setInteractive({ useHandCursor: true });
+    this.speedButton.on('pointerdown', () => this._cycleSpeed());
 
-    this.speedButton.on('pointerdown', () => {
-      if (this.speedMultiplier === 1) this.speedMultiplier = 2;
-      else if (this.speedMultiplier === 2) this.speedMultiplier = 3;
-      else this.speedMultiplier = 1;
-      this.speedButton!.setText(`${this.speedMultiplier}x`);
-    });
-
-    this.atbModeButton = this.add.text(scW - 340, UI_PANEL_Y + 20, `MODE: ${this.atbMode}`, {
+    this.atbModeButton = this.add.text(scW - 340, UI_PANEL_Y + 20, `MODE: ${this.atbMode} (M)`, {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#c8a2ff',
       backgroundColor: '#222244',
       padding: { x: 6, y: 3 },
     }).setDepth(200).setInteractive({ useHandCursor: true });
-
-    this.atbModeButton.on('pointerdown', () => {
-      this.atbMode = this.atbMode === 'WAIT' ? 'ACTIVE' : this.atbMode === 'ACTIVE' ? 'SEMI' : 'WAIT';
-      this.atbModeButton!.setText(`MODE: ${this.atbMode}`);
-      this.battleUI?.addLog(`ATB 모드: ${this.atbMode}`);
-    });
+    this.atbModeButton.on('pointerdown', () => this._cycleAtbMode());
 
     // ── 인트로 연출 ─────────────────────────────────────────
     this._playIntro();
+  }
+
+  // ─── 전투 페이싱 컨트롤(AUTO/속도/ATB모드) — 마우스 버튼 + 키보드 핫키 단일 진입점 ───
+  private _toggleAuto(): void {
+    this.autoMode = !this.autoMode;
+    this.autoButton?.setText(this.autoMode ? 'AUTO: ON (A)' : 'AUTO: OFF (A)');
+    this.autoButton?.setColor(this.autoMode ? '#44ff44' : '#888888');
+    if (this.autoMode) {
+      this._closeCommandMenu();
+      this._closeSubMenu();
+      if (this.activeCommander) {
+        this.commandQueue.unshift(this.activeCommander);
+        this.activeCommander = null;
+        this._clearActiveIndicator(); // UX(rank8): AUTO 전환 시 주인 없는 펄싱 ▼ 제거(_endTurn 만 호출하던 누수)
+      }
+      this.battleUI?.addLog('⚙ [AUTO] 자동 전투 ON (×1.5)');
+    } else {
+      this.battleUI?.addLog('⚙ [AUTO] 자동 전투 OFF');
+    }
+  }
+
+  private _cycleSpeed(): void {
+    this.speedMultiplier = this.speedMultiplier === 1 ? 2 : this.speedMultiplier === 2 ? 3 : 1;
+    this.speedButton?.setText(`${this.speedMultiplier}x (F)`);
+  }
+
+  private _cycleAtbMode(): void {
+    this.atbMode = this.atbMode === 'WAIT' ? 'ACTIVE' : this.atbMode === 'ACTIVE' ? 'SEMI' : 'WAIT';
+    this.atbModeButton?.setText(`MODE: ${this.atbMode} (M)`);
+    // UX(rank9): raw enum 만 반복하던 라벨/로그에 동작 설명 병기(_isATBTimelineFrozen 의 실제 분기와 일치).
+    const desc = this.atbMode === 'WAIT' ? '메뉴/조준 중 정지'
+      : this.atbMode === 'ACTIVE' ? '항상 실시간'
+      : '조준 중만 정지';
+    this.battleUI?.addLog(`⏱ ATB 모드: ${this.atbMode} — ${desc}`);
   }
 
   update(_time: number, delta: number): void {
