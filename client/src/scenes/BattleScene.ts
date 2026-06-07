@@ -712,6 +712,8 @@ export class BattleScene extends Phaser.Scene {
     this.effectManager?.update(delta);
     this.statusEffectRenderer?.update(delta);
     this.comboUI?.update(delta);
+    // UX(rank14): 활성 commander MP(내 턴 아니면 null)를 스킬바에 push — 누르기 전 MP부족/내턴아님 dim.
+    this.battleUI?.setSkillAvailability(this.activeCommander ? (this.activeCommander.unit.mp ?? 0) : null);
     this.battleUI?.update(delta);
   }
 
