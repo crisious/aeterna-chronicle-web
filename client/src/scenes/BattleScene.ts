@@ -1107,6 +1107,9 @@ export class BattleScene extends Phaser.Scene {
       this._spawnMissText(target.sprite.x, target.sprite.y);
       this.battleUI?.addLog(`${attacker.unit.name} → ${target.unit.name} : MISS!`);
       this._flashSprite(target);
+      // UX(rank4): 빗나감 피드백 — 헛스윙 whiff(저볼륨 slash) + 회피 보이스. 이전엔 무음이었다.
+      playSfx(this, 'sfx_combat_slash', 0.25);
+      playSfx(this, COMBAT_VOICE.DODGE, 0.5);
       return;
     }
 
@@ -1153,6 +1156,10 @@ export class BattleScene extends Phaser.Scene {
       } else {
         playRandomVoice(this, [...COMBAT_VOICE.ATTACK], 0.5);
       }
+    } else if (target.isAlly) {
+      // UX(rank3): 아군 피격음 — 이전엔 attacker.isAlly 게이트로 '적의 공격'(절반의 전투)이 완전 무음이었다.
+      playSfx(this, 'sfx_hit_flesh', isCritical ? 0.7 : 0.55);
+      playRandomVoice(this, [...COMBAT_VOICE.HIT], 0.5);
     }
 
     // 로그
@@ -1435,16 +1442,23 @@ export class BattleScene extends Phaser.Scene {
 
     // 커맨드 메뉴 조작
     if (this.activeCommander && this.cmdMenuContainer) {
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+      // UX(rank10): 좌/우도 받음(이전엔 up/down 만) — 타겟선택 분기는 이미 4방향이라 비대칭이었다.
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.cursors.left)) {
         this.cmdMenuIndex = (this.cmdMenuIndex - 1 + COMMANDS.length) % COMMANDS.length;
         this._highlightCommand();
       }
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
         this.cmdMenuIndex = (this.cmdMenuIndex + 1) % COMMANDS.length;
         this._highlightCommand();
       }
       if (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) {
         this._executeCommand(COMMANDS[this.cmdMenuIndex].type);
+      }
+      // UX(rank5): ESC = 이 턴 대기/넘김(atb 리셋→재충전). 형제 분기(타겟/서브메뉴)는 ESC 를 처리하는데
+      //   커맨드 메뉴만 누락이라 진입 후 빠져나갈 수 없었다(WAIT 모드에서 강제 커밋). _endTurn 재사용.
+      if (this.escKey && Phaser.Input.Keyboard.JustDown(this.escKey)) {
+        this.battleUI?.addLog(`⏭ ${this.activeCommander.unit.name} 대기`);
+        this._endTurn();
       }
     }
   }
@@ -1963,9 +1977,11 @@ export class BattleScene extends Phaser.Scene {
 
       // HP/MP 텍스트 업데이트 (숫자는 실제 hp 로 즉시 — FF식 '숫자는 점프, 바는 드레인')
       const hpRatio = us.unit.hp / us.unit.maxHp;
-      entry.hp.setText(`HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
+      const hpCritical = hpRatio < 0.25;
+      // UX(rank7): 위급(<25%)을 색상만으로 표시하면 색약 사용자가 구분 불가 → ⚠ 접두로 색-독립 단서.
+      entry.hp.setText(`${hpCritical ? '⚠ ' : ''}HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
       entry.mp.setText(`MP ${Math.max(0, us.unit.mp)}/${us.unit.maxMp}`);
-      entry.hp.setColor(hpRatio < 0.25 ? '#ff4444' : '#ffcc44');
+      entry.hp.setColor(hpCritical ? '#ff4444' : '#ffcc44');
 
       // HP 바 — UX(#9): displayedHp(보간값)로 부드럽게 드레인
       const drainRatio = Math.max(0, (us.displayedHp ?? us.unit.hp) / us.unit.maxHp);
@@ -1973,8 +1989,11 @@ export class BattleScene extends Phaser.Scene {
       const hpBarX = baseX + 160;
       this.statusPanelGraphics!.fillStyle(0x222244, 1);
       this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W, 4);
-      this.statusPanelGraphics!.fillStyle(hpRatio < 0.25 ? 0xff4444 : 0xffcc44, 1);
+      this.statusPanelGraphics!.fillStyle(hpCritical ? 0xff4444 : 0xffcc44, 1);
       this.statusPanelGraphics!.fillRect(hpBarX, barY, STAT_BAR_W * drainRatio, 4);
+      // UX(rank7): 25/50/75% tick — 적 HP 바(_updateEnemyHpBars)와 동일한 색약 redundancy + 잔량 판단 단서.
+      this.statusPanelGraphics!.fillStyle(0x000000, 0.5);
+      for (const t of [0.25, 0.5, 0.75]) this.statusPanelGraphics!.fillRect(Math.round(hpBarX + STAT_BAR_W * t), barY, 1, 4);
 
       // MP 바
       const mpRatio = us.unit.maxMp > 0 ? us.unit.mp / us.unit.maxMp : 0;
@@ -2242,16 +2261,22 @@ export class BattleScene extends Phaser.Scene {
 
     this.battleUI?.addLog('💔 패배...');
 
-    // 화면 붉은 플래시
+    // 화면 붉은 플래시 — UX(rank6): 전체화면 적색 점멸은 광과민성 최고위험 패턴이라 reduce-motion
+    //   (흔들림 설정 off)일 땐 점멸 없이 정적 옅은 오버레이로 대체. 같은 파일의 모든 shake 는 이미 게이트됨.
     const flash = this.add.rectangle(scW / 2, scH / 2, scW, scH, 0xff0000, 0).setDepth(400);
-    this.tweens.add({
-      targets: flash,
-      alpha: 0.3,
-      duration: 300,
-      yoyo: true,
-      repeat: 2,
-      onComplete: () => flash.destroy(),
-    });
+    if (isScreenShakeEnabled()) {
+      this.tweens.add({
+        targets: flash,
+        alpha: 0.3,
+        duration: 300,
+        yoyo: true,
+        repeat: 2,
+        onComplete: () => flash.destroy(),
+      });
+    } else {
+      // 점멸 없이 1회 옅게 페이드인 후 유지(씬 종료 시 정리). 색만으로 '패배' 분위기 전달.
+      this.tweens.add({ targets: flash, alpha: 0.15, duration: 400 });
+    }
 
     const defeatText = this.add.text(scW / 2, scH / 3, '💔 패배...', {
       fontSize: '36px',
