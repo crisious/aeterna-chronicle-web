@@ -1892,6 +1892,8 @@ export class BattleScene extends Phaser.Scene {
 
       // UX(#1): 적 머리 위 HP 바 — ATB RPG 의 가장 기본 정보(이전엔 적 HP 가시화 0%). _updateEnemyHpBars 갱신.
       const enemyHpBar = this.add.graphics().setDepth(51);
+      // UX(rank2): 적 ATB(행동 임박) 게이지 — HP 만큼 기본 정보(이전엔 적 게이지 전무). dead 필드 atbBar 재사용.
+      const atbBar = this.add.graphics().setDepth(51);
 
       const us: UnitSprite = {
         unit, sprite, nameText,
@@ -1899,6 +1901,7 @@ export class BattleScene extends Phaser.Scene {
         isAlly: false, isDead: false,
         isBoss,
         enemyHpBar,
+        atbBar,
       };
       this.enemySprites.push(us);
     });
@@ -2008,12 +2011,14 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── UX(#1): 적 머리 위 HP 바 ─────────────────────────────────
   /** 적/보스 sprite 위에 HP 바를 매프레임 그린다. 적 HP 가시화로 "몇 대 더?" 판단 + 보스전 페이싱. */
+  /** 적 머리 위 HP 바(#1) + ATB 행동 게이지(rank2)를 매프레임 갱신. 사망 시 둘 다 숨김. */
   private _updateEnemyHpBars(): void {
     for (const us of this.enemySprites) {
       const g = us.enemyHpBar;
-      if (!g) continue;
-      g.clear();
-      if (us.isDead) continue; // 사망 시 바 숨김
+      const ab = us.atbBar;
+      g?.clear();
+      ab?.clear();
+      if (us.isDead) continue; // 사망 시 두 바 모두 숨김(위에서 clear 완료)
 
       const ratio = us.unit.maxHp > 0 ? Math.max(0, Math.min(1, (us.displayedHp ?? us.unit.hp) / us.unit.maxHp)) : 0;
       const w = us.isBoss ? 140 : 64;
@@ -2022,18 +2027,40 @@ export class BattleScene extends Phaser.Scene {
       const x = us.sprite.x - w / 2;
       const y = us.sprite.y - spriteH / 2 - (us.isBoss ? 30 : 22); // 이름 라벨 위
 
-      // 외곽 + 배경
-      g.fillStyle(0x000000, 0.55);
-      g.fillRect(x - 1, y - 1, w + 2, h + 2);
-      g.fillStyle(0x331111, 1);
-      g.fillRect(x, y, w, h);
-      // 잔여 HP(적=빨강 계열, 위험 구간에서 색 변화 — 색약 대비 tick 병행)
-      const col = ratio > 0.5 ? 0xee5555 : ratio > 0.25 ? 0xffaa33 : 0xff2222;
-      g.fillStyle(col, 1);
-      g.fillRect(x, y, w * ratio, h);
-      // 25/50/75% tick(색약 redundancy + 마무리 판단)
-      g.fillStyle(0x000000, 0.5);
-      for (const t of [0.25, 0.5, 0.75]) g.fillRect(Math.round(x + w * t), y, 1, h);
+      if (g) {
+        // 외곽 + 배경
+        g.fillStyle(0x000000, 0.55);
+        g.fillRect(x - 1, y - 1, w + 2, h + 2);
+        g.fillStyle(0x331111, 1);
+        g.fillRect(x, y, w, h);
+        // 잔여 HP(적=빨강 계열, 위험 구간에서 색 변화 — 색약 대비 tick 병행)
+        const col = ratio > 0.5 ? 0xee5555 : ratio > 0.25 ? 0xffaa33 : 0xff2222;
+        g.fillStyle(col, 1);
+        g.fillRect(x, y, w * ratio, h);
+        // 25/50/75% tick(색약 redundancy + 마무리 판단)
+        g.fillStyle(0x000000, 0.5);
+        for (const t of [0.25, 0.5, 0.75]) g.fillRect(Math.round(x + w * t), y, 1, h);
+      }
+
+      // UX(rank2): ATB 게이지 — HP 바 바로 아래. '언제 맞을지' 예측 가능하게(이전엔 적 게이지 전무).
+      if (ab) {
+        const atbRatio = Math.max(0, Math.min(1, us.atb / ATB_MAX));
+        const abH = us.isBoss ? 4 : 3;
+        const abY = y + h + 2;
+        ab.fillStyle(0x000000, 0.55);
+        ab.fillRect(x - 1, abY - 1, w + 2, abH + 2);
+        ab.fillStyle(0x0a1a2a, 1);
+        ab.fillRect(x, abY, w, abH);
+        // 평소 청록 충전 → 임박(≥80%)엔 적색으로 '곧 행동' 신호(색=색약 redundancy).
+        // 펄스는 모션 강조라 reduce-motion(흔들림 설정)일 때 비활성 — 색만으로도 구분 가능.
+        const imminent = atbRatio >= 0.8;
+        const fillCol = imminent ? 0xff5544 : 0x44ccff;
+        const alpha = (imminent && isScreenShakeEnabled())
+          ? 0.55 + 0.45 * Math.abs(Math.sin(this.time.now / 110))
+          : 1;
+        ab.fillStyle(fillCol, alpha);
+        ab.fillRect(x, abY, w * atbRatio, abH);
+      }
     }
   }
 
