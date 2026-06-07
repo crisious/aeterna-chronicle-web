@@ -46,6 +46,8 @@ export class BattleUI {
   // 전투 로그
   private logLines: string[] = [];
   private logText!: Phaser.GameObjects.Text;
+  // UX(#11): 중요 이벤트(크리/콤보/사망/승리)를 색상으로 강조하는 1줄 하이라이트(회색 로그에 묻힘 방지).
+  private logHighlight?: Phaser.GameObjects.Text;
 
   // 미니 상태창
   private statusContainer!: Phaser.GameObjects.Container;
@@ -145,7 +147,22 @@ export class BattleUI {
     this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 340, 86, 0x000000, 0.35)
       .setDepth(110);
 
+    // UX(#11): 로그 패널 위 색상 하이라이트(중요 이벤트 1줄). 별도 객체라 회색 로그와 분리.
+    this.logHighlight = this.scene.add.text(LOG_X, LOG_Y - 16, '', {
+      fontSize: '13px', fontStyle: 'bold', stroke: '#000000', strokeThickness: 3,
+    }).setDepth(112).setAlpha(0);
+
     this._makeLogText();
+  }
+
+  /** UX(#11): 메시지의 이모지/키워드로 중요 이벤트 색을 추론(평범한 줄은 null = 강조 안 함). */
+  private _inferHighlightColor(m: string): string | null {
+    if (m.includes('💥') || m.includes('크리') || m.includes('CRIT')) return '#ffd700';   // 크리
+    if (m.includes('💀')) return '#ff5555';                                              // 사망
+    if (m.includes('🎉') || m.includes('승리')) return '#55ff77';                         // 승리
+    if (m.includes('🆙') || m.includes('레벨 업')) return '#55ddff';                       // 레벨업
+    if (m.includes('⚡') || m.includes('콤보') || m.includes('🔥') || m.includes('CHAIN')) return '#ff9933'; // 콤보/체인
+    return null;
   }
 
   /** 로그 Text 게임오브젝트 생성(배경 제외) — 파괴 시 재생성용으로 분리 */
@@ -194,6 +211,16 @@ export class BattleUI {
         this._makeLogText();
         this.logText.setText(this.logLines.join('\n'));
       } catch { /* 로그 갱신 포기(비치명적) */ }
+    }
+
+    // UX(#11): 중요 이벤트면 색상 하이라이트로 강조 + 페이드(회색 로그에 묻히지 않게)
+    const hlColor = this._inferHighlightColor(message);
+    const hl = this.logHighlight as unknown as { scene?: unknown; frame?: { data?: unknown } | null } | undefined;
+    if (hlColor && hl && hl.scene && hl.frame && hl.frame.data) {
+      try {
+        this.logHighlight!.setText(message).setColor(hlColor).setAlpha(1);
+        this.scene.tweens.add({ targets: this.logHighlight, alpha: 0, duration: 1400, delay: 700, ease: 'Sine.easeIn' });
+      } catch { /* 하이라이트 갱신 포기(비치명적) */ }
     }
   }
 
