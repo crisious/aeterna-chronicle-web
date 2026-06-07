@@ -1073,6 +1073,7 @@ export class BattleScene extends Phaser.Scene {
       c.sprite.on('pointerdown', () => {
         this._confirmTarget(c);
       });
+      if (c.sprite.input) c.sprite.input.cursor = 'pointer'; // UX(rank11): 지금 클릭 가능한 대상만 손가락 커서
     }
 
     this._drawTargetCursor();
@@ -1129,6 +1130,7 @@ export class BattleScene extends Phaser.Scene {
     // 클릭 리스너 복원
     for (const c of this.targetCandidates) {
       c.sprite.removeAllListeners('pointerdown');
+      if (c.sprite.input) c.sprite.input.cursor = ''; // UX(rank11): 타겟 확정 후 손가락 커서 해제
     }
     this.targetCandidates = [];
   }
@@ -1141,6 +1143,7 @@ export class BattleScene extends Phaser.Scene {
     this.targetSelectCallback = null;
     for (const c of this.targetCandidates) {
       c.sprite.removeAllListeners('pointerdown');
+      if (c.sprite.input) c.sprite.input.cursor = ''; // UX(rank11): 취소 시 손가락 커서 해제
     }
     this.targetCandidates = [];
     // 커맨드 메뉴 재오픈
@@ -1888,13 +1891,14 @@ export class BattleScene extends Phaser.Scene {
       if (classId && this.textures.exists(texKey)) {
         sprite = this.add.image(pos.x, pos.y, texKey)
           .setScale(1)
-          .setInteractive({ useHandCursor: true })
+          // UX(rank11): 평소엔 손가락 커서 끔(클릭 가능해 보이는 거짓 어포던스). 타겟 선택 중 후보에만 켠다.
+          .setInteractive({ useHandCursor: false })
           .setDepth(50);
         // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
         sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       } else {
         sprite = this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)
-          .setInteractive({ useHandCursor: true })
+          .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
           .setDepth(50);
       }
 
@@ -1945,7 +1949,7 @@ export class BattleScene extends Phaser.Scene {
       if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
           .setScale(isBoss ? 2 : 1)
-          .setInteractive({ useHandCursor: true })
+          .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
           .setDepth(50);
         sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       } else {
@@ -1962,7 +1966,7 @@ export class BattleScene extends Phaser.Scene {
         gfx.generateTexture(fallbackKey, size, size);
         gfx.destroy();
         sprite = this.add.image(pos.x, pos.y, fallbackKey)
-          .setInteractive({ useHandCursor: true })
+          .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
           .setDepth(50);
         this.add.text(pos.x, pos.y - 4, icon, {
           fontSize: isBoss ? '36px' : '24px',
