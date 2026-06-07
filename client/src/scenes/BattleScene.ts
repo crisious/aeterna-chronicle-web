@@ -232,6 +232,9 @@ export class BattleScene extends Phaser.Scene {
   // P25-05: 소켓 이벤트 클린업
   private socketCleanups: Array<() => void> = [];
   private serverCombatId: string | null = null;
+  // UX(#13): 전투 중 연결 끊김 — '재연결 중' 배지 + ATB 정지(입력/진행 잠금).
+  private connectionBadge?: Phaser.GameObjects.Text;
+  private atbFrozenByConnection = false;
   // CHRONO-S23/S45: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
   private lastDualTechCandidates: Array<{
     techId: string;
@@ -833,6 +836,8 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _isATBTimelineFrozen(): boolean {
+    if (this.atbFrozenByConnection) return true; // UX(#13): 연결 끊김 중엔 전투 정지
+
     if (this.atbMode === 'ACTIVE') {
       return false;
     }
@@ -2313,9 +2318,36 @@ export class BattleScene extends Phaser.Scene {
       });
       this.serverCombatId = result.combatId;
       this.battleUI?.addLog(`[서버] 전투 ID: ${result.combatId}`);
+      this._setupConnectionBadge(); // UX(#13): 연결 끊김 감지 + 배지
     } catch (err) {
       console.warn('[BattleScene] 서버 전투 시작 실패 (로컬 모드):', err);
     }
+  }
+
+  /** UX(#13): 전투 중 연결 끊김/재연결 상태를 상단 배지로 표시하고 ATB 를 정지(silent freeze 방지). */
+  private _setupConnectionBadge(): void {
+    if (!this.connectionBadge) {
+      const cx = this.cameras.main.width / 2;
+      this.connectionBadge = this.add.text(cx, 64, '', {
+        fontSize: '14px', fontFamily: FONT_FAMILY, color: '#ffcc44',
+        backgroundColor: '#000000cc', padding: { x: 12, y: 6 }, stroke: '#000000', strokeThickness: 2,
+      }).setOrigin(0.5).setDepth(9500).setVisible(false);
+    }
+    const unsub = networkManager.onConnectionChange((state) => {
+      if (state === 'reconnecting' || state === 'connecting' || state === 'disconnected' || state === 'error') {
+        const reconnecting = state !== 'error';
+        this.connectionBadge
+          ?.setText(reconnecting ? '○ 재연결 중… 전투 일시정지' : '✕ 연결 실패 — 재시도 중')
+          .setColor(reconnecting ? '#ffaa44' : '#ff5555')
+          .setVisible(true);
+        this.atbFrozenByConnection = true;
+      } else if (state === 'connected') {
+        if (this.atbFrozenByConnection) this.battleUI?.addLog('🔌 재연결됨 — 전투 재개');
+        this.atbFrozenByConnection = false;
+        this.connectionBadge?.setVisible(false);
+      }
+    });
+    this.socketCleanups.push(unsub);
   }
 
   /**
