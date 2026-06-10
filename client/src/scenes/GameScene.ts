@@ -59,6 +59,8 @@ interface RemoteEntity {
   sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   nameTag: Phaser.GameObjects.Text;
   isMonster: boolean;
+  /** 키보드 컷오버(감사 rank2): 몬스터 전투 진입 액션 — pointerdown 클로저와 동일 페이로드 공유. */
+  engage?: () => void;
 }
 
 export class GameScene extends Phaser.Scene {
@@ -483,6 +485,33 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * 키보드 컷오버(감사 rank2): 범위 내 최근접 몬스터와 전투 진입(F). NPC 의 keydown-T
+   * (_openNearestNpcDialogue) 와 대칭 — 몬스터만 키보드 등가가 없어 keyboardOnlyMode 에선
+   * BattleScene 진입로가 전무하던 갭. 액션은 entity.engage(클릭과 동일 페이로드)로 단일화.
+   */
+  private _engageNearestMonster(): void {
+    if (!this.player) return;
+
+    let nearest: RemoteEntity | null = null;
+    let nearestDistanceSq = Number.POSITIVE_INFINITY;
+    const maxDistanceSq = GameScene.NPC_INTERACTION_RANGE_PX * GameScene.NPC_INTERACTION_RANGE_PX;
+
+    for (const entity of this.remoteEntities.values()) {
+      if (!entity.isMonster || !entity.engage) continue;
+
+      const dx = entity.sprite.x - this.player.x;
+      const dy = entity.sprite.y - this.player.y;
+      const distanceSq = dx * dx + dy * dy;
+      if (distanceSq <= maxDistanceSq && distanceSq < nearestDistanceSq) {
+        nearest = entity;
+        nearestDistanceSq = distanceSq;
+      }
+    }
+
+    nearest?.engage?.();
+  }
+
   // 프로그래매틱 몬스터 아이콘 팔레트
   private static readonly MONSTER_COLORS = [0xcc3333, 0xcc6633, 0x9933cc, 0x3366cc, 0x33cc66, 0xcc3399, 0x6633cc, 0x33cccc];
   private static readonly MONSTER_EMOJIS = ['💀', '🐺', '👻', '🕷', '🪨', '🐛', '🦇', '🔥'];
@@ -522,7 +551,10 @@ export class GameScene extends Phaser.Scene {
       fontSize: '10px', color: `#${getChronoEra(this.currentEraId).tintColor.toString(16).padStart(6, '0')}`, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
 
-    sprite.on('pointerdown', () => {
+    // 키보드 컷오버(감사 rank2): 전투 진입을 engage 로 추출 — 마우스 클릭과 키보드(F)가 동일
+    // 페이로드(battleSeed·isBoss 배율)를 공유. 이전엔 pointerdown 클로저에만 갇혀 있어
+    // keyboardOnlyMode(canvas pointer-events:none)에선 전투를 시작할 방법이 전무했다.
+    const engage = (): void => {
       this.scene.start('BattleScene', {
         zoneId: this.currentZoneId,
         eraId: this.currentEraId,
@@ -534,9 +566,10 @@ export class GameScene extends Phaser.Scene {
         rewardMultiplier: battleSeed.rewardMultiplier * (isBoss ? 1.5 : 1),
         isBossField: isBoss,
       });
-    });
+    };
+    sprite.on('pointerdown', engage);
 
-    this.remoteEntities.set(id, { id, name: battleSeed.monsterName, sprite, nameTag: tag, isMonster: true });
+    this.remoteEntities.set(id, { id, name: battleSeed.monsterName, sprite, nameTag: tag, isMonster: true, engage });
   }
 
   // ── P25-04: 소켓 이벤트 ─────────────────────────────────
@@ -778,6 +811,10 @@ export class GameScene extends Phaser.Scene {
 
       this.input.keyboard.on('keydown-T', () => {
         this._openNearestNpcDialogue();
+      });
+      // 키보드 컷오버(감사 rank2): F = 최근접 몬스터 전투 진입(T 의 몬스터 대칭)
+      this.input.keyboard.on('keydown-F', () => {
+        this._engageNearestMonster();
       });
       this.input.keyboard.on('keydown-ESC', () => {
         this.scene.start('WorldScene');
