@@ -2273,6 +2273,20 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * 키보드 컷오버: 결과/패배 팝업을 Enter/ESC 로 닫는다. victory/defeat phase 는 update 가
+   * early-return(L692) 해 _handleKeyboardInput 의 폴링 키 입력이 죽으므로, 폴링이 아니라
+   * 이벤트 once 로 _exitBattle 을 건다(_exiting 가드로 중복 안전, 씬 종료 시 dangling once 정리).
+   * keyboardOnlyMode(마우스 차단) 에서 전투를 빠져나가는 유일 경로 — 이게 없으면 하드 softlock.
+   */
+  private _bindPopupExitKeys(): void {
+    const kb = this.input.keyboard;
+    if (!kb) return;
+    const exit = (): void => { this._exitBattle(); };
+    kb.once('keydown-ENTER', exit);
+    kb.once('keydown-ESC', exit);
+  }
+
   private _showResultPopup(): void {
     const cx = this.cameras.main.centerX;
     const cy = this.cameras.main.centerY;
@@ -2326,8 +2340,8 @@ export class BattleScene extends Phaser.Scene {
       container.add(noLoot);
     }
 
-    // 확인 버튼
-    const closeBtn = this.add.text(0, 120, '[ 확인 ]', {
+    // 확인 버튼 (Enter/ESC 키로도 닫힘 — 마우스 없이 전투 종료)
+    const closeBtn = this.add.text(0, 120, '[ 확인 ] (Enter)', {
       fontSize: '18px', fontFamily: FONT_FAMILY, color: '#88ff88',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -2337,6 +2351,7 @@ export class BattleScene extends Phaser.Scene {
     container.add(closeBtn);
 
     this.lootPopup = container;
+    this._bindPopupExitKeys(); // 키보드 컷오버: Enter/ESC → _exitBattle
   }
 
   // ─── 패배 연출 ───────────────────────────────────────────────
@@ -2392,11 +2407,12 @@ export class BattleScene extends Phaser.Scene {
       }).setOrigin(0.5);
       container.add(title);
 
-      const closeBtn = this.add.text(0, 30, '[ 돌아가기 ]', {
+      const closeBtn = this.add.text(0, 30, '[ 돌아가기 ] (Enter)', {
         fontSize: '16px', fontFamily: FONT_FAMILY, color: '#aaaaaa',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       closeBtn.on('pointerdown', () => this._exitBattle());
       container.add(closeBtn);
+      this._bindPopupExitKeys(); // 키보드 컷오버: Enter/ESC → _exitBattle (마우스 없이 패배 종료)
     });
   }
 
