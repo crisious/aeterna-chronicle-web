@@ -260,7 +260,7 @@ export class TutorialFlowManager {
       }).setOrigin(0.5);
 
     // 스킵 버튼
-    const skipBtn = this.scene.add.text(panelW / 2 - 15, -panelH / 2 + 15, '[스킵]', {
+    const skipBtn = this.scene.add.text(panelW / 2 - 15, -panelH / 2 + 15, '[스킵] (ESC)', {
       fontSize: '12px', color: '#ff6666', fontFamily: 'NanumGothic, sans-serif',
     }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
     skipBtn.on('pointerdown', () => this.skip());
@@ -282,10 +282,30 @@ export class TutorialFlowManager {
   }
 
   private setupTrigger(step: TutorialStep): void {
+    // 키보드 컷오버: 모든 스텝에서 ESC 로 스킵(skipBtn 이 pointerdown 단독이라, 마우스 없이는 튜토리얼을
+    //   탈출 못 하던 갭 보완). window keydown 이라 keyboardOnlyMode 의 canvas pointer-events:none 무관.
+    const skipHandler = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') { event.preventDefault(); this.skip(); }
+    };
+    window.addEventListener('keydown', skipHandler);
+    this.eventListeners.push(() => window.removeEventListener('keydown', skipHandler));
+
     switch (step.trigger) {
-      case 'click':
+      case 'click': {
+        // 마우스: overlay 클릭. 키보드: Enter/Space. keyboardOnlyMode 에선 canvas 차단으로 overlay
+        //   pointerdown 이 안 와 키 경로가 없으면 첫 스텝부터 진행 불능(하드 softlock). key 케이스 패턴 재사용.
         this.overlay?.once('pointerdown', () => this.advanceStep());
+        const advanceHandler = (event: KeyboardEvent): void => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            window.removeEventListener('keydown', advanceHandler);
+            this.advanceStep();
+          }
+        };
+        window.addEventListener('keydown', advanceHandler);
+        this.eventListeners.push(() => window.removeEventListener('keydown', advanceHandler));
         break;
+      }
       case 'key':
         if (step.triggerKey) {
           const handler = (event: KeyboardEvent) => {
