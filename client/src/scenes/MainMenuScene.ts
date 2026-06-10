@@ -33,6 +33,8 @@ export class MainMenuScene extends Phaser.Scene {
   private menuActions: (() => void)[] = [];
   private menuHighlightIndex = 0;
   private focusRing?: KeyboardFocusRing;
+  // 키보드 컷오버(감사 rank4): 크레딧 오버레이 참조 — 중복 오픈 가드 + ESC 닫기 대상.
+  private creditsOverlay: Phaser.GameObjects.Container | null = null;
   private titleText!: Phaser.GameObjects.Text;
   private subtitleText!: Phaser.GameObjects.Text;
   private particleTimer?: Phaser.Time.TimerEvent;
@@ -119,6 +121,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuLabels = menuDefs.map(d => d.label);
     this.menuActions = menuDefs.map(d => d.action);
     this.menuHighlightIndex = 0;
+    this.creditsOverlay = null; // 인스턴스 재사용 시 stale 참조가 가드를 영구 잠그지 않게 리셋
 
     const menuStartY = height * 0.58;
     const menuGap = 48;
@@ -278,15 +281,25 @@ export class MainMenuScene extends Phaser.Scene {
 
     // FINDING-DR-3: 로그인 모달 키보드 nav (WCAG 2.1.1)
     // - input Enter → 로그인 (가장 자연스러운 form submit)
+    // - input Shift+Enter → 가입 — 키보드 컷오버(감사 rank4): [ 가입 ] 버튼이 canvas pointerdown
+    //   단독이라 keyboardOnlyMode(canvas pointer-events:none)에선 신규가입이 완전 불능이던 갭.
+    //   DOM input 의 keydown 이라 canvas 차단과 무관하게 동작한다.
     // - ESC → 모달 닫기
     const onInputEnter = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        this._doLogin();
+        if (e.shiftKey) this._doRegister();
+        else this._doLogin();
       }
     };
     this.usernameInput?.addEventListener('keydown', onInputEnter);
     this.passwordInput?.addEventListener('keydown', onInputEnter);
+
+    // 키 힌트(발견성): 버튼 라벨 충돌 없이 별도 라인으로
+    const keyHint = this.add.text(0, 108, 'Enter 로그인 · Shift+Enter 가입 · ESC 닫기', {
+      fontSize: '10px', color: '#777799', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setOrigin(0.5);
+    this.loginContainer.add(keyHint);
 
     const onLoginEsc = () => this._closeLoginUI();
     this.input.keyboard?.on('keydown-ESC', onLoginEsc);
@@ -471,6 +484,11 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   private _showCreditsOverlay(): void {
+    // 키보드 컷오버(감사 rank4): (a) 중복 가드 — 메뉴 focusRing 이 크레딧 위에서도 살아 있어
+    //   Enter 연타가 오버레이를 겹겹이 쌓던 중첩 차단. (b) ESC 닫기 — [ 닫기 ] 가 pointerdown
+    //   단독이라 keyboardOnlyMode 에선 열면 영영 못 닫는 트랩이었다.
+    if (this.creditsOverlay) return;
+
     const { width, height } = this.cameras.main;
     const cx = width / 2;
     const cy = height / 2;
@@ -479,16 +497,23 @@ export class MainMenuScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 400, 300, 0x000000, 0.9).setStrokeStyle(1, 0x6644aa);
     container.add(bg);
 
+    const onCreditsEsc = (): void => closeCredits();
+    const closeCredits = (): void => {
+      this.input.keyboard?.off('keydown-ESC', onCreditsEsc);
+      container.destroy();
+      this.creditsOverlay = null;
+    };
+
     const credits = [
       '— 에테르나 크로니클 —', '',
       '기획·개발: Crisious',
       '엔진: Phaser 3',
       '서버: Fastify + Prisma', '',
-      '[ 닫기 ]',
+      '[ 닫기 ] (ESC)',
     ];
 
     credits.forEach((line, i) => {
-      const isClose = line === '[ 닫기 ]';
+      const isClose = line.startsWith('[ 닫기 ]');
       const txt = this.add.text(0, -100 + i * 28, line, {
         fontSize: isClose ? '16px' : '14px',
         color: isClose ? '#88ff88' : '#cccccc',
@@ -496,10 +521,13 @@ export class MainMenuScene extends Phaser.Scene {
       }).setOrigin(0.5);
       if (isClose) {
         txt.setInteractive({ useHandCursor: true });
-        txt.on('pointerdown', () => container.destroy());
+        txt.on('pointerdown', closeCredits);
       }
       container.add(txt);
     });
+
+    this.input.keyboard?.on('keydown-ESC', onCreditsEsc);
+    this.creditsOverlay = container;
   }
 
   shutdown(): void {
