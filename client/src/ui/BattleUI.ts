@@ -257,19 +257,24 @@ export class BattleUI {
   // ─── 버튼 ────────────────────────────────────────────────────
 
   private _createButtons(): void {
-    // 일시정지 (battle log 아래)
-    this.pauseBtn = this.scene.add.text(LOG_X, LOG_Y + 84, '⏸ 일시정지', {
+    // 일시정지 (battle log 아래) — 키보드 컷오버(감사 rank5): P 키 등가 추가.
+    this.pauseBtn = this.scene.add.text(LOG_X, LOG_Y + 84, '⏸ 일시정지 (P)', {
       fontSize: '10px', color: '#aaaaaa',
       backgroundColor: '#222222', padding: { x: 4, y: 2 },
     }).setDepth(112).setInteractive({ useHandCursor: true });
-    this.pauseBtn.on('pointerdown', () => {
-      if (this.scene.scene.isPaused('BattleScene')) {
-        this.scene.scene.resume('BattleScene');
-        this.pauseBtn.setText('⏸ 일시정지');
-      } else {
-        this.scene.scene.pause('BattleScene');
-        this.pauseBtn.setText('▶ 재개');
-      }
+    this.pauseBtn.on('pointerdown', () => this.togglePause());
+
+    // P 키는 Phaser 씬 키보드가 아니라 window 레벨에 바인딩 — scene.pause('BattleScene') 가
+    // 씬 시스템(키보드 플러그인 포함)을 멈추므로, 씬 키였다면 "P로 정지 → P로 재개 불가" 트랩.
+    // window keydown 은 일시정지 상태와 무관하게 발화한다(#271 튜토리얼과 동일 패턴).
+    const onPauseKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'p' && e.key !== 'P') return;
+      if ((e.target as HTMLElement | null)?.tagName === 'INPUT') return; // DOM 입력 중 보호
+      this.togglePause();
+    };
+    window.addEventListener('keydown', onPauseKey);
+    this.scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      window.removeEventListener('keydown', onPauseKey);
     });
 
     // 도주
@@ -283,6 +288,17 @@ export class BattleUI {
     this.fleeBtn.on('pointerdown', () => {
       (this.scene as unknown as { _attemptFlee?: () => void })._attemptFlee?.();
     });
+  }
+
+  /** 일시정지 토글 — 마우스 버튼과 P 키(window)가 공유하는 단일 진입점(라벨 동기 포함). */
+  togglePause(): void {
+    if (this.scene.scene.isPaused('BattleScene')) {
+      this.scene.scene.resume('BattleScene');
+      this.pauseBtn.setText('⏸ 일시정지 (P)');
+    } else {
+      this.scene.scene.pause('BattleScene');
+      this.pauseBtn.setText('▶ 재개 (P)');
+    }
   }
 
   // ─── 스킬 쿨다운 표시 ────────────────────────────────────────
