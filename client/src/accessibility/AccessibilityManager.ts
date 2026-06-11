@@ -42,7 +42,10 @@ export interface AccessibilitySettings {
   screenReaderEnabled: boolean;
   /** 모션 감소 모드 */
   reduceMotion: boolean;
-  /** 키보드 전용 모드 — 켜면 게임 캔버스의 포인터(마우스·터치) 입력을 비활성(키보드만). */
+  /**
+   * 키보드 전용 모드 — 켜면 게임 캔버스의 포인터(마우스·터치) 입력을 비활성(키보드만).
+   * 컷오버로 기본 ON. 저장 설정의 opt-out(false)은 loadSettings 머지가 그대로 존중.
+   */
   keyboardOnlyMode: boolean;
 }
 
@@ -110,7 +113,7 @@ const DEFAULT_SETTINGS: AccessibilitySettings = {
   keyboardNavEnabled: false,
   screenReaderEnabled: false,
   reduceMotion: false,
-  keyboardOnlyMode: false,
+  keyboardOnlyMode: true,
 };
 
 // ─── SVG 필터 정의 (색맹 시뮬레이션) ────────────────────────────
@@ -721,7 +724,8 @@ export class AccessibilityManager {
   /**
    * 키보드 전용 모드 적용 — 게임 캔버스에 pointer-events:none 을 걸어 마우스·터치 클릭을 막는다.
    * 키보드(document 레벨)는 영향 없음. DOM HUD(별도 div)는 키보드로도 조작 가능하므로 캔버스만 차단.
-   * P0~P4 로 전 표면 키보드 패리티가 완비된 뒤의 컷오버 — 토글 기본 OFF 라 미사용자 회귀 0.
+   * 컷오버 완료(기본 ON): 전 표면 키보드 패리티(P0~P4) + 컷오버 감사 high 5·med 2(PR #270~#274)
+   * 전부 해소 후 전환. 마우스 사용자는 설정의 '키보드 전용 (마우스 끄기)' 토글로 opt-out.
    */
   private applyKeyboardOnlyMode(): void {
     if (!this.gameCanvas) return;
