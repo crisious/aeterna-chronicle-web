@@ -145,7 +145,8 @@ async function run() {
     record('settings-nav', idxN === (idx0 + KEYBOARD_ONLY_IDX),
       `settingsIndex ${idx0} -> ${idxN} (기대 ${idx0 + KEYBOARD_ONLY_IDX})`);
 
-    // 이동한 항목이 '키보드 전용' 토글인지 확인 후 Enter → 컷오버
+    // 컷오버(기본 ON) 검증 — 부팅 직후 canvas 가 이미 차단('none')돼 있어야 한다.
+    // 이동한 항목('키보드 전용' 토글)에서 Enter → opt-out(복원), 다시 Enter → 재차단.
     const pe0 = await canvasPointerEvents(page);
     await page.keyboard.press('Enter');
     await sleep(300);
@@ -155,8 +156,8 @@ async function run() {
     await sleep(300);
     const pe2 = await canvasPointerEvents(page);
 
-    record('cutover-engine', pe1 === 'none' && pe0 !== 'none',
-      `canvas.pointerEvents: 초기='${pe0}' → 토글ON='${pe1}' → 토글OFF='${pe2}' (ON 시 'none' 기대)`);
+    record('cutover-engine', pe0 === 'none' && pe1 !== 'none' && pe2 === 'none',
+      `canvas.pointerEvents: 초기='${pe0}'(기본 ON 'none' 기대) → 토글OFF='${pe1}' → 토글ON='${pe2}'`);
     await page.screenshot({ path: join(SHOTS, '03-settings-after-toggle.png') });
   } catch (e) { record('settings-suite', false, `예외: ${e.message}`); }
 
