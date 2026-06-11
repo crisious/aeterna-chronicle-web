@@ -367,19 +367,28 @@ export class CharacterSelectScene extends Phaser.Scene {
       this._setClassCardIndex(0);
     }
 
+    // 키보드 컷오버(감사 rank6): 이름 input 타이핑 중엔 Phaser 키(window 레벨이라 input focus 와
+    // 무관하게 발화)가 클래스 전환/재선택을 일으키지 않게 양보. ESC 는 1차=입력 탈출(blur),
+    // 2차=화면 뒤로 — 모달 ESC 관례와 동일한 단계적 탈출.
+    const isTypingName = (): boolean => document.activeElement === this.nameInput;
+
     const onLeft = () => {
+      if (isTypingName()) return;
       const next = (this.classCardIndex + this.cards.length - 1) % this.cards.length;
       this._setClassCardIndex(next);
     };
     const onRight = () => {
+      if (isTypingName()) return;
       const next = (this.classCardIndex + 1) % this.cards.length;
       this._setClassCardIndex(next);
     };
     const onSelectKey = () => {
+      if (isTypingName()) return; // Enter 는 input 자체 리스너(_onCreate)가 처리
       const cls = this.classes[this.classCardIndex];
       if (cls) this._selectClass(cls);
     };
     const onEsc = () => {
+      if (isTypingName()) { this.nameInput?.blur(); return; }
       this._createKeyboardCleanup?.();
       this._createKeyboardCleanup = null;
       if (this.existingCharacters.length > 0) {
@@ -495,6 +504,11 @@ export class CharacterSelectScene extends Phaser.Scene {
     }).setOrigin(0, 0.5);
     this.previewContainer.add([txt, subTxt]);
     this.errorText.setText('');
+
+    // 키보드 컷오버(감사 rank6): 클래스 선택(Enter/클릭) 직후 이름 input 으로 자동 focus —
+    // 이전엔 focus 미호출이라 키보드 사용자가 네이티브 Tab 우연 안착에만 의존했다.
+    // 이후 흐름: 이름 타이핑 → Enter(_onCreate, input 자체 keydown 리스너) 로 생성까지 무마우스.
+    this.nameInput?.focus();
   }
 
   // ── 이름 입력 (DOM) ──────────────────────────────────────
