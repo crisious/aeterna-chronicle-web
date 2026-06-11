@@ -57,6 +57,7 @@
 | Pillow | 10.0+ | 이미지 처리 | `pip install Pillow` |
 | rembg | 2.0+ | 배경 제거 | `pip install rembg` |
 | numpy | 1.24+ | 색상 분석 | `pip install numpy` |
+| Aseprite | 1.3+ | 캐릭터/NPC 픽셀아트 원본 편집 및 CLI export | Steam 설치 |
 
 ### 2.2 선택 소프트웨어 (AI 엔진)
 
@@ -176,16 +177,53 @@ make catalog       # 카탈로그만
 
 AI 생성 이미지가 QA를 통과하지 못하거나 NPC/캐릭터 애니메이션의 프레임 일관성이 필요한 경우 Aseprite 원본을 수동 보정 SSOT로 승격합니다. 기존 AI 파이프라인은 seed/reference 생성과 후처리에 유지하고, Aseprite 루프는 사람이 보정한 `.aseprite` 원본을 검증 가능한 PNG/JSON atlas로 만드는 보조 경로입니다.
 
+Windows 기준 Aseprite 실행 파일은 다음 경로를 사용합니다.
+
+```text
+C:\Program Files (x86)\Steam\steamapps\common\Aseprite\Aseprite.exe
+```
+
 ```
 AI seed/reference
   → Aseprite 원본 편집 (`assets/source/aseprite`)
   → Aseprite CLI export (`npm run art:aseprite:export`)
   → JSON 정규화 (`tools/aseprite-pipeline/normalize-aseprite-json.mjs`)
   → 자동 검증 (`npm run art:aseprite:validate` + 기존 QA)
-  → 리뷰 후 수동 publish (`client/public/assets/atlas`)
+  → publish (NPC/일반 atlas는 수동, 캐릭터는 roster build `--publish`)
 ```
 
-설치 확인은 `npm run art:aseprite:check`로 수행하고, 표준 위치에서 Aseprite를 찾지 못하면 `ASEPRITE_EXE`로 실행 파일 경로를 지정합니다. 자세한 명령과 NPC 파일럿 예시는 [Aseprite Pipeline](../../tools/aseprite-pipeline/README.md)을 참조합니다. 이 스프린트는 자동 publish를 제공하지 않으므로, 검증된 PNG/JSON만 리뷰 후 `client/public/assets/atlas`로 수동 복사합니다.
+설치 확인은 `npm run art:aseprite:check`로 수행하고, 표준 위치에서 Aseprite를 찾지 못하면 `ASEPRITE_EXE`로 실행 파일 경로를 지정합니다. 자세한 명령과 NPC 파일럿 예시는 [Aseprite Pipeline](../../tools/aseprite-pipeline/README.md)을 참조합니다. NPC/일반 atlas는 검증된 PNG/JSON만 리뷰 후 `client/public/assets/atlas`로 수동 복사합니다.
+
+#### 캐릭터 스프라이트 파일럿
+
+캐릭터 스프라이트는 [Character Sprite Production](character-sprite-production.md)을 기준으로 제작합니다. `char_ether_knight_base` 파일럿이 field/battle 런타임 QA를 통과하기 전에는 다른 클래스의 full motion 제작을 시작하지 않습니다.
+
+현재 파일럿 source `.aseprite`는 프레임 캔버스 `64x64`, 10프레임입니다. export sheet는 `640x64`이며 runtime에서는 `frameWidth: 64`, `frameHeight: 64`로 잘라 씁니다.
+
+```powershell
+npm run art:character:roster
+npm run art:character:build -- char_ether_knight_base
+npm run art:character:build -- char_ether_knight_base --publish
+```
+
+경로 계약:
+
+| 구분 | 경로 |
+|------|------|
+| Source | `assets/source/aseprite/character/...` |
+| Aseprite export | `assets/generated/aseprite/character/...` |
+| Runtime publish | `assets/generated/characters/sprites/...` |
+| Client serve | `client/public/assets/generated` 심링크 경유 |
+| Runtime manifest | `client/src/assets/characterSpriteManifest.ts` |
+
+`GameScene`과 `BattleScene`은 manifest의 `textureKey`와 `imagePath`를 사용해 `load.spritesheet(..., { frameWidth: 64, frameHeight: 64 })`로 로드하고, 생성 직후 `setFrame(0)`을 적용합니다. 이 처리가 없으면 `640x64` strip 전체가 한 스프라이트처럼 렌더링될 수 있습니다.
+
+브라우저 QA 포인트:
+
+```text
+?debugScene=world&class=ether_knight&era=present
+?debugScene=battle&class=ether_knight&era=present
+```
 
 ---
 

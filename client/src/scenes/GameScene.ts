@@ -13,6 +13,7 @@ import { TelemetryEmitter } from '../services/TelemetryEmitter';
 import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
+import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
 import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
 import { resolveZoneBackground, type ZoneBackgroundDescriptor } from '../data/zoneBackgrounds';
 import {
@@ -31,6 +32,12 @@ interface GameSceneData {
   zoneId?: string;
   zoneName?: string;
   characterId?: string;
+  characterName?: string;
+  characterClass?: string;
+  className?: string;
+  baseStats?: { hp: number; mp: number; atk: number; def: number };
+  level?: number;
+  offlineQa?: boolean;
   eraId?: ChronoEraId;
 }
 
@@ -82,7 +89,9 @@ export class GameScene extends Phaser.Scene {
   // P25-04: 존 + 소켓 데이터
   private currentZoneId = 'aether_plains';
   private currentZoneName = '에테르 평원';
+  private currentCharacterClassId = 'ether_knight';
   private currentEraId: ChronoEraId = 'present';
+  private sceneData: GameSceneData = {};
   private zoneInfo: ZoneInfo | null = null;
   private remoteEntities: Map<string, RemoteEntity> = new Map();
   private activeDialogueNpc: RemoteEntity | null = null;
@@ -98,10 +107,19 @@ export class GameScene extends Phaser.Scene {
   }
 
   init(data: GameSceneData): void {
+    this.sceneData = data ?? {};
     if (data?.zoneId) this.currentZoneId = data.zoneId;
+    this.currentCharacterClassId = data?.characterClass?.trim() || 'ether_knight';
     if (data?.eraId) this.currentEraId = data.eraId;
     this.currentZoneName = data?.zoneName ?? projectZoneToEra(this.currentZoneId, this.currentEraId).displayName;
     this.zoneBackground = resolveZoneBackground(this.currentZoneId, this.currentEraId);
+    this.sceneData = {
+      ...this.sceneData,
+      zoneId: this.currentZoneId,
+      zoneName: this.currentZoneName,
+      characterClass: this.currentCharacterClassId,
+      eraId: this.currentEraId,
+    };
   }
 
   preload(): void {
@@ -112,6 +130,13 @@ export class GameScene extends Phaser.Scene {
 
     // 주인공 캐릭터 이미지 (기본: 에테르 기사 front)
     this.load.image('player_sprite', 'assets/generated/characters/class_main/char_illust_ether_knight_front.png');
+    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
+    if (playerSpriteResource && !this.textures.exists(playerSpriteResource.textureKey)) {
+      this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath, {
+        frameWidth: playerSpriteResource.frameWidth,
+        frameHeight: playerSpriteResource.frameHeight,
+      });
+    }
 
     // NPC 스프라이트
     this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_battle/04_mateus_sprite.png');
@@ -149,6 +174,26 @@ export class GameScene extends Phaser.Scene {
     } catch (e) {
       console.warn('[GameScene] SoundManager preload 실패:', e);
     }
+  }
+
+  private startWorldScene(): void {
+    this.scene.start('WorldScene', {
+      ...this.sceneData,
+      zoneId: this.currentZoneId,
+      zoneName: this.currentZoneName,
+      eraId: this.currentEraId,
+      characterClass: this.currentCharacterClassId,
+    });
+  }
+
+  private startLobbyScene(): void {
+    this.scene.start('LobbyScene', {
+      ...this.sceneData,
+      zoneId: this.currentZoneId,
+      zoneName: this.currentZoneName,
+      eraId: this.currentEraId,
+      characterClass: this.currentCharacterClassId,
+    });
   }
 
   /** Phaser create 직전: 프로그래매틱 텍스처 생성 (preload 로드 실패 대비) */
@@ -192,18 +237,18 @@ export class GameScene extends Phaser.Scene {
     const backBtn = this.add.text(width / 2, height / 2 + 110, '[ 월드맵으로 돌아가기 ] (Enter)', {
       fontSize: '16px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    backBtn.on('pointerdown', () => this.scene.start('WorldScene'));
+    backBtn.on('pointerdown', () => this.startWorldScene());
 
     const lobbyBtn = this.add.text(width / 2, height / 2 + 140, '[ 로비로 돌아가기 ] (ESC)', {
       fontSize: '14px', color: '#88ff88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    lobbyBtn.on('pointerdown', () => this.scene.start('LobbyScene'));
+    lobbyBtn.on('pointerdown', () => this.startLobbyScene());
 
     // FINDING-A4 ext6: 에러 화면 키보드 nav (WCAG 2.1.1)
     // Enter → 월드맵, ESC → 로비. 단순 fallback 이라 cycle 보다 직접 매핑이 명확.
-    this.input.keyboard?.on('keydown-ENTER', () => this.scene.start('WorldScene'));
-    this.input.keyboard?.on('keydown-SPACE', () => this.scene.start('WorldScene'));
-    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
+    this.input.keyboard?.on('keydown-ENTER', () => this.startWorldScene());
+    this.input.keyboard?.on('keydown-SPACE', () => this.startWorldScene());
+    this.input.keyboard?.on('keydown-ESC', () => this.startLobbyScene());
   }
 
   private _createSafe(): void {
@@ -221,7 +266,7 @@ export class GameScene extends Phaser.Scene {
     // ESC 키(createInputs)와 동일 동작을 1-클릭으로 제공해, 메인 퀘스트
     // "말라투스 성소 진입"의 진행 방법을 모르는 사용자가 곧바로 목적지로 이동하게 한다.
     this.events.on('ui.event.quest.open_map', () => {
-      this.scene.start('WorldScene');
+      this.startWorldScene();
     });
 
     try {
@@ -556,8 +601,11 @@ export class GameScene extends Phaser.Scene {
     // keyboardOnlyMode(canvas pointer-events:none)에선 전투를 시작할 방법이 전무했다.
     const engage = (): void => {
       this.scene.start('BattleScene', {
+        ...this.sceneData,
         zoneId: this.currentZoneId,
+        zoneName: this.currentZoneName,
         eraId: this.currentEraId,
+        characterClass: this.currentCharacterClassId,
         monsterId: id,
         monsterName: battleSeed.monsterName,
         // CHRONO-S126: 보스 spawn 시 데미지 배율 강화 (1.5x — 보스 분위기)
@@ -773,7 +821,16 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPlayer(): void {
-    this.player = this.physics.add.sprite(640, 360, 'player_sprite');
+    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
+    const textureKey = playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)
+      ? playerSpriteResource.textureKey
+      : 'player_sprite';
+
+    this.player = this.physics.add.sprite(640, 360, textureKey, 0);
+    if (playerSpriteResource && textureKey === playerSpriteResource.textureKey) {
+      this.player.setFrame(0);
+      this.player.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
     // 필드용 표시 크기 고정: 현재 에테르 기사 원본은 256x384 전신 일러스트라 원본 크기 표시 시 시야를 가림.
     const targetHeight = 112;
     const scale = Math.min(1, targetHeight / Math.max(1, this.player.height));
@@ -817,7 +874,7 @@ export class GameScene extends Phaser.Scene {
         this._engageNearestMonster();
       });
       this.input.keyboard.on('keydown-ESC', () => {
-        this.scene.start('WorldScene');
+        this.startWorldScene();
       });
     }
   }

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "characters": [
+    {
+      "id": "char_ether_knight_base",
+      "classId": "ether_knight",
+      "phase": "pilot",
+      "source": "assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite",
+      "generatedPng": "assets/generated/aseprite/character/char_ether_knight_base.png",
+      "generatedJson": "assets/generated/aseprite/character/char_ether_knight_base.json",
+      "runtimePng": "client/public/assets/generated/characters/sprites/char_ether_knight_base.png",
+      "runtimeJson": "client/public/assets/generated/characters/sprites/char_ether_knight_base.json",
+      "textureKey": "char_sprite_ether_knight_base",
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "directions": [
+        "D"
+      ],
+      "motions": [
+        "idle",
+        "walk"
+      ],
+      "requiredTags": [
+        "idle_D",
+        "walk_D"
+      ],
+      "status": "published"
+    }
+  ]
+}

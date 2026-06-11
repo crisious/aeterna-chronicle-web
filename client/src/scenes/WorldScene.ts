@@ -34,6 +34,17 @@ interface WorldZone {
   unlocked: boolean;
 }
 
+interface WorldSceneData {
+  eraId?: ChronoEraId;
+  characterId?: string;
+  characterName?: string;
+  characterClass?: string;
+  className?: string;
+  baseStats?: { hp: number; mp: number; atk: number; def: number };
+  level?: number;
+  offlineQa?: boolean;
+}
+
 const WORLD_ZONES: WorldZone[] = [
   { id: 'aether_plains',     name: '에테르 평원',     description: 'Lv.1~10 / 시작 지역',       color: 0x88cc44, posRatioX: 0.2,  posRatioY: 0.55, minLevel: 1,  unlocked: true },
   { id: 'memory_forest',     name: '기억의 숲',       description: 'Lv.10~20 / 고대 정령 서식지', color: 0x44aa88, posRatioX: 0.4,  posRatioY: 0.35, minLevel: 10, unlocked: true },
@@ -55,6 +66,7 @@ export class WorldScene extends Phaser.Scene {
   private playerMarker!: Phaser.GameObjects.Arc;
   private currentZoneId = 'aether_plains';
   private currentEraId: ChronoEraId = 'present';
+  private sceneData: WorldSceneData = {};
   private selectedZone: WorldZone | null = null;
   private eraLabelText: Phaser.GameObjects.Text | null = null;
   private eraHintText: Phaser.GameObjects.Text | null = null;
@@ -69,7 +81,8 @@ export class WorldScene extends Phaser.Scene {
     super({ key: 'WorldScene' });
   }
 
-  init(data?: { eraId?: ChronoEraId }): void {
+  init(data?: WorldSceneData): void {
+    this.sceneData = data ?? {};
     // 우선순위: scene init data > localStorage 복원 > 기존 currentEraId(present)
     this.currentEraId = data?.eraId ?? loadLastEra() ?? this.currentEraId;
     this.selectedZone = null;
@@ -149,7 +162,7 @@ export class WorldScene extends Phaser.Scene {
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     })
       .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.scene.start('LobbyScene'));
+      .on('pointerdown', () => this.startLobbyScene());
 
     // FINDING-A4 ext3: zone 키보드 nav (WCAG 2.1.1)
     // unlocked zone 만 cycle. ArrowLeft/Right + Up/Down 모두 zone idx 단방향.
@@ -187,7 +200,7 @@ export class WorldScene extends Phaser.Scene {
         this._onZoneClick(zone);
       }
     };
-    const onEsc = () => this.scene.start('LobbyScene');
+    const onEsc = () => this.startLobbyScene();
 
     this.input.keyboard?.on('keydown-LEFT', onPrev);
     this.input.keyboard?.on('keydown-UP', onPrev);
@@ -212,6 +225,13 @@ export class WorldScene extends Phaser.Scene {
     };
 
     SceneManager.fadeIn(this, 300);
+  }
+
+  private startLobbyScene(): void {
+    this.scene.start('LobbyScene', {
+      ...this.sceneData,
+      eraId: this.currentEraId,
+    });
   }
 
   private _createChronoControls(width: number): void {
@@ -248,6 +268,7 @@ export class WorldScene extends Phaser.Scene {
 
   private _setChronoEra(nextEraId: ChronoEraId): void {
     this.currentEraId = nextEraId;
+    this.sceneData = { ...this.sceneData, eraId: nextEraId };
     saveLastEra(nextEraId);
     this._refreshChronoControls();
     if (this.selectedZone) {
@@ -468,9 +489,11 @@ export class WorldScene extends Phaser.Scene {
         this.cameras.main.fadeOut(300, 0, 0, 0);
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
           this.scene.start('GameScene', {
+            ...this.sceneData,
             zoneId: zone.id,
             zoneName: projection.displayName,
             eraId: this.currentEraId,
+            characterClass: this.sceneData.characterClass,
           });
         });
       },
