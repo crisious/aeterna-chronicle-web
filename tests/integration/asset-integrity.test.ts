@@ -11,10 +11,18 @@
 import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
+import { CHARACTER_SPRITE_MANIFEST } from '../../client/src/assets/characterSpriteManifest';
 
 const ROOT = path.resolve(__dirname, '../..');
 const CLIENT_SRC = path.join(ROOT, 'client/src');
 const CLIENT_PUBLIC = path.join(ROOT, 'client/public');
+
+interface CharacterSpriteRuntimeAtlas {
+  atlas: string;
+  image: string;
+  size: { w: number; h: number };
+  sprites: Array<{ w: number; h: number }>;
+}
 
 // ── 유틸리티 ──────────────────────────────────────────────────────
 
@@ -108,6 +116,66 @@ describe('Asset Reference Integrity', () => {
 
       // 누락 에셋이 없으면 통과, 있으면 경고 + 실패
       expect(missing, `${missing.length}개 에셋 파일이 디스크에 없습니다`).toHaveLength(0);
+    });
+
+    it('characterSpriteManifest imagePath / jsonPath 참조 파일이 client/public/ 에 존재해야 한다', () => {
+      const manifestRefs = CHARACTER_SPRITE_MANIFEST.flatMap((entry) => [
+        {
+          classId: entry.classId,
+          assetPath: entry.imagePath,
+          type: 'character_manifest_image',
+        },
+        {
+          classId: entry.classId,
+          assetPath: entry.jsonPath,
+          type: 'character_manifest_json',
+        },
+      ]);
+      const missing: { classId: string; assetPath: string; type: string }[] = [];
+
+      expect(manifestRefs.length).toBeGreaterThan(0);
+
+      for (const ref of manifestRefs) {
+        const diskPath = path.join(CLIENT_PUBLIC, ref.assetPath);
+        if (!fs.existsSync(diskPath)) {
+          missing.push(ref);
+        }
+      }
+
+      if (missing.length > 0) {
+        console.warn('\n⚠️  누락된 캐릭터 스프라이트 매니페스트 파일:');
+        for (const m of missing) {
+          console.warn(`  [${m.type}] ${m.assetPath}  ← ${m.classId}`);
+        }
+      }
+
+      expect(missing, `${missing.length}개 캐릭터 스프라이트 파일이 디스크에 없습니다`).toHaveLength(0);
+    });
+
+    it('characterSpriteManifest runtime JSON 이 client/public/ 에서도 프레임 계약과 일치해야 한다', () => {
+      expect(CHARACTER_SPRITE_MANIFEST.length).toBeGreaterThan(0);
+
+      for (const entry of CHARACTER_SPRITE_MANIFEST) {
+        const sourceJsonPath = path.join(ROOT, entry.jsonPath);
+        const runtimeJsonPath = path.join(CLIENT_PUBLIC, entry.jsonPath);
+        const runtimeAtlas = JSON.parse(
+          fs.readFileSync(runtimeJsonPath, 'utf-8'),
+        ) as CharacterSpriteRuntimeAtlas;
+        const sourceAtlas = JSON.parse(
+          fs.readFileSync(sourceJsonPath, 'utf-8'),
+        ) as CharacterSpriteRuntimeAtlas;
+
+        expect(runtimeAtlas, `${entry.classId} runtime JSON differs from generated JSON`).toEqual(sourceAtlas);
+        expect(runtimeAtlas.image).toBe(path.basename(entry.imagePath));
+        expect(runtimeAtlas.sprites.length).toBeGreaterThan(0);
+        expect(runtimeAtlas.size.w).toBeGreaterThanOrEqual(entry.frameWidth);
+        expect(runtimeAtlas.size.h).toBeGreaterThanOrEqual(entry.frameHeight);
+
+        for (const frame of runtimeAtlas.sprites) {
+          expect(frame.w).toBe(entry.frameWidth);
+          expect(frame.h).toBe(entry.frameHeight);
+        }
+      }
     });
   });
 

@@ -224,6 +224,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
 
     const eraId = parseChronoEraId(params.get('era') ?? 'present');
     const zoneId = params.get('zone') ?? 'aether_plains';
+    const characterClass = params.get('class')?.trim() || 'ether_knight';
 
     if (debugScene === 'lobby') {
         const lobbyData: LobbySceneData = {
@@ -242,7 +243,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
 
     if (debugScene === 'world') {
         phaserGame.scene.stop('MainMenuScene');
-        phaserGame.scene.start('WorldScene', { eraId });
+        phaserGame.scene.start('WorldScene', { eraId, characterClass });
         return;
     }
 
@@ -253,6 +254,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             eraId,
             monsterId: 'debug_chrono_wraith',
             monsterName: eraId === 'ruined_future' ? '붕괴미래 시간 망령' : '시간 망령',
+            characterClass,
             enemyHpMultiplier: eraId === 'ruined_future' ? 1.25 : 1,
             enemyAttackSpeedMultiplier: eraId === 'ruined_future' ? 1.15 : 1,
             rewardMultiplier: eraId === 'ruined_future' ? 1.25 : 1,

@@ -26,6 +26,7 @@ import { networkManager, CombatResult } from '../network/NetworkManager';
 import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
+import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
 import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
 import { loadLastEra } from '../time/eraStorage';
@@ -76,6 +77,11 @@ export interface BattleSceneData {
   monsterId?: string;
   monsterName?: string;
   characterId?: string;
+  characterName?: string;
+  characterClass?: string;
+  className?: string;
+  baseStats?: { hp: number; mp: number; atk: number; def: number };
+  level?: number;
   eraId?: ChronoEraId;
   atbMode?: ATBMode;
   enemyHpMultiplier?: number;
@@ -363,6 +369,13 @@ export class BattleScene extends Phaser.Scene {
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
       this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
+      const spriteResource = getCharacterSpriteResource(cid);
+      if (spriteResource && !this.textures.exists(spriteResource.textureKey)) {
+        this.load.spritesheet(spriteResource.textureKey, spriteResource.imagePath, {
+          frameWidth: spriteResource.frameWidth,
+          frameHeight: spriteResource.frameHeight,
+        });
+      }
     }
 
     // 몬스터 스프라이트 이미지 로드 (128x128, 투명 배경)
@@ -1879,7 +1892,8 @@ export class BattleScene extends Phaser.Scene {
     units.forEach((unit, idx) => {
       const pos = ALLY_POSITIONS[idx % ALLY_POSITIONS.length];
       const classId = unit.classId ?? '';
-      const texKey = `char_battle_${classId}`;
+      const spriteResource = getCharacterSpriteResource(classId);
+      const staticTexKey = `char_battle_${classId}`;
 
       // B-S4: ally 에 critEcho 부여 (default 30%)
       if (unit.critEchoPercent === undefined) {
@@ -1888,8 +1902,16 @@ export class BattleScene extends Phaser.Scene {
       if (unit.alive === undefined) unit.alive = true;
 
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
-      if (classId && this.textures.exists(texKey)) {
-        sprite = this.add.image(pos.x, pos.y, texKey)
+      if (spriteResource && this.textures.exists(spriteResource.textureKey)) {
+        sprite = this.add.image(pos.x, pos.y, spriteResource.textureKey, 0)
+          .setScale(1)
+          // UX(rank11): 평소엔 손가락 커서 끔(클릭 가능해 보이는 거짓 어포던스). 타겟 선택 중 후보에만 켠다.
+          .setInteractive({ useHandCursor: false })
+          .setDepth(50);
+        sprite.setFrame(0);
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      } else if (classId && this.textures.exists(staticTexKey)) {
+        sprite = this.add.image(pos.x, pos.y, staticTexKey)
           .setScale(1)
           // UX(rank11): 평소엔 손가락 커서 끔(클릭 가능해 보이는 거짓 어포던스). 타겟 선택 중 후보에만 켠다.
           .setInteractive({ useHandCursor: false })
@@ -2419,7 +2441,7 @@ export class BattleScene extends Phaser.Scene {
   // ─── 기본 유닛 생성 (폴백) ────────────────────────────────────
 
   private _createDefaultAllies(): CombatUnit[] {
-    const classId = (this._initData as unknown as Record<string, unknown>)?.characterClass as string ?? 'ether_knight';
+    const classId = this._initData.characterClass ?? 'ether_knight';
     const charName = (this._initData as unknown as Record<string, unknown>)?.characterName as string ?? '모험자';
     const level = (this._initData as unknown as Record<string, unknown>)?.level as number ?? 1;
     return [{
@@ -3017,8 +3039,10 @@ export class BattleScene extends Phaser.Scene {
       });
     } else {
       this.scene.start('GameScene', {
+        ...this._initData,
         zoneId: this._initData.zoneId,
         eraId: this._initData.eraId,
+        characterClass: this._initData.characterClass,
       });
     }
   }

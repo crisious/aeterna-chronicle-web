@@ -4,14 +4,15 @@
 
 이 파이프라인은 사람이 보정한 `.ase`/`.aseprite` 원본을 Aseprite CLI로 export해 에테르나 크로니클의 PNG sprite sheet와 JSON atlas로 변환한다. AI 아트 파이프라인은 seed/reference 생성과 후처리에 계속 사용하고, Aseprite는 QA 반려 에셋이나 애니메이션 일관성이 필요한 에셋의 수동 보정 SSOT(Single Source of Truth)로 사용한다.
 
-현재 범위는 다음 네 단계다.
+현재 범위는 다음 단계다.
 
 1. Aseprite 실행 파일 탐색 및 설치 확인
 2. `.ase`/`.aseprite` 원본 batch export
 3. Aseprite JSON을 런타임 atlas JSON 형태로 정규화
 4. PNG/JSON/프레임/tag 정합성 검증
+5. character roster 기반 단일 캐릭터 build 및 선택적 runtime publish
 
-이 스프린트에는 publish 자동화가 없다. `client/public`으로 복사하는 단계는 리뷰 후 수동으로만 수행한다.
+NPC/일반 atlas publish는 리뷰 후 수동 배치를 유지한다. 캐릭터 파일럿은 `npm run art:character:build -- <character-id> --publish`로 `client/public/assets/generated` 심링크를 경유하는 runtime sprite 경로에 게시할 수 있다.
 
 ## Aseprite 설치 확인
 
@@ -42,15 +43,18 @@ npm run art:aseprite:check
 
 ## 루트 경로
 
-루트 경로와 카테고리 규격은 `tools/aseprite-pipeline/aseprite.config.json`이 기준이다.
+기본 루트 경로와 카테고리 규격은 `tools/aseprite-pipeline/aseprite.config.json`이 기준이다. 캐릭터 런타임 publish 대상은 config가 아니라 `assets/source/aseprite/character/character-sprite-roster.json`의 `runtimePng`/`runtimeJson`이 기준이다.
 
 | 구분 | 경로 | 용도 |
 |------|------|------|
 | sourceRoot | `assets/source/aseprite` | 사람이 편집하는 `.ase`/`.aseprite` 원본 |
 | exportRoot | `assets/generated/aseprite` | Aseprite CLI가 만든 PNG와 raw JSON, 정규화 JSON |
-| publishRoot | `client/public/assets/atlas` | 리뷰 통과 후 런타임에 수동 배치하는 atlas 경로 |
+| publishRoot | `client/public/assets/atlas` | NPC/일반 atlas 리뷰 통과 후 수동 배치 경로 |
+| character roster runtime | `client/public/assets/generated/characters/sprites` | roster의 `runtimePng`/`runtimeJson`이 가리키는 캐릭터 파일럿 publish 경로 |
 
 현재 export 스크립트는 카테고리별 export 폴더에 basename 기준으로 산출물을 만든다. 예를 들어 `npc` 카테고리는 `assets/generated/aseprite/npc/<basename>.png`와 `assets/generated/aseprite/npc/<basename>.aseprite.json`을 생성한다.
+
+`client/public/assets/generated`는 `assets/generated`를 가리키는 심링크다. 캐릭터 런타임 경로는 브라우저에서 `assets/generated/characters/sprites/...`로 로드한다.
 
 ## 카테고리 규격
 
@@ -64,6 +68,51 @@ npm run art:aseprite:check
 | `tile` | 32x32 | `rows` | 없음 |
 
 NPC는 반드시 64x64 프레임을 사용한다. `idle_D`, `talk_D` tag는 Aseprite timeline의 frame range를 가져야 하며, `from`/`to` 값은 정수이고 실제 frame index 범위 안에 있어야 한다.
+
+## Character Sprite Workflow
+
+캐릭터 스프라이트는 `assets/source/aseprite/character/character-sprite-roster.json`을 기준으로 검증한다. 첫 파일럿은 `char_ether_knight_base`이며 source `.aseprite`는 64x64 프레임 캔버스, 10프레임, export sheet `640x64` 규격이다.
+
+### 1) Roster 검증
+
+```powershell
+npm run art:character:roster
+```
+
+### 2) 단일 캐릭터 build/검증
+
+```powershell
+npm run art:character:build -- char_ether_knight_base
+```
+
+예상 산출물:
+
+- `assets/generated/aseprite/character/char_ether_knight_base.png`
+- `assets/generated/aseprite/character/char_ether_knight_base.aseprite.json`
+- `assets/generated/aseprite/character/char_ether_knight_base.json`
+
+### 3) 런타임 publish
+
+```powershell
+npm run art:character:build -- char_ether_knight_base --publish
+```
+
+publish 후 runtime 산출물은 다음 경로에서 확인한다.
+
+- `assets/generated/characters/sprites/char_ether_knight_base.png`
+- `assets/generated/characters/sprites/char_ether_knight_base.json`
+- `client/public/assets/generated/characters/sprites/...` 심링크 경유
+
+런타임 계약은 `client/src/assets/characterSpriteManifest.ts`가 가진다. `GameScene`과 `BattleScene`은 해당 manifest를 읽어 `load.spritesheet(..., { frameWidth: 64, frameHeight: 64 })`로 로드하고, 생성 후 `setFrame(0)`을 적용해 640px strip 전체 렌더링을 피한다.
+
+브라우저 QA는 다음 파라미터로 확인한다.
+
+```text
+?debugScene=world&class=ether_knight&era=present
+?debugScene=battle&class=ether_knight&era=present
+```
+
+full motion 제작은 field/battle QA 통과 후 `attack_melee_D`, `cast_D`, `hit_D`, `death_D`를 추가한다.
 
 ## 브러쉬와 팔레트 설정
 
@@ -134,4 +183,10 @@ npm run art:aseprite:validate -- npc `
 
 ## Publish 규칙
 
-이 스프린트는 `client/public`으로 자동 publish하지 않는다. 리뷰를 통과한 검증 완료 PNG/JSON만 `client/public/assets/atlas` 아래의 런타임 대상 위치로 수동 복사한다. 새 publish 자동화는 런타임 asset loader가 NPC/캐릭터/VFX atlas를 어떤 key로 읽는지 확인한 뒤 별도 작업으로 추가한다.
+NPC/일반 atlas는 리뷰를 통과한 검증 완료 PNG/JSON만 `client/public/assets/atlas` 아래의 런타임 대상 위치로 수동 복사한다. 캐릭터 파일럿은 roster에 등록된 runtime 경로로만 publish한다.
+
+```powershell
+npm run art:character:build -- char_ether_knight_base --publish
+```
+
+publish 대상은 `client/public/assets/generated/characters/sprites`이며, 이 경로는 `client/public/assets/generated` 심링크를 통해 `assets/generated/characters/sprites`와 연결된다.

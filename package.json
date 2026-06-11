@@ -39,6 +39,8 @@
     "art:aseprite:check": "node tools/aseprite-pipeline/find-aseprite.mjs",
     "art:aseprite:export": "node tools/aseprite-pipeline/export-aseprite.mjs",
     "art:aseprite:validate": "node tools/aseprite-pipeline/validate-aseprite-export.mjs",
+    "art:character:roster": "node tools/aseprite-pipeline/validate-character-sprite-roster.mjs",
+    "art:character:build": "node tools/aseprite-pipeline/build-character-sprite.mjs",
     "mp:catalog": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types ./scripts/monster-pipeline/cli.ts catalog",
     "mp:generate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types ./scripts/monster-pipeline/cli.ts generate",
     "mp:touchup": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types ./scripts/monster-pipeline/cli.ts touchup",

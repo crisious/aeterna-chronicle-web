@@ -113,6 +113,390 @@ describe('aseprite pipeline config', () => {
   });
 });
 
+describe('character sprite roster contract', () => {
+  function createEtherKnightPilotRoster() {
+    return {
+      version: 1,
+      characters: [
+        {
+          id: 'char_ether_knight_base',
+          classId: 'ether_knight',
+          phase: 'pilot',
+          source: 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite',
+          generatedPng: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+          generatedJson: 'assets/generated/aseprite/character/char_ether_knight_base.json',
+          runtimePng: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.png',
+          runtimeJson: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.json',
+          textureKey: 'char_sprite_ether_knight_base',
+          frameWidth: 64,
+          frameHeight: 64,
+          directions: ['D'],
+          motions: ['idle', 'walk'],
+          requiredTags: ['idle_D', 'walk_D'],
+          status: 'planned',
+        },
+      ],
+    };
+  }
+
+  test('accepts the Ether Knight pilot roster entry', async () => {
+    const { validateCharacterSpriteRoster } = await import(
+      '../../tools/aseprite-pipeline/validate-character-sprite-roster.mjs'
+    );
+
+    const result = validateCharacterSpriteRoster(createEtherKnightPilotRoster());
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts .ase source files for character sprite roster entries', async () => {
+    const { validateCharacterSpriteRoster } = await import(
+      '../../tools/aseprite-pipeline/validate-character-sprite-roster.mjs'
+    );
+    const roster = createEtherKnightPilotRoster();
+    const character = roster.characters[0];
+
+    character.source = 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.ase';
+
+    const result = validateCharacterSpriteRoster(roster);
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('reports concrete errors when sprite paths are outside allowed roots', async () => {
+    const { validateCharacterSpriteRoster } = await import(
+      '../../tools/aseprite-pipeline/validate-character-sprite-roster.mjs'
+    );
+    const roster = createEtherKnightPilotRoster();
+    const character = roster.characters[0];
+
+    character.source = 'assets/source/aseprite/npc/char_ether_knight_base.aseprite';
+    character.generatedPng = 'assets/generated/aseprite/npc/char_ether_knight_base.png';
+    character.generatedJson = 'assets/generated/aseprite/npc/char_ether_knight_base.json';
+    character.runtimePng = 'client/public/assets/generated/monsters/char_ether_knight_base.png';
+    character.runtimeJson = 'client/public/assets/generated/monsters/char_ether_knight_base.json';
+
+    const result = validateCharacterSpriteRoster(roster);
+
+    expect(result).toEqual({
+      ok: false,
+      errors: [
+        'Character "char_ether_knight_base" source must be inside assets/source/aseprite/character: assets/source/aseprite/npc/char_ether_knight_base.aseprite.',
+        'Character "char_ether_knight_base" generatedPng must be inside assets/generated/aseprite/character: assets/generated/aseprite/npc/char_ether_knight_base.png.',
+        'Character "char_ether_knight_base" generatedJson must be inside assets/generated/aseprite/character: assets/generated/aseprite/npc/char_ether_knight_base.json.',
+        'Character "char_ether_knight_base" runtimePng must be inside client/public/assets/generated/characters/sprites: client/public/assets/generated/monsters/char_ether_knight_base.png.',
+        'Character "char_ether_knight_base" runtimeJson must be inside client/public/assets/generated/characters/sprites: client/public/assets/generated/monsters/char_ether_knight_base.json.',
+      ],
+    });
+  });
+
+  test('rejects character sprite paths with valid roots but invalid file extensions', async () => {
+    const { validateCharacterSpriteRoster } = await import(
+      '../../tools/aseprite-pipeline/validate-character-sprite-roster.mjs'
+    );
+    const roster = createEtherKnightPilotRoster();
+    const character = roster.characters[0];
+
+    character.source = 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.png';
+    character.generatedPng = 'assets/generated/aseprite/character/char_ether_knight_base.json';
+    character.generatedJson = 'assets/generated/aseprite/character/char_ether_knight_base.png';
+    character.runtimePng = 'client/public/assets/generated/characters/sprites/char_ether_knight_base.json';
+    character.runtimeJson = 'client/public/assets/generated/characters/sprites/char_ether_knight_base.png';
+
+    const result = validateCharacterSpriteRoster(roster);
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        'Character "char_ether_knight_base" source must use .ase or .aseprite extension: assets/source/aseprite/character/ether_knight/char_ether_knight_base.png.',
+        'Character "char_ether_knight_base" generatedPng must use .png extension: assets/generated/aseprite/character/char_ether_knight_base.json.',
+        'Character "char_ether_knight_base" generatedJson must use .json extension: assets/generated/aseprite/character/char_ether_knight_base.png.',
+        'Character "char_ether_knight_base" runtimePng must use .png extension: client/public/assets/generated/characters/sprites/char_ether_knight_base.json.',
+        'Character "char_ether_knight_base" runtimeJson must use .json extension: client/public/assets/generated/characters/sprites/char_ether_knight_base.png.',
+      ]),
+    );
+  });
+
+  test('requires full phase character sprites to include every production tag', async () => {
+    const { validateCharacterSpriteRoster } = await import(
+      '../../tools/aseprite-pipeline/validate-character-sprite-roster.mjs'
+    );
+    const roster = createEtherKnightPilotRoster();
+    const character = roster.characters[0];
+
+    character.phase = 'full';
+
+    const result = validateCharacterSpriteRoster(roster);
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        'Character "char_ether_knight_base" phase "full" requiredTags must include "attack_melee_D".',
+        'Character "char_ether_knight_base" phase "full" requiredTags must include "cast_D".',
+        'Character "char_ether_knight_base" phase "full" requiredTags must include "hit_D".',
+        'Character "char_ether_knight_base" phase "full" requiredTags must include "death_D".',
+      ]),
+    );
+  });
+
+  test('rejects unsupported character sprite phases', async () => {
+    const { validateCharacterSpriteRoster } = await import(
+      '../../tools/aseprite-pipeline/validate-character-sprite-roster.mjs'
+    );
+    const roster = createEtherKnightPilotRoster();
+    const character = roster.characters[0];
+
+    character.phase = 'prototype';
+
+    const result = validateCharacterSpriteRoster(roster);
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toContain('Character "char_ether_knight_base" phase must be one of pilot, full, production, full-production.');
+  });
+});
+
+describe('character sprite build wrapper', () => {
+  function createEtherKnightBuildRoster() {
+    return {
+      version: 1,
+      characters: [
+        {
+          id: 'char_ether_knight_base',
+          classId: 'ether_knight',
+          phase: 'pilot',
+          source: 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite',
+          generatedPng: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+          generatedJson: 'assets/generated/aseprite/character/char_ether_knight_base.json',
+          runtimePng: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.png',
+          runtimeJson: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.json',
+          textureKey: 'char_sprite_ether_knight_base',
+          frameWidth: 64,
+          frameHeight: 64,
+          directions: ['D'],
+          motions: ['idle', 'walk'],
+          requiredTags: ['idle_D', 'walk_D'],
+          status: 'planned',
+        },
+      ],
+    };
+  }
+
+  test('resolveCharacterBuildTarget reads roster paths and derives raw Aseprite JSON path', async () => {
+    const { resolveCharacterBuildTarget } = await import('../../tools/aseprite-pipeline/build-character-sprite.mjs');
+
+    expect(resolveCharacterBuildTarget(createEtherKnightBuildRoster(), 'char_ether_knight_base')).toEqual({
+      id: 'char_ether_knight_base',
+      category: 'character',
+      atlasName: 'char_ether_knight_base',
+      source: 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite',
+      generatedPng: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+      rawJson: 'assets/generated/aseprite/character/char_ether_knight_base.aseprite.json',
+      generatedJson: 'assets/generated/aseprite/character/char_ether_knight_base.json',
+      runtimePng: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.png',
+      runtimeJson: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.json',
+    });
+  });
+
+  test('resolveCharacterBuildTarget rejects unknown ids', async () => {
+    const { resolveCharacterBuildTarget } = await import('../../tools/aseprite-pipeline/build-character-sprite.mjs');
+
+    expect(() => resolveCharacterBuildTarget({ version: 1, characters: [] }, 'missing')).toThrow(
+      'Unknown character sprite id: missing',
+    );
+  });
+
+  test('buildCharacterSprite orchestrates export normalization validation and publish with roster requiredTags', async () => {
+    const { buildCharacterSprite } = await import('../../tools/aseprite-pipeline/build-character-sprite.mjs');
+    const roster = createEtherKnightBuildRoster();
+    const atlas = {
+      size: { w: 128, h: 64 },
+      sprites: [
+        { name: 'char_ether_knight_base_idle_0', x: 0, y: 0, w: 64, h: 64 },
+        { name: 'char_ether_knight_base_walk_0', x: 64, y: 0, w: 64, h: 64 },
+      ],
+      tags: [
+        { name: 'idle_D', from: 0, to: 0 },
+        { name: 'walk_D', from: 1, to: 1 },
+      ],
+      count: 2,
+    };
+    const calls: string[] = [];
+    const copiedFiles: Array<{ source: string; destination: string }> = [];
+    const mkdirCalls: Array<{ directory: string; options: { recursive?: boolean } }> = [];
+
+    const result = buildCharacterSprite({
+      id: 'char_ether_knight_base',
+      publish: true,
+      dependencies: {
+        loadRoster: () => roster,
+        validateRoster: (candidate: unknown) => {
+          expect(candidate).toBe(roster);
+          return { ok: true, errors: [] };
+        },
+        runExport: (args: { category: string; sourceFile: string }) => {
+          calls.push('runExport');
+          expect(args).toEqual({
+            category: 'character',
+            sourceFile: 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite',
+          });
+          return {
+            sheetFile: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+            dataFile: 'assets/generated/aseprite/character/char_ether_knight_base.aseprite.json',
+          };
+        },
+        normalize: (rawJson: string, generatedJson: string, atlasName: string, sheetFileName: string) => {
+          calls.push('normalize');
+          expect([rawJson, generatedJson, atlasName, sheetFileName]).toEqual([
+            'assets/generated/aseprite/character/char_ether_knight_base.aseprite.json',
+            'assets/generated/aseprite/character/char_ether_knight_base.json',
+            'char_ether_knight_base',
+            'char_ether_knight_base.png',
+          ]);
+          return atlas;
+        },
+        loadConfig: () => ({
+          categories: {
+            character: {
+              frameWidth: 64,
+              frameHeight: 64,
+              padding: 2,
+              sheetType: 'rows',
+              requiredTags: ['idle_D', 'walk_D', 'attack_melee_D', 'cast_D', 'hit_D', 'death_D'],
+            },
+          },
+        }),
+        readText: (filePath: string) => {
+          expect(filePath).toBe('assets/generated/aseprite/character/char_ether_knight_base.json');
+          return JSON.stringify(atlas);
+        },
+        readSize: (filePath: string) => {
+          expect(filePath).toBe('assets/generated/aseprite/character/char_ether_knight_base.png');
+          return { w: 128, h: 64 };
+        },
+        validateAtlas: ({
+          atlas: actualAtlas,
+          categoryConfig,
+          pngSize,
+        }: {
+          atlas: typeof atlas;
+          categoryConfig: {
+            frameWidth: number;
+            frameHeight: number;
+            padding: number;
+            sheetType: string;
+            requiredTags: string[];
+          };
+          pngSize: { w: number; h: number };
+        }) => {
+          calls.push('validateAtlas');
+          expect(actualAtlas).toEqual(atlas);
+          expect(pngSize).toEqual({ w: 128, h: 64 });
+          expect(categoryConfig).toMatchObject({
+            frameWidth: 64,
+            frameHeight: 64,
+            padding: 2,
+            sheetType: 'rows',
+          });
+          expect(categoryConfig.requiredTags).toEqual(['idle_D', 'walk_D']);
+          return { ok: true, errors: [] };
+        },
+        mkdir: (directory: string, options: { recursive?: boolean }) => {
+          mkdirCalls.push({ directory, options });
+        },
+        copyFile: (source: string, destination: string) => {
+          copiedFiles.push({ source, destination });
+        },
+      },
+    });
+
+    expect(calls).toEqual(['runExport', 'normalize', 'validateAtlas']);
+    expect(mkdirCalls).toEqual([
+      {
+        directory: path.dirname('client/public/assets/generated/characters/sprites/char_ether_knight_base.png'),
+        options: { recursive: true },
+      },
+    ]);
+    expect(copiedFiles).toEqual([
+      {
+        source: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+        destination: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.png',
+      },
+      {
+        source: 'assets/generated/aseprite/character/char_ether_knight_base.json',
+        destination: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.json',
+      },
+    ]);
+    expect(result).toEqual({
+      target: {
+        id: 'char_ether_knight_base',
+        category: 'character',
+        atlasName: 'char_ether_knight_base',
+        source: 'assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite',
+        generatedPng: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+        rawJson: 'assets/generated/aseprite/character/char_ether_knight_base.aseprite.json',
+        generatedJson: 'assets/generated/aseprite/character/char_ether_knight_base.json',
+        runtimePng: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.png',
+        runtimeJson: 'client/public/assets/generated/characters/sprites/char_ether_knight_base.json',
+      },
+      validation: { ok: true, errors: [] },
+    });
+  });
+
+  test('buildCharacterSprite rejects Aseprite export targets that do not match the roster target', async () => {
+    const { buildCharacterSprite } = await import('../../tools/aseprite-pipeline/build-character-sprite.mjs');
+    const calls: string[] = [];
+
+    expect(() =>
+      buildCharacterSprite({
+        id: 'char_ether_knight_base',
+        dependencies: {
+          loadRoster: () => createEtherKnightBuildRoster(),
+          validateRoster: () => ({ ok: true, errors: [] }),
+          runExport: () => {
+            calls.push('runExport');
+            return {
+              sheetFile: 'assets/generated/aseprite/character/wrong.png',
+              dataFile: 'assets/generated/aseprite/character/wrong.aseprite.json',
+            };
+          },
+          normalize: () => {
+            calls.push('normalize');
+          },
+        },
+      }),
+    ).toThrow('Aseprite export target mismatch:');
+    expect(calls).toEqual(['runExport']);
+  });
+
+  test('parseBuildCharacterSpriteArgs accepts publish before or after the character id', async () => {
+    const { parseBuildCharacterSpriteArgs } = await import('../../tools/aseprite-pipeline/build-character-sprite.mjs');
+
+    expect(parseBuildCharacterSpriteArgs(['char_ether_knight_base'])).toEqual({
+      id: 'char_ether_knight_base',
+      publish: false,
+    });
+    expect(parseBuildCharacterSpriteArgs(['char_ether_knight_base', '--publish'])).toEqual({
+      id: 'char_ether_knight_base',
+      publish: true,
+    });
+    expect(parseBuildCharacterSpriteArgs(['--publish', 'char_ether_knight_base'])).toEqual({
+      id: 'char_ether_knight_base',
+      publish: true,
+    });
+  });
+
+  test('parseBuildCharacterSpriteArgs rejects unknown flags and extra positional ids', async () => {
+    const { parseBuildCharacterSpriteArgs } = await import('../../tools/aseprite-pipeline/build-character-sprite.mjs');
+
+    expect(() => parseBuildCharacterSpriteArgs(['char_ether_knight_base', '--dry-run'])).toThrow(
+      'Unknown option: --dry-run',
+    );
+    expect(() => parseBuildCharacterSpriteArgs(['char_ether_knight_base', 'char_shadow_weaver_base'])).toThrow(
+      'Expected exactly one character id.',
+    );
+  });
+});
+
 // Windows 경로(C:\\)·path.delimiter 의존 테스트 — 비-Windows CI(ubuntu)에서는 스킵.
 // aseprite 파이프라인은 Windows dev 도구이며 find-aseprite 는 OS 기본 path 의미로 후보를 구성한다.
 describe.skipIf(process.platform !== 'win32')('aseprite executable finder', () => {
