@@ -3,8 +3,12 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   CHARACTER_SPRITE_MANIFEST,
+  CHARACTER_BASE_FRAME_COUNT,
+  CHARACTER_DIRECTION_ORDER,
+  CHARACTER_MOTION_FRAMES,
   getCharacterSpriteAnimationKey,
   getCharacterSpriteResource,
+  getCharacterFrameRange,
 } from '../../client/src/assets/characterSpriteManifest';
 
 function readSceneSource(sceneFileName: string): string {
@@ -474,18 +478,62 @@ describe('character sprite manifest', () => {
   it('BattleScene prioritizes manifest sprite resources before static battle fallbacks', () => {
     const source = readSceneSource('BattleScene.ts');
 
-    expect(source).toContain("import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';");
+    expect(source).toContain("from '../assets/characterSpriteManifest'");
+    expect(source).toContain('getCharacterSpriteResource');
+    expect(source).toContain('getCharacterSpriteAnimationKey');
+    expect(source).toContain('getCharacterFrameRange');
     expect(source).toContain('const spriteResource = getCharacterSpriteResource(cid)');
     expect(source).toContain('this.load.spritesheet(spriteResource.textureKey, spriteResource.imagePath');
     expect(source).toContain('frameWidth: spriteResource.frameWidth');
     expect(source).toContain('frameHeight: spriteResource.frameHeight');
     expect(source).toContain('const spriteResource = getCharacterSpriteResource(classId)');
     expect(source).toContain('this.textures.exists(spriteResource.textureKey)');
-    expect(source).toContain('this.add.image(pos.x, pos.y, spriteResource.textureKey, 0)');
-    expect(source).toContain('sprite.setFrame(0)');
+    // 애니메이션 배선: 정적 add.image 가 아니라 add.sprite 로 만들어 태그 재생.
+    expect(source).toContain('this.add.sprite(pos.x, pos.y, spriteResource.textureKey, 0)');
+    expect(source).toContain("this._playCharMotion(charSprite, classId, 'idle', 'D')");
+    expect(source).toContain('this.anims.generateFrameNumbers(resource.textureKey, { start: from, end: to })');
+    expect(source).toContain("this._playAllyMotion(a => !a.isDead, 'victory')");
+    expect(source).toContain("this._playAllyMotion(() => true, 'death')");
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
     expect(source).toContain('Phaser.Textures.FilterMode.LINEAR');
     expect(source).toContain('this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)');
+  });
+
+  describe('frame-range SSOT', () => {
+    it('exposes the 40-frame layout constants', () => {
+      expect(CHARACTER_BASE_FRAME_COUNT).toBe(40);
+      expect(CHARACTER_DIRECTION_ORDER).toEqual(['D', 'DL', 'L', 'UL', 'U']);
+    });
+
+    it('motion frame table matches the documented contract (attack_ranged falls back to melee)', () => {
+      for (const [motion, range] of Object.entries(motionRanges)) {
+        expect(CHARACTER_MOTION_FRAMES[motion as keyof typeof motionRanges]).toEqual(range);
+      }
+      // attack_ranged shares the melee block so missing-ranged classes don't index past the sheet.
+      expect(CHARACTER_MOTION_FRAMES.attack_ranged).toEqual(CHARACTER_MOTION_FRAMES.attack_melee);
+    });
+
+    it('getCharacterFrameRange offsets by direction index × 40', () => {
+      // D is the first block — no offset.
+      expect(getCharacterFrameRange('idle', 'D')).toEqual({ from: 0, to: 3 });
+      expect(getCharacterFrameRange('victory', 'D')).toEqual({ from: 34, to: 39 });
+      // L is index 2 → +80.
+      expect(getCharacterFrameRange('idle', 'L')).toEqual({ from: 80, to: 83 });
+      // U is index 4 → +160; victory tops out at 199 (last frame of a 200-frame sheet).
+      expect(getCharacterFrameRange('victory', 'U')).toEqual({ from: 194, to: 199 });
+    });
+
+    it('every direction × motion range stays within the per-class 200-frame sheet', () => {
+      const totalFrames = CHARACTER_BASE_FRAME_COUNT * CHARACTER_DIRECTION_ORDER.length;
+      for (const direction of CHARACTER_DIRECTION_ORDER) {
+        for (const motion of Object.keys(CHARACTER_MOTION_FRAMES) as (keyof typeof CHARACTER_MOTION_FRAMES)[]) {
+          const { from, to } = getCharacterFrameRange(motion, direction);
+          expect(from).toBeGreaterThanOrEqual(0);
+          expect(to).toBeLessThan(totalFrames);
+          expect(from).toBeLessThanOrEqual(to);
+        }
+      }
+    });
   });
 
   it('DungeonScene prioritizes manifest character sprites before side illustration fallback', () => {

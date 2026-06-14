@@ -26,7 +26,13 @@ import { networkManager, CombatResult } from '../network/NetworkManager';
 import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
-import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
+import {
+  getCharacterSpriteResource,
+  getCharacterSpriteAnimationKey,
+  getCharacterFrameRange,
+  type CharacterMotion,
+  type CharacterDirection,
+} from '../assets/characterSpriteManifest';
 import { preloadEnvironmentParticleTextures } from './TransitionEffects';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
 import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
@@ -255,7 +261,7 @@ const FONT_FAMILY = '"Galmuri11", "Apple SD Gothic Neo", "Malgun Gothic", "Noto 
 
 interface UnitSprite {
   unit: CombatUnit;
-  sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   nameText: Phaser.GameObjects.Text;
   atb: number;           // 0 ~ ATB_MAX
   atbBar?: Phaser.GameObjects.Graphics;
@@ -2780,6 +2786,46 @@ export class BattleScene extends Phaser.Scene {
     }
   }
 
+  // ─── 캐릭터 태그 애니메이션 ───────────────────────────────────
+
+  /**
+   * classId·motion·direction 조합당 Phaser Animation 을 lazily 생성한다.
+   * 프레임 범위는 manifest 의 SSOT(getCharacterFrameRange)에서 받아 시트
+   * 레이아웃과 런타임이 절대 어긋나지 않게 한다. idle 만 루프(repeat -1),
+   * 나머지(victory/death 등)는 1회 재생.
+   */
+  private _ensureCharAnim(
+    classId: string,
+    motion: CharacterMotion,
+    direction: CharacterDirection,
+  ): string {
+    const resource = getCharacterSpriteResource(classId);
+    const key = getCharacterSpriteAnimationKey(classId, motion, direction);
+    if (!resource || this.anims.exists(key)) return key;
+
+    const { from, to } = getCharacterFrameRange(motion, direction);
+    // idle 은 잔잔하게(6fps), victory 는 약간 빠르게(10fps) — CT 승리 포즈 리듬.
+    const frameRate = motion === 'idle' ? 6 : motion === 'victory' ? 10 : 8;
+    this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers(resource.textureKey, { start: from, end: to }),
+      frameRate,
+      repeat: motion === 'idle' ? -1 : 0,
+    });
+    return key;
+  }
+
+  /** 태그 애니메이션을 보장 생성 후 스프라이트에 재생. Sprite 타입에만 적용. */
+  private _playCharMotion(
+    sprite: Phaser.GameObjects.Sprite,
+    classId: string,
+    motion: CharacterMotion,
+    direction: CharacterDirection = 'D',
+  ): void {
+    const key = this._ensureCharAnim(classId, motion, direction);
+    if (this.anims.exists(key)) sprite.play(key);
+  }
+
   // ─── 유닛 스폰 ───────────────────────────────────────────────
 
   private _spawnAllies(units: CombatUnit[]): void {
@@ -2795,15 +2841,17 @@ export class BattleScene extends Phaser.Scene {
       }
       if (unit.alive === undefined) unit.alive = true;
 
-      let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+      let sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
       if (spriteResource && this.textures.exists(spriteResource.textureKey)) {
-        sprite = this.add.image(pos.x, pos.y, spriteResource.textureKey, 0)
+        // 태그 기반 스프라이트: add.sprite 로 만들어 idle 루프 재생(A/B 포즈가 실제로 움직임).
+        const charSprite = this.add.sprite(pos.x, pos.y, spriteResource.textureKey, 0)
           .setScale(1)
           // UX(rank11): 평소엔 손가락 커서 끔(클릭 가능해 보이는 거짓 어포던스). 타겟 선택 중 후보에만 켠다.
           .setInteractive({ useHandCursor: false })
           .setDepth(50);
-        sprite.setFrame(0);
-        sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        charSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this._playCharMotion(charSprite, classId, 'idle', 'D');
+        sprite = charSprite;
       } else if (classId && this.textures.exists(staticTexKey)) {
         sprite = this.add.image(pos.x, pos.y, staticTexKey)
           .setScale(1)
@@ -3166,6 +3214,9 @@ export class BattleScene extends Phaser.Scene {
       this._closeSubMenu();
       this.targetSelectMode = false;
       this.activeCommander = null;
+      // 생존 아군은 승리 포즈 재생(idle 루프 → victory 1회). 흔들림 트윈은
+      // y 를 건드릴 뿐 프레임과 무관해 그대로 둬도 포즈 전환과 충돌하지 않는다.
+      this._playAllyMotion(a => !a.isDead, 'victory');
       this._showVictory();
     } else if (allAlliesDead) {
       this.phase = 'defeat';
@@ -3173,7 +3224,21 @@ export class BattleScene extends Phaser.Scene {
       this._closeSubMenu();
       this.targetSelectMode = false;
       this.activeCommander = null;
+      this._playAllyMotion(() => true, 'death');
       this._showDefeat();
+    }
+  }
+
+  /**
+   * 조건에 맞는 아군의 태그 스프라이트에 모션을 재생한다. add.sprite 로
+   * 만들어진 아군에만 적용(정적 이미지/사각형 폴백은 anims 가 없어 건너뜀).
+   */
+  private _playAllyMotion(predicate: (us: UnitSprite) => boolean, motion: CharacterMotion): void {
+    for (const us of this.allySprites) {
+      if (!predicate(us)) continue;
+      if (!(us.sprite instanceof Phaser.GameObjects.Sprite)) continue;
+      const classId = us.unit.classId ?? '';
+      if (classId) this._playCharMotion(us.sprite, classId, motion, 'D');
     }
   }
 
