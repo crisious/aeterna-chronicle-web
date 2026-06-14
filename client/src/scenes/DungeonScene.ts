@@ -20,7 +20,11 @@ import type { CombatUnit } from '../combat/CombatManager';
 import type { BattleSceneData } from './BattleScene';
 import { classSkills } from '../data/classSkills';
 import { composeDungeonGameOverText } from '../gameplay/dungeonGameOverNarration';
-import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
+import {
+  getCharacterSpriteResource,
+  getCharacterSpriteAnimationKey,
+  getCharacterFrameRange,
+} from '../assets/characterSpriteManifest';
 import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ── 타입 ────────────────────────────────────────────────────
@@ -198,7 +202,7 @@ export class DungeonScene extends Phaser.Scene {
   private waveText?: Phaser.GameObjects.Text;
   private timerText?: Phaser.GameObjects.Text;
   private phaseText?: Phaser.GameObjects.Text;
-  private playerSprite?: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  private playerSprite?: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   private playerHpBar?: Phaser.GameObjects.Rectangle;
   private playerHpBarBg?: Phaser.GameObjects.Rectangle;
   private playerHpText?: Phaser.GameObjects.Text;
@@ -426,15 +430,37 @@ export class DungeonScene extends Phaser.Scene {
     return classId && classId.length > 0 ? classId : 'ether_knight';
   }
 
+  /**
+   * 던전 플레이어 idle 애니메이션 lazy 생성. manifest SSOT
+   * (getCharacterFrameRange)에서 idle_D 프레임 범위를 받아 루프 생성.
+   */
+  private _ensureCharIdleAnim(classId: string): string {
+    const resource = getCharacterSpriteResource(classId);
+    const key = getCharacterSpriteAnimationKey(classId, 'idle', 'D');
+    if (!resource || this.anims.exists(key)) return key;
+    const { from, to } = getCharacterFrameRange('idle', 'D');
+    this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers(resource.textureKey, { start: from, end: to }),
+      frameRate: 6,
+      repeat: -1,
+    });
+    return key;
+  }
+
   private _createPlayer(sceneHeight: number): void {
     const py = sceneHeight / 2;
     const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource('ether_knight');
 
     if (playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)) {
-      const sprite = this.add.image(PLAYER_X, py, playerSpriteResource.textureKey, 0)
+      // 태그 스프라이트: add.sprite 로 만들어 idle 루프 재생(이전엔 정적 frame 0).
+      // 던전은 고정 위치 사이드뷰라 walk 는 없고 idle 만 — 아래 bob 트윈과 겹쳐도
+      // 트윈은 y 만 건드려 프레임과 무관.
+      const sprite = this.add.sprite(PLAYER_X, py, playerSpriteResource.textureKey, 0)
         .setScale(1.4);
-      sprite.setFrame(0);
       sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const idleKey = this._ensureCharIdleAnim(playerSpriteResource.classId);
+      if (this.anims.exists(idleKey)) sprite.play(idleKey);
       this.playerSprite = sprite;
     } else if (this.textures.exists('dungeon_player')) {
       this.playerSprite = this.add.image(PLAYER_X, py, 'dungeon_player')
