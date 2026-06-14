@@ -1871,6 +1871,9 @@ export class BattleScene extends Phaser.Scene {
   // ─── 전투 행동 ───────────────────────────────────────────────
 
   private _performAttack(attacker: UnitSprite, target: UnitSprite): void {
+    // 공격자 근접 스윙 모션(빗나가도 whiff 로 재생) → 완료 시 idle 복귀.
+    this._playAttackerAction(attacker, 'attack_melee');
+
     // B-S2: passive evasion / hit_chance 미러 — miss 판정
     if (rollMiss(attacker.unit as PassiveCombatantClient, target.unit as PassiveCombatantClient)) {
       this._spawnMissText(target.sprite.x, target.sprite.y);
@@ -1940,9 +1943,11 @@ export class BattleScene extends Phaser.Scene {
     // 대상 피격 연출 (번쩍임 + 흔들림)
     this._flashSprite(target);
 
-    // 사망 처리
+    // 사망 처리 (사망이면 death, 생존이면 hit 포즈 — 한 스프라이트에 둘 겹침 방지)
     if (target.unit.hp <= 0) {
       this._killUnit(target);
+    } else {
+      this._playHitReaction(attacker, target);
     }
   }
 
@@ -2291,6 +2296,9 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _performSkill(attacker: UnitSprite, target: UnitSprite, skill: SkillSlot): void {
+    // 시전자 cast 모션 → 완료 시 idle 복귀.
+    this._playAttackerAction(attacker, 'cast');
+
     // MP 차감
     attacker.unit.mp -= skill.mpCost;
     skill.currentCooldown = skill.cooldown;
@@ -2341,6 +2349,8 @@ export class BattleScene extends Phaser.Scene {
 
     if (target.unit.hp <= 0) {
       this._killUnit(target);
+    } else {
+      this._playHitReaction(attacker, target);
     }
   }
 
@@ -2828,23 +2838,60 @@ export class BattleScene extends Phaser.Scene {
   }
 
   /**
-   * 전투 진입 포즈(FF6 표준): ready(무기 들고 대기) 1회 → idle 루프로 정착.
-   * ready 프레임이 없으면 곧장 idle. ready 완료 후에도 그 사이 victory/death
-   * 가 재생됐으면 idle 로 덮지 않도록 완료 애니 키를 확인한다.
+   * 단발 모션(attack_melee/cast/hit/ready 등)을 1회 재생 후 idle 루프로 복귀.
+   * 완료 콜백은 *그 모션의* 키를 확인한다 — 재생 도중 death/victory 가 끼어들면
+   * (그쪽이 sprite.play 로 덮음) 완료 이벤트의 key 가 달라 idle 로 안 되돌린다.
    */
-  private _playCharIntro(sprite: Phaser.GameObjects.Sprite, classId: string): void {
-    const readyKey = this._ensureCharAnim(classId, 'ready', 'D');
-    if (!this.anims.exists(readyKey)) {
-      this._playCharMotion(sprite, classId, 'idle', 'D');
-      return;
-    }
-    sprite.play(readyKey);
+  private _playCharAction(
+    sprite: Phaser.GameObjects.Sprite,
+    classId: string,
+    motion: CharacterMotion,
+    direction: CharacterDirection = 'D',
+  ): void {
+    const key = this._ensureCharAnim(classId, motion, direction);
+    if (!this.anims.exists(key)) return;
+    sprite.play(key);
     sprite.once(
       Phaser.Animations.Events.ANIMATION_COMPLETE,
       (anim: Phaser.Animations.Animation) => {
-        if (anim.key === readyKey) this._playCharMotion(sprite, classId, 'idle', 'D');
+        if (anim.key === key) this._playCharMotion(sprite, classId, 'idle', direction);
       },
     );
+  }
+
+  /**
+   * 전투 진입 포즈(FF6 표준): ready(무기 들고 대기) 1회 → idle 루프로 정착.
+   * ready 프레임이 없으면 곧장 idle.
+   */
+  private _playCharIntro(sprite: Phaser.GameObjects.Sprite, classId: string): void {
+    if (this.anims.exists(this._ensureCharAnim(classId, 'ready', 'D'))) {
+      this._playCharAction(sprite, classId, 'ready', 'D');
+    } else {
+      this._playCharMotion(sprite, classId, 'idle', 'D');
+    }
+  }
+
+  /**
+   * 공격자(아군 태그 스프라이트)의 액션 모션 재생. 적은 add.image(Image) 라
+   * Sprite 가드로 자연 제외 → 적 공격엔 캐릭터 태그 애니 없음.
+   */
+  private _playAttackerAction(attacker: UnitSprite, motion: CharacterMotion): void {
+    if (!attacker.isAlly) return;
+    if (!(attacker.sprite instanceof Phaser.GameObjects.Sprite)) return;
+    const classId = attacker.unit.classId ?? '';
+    if (classId) this._playCharAction(attacker.sprite, classId, motion, 'D');
+  }
+
+  /**
+   * 피격 반응(hit) 모션. 생존 시에만(사망은 _killUnit 의 death 가 우선),
+   * 적대 관계일 때만(아군 힐/버프 대상엔 hit 없음), 아군 태그 스프라이트에만.
+   */
+  private _playHitReaction(attacker: UnitSprite, target: UnitSprite): void {
+    if (target.unit.hp <= 0) return;
+    if (attacker.isAlly === target.isAlly) return;
+    if (!(target.sprite instanceof Phaser.GameObjects.Sprite)) return;
+    const classId = target.unit.classId ?? '';
+    if (classId) this._playCharAction(target.sprite, classId, 'hit', 'D');
   }
 
   /**

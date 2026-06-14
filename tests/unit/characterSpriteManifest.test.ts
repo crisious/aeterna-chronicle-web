@@ -497,6 +497,11 @@ describe('character sprite manifest', () => {
     // 승리=생존 아군 victory, 개별 사망=_killUnit 의 death 포즈.
     expect(source).toContain("this._playAllyMotion(a => !a.isDead, 'victory')");
     expect(source).toContain("this._playCharMotion(spr, classId, 'death', 'D')");
+    // 전투 액션 모션: 공격=attack_melee, 스킬=cast, 피격=hit(단발→idle 복귀).
+    expect(source).toContain('private _playCharAction(');
+    expect(source).toContain("this._playAttackerAction(attacker, 'attack_melee')");
+    expect(source).toContain("this._playAttackerAction(attacker, 'cast')");
+    expect(source).toContain('this._playHitReaction(attacker, target)');
     // #280 회귀 가드: Image|Sprite 둘 다 틴트 가능하도록 타입가드 경유.
     expect(source).toContain('private _canTint(');
     expect(source).toContain('if (this._canTint(us.sprite)) us.sprite.setTint(0x666666)');
