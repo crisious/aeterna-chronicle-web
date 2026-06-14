@@ -34,12 +34,21 @@ export class LoadingProgress {
         this.update(100);
         if (!this.screenEl) return;
 
-        this.screenEl.classList.add('fade-out');
-        this.screenEl.addEventListener('transitionend', () => {
-            this.screenEl?.remove();
-            this.screenEl = null;
-            this.progressEl = null;
-        }, { once: true });
+        const screenEl = this.screenEl;
+        let removed = false;
+        const removeScreen = () => {
+            if (removed) return;
+            removed = true;
+            screenEl.remove();
+            if (this.screenEl === screenEl) {
+                this.screenEl = null;
+                this.progressEl = null;
+            }
+        };
+
+        screenEl.classList.add('fade-out');
+        screenEl.addEventListener('transitionend', removeScreen, { once: true });
+        window.setTimeout(removeScreen, 700);
     }
 }
 

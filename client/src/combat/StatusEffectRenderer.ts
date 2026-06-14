@@ -8,6 +8,7 @@
  */
 
 import * as Phaser from 'phaser';
+import { getStatusIconResource } from '../data/statusEffectIcons';
 import { getStatusCategoryColor, hexToPhaserColor } from './statusEffectCategory';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
@@ -67,9 +68,11 @@ const EFFECT_VISUALS: Record<string, {
 
 // ─── 내부: 유닛 렌더 상태 ──────────────────────────────────────
 
+type StatusIconGameObject = Phaser.GameObjects.Graphics | Phaser.GameObjects.Image;
+
 interface UnitEffectDisplay {
-  /** 아이콘 그래픽스 (최대 4개) */
-  icons: Phaser.GameObjects.Graphics[];
+  /** 아이콘 이미지/테두리 (최대 4개 효과, 효과당 1~2개 오브젝트) */
+  icons: StatusIconGameObject[];
   /** 지속시간 바 */
   durationBars: Phaser.GameObjects.Graphics[];
   /** 라벨 텍스트 */
@@ -174,14 +177,28 @@ export class StatusEffectRenderer {
       // SCENARIO_STATUS_EFFECT_CATEGORIES 의 uiColor 를 카테고리(buff/debuff/control/dot/special)별
       // 테두리로 표시 — SSOT description 의 "잎새 색/모래 색/붉은 테두리" 의도를 시각화.
       const categoryColor = hexToPhaserColor(getStatusCategoryColor(eff.effectId, eff.isDebuff));
-      const icon = this.scene.add.graphics();
-      icon.fillStyle(eff.isDebuff ? 0x220000 : 0x002200, 0.8);
-      icon.fillRoundedRect(ix, iy, ICON_SIZE, ICON_SIZE, 3);
-      icon.lineStyle(2, categoryColor, 1);
-      icon.strokeRoundedRect(ix, iy, ICON_SIZE, ICON_SIZE, 3);
-      icon.fillStyle(visual.color, 1);
-      icon.fillCircle(ix + ICON_SIZE / 2, iy + ICON_SIZE / 2, 6);
-      display.icons.push(icon);
+      const iconResource = getStatusIconResource(eff.effectId);
+      if (iconResource && this.scene.textures.exists(iconResource.key)) {
+        const icon = this.scene.add.image(ix, iy, iconResource.key)
+          .setOrigin(0)
+          .setDisplaySize(ICON_SIZE, ICON_SIZE)
+          .setName(`status_icon_${eff.effectId}`);
+        display.icons.push(icon);
+
+        const frame = this.scene.add.graphics();
+        frame.lineStyle(2, categoryColor, 1);
+        frame.strokeRoundedRect(ix, iy, ICON_SIZE, ICON_SIZE, 3);
+        display.icons.push(frame);
+      } else {
+        const icon = this.scene.add.graphics();
+        icon.fillStyle(eff.isDebuff ? 0x220000 : 0x002200, 0.8);
+        icon.fillRoundedRect(ix, iy, ICON_SIZE, ICON_SIZE, 3);
+        icon.lineStyle(2, categoryColor, 1);
+        icon.strokeRoundedRect(ix, iy, ICON_SIZE, ICON_SIZE, 3);
+        icon.fillStyle(visual.color, 1);
+        icon.fillCircle(ix + ICON_SIZE / 2, iy + ICON_SIZE / 2, 6);
+        display.icons.push(icon);
+      }
 
       // 지속시간 바
       const durBar = this.scene.add.graphics();

@@ -32,11 +32,17 @@ const malatusQuest: QuestItem = {
 };
 
 describe('buildQuestRowHtml — 메인 퀘스트 진행 방법 노출', () => {
-  test('actionHint 가 있으면 강조 안내 줄(▶)이 렌더된다', () => {
+  test('actionHint 가 있으면 Aseprite 안내 아이콘과 강조 안내 줄이 렌더된다', () => {
     const html = buildQuestRowHtml(malatusQuest);
     expect(html).toContain('hud-quest-action');
-    expect(html).toContain('▶ ESC로 월드맵을 열고');
+    expect(html).toContain('class="hud-quest-action-icon"');
+    expect(html).toContain('src="/assets/generated/ui/icons/skills/skill_mw_arrow.png"');
+    expect(html).toContain('data-aeterna-icon-key="skill_mw_arrow_icon"');
+    expect(html).toContain('data-aeterna-icon-path="assets/generated/ui/icons/skills/skill_mw_arrow.png"');
+    expect(html).toContain('class="hud-quest-action-text"');
+    expect(html).toContain('ESC로 월드맵을 열고');
     expect(html).toContain('«말라투스 성소»');
+    expect(html).not.toContain('▶ ESC로 월드맵을 열고');
   });
 
   test('mapZoneId 가 있으면 그 존을 가리키는 "월드맵 열기" 버튼이 렌더된다', () => {
@@ -46,6 +52,16 @@ describe('buildQuestRowHtml — 메인 퀘스트 진행 방법 노출', () => {
     expect(html).toContain('data-map-zone-id="malatus_sanctuary"');
     // 어떤 키로 여는지(ESC)도 버튼에 명시돼 키보드 사용자가 추측하지 않게.
     expect(html).toContain('ESC');
+  });
+
+  test('mapZoneId 가 있으면 Aseprite 월드맵 아이콘을 버튼 내부 이미지로 렌더한다', () => {
+    const html = buildQuestRowHtml(malatusQuest);
+    expect(html).toContain('class="hud-quest-map-icon"');
+    expect(html).toContain('src="/assets/generated/ui/worldmap/zone_malatus_sanctuary.png"');
+    expect(html).toContain('data-aeterna-icon-key="zone_malatus_sanctuary"');
+    expect(html).toContain('data-aeterna-icon-path="assets/generated/ui/worldmap/zone_malatus_sanctuary.png"');
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).not.toContain('>🗺 월드맵 열기 (ESC)<');
   });
 
   test('기존 필드(제목/목표/진행도)는 그대로 유지된다', () => {
@@ -84,6 +100,18 @@ describe('buildQuestRowHtml — 안내 요소 조건부 렌더', () => {
     expect(html).not.toContain('hud-quest-map-btn');
     expect(html).not.toContain('data-map-zone-id');
   });
+
+  test('worldmap 리소스가 없는 mapZoneId 는 버튼을 숨겨 glyph fallback 노출을 막는다', () => {
+    const html = buildQuestRowHtml({
+      ...malatusQuest,
+      mapZoneId: 'frostmoss_sap',
+    });
+    expect(html).toContain('hud-quest-action');
+    expect(html).not.toContain('hud-quest-map-btn');
+    expect(html).not.toContain('data-map-zone-id="frostmoss_sap"');
+    expect(html).not.toContain('hud-quest-map-icon-fallback');
+    expect(html).not.toContain('🗺');
+  });
 });
 
 describe('buildQuestRowHtml — XSS 이스케이프 (결과가 innerHTML 로 라이브 DOM 주입됨)', () => {
@@ -104,8 +132,9 @@ describe('buildQuestRowHtml — XSS 이스케이프 (결과가 innerHTML 로 라
     expect(html).not.toContain('<img src=x');
     expect(html).not.toContain('<script>');
     expect(html).not.toContain('" onmouseover="alert(3)"'); // 따옴표 탈출이 막혔는지
-    // 속성 값의 따옴표가 엔티티로 치환됐는지(속성 경계 보존).
-    expect(html).toContain('data-map-zone-id="&quot; onmouseover=&quot;alert(3)"');
+    // worldmap 리소스가 아닌 mapZoneId 는 버튼 자체를 렌더하지 않아 속성 탈출 표면을 없앤다.
+    expect(html).not.toContain('data-map-zone-id');
+    expect(html).not.toContain('hud-quest-map-btn');
     // 본문·안내의 <, & 가 엔티티로.
     expect(html).toContain('&lt;img');
     expect(html).toContain('&amp;');

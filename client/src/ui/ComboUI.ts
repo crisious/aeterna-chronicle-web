@@ -10,6 +10,21 @@
 import * as Phaser from 'phaser';
 import { isScreenShakeEnabled } from '../scenes/SettingsScene';
 
+export const COMBO_UI_FRAME_TEXTURES = {
+  chainGauge: {
+    key: 'ui_frame_combo_chain_gauge',
+    path: 'assets/generated/ui/frames/UI-BTN-005-DEF.png',
+  },
+} as const;
+
+export function preloadComboUiFrameTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(COMBO_UI_FRAME_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+}
+
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
 /** 콤보 힌트 데이터 */
@@ -24,6 +39,10 @@ export interface ComboAchievedEvent {
   comboName: string;
   damageBonus: number;
   bonusDescription: string;
+}
+
+interface ComboUiConfig {
+  frameQa: boolean;
 }
 
 // ─── 상수 ──────────────────────────────────────────────────────
@@ -60,6 +79,7 @@ function getChainGaugeColor(hitCount: number): number {
 
 export class ComboUI {
   private scene: Phaser.Scene;
+  private config: ComboUiConfig;
 
   // 히트 카운터 표시
   private counterText: Phaser.GameObjects.Text;
@@ -67,8 +87,11 @@ export class ComboUI {
   private multiplierText: Phaser.GameObjects.Text;
 
   // 체인 게이지 바
+  private gaugeFrame: Phaser.GameObjects.Image | null = null;
   private gaugeBg: Phaser.GameObjects.Rectangle;
   private gaugeFill: Phaser.GameObjects.Rectangle;
+  private renderedFrameKeys: string[] = [];
+  private missingFrameKeys: string[] = [];
 
   // 콤보 달성 텍스트
   private comboText: Phaser.GameObjects.Text;
@@ -84,8 +107,9 @@ export class ComboUI {
   private gaugeRemaining: number = 0; // 0~1
   private isVisible: boolean = false;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, config?: Partial<ComboUiConfig>) {
     this.scene = scene;
+    this.config = { frameQa: false, ...config };
 
     // ── 히트 카운터 (우측 상단) ──
     this.counterText = scene.add.text(COUNTER_X, COUNTER_Y, '0', {
@@ -111,10 +135,22 @@ export class ComboUI {
     }).setOrigin(0.5).setAlpha(0).setDepth(100);
 
     // ── 체인 게이지 바 ──
+    const chainGaugeTexture = COMBO_UI_FRAME_TEXTURES.chainGauge;
+    const hasChainGaugeFrame = scene.textures.exists(chainGaugeTexture.key);
+    if (hasChainGaugeFrame) {
+      this.gaugeFrame = scene.add.image(COUNTER_X, COUNTER_Y + 64, chainGaugeTexture.key)
+        .setDisplaySize(GAUGE_WIDTH + 16, GAUGE_HEIGHT + 14)
+        .setAlpha(0)
+        .setDepth(99);
+      this.renderedFrameKeys.push(chainGaugeTexture.key);
+    } else {
+      this.missingFrameKeys.push(chainGaugeTexture.key);
+    }
+
     this.gaugeBg = scene.add.rectangle(
       COUNTER_X, COUNTER_Y + 64,
       GAUGE_WIDTH, GAUGE_HEIGHT,
-      0x333333, 0.6,
+      0x333333, hasChainGaugeFrame ? 0.24 : 0.6,
     ).setOrigin(0.5).setAlpha(0).setDepth(100);
 
     this.gaugeFill = scene.add.rectangle(
@@ -147,6 +183,8 @@ export class ComboUI {
       scene.cameras.main.centerX,
       scene.cameras.main.height - 100 + HINT_Y_OFFSET,
     ).setDepth(90);
+
+    this.writeFrameQaProbeIfEnabled('hidden');
   }
 
   // ─── 히트 카운터 업데이트 ────────────────────────────────────
@@ -185,6 +223,7 @@ export class ComboUI {
       yoyo: true,
       ease: 'Quad.easeOut',
     });
+    this.writeFrameQaProbeIfEnabled('ready');
   }
 
   // ─── 콤보 달성 연출 ──────────────────────────────────────────
@@ -221,6 +260,7 @@ export class ComboUI {
     if (isScreenShakeEnabled()) {
       this.scene.cameras.main.shake(SHAKE_DURATION, SHAKE_INTENSITY / 1000);
     }
+    this.writeFrameQaProbeIfEnabled('ready');
   }
 
   // ─── 콤보 힌트 표시 ─────────────────────────────────────────
@@ -264,6 +304,7 @@ export class ComboUI {
       this.hintContainer.add(text);
       this.hintTexts.push(text);
     }
+    this.writeFrameQaProbeIfEnabled('ready');
   }
 
   // ─── 프레임 업데이트 ─────────────────────────────────────────
@@ -285,6 +326,7 @@ export class ComboUI {
       const gaugeColor = getChainGaugeColor(this.currentHitCount);
       this.gaugeFill.setSize(GAUGE_WIDTH * Math.max(0, this.gaugeRemaining), GAUGE_HEIGHT);
       this.gaugeFill.setFillStyle(gaugeColor, 0.9);
+      this.writeFrameQaProbeIfEnabled('ready');
     }
 
     // 콤보 텍스트 페이드아웃
@@ -308,6 +350,7 @@ export class ComboUI {
 
     this.counterText.setAlpha(1);
     this.hitsLabel.setAlpha(1);
+    this.gaugeFrame?.setAlpha(1);
     this.gaugeBg.setAlpha(1);
     this.gaugeFill.setAlpha(1);
   }
@@ -316,11 +359,21 @@ export class ComboUI {
     if (!this.isVisible) return;
     this.isVisible = false;
 
+    const targets: Phaser.GameObjects.GameObject[] = [
+      this.counterText,
+      this.hitsLabel,
+      this.multiplierText,
+      this.gaugeBg,
+      this.gaugeFill,
+    ];
+    if (this.gaugeFrame) targets.push(this.gaugeFrame);
+
     this.scene.tweens.add({
-      targets: [this.counterText, this.hitsLabel, this.multiplierText, this.gaugeBg, this.gaugeFill],
+      targets,
       alpha: 0,
       duration: 300,
     });
+    this.writeFrameQaProbeIfEnabled('hidden');
   }
 
   // ─── 전체 초기화 ────────────────────────────────────────────
@@ -335,6 +388,34 @@ export class ComboUI {
 
     for (const ht of this.hintTexts) ht.destroy();
     this.hintTexts = [];
+    this.writeFrameQaProbeIfEnabled('hidden');
+  }
+
+  public writeFrameQaProbe(status: 'ready' | 'hidden' = 'ready'): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const chainGaugeTexture = COMBO_UI_FRAME_TEXTURES.chainGauge;
+    document.body.dataset.aeternaComboFrameQa = JSON.stringify({
+      status,
+      visible: this.isVisible,
+      renderedFrameKeys: this.renderedFrameKeys,
+      renderedFrameCount: this.renderedFrameKeys.length,
+      expectedFrameCount: 1,
+      missingFrameKeys: this.missingFrameKeys,
+      chainGaugeFrame: {
+        key: chainGaugeTexture.key,
+        path: chainGaugeTexture.path,
+        rendered: this.gaugeFrame !== null,
+        displayWidth: this.gaugeFrame?.displayWidth ?? 0,
+        displayHeight: this.gaugeFrame?.displayHeight ?? 0,
+      },
+      currentHitCount: this.currentHitCount,
+      gaugeRemaining: Number(this.gaugeRemaining.toFixed(3)),
+      gaugeFillWidth: this.gaugeFill.displayWidth,
+      hintCount: this.hintTexts.length,
+      comboTextVisible: this.comboText.alpha > 0,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
   }
 
   /** 파괴 */
@@ -342,6 +423,7 @@ export class ComboUI {
     this.counterText.destroy();
     this.hitsLabel.destroy();
     this.multiplierText.destroy();
+    this.gaugeFrame?.destroy();
     this.gaugeBg.destroy();
     this.gaugeFill.destroy();
     this.comboText.destroy();
@@ -350,5 +432,16 @@ export class ComboUI {
 
     for (const ht of this.hintTexts) ht.destroy();
     this.hintTexts = [];
+  }
+
+  private isFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('comboFrameQa') === '1';
+  }
+
+  private writeFrameQaProbeIfEnabled(status: 'ready' | 'hidden'): void {
+    if (this.config.frameQa || this.isFrameQaRoute()) {
+      this.writeFrameQaProbe(status);
+    }
   }
 }

@@ -16,7 +16,18 @@ function readClientSource(relativePath: string): string {
 }
 
 describe('character sprite manifest', () => {
-  it('Ether Knight pilot runtime paths are defined', () => {
+  const expectedDirections = ['D', 'DL', 'L', 'UL', 'U'] as const;
+  const expectedMotions = ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'] as const;
+  const motionRanges = {
+    idle: { from: 0, to: 3 },
+    walk: { from: 4, to: 9 },
+    attack_melee: { from: 10, to: 15 },
+    cast: { from: 16, to: 20 },
+    hit: { from: 21, to: 23 },
+    death: { from: 24, to: 29 },
+  } as const;
+
+  it('Ether Knight full 5-direction runtime paths are defined', () => {
     const resource = getCharacterSpriteResource('ether_knight');
 
     expect(resource).toEqual({
@@ -26,18 +37,144 @@ describe('character sprite manifest', () => {
       jsonPath: 'assets/generated/characters/sprites/char_ether_knight_base.json',
       frameWidth: 64,
       frameHeight: 64,
-      directions: ['D'],
-      motions: ['idle', 'walk'],
+      directions: expectedDirections,
+      motions: expectedMotions,
+    });
+  });
+
+  it('Memory Weaver full 5-direction runtime paths are defined', () => {
+    const resource = getCharacterSpriteResource('memory_weaver');
+
+    expect(resource).toEqual({
+      classId: 'memory_weaver',
+      textureKey: 'char_sprite_memory_weaver_base',
+      imagePath: 'assets/generated/characters/sprites/char_memory_weaver_base.png',
+      jsonPath: 'assets/generated/characters/sprites/char_memory_weaver_base.json',
+      frameWidth: 64,
+      frameHeight: 64,
+      directions: expectedDirections,
+      motions: expectedMotions,
+    });
+  });
+
+  it('Shadow Weaver full 5-direction runtime paths are defined', () => {
+    const resource = getCharacterSpriteResource('shadow_weaver');
+
+    expect(resource).toEqual({
+      classId: 'shadow_weaver',
+      textureKey: 'char_sprite_shadow_weaver_base',
+      imagePath: 'assets/generated/characters/sprites/char_shadow_weaver_base.png',
+      jsonPath: 'assets/generated/characters/sprites/char_shadow_weaver_base.json',
+      frameWidth: 64,
+      frameHeight: 64,
+      directions: expectedDirections,
+      motions: expectedMotions,
+    });
+  });
+
+  it('Memory Breaker full 5-direction runtime paths are defined', () => {
+    const resource = getCharacterSpriteResource('memory_breaker');
+
+    expect(resource).toEqual({
+      classId: 'memory_breaker',
+      textureKey: 'char_sprite_memory_breaker_base',
+      imagePath: 'assets/generated/characters/sprites/char_memory_breaker_base.png',
+      jsonPath: 'assets/generated/characters/sprites/char_memory_breaker_base.json',
+      frameWidth: 64,
+      frameHeight: 64,
+      directions: expectedDirections,
+      motions: expectedMotions,
+    });
+  });
+
+  it('Time Guardian full 5-direction runtime paths are defined', () => {
+    const resource = getCharacterSpriteResource('time_guardian');
+
+    expect(resource).toEqual({
+      classId: 'time_guardian',
+      textureKey: 'char_sprite_time_guardian_base',
+      imagePath: 'assets/generated/characters/sprites/char_time_guardian_base.png',
+      jsonPath: 'assets/generated/characters/sprites/char_time_guardian_base.json',
+      frameWidth: 64,
+      frameHeight: 64,
+      directions: expectedDirections,
+      motions: expectedMotions,
+    });
+  });
+
+  it('Void Wanderer full 5-direction runtime paths are defined', () => {
+    const resource = getCharacterSpriteResource('void_wanderer');
+
+    expect(resource).toEqual({
+      classId: 'void_wanderer',
+      textureKey: 'char_sprite_void_wanderer_base',
+      imagePath: 'assets/generated/characters/sprites/char_void_wanderer_base.png',
+      jsonPath: 'assets/generated/characters/sprites/char_void_wanderer_base.json',
+      frameWidth: 64,
+      frameHeight: 64,
+      directions: expectedDirections,
+      motions: expectedMotions,
     });
   });
 
   it('builds Ether Knight animation keys', () => {
-    expect(getCharacterSpriteAnimationKey('ether_knight', 'idle', 'D')).toBe(
-      'char_sprite_ether_knight_idle_D',
-    );
-    expect(getCharacterSpriteAnimationKey('ether_knight', 'walk', 'D')).toBe(
-      'char_sprite_ether_knight_walk_D',
-    );
+    for (const direction of expectedDirections) {
+      for (const motion of expectedMotions) {
+        expect(getCharacterSpriteAnimationKey('ether_knight', motion, direction)).toBe(
+          `char_sprite_ether_knight_${motion}_${direction}`,
+        );
+      }
+    }
+  });
+
+  it('builds Memory Weaver animation keys', () => {
+    for (const direction of expectedDirections) {
+      for (const motion of expectedMotions) {
+        expect(getCharacterSpriteAnimationKey('memory_weaver', motion, direction)).toBe(
+          `char_sprite_memory_weaver_${motion}_${direction}`,
+        );
+      }
+    }
+  });
+
+  it('builds Shadow Weaver animation keys', () => {
+    for (const direction of expectedDirections) {
+      for (const motion of expectedMotions) {
+        expect(getCharacterSpriteAnimationKey('shadow_weaver', motion, direction)).toBe(
+          `char_sprite_shadow_weaver_${motion}_${direction}`,
+        );
+      }
+    }
+  });
+
+  it('builds Memory Breaker animation keys', () => {
+    for (const direction of expectedDirections) {
+      for (const motion of expectedMotions) {
+        expect(getCharacterSpriteAnimationKey('memory_breaker', motion, direction)).toBe(
+          `char_sprite_memory_breaker_${motion}_${direction}`,
+        );
+      }
+    }
+  });
+
+  it('builds Time Guardian animation keys', () => {
+    for (const direction of expectedDirections) {
+      for (const motion of expectedMotions) {
+        expect(getCharacterSpriteAnimationKey('time_guardian', motion, direction)).toBe(
+          `char_sprite_time_guardian_${motion}_${direction}`,
+        );
+      }
+    }
+  });
+
+  it('builds Void Wanderer animation keys', () => {
+    for (const direction of expectedDirections) {
+      for (const motion of expectedMotions) {
+        expect(getCharacterSpriteAnimationKey('void_wanderer', motion, direction)).toBe(
+          `char_sprite_void_wanderer_${motion}_${direction}`,
+        );
+      }
+    }
   });
 
   it('keeps texture keys unique', () => {
@@ -50,20 +187,208 @@ describe('character sprite manifest', () => {
     expect(getCharacterSpriteResource('unknown_class')).toBeUndefined();
   });
 
-  it('Ether Knight runtime JSON matches the 10-frame 64x64 strip contract', () => {
+  it('Ether Knight runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('ether_knight');
     if (!resource) throw new Error('ether_knight sprite resource is missing');
 
     const metadata = JSON.parse(
       readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8'),
-    ) as { count: number; sprites: Array<{ w: number; h: number }> };
+    ) as {
+      count: number;
+      size: { w: number; h: number };
+      sprites: Array<{ w: number; h: number }>;
+      tags: Array<{ name: string; from: number; to: number }>;
+    };
 
-    expect(metadata.count).toBe(10);
-    expect(metadata.sprites).toHaveLength(10);
+    expect(metadata.count).toBe(150);
+    expect(metadata.size).toEqual({ w: 1920, h: 320 });
+    expect(metadata.sprites).toHaveLength(150);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
     }
+    const actualTags = Object.fromEntries(metadata.tags.map(({ name, from, to }) => [name, { from, to }]));
+    const expectedTags = Object.fromEntries(
+      expectedDirections.flatMap((direction, directionIndex) => (
+        expectedMotions.map((motion) => {
+          const range = motionRanges[motion];
+          const frameOffset = directionIndex * 30;
+
+          return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
+        })
+      )),
+    );
+    expect(actualTags).toEqual(expectedTags);
+  });
+
+  it('Memory Weaver runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+    const resource = getCharacterSpriteResource('memory_weaver');
+    if (!resource) throw new Error('memory_weaver sprite resource is missing');
+
+    const metadata = JSON.parse(
+      readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8'),
+    ) as {
+      count: number;
+      size: { w: number; h: number };
+      sprites: Array<{ w: number; h: number }>;
+      tags: Array<{ name: string; from: number; to: number }>;
+    };
+
+    expect(metadata.count).toBe(150);
+    expect(metadata.size).toEqual({ w: 1920, h: 320 });
+    expect(metadata.sprites).toHaveLength(150);
+    for (const frame of metadata.sprites) {
+      expect(frame.w).toBe(resource.frameWidth);
+      expect(frame.h).toBe(resource.frameHeight);
+    }
+    const actualTags = Object.fromEntries(metadata.tags.map(({ name, from, to }) => [name, { from, to }]));
+    const expectedTags = Object.fromEntries(
+      expectedDirections.flatMap((direction, directionIndex) => (
+        expectedMotions.map((motion) => {
+          const range = motionRanges[motion];
+          const frameOffset = directionIndex * 30;
+
+          return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
+        })
+      )),
+    );
+    expect(actualTags).toEqual(expectedTags);
+  });
+
+  it('Shadow Weaver runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+    const resource = getCharacterSpriteResource('shadow_weaver');
+    if (!resource) throw new Error('shadow_weaver sprite resource is missing');
+
+    const metadata = JSON.parse(
+      readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8'),
+    ) as {
+      count: number;
+      size: { w: number; h: number };
+      sprites: Array<{ w: number; h: number }>;
+      tags: Array<{ name: string; from: number; to: number }>;
+    };
+
+    expect(metadata.count).toBe(150);
+    expect(metadata.size).toEqual({ w: 1920, h: 320 });
+    expect(metadata.sprites).toHaveLength(150);
+    for (const frame of metadata.sprites) {
+      expect(frame.w).toBe(resource.frameWidth);
+      expect(frame.h).toBe(resource.frameHeight);
+    }
+    const actualTags = Object.fromEntries(metadata.tags.map(({ name, from, to }) => [name, { from, to }]));
+    const expectedTags = Object.fromEntries(
+      expectedDirections.flatMap((direction, directionIndex) => (
+        expectedMotions.map((motion) => {
+          const range = motionRanges[motion];
+          const frameOffset = directionIndex * 30;
+
+          return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
+        })
+      )),
+    );
+    expect(actualTags).toEqual(expectedTags);
+  });
+
+  it('Memory Breaker runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+    const resource = getCharacterSpriteResource('memory_breaker');
+    if (!resource) throw new Error('memory_breaker sprite resource is missing');
+
+    const metadata = JSON.parse(
+      readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8'),
+    ) as {
+      count: number;
+      size: { w: number; h: number };
+      sprites: Array<{ w: number; h: number }>;
+      tags: Array<{ name: string; from: number; to: number }>;
+    };
+
+    expect(metadata.count).toBe(150);
+    expect(metadata.size).toEqual({ w: 1920, h: 320 });
+    expect(metadata.sprites).toHaveLength(150);
+    for (const frame of metadata.sprites) {
+      expect(frame.w).toBe(resource.frameWidth);
+      expect(frame.h).toBe(resource.frameHeight);
+    }
+    const actualTags = Object.fromEntries(metadata.tags.map(({ name, from, to }) => [name, { from, to }]));
+    const expectedTags = Object.fromEntries(
+      expectedDirections.flatMap((direction, directionIndex) => (
+        expectedMotions.map((motion) => {
+          const range = motionRanges[motion];
+          const frameOffset = directionIndex * 30;
+
+          return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
+        })
+      )),
+    );
+    expect(actualTags).toEqual(expectedTags);
+  });
+
+  it('Time Guardian runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+    const resource = getCharacterSpriteResource('time_guardian');
+    if (!resource) throw new Error('time_guardian sprite resource is missing');
+
+    const metadata = JSON.parse(
+      readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8'),
+    ) as {
+      count: number;
+      size: { w: number; h: number };
+      sprites: Array<{ w: number; h: number }>;
+      tags: Array<{ name: string; from: number; to: number }>;
+    };
+
+    expect(metadata.count).toBe(150);
+    expect(metadata.size).toEqual({ w: 1920, h: 320 });
+    expect(metadata.sprites).toHaveLength(150);
+    for (const frame of metadata.sprites) {
+      expect(frame.w).toBe(resource.frameWidth);
+      expect(frame.h).toBe(resource.frameHeight);
+    }
+    const actualTags = Object.fromEntries(metadata.tags.map(({ name, from, to }) => [name, { from, to }]));
+    const expectedTags = Object.fromEntries(
+      expectedDirections.flatMap((direction, directionIndex) => (
+        expectedMotions.map((motion) => {
+          const range = motionRanges[motion];
+          const frameOffset = directionIndex * 30;
+
+          return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
+        })
+      )),
+    );
+    expect(actualTags).toEqual(expectedTags);
+  });
+
+  it('Void Wanderer runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+    const resource = getCharacterSpriteResource('void_wanderer');
+    if (!resource) throw new Error('void_wanderer sprite resource is missing');
+
+    const metadata = JSON.parse(
+      readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8'),
+    ) as {
+      count: number;
+      size: { w: number; h: number };
+      sprites: Array<{ w: number; h: number }>;
+      tags: Array<{ name: string; from: number; to: number }>;
+    };
+
+    expect(metadata.count).toBe(150);
+    expect(metadata.size).toEqual({ w: 1920, h: 320 });
+    expect(metadata.sprites).toHaveLength(150);
+    for (const frame of metadata.sprites) {
+      expect(frame.w).toBe(resource.frameWidth);
+      expect(frame.h).toBe(resource.frameHeight);
+    }
+    const actualTags = Object.fromEntries(metadata.tags.map(({ name, from, to }) => [name, { from, to }]));
+    const expectedTags = Object.fromEntries(
+      expectedDirections.flatMap((direction, directionIndex) => (
+        expectedMotions.map((motion) => {
+          const range = motionRanges[motion];
+          const frameOffset = directionIndex * 30;
+
+          return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
+        })
+      )),
+    );
+    expect(actualTags).toEqual(expectedTags);
   });
 
   it('GameScene integrates manifest sprite resources with the player fallback texture', () => {
@@ -71,13 +396,48 @@ describe('character sprite manifest', () => {
 
     expect(source).toContain("import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';");
     expect(source).toContain('getCharacterSpriteResource(this.currentCharacterClassId)');
-    expect(source).toContain('this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath');
-    expect(source).toContain('frameWidth: playerSpriteResource.frameWidth');
-    expect(source).toContain('frameHeight: playerSpriteResource.frameHeight');
-    expect(source).toContain('this.textures.exists(playerSpriteResource.textureKey)');
+    expect(source).toContain('queueCharacterSprite(playerSpriteResource)');
+    expect(source).toContain('this.load.spritesheet(characterSpriteResource.textureKey, characterSpriteResource.imagePath');
+    expect(source).toContain('frameWidth: characterSpriteResource.frameWidth');
+    expect(source).toContain('frameHeight: characterSpriteResource.frameHeight');
+    expect(source).toContain('this.textures.exists(characterSpriteResource.textureKey)');
     expect(source).toContain('this.physics.add.sprite(640, 360, textureKey, 0)');
     expect(source).toContain('this.player.setFrame(0)');
     expect(source).toContain("'player_sprite'");
+  });
+
+  it('GameScene renders remote players with Aseprite character sprites before rectangle fallback', () => {
+    const source = readSceneSource('GameScene.ts');
+    const networkSource = readClientSource('network/NetworkManager.ts');
+
+    expect(source).toContain("import { CHARACTER_SPRITE_MANIFEST } from '../assets/characterSpriteManifest';");
+    expect(source).toContain('const queuedCharacterTextureKeys = new Set<string>()');
+    expect(source).toContain('for (const characterSpriteResource of CHARACTER_SPRITE_MANIFEST)');
+    expect(source).toContain("characterClass?: string");
+    expect(source).toContain("const remoteClassId = d.characterClass?.trim() ?? ''");
+    expect(source).toContain('const remoteSpriteResource = remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined');
+    expect(source).toContain('this.add.image(d.x, d.y, remoteSpriteResource.textureKey, 0)');
+    expect(source).toContain('sprite.setFrame(0)');
+    expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
+    expect(source).toContain('Aseprite remote player sprite 로드 실패 시에만 사용하는 안전 fallback');
+    expect(source).toContain('this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff)');
+    expect(networkSource).toContain("'world:playerJoined': { characterId: string; name: string; x: number; y: number; characterClass?: string }");
+  });
+
+  it('GameScene skips network setup in offline QA mode', () => {
+    const source = readSceneSource('GameScene.ts');
+    const hudSource = readClientSource('services/HUDOrchestrator.ts');
+
+    expect(source).toContain('if (this.sceneData.offlineQa === true)');
+    expect(source).toContain("this.connectionLabel?.setText('● 로컬 QA').setColor('#ffcc44')");
+    expect(source).toContain('return;');
+    expect(source).toContain('this.zoneInfo = null;');
+    expect(source).toContain('networkManager.getZoneInfo(this.currentZoneId)');
+    expect(source).toContain('networkManager.connect()');
+    expect(source).toContain('skipQuestLoad: this.sceneData.offlineQa === true');
+    expect(hudSource).toContain('interface HUDOrchestratorOptions');
+    expect(hudSource).toContain('skipQuestLoad?: boolean');
+    expect(hudSource).toContain('if (!this.options.skipQuestLoad)');
   });
 
   it('GameScene forwards characterClass when returning to WorldScene', () => {
@@ -126,6 +486,24 @@ describe('character sprite manifest', () => {
     expect(source).toContain('this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)');
   });
 
+  it('DungeonScene prioritizes manifest character sprites before side illustration fallback', () => {
+    const source = readSceneSource('DungeonScene.ts');
+
+    expect(source).toContain("import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';");
+    expect(source).toContain('private _getPlayerClassId(): string');
+    expect(source).toContain('getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource');
+    expect(source).toContain('this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath');
+    expect(source).toContain('frameWidth: playerSpriteResource.frameWidth');
+    expect(source).toContain('frameHeight: playerSpriteResource.frameHeight');
+    expect(source).toContain("this.load.image('dungeon_player'");
+    expect(source).toContain('this.textures.exists(playerSpriteResource.textureKey)');
+    expect(source).toContain('this.add.image(PLAYER_X, py, playerSpriteResource.textureKey, 0)');
+    expect(source).toContain('sprite.setFrame(0)');
+    expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
+    expect(source).toContain("this.add.image(PLAYER_X, py, 'dungeon_player')");
+    expect(source).toContain('this.add.rectangle(PLAYER_X, py, 40, 50, 0x4488ff)');
+  });
+
   it('WorldScene forwards characterClass when entering GameScene', () => {
     const source = readSceneSource('WorldScene.ts');
 
@@ -168,6 +546,7 @@ describe('character sprite manifest', () => {
 
     expect(source).toContain("const characterClass = params.get('class')?.trim() || 'ether_knight'");
     expect(source).toContain("phaserGame.scene.start('WorldScene', { eraId, characterClass })");
+    expect(source).toContain("phaserGame.scene.start('DungeonScene', {");
     expect(source).toContain('characterClass,');
   });
 });

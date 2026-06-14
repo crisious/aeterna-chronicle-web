@@ -77,6 +77,37 @@ const TUTORIAL_STEPS: TutorialStepDef[] = [
 
 const STORAGE_KEY = 'aeterna_tutorial_step';
 
+interface TutorialManagerFrameTexture {
+  key: string;
+  path: string;
+}
+
+export const TUTORIAL_MANAGER_UI_FRAME_TEXTURES = {
+  panel: {
+    key: 'ui_frame_tutorial_manager_panel',
+    path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png',
+  },
+  actionButton: {
+    key: 'ui_frame_tutorial_manager_action_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+} as const satisfies Record<string, TutorialManagerFrameTexture>;
+
+const TUTORIAL_MANAGER_EXPECTED_PANEL_FRAME_COUNT = 1;
+const TUTORIAL_MANAGER_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 2;
+
+export function preloadTutorialManagerUiFrameTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(TUTORIAL_MANAGER_UI_FRAME_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+}
+
+export interface TutorialManagerOptions {
+  frameQa?: boolean;
+}
+
 // ─── 튜토리얼 매니저 클래스 ─────────────────────────────────────
 
 export class TutorialManager {
@@ -85,14 +116,21 @@ export class TutorialManager {
   private isActive: boolean;
   private overlay: Phaser.GameObjects.DOMElement | null = null;
   private readonly serverBaseUrl: string;
+  private readonly frameQa: boolean;
+  private currentStepDef: TutorialStepDef | null = null;
   private userId: string | null = null;
 
   /** 이벤트 리스너 정리용 */
   private boundListeners = new Map<string, () => void>();
 
-  constructor(scene: Phaser.Scene, serverBaseUrl = 'http://localhost:3000') {
+  constructor(
+    scene: Phaser.Scene,
+    serverBaseUrl = 'http://localhost:3000',
+    options: TutorialManagerOptions = {},
+  ) {
     this.scene = scene;
     this.serverBaseUrl = serverBaseUrl;
+    this.frameQa = options.frameQa === true;
     this.currentStep = this.loadProgress();
     this.isActive = false;
   }
@@ -158,7 +196,8 @@ export class TutorialManager {
   // ── UI 렌더링 ─────────────────────────────────────────────────
 
   private renderOverlay(stepDef: TutorialStepDef): void {
-    this.hideOverlay();
+    this.hideOverlay(false);
+    this.currentStepDef = stepDef;
 
     const { width, height } = this.scene.scale;
     const hl = stepDef.highlightRect ?? { x: 0.3, y: 0.3, w: 0.4, h: 0.4 };
@@ -182,6 +221,47 @@ export class TutorialManager {
         bubbleTop = '40%';
     }
 
+    const panelTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.panel;
+    const actionButtonTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.actionButton;
+    const hasPanelFrame = this.scene.textures.exists(panelTexture.key);
+    const hasActionButtonFrame = this.scene.textures.exists(actionButtonTexture.key);
+    const panelFrameStyle = hasPanelFrame
+      ? `
+          background-color: rgba(7, 17, 32, 0.36);
+          background-image: linear-gradient(rgba(7,17,32,0.56), rgba(7,17,32,0.56)), url('/${panelTexture.path}');
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: 100% 100%;
+          border: 0; border-radius: 0;
+          padding: 28px 40px; max-width: 460px; min-width: 360px;
+          box-shadow: 0 18px 42px rgba(0,0,0,0.34);
+        `
+      : `
+          background: rgba(20,20,40,0.95); border: 2px solid #FFD700; border-radius: 12px;
+          padding: 20px 28px; max-width: 420px;
+        `;
+    const buttonFrameStyle = hasActionButtonFrame
+      ? `
+              min-width: 96px; height: 34px; padding: 0 18px;
+              background-color: rgba(17, 31, 52, 0.58);
+              background-image: linear-gradient(rgba(16,29,48,0.42), rgba(16,29,48,0.42)), url('/${actionButtonTexture.path}');
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: 100% 100%;
+              color: #f7fbff; border: 0; border-radius: 0;
+              cursor: pointer; font-size: 13px; font-weight: 700;
+              text-shadow: 0 1px 2px rgba(0,0,0,0.66);
+        `
+      : `
+              padding: 8px 20px; background: #555; color: #fff; border: none;
+              border-radius: 6px; cursor: pointer; font-size: 13px;
+        `;
+    const nextButtonColorStyle = hasActionButtonFrame
+      ? ''
+      : 'background: #FFD700; color: #000; font-weight: bold;';
+    const safeLabel = this.escapeHtml(stepDef.label);
+    const safeDescription = this.escapeHtml(stepDef.description);
+
     const html = `
       <div id="tutorial-overlay" style="
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -201,24 +281,35 @@ export class TutorialManager {
         </svg>
 
         <!-- 말풍선 -->
-        <div style="
+        <div id="tutorial-panel"
+          data-aeterna-frame-role="panel"
+          data-aeterna-frame-key="${panelTexture.key}"
+          data-aeterna-frame-path="${panelTexture.path}"
+          style="
           position: absolute; top: ${bubbleTop}; left: 50%; transform: translateX(-50%);
-          background: rgba(20,20,40,0.95); border: 2px solid #FFD700; border-radius: 12px;
-          padding: 20px 28px; max-width: 420px; text-align: center;
+          ${panelFrameStyle}
+          text-align: center;
           color: #fff; font-family: sans-serif; font-size: 15px; line-height: 1.6;
         ">
           <div style="font-size: 13px; color: #FFD700; margin-bottom: 8px;">
-            단계 ${stepDef.step}/5 — ${stepDef.label}
+            단계 ${stepDef.step}/5 — ${safeLabel}
           </div>
-          <div style="white-space: pre-wrap;">${stepDef.description}</div>
+          <div style="white-space: pre-wrap;">${safeDescription}</div>
           <div style="margin-top: 16px; display: flex; gap: 10px; justify-content: center;">
-            <button id="tutorial-skip-btn" style="
-              padding: 8px 20px; background: #555; color: #fff; border: none;
-              border-radius: 6px; cursor: pointer; font-size: 13px;
+            <button id="tutorial-skip-btn"
+              data-aeterna-frame-role="action-button"
+              data-aeterna-frame-key="${actionButtonTexture.key}"
+              data-aeterna-frame-path="${actionButtonTexture.path}"
+              style="
+              ${buttonFrameStyle}
             ">스킵</button>
-            <button id="tutorial-next-btn" style="
-              padding: 8px 20px; background: #FFD700; color: #000; border: none;
-              border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;
+            <button id="tutorial-next-btn"
+              data-aeterna-frame-role="action-button"
+              data-aeterna-frame-key="${actionButtonTexture.key}"
+              data-aeterna-frame-path="${actionButtonTexture.path}"
+              style="
+              ${buttonFrameStyle}
+              ${nextButtonColorStyle}
             ">다음 →</button>
           </div>
         </div>
@@ -240,12 +331,18 @@ export class TutorialManager {
     nextBtn?.addEventListener('click', () => {
       void this.completeCurrentStep();
     });
+
+    this.writeFrameQaProbeIfEnabled('ready');
   }
 
-  private hideOverlay(): void {
+  private hideOverlay(writeProbe = true): void {
     if (this.overlay) {
       this.overlay.destroy();
       this.overlay = null;
+    }
+    this.currentStepDef = null;
+    if (writeProbe) {
+      this.writeFrameQaProbeIfEnabled('hidden');
     }
   }
 
@@ -366,5 +463,69 @@ export class TutorialManager {
 
   isCompleted(): boolean {
     return this.currentStep >= 5;
+  }
+
+  public writeFrameQaProbe(status: 'ready' | 'hidden' = 'ready'): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const root = this.overlay?.node as HTMLElement | undefined;
+    const panel = root?.querySelector('[data-aeterna-frame-role="panel"]') as HTMLElement | null;
+    const actionButtons = Array.from(
+      root?.querySelectorAll('[data-aeterna-frame-role="action-button"]') ?? [],
+    ) as HTMLElement[];
+    const panelTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.panel;
+    const actionButtonTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.actionButton;
+    const missingFrameKeys = Object.values(TUTORIAL_MANAGER_UI_FRAME_TEXTURES)
+      .filter((texture) => !this.scene.textures.exists(texture.key))
+      .map((texture) => texture.key);
+
+    document.body.dataset.aeternaTutorialManagerFrameQa = JSON.stringify({
+      status,
+      active: this.isActive && this.overlay?.active === true,
+      currentStep: this.currentStep,
+      currentStepName: this.currentStepDef?.name ?? null,
+      panelFrame: {
+        key: panelTexture.key,
+        path: panelTexture.path,
+        renderedCount: panel?.dataset.aeternaFrameKey === panelTexture.key ? 1 : 0,
+        expectedCount: status === 'ready' ? TUTORIAL_MANAGER_EXPECTED_PANEL_FRAME_COUNT : 0,
+        cssBackground: panel?.style.backgroundImage ?? '',
+        displayWidth: panel?.getBoundingClientRect().width ?? 0,
+        displayHeight: panel?.getBoundingClientRect().height ?? 0,
+      },
+      actionButtonFrame: {
+        key: actionButtonTexture.key,
+        path: actionButtonTexture.path,
+        renderedCount: actionButtons.filter((button) => button.dataset.aeternaFrameKey === actionButtonTexture.key).length,
+        expectedCount: status === 'ready' ? TUTORIAL_MANAGER_EXPECTED_ACTION_BUTTON_FRAME_COUNT : 0,
+        cssBackgrounds: actionButtons.map((button) => button.style.backgroundImage),
+        displaySizes: actionButtons.map((button) => {
+          const rect = button.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        }),
+      },
+      missingFrameKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private writeFrameQaProbeIfEnabled(status: 'ready' | 'hidden'): void {
+    if (this.frameQa || this.isFrameQaRoute()) {
+      this.writeFrameQaProbe(status);
+    }
+  }
+
+  private isFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('tutorialManagerFrameQa') === '1';
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 }

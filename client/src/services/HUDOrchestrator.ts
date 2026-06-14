@@ -25,6 +25,10 @@ import { networkManager } from '../network/NetworkManager';
 
 // ── HUDOrchestrator ───────────────────────────────────────────
 
+interface HUDOrchestratorOptions {
+  skipQuestLoad?: boolean;
+}
+
 export class HUDOrchestrator {
   private hud!: HudOverlay;
   private hudStatus: HudStatusProps;
@@ -40,6 +44,7 @@ export class HUDOrchestrator {
   constructor(
     private readonly scene: Phaser.Scene,
     initialStatus?: Partial<HudStatusProps>,
+    private readonly options: HUDOrchestratorOptions = {},
   ) {
     this.hudStatus = {
       hpCurrent: 415,
@@ -64,7 +69,9 @@ export class HUDOrchestrator {
     this.hud.setQuickSlots(this.quickSlots, 'keyboard');
     // 데모 목업을 먼저(동기) 그려 HUD 가 빈 채로 뜨지 않게 하고, 실 active 퀘스트를 비동기로 덮어쓴다.
     this.hud.setQuests(makeDefaultQuests());
-    void this.loadQuests();
+    if (!this.options.skipQuestLoad) {
+      void this.loadQuests();
+    }
 
     this.bindEvents();
   }

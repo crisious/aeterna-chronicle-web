@@ -15,6 +15,7 @@ import { accessibilityManager, type SubtitleSize } from '../accessibility/Access
 import { i18n, type SupportedLocale } from '../i18n/i18nManager';
 import { getSettingsLabel } from '../settings/settingsLabels';
 import { networkManager } from '../network/NetworkManager';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ── 설정 저장 키 ─────────────────────────────────────────────
 
@@ -107,6 +108,48 @@ const COLORBLIND_LABELS: Record<string, string> = {
 const UI_SCALE_VALUES = [0.75, 1.0, 1.25, 1.5, 2.0];
 const UI_SCALE_LABELS = ['75%', '100%', '125%', '150%', '200%'];
 
+const SETTINGS_UI_FRAME_TEXTURES = {
+  mainPanel: {
+    key: 'ui_frame_UI-SET-002-DEF',
+    path: 'assets/generated/ui/frames/UI-SET-002-DEF.png',
+  },
+  keybindPanel: {
+    key: 'ui_frame_UI-SET-003-DEF',
+    path: 'assets/generated/ui/frames/UI-SET-003-DEF.png',
+  },
+  footerPanel: {
+    key: 'ui_frame_UI-SET-004-DEF',
+    path: 'assets/generated/ui/frames/UI-SET-004-DEF.png',
+  },
+  actionButton: {
+    key: 'ui_frame_settings_action_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+  sliderTrack: {
+    key: 'ui_frame_settings_slider_track',
+    path: 'assets/generated/ui/frames/UI-BTN-005-DEF.png',
+  },
+} as const;
+
+const SETTINGS_EXPECTED_SLIDER_TRACK_FRAME_COUNT = 3;
+const SETTINGS_EXPECTED_ACTION_ICON_COUNT = 2;
+
+const SETTINGS_ACTION_BUTTON_ICON_IDS = {
+  feedback: 'skill_mw_arrow',
+  back: 'skill_tg_reverse',
+} as const;
+
+type SettingsActionIconId = keyof typeof SETTINGS_ACTION_BUTTON_ICON_IDS;
+
+interface SettingsSceneData {
+  frameQa?: boolean;
+}
+
+interface SettingsFrameRender {
+  primary: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  stroke?: Phaser.GameObjects.Rectangle;
+}
+
 // ── 키바인드 표시용 ──────────────────────────────────────────
 
 const KEYBINDS = [
@@ -131,6 +174,12 @@ type SettingsSelectable = {
 export class SettingsScene extends Phaser.Scene {
   private settings!: GameSettings;
   private uiElements: Phaser.GameObjects.GameObject[] = [];
+  private sceneData: SettingsSceneData = {};
+  private frameQaRenderedCounts = new Map<string, number>();
+  private settingsSliderFrames: Phaser.GameObjects.Image[] = [];
+  private settingsActionIcons: Phaser.GameObjects.Image[] = [];
+  private missingActionIconKeys: string[] = [];
+  private fallbackActionIconIds: string[] = [];
 
   // FINDING-A4 ext4: 키보드 nav state
   private settingsItems: SettingsSelectable[] = [];
@@ -141,14 +190,45 @@ export class SettingsScene extends Phaser.Scene {
     super({ key: 'SettingsScene' });
   }
 
+  init(data?: SettingsSceneData): void {
+    this.sceneData = data ?? {};
+    this.frameQaRenderedCounts.clear();
+    this.settingsSliderFrames = [];
+    this.settingsActionIcons = [];
+    this.missingActionIconKeys = [];
+    this.fallbackActionIconIds = [];
+  }
+
+  preload(): void {
+    for (const texture of Object.values(SETTINGS_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+    for (const iconId of Object.values(SETTINGS_ACTION_BUTTON_ICON_IDS)) {
+      const actionIconResource = getSpriteResourceForSkillIcon(iconId);
+      if (actionIconResource && !this.textures.exists(actionIconResource.key)) {
+        this.load.image(actionIconResource.key, actionIconResource.path);
+      }
+    }
+  }
+
   create(): void {
     this.settings = this._loadSettings();
+    this.frameQaRenderedCounts.clear();
+    this.settingsSliderFrames = [];
+    this.settingsActionIcons = [];
+    this.missingActionIconKeys = [];
+    this.fallbackActionIconIds = [];
     // FINDING-A4 ext10: 색약 모드 진입 시 즉시 적용 (cb-simulator-filters.css SVG 필터)
     applyColorblindMode(this.settings.colorblindMode);
     const { width, height } = this.cameras.main;
 
     // 배경
     this.cameras.main.setBackgroundColor('#0a0a2e');
+    this._addSettingsFrame(width / 2 - 310, height / 2 + 32, 620, height - 132, SETTINGS_UI_FRAME_TEXTURES.mainPanel);
+    this._addSettingsFrame(width - 230, 242, 370, 320, SETTINGS_UI_FRAME_TEXTURES.keybindPanel);
+    this._addSettingsFrame(width / 2, height - 76, 430, 116, SETTINGS_UI_FRAME_TEXTURES.footerPanel);
 
     // 타이틀
     this._addText(width / 2, 40, '⚙ 설정', 28, '#c8a2ff', true);
@@ -287,10 +367,24 @@ export class SettingsScene extends Phaser.Scene {
     // FeedbackForm 은 서버 라우트(/beta/feedback)·관리자 대시보드까지 완비된 기능이며,
     // 여기 진입점으로 도달 가능해진다. launch 후 이 씬은 pause(입력 양보) → 닫으면 resume.
     let feedbackHighlighted = false;
-    const feedbackBtn = this.add.text(width / 2, height - 100, '📝 피드백 보내기', {
+    const feedbackBtnFrame = this._addSettingsFrame(
+      width / 2,
+      height - 100,
+      250,
+      42,
+      SETTINGS_UI_FRAME_TEXTURES.actionButton,
+      0.72,
+      0x66bbff,
+      1,
+    );
+    const feedbackIcon = this._addSettingsActionIcon('feedback', width / 2 - 82, height - 100);
+    const feedbackLabel = feedbackIcon ? '피드백 보내기' : '📝 피드백 보내기';
+    const feedbackBtn = this.add.text(feedbackIcon ? width / 2 + 12 : width / 2, height - 100, feedbackLabel, {
       fontSize: '18px',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#88ccff',
+      stroke: '#102034',
+      strokeThickness: 3,
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     const openFeedback = () => {
       const env = (import.meta as unknown as { env?: Record<string, string> }).env;
@@ -302,8 +396,11 @@ export class SettingsScene extends Phaser.Scene {
       });
       this.scene.pause();
     };
+    feedbackBtnFrame.primary.setInteractive({ useHandCursor: true });
+    feedbackBtnFrame.primary.on('pointerdown', openFeedback);
     feedbackBtn.on('pointerdown', openFeedback);
     const feedbackBtnIndex = this.settingsItems.length;
+    feedbackBtnFrame.primary.on('pointerover', () => this._setSettingsIndex(feedbackBtnIndex));
     feedbackBtn.on('pointerover', () => this._setSettingsIndex(feedbackBtnIndex));
     this.settingsItems.push({
       setHighlighted: (b) => {
@@ -317,17 +414,33 @@ export class SettingsScene extends Phaser.Scene {
 
     // ── 뒤로가기 버튼 ──
     let backHighlighted = false;
-    const backBtn = this.add.text(width / 2, height - 60, '◀ 뒤로가기', {
+    const backBtnFrame = this._addSettingsFrame(
+      width / 2,
+      height - 60,
+      220,
+      44,
+      SETTINGS_UI_FRAME_TEXTURES.actionButton,
+      0.72,
+      0x66ff88,
+      1,
+    );
+    const backIcon = this._addSettingsActionIcon('back', width / 2 - 58, height - 60);
+    const backLabel = backIcon ? '뒤로가기' : '◀ 뒤로가기';
+    const backBtn = this.add.text(backIcon ? width / 2 + 12 : width / 2, height - 60, backLabel, {
       fontSize: '20px',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#88ff88',
+      stroke: '#0d2a16',
+      strokeThickness: 3,
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
-      .on('pointerover', () => this._setSettingsIndex(this.settingsItems.length - 1))
       .on('pointerdown', () => this._onBack());
 
     const backBtnIndex = this.settingsItems.length;
+    backBtnFrame.primary.setInteractive({ useHandCursor: true });
+    backBtnFrame.primary.on('pointerover', () => this._setSettingsIndex(backBtnIndex));
+    backBtnFrame.primary.on('pointerdown', () => this._onBack());
     backBtn.on('pointerover', () => this._setSettingsIndex(backBtnIndex));
     this.settingsItems.push({
       setHighlighted: (b) => {
@@ -379,6 +492,10 @@ export class SettingsScene extends Phaser.Scene {
       this.input.keyboard?.off('keydown-ESC', onEsc);
     };
 
+    if (this.sceneData.frameQa === true || this._isSettingsFrameQaRoute()) {
+      this._writeSettingsFrameQaProbe();
+    }
+
     // 페이드 인
     SceneManager.fadeIn(this, 300);
   }
@@ -403,6 +520,150 @@ export class SettingsScene extends Phaser.Scene {
     return t;
   }
 
+  private _addSettingsActionIcon(
+    actionId: SettingsActionIconId,
+    x: number,
+    y: number,
+  ): Phaser.GameObjects.Image | null {
+    const iconId = SETTINGS_ACTION_BUTTON_ICON_IDS[actionId];
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    if (!iconResource || !this.textures.exists(iconResource.key)) {
+      this.fallbackActionIconIds.push(actionId);
+      this.missingActionIconKeys.push(iconResource?.key ?? `settings_action_icon_${actionId}`);
+      return null;
+    }
+
+    const icon = this.add.image(x, y, iconResource.key)
+      .setName(`settings_action_icon_${actionId}`)
+      .setOrigin(0.5);
+    icon.setDisplaySize(18, 18);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.uiElements.push(icon);
+    this.settingsActionIcons.push(icon);
+    return icon;
+  }
+
+  private _addSettingsFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof SETTINGS_UI_FRAME_TEXTURES[keyof typeof SETTINGS_UI_FRAME_TEXTURES],
+    alpha = 0.82,
+    strokeColor = 0x6644aa,
+    strokeWidth = 1,
+  ): SettingsFrameRender {
+    if (this.textures.exists(texture.key)) {
+      const frame = this.add.image(x, y, texture.key)
+        .setDisplaySize(width, height)
+        .setAlpha(alpha);
+      this.uiElements.push(frame);
+      const stroke = this.add.rectangle(x, y, width, height, 0x000000, 0)
+        .setStrokeStyle(strokeWidth, strokeColor, 0.72);
+      this.uiElements.push(stroke);
+      this.frameQaRenderedCounts.set(texture.key, (this.frameQaRenderedCounts.get(texture.key) ?? 0) + 1);
+      return { primary: frame, stroke };
+    }
+
+    // Aseprite settings UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    const fallback = this.add.rectangle(x, y, width, height, 0x000000, 0.45)
+      .setStrokeStyle(strokeWidth, strokeColor, 0.72);
+    this.uiElements.push(fallback);
+    return { primary: fallback };
+  }
+
+  private _isSettingsFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('settingsFrameQa') === '1';
+  }
+
+  private _writeSettingsFrameQaProbe(): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const panelTextures = [
+      SETTINGS_UI_FRAME_TEXTURES.mainPanel,
+      SETTINGS_UI_FRAME_TEXTURES.keybindPanel,
+      SETTINGS_UI_FRAME_TEXTURES.footerPanel,
+    ];
+    const buttonTexture = SETTINGS_UI_FRAME_TEXTURES.actionButton;
+    const sliderTexture = SETTINGS_UI_FRAME_TEXTURES.sliderTrack;
+    const buttonRenderedFrameCount = this.frameQaRenderedCounts.get(buttonTexture.key) ?? 0;
+    const sliderRenderedFrameCount = this.settingsSliderFrames.length;
+    const actionIconRenderedCount = this.settingsActionIcons.length;
+    const actionIconKeys = Object.values(SETTINGS_ACTION_BUTTON_ICON_IDS)
+      .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key)
+      .filter((key): key is NonNullable<typeof key> => key !== undefined);
+    const panelRenderedFrameCount = panelTextures.reduce(
+      (sum, texture) => sum + (this.frameQaRenderedCounts.get(texture.key) ?? 0),
+      0,
+    );
+    const renderedFrameKeys = Array.from(new Set([
+      ...Object.values(SETTINGS_UI_FRAME_TEXTURES)
+        .filter((texture) => (this.frameQaRenderedCounts.get(texture.key) ?? 0) > 0)
+        .map((texture) => texture.key),
+      ...(sliderRenderedFrameCount > 0 ? [sliderTexture.key] : []),
+    ]));
+    const missingFrameKeys: string[] = [
+      ...panelTextures
+        .filter((texture) => !this.textures.exists(texture.key) || (this.frameQaRenderedCounts.get(texture.key) ?? 0) < 1)
+        .map((texture) => texture.key),
+      !this.textures.exists(buttonTexture.key) || buttonRenderedFrameCount < 2 ? buttonTexture.key : null,
+      !this.textures.exists(sliderTexture.key) || sliderRenderedFrameCount < SETTINGS_EXPECTED_SLIDER_TRACK_FRAME_COUNT ? sliderTexture.key : null,
+      actionIconRenderedCount < SETTINGS_EXPECTED_ACTION_ICON_COUNT ? 'settings_action_icons' : null,
+    ].filter((key): key is NonNullable<typeof key> => key !== null);
+
+    document.body.dataset.aeternaSettingsFrameQa = JSON.stringify({
+      status: missingFrameKeys.length === 0 && this.missingActionIconKeys.length === 0 ? 'ready' : 'missing-frame',
+      renderedFrameKeys,
+      panelRenderedFrameCount,
+      buttonRenderedFrameCount,
+      expectedButtonFrameCount: 2,
+      sliderRenderedFrameCount,
+      expectedSliderFrameCount: SETTINGS_EXPECTED_SLIDER_TRACK_FRAME_COUNT,
+      sliderTrackFrame: {
+        key: sliderTexture.key,
+        path: sliderTexture.path,
+        displaySizes: this.settingsSliderFrames.map((frame) => ({
+          name: frame.name,
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+        })),
+      },
+      actionIcon: {
+        expectedCount: SETTINGS_EXPECTED_ACTION_ICON_COUNT,
+        renderedCount: actionIconRenderedCount,
+        expectedKeys: actionIconKeys,
+        renderedKeys: this.settingsActionIcons.map((icon) => icon.texture.key),
+        displaySizes: this.settingsActionIcons.map((icon) => ({
+          name: icon.name,
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        fallbackActionIconIds: this.fallbackActionIconIds,
+      },
+      missingActionIconKeys: this.missingActionIconKeys,
+      missingFrameKeys,
+    });
+  }
+
+  private _addSettingsSliderTrackFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ): Phaser.GameObjects.Image | null {
+    const texture = SETTINGS_UI_FRAME_TEXTURES.sliderTrack;
+    if (!this.textures.exists(texture.key)) return null;
+
+    const frame = this.add.image(x, y, texture.key)
+      .setName(`settings_slider_track_frame_${this.settingsSliderFrames.length + 1}`)
+      .setDisplaySize(width, height)
+      .setAlpha(0.72);
+    this.uiElements.push(frame);
+    this.settingsSliderFrames.push(frame);
+    return frame;
+  }
+
   private _addSlider(x: number, y: number, label: string, value: number, onChange: (v: number) => void): void {
     let highlighted = false;
     let currentRatio = value;
@@ -415,9 +676,10 @@ export class SettingsScene extends Phaser.Scene {
 
     const barWidth = 200;
     const barY = y + 22;
+    const sliderTrackFrame = this._addSettingsSliderTrackFrame(x + barWidth / 2, barY, barWidth + 28, 24);
 
     // 배경 바
-    const bg = this.add.rectangle(x + barWidth / 2, barY, barWidth, 8, 0x333355);
+    const bg = this.add.rectangle(x + barWidth / 2, barY, barWidth, 8, 0x333355, sliderTrackFrame ? 0.32 : 1);
     this.uiElements.push(bg);
 
     // 채움 바

@@ -35,6 +35,15 @@ interface ArrowConfig {
   distance: number;  // 플레이어 중심으로부터의 거리
 }
 
+interface NavigationArrowTexture {
+  key: string;
+  path: string;
+}
+
+interface NavigationManagerOptions {
+  frameQa?: boolean;
+}
+
 // ── 기본 설정 ──────────────────────────────────────────────────
 
 const DEFAULT_ARROW: ArrowConfig = {
@@ -44,12 +53,29 @@ const DEFAULT_ARROW: ArrowConfig = {
   distance: 50,
 };
 
+export const NAVIGATION_ARROW_TEXTURE = {
+  key: 'ui_navigation_direction_arrow',
+  path: 'assets/generated/ui/icons/skills/skill_mw_arrow.png',
+} as const satisfies NavigationArrowTexture;
+
+const NAVIGATION_ARROW_EXPECTED_IMAGE_COUNT = 1;
+
+export function preloadNavigationArrowTexture(scene: Phaser.Scene): void {
+  if (!scene.textures.exists(NAVIGATION_ARROW_TEXTURE.key)) {
+    scene.load.image(NAVIGATION_ARROW_TEXTURE.key, NAVIGATION_ARROW_TEXTURE.path);
+  }
+}
+
 // ── 내비게이션 매니저 ──────────────────────────────────────────
 
 export class NavigationManager {
   private scene: Phaser.Scene;
   private minimap: MinimapOverlay;
   private arrowGraphics: Phaser.GameObjects.Graphics;
+  private arrowImage: Phaser.GameObjects.Image | null = null;
+  private fallbackArrowRendered = false;
+  private lastArrowAngle = 0;
+  private readonly frameQa: boolean;
 
   // 상태
   private playerX: number = 0;
@@ -74,10 +100,12 @@ export class NavigationManager {
     scene: Phaser.Scene,
     minimap: MinimapOverlay,
     arrowConfig?: Partial<ArrowConfig>,
+    options: NavigationManagerOptions = {},
   ) {
     this.scene = scene;
     this.minimap = minimap;
     this.arrowConfig = { ...DEFAULT_ARROW, ...arrowConfig };
+    this.frameQa = options.frameQa === true;
 
     // 방향 화살표 Graphics (화면 고정)
     this.arrowGraphics = scene.add.graphics();
@@ -151,7 +179,7 @@ export class NavigationManager {
     this.waypointX = null;
     this.waypointY = null;
     this.minimap.clearWaypoint();
-    this.arrowGraphics.clear();
+    this.hideArrow();
   }
 
   /** 퀘스트 추적 등록 */
@@ -224,7 +252,35 @@ export class NavigationManager {
 
   /** 리소스 정리 */
   destroy(): void {
+    this.arrowImage?.destroy();
+    this.arrowImage = null;
     this.arrowGraphics.destroy();
+  }
+
+  /** QA probe: Aseprite 방향 화살표 이미지의 런타임 렌더 상태를 DOM dataset에 기록한다. */
+  writeArrowQaProbe(status: 'ready' | 'hidden' = 'ready'): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    document.body.dataset.aeternaNavigationArrowFrameQa = JSON.stringify({
+      status,
+      active: this.arrowImage?.visible === true || this.fallbackArrowRendered,
+      renderedImageKeys: this.arrowImage?.visible === true ? [NAVIGATION_ARROW_TEXTURE.key] : [],
+      renderedImageCount: this.arrowImage?.visible === true ? 1 : 0,
+      expectedImageCount: NAVIGATION_ARROW_EXPECTED_IMAGE_COUNT,
+      missingFrameKeys: this.scene.textures.exists(NAVIGATION_ARROW_TEXTURE.key)
+        ? []
+        : [NAVIGATION_ARROW_TEXTURE.key],
+      arrowImage: {
+        key: NAVIGATION_ARROW_TEXTURE.key,
+        path: NAVIGATION_ARROW_TEXTURE.path,
+        rendered: this.arrowImage?.visible === true,
+        displayWidth: this.arrowImage?.displayWidth ?? 0,
+        displayHeight: this.arrowImage?.displayHeight ?? 0,
+        rotation: this.arrowImage?.rotation ?? this.lastArrowAngle,
+      },
+      fallbackArrowRendered: this.fallbackArrowRendered,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
   }
 
   // ── 내부: 퀘스트 마커 ────────────────────────────────────
@@ -268,6 +324,7 @@ export class NavigationManager {
         targetX = nearest.x;
         targetY = nearest.y;
       } else {
+        this.hideArrow();
         return;  // 표시할 대상 없음
       }
     }
@@ -281,6 +338,7 @@ export class NavigationManager {
       screenX >= 0 && screenX <= cam.width &&
       screenY >= 0 && screenY <= cam.height
     ) {
+      this.hideArrow();
       return;
     }
 
@@ -291,6 +349,13 @@ export class NavigationManager {
 
     const arrowX = centerX + Math.cos(angle) * this.arrowConfig.distance;
     const arrowY = centerY + Math.sin(angle) * this.arrowConfig.distance;
+    this.lastArrowAngle = angle;
+
+    if (this.scene.textures.exists(NAVIGATION_ARROW_TEXTURE.key)) {
+      this.renderArrowImage(arrowX, arrowY, angle);
+      this.writeArrowQaProbeIfEnabled('ready');
+      return;
+    }
 
     // 삼각형 화살표
     const s = this.arrowConfig.size;
@@ -303,10 +368,54 @@ export class NavigationManager {
     const rightX = arrowX - Math.cos(perpAngle) * s * 0.5;
     const rightY = arrowY - Math.sin(perpAngle) * s * 0.5;
 
+    // Aseprite navigation arrow image 로드 실패 시에만 사용하는 안전 fallback.
+    this.arrowImage?.setVisible(false);
+    this.fallbackArrowRendered = true;
     this.arrowGraphics.fillStyle(this.arrowConfig.color, this.arrowConfig.alpha);
     this.arrowGraphics.fillTriangle(tipX, tipY, leftX, leftY, rightX, rightY);
+    this.writeArrowQaProbeIfEnabled('ready');
 
     // 거리 텍스트 (간략: Graphics로는 텍스트 불가, 생략)
+  }
+
+  private renderArrowImage(arrowX: number, arrowY: number, angle: number): void {
+    this.arrowGraphics.clear();
+    this.fallbackArrowRendered = false;
+
+    if (!this.arrowImage) {
+      this.arrowImage = this.scene.add.image(arrowX, arrowY, NAVIGATION_ARROW_TEXTURE.key)
+        .setName('navigation_direction_arrow_image')
+        .setOrigin(0.5)
+        .setDepth(850)
+        .setScrollFactor(0);
+    }
+
+    this.arrowImage
+      .setVisible(true)
+      .setPosition(arrowX, arrowY)
+      .setRotation(angle + Math.PI / 2)
+      .setAlpha(this.arrowConfig.alpha)
+      .setTint(this.arrowConfig.color)
+      .setDisplaySize(this.arrowConfig.size * 2.4, this.arrowConfig.size * 2.4);
+  }
+
+  private hideArrow(): void {
+    this.arrowGraphics.clear();
+    this.arrowImage?.setVisible(false);
+    this.fallbackArrowRendered = false;
+    this.writeArrowQaProbeIfEnabled('hidden');
+  }
+
+  private isArrowQaEnabled(): boolean {
+    if (this.frameQa) return true;
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('navigationArrowQa') === '1';
+  }
+
+  private writeArrowQaProbeIfEnabled(status: 'ready' | 'hidden'): void {
+    if (this.isArrowQaEnabled()) {
+      this.writeArrowQaProbe(status);
+    }
   }
 
   /** 가장 가까운 퀘스트 목표 검색 */
