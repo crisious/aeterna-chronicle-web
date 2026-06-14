@@ -11,9 +11,10 @@
  */
 
 import * as Phaser from 'phaser';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ── 엔딩 타입 (서버와 동일) ─────────────────────────────────
-type EndingType =
+export type EndingType =
   | 'DIVINE_RETURN'
   | 'BETRAYAL'
   | 'TRUE_GUARDIAN'
@@ -26,6 +27,7 @@ export interface EndingSceneData {
   endingName: string;
   endingDescription: string;
   playthrough: number;
+  frameQa?: boolean;
 }
 
 // ── 엔딩별 연출 설정 ────────────────────────────────────────
@@ -39,6 +41,29 @@ interface EndingPresentation {
 
 // ── 엔딩 타입 → CG 이미지 키 ────────────────────────────────
 const ENDING_CG_KEY = 'ending_cg';
+
+const ENDING_UI_FRAME_TEXTURES = {
+  storyPanel: {
+    key: 'ui_frame_ending_story_panel',
+    path: 'assets/generated/ui/frames/UI-HUD-006-DEF.png',
+  },
+  promptTrack: {
+    key: 'ui_frame_ending_prompt_track',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+} as const;
+
+const ENDING_EXPECTED_STORY_PANEL_FRAME_COUNT = 1;
+const ENDING_EXPECTED_PROMPT_TRACK_FRAME_COUNT = 1;
+const ENDING_PROMPT_ICON_ID = 'skill_mw_arrow';
+const ENDING_EXPECTED_PROMPT_ICON_COUNT = 1;
+
+const DEFAULT_ENDING_SCENE_DATA: EndingSceneData = {
+  endingType: 'TRUE_GUARDIAN',
+  endingName: '시간의 수호자',
+  endingDescription: '시간의 균열을 봉인하고 세계의 평화를 지켜냈다.',
+  playthrough: 1,
+};
 
 const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
   DIVINE_RETURN: {
@@ -115,27 +140,54 @@ const ENDING_PRESENTATIONS: Record<EndingType, EndingPresentation> = {
 
 export class EndingScene extends Phaser.Scene {
   private endingData!: EndingSceneData;
+  private frameQa = false;
+  private storyPanelFrames: Phaser.GameObjects.Image[] = [];
+  private promptTrackFrames: Phaser.GameObjects.Image[] = [];
+  private promptIcon: Phaser.GameObjects.Image | null = null;
+  private promptIconFallbackRendered = false;
 
   constructor() {
     super({ key: 'EndingScene' });
   }
 
-  init(data: EndingSceneData): void {
-    this.endingData = data;
+  init(data?: Partial<EndingSceneData>): void {
+    this.endingData = {
+      ...DEFAULT_ENDING_SCENE_DATA,
+      ...data,
+    };
+    this.frameQa = data?.frameQa === true || this._isEndingFrameQaRoute();
+    this.storyPanelFrames = [];
+    this.promptTrackFrames = [];
+    this.promptIcon = null;
+    this.promptIconFallbackRendered = false;
   }
 
   preload(): void {
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
-      console.warn(`[EndingScene] CG 로드 실패 (무시): ${file.key}`);
+      console.warn(`[EndingScene] 에셋 로드 실패 (무시): ${file.key}`);
     });
 
     const presentation = ENDING_PRESENTATIONS[this.endingData.endingType] ?? ENDING_PRESENTATIONS.DEFEAT;
     this.load.image(ENDING_CG_KEY, presentation.cgPath);
+    for (const texture of Object.values(ENDING_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+
+    const promptIconResource = getSpriteResourceForSkillIcon(ENDING_PROMPT_ICON_ID);
+    if (promptIconResource && !this.textures.exists(promptIconResource.key)) {
+      this.load.image(promptIconResource.key, promptIconResource.path);
+    }
   }
 
   create(): void {
     const { width, height } = this.cameras.main;
     const presentation = ENDING_PRESENTATIONS[this.endingData.endingType] ?? ENDING_PRESENTATIONS.DEFEAT;
+    this.storyPanelFrames = [];
+    this.promptTrackFrames = [];
+    this.promptIcon = null;
+    this.promptIconFallbackRendered = false;
 
     // ── 배경 ────────────────────────────────────────────────
     this.cameras.main.setBackgroundColor(presentation.bgColor);
@@ -171,6 +223,27 @@ export class EndingScene extends Phaser.Scene {
       ease: 'Power2',
     });
 
+    const storyPanelWidth = Math.min(width * 0.78, 980);
+    const storyPanelHeight = Math.min(height * 0.58, 500);
+    this._addEndingFrame(
+      width / 2,
+      height * 0.6,
+      storyPanelWidth,
+      storyPanelHeight,
+      ENDING_UI_FRAME_TEXTURES.storyPanel,
+      this.storyPanelFrames,
+      'ending_story_panel_frame',
+      0.82,
+    );
+    this.add.rectangle(
+      width / 2,
+      height * 0.6,
+      Math.max(0, storyPanelWidth - 110),
+      Math.max(0, storyPanelHeight - 118),
+      0x04131e,
+      0.74,
+    ).setName('ending_story_panel_readability_layer');
+
     // ── 엔딩 설명 (타이틀 이후 페이드인) ────────────────────
     const descText = this.add.text(width / 2, height * 0.28, this.endingData.endingDescription, {
       fontSize: '20px',
@@ -192,7 +265,7 @@ export class EndingScene extends Phaser.Scene {
     });
 
     // ── 에필로그 텍스트 순차 표시 ───────────────────────────
-    const startY = height * 0.45;
+    const startY = height * 0.48;
     const lineHeight = 36;
 
     presentation.epilogueLines.forEach((line, i) => {
@@ -241,7 +314,9 @@ export class EndingScene extends Phaser.Scene {
     });
 
     // ── "아무 키나 누르면 타이틀로" 안내 ────────────────────
-    const promptText = this.add.text(width / 2, height * 0.96, '아무 키나 누르면 타이틀로 돌아갑니다', {
+    const promptIconResource = getSpriteResourceForSkillIcon(ENDING_PROMPT_ICON_ID);
+    const hasPromptIcon = Boolean(promptIconResource && this.textures.exists(promptIconResource.key));
+    const promptText = this.add.text(hasPromptIcon ? width / 2 + 12 : width / 2, height * 0.96, '아무 키나 누르면 타이틀로 돌아갑니다', {
       fontSize: '14px',
       fontFamily: 'Noto Sans KR, sans-serif',
       color: '#444444',
@@ -250,8 +325,44 @@ export class EndingScene extends Phaser.Scene {
     promptText.setOrigin(0.5);
     promptText.setAlpha(0);
 
+    this._addEndingFrame(
+      width / 2,
+      height * 0.96,
+      390,
+      34,
+      ENDING_UI_FRAME_TEXTURES.promptTrack,
+      this.promptTrackFrames,
+      'ending_prompt_track_frame',
+      0.74,
+    );
+    promptText.setDepth((this.promptTrackFrames[0]?.depth ?? promptText.depth) + 1);
+
+    const promptVisualTargets: Phaser.GameObjects.GameObject[] = [promptText];
+    if (hasPromptIcon && promptIconResource) {
+      this.promptIcon = this.add.image(width / 2 - 164, height * 0.96, promptIconResource.key)
+        .setName('ending_prompt_icon');
+      this.promptIcon.setDisplaySize(16, 16);
+      this.promptIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.promptIcon.setAlpha(0);
+      this.promptIcon.setDepth(promptText.depth);
+      promptVisualTargets.push(this.promptIcon);
+    } else {
+      const fallbackIcon = this.add.text(width / 2 - 164, height * 0.96, '>', {
+        fontSize: '13px',
+        fontFamily: 'Noto Sans KR, sans-serif',
+        color: '#444444',
+        align: 'center',
+      })
+        .setName('ending_prompt_icon_fallback')
+        .setOrigin(0.5)
+        .setAlpha(0)
+        .setDepth(promptText.depth);
+      promptVisualTargets.push(fallbackIcon);
+      this.promptIconFallbackRendered = true;
+    }
+
     this.tweens.add({
-      targets: promptText,
+      targets: promptVisualTargets,
       alpha: { from: 0, to: 0.6 },
       duration: 800,
       delay: totalEpilogueDelay + 1500,
@@ -269,6 +380,110 @@ export class EndingScene extends Phaser.Scene {
       this.input.once('pointerdown', () => {
         this.returnToTitle();
       });
+    });
+
+    this._writeEndingFrameQaProbe();
+  }
+
+  private _addEndingFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof ENDING_UI_FRAME_TEXTURES[keyof typeof ENDING_UI_FRAME_TEXTURES],
+    targetFrames: Phaser.GameObjects.Image[],
+    name: string,
+    alpha: number,
+  ): Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle {
+    if (this.textures.exists(texture.key)) {
+      const frame = this.add.image(x, y, texture.key)
+        .setDisplaySize(width, height)
+        .setAlpha(alpha)
+        .setName(name);
+      targetFrames.push(frame);
+      return frame;
+    }
+
+    // Aseprite ending UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    return this.add.rectangle(x, y, width, height, 0x050510, 0.58)
+      .setStrokeStyle(1, 0x6a5f92)
+      .setName(`${name}_fallback`);
+  }
+
+  private _isEndingFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return new URLSearchParams(window.location.search).get('endingFrameQa') === '1';
+  }
+
+  private _writeEndingFrameQaProbe(): void {
+    if (!this.frameQa || typeof document === 'undefined') {
+      return;
+    }
+
+    const storyPanelFrame = ENDING_UI_FRAME_TEXTURES.storyPanel;
+    const promptTrackFrame = ENDING_UI_FRAME_TEXTURES.promptTrack;
+    const hasExpectedStoryPanelFrames = (
+      this.textures.exists(storyPanelFrame.key)
+      && this.storyPanelFrames.length === ENDING_EXPECTED_STORY_PANEL_FRAME_COUNT
+    );
+    const hasExpectedPromptTrackFrames = (
+      this.textures.exists(promptTrackFrame.key)
+      && this.promptTrackFrames.length === ENDING_EXPECTED_PROMPT_TRACK_FRAME_COUNT
+    );
+    const promptIconResource = getSpriteResourceForSkillIcon(ENDING_PROMPT_ICON_ID);
+    const hasExpectedPromptIcon = (
+      Boolean(promptIconResource)
+      && this.textures.exists(promptIconResource?.key ?? '')
+      && this.promptIcon?.active === true
+    );
+    const visibleCanvasCount = Array.from(document.querySelectorAll('canvas'))
+      .filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length;
+
+    document.body.dataset.aeternaEndingFrameQa = JSON.stringify({
+      status: 'ready',
+      endingType: this.endingData.endingType,
+      storyPanelFrame: {
+        key: storyPanelFrame.key,
+        path: storyPanelFrame.path,
+        renderedCount: this.storyPanelFrames.length,
+        expectedCount: ENDING_EXPECTED_STORY_PANEL_FRAME_COUNT,
+        displaySizes: this.storyPanelFrames.map((frame) => ({
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+        })),
+      },
+      promptTrackFrame: {
+        key: promptTrackFrame.key,
+        path: promptTrackFrame.path,
+        renderedCount: this.promptTrackFrames.length,
+        expectedCount: ENDING_EXPECTED_PROMPT_TRACK_FRAME_COUNT,
+        displaySizes: this.promptTrackFrames.map((frame) => ({
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+        })),
+      },
+      promptIcon: {
+        iconId: ENDING_PROMPT_ICON_ID,
+        key: promptIconResource?.key ?? null,
+        path: promptIconResource?.path ?? null,
+        renderedCount: this.promptIcon?.active ? 1 : 0,
+        expectedCount: ENDING_EXPECTED_PROMPT_ICON_COUNT,
+        displayWidth: this.promptIcon?.displayWidth ?? 0,
+        displayHeight: this.promptIcon?.displayHeight ?? 0,
+        fallbackRendered: this.promptIconFallbackRendered,
+      },
+      missingFrameKeys: [
+        ...(hasExpectedStoryPanelFrames ? [] : [storyPanelFrame.key]),
+        ...(hasExpectedPromptTrackFrames ? [] : [promptTrackFrame.key]),
+      ],
+      missingPromptIconKeys: hasExpectedPromptIcon ? [] : [promptIconResource?.key ?? ENDING_PROMPT_ICON_ID],
+      visibleCanvasCount,
     });
   }
 

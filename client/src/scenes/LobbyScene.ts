@@ -15,10 +15,24 @@ import { networkManager } from '../network/NetworkManager';
 import type { QuestData } from '../network/NetworkManager';
 import { mergeActiveQuestStatus } from '../network/questTransforms';
 import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
-import { SkillTreeUI, type ClassId } from '../ui/SkillTreeUI';
+import {
+  SkillTreeUI,
+  SKILL_TREE_UI_FRAME_TEXTURES,
+  preloadSkillTreeUiFrameTextures,
+  type ClassId,
+} from '../ui/SkillTreeUI';
 import { isUiModalOpen } from '../accessibility/uiModalLock';
+import {
+  getSpriteResourceForLobbyNpc,
+  getSpriteResourceForSkillIcon,
+  getSpriteResourceForWorldZoneIcon,
+} from '../assets/spriteResourceManifest';
+import { getItemIconResource, preloadItemIconResources } from '../data/itemIconResources';
+import { preloadSkillTreeIconResources } from '../data/skillTreeIcons';
 
 // ── 타입 ────────────────────────────────────────────────────
+
+type ItemIconQaMode = 'shop' | 'inventory';
 
 export interface LobbySceneData {
   characterId?: string;
@@ -28,6 +42,25 @@ export interface LobbySceneData {
   baseStats: { hp: number; mp: number; atk: number; def: number };
   level?: number;
   offlineQa?: boolean;
+  openSkillTreeQa?: boolean;
+  itemIconQa?: ItemIconQaMode;
+  dialogueTitleIconQa?: boolean;
+  dialogueChoiceButtonFrameQa?: boolean;
+  dialogueChoiceFocusIconQa?: boolean;
+  lobbyNavFocusIconQa?: boolean;
+  inventoryTitleIconQa?: boolean;
+  inventoryActionFocusIconQa?: boolean;
+  partyRecruitIconQa?: boolean;
+  partyActionFocusIconQa?: boolean;
+  shopTitleIconQa?: boolean;
+  shopActionFocusIconQa?: boolean;
+  enhanceTitleIconQa?: boolean;
+  enhanceActionFocusIconQa?: boolean;
+  storyTitleIconQa?: boolean;
+  storyActionFocusIconQa?: boolean;
+  questTitleIconQa?: boolean;
+  questActionFocusIconQa?: boolean;
+  goldIconQa?: boolean;
 }
 
 interface NpcEntry {
@@ -40,6 +73,13 @@ interface NpcEntry {
 }
 
 type QuestPanelSource = 'server' | 'local';
+
+type ShopRow = { code: string; name: string; price: number; itemIconId?: string; type?: string };
+type LobbyNavIconDescriptor =
+  | { kind: 'worldmap'; id: string }
+  | { kind: 'item'; id: string }
+  | { kind: 'skill'; id: string };
+type LobbyNavIconResource = { key: string; path: string };
 
 // ── 상수 ────────────────────────────────────────────────────
 
@@ -54,6 +94,86 @@ const TOWN_NPCS: NpcEntry[] = [
 const MINIMAP_SIZE = 140;
 const MINIMAP_MARGIN = 12;
 
+const LOBBY_UI_FRAME_TEXTURES = {
+  minimap: {
+    key: 'ui_frame_UI-HUD-002-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-002-DEF.png',
+  },
+  dialoguePanel: {
+    key: 'ui_frame_UI-HUD-007-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-007-DEF.png',
+  },
+  dialogueChoiceButton: {
+    key: 'ui_frame_lobby_dialogue_choice_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+  storyPanel: {
+    key: 'ui_frame_UI-HUD-008-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-008-DEF.png',
+  },
+  shopPanel: {
+    key: 'ui_frame_UI-SHP-001-DEF',
+    path: 'assets/generated/ui/frames/UI-SHP-001-DEF.png',
+  },
+  enhancePanel: {
+    key: 'ui_frame_UI-SHP-002-DEF',
+    path: 'assets/generated/ui/frames/UI-SHP-002-DEF.png',
+  },
+  partyPanel: {
+    key: 'ui_frame_UI-SHP-003-DEF',
+    path: 'assets/generated/ui/frames/UI-SHP-003-DEF.png',
+  },
+  inventoryPanel: {
+    key: 'ui_frame_UI-INV-003-DEF',
+    path: 'assets/generated/ui/frames/UI-INV-003-DEF.png',
+  },
+  questPanel: {
+    key: 'ui_frame_UI-INV-004-DEF',
+    path: 'assets/generated/ui/frames/UI-INV-004-DEF.png',
+  },
+} as const;
+
+const LOBBY_NAV_ICON_TEXTURES = {
+  world: { kind: 'worldmap', id: 'aether_plains' },
+  dungeon: { kind: 'worldmap', id: 'crystal_cave' },
+  inventory: { kind: 'item', id: 'ITM-CON-001' },
+  skill: { kind: 'skill', id: 'skill_ek_slash' },
+  quest: { kind: 'item', id: 'ITM-QST-004' },
+} as const;
+
+const LOBBY_DIALOGUE_TITLE_ICON_NPC_ID = 'merchant';
+const LOBBY_DIALOGUE_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_NAV_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_NAV_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_PARTY_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_PARTY_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_STORY_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_STORY_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_SHOP_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_SHOP_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_ENHANCE_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_ENHANCE_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_INVENTORY_TITLE_ICON_ID = 'ITM-CON-001';
+const LOBBY_INVENTORY_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_INVENTORY_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_INVENTORY_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_PARTY_RECRUIT_TITLE_ICON_ID = 'skill_ek_slash';
+const LOBBY_PARTY_RECRUIT_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_SHOP_TITLE_ICON_ID = 'ITM-CON-001';
+const LOBBY_SHOP_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_ENHANCE_TITLE_ICON_ID = 'ITM-MAT-001';
+const LOBBY_ENHANCE_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_STORY_TITLE_ICON_ID = 'ITM-QST-001';
+const LOBBY_STORY_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_QUEST_TITLE_ICON_ID = 'ITM-QST-004';
+const LOBBY_QUEST_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_QUEST_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
+const LOBBY_QUEST_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
+const LOBBY_GOLD_ICON_ID = 'ITM-MAT-002';
+const LOBBY_GOLD_ICON_EXPECTED_COUNT = 1;
+
 // P33-A: NPC id → 스프라이트 파일명 매핑
 const NPC_SPRITE_MAP: Record<string, string> = {
   blacksmith: '19_kalen_sprite',   // 대장장이 칼렌
@@ -61,6 +181,34 @@ const NPC_SPRITE_MAP: Record<string, string> = {
   quest_board: '18_memory_fragment_sprite', // 기억의 게시판 (기억 파편 컨셉)
   party_recruit: '13_hashir_sprite', // 모험가 길드 → 하시르 스프라이트
   elder: '04_mateus_sprite',       // 장로 마테우스
+};
+
+type LobbyNpcPortraitTexture = {
+  key: string;
+  path: string;
+};
+
+const LOBBY_NPC_PORTRAIT_TEXTURES: Record<string, LobbyNpcPortraitTexture> = {
+  blacksmith: {
+    key: 'npc_portrait_19_kalen_portrait',
+    path: 'assets/generated/characters/npc/npc_portrait_19_kalen_portrait.png',
+  },
+  merchant: {
+    key: 'npc_portrait_20_mira_portrait',
+    path: 'assets/generated/characters/npc/npc_portrait_20_mira_portrait.png',
+  },
+  quest_board: {
+    key: 'npc_portrait_18_memory_fragment_portrait',
+    path: 'assets/generated/characters/npc/npc_portrait_18_memory_fragment_portrait.png',
+  },
+  party_recruit: {
+    key: 'npc_portrait_13_hashir_portrait',
+    path: 'assets/generated/characters/npc/npc_portrait_13_hashir_portrait.png',
+  },
+  elder: {
+    key: 'npc_portrait_04_mateus_portrait',
+    path: 'assets/generated/characters/npc/npc_portrait_04_mateus_portrait.png',
+  },
 };
 
 const QUEST_STATUS_STYLE: Record<QuestData['status'], { label: string; color: string }> = {
@@ -106,6 +254,20 @@ const FALLBACK_QUESTS: QuestData[] = [
   },
 ];
 
+const FALLBACK_SHOP_ITEMS: ShopRow[] = [
+  { code: 'CON_HP_S', name: 'HP 포션 (소)', price: 20, itemIconId: 'ITM-CON-001', type: 'consumable' },
+  { code: 'CON_HP_M', name: 'HP 포션 (중)', price: 60, itemIconId: 'ITM-CON-002', type: 'consumable' },
+  { code: 'CON_MP_S', name: 'MP 포션 (소)', price: 25, itemIconId: 'ITM-CON-003', type: 'consumable' },
+  { code: 'CON_HP_L', name: 'HP 포션 (대)', price: 150, itemIconId: 'ITM-CON-004', type: 'consumable' },
+  { code: 'CON_MP_M', name: 'MP 포션 (중)', price: 70, itemIconId: 'ITM-CON-005', type: 'consumable' },
+];
+
+const LOBBY_QA_INVENTORY_ITEMS = [
+  { id: 'qa-wpn-001', itemId: 'WP-001-ironSword', name: '훈련용 철검', type: 'weapon', quantity: 1, rarity: 'common' },
+  { id: 'qa-con-003', itemId: 'CS-003-hpPotionM', name: '중형 HP 포션', type: 'consumable', quantity: 4, rarity: 'uncommon' },
+  { id: 'qa-mat-002', itemId: 'MAT-002-memoryShard', name: '기억 파편', type: 'material', quantity: 7, rarity: 'rare' },
+];
+
 // ── LobbyScene ──────────────────────────────────────────────
 
 export class LobbyScene extends Phaser.Scene {
@@ -114,7 +276,13 @@ export class LobbyScene extends Phaser.Scene {
   private dialoguePanel: Phaser.GameObjects.Container | null = null;
 
   // FINDING-A4 ext5: 하단 nav 버튼 키보드 nav state
-  private navButtonItems: Array<{ text: Phaser.GameObjects.Text; action: () => void; label: string }> = [];
+  private navButtonItems: Array<{
+    text: Phaser.GameObjects.Text;
+    action: () => void;
+    label: string;
+    focusX: number;
+    focusY: number;
+  }> = [];
   private navIndex = 0;
   private _lobbyKeyboardCleanup: (() => void) | null = null;
 
@@ -126,8 +294,63 @@ export class LobbyScene extends Phaser.Scene {
   private skillTreeUI?: SkillTreeUI; // 스킬 트리 패널(지연 생성). uiModalLock 사용.
   private npcHighlightRing: Phaser.GameObjects.Arc | null = null;
   private minimapContainer!: Phaser.GameObjects.Container;
+  private lobbyMinimapNpcMarkerKeys: string[] = [];
+  private lobbyMinimapNpcMarkerMissingTextureKeys: string[] = [];
+  private lobbyMinimapNpcMarkerFallbackIds: string[] = [];
+  private lobbyNavIconImages: Phaser.GameObjects.Image[] = [];
+  private fallbackLobbyNavIconIds: string[] = [];
+  private lobbyNavFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyNavFocusIconFallbackRendered = false;
   private connectionIndicator!: Phaser.GameObjects.Text;
   private goldText!: Phaser.GameObjects.Text;
+  private goldIcon: Phaser.GameObjects.Image | null = null;
+  private goldIconFallbackRendered = false;
+  private itemIconQaRenderedIconIds: string[] = [];
+  private itemIconQaMissingIconIds: string[] = [];
+  private lobbyDialogueTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyDialogueTitleIconFallbackRendered = false;
+  private lobbyDialogueTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyDialogueChoiceButtonFrames: Phaser.GameObjects.Image[] = [];
+  private lobbyDialogueChoiceButtonFrameFallbackRendered = false;
+  private lobbyDialogueChoiceFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyDialogueChoiceFocusIconFallbackRendered = false;
+  private lobbyDialogueChoiceTexts: Phaser.GameObjects.Text[] = [];
+  private lobbyInventoryTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyInventoryTitleIconFallbackRendered = false;
+  private lobbyInventoryTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyInventoryActionFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyInventoryActionFocusIconFallbackRendered = false;
+  private lobbyInventoryActionFocusTexts: Phaser.GameObjects.Text[] = [];
+  private lobbyPartyRecruitTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyPartyRecruitTitleIconFallbackRendered = false;
+  private lobbyPartyRecruitTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyPartyActionFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyPartyActionFocusIconFallbackRendered = false;
+  private lobbyPartyActionFocusTexts: Phaser.GameObjects.Text[] = [];
+  private lobbyShopTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyShopTitleIconFallbackRendered = false;
+  private lobbyShopTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyShopActionFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyShopActionFocusIconFallbackRendered = false;
+  private lobbyShopActionFocusTexts: Phaser.GameObjects.Text[] = [];
+  private lobbyEnhanceTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyEnhanceTitleIconFallbackRendered = false;
+  private lobbyEnhanceTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyEnhanceActionFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyEnhanceActionFocusIconFallbackRendered = false;
+  private lobbyEnhanceActionFocusTexts: Phaser.GameObjects.Text[] = [];
+  private lobbyStoryTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyStoryTitleIconFallbackRendered = false;
+  private lobbyStoryTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyStoryActionFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyStoryActionFocusIconFallbackRendered = false;
+  private lobbyStoryActionFocusTexts: Phaser.GameObjects.Text[] = [];
+  private lobbyQuestTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyQuestTitleIconFallbackRendered = false;
+  private lobbyQuestTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyQuestActionFocusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyQuestActionFocusIconFallbackRendered = false;
+  private lobbyQuestActionFocusTexts: Phaser.GameObjects.Text[] = [];
 
   constructor() {
     super({ key: 'LobbyScene' });
@@ -137,23 +360,187 @@ export class LobbyScene extends Phaser.Scene {
 
   init(data: LobbySceneData): void {
     this.characterData = data;
+    this.lobbyDialogueTitleIcon = null;
+    this.lobbyDialogueTitleIconFallbackRendered = false;
+    this.lobbyDialogueTitleText = null;
+    this.lobbyDialogueChoiceButtonFrames = [];
+    this.lobbyDialogueChoiceButtonFrameFallbackRendered = false;
+    this.lobbyDialogueChoiceFocusIcon = null;
+    this.lobbyDialogueChoiceFocusIconFallbackRendered = false;
+    this.lobbyDialogueChoiceTexts = [];
+    this.lobbyNavFocusIcon = null;
+    this.lobbyNavFocusIconFallbackRendered = false;
+    this.lobbyInventoryTitleIcon = null;
+    this.lobbyInventoryTitleIconFallbackRendered = false;
+    this.lobbyInventoryTitleText = null;
+    this.lobbyInventoryActionFocusIcon = null;
+    this.lobbyInventoryActionFocusIconFallbackRendered = false;
+    this.lobbyInventoryActionFocusTexts = [];
+    this.lobbyPartyRecruitTitleIcon = null;
+    this.lobbyPartyRecruitTitleIconFallbackRendered = false;
+    this.lobbyPartyRecruitTitleText = null;
+    this.lobbyPartyActionFocusIcon = null;
+    this.lobbyPartyActionFocusIconFallbackRendered = false;
+    this.lobbyPartyActionFocusTexts = [];
+    this.lobbyShopTitleIcon = null;
+    this.lobbyShopTitleIconFallbackRendered = false;
+    this.lobbyShopTitleText = null;
+    this.lobbyShopActionFocusIcon = null;
+    this.lobbyShopActionFocusIconFallbackRendered = false;
+    this.lobbyShopActionFocusTexts = [];
+    this.lobbyEnhanceTitleIcon = null;
+    this.lobbyEnhanceTitleIconFallbackRendered = false;
+    this.lobbyEnhanceTitleText = null;
+    this.lobbyEnhanceActionFocusIcon = null;
+    this.lobbyEnhanceActionFocusIconFallbackRendered = false;
+    this.lobbyEnhanceActionFocusTexts = [];
+    this.lobbyStoryTitleIcon = null;
+    this.lobbyStoryTitleIconFallbackRendered = false;
+    this.lobbyStoryTitleText = null;
+    this.lobbyStoryActionFocusIcon = null;
+    this.lobbyStoryActionFocusIconFallbackRendered = false;
+    this.lobbyStoryActionFocusTexts = [];
+    this.lobbyQuestTitleIcon = null;
+    this.lobbyQuestTitleIconFallbackRendered = false;
+    this.lobbyQuestTitleText = null;
+    this.lobbyQuestActionFocusIcon = null;
+    this.lobbyQuestActionFocusIconFallbackRendered = false;
+    this.lobbyQuestActionFocusTexts = [];
+    this.goldIcon = null;
+    this.goldIconFallbackRendered = false;
   }
 
   preload(): void {
     // P33-A: 타운 배경 (실반헤임 숲)
     this.load.image('town_bg', 'assets/generated/environment/backgrounds/SYL-BG-FAR-DAY.png');
     this.load.image('town_bg_mid', 'assets/generated/environment/backgrounds/SYL-BG-MID-DAY.png');
+    for (const texture of Object.values(LOBBY_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+    for (const icon of Object.values(LOBBY_NAV_ICON_TEXTURES)) {
+      const navIconResource = this._resolveLobbyNavIconResource(icon);
+      if (navIconResource && !this.textures.exists(navIconResource.key)) {
+        this.load.image(navIconResource.key, navIconResource.path);
+      }
+    }
+    const partyTitleIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_RECRUIT_TITLE_ICON_ID);
+    if (partyTitleIconResource && !this.textures.exists(partyTitleIconResource.key)) {
+      this.load.image(partyTitleIconResource.key, partyTitleIconResource.path);
+    }
+    const dialogueChoiceFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_ID);
+    if (dialogueChoiceFocusIconResource && !this.textures.exists(dialogueChoiceFocusIconResource.key)) {
+      this.load.image(dialogueChoiceFocusIconResource.key, dialogueChoiceFocusIconResource.path);
+    }
+    const navFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_NAV_FOCUS_ICON_ID);
+    if (
+      navFocusIconResource
+      && navFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && !this.textures.exists(navFocusIconResource.key)
+    ) {
+      this.load.image(navFocusIconResource.key, navFocusIconResource.path);
+    }
+    const partyActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_ACTION_FOCUS_ICON_ID);
+    if (
+      partyActionFocusIconResource
+      && partyActionFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && partyActionFocusIconResource.key !== navFocusIconResource?.key
+      && !this.textures.exists(partyActionFocusIconResource.key)
+    ) {
+      this.load.image(partyActionFocusIconResource.key, partyActionFocusIconResource.path);
+    }
+    const storyActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_STORY_ACTION_FOCUS_ICON_ID);
+    if (
+      storyActionFocusIconResource
+      && storyActionFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && storyActionFocusIconResource.key !== navFocusIconResource?.key
+      && storyActionFocusIconResource.key !== partyActionFocusIconResource?.key
+      && !this.textures.exists(storyActionFocusIconResource.key)
+    ) {
+      this.load.image(storyActionFocusIconResource.key, storyActionFocusIconResource.path);
+    }
+    const shopActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_SHOP_ACTION_FOCUS_ICON_ID);
+    if (
+      shopActionFocusIconResource
+      && shopActionFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && shopActionFocusIconResource.key !== navFocusIconResource?.key
+      && shopActionFocusIconResource.key !== partyActionFocusIconResource?.key
+      && shopActionFocusIconResource.key !== storyActionFocusIconResource?.key
+      && !this.textures.exists(shopActionFocusIconResource.key)
+    ) {
+      this.load.image(shopActionFocusIconResource.key, shopActionFocusIconResource.path);
+    }
+    const enhanceActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_ENHANCE_ACTION_FOCUS_ICON_ID);
+    if (
+      enhanceActionFocusIconResource
+      && enhanceActionFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && enhanceActionFocusIconResource.key !== navFocusIconResource?.key
+      && enhanceActionFocusIconResource.key !== partyActionFocusIconResource?.key
+      && enhanceActionFocusIconResource.key !== storyActionFocusIconResource?.key
+      && enhanceActionFocusIconResource.key !== shopActionFocusIconResource?.key
+      && !this.textures.exists(enhanceActionFocusIconResource.key)
+    ) {
+      this.load.image(enhanceActionFocusIconResource.key, enhanceActionFocusIconResource.path);
+    }
+    const inventoryActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_INVENTORY_ACTION_FOCUS_ICON_ID);
+    if (
+      inventoryActionFocusIconResource
+      && inventoryActionFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && inventoryActionFocusIconResource.key !== navFocusIconResource?.key
+      && inventoryActionFocusIconResource.key !== partyActionFocusIconResource?.key
+      && inventoryActionFocusIconResource.key !== storyActionFocusIconResource?.key
+      && inventoryActionFocusIconResource.key !== shopActionFocusIconResource?.key
+      && inventoryActionFocusIconResource.key !== enhanceActionFocusIconResource?.key
+      && !this.textures.exists(inventoryActionFocusIconResource.key)
+    ) {
+      this.load.image(inventoryActionFocusIconResource.key, inventoryActionFocusIconResource.path);
+    }
+    const questActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_QUEST_ACTION_FOCUS_ICON_ID);
+    if (
+      questActionFocusIconResource
+      && questActionFocusIconResource.key !== dialogueChoiceFocusIconResource?.key
+      && questActionFocusIconResource.key !== navFocusIconResource?.key
+      && questActionFocusIconResource.key !== partyActionFocusIconResource?.key
+      && questActionFocusIconResource.key !== storyActionFocusIconResource?.key
+      && questActionFocusIconResource.key !== shopActionFocusIconResource?.key
+      && questActionFocusIconResource.key !== enhanceActionFocusIconResource?.key
+      && questActionFocusIconResource.key !== inventoryActionFocusIconResource?.key
+      && !this.textures.exists(questActionFocusIconResource.key)
+    ) {
+      this.load.image(questActionFocusIconResource.key, questActionFocusIconResource.path);
+    }
 
     // P33-A: NPC 스프라이트
     for (const [npcId, spriteFile] of Object.entries(NPC_SPRITE_MAP)) {
-      this.load.image(
-        `npc_${npcId}`,
-        `assets/generated/characters/npc_sprites/${spriteFile}.png`,
-      );
+      const resource = getSpriteResourceForLobbyNpc(npcId);
+      if (resource) {
+        this.load.spritesheet(resource.key, resource.path, {
+          frameWidth: resource.frameWidth,
+          frameHeight: resource.frameHeight,
+        });
+      } else {
+        this.load.image(
+          `npc_${npcId}`,
+          `assets/generated/characters/npc_sprites/${spriteFile}.png`,
+        );
+      }
     }
-    // 추가 NPC 초상화 (대화 패널용)
-    this.load.image('npc_portrait_mateus', 'assets/generated/characters/npc_sprites/04_mateus_sprite.png');
-    this.load.image('npc_portrait_lumina', 'assets/generated/characters/npc_sprites/03_lumina_sprite.png');
+    for (const portrait of Object.values(LOBBY_NPC_PORTRAIT_TEXTURES)) {
+      if (!this.textures.exists(portrait.key)) {
+        this.load.image(portrait.key, portrait.path);
+      }
+    }
+    preloadSkillTreeIconResources(this);
+    preloadItemIconResources(this);
+    const isSkillTreeFrameQa = this.characterData?.openSkillTreeQa === true || this._isSkillTreeFrameQaRoute();
+    const skillTreeFrameQaCacheBuster = isSkillTreeFrameQa ? this._getSkillTreeFrameQaCacheBuster() : undefined;
+    preloadSkillTreeUiFrameTextures(this, skillTreeFrameQaCacheBuster
+      ? { cacheBuster: skillTreeFrameQaCacheBuster, forceReload: true }
+      : undefined);
+    if (skillTreeFrameQaCacheBuster) {
+      this._preloadSkillTreeFrameQaProbes(skillTreeFrameQaCacheBuster);
+    }
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Lobby] 이미지 로드 실패: ${file.key}`);
@@ -177,7 +564,899 @@ export class LobbyScene extends Phaser.Scene {
 
     this._connectToServer();
 
+    if (this.characterData?.openSkillTreeQa === true) {
+      this.time.delayedCall(300, () => {
+        void this._openSkillTree();
+      });
+    }
+
+    if (this._getItemIconQaMode()) {
+      this.time.delayedCall(350, () => this._openItemIconQaPanel());
+    }
+
+    if (this.characterData?.dialogueTitleIconQa === true || this._isDialogueTitleIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openDialogueTitleIconQaPanel());
+    }
+
+    if (this.characterData?.dialogueChoiceButtonFrameQa === true || this._isDialogueChoiceButtonFrameQaRoute()) {
+      this.time.delayedCall(350, () => this._openDialogueChoiceButtonFrameQaPanel());
+    }
+
+    if (this.characterData?.dialogueChoiceFocusIconQa === true || this._isDialogueChoiceFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openDialogueChoiceFocusIconQaPanel());
+    }
+
+    if (this.characterData?.inventoryTitleIconQa === true || this._isInventoryTitleIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openInventoryTitleIconQaPanel());
+    }
+
+    if (this.characterData?.inventoryActionFocusIconQa === true || this._isInventoryActionFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openInventoryActionFocusIconQaPanel());
+    }
+
+    if (this.characterData?.partyRecruitIconQa === true || this._isPartyRecruitIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openPartyRecruitIconQaPanel());
+    }
+
+    if (this.characterData?.partyActionFocusIconQa === true || this._isPartyActionFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openPartyActionFocusIconQaPanel());
+    }
+
+    if (this.characterData?.shopTitleIconQa === true || this._isShopTitleIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openShopTitleIconQaPanel());
+    }
+
+    if (this.characterData?.shopActionFocusIconQa === true || this._isShopActionFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openShopActionFocusIconQaPanel());
+    }
+
+    if (this.characterData?.enhanceTitleIconQa === true || this._isEnhanceTitleIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openEnhanceTitleIconQaPanel());
+    }
+
+    if (this.characterData?.enhanceActionFocusIconQa === true || this._isEnhanceActionFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openEnhanceActionFocusIconQaPanel());
+    }
+
+    if (this.characterData?.storyTitleIconQa === true || this._isStoryTitleIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openStoryTitleIconQaPanel());
+    }
+
+    if (this.characterData?.storyActionFocusIconQa === true || this._isStoryActionFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openStoryActionFocusIconQaPanel());
+    }
+
+    if (this.characterData?.questTitleIconQa === true || this._isQuestTitleIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openQuestTitleIconQaPanel());
+    }
+
+    if (this.characterData?.questActionFocusIconQa === true || this._isQuestActionFocusIconQaRoute()) {
+      this.time.delayedCall(350, () => this._openQuestActionFocusIconQaPanel());
+    }
+
     SceneManager.fadeIn(this, 300);
+  }
+
+  private _isSkillTreeFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('skillTreeQa') === '1';
+  }
+
+  private _getSkillTreeFrameQaCacheBuster(): string {
+    if (typeof window === 'undefined') return 'skillTreeQa=1';
+
+    const qaRun = new URLSearchParams(window.location.search).get('qaRun');
+    return qaRun ? `skillTreeQa=1&qaRun=${encodeURIComponent(qaRun)}` : 'skillTreeQa=1';
+  }
+
+  private _getItemIconQaMode(): ItemIconQaMode | undefined {
+    const dataMode = this.characterData?.itemIconQa;
+    if (dataMode === 'shop' || dataMode === 'inventory') return dataMode;
+    if (typeof window === 'undefined') return undefined;
+
+    const routeMode = new URLSearchParams(window.location.search).get('itemIconQa');
+    return routeMode === 'shop' || routeMode === 'inventory' ? routeMode : undefined;
+  }
+
+  private _openItemIconQaPanel(): void {
+    const itemIconQaMode = this._getItemIconQaMode();
+    if (!itemIconQaMode) return;
+
+    this._resetItemIconQaProbe();
+
+    if (itemIconQaMode === 'shop') {
+      const merchant = TOWN_NPCS.find((npc) => npc.id === 'merchant');
+      if (merchant) {
+        void this._showShopPanel(merchant).then(() => this._writeItemIconQaProbe('ready'));
+      } else {
+        this._writeItemIconQaProbe('missing-merchant');
+      }
+      return;
+    }
+
+    if (itemIconQaMode === 'inventory') {
+      this._showInventoryPanel(LOBBY_QA_INVENTORY_ITEMS);
+      this._writeItemIconQaProbe('ready');
+    }
+  }
+
+  private _resetItemIconQaProbe(): void {
+    if (!this._getItemIconQaMode()) return;
+
+    this.itemIconQaRenderedIconIds = [];
+    this.itemIconQaMissingIconIds = [];
+    this._writeItemIconQaProbe('opening');
+  }
+
+  private _recordItemIconQaProbe(iconId: string, rendered: boolean): void {
+    if (!this._getItemIconQaMode()) return;
+
+    const target = rendered ? this.itemIconQaRenderedIconIds : this.itemIconQaMissingIconIds;
+    if (!target.includes(iconId)) {
+      target.push(iconId);
+    }
+  }
+
+  private _writeItemIconQaProbe(status: string): void {
+    const itemIconQaMode = this._getItemIconQaMode();
+    if (!itemIconQaMode || typeof document === 'undefined') return;
+
+    document.body.dataset.aeternaItemIconQa = JSON.stringify({
+      mode: itemIconQaMode,
+      status,
+      renderedIconIds: this.itemIconQaRenderedIconIds,
+      missingIconIds: this.itemIconQaMissingIconIds,
+    });
+  }
+
+  private _isDialogueTitleIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('dialogueTitleIconQa') === '1';
+  }
+
+  private _openDialogueTitleIconQaPanel(): void {
+    if (!this._isDialogueTitleIconQaRoute() && this.characterData?.dialogueTitleIconQa !== true) return;
+
+    const merchant = TOWN_NPCS.find((npc) => npc.id === LOBBY_DIALOGUE_TITLE_ICON_NPC_ID);
+    if (!merchant) {
+      this._writeDialogueTitleIconQaProbe({ npc: null, titleText: '' });
+      return;
+    }
+
+    this._openNpcDialogue(merchant);
+  }
+
+  private _writeDialogueTitleIconQaProbe({ npc, titleText }: { npc: NpcEntry | null; titleText: string }): void {
+    if (!this._isDialogueTitleIconQaRoute() && this.characterData?.dialogueTitleIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const dialogueTitleIconResource = npc ? LOBBY_NPC_PORTRAIT_TEXTURES[npc.id] : undefined;
+    const titleIcon = this.lobbyDialogueTitleIcon?.active === true
+      ? this.lobbyDialogueTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('💬')
+      || (this.lobbyDialogueTitleText?.text.includes('💬') ?? false);
+    const missingDialogueTitleIconKeys = titleIcon && dialogueTitleIconResource
+      ? []
+      : [dialogueTitleIconResource?.key ?? LOBBY_DIALOGUE_TITLE_ICON_NPC_ID];
+
+    document.body.dataset.aeternaDialogueTitleIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      npcId: npc?.id ?? null,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: dialogueTitleIconResource?.key ?? null,
+        path: dialogueTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_DIALOGUE_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyDialogueTitleIconFallbackRendered,
+      },
+      missingDialogueTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isDialogueChoiceButtonFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('dialogueChoiceButtonFrameQa') === '1';
+  }
+
+  private _openDialogueChoiceButtonFrameQaPanel(): void {
+    if (!this._isDialogueChoiceButtonFrameQaRoute() && this.characterData?.dialogueChoiceButtonFrameQa !== true) return;
+
+    const merchant = TOWN_NPCS.find((npc) => npc.id === LOBBY_DIALOGUE_TITLE_ICON_NPC_ID);
+    if (!merchant) {
+      this._writeDialogueChoiceButtonFrameQaProbe();
+      return;
+    }
+
+    this._openNpcDialogue(merchant);
+  }
+
+  private _writeDialogueChoiceButtonFrameQaProbe(): void {
+    if (!this._isDialogueChoiceButtonFrameQaRoute() && this.characterData?.dialogueChoiceButtonFrameQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const frameTexture = LOBBY_UI_FRAME_TEXTURES.dialogueChoiceButton;
+    const renderedCount = this.lobbyDialogueChoiceButtonFrames.length;
+
+    document.body.dataset.aeternaDialogueChoiceButtonFrameQa = JSON.stringify({
+      status: renderedCount === 2 && !this.lobbyDialogueChoiceButtonFrameFallbackRendered ? 'ready' : 'missing-frame',
+      buttonFrame: {
+        key: frameTexture.key,
+        path: frameTexture.path,
+        renderedCount: this.lobbyDialogueChoiceButtonFrames.length,
+        expectedCount: 2,
+        displaySizes: this.lobbyDialogueChoiceButtonFrames.map((frame) => ({
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+        })),
+        fallbackRendered: this.lobbyDialogueChoiceButtonFrameFallbackRendered,
+      },
+      missingFrameKeys: renderedCount === 2 ? [] : [frameTexture.key],
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isDialogueChoiceFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('dialogueChoiceFocusIconQa') === '1';
+  }
+
+  private _openDialogueChoiceFocusIconQaPanel(): void {
+    if (!this._isDialogueChoiceFocusIconQaRoute() && this.characterData?.dialogueChoiceFocusIconQa !== true) return;
+
+    const merchant = TOWN_NPCS.find((npc) => npc.id === LOBBY_DIALOGUE_TITLE_ICON_NPC_ID);
+    if (!merchant) {
+      this._writeDialogueChoiceFocusIconQaProbe();
+      return;
+    }
+
+    this._openNpcDialogue(merchant);
+  }
+
+  private _writeDialogueChoiceFocusIconQaProbe(): void {
+    if (!this._isDialogueChoiceFocusIconQaRoute() && this.characterData?.dialogueChoiceFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const focusIconResource = getSpriteResourceForSkillIcon(LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyDialogueChoiceFocusIcon?.active === true
+      ? this.lobbyDialogueChoiceFocusIcon
+      : null;
+    const legacyGlyphPresent = this.lobbyDialogueChoiceTexts.some((text) => text.text.includes('▶'));
+    const missingDialogueChoiceFocusIconKeys = focusIcon && focusIconResource
+      ? []
+      : [focusIconResource?.key ?? LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaDialogueChoiceFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      focusIcon: {
+        key: focusIconResource?.key ?? null,
+        path: focusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyDialogueChoiceFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      missingDialogueChoiceFocusIconKeys,
+      labels: this.lobbyDialogueChoiceTexts.map((text) => text.text),
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isInventoryTitleIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('inventoryTitleIconQa') === '1';
+  }
+
+  private _openInventoryTitleIconQaPanel(): void {
+    if (!this._isInventoryTitleIconQaRoute() && this.characterData?.inventoryTitleIconQa !== true) return;
+
+    this._showInventoryPanel(LOBBY_QA_INVENTORY_ITEMS);
+  }
+
+  private _writeInventoryTitleIconQaProbe({ titleText }: { titleText: string }): void {
+    if (!this._isInventoryTitleIconQaRoute() && this.characterData?.inventoryTitleIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const inventoryTitleIconResource = getItemIconResource({ itemIconId: LOBBY_INVENTORY_TITLE_ICON_ID });
+    const titleIcon = this.lobbyInventoryTitleIcon?.active === true
+      ? this.lobbyInventoryTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('🎒')
+      || (this.lobbyInventoryTitleText?.text.includes('🎒') ?? false);
+    const missingInventoryTitleIconKeys = titleIcon && inventoryTitleIconResource
+      ? []
+      : [inventoryTitleIconResource?.key ?? LOBBY_INVENTORY_TITLE_ICON_ID];
+
+    document.body.dataset.aeternaInventoryTitleIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      iconId: LOBBY_INVENTORY_TITLE_ICON_ID,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: inventoryTitleIconResource?.key ?? null,
+        path: inventoryTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_INVENTORY_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyInventoryTitleIconFallbackRendered,
+      },
+      missingInventoryTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isInventoryActionFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('inventoryActionFocusIconQa') === '1';
+  }
+
+  private _openInventoryActionFocusIconQaPanel(): void {
+    if (!this._isInventoryActionFocusIconQaRoute() && this.characterData?.inventoryActionFocusIconQa !== true) return;
+
+    this._showInventoryPanel(LOBBY_QA_INVENTORY_ITEMS);
+  }
+
+  private _writeInventoryActionFocusIconQaProbe(activeIndex = 0): void {
+    if (!this._isInventoryActionFocusIconQaRoute() && this.characterData?.inventoryActionFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const inventoryActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_INVENTORY_ACTION_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyInventoryActionFocusIcon?.active === true
+      ? this.lobbyInventoryActionFocusIcon
+      : null;
+    const labels = this.lobbyInventoryActionFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingInventoryActionFocusIconKeys = focusIcon && inventoryActionFocusIconResource
+      ? []
+      : [inventoryActionFocusIconResource?.key ?? LOBBY_INVENTORY_ACTION_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaInventoryActionFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: inventoryActionFocusIconResource?.key ?? null,
+        path: inventoryActionFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_INVENTORY_ACTION_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyInventoryActionFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingInventoryActionFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isPartyRecruitIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('partyRecruitIconQa') === '1';
+  }
+
+  private _openPartyRecruitIconQaPanel(): void {
+    if (!this._isPartyRecruitIconQaRoute() && this.characterData?.partyRecruitIconQa !== true) return;
+
+    const partyRecruit = TOWN_NPCS.find((npc) => npc.id === 'party_recruit');
+    if (!partyRecruit) {
+      this._writePartyRecruitIconQaProbe({ titleText: '' });
+      return;
+    }
+
+    this._showPartyPanel(partyRecruit);
+  }
+
+  private _writePartyRecruitIconQaProbe({ titleText }: { titleText: string }): void {
+    if (!this._isPartyRecruitIconQaRoute() && this.characterData?.partyRecruitIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const partyTitleIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_RECRUIT_TITLE_ICON_ID);
+    const titleIcon = this.lobbyPartyRecruitTitleIcon?.active === true
+      ? this.lobbyPartyRecruitTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('⚔')
+      || (this.lobbyPartyRecruitTitleText?.text.includes('⚔') ?? false);
+    const missingPartyRecruitTitleIconKeys = titleIcon && partyTitleIconResource
+      ? []
+      : [partyTitleIconResource?.key ?? LOBBY_PARTY_RECRUIT_TITLE_ICON_ID];
+
+    document.body.dataset.aeternaPartyRecruitIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      iconId: LOBBY_PARTY_RECRUIT_TITLE_ICON_ID,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: partyTitleIconResource?.key ?? null,
+        path: partyTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_PARTY_RECRUIT_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyPartyRecruitTitleIconFallbackRendered,
+      },
+      missingPartyRecruitTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isPartyActionFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('partyActionFocusIconQa') === '1';
+  }
+
+  private _openPartyActionFocusIconQaPanel(): void {
+    if (!this._isPartyActionFocusIconQaRoute() && this.characterData?.partyActionFocusIconQa !== true) return;
+
+    const partyRecruit = TOWN_NPCS.find((npc) => npc.id === 'party_recruit');
+    if (!partyRecruit) {
+      this._writePartyActionFocusIconQaProbe();
+      return;
+    }
+
+    this._showPartyPanel(partyRecruit);
+  }
+
+  private _writePartyActionFocusIconQaProbe(activeIndex = 0): void {
+    if (!this._isPartyActionFocusIconQaRoute() && this.characterData?.partyActionFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const partyActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_ACTION_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyPartyActionFocusIcon?.active === true
+      ? this.lobbyPartyActionFocusIcon
+      : null;
+    const labels = this.lobbyPartyActionFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingPartyActionFocusIconKeys = focusIcon && partyActionFocusIconResource
+      ? []
+      : [partyActionFocusIconResource?.key ?? LOBBY_PARTY_ACTION_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaPartyActionFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: partyActionFocusIconResource?.key ?? null,
+        path: partyActionFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_PARTY_ACTION_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyPartyActionFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingPartyActionFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isShopTitleIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('shopTitleIconQa') === '1';
+  }
+
+  private _openShopTitleIconQaPanel(): void {
+    if (!this._isShopTitleIconQaRoute() && this.characterData?.shopTitleIconQa !== true) return;
+
+    const merchant = TOWN_NPCS.find((npc) => npc.id === 'merchant');
+    if (!merchant) {
+      this._writeShopTitleIconQaProbe({ titleText: '' });
+      return;
+    }
+
+    void this._showShopPanel(merchant);
+  }
+
+  private _writeShopTitleIconQaProbe({ titleText }: { titleText: string }): void {
+    if (!this._isShopTitleIconQaRoute() && this.characterData?.shopTitleIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const shopTitleIconResource = getItemIconResource({ itemIconId: LOBBY_SHOP_TITLE_ICON_ID });
+    const titleIcon = this.lobbyShopTitleIcon?.active === true
+      ? this.lobbyShopTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('🛒')
+      || (this.lobbyShopTitleText?.text.includes('🛒') ?? false);
+    const missingShopTitleIconKeys = titleIcon && shopTitleIconResource
+      ? []
+      : [shopTitleIconResource?.key ?? LOBBY_SHOP_TITLE_ICON_ID];
+
+    document.body.dataset.aeternaShopTitleIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      iconId: LOBBY_SHOP_TITLE_ICON_ID,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: shopTitleIconResource?.key ?? null,
+        path: shopTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_SHOP_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyShopTitleIconFallbackRendered,
+      },
+      missingShopTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isShopActionFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('shopActionFocusIconQa') === '1';
+  }
+
+  private _openShopActionFocusIconQaPanel(): void {
+    if (!this._isShopActionFocusIconQaRoute() && this.characterData?.shopActionFocusIconQa !== true) return;
+
+    const merchant = TOWN_NPCS.find((npc) => npc.id === 'merchant');
+    if (!merchant) {
+      this._writeShopActionFocusIconQaProbe();
+      return;
+    }
+
+    void this._showShopPanel(merchant);
+  }
+
+  private _writeShopActionFocusIconQaProbe(activeIndex = 0): void {
+    if (!this._isShopActionFocusIconQaRoute() && this.characterData?.shopActionFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const shopActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_SHOP_ACTION_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyShopActionFocusIcon?.active === true
+      ? this.lobbyShopActionFocusIcon
+      : null;
+    const labels = this.lobbyShopActionFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingShopActionFocusIconKeys = focusIcon && shopActionFocusIconResource
+      ? []
+      : [shopActionFocusIconResource?.key ?? LOBBY_SHOP_ACTION_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaShopActionFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: shopActionFocusIconResource?.key ?? null,
+        path: shopActionFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_SHOP_ACTION_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyShopActionFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingShopActionFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isEnhanceTitleIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('enhanceTitleIconQa') === '1';
+  }
+
+  private _openEnhanceTitleIconQaPanel(): void {
+    if (!this._isEnhanceTitleIconQaRoute() && this.characterData?.enhanceTitleIconQa !== true) return;
+
+    const blacksmith = TOWN_NPCS.find((npc) => npc.id === 'blacksmith');
+    if (!blacksmith) {
+      this._writeEnhanceTitleIconQaProbe({ titleText: '' });
+      return;
+    }
+
+    this._showEnhancePanel(blacksmith);
+  }
+
+  private _writeEnhanceTitleIconQaProbe({ titleText }: { titleText: string }): void {
+    if (!this._isEnhanceTitleIconQaRoute() && this.characterData?.enhanceTitleIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const enhanceTitleIconResource = getItemIconResource({ itemIconId: LOBBY_ENHANCE_TITLE_ICON_ID });
+    const titleIcon = this.lobbyEnhanceTitleIcon?.active === true
+      ? this.lobbyEnhanceTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('🔨')
+      || (this.lobbyEnhanceTitleText?.text.includes('🔨') ?? false);
+    const missingEnhanceTitleIconKeys = titleIcon && enhanceTitleIconResource
+      ? []
+      : [enhanceTitleIconResource?.key ?? LOBBY_ENHANCE_TITLE_ICON_ID];
+
+    document.body.dataset.aeternaEnhanceTitleIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      iconId: LOBBY_ENHANCE_TITLE_ICON_ID,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: enhanceTitleIconResource?.key ?? null,
+        path: enhanceTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_ENHANCE_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyEnhanceTitleIconFallbackRendered,
+      },
+      missingEnhanceTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isEnhanceActionFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('enhanceActionFocusIconQa') === '1';
+  }
+
+  private _openEnhanceActionFocusIconQaPanel(): void {
+    if (!this._isEnhanceActionFocusIconQaRoute() && this.characterData?.enhanceActionFocusIconQa !== true) return;
+
+    const blacksmith = TOWN_NPCS.find((npc) => npc.id === 'blacksmith');
+    if (!blacksmith) {
+      this._writeEnhanceActionFocusIconQaProbe();
+      return;
+    }
+
+    this._showEnhancePanel(blacksmith);
+  }
+
+  private _writeEnhanceActionFocusIconQaProbe(activeIndex = 0): void {
+    if (!this._isEnhanceActionFocusIconQaRoute() && this.characterData?.enhanceActionFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const enhanceActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_ENHANCE_ACTION_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyEnhanceActionFocusIcon?.active === true
+      ? this.lobbyEnhanceActionFocusIcon
+      : null;
+    const labels = this.lobbyEnhanceActionFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingEnhanceActionFocusIconKeys = focusIcon && enhanceActionFocusIconResource
+      ? []
+      : [enhanceActionFocusIconResource?.key ?? LOBBY_ENHANCE_ACTION_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaEnhanceActionFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: enhanceActionFocusIconResource?.key ?? null,
+        path: enhanceActionFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_ENHANCE_ACTION_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyEnhanceActionFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingEnhanceActionFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isStoryTitleIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('storyTitleIconQa') === '1';
+  }
+
+  private _openStoryTitleIconQaPanel(): void {
+    if (!this._isStoryTitleIconQaRoute() && this.characterData?.storyTitleIconQa !== true) return;
+
+    const elder = TOWN_NPCS.find((npc) => npc.id === 'elder');
+    if (!elder) {
+      this._writeStoryTitleIconQaProbe({ titleText: '' });
+      return;
+    }
+
+    this._showStoryPanel(elder);
+  }
+
+  private _writeStoryTitleIconQaProbe({ titleText }: { titleText: string }): void {
+    if (!this._isStoryTitleIconQaRoute() && this.characterData?.storyTitleIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const storyTitleIconResource = getItemIconResource({ itemIconId: LOBBY_STORY_TITLE_ICON_ID });
+    const titleIcon = this.lobbyStoryTitleIcon?.active === true
+      ? this.lobbyStoryTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('📖')
+      || (this.lobbyStoryTitleText?.text.includes('📖') ?? false);
+    const missingStoryTitleIconKeys = titleIcon && storyTitleIconResource
+      ? []
+      : [storyTitleIconResource?.key ?? LOBBY_STORY_TITLE_ICON_ID];
+
+    document.body.dataset.aeternaStoryTitleIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      iconId: LOBBY_STORY_TITLE_ICON_ID,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: storyTitleIconResource?.key ?? null,
+        path: storyTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_STORY_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyStoryTitleIconFallbackRendered,
+      },
+      missingStoryTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isStoryActionFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('storyActionFocusIconQa') === '1';
+  }
+
+  private _openStoryActionFocusIconQaPanel(): void {
+    if (!this._isStoryActionFocusIconQaRoute() && this.characterData?.storyActionFocusIconQa !== true) return;
+
+    const elder = TOWN_NPCS.find((npc) => npc.id === 'elder');
+    if (!elder) {
+      this._writeStoryActionFocusIconQaProbe();
+      return;
+    }
+
+    this._showStoryPanel(elder);
+  }
+
+  private _writeStoryActionFocusIconQaProbe(activeIndex = 0): void {
+    if (!this._isStoryActionFocusIconQaRoute() && this.characterData?.storyActionFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const storyActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_STORY_ACTION_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyStoryActionFocusIcon?.active === true
+      ? this.lobbyStoryActionFocusIcon
+      : null;
+    const labels = this.lobbyStoryActionFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingStoryActionFocusIconKeys = focusIcon && storyActionFocusIconResource
+      ? []
+      : [storyActionFocusIconResource?.key ?? LOBBY_STORY_ACTION_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaStoryActionFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: storyActionFocusIconResource?.key ?? null,
+        path: storyActionFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_STORY_ACTION_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyStoryActionFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingStoryActionFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isQuestTitleIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('questTitleIconQa') === '1';
+  }
+
+  private _openQuestTitleIconQaPanel(): void {
+    if (!this._isQuestTitleIconQaRoute() && this.characterData?.questTitleIconQa !== true) return;
+
+    this._showQuestPanel(FALLBACK_QUESTS, 'local');
+  }
+
+  private _writeQuestTitleIconQaProbe({ titleText }: { titleText: string }): void {
+    if (!this._isQuestTitleIconQaRoute() && this.characterData?.questTitleIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const questTitleIconResource = getItemIconResource({ itemIconId: LOBBY_QUEST_TITLE_ICON_ID });
+    const titleIcon = this.lobbyQuestTitleIcon?.active === true
+      ? this.lobbyQuestTitleIcon
+      : null;
+    const legacyGlyphPresent = titleText.includes('📜')
+      || (this.lobbyQuestTitleText?.text.includes('📜') ?? false);
+    const missingQuestTitleIconKeys = titleIcon && questTitleIconResource
+      ? []
+      : [questTitleIconResource?.key ?? LOBBY_QUEST_TITLE_ICON_ID];
+
+    document.body.dataset.aeternaQuestTitleIconQa = JSON.stringify({
+      status: titleIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      iconId: LOBBY_QUEST_TITLE_ICON_ID,
+      titleText,
+      legacyGlyphPresent,
+      titleIcon: {
+        key: questTitleIconResource?.key ?? null,
+        path: questTitleIconResource?.path ?? null,
+        renderedCount: titleIcon ? 1 : 0,
+        expectedCount: LOBBY_QUEST_TITLE_ICON_EXPECTED_COUNT,
+        displaySizes: titleIcon ? [{ width: titleIcon.displayWidth, height: titleIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyQuestTitleIconFallbackRendered,
+      },
+      missingQuestTitleIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isQuestActionFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('questActionFocusIconQa') === '1';
+  }
+
+  private _openQuestActionFocusIconQaPanel(): void {
+    if (!this._isQuestActionFocusIconQaRoute() && this.characterData?.questActionFocusIconQa !== true) return;
+
+    this._showQuestPanel(FALLBACK_QUESTS, 'local');
+  }
+
+  private _writeQuestActionFocusIconQaProbe(activeIndex = 0): void {
+    if (!this._isQuestActionFocusIconQaRoute() && this.characterData?.questActionFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const questActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_QUEST_ACTION_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyQuestActionFocusIcon?.active === true
+      ? this.lobbyQuestActionFocusIcon
+      : null;
+    const labels = this.lobbyQuestActionFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingQuestActionFocusIconKeys = focusIcon && questActionFocusIconResource
+      ? []
+      : [questActionFocusIconResource?.key ?? LOBBY_QUEST_ACTION_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaQuestActionFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: questActionFocusIconResource?.key ?? null,
+        path: questActionFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_QUEST_ACTION_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyQuestActionFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingQuestActionFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _preloadSkillTreeFrameQaProbes(cacheBuster: string): void {
+    const probes = [
+      {
+        key: 'ui_frame_skill_tree_main_panel_qa_probe',
+        path: SKILL_TREE_UI_FRAME_TEXTURES.mainPanel.path,
+        probe: 'main',
+      },
+      {
+        key: 'ui_frame_skill_tree_detail_panel_qa_probe',
+        path: SKILL_TREE_UI_FRAME_TEXTURES.detailPanel.path,
+        probe: 'detail',
+      },
+      {
+        key: 'ui_frame_skill_tree_action_button_qa_probe',
+        path: SKILL_TREE_UI_FRAME_TEXTURES.actionButton.path,
+        probe: 'action',
+      },
+    ] as const;
+
+    for (const probe of probes) {
+      if (this.textures.exists(probe.key)) {
+        this.textures.remove(probe.key);
+      }
+      this.load.image(probe.key, `${probe.path}?${cacheBuster}&probe=${probe.probe}`);
+    }
   }
 
   // ── P25-03: 서버 연결 ───────────────────────────────────
@@ -277,15 +1556,31 @@ export class LobbyScene extends Phaser.Scene {
       backgroundColor: '#00000088', padding: { x: 8, y: 4 },
     });
 
-    this.goldText = this.add.text(w - 12, 12, '💰 --- Gold', {
+    const goldIconResource = getItemIconResource({ itemIconId: LOBBY_GOLD_ICON_ID });
+    const hasGoldIcon = Boolean(goldIconResource && this.textures.exists(goldIconResource.key));
+
+    this.goldText = this.add.text(w - 12, 12, hasGoldIcon ? '--- Gold' : '💰 --- Gold', {
       fontSize: '13px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#ffcc44',
     }).setOrigin(1, 0);
 
+    if (hasGoldIcon && goldIconResource) {
+      this.goldIcon = this.add.image(0, 0, goldIconResource.key)
+        .setName('lobby_gold_icon')
+        .setOrigin(0.5);
+      this.goldIcon.setDisplaySize(18, 18);
+      this.goldIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this._updateGoldIconPosition();
+    } else {
+      this.goldIcon = null;
+      this.goldIconFallbackRendered = true;
+    }
+
     // 서버에서 실제 골드 조회
     if (this.characterData?.offlineQa) {
-      this.goldText.setText('💰 999 Gold');
+      this._setGoldLabel('999 Gold');
       return;
     }
+    this._writeGoldIconQaProbe();
     this._fetchGold();
   }
 
@@ -297,10 +1592,58 @@ export class LobbyScene extends Phaser.Scene {
         ? chars.find((c: any) => c.id === this.characterData?.characterId) ?? chars[0]
         : null;
       const gold = char?.gold ?? char?.currency ?? 0;
-      if (this.goldText) this.goldText.setText(`💰 ${gold.toLocaleString()} Gold`);
+      this._setGoldLabel(`${gold.toLocaleString()} Gold`);
     } catch {
-      if (this.goldText) this.goldText.setText('💰 --- Gold');
+      this._setGoldLabel('--- Gold');
     }
+  }
+
+  private _setGoldLabel(label: string): void {
+    if (!this.goldText) return;
+
+    this.goldText.setText(this.goldIcon?.active === true ? label : `💰 ${label}`);
+    this._updateGoldIconPosition();
+    this._writeGoldIconQaProbe();
+  }
+
+  private _updateGoldIconPosition(): void {
+    if (!this.goldIcon || !this.goldText) return;
+
+    this.goldIcon.setPosition(this.goldText.x - this.goldText.displayWidth - 12, this.goldText.y + 9);
+  }
+
+  private _isGoldIconQaRoute(): boolean {
+    if (this.characterData?.goldIconQa === true) return true;
+    if (typeof window === 'undefined') return false;
+
+    return new URLSearchParams(window.location.search).get('goldIconQa') === '1';
+  }
+
+  private _writeGoldIconQaProbe(): void {
+    if (!this._isGoldIconQaRoute() || typeof document === 'undefined' || !document.body) return;
+
+    const goldIconResource = getItemIconResource({ itemIconId: LOBBY_GOLD_ICON_ID });
+    const rendered = this.goldIcon?.active === true;
+    const legacyGlyphPresent = this.goldText?.text.includes('💰') ?? false;
+    const missingGoldIconKeys = rendered ? [] : [goldIconResource?.key ?? LOBBY_GOLD_ICON_ID];
+
+    document.body.dataset.aeternaLobbyGoldIconQa = JSON.stringify({
+      status: rendered && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      goldLabel: this.goldText?.text ?? null,
+      goldIcon: {
+        expectedCount: LOBBY_GOLD_ICON_EXPECTED_COUNT,
+        renderedCount: rendered ? 1 : 0,
+        key: goldIconResource?.key ?? null,
+        path: goldIconResource?.path ?? null,
+        displaySizes: this.goldIcon
+          ? [{ width: this.goldIcon.displayWidth, height: this.goldIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.goldIconFallbackRendered,
+      },
+      legacyGlyphPresent,
+      missingGoldIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
   }
 
   // ── NPC ──────────────────────────────────────────────────
@@ -310,12 +1653,17 @@ export class LobbyScene extends Phaser.Scene {
       const container = this.add.container(npc.x, npc.y);
 
       // P33-A: 실제 NPC 스프라이트 사용 (fallback: 원형 도형)
-      const npcTexKey = `npc_${npc.id}`;
+      const spriteResource = getSpriteResourceForLobbyNpc(npc.id);
+      const npcTexKey = spriteResource?.key ?? `npc_${npc.id}`;
       let body: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
       if (this.textures.exists(npcTexKey)) {
-        body = this.add.image(0, 0, npcTexKey)
-          .setScale(0.15)
+        body = this.add.image(0, 0, npcTexKey, 0)
+          .setScale(spriteResource ? 1 : 0.15)
           .setInteractive({ useHandCursor: true });
+        if (spriteResource) {
+          body.setFrame(0);
+          body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        }
       } else {
         body = this.add.circle(0, 0, 20, npc.color)
           .setInteractive({ useHandCursor: true });
@@ -426,24 +1774,50 @@ export class LobbyScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
 
-    const bg = this.add.rectangle(0, 0, 420, 200, 0x000000, 0.9)
-      .setStrokeStyle(1, 0x446644);
-    panel.add(bg);
+    this._addLobbyModalFrame(panel, 0, 0, 420, 200, LOBBY_UI_FRAME_TEXTURES.dialoguePanel, 0x000000, 0.9, 0x446644, 1);
 
-    // P33-A: NPC 대화 초상화
-    const npcPortraitKey = `npc_${npc.id}`;
-    if (this.textures.exists(npcPortraitKey)) {
-      panel.add(this.add.image(-160, 0, npcPortraitKey).setScale(0.25));
+    this._addLobbyNpcPortrait(panel, npc, -160, 0, 96);
+
+    this.lobbyDialogueTitleIconFallbackRendered = false;
+    const dialogueTitleIconResource = LOBBY_NPC_PORTRAIT_TEXTURES[npc.id];
+    const hasDialogueTitleIcon = Boolean(dialogueTitleIconResource && this.textures.exists(dialogueTitleIconResource.key));
+    if (hasDialogueTitleIcon && dialogueTitleIconResource) {
+      this.lobbyDialogueTitleIcon = this._addLobbyDialogueTitleIcon(panel, -58, -70, dialogueTitleIconResource);
+    } else {
+      this.lobbyDialogueTitleIcon = null;
+      this.lobbyDialogueTitleIconFallbackRendered = true;
     }
-
-    panel.add(this.add.text(0, -70, `💬 ${npc.name}`, {
+    const titleText = hasDialogueTitleIcon ? npc.name : `💬 ${npc.name}`;
+    this.lobbyDialogueTitleText = this.add.text(hasDialogueTitleIcon ? 12 : 0, -70, titleText, {
       fontSize: '16px', color: '#ffffff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyDialogueTitleText);
+    this._writeDialogueTitleIconQaProbe({ npc, titleText });
+    panel.once('destroy', () => {
+      this.lobbyDialogueTitleIcon = null;
+      this.lobbyDialogueTitleText = null;
+      this.lobbyDialogueChoiceButtonFrames = [];
+      this.lobbyDialogueChoiceFocusIcon = null;
+      this.lobbyDialogueChoiceTexts = [];
+    });
 
     panel.add(this.add.text(0, -20, `"어서 와, 모험가. 내 ${npc.role} 서비스가 필요한가?"`, {
       fontSize: '13px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       wordWrap: { width: 380 }, align: 'center',
     }).setOrigin(0.5));
+
+    this.lobbyDialogueChoiceButtonFrames = [];
+    this.lobbyDialogueChoiceButtonFrameFallbackRendered = false;
+    const choiceButtonFrameResource = LOBBY_UI_FRAME_TEXTURES.dialogueChoiceButton;
+    if (this.textures.exists(choiceButtonFrameResource.key)) {
+      this.lobbyDialogueChoiceButtonFrames.push(
+        this._addLobbyDialogueChoiceButtonFrame(panel, -60, 50, 108, 34, choiceButtonFrameResource),
+        this._addLobbyDialogueChoiceButtonFrame(panel, 60, 50, 108, 34, choiceButtonFrameResource),
+      );
+    } else {
+      this.lobbyDialogueChoiceButtonFrameFallbackRendered = true;
+    }
+    this._writeDialogueChoiceButtonFrameQaProbe();
 
     const acceptBtn = this.add.text(-60, 50, '[ 이용하기 ]', {
       fontSize: '14px', color: '#88ff88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
@@ -455,16 +1829,29 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     panel.add(closeBtn);
 
+    this.lobbyDialogueChoiceTexts = [acceptBtn, closeBtn];
+    this.lobbyDialogueChoiceFocusIconFallbackRendered = false;
+    const dialogueChoiceFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_ID);
+    if (dialogueChoiceFocusIconResource && this.textures.exists(dialogueChoiceFocusIconResource.key)) {
+      this.lobbyDialogueChoiceFocusIcon = this._addLobbyDialogueChoiceFocusIcon(
+        panel,
+        -108,
+        50,
+        dialogueChoiceFocusIconResource,
+      );
+    } else {
+      this.lobbyDialogueChoiceFocusIcon = null;
+      this.lobbyDialogueChoiceFocusIconFallbackRendered = true;
+    }
+
     // FINDING-A4 ext8: 다이얼로그 패널 키보드 nav (WCAG 2.1.1)
     // 0 = 이용하기 / 1 = 닫기. 첫 highlight = 이용하기(default action)
     let dialogueIndex = 0;
     const renderDialogueChoice = () => {
-      acceptBtn.setText(dialogueIndex === 0 ? '▶ [ 이용하기 ]' : '   [ 이용하기 ]');
-      acceptBtn.setColor(dialogueIndex === 0 ? '#ffffff' : '#88ff88');
-      closeBtn.setText(dialogueIndex === 1 ? '▶ [ 닫기 ]' : '   [ 닫기 ]');
-      closeBtn.setColor(dialogueIndex === 1 ? '#ffffff' : '#888888');
+      this._renderDialogueChoiceFocus({ dialogueIndex, acceptBtn, closeBtn });
     };
     renderDialogueChoice();
+    this._writeDialogueChoiceFocusIconQaProbe();
 
     const doAccept = () => {
       playSfx(this, UI_SFX.CONFIRM);
@@ -480,6 +1867,10 @@ export class LobbyScene extends Phaser.Scene {
     acceptBtn.on('pointerdown', doAccept);
     closeBtn.on('pointerover', () => { dialogueIndex = 1; renderDialogueChoice(); });
     closeBtn.on('pointerdown', doClose);
+    this.lobbyDialogueChoiceButtonFrames[0]?.on('pointerover', () => { dialogueIndex = 0; renderDialogueChoice(); });
+    this.lobbyDialogueChoiceButtonFrames[0]?.on('pointerdown', doAccept);
+    this.lobbyDialogueChoiceButtonFrames[1]?.on('pointerover', () => { dialogueIndex = 1; renderDialogueChoice(); });
+    this.lobbyDialogueChoiceButtonFrames[1]?.on('pointerdown', doClose);
 
     // 상위 uiModal 떠 있으면 양보(심층 방어 — 마우스 진입 가드와 상호 보완).
     const onDialogLeft = () => { if (isUiModalOpen()) return; dialogueIndex = 0; renderDialogueChoice(); };
@@ -507,6 +1898,84 @@ export class LobbyScene extends Phaser.Scene {
     // FINDING-A4 ext20: _registerModalPanel 패턴 통일 (다른 5 모달과 일관)
     // 기존 doAccept/doClose 의 panel.destroy() → register hook 으로 자동 dialoguePanel null
     this._registerModalPanel(panel);
+  }
+
+  private _addLobbyDialogueTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNpcPortraitTexture,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_dialogue_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
+  }
+
+  private _addLobbyDialogueChoiceButtonFrame(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    resource: typeof LOBBY_UI_FRAME_TEXTURES.dialogueChoiceButton,
+  ): Phaser.GameObjects.Image {
+    const frame = this.add.image(x, y, resource.key)
+      .setName('lobby_dialogue_choice_button_frame')
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+    frame.setDisplaySize(width, height);
+    frame.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(frame);
+    return frame;
+  }
+
+  private _renderDialogueChoiceFocus({
+    dialogueIndex,
+    acceptBtn,
+    closeBtn,
+  }: {
+    dialogueIndex: number;
+    acceptBtn: Phaser.GameObjects.Text;
+    closeBtn: Phaser.GameObjects.Text;
+  }): void {
+    const hasFocusIcon = this.lobbyDialogueChoiceFocusIcon?.active === true;
+    if (hasFocusIcon && this.lobbyDialogueChoiceFocusIcon) {
+      acceptBtn.setText('[ 이용하기 ]');
+      acceptBtn.setColor(dialogueIndex === 0 ? '#ffffff' : '#88ff88');
+      closeBtn.setText('[ 닫기 ]');
+      closeBtn.setColor(dialogueIndex === 1 ? '#ffffff' : '#888888');
+      this.lobbyDialogueChoiceFocusIcon
+        .setVisible(true)
+        .setPosition(dialogueIndex === 0 ? -108 : 16, 50);
+      this._writeDialogueChoiceFocusIconQaProbe();
+      return;
+    }
+
+    const focusPrefix = '▶ ';
+    acceptBtn.setText(dialogueIndex === 0 ? `${focusPrefix}[ 이용하기 ]` : '   [ 이용하기 ]');
+    acceptBtn.setColor(dialogueIndex === 0 ? '#ffffff' : '#88ff88');
+    closeBtn.setText(dialogueIndex === 1 ? `${focusPrefix}[ 닫기 ]` : '   [ 닫기 ]');
+    closeBtn.setColor(dialogueIndex === 1 ? '#ffffff' : '#888888');
+    this._writeDialogueChoiceFocusIconQaProbe();
+  }
+
+  private _addLobbyDialogueChoiceFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_dialogue_choice_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
   }
 
   // ── NPC 액션 실행 ────────────────────────────────────────
@@ -543,29 +2012,42 @@ export class LobbyScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
     this._registerModalPanel(panel);
-    const bg = this.add.rectangle(0, 0, 500, 350, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x44cc88);
-    panel.add(bg);
-    panel.add(this.add.text(0, -150, `🛒 ${npc.name} — 아이템 상점`, {
+    this._addLobbyModalFrame(panel, 0, 0, 500, 350, LOBBY_UI_FRAME_TEXTURES.shopPanel, 0x0a0a1a, 0.95, 0x44cc88);
+    this.lobbyShopTitleIconFallbackRendered = false;
+    const shopTitleIconResource = getItemIconResource({ itemIconId: LOBBY_SHOP_TITLE_ICON_ID });
+    const hasShopTitleIcon = Boolean(shopTitleIconResource && this.textures.exists(shopTitleIconResource.key));
+    if (hasShopTitleIcon && shopTitleIconResource) {
+      this.lobbyShopTitleIcon = this._addLobbyShopTitleIcon(panel, -136, -150, shopTitleIconResource);
+    } else {
+      this.lobbyShopTitleIcon = null;
+      this.lobbyShopTitleIconFallbackRendered = true;
+    }
+    const titleText = hasShopTitleIcon ? `${npc.name} — 아이템 상점` : `🛒 ${npc.name} — 아이템 상점`;
+    this.lobbyShopTitleText = this.add.text(hasShopTitleIcon ? 12 : 0, -150, titleText, {
       fontSize: '18px', color: '#44cc88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyShopTitleText);
+    this._writeShopTitleIconQaProbe({ titleText });
+    panel.once('destroy', () => {
+      this.lobbyShopTitleIcon = null;
+      this.lobbyShopTitleText = null;
+      this.lobbyShopActionFocusIcon = null;
+      this.lobbyShopActionFocusTexts = [];
+    });
 
     // 서버 소비 상점(gold 아이템) 목록 fetch. 오프라인/실패 시 fallback 으로 렌더는 유지.
-    type ShopRow = { code: string; name: string; price: number };
-    const FALLBACK: ShopRow[] = [
-      { code: 'CON_HP_S', name: 'HP 포션 (소)', price: 20 },
-      { code: 'CON_HP_M', name: 'HP 포션 (중)', price: 60 },
-      { code: 'CON_MP_S', name: 'MP 포션 (소)', price: 25 },
-      { code: 'CON_HP_L', name: 'HP 포션 (대)', price: 150 },
-      { code: 'CON_MP_M', name: 'MP 포션 (중)', price: 70 },
-    ];
     let shopItems: ShopRow[];
-    try {
-      const level = this.characterData?.level ?? 1;
-      const resp = await networkManager.get<{ items?: ShopRow[] }>(`/api/shop/consumables?characterLevel=${level}`);
-      const items = (resp?.items ?? []).slice(0, 8);
-      shopItems = items.length > 0 ? items : FALLBACK;
-    } catch {
-      shopItems = FALLBACK;
+    if (this.characterData?.offlineQa) {
+      shopItems = FALLBACK_SHOP_ITEMS;
+    } else {
+      try {
+        const level = this.characterData?.level ?? 1;
+        const resp = await networkManager.get<{ items?: ShopRow[] }>(`/api/shop/consumables?characterLevel=${level}`);
+        const items = (resp?.items ?? []).slice(0, 8);
+        shopItems = items.length > 0 ? items : FALLBACK_SHOP_ITEMS;
+      } catch {
+        shopItems = FALLBACK_SHOP_ITEMS;
+      }
     }
 
     // 마우스(pointerdown)와 키보드(ENTER)가 공유하는 구매 동작 (gold 차감 + 인벤토리 지급).
@@ -589,10 +2071,12 @@ export class LobbyScene extends Phaser.Scene {
 
     // 키보드 포커스 링: [구매]×5 + [닫기]
     const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+    const buyButtons: Phaser.GameObjects.Text[] = [];
 
     shopItems.forEach((item, i) => {
       const y = -80 + i * 40;
-      panel.add(this.add.text(-200, y, item.name, {
+      this._addLobbyItemIcon(panel, -214, y + 8, item, 28);
+      panel.add(this.add.text(-176, y, item.name, {
         fontSize: '13px', color: '#ffffff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       }));
       panel.add(this.add.text(100, y, `${item.price}G`, {
@@ -603,8 +2087,18 @@ export class LobbyScene extends Phaser.Scene {
       }).setInteractive({ useHandCursor: true });
       buyBtn.on('pointerdown', () => void buy(item));
       panel.add(buyBtn);
+      const buyIndex = buyButtons.length;
+      buyButtons.push(buyBtn);
+      buyBtn.on('pointerover', () => {
+        shopActionIndex = buyIndex;
+        renderShopActionFocus();
+      });
       focusables.push({
-        setFocused: (a) => { buyBtn.setText(a ? '▶[구매]' : '[구매]'); buyBtn.setColor(a ? '#ffffff' : '#88ff88'); },
+        setFocused: (active) => {
+          if (!active) return;
+          shopActionIndex = buyIndex;
+          renderShopActionFocus();
+        },
         activate: () => void buy(item),
       });
     });
@@ -614,23 +2108,134 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+    closeBtn.on('pointerover', () => {
+      shopActionIndex = buyButtons.length;
+      renderShopActionFocus();
+    });
     focusables.push({
-      setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); },
+      setFocused: (active) => {
+        if (!active) return;
+        shopActionIndex = buyButtons.length;
+        renderShopActionFocus();
+      },
       activate: () => panel.destroy(),
     });
 
+    this.lobbyShopActionFocusTexts = [...buyButtons, closeBtn];
+    this.lobbyShopActionFocusIconFallbackRendered = false;
+    const shopActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_SHOP_ACTION_FOCUS_ICON_ID);
+    if (shopActionFocusIconResource && this.textures.exists(shopActionFocusIconResource.key)) {
+      this.lobbyShopActionFocusIcon = this._addLobbyShopActionFocusIcon(
+        panel,
+        162,
+        -73,
+        shopActionFocusIconResource,
+      );
+    } else {
+      this.lobbyShopActionFocusIcon = null;
+      this.lobbyShopActionFocusIconFallbackRendered = true;
+    }
+
+    let shopActionIndex = 0;
+    const renderShopActionFocus = () => {
+      this._renderLobbyShopActionFocus({ activeIndex: shopActionIndex, buyButtons, closeBtn });
+    };
     this._attachPanelKeyboardNav(panel, focusables);
+  }
+
+  private _addLobbyShopTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_shop_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
+  }
+
+  private _renderLobbyShopActionFocus({
+    activeIndex,
+    buyButtons,
+    closeBtn,
+  }: {
+    activeIndex: number;
+    buyButtons: Phaser.GameObjects.Text[];
+    closeBtn: Phaser.GameObjects.Text;
+  }): void {
+    const hasFocusIcon = this.lobbyShopActionFocusIcon?.active === true;
+    const closeIndex = buyButtons.length;
+
+    buyButtons.forEach((buyBtn, index) => {
+      const isActive = activeIndex === index;
+      buyBtn
+        .setText(hasFocusIcon ? '[구매]' : (isActive ? '▶[구매]' : '[구매]'))
+        .setColor(isActive ? '#ffffff' : '#88ff88');
+    });
+
+    const isCloseActive = activeIndex === closeIndex;
+    closeBtn
+      .setText(hasFocusIcon ? '[ 닫기 ]' : (isCloseActive ? '▶ [ 닫기 ]' : '[ 닫기 ]'))
+      .setColor(isCloseActive ? '#ffffff' : '#888888');
+
+    if (hasFocusIcon && this.lobbyShopActionFocusIcon) {
+      const activeBuyBtn = activeIndex < buyButtons.length ? buyButtons[activeIndex] : null;
+      const position = activeBuyBtn
+        ? { x: activeBuyBtn.x - 18, y: activeBuyBtn.y + 7 }
+        : { x: -50, y: closeBtn.y };
+      this.lobbyShopActionFocusIcon
+        .setVisible(true)
+        .setPosition(position.x, position.y);
+    }
+
+    this._writeShopActionFocusIconQaProbe(activeIndex);
+  }
+
+  private _addLobbyShopActionFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_shop_action_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
   }
 
   private _showEnhancePanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
     this._registerModalPanel(panel);
-    const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xff8844);
-    panel.add(bg);
-    panel.add(this.add.text(0, -90, `🔨 ${npc.name} — 장비 강화`, {
+    this._addLobbyModalFrame(panel, 0, 0, 450, 250, LOBBY_UI_FRAME_TEXTURES.enhancePanel, 0x0a0a1a, 0.95, 0xff8844);
+    this.lobbyEnhanceTitleIconFallbackRendered = false;
+    const enhanceTitleIconResource = getItemIconResource({ itemIconId: LOBBY_ENHANCE_TITLE_ICON_ID });
+    const hasEnhanceTitleIcon = Boolean(enhanceTitleIconResource && this.textures.exists(enhanceTitleIconResource.key));
+    if (hasEnhanceTitleIcon && enhanceTitleIconResource) {
+      this.lobbyEnhanceTitleIcon = this._addLobbyEnhanceTitleIcon(panel, -132, -90, enhanceTitleIconResource);
+    } else {
+      this.lobbyEnhanceTitleIcon = null;
+      this.lobbyEnhanceTitleIconFallbackRendered = true;
+    }
+    const titleText = hasEnhanceTitleIcon ? `${npc.name} — 장비 강화` : `🔨 ${npc.name} — 장비 강화`;
+    this.lobbyEnhanceTitleText = this.add.text(hasEnhanceTitleIcon ? 12 : 0, -90, titleText, {
       fontSize: '18px', color: '#ff8844', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyEnhanceTitleText);
+    this._writeEnhanceTitleIconQaProbe({ titleText });
+    panel.once('destroy', () => {
+      this.lobbyEnhanceTitleIcon = null;
+      this.lobbyEnhanceTitleText = null;
+      this.lobbyEnhanceActionFocusIcon = null;
+      this.lobbyEnhanceActionFocusTexts = [];
+    });
     panel.add(this.add.text(0, -30, '"장비를 가져오면 강화해주지.\n강화 재료와 골드가 필요하다."', {
       fontSize: '13px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       align: 'center',
@@ -643,21 +2248,110 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+    this.lobbyEnhanceActionFocusTexts = [closeBtn];
+    this.lobbyEnhanceActionFocusIconFallbackRendered = false;
+    const enhanceActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_ENHANCE_ACTION_FOCUS_ICON_ID);
+    if (enhanceActionFocusIconResource && this.textures.exists(enhanceActionFocusIconResource.key)) {
+      this.lobbyEnhanceActionFocusIcon = this._addLobbyEnhanceActionFocusIcon(
+        panel,
+        -50,
+        90,
+        enhanceActionFocusIconResource,
+      );
+    } else {
+      this.lobbyEnhanceActionFocusIcon = null;
+      this.lobbyEnhanceActionFocusIconFallbackRendered = true;
+    }
+    const renderEnhanceActionFocus = () => {
+      this._renderLobbyEnhanceActionFocus({ activeIndex: 0, closeBtn });
+    };
+    closeBtn.on('pointerover', renderEnhanceActionFocus);
     this._attachPanelKeyboardNav(panel, [{
-      setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); },
+      setFocused: (active) => {
+        if (!active) return;
+        renderEnhanceActionFocus();
+      },
       activate: () => panel.destroy(),
     }]);
+  }
+
+  private _renderLobbyEnhanceActionFocus({
+    activeIndex,
+    closeBtn,
+  }: {
+    activeIndex: number;
+    closeBtn: Phaser.GameObjects.Text;
+  }): void {
+    const hasFocusIcon = this.lobbyEnhanceActionFocusIcon?.active === true;
+    closeBtn
+      .setText(hasFocusIcon ? '[ 닫기 ]' : '▶ [ 닫기 ]')
+      .setColor('#ffffff');
+
+    if (hasFocusIcon && this.lobbyEnhanceActionFocusIcon) {
+      this.lobbyEnhanceActionFocusIcon
+        .setVisible(true)
+        .setPosition(-50, 90);
+    }
+
+    this._writeEnhanceActionFocusIconQaProbe(activeIndex);
+  }
+
+  private _addLobbyEnhanceActionFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_enhance_action_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
+  }
+
+  private _addLobbyEnhanceTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_enhance_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
   }
 
   private _showPartyPanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
     this._registerModalPanel(panel);
-    const bg = this.add.rectangle(0, 0, 450, 250, 0x0a0a1a, 0.95).setStrokeStyle(2, 0x4488ff);
-    panel.add(bg);
-    panel.add(this.add.text(0, -90, `⚔️ ${npc.name} — 파티 모집`, {
+    this._addLobbyModalFrame(panel, 0, 0, 450, 250, LOBBY_UI_FRAME_TEXTURES.partyPanel, 0x0a0a1a, 0.95, 0x4488ff);
+    this.lobbyPartyRecruitTitleIconFallbackRendered = false;
+    const partyTitleIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_RECRUIT_TITLE_ICON_ID);
+    const hasPartyTitleIcon = Boolean(partyTitleIconResource && this.textures.exists(partyTitleIconResource.key));
+    if (hasPartyTitleIcon && partyTitleIconResource) {
+      this.lobbyPartyRecruitTitleIcon = this._addLobbyPartyRecruitTitleIcon(panel, -120, -90, partyTitleIconResource);
+    } else {
+      this.lobbyPartyRecruitTitleIcon = null;
+      this.lobbyPartyRecruitTitleIconFallbackRendered = true;
+    }
+    const titleText = hasPartyTitleIcon ? `${npc.name} — 파티 모집` : `⚔️ ${npc.name} — 파티 모집`;
+    this.lobbyPartyRecruitTitleText = this.add.text(hasPartyTitleIcon ? 12 : 0, -90, titleText, {
       fontSize: '18px', color: '#4488ff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyPartyRecruitTitleText);
+    this._writePartyRecruitIconQaProbe({ titleText });
+    panel.once('destroy', () => {
+      this.lobbyPartyRecruitTitleIcon = null;
+      this.lobbyPartyRecruitTitleText = null;
+      this.lobbyPartyActionFocusIcon = null;
+      this.lobbyPartyActionFocusTexts = [];
+    });
     panel.add(this.add.text(0, -20, '"파티원을 모집하거나 참여할 수 있다.\n함께라면 더 강한 적도 쓰러뜨릴 수 있지."', {
       fontSize: '13px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       align: 'center',
@@ -677,30 +2371,139 @@ export class LobbyScene extends Phaser.Scene {
     const closeBtn = this.add.text(0, 90, '[ 닫기 ]', {
       fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    closeBtn.on('pointerdown', () => panel.destroy());
+    const doClose = () => panel.destroy();
+    closeBtn.on('pointerdown', doClose);
     panel.add(closeBtn);
+
+    this.lobbyPartyActionFocusTexts = [createBtn, searchBtn, closeBtn];
+    this.lobbyPartyActionFocusIconFallbackRendered = false;
+    const partyActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_ACTION_FOCUS_ICON_ID);
+    if (partyActionFocusIconResource && this.textures.exists(partyActionFocusIconResource.key)) {
+      this.lobbyPartyActionFocusIcon = this._addLobbyPartyActionFocusIcon(
+        panel,
+        -142,
+        50,
+        partyActionFocusIconResource,
+      );
+    } else {
+      this.lobbyPartyActionFocusIcon = null;
+      this.lobbyPartyActionFocusIconFallbackRendered = true;
+    }
+
+    let partyActionIndex = 0;
+    const renderPartyActionFocus = () => {
+      this._renderLobbyPartyActionFocus({ activeIndex: partyActionIndex, createBtn, searchBtn, closeBtn });
+    };
+    createBtn.on('pointerover', () => { partyActionIndex = 0; renderPartyActionFocus(); });
+    searchBtn.on('pointerover', () => { partyActionIndex = 1; renderPartyActionFocus(); });
+    closeBtn.on('pointerover', () => { partyActionIndex = 2; renderPartyActionFocus(); });
     this._attachPanelKeyboardNav(panel, [
-      { setFocused: (a) => { createBtn.setText(a ? '▶ [ 파티 생성 ]' : '[ 파티 생성 ]'); createBtn.setColor(a ? '#ffffff' : '#88ff88'); }, activate: doCreate },
-      { setFocused: (a) => { searchBtn.setText(a ? '▶ [ 파티 검색 ]' : '[ 파티 검색 ]'); searchBtn.setColor(a ? '#ffffff' : '#88ccff'); }, activate: doSearch },
-      { setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); }, activate: () => panel.destroy() },
+      { setFocused: (active) => { if (!active) return; partyActionIndex = 0; renderPartyActionFocus(); }, activate: doCreate },
+      { setFocused: (active) => { if (!active) return; partyActionIndex = 1; renderPartyActionFocus(); }, activate: doSearch },
+      { setFocused: (active) => { if (!active) return; partyActionIndex = 2; renderPartyActionFocus(); }, activate: doClose },
     ]);
+  }
+
+  private _addLobbyPartyRecruitTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_party_recruit_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
+  }
+
+  private _renderLobbyPartyActionFocus({
+    activeIndex,
+    createBtn,
+    searchBtn,
+    closeBtn,
+  }: {
+    activeIndex: number;
+    createBtn: Phaser.GameObjects.Text;
+    searchBtn: Phaser.GameObjects.Text;
+    closeBtn: Phaser.GameObjects.Text;
+  }): void {
+    const hasFocusIcon = this.lobbyPartyActionFocusIcon?.active === true;
+    const isCreateActive = activeIndex === 0;
+    const isSearchActive = activeIndex === 1;
+    const isCloseActive = activeIndex === 2;
+
+    createBtn
+      .setText(hasFocusIcon ? '[ 파티 생성 ]' : (isCreateActive ? '▶ [ 파티 생성 ]' : '[ 파티 생성 ]'))
+      .setColor(isCreateActive ? '#ffffff' : '#88ff88');
+    searchBtn
+      .setText(hasFocusIcon ? '[ 파티 검색 ]' : (isSearchActive ? '▶ [ 파티 검색 ]' : '[ 파티 검색 ]'))
+      .setColor(isSearchActive ? '#ffffff' : '#88ccff');
+    closeBtn
+      .setText(hasFocusIcon ? '[ 닫기 ]' : (isCloseActive ? '▶ [ 닫기 ]' : '[ 닫기 ]'))
+      .setColor(isCloseActive ? '#ffffff' : '#888888');
+
+    if (hasFocusIcon && this.lobbyPartyActionFocusIcon) {
+      const iconPositions = [
+        { x: -142, y: 50 },
+        { x: 18, y: 50 },
+        { x: -50, y: 90 },
+      ];
+      const position = iconPositions[activeIndex] ?? iconPositions[0];
+      this.lobbyPartyActionFocusIcon
+        .setVisible(true)
+        .setPosition(position.x, position.y);
+    }
+
+    this._writePartyActionFocusIconQaProbe(activeIndex);
+  }
+
+  private _addLobbyPartyActionFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_party_action_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
   }
 
   private _showStoryPanel(npc: NpcEntry): void {
     const { width, height } = this.cameras.main;
     const panel = this.add.container(width / 2, height / 2);
     this._registerModalPanel(panel);
-    const bg = this.add.rectangle(0, 0, 500, 300, 0x0a0a1a, 0.95).setStrokeStyle(2, 0xcc88ff);
-    panel.add(bg);
+    this._addLobbyModalFrame(panel, 0, 0, 500, 300, LOBBY_UI_FRAME_TEXTURES.storyPanel, 0x0a0a1a, 0.95, 0xcc88ff);
 
-    // P33-A: NPC 초상화 (마테우스)
-    if (this.textures.exists('npc_portrait_mateus')) {
-      panel.add(this.add.image(-200, -30, 'npc_portrait_mateus').setScale(0.25));
+    this._addLobbyNpcPortrait(panel, npc, -200, -30, 112);
+
+    this.lobbyStoryTitleIconFallbackRendered = false;
+    const storyTitleIconResource = getItemIconResource({ itemIconId: LOBBY_STORY_TITLE_ICON_ID });
+    const hasStoryTitleIcon = Boolean(storyTitleIconResource && this.textures.exists(storyTitleIconResource.key));
+    if (hasStoryTitleIcon && storyTitleIconResource) {
+      this.lobbyStoryTitleIcon = this._addLobbyStoryTitleIcon(panel, -128, -120, storyTitleIconResource);
+    } else {
+      this.lobbyStoryTitleIcon = null;
+      this.lobbyStoryTitleIconFallbackRendered = true;
     }
-
-    panel.add(this.add.text(0, -120, `📖 ${npc.name} — 메인 스토리`, {
+    const titleText = hasStoryTitleIcon ? `${npc.name} — 메인 스토리` : `📖 ${npc.name} — 메인 스토리`;
+    this.lobbyStoryTitleText = this.add.text(hasStoryTitleIcon ? 12 : 0, -120, titleText, {
       fontSize: '18px', color: '#cc88ff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyStoryTitleText);
+    this._writeStoryTitleIconQaProbe({ titleText });
+    panel.once('destroy', () => {
+      this.lobbyStoryTitleIcon = null;
+      this.lobbyStoryTitleText = null;
+      this.lobbyStoryActionFocusIcon = null;
+      this.lobbyStoryActionFocusTexts = [];
+    });
     panel.add(this.add.text(20, -50, '"대망각이 세계를 덮친 지 212년...\n에리언이여, 기억의 파편을 찾아야 한다.\n에레보스의 폐허에서 첫 번째 단서가 기다리고 있다."', {
       fontSize: '12px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       align: 'center', wordWrap: { width: 440 },
@@ -719,10 +2522,90 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => panel.destroy());
     panel.add(closeBtn);
+
+    this.lobbyStoryActionFocusTexts = [startBtn, closeBtn];
+    this.lobbyStoryActionFocusIconFallbackRendered = false;
+    const storyActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_STORY_ACTION_FOCUS_ICON_ID);
+    if (storyActionFocusIconResource && this.textures.exists(storyActionFocusIconResource.key)) {
+      this.lobbyStoryActionFocusIcon = this._addLobbyStoryActionFocusIcon(
+        panel,
+        -142,
+        80,
+        storyActionFocusIconResource,
+      );
+    } else {
+      this.lobbyStoryActionFocusIcon = null;
+      this.lobbyStoryActionFocusIconFallbackRendered = true;
+    }
+
+    let storyActionIndex = 0;
+    const renderStoryActionFocus = () => {
+      this._renderLobbyStoryActionFocus({ activeIndex: storyActionIndex, startBtn, closeBtn });
+    };
+    startBtn.on('pointerover', () => { storyActionIndex = 0; renderStoryActionFocus(); });
+    closeBtn.on('pointerover', () => { storyActionIndex = 1; renderStoryActionFocus(); });
     this._attachPanelKeyboardNav(panel, [
-      { setFocused: (a) => { startBtn.setText(a ? '▶ [ 챕터 1 시작 ]' : '[ 챕터 1 시작 ]'); startBtn.setColor(a ? '#ffffff' : '#ffcc44'); }, activate: doStart },
-      { setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); }, activate: () => panel.destroy() },
+      { setFocused: (active) => { if (!active) return; storyActionIndex = 0; renderStoryActionFocus(); }, activate: doStart },
+      { setFocused: (active) => { if (!active) return; storyActionIndex = 1; renderStoryActionFocus(); }, activate: () => panel.destroy() },
     ]);
+  }
+
+  private _addLobbyStoryTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_story_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
+  }
+
+  private _renderLobbyStoryActionFocus({
+    activeIndex,
+    startBtn,
+    closeBtn,
+  }: {
+    activeIndex: number;
+    startBtn: Phaser.GameObjects.Text;
+    closeBtn: Phaser.GameObjects.Text;
+  }): void {
+    const isStartActive = activeIndex === 0;
+    const hasFocusIcon = this.lobbyStoryActionFocusIcon?.active === true;
+
+    startBtn
+      .setText(hasFocusIcon ? '[ 챕터 1 시작 ]' : (isStartActive ? '▶ [ 챕터 1 시작 ]' : '[ 챕터 1 시작 ]'))
+      .setColor(isStartActive ? '#ffffff' : '#ffcc44');
+    closeBtn
+      .setText(hasFocusIcon ? '[ 닫기 ]' : (!isStartActive ? '▶ [ 닫기 ]' : '[ 닫기 ]'))
+      .setColor(!isStartActive ? '#ffffff' : '#888888');
+
+    if (hasFocusIcon && this.lobbyStoryActionFocusIcon) {
+      this.lobbyStoryActionFocusIcon
+        .setVisible(true)
+        .setPosition(isStartActive ? -142 : 38, 80);
+    }
+
+    this._writeStoryActionFocusIconQaProbe(activeIndex);
+  }
+
+  private _addLobbyStoryActionFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_story_action_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
   }
 
   // ── 하단 네비게이션 ──────────────────────────────────────
@@ -731,35 +2614,79 @@ export class LobbyScene extends Phaser.Scene {
     const btnY = h - 40;
     // 5개 균등 배치 (i+1)/6
     const buttons = [
-      { label: '🗺️ 월드맵', x: w / 6, action: () => this.scene.start('WorldScene', this.characterData) },
-      { label: '⚔️ 던전', x: (w * 2) / 6, action: () => this.scene.start('DungeonScene', this.characterData) },
-      { label: '🎒 인벤토리', x: (w * 3) / 6, action: () => this._showInventory() },
-      { label: '🌳 스킬', x: (w * 4) / 6, action: () => void this._openSkillTree() },
-      { label: '📜 퀘스트', x: (w * 5) / 6, action: () => this._showQuests() },
+      { id: 'world', label: '월드맵', fallbackLabel: '🗺️ 월드맵', icon: LOBBY_NAV_ICON_TEXTURES.world, x: w / 6, action: () => this.scene.start('WorldScene', this.characterData) },
+      { id: 'dungeon', label: '던전', fallbackLabel: '⚔️ 던전', icon: LOBBY_NAV_ICON_TEXTURES.dungeon, x: (w * 2) / 6, action: () => this.scene.start('DungeonScene', this.characterData) },
+      { id: 'inventory', label: '인벤토리', fallbackLabel: '🎒 인벤토리', icon: LOBBY_NAV_ICON_TEXTURES.inventory, x: (w * 3) / 6, action: () => this._showInventory() },
+      { id: 'skill', label: '스킬', fallbackLabel: '🌳 스킬', icon: LOBBY_NAV_ICON_TEXTURES.skill, x: (w * 4) / 6, action: () => void this._openSkillTree() },
+      { id: 'quest', label: '퀘스트', fallbackLabel: '📜 퀘스트', icon: LOBBY_NAV_ICON_TEXTURES.quest, x: (w * 5) / 6, action: () => this._showQuests() },
     ];
 
     this.navButtonItems = [];
+    this.lobbyNavIconImages = [];
+    this.fallbackLobbyNavIconIds = [];
+    this.lobbyNavFocusIcon = null;
+    this.lobbyNavFocusIconFallbackRendered = false;
 
     buttons.forEach((def, i) => {
-      const t = this.add.text(def.x, btnY, def.label, {
+      const navIconResource = this._resolveLobbyNavIconResource(def.icon);
+      const hasNavIcon = Boolean(navIconResource && this.textures.exists(navIconResource.key));
+      const displayLabel = hasNavIcon ? def.label : def.fallbackLabel;
+      const activate = () => {
+        // 키보드 onActivate 와 동일 가드 — 모달/패널이 떠 있으면 마우스로 두 번째 표면을 열지 않음.
+        if (this.dialoguePanel || isUiModalOpen()) return;
+        playSfx(this, UI_SFX.CLICK);
+        def.action();
+      };
+
+      if (navIconResource && hasNavIcon) {
+        const navIcon = this.add.image(def.x - 38, btnY, navIconResource.key)
+          .setName(`lobby_nav_icon_${def.id}`)
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true })
+          .on('pointerover', () => this._setNavIndex(i))
+          .on('pointerdown', activate);
+        navIcon.setDisplaySize(18, 18);
+        navIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.lobbyNavIconImages.push(navIcon);
+      } else {
+        this.fallbackLobbyNavIconIds.push(def.id);
+      }
+
+      const t = this.add.text(hasNavIcon ? def.x + 12 : def.x, btnY, displayLabel, {
         fontSize: '14px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#cccccc',
         backgroundColor: '#1a1a2e', padding: { x: 10, y: 5 },
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         .on('pointerover', () => this._setNavIndex(i))
-        .on('pointerdown', () => {
-          // 키보드 onActivate 와 동일 가드 — 모달/패널이 떠 있으면 마우스로 두 번째 표면을 열지 않음.
-          if (this.dialoguePanel || isUiModalOpen()) return;
-          playSfx(this, UI_SFX.CLICK);
-          def.action();
-        });
-      this.navButtonItems.push({ text: t, action: def.action, label: def.label });
+        .on('pointerdown', activate);
+      this.navButtonItems.push({
+        text: t,
+        action: def.action,
+        label: displayLabel,
+        focusX: hasNavIcon ? def.x - 62 : def.x - 54,
+        focusY: btnY,
+      });
     });
+
+    const navFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_NAV_FOCUS_ICON_ID);
+    if (navFocusIconResource && this.textures.exists(navFocusIconResource.key)) {
+      const firstItem = this.navButtonItems[0];
+      this.lobbyNavFocusIcon = this._addLobbyNavFocusIcon(
+        firstItem?.focusX ?? buttons[0].x - 62,
+        firstItem?.focusY ?? btnY,
+        navFocusIconResource,
+      );
+    } else {
+      this.lobbyNavFocusIconFallbackRendered = true;
+    }
 
     // FINDING-A4 ext5: 메인 nav 버튼 키보드 navigation (WCAG 2.1.1)
     if (this.navButtonItems.length > 0) {
       this.navIndex = 0;
       this._renderNavButton(0);
     }
+
+    this._writeLobbyNavIconQaProbe();
+    this._writeLobbyNavFocusIconQaProbe();
 
     const len = this.navButtonItems.length;
     const onLeft = () => {
@@ -836,7 +2763,101 @@ export class LobbyScene extends Phaser.Scene {
     };
   }
 
-  // FINDING-A4 ext5: nav 버튼 highlight 동기화 + 라벨 ▶ prefix
+  private _resolveLobbyNavIconResource(icon: LobbyNavIconDescriptor): LobbyNavIconResource | undefined {
+    if (icon.kind === 'worldmap') {
+      return getSpriteResourceForWorldZoneIcon(icon.id);
+    }
+    if (icon.kind === 'skill') {
+      return getSpriteResourceForSkillIcon(icon.id);
+    }
+    return getItemIconResource({ itemIconId: icon.id });
+  }
+
+  private _isLobbyNavIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('lobbyNavIconQa') === '1';
+  }
+
+  private _writeLobbyNavIconQaProbe(): void {
+    if (!this._isLobbyNavIconQaRoute() || typeof document === 'undefined') return;
+
+    const expectedResources = Object.values(LOBBY_NAV_ICON_TEXTURES)
+      .map((icon) => this._resolveLobbyNavIconResource(icon));
+    const expectedKeys = expectedResources
+      .map((resource) => resource?.key)
+      .filter((key): key is string => typeof key === 'string');
+    const missingNavIconKeys = Object.values(LOBBY_NAV_ICON_TEXTURES)
+      .map((icon, index) => {
+        const resource = expectedResources[index];
+        if (!resource) return `${icon.kind}:${icon.id}`;
+        return this.textures.exists(resource.key) ? null : resource.key;
+      })
+      .filter((key): key is string => typeof key === 'string');
+    const activeIcons = this.lobbyNavIconImages.filter((icon) => icon.active);
+
+    document.body.dataset.aeternaLobbyNavIconQa = JSON.stringify({
+      status: missingNavIconKeys.length === 0
+        && this.fallbackLobbyNavIconIds.length === 0
+        && activeIcons.length === Object.keys(LOBBY_NAV_ICON_TEXTURES).length
+        ? 'ready'
+        : 'missing-icon',
+      renderedCount: activeIcons.length,
+      expectedCount: Object.keys(LOBBY_NAV_ICON_TEXTURES).length,
+      expectedKeys,
+      renderedKeys: activeIcons.map((icon) => icon.texture.key),
+      fallbackLobbyNavIconIds: this.fallbackLobbyNavIconIds,
+      missingNavIconKeys,
+      displaySizes: activeIcons.map((icon) => ({
+        name: icon.name,
+        width: icon.displayWidth,
+        height: icon.displayHeight,
+        visible: icon.visible,
+      })),
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _isLobbyNavFocusIconQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('lobbyNavFocusIconQa') === '1';
+  }
+
+  private _writeLobbyNavFocusIconQaProbe(): void {
+    if (!this._isLobbyNavFocusIconQaRoute() && this.characterData?.lobbyNavFocusIconQa !== true) return;
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const navFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_NAV_FOCUS_ICON_ID);
+    const focusIcon = this.lobbyNavFocusIcon?.active === true
+      ? this.lobbyNavFocusIcon
+      : null;
+    const labels = this.navButtonItems.map((item) => item.text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingLobbyNavFocusIconKeys = focusIcon && navFocusIconResource
+      ? []
+      : [navFocusIconResource?.key ?? LOBBY_NAV_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaLobbyNavFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex: this.navIndex,
+      focusIcon: {
+        key: navFocusIconResource?.key ?? null,
+        path: navFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: LOBBY_NAV_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.lobbyNavFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      legacyGlyphPresent,
+      labels,
+      missingLobbyNavFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  // FINDING-A4 ext5: nav 버튼 highlight 동기화 + Aseprite focus icon
   private _setNavIndex(i: number): void {
     if (i === this.navIndex || !this.navButtonItems[i]) return;
     const oldI = this.navIndex;
@@ -849,8 +2870,30 @@ export class LobbyScene extends Phaser.Scene {
     const item = this.navButtonItems[i];
     if (!item) return;
     const isActive = i === this.navIndex;
-    item.text.setText(isActive ? `▶ ${item.label}` : item.label);
+    item.text.setText(this.lobbyNavFocusIcon?.active === true ? item.label : (isActive ? `▶ ${item.label}` : item.label));
     item.text.setColor(isActive ? '#ffffff' : '#cccccc');
+    if (this.lobbyNavFocusIcon?.active === true) {
+      const activeItem = this.navButtonItems[this.navIndex];
+      if (activeItem) {
+        this.lobbyNavFocusIcon
+          .setVisible(true)
+          .setPosition(activeItem.focusX, activeItem.focusY);
+      }
+    }
+    this._writeLobbyNavFocusIconQaProbe();
+  }
+
+  private _addLobbyNavFocusIcon(
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_nav_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return focusIcon;
   }
 
   // ── P25-04: 인벤토리 / 퀘스트 표시 ─────────────────────
@@ -865,12 +2908,14 @@ export class LobbyScene extends Phaser.Scene {
     const classId: ClassId = (VALID as string[]).includes(raw) ? (raw as ClassId) : 'ether_knight';
     const level = this.characterData?.level ?? 1;
     // 잔여 스킬 포인트 fetch (실패 시 0)
-    let points = 0;
-    try {
-      // 서버 응답 필드는 remainingPoints. characterLevel 쿼리로 총 포인트 계산(미전달 시 서버 기본 1).
-      const resp = await networkManager.get<{ remainingPoints?: number }>(`/api/skills/points/${userId}?characterLevel=${level}`);
-      points = resp?.remainingPoints ?? 0;
-    } catch { /* fallback 0 */ }
+    let points = this.characterData?.openSkillTreeQa === true ? 3 : 0;
+    if (this.characterData?.openSkillTreeQa !== true) {
+      try {
+        // 서버 응답 필드는 remainingPoints. characterLevel 쿼리로 총 포인트 계산(미전달 시 서버 기본 1).
+        const resp = await networkManager.get<{ remainingPoints?: number }>(`/api/skills/points/${userId}?characterLevel=${level}`);
+        points = resp?.remainingPoints ?? 0;
+      } catch { /* fallback 0 */ }
+    }
     if (!this.skillTreeUI) {
       this.skillTreeUI = new SkillTreeUI(this, networkManager);
       // 씬 종료 시 모달락(uiModalLock) 누수 방지 — 열려 있으면 닫는다.
@@ -880,6 +2925,12 @@ export class LobbyScene extends Phaser.Scene {
   }
 
   private async _showInventory(): Promise<void> {
+    if (this.characterData?.offlineQa) {
+      this._showInventoryPanel(LOBBY_QA_INVENTORY_ITEMS);
+      this._showNotification('로컬 QA 인벤토리를 표시합니다.');
+      return;
+    }
+
     const userId = networkManager.getUserId();
     if (!userId) {
       this._showNotification('로그인이 필요합니다.');
@@ -929,15 +2980,53 @@ export class LobbyScene extends Phaser.Scene {
 
     // 키보드 포커스 링: 아이템 행(읽기 전용 highlight) + [닫기]
     const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+    const actionFocusTargets: Array<{
+      text: Phaser.GameObjects.Text;
+      label: string;
+      x: number;
+      y: number;
+      activeColor: string;
+      inactiveColor: string;
+    }> = [];
 
     const panelH = Math.min(400, 120 + items.length * 36);
-    const bg = this.add.rectangle(0, 0, 520, panelH, 0x0a0a1a, 0.95)
-      .setStrokeStyle(2, 0xcc8844);
-    panel.add(bg);
+    this._addLobbyModalFrame(panel, 0, 0, 520, panelH, LOBBY_UI_FRAME_TEXTURES.inventoryPanel, 0x0a0a1a, 0.95, 0xcc8844);
+    this.lobbyInventoryActionFocusIconFallbackRendered = false;
+    this.lobbyInventoryActionFocusTexts = [];
+    const inventoryActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_INVENTORY_ACTION_FOCUS_ICON_ID);
+    if (inventoryActionFocusIconResource && this.textures.exists(inventoryActionFocusIconResource.key)) {
+      this.lobbyInventoryActionFocusIcon = this._addLobbyInventoryActionFocusIcon(
+        panel,
+        -202,
+        -panelH / 2 + 80,
+        inventoryActionFocusIconResource,
+      ).setVisible(false);
+    } else {
+      this.lobbyInventoryActionFocusIcon = null;
+      this.lobbyInventoryActionFocusIconFallbackRendered = true;
+    }
 
-    panel.add(this.add.text(0, -panelH / 2 + 20, `🎒 인벤토리 (${items.length}개)`, {
+    this.lobbyInventoryTitleIconFallbackRendered = false;
+    const inventoryTitleIconResource = getItemIconResource({ itemIconId: LOBBY_INVENTORY_TITLE_ICON_ID });
+    const hasInventoryTitleIcon = Boolean(inventoryTitleIconResource && this.textures.exists(inventoryTitleIconResource.key));
+    if (hasInventoryTitleIcon && inventoryTitleIconResource) {
+      this.lobbyInventoryTitleIcon = this._addLobbyInventoryTitleIcon(panel, -116, -panelH / 2 + 20, inventoryTitleIconResource);
+    } else {
+      this.lobbyInventoryTitleIcon = null;
+      this.lobbyInventoryTitleIconFallbackRendered = true;
+    }
+    const titleText = hasInventoryTitleIcon ? `인벤토리 (${items.length}개)` : `🎒 인벤토리 (${items.length}개)`;
+    this.lobbyInventoryTitleText = this.add.text(hasInventoryTitleIcon ? 12 : 0, -panelH / 2 + 20, titleText, {
       fontSize: '18px', color: '#cc8844', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyInventoryTitleText);
+    this._writeInventoryTitleIconQaProbe({ titleText });
+    panel.once('destroy', () => {
+      this.lobbyInventoryTitleIcon = null;
+      this.lobbyInventoryTitleText = null;
+      this.lobbyInventoryActionFocusIcon = null;
+      this.lobbyInventoryActionFocusTexts = [];
+    });
 
     if (items.length === 0) {
       panel.add(this.add.text(0, 0, '아이템이 없습니다.', {
@@ -973,15 +3062,34 @@ export class LobbyScene extends Phaser.Scene {
         };
         const nameColor = rarityColors[rarity] ?? '#ffffff';
 
-        const nameText = this.add.text(-220, y, itemName, {
+        this._addLobbyItemIcon(panel, -220, y + 8, item, 28);
+        const nameText = this.add.text(-184, y, itemName, {
           fontSize: '13px', color: nameColor, fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
         });
         panel.add(nameText);
         // ENTER → 소비템은 사용, 장비는 장착. (마우스: 행 클릭으로도 동일)
         nameText.setInteractive({ useHandCursor: true });
         nameText.on('pointerdown', () => void this._useOrEquipItem(slotId, itemType, itemName));
+        const focusIndex = actionFocusTargets.length;
+        actionFocusTargets.push({
+          text: nameText,
+          label: itemName,
+          x: -202,
+          y: y + 7,
+          activeColor: '#ffffff',
+          inactiveColor: nameColor,
+        });
+        this.lobbyInventoryActionFocusTexts = actionFocusTargets.map((target) => target.text);
         focusables.push({
-          setFocused: (a) => nameText.setText(a ? `▶ ${itemName}` : itemName),
+          setFocused: (a) => {
+            const target = actionFocusTargets[focusIndex];
+            if (!target) return;
+            if (a) {
+              this._renderLobbyInventoryActionFocus({ activeIndex: focusIndex, target });
+              return;
+            }
+            target.text.setText(target.label).setColor(target.inactiveColor);
+          },
           activate: () => void this._useOrEquipItem(slotId, itemType, itemName),
         });
         panel.add(this.add.text(80, y, `×${qty}`, {
@@ -1010,12 +3118,116 @@ export class LobbyScene extends Phaser.Scene {
     };
     closeBtn.on('pointerdown', doClose);
     panel.add(closeBtn);
+    const closeFocusIndex = actionFocusTargets.length;
+    actionFocusTargets.push({
+      text: closeBtn,
+      label: '[ 닫기 ]',
+      x: -50,
+      y: panelH / 2 - 25,
+      activeColor: '#ffffff',
+      inactiveColor: '#888888',
+    });
+    this.lobbyInventoryActionFocusTexts = actionFocusTargets.map((target) => target.text);
     focusables.push({
-      setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); },
+      setFocused: (a) => {
+        const target = actionFocusTargets[closeFocusIndex];
+        if (!target) return;
+        if (a) {
+          this._renderLobbyInventoryActionFocus({ activeIndex: closeFocusIndex, target });
+          return;
+        }
+        target.text.setText(target.label).setColor(target.inactiveColor);
+      },
       activate: doClose,
     });
 
     this._attachPanelKeyboardNav(panel, focusables);
+  }
+
+  private _addLobbyInventoryTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_inventory_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
+  }
+
+  private _renderLobbyInventoryActionFocus({
+    activeIndex,
+    target,
+  }: {
+    activeIndex: number;
+    target: {
+      text: Phaser.GameObjects.Text;
+      label: string;
+      x: number;
+      y: number;
+      activeColor: string;
+      inactiveColor: string;
+    };
+  }): void {
+    const focusIcon = this.lobbyInventoryActionFocusIcon?.active === true
+      ? this.lobbyInventoryActionFocusIcon
+      : null;
+
+    if (focusIcon) {
+      target.text.setText(target.label).setColor(target.activeColor);
+      focusIcon.setPosition(target.x, target.y).setVisible(true);
+    } else {
+      target.text.setText(`▶ ${target.label}`).setColor(target.activeColor);
+      this.lobbyInventoryActionFocusIconFallbackRendered = true;
+    }
+
+    this._writeInventoryActionFocusIconQaProbe(activeIndex);
+  }
+
+  private _addLobbyInventoryActionFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_inventory_action_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
+  }
+
+  private _addLobbyItemIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    item: Record<string, unknown>,
+    displaySize: number,
+  ): boolean {
+    const iconResource = getItemIconResource(item);
+    if (!iconResource) {
+      this._recordItemIconQaProbe('unresolved', false);
+      return false;
+    }
+
+    if (!this.textures.exists(iconResource.key)) {
+      this._recordItemIconQaProbe(iconResource.itemIconId, false);
+      return false;
+    }
+
+    const icon = this.add.image(x, y, iconResource.key)
+      .setDisplaySize(displaySize, displaySize)
+      .setName(`item_icon_${iconResource.itemIconId}`);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(icon);
+    this._recordItemIconQaProbe(iconResource.itemIconId, true);
+    return true;
   }
 
   private async _showQuests(): Promise<void> {
@@ -1061,14 +3273,44 @@ export class LobbyScene extends Phaser.Scene {
 
     const panelW = 640;
     const panelH = 440;
-    const bg = this.add.rectangle(0, 0, panelW, panelH, 0x0a0a1a, 0.96)
-      .setStrokeStyle(2, 0xcccc44);
-    panel.add(bg);
+    this._addLobbyModalFrame(panel, 0, 0, panelW, panelH, LOBBY_UI_FRAME_TEXTURES.questPanel, 0x0a0a1a, 0.96, 0xcccc44);
 
     const sourceLabel = source === 'server' ? '서버 동기화' : '로컬 QA 데이터';
-    panel.add(this.add.text(0, -panelH / 2 + 24, `📜 퀘스트 (${sourceLabel})`, {
+    this.lobbyQuestTitleIconFallbackRendered = false;
+    const questTitleIconResource = getItemIconResource({ itemIconId: LOBBY_QUEST_TITLE_ICON_ID });
+    const hasQuestTitleIcon = Boolean(questTitleIconResource && this.textures.exists(questTitleIconResource.key));
+    if (hasQuestTitleIcon && questTitleIconResource) {
+      this.lobbyQuestTitleIcon = this._addLobbyQuestTitleIcon(panel, -128, -panelH / 2 + 24, questTitleIconResource);
+    } else {
+      this.lobbyQuestTitleIcon = null;
+      this.lobbyQuestTitleIconFallbackRendered = true;
+    }
+    const titleText = hasQuestTitleIcon ? `퀘스트 (${sourceLabel})` : `📜 퀘스트 (${sourceLabel})`;
+    this.lobbyQuestTitleText = this.add.text(hasQuestTitleIcon ? 12 : 0, -panelH / 2 + 24, titleText, {
       fontSize: '18px', color: '#ffdd66', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5));
+    }).setOrigin(0.5);
+    panel.add(this.lobbyQuestTitleText);
+    this._writeQuestTitleIconQaProbe({ titleText });
+    this.lobbyQuestActionFocusIconFallbackRendered = false;
+    this.lobbyQuestActionFocusTexts = [];
+    const questActionFocusIconResource = getSpriteResourceForSkillIcon(LOBBY_QUEST_ACTION_FOCUS_ICON_ID);
+    if (questActionFocusIconResource && this.textures.exists(questActionFocusIconResource.key)) {
+      this.lobbyQuestActionFocusIcon = this._addLobbyQuestActionFocusIcon(
+        panel,
+        190,
+        -120,
+        questActionFocusIconResource,
+      ).setVisible(false);
+    } else {
+      this.lobbyQuestActionFocusIcon = null;
+      this.lobbyQuestActionFocusIconFallbackRendered = true;
+    }
+    panel.once('destroy', () => {
+      this.lobbyQuestTitleIcon = null;
+      this.lobbyQuestTitleText = null;
+      this.lobbyQuestActionFocusIcon = null;
+      this.lobbyQuestActionFocusTexts = [];
+    });
 
     // 상태순(actionable 우선) 안정 정렬 후 앞 4개 — turned_in 이 수주 가능 퀘스트를 가리지 않도록.
     const sortedQuests = [...quests].sort(
@@ -1078,6 +3320,14 @@ export class LobbyScene extends Phaser.Scene {
 
     // 키보드 포커스 링: 액션 가능 퀘스트(수주/완료) + [새로고침] + [닫기]
     const focusables: Array<{ setFocused: (active: boolean) => void; activate: () => void }> = [];
+    const actionFocusTargets: Array<{
+      text: Phaser.GameObjects.Text;
+      label: string;
+      x: number;
+      y: number;
+      activeColor: string;
+      inactiveColor: string;
+    }> = [];
 
     if (visibleQuests.length === 0) {
       panel.add(this.add.text(0, 0, '표시할 퀘스트가 없습니다.', {
@@ -1135,11 +3385,25 @@ export class LobbyScene extends Phaser.Scene {
           actionBtn.setText(doneText).setColor('#777777').disableInteractive();
         };
         actionBtn.on('pointerdown', act);
+        const focusIndex = actionFocusTargets.length;
+        actionFocusTargets.push({
+          text: actionBtn,
+          label: actionText,
+          x: 190,
+          y: y + 30,
+          activeColor: '#ffffff',
+          inactiveColor: '#88ff88',
+        });
         focusables.push({
           setFocused: (a) => {
             if (done) return; // 활성 후 라벨 고정
-            actionBtn.setText(a ? `▶ ${actionText}` : actionText);
-            actionBtn.setColor(a ? '#ffffff' : '#88ff88');
+            const target = actionFocusTargets[focusIndex];
+            if (!target) return;
+            if (a) {
+              this._renderLobbyQuestActionFocus({ activeIndex: focusIndex, target });
+              return;
+            }
+            target.text.setText(target.label).setColor(target.inactiveColor);
           },
           activate: () => void act(),
         });
@@ -1163,6 +3427,15 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     refreshBtn.on('pointerdown', doRefresh);
     panel.add(refreshBtn);
+    const refreshFocusIndex = actionFocusTargets.length;
+    actionFocusTargets.push({
+      text: refreshBtn,
+      label: '[ 새로고침 ]',
+      x: -142,
+      y: panelH / 2 - 26,
+      activeColor: '#ffffff',
+      inactiveColor: '#88ccff',
+    });
 
     const doClose = () => {
       playSfx(this, UI_SFX.CANCEL);
@@ -1173,12 +3446,103 @@ export class LobbyScene extends Phaser.Scene {
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', doClose);
     panel.add(closeBtn);
+    const closeFocusIndex = actionFocusTargets.length;
+    actionFocusTargets.push({
+      text: closeBtn,
+      label: '[ 닫기 ]',
+      x: 42,
+      y: panelH / 2 - 26,
+      activeColor: '#ffffff',
+      inactiveColor: '#888888',
+    });
+    this.lobbyQuestActionFocusTexts = actionFocusTargets.map((target) => target.text);
 
     focusables.push(
-      { setFocused: (a) => { refreshBtn.setText(a ? '▶ [ 새로고침 ]' : '[ 새로고침 ]'); refreshBtn.setColor(a ? '#ffffff' : '#88ccff'); }, activate: doRefresh },
-      { setFocused: (a) => { closeBtn.setText(a ? '▶ [ 닫기 ]' : '[ 닫기 ]'); closeBtn.setColor(a ? '#ffffff' : '#888888'); }, activate: doClose },
+      {
+        setFocused: (a) => {
+          const target = actionFocusTargets[refreshFocusIndex];
+          if (!target) return;
+          if (a) {
+            this._renderLobbyQuestActionFocus({ activeIndex: refreshFocusIndex, target });
+            return;
+          }
+          target.text.setText(target.label).setColor(target.inactiveColor);
+        },
+        activate: doRefresh,
+      },
+      {
+        setFocused: (a) => {
+          const target = actionFocusTargets[closeFocusIndex];
+          if (!target) return;
+          if (a) {
+            this._renderLobbyQuestActionFocus({ activeIndex: closeFocusIndex, target });
+            return;
+          }
+          target.text.setText(target.label).setColor(target.inactiveColor);
+        },
+        activate: doClose,
+      },
     );
     this._attachPanelKeyboardNav(panel, focusables);
+  }
+
+  private _renderLobbyQuestActionFocus({
+    activeIndex,
+    target,
+  }: {
+    activeIndex: number;
+    target: {
+      text: Phaser.GameObjects.Text;
+      label: string;
+      x: number;
+      y: number;
+      activeColor: string;
+      inactiveColor: string;
+    };
+  }): void {
+    const focusIcon = this.lobbyQuestActionFocusIcon?.active === true
+      ? this.lobbyQuestActionFocusIcon
+      : null;
+
+    if (focusIcon) {
+      target.text.setText(target.label).setColor(target.activeColor);
+      focusIcon.setPosition(target.x, target.y).setVisible(true);
+    } else {
+      target.text.setText(`▶ ${target.label}`).setColor(target.activeColor);
+      this.lobbyQuestActionFocusIconFallbackRendered = true;
+    }
+
+    this._writeQuestActionFocusIconQaProbe(activeIndex);
+  }
+
+  private _addLobbyQuestActionFocusIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_quest_action_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(focusIcon);
+    return focusIcon;
+  }
+
+  private _addLobbyQuestTitleIcon(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: LobbyNavIconResource,
+  ): Phaser.GameObjects.Image {
+    const titleIcon = this.add.image(x, y, resource.key)
+      .setName('lobby_quest_title_icon')
+      .setOrigin(0.5);
+    titleIcon.setDisplaySize(20, 20);
+    titleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    panel.add(titleIcon);
+    return titleIcon;
   }
 
   private _getQuestActionText(status: QuestData['status']): string {
@@ -1212,27 +3576,146 @@ export class LobbyScene extends Phaser.Scene {
     this._showNotification(`${quest.name} 완료 보상 지급`);
   }
 
+  private _addLobbyModalFrame(
+    panel: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof LOBBY_UI_FRAME_TEXTURES[keyof typeof LOBBY_UI_FRAME_TEXTURES],
+    fallbackColor: number,
+    fallbackAlpha: number,
+    strokeColor: number,
+    strokeWidth = 2,
+  ): void {
+    if (this.textures.exists(texture.key)) {
+      panel.add(this.add.image(x, y, texture.key)
+        .setDisplaySize(width, height)
+        .setAlpha(0.9));
+      panel.add(this.add.rectangle(x, y, width, height, 0x000000, 0)
+        .setStrokeStyle(strokeWidth, strokeColor));
+      return;
+    }
+
+    // Aseprite lobby modal UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    panel.add(this.add.rectangle(x, y, width, height, fallbackColor, fallbackAlpha)
+      .setStrokeStyle(strokeWidth, strokeColor));
+  }
+
+  private _addLobbyNpcPortrait(
+    panel: Phaser.GameObjects.Container,
+    npc: NpcEntry,
+    x: number,
+    y: number,
+    size: number,
+  ): void {
+    const portrait = LOBBY_NPC_PORTRAIT_TEXTURES[npc.id];
+    if (portrait && this.textures.exists(portrait.key)) {
+      const portraitImage = this.add.image(x, y, portrait.key)
+        .setName(`lobby_npc_portrait_${npc.id}`);
+      portraitImage.setDisplaySize(size, size);
+      portraitImage.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      panel.add(portraitImage);
+      return;
+    }
+
+    const spriteResource = getSpriteResourceForLobbyNpc(npc.id);
+    const fallbackKey = spriteResource?.key ?? `npc_${npc.id}`;
+    if (!this.textures.exists(fallbackKey)) return;
+
+    const fallbackImage = this.add.image(x, y, fallbackKey, 0)
+      .setDisplaySize(Math.round(size * 0.72), Math.round(size * 0.72))
+      .setName(`lobby_npc_portrait_sprite_fallback_${npc.id}`);
+    if (spriteResource) {
+      fallbackImage.setFrame(0);
+      fallbackImage.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    panel.add(fallbackImage);
+  }
+
   // ── 미니맵 ───────────────────────────────────────────────
 
   private _drawMinimap(sceneW: number): void {
     const mx = sceneW - MINIMAP_SIZE - MINIMAP_MARGIN;
     const my = MINIMAP_MARGIN + 40;
     this.minimapContainer = this.add.container(mx, my);
+    this.lobbyMinimapNpcMarkerKeys = [];
+    this.lobbyMinimapNpcMarkerMissingTextureKeys = [];
+    this.lobbyMinimapNpcMarkerFallbackIds = [];
 
-    const bg = this.add.rectangle(
-      MINIMAP_SIZE / 2, MINIMAP_SIZE / 2, MINIMAP_SIZE, MINIMAP_SIZE, 0x000000, 0.6,
-    ).setStrokeStyle(1, 0x446644);
-    this.minimapContainer.add(bg);
+    const minimapFrame = LOBBY_UI_FRAME_TEXTURES.minimap;
+    if (this.textures.exists(minimapFrame.key)) {
+      const bg = this.add.image(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2, minimapFrame.key)
+        .setDisplaySize(MINIMAP_SIZE, MINIMAP_SIZE)
+        .setAlpha(0.88);
+      this.minimapContainer.add(bg);
+      this.minimapContainer.add(this.add.rectangle(
+        MINIMAP_SIZE / 2, MINIMAP_SIZE / 2, MINIMAP_SIZE, MINIMAP_SIZE, 0x000000, 0,
+      ).setStrokeStyle(1, 0x446644));
+    } else {
+      // Aseprite UI frame 로드 실패 시에만 사용하는 안전 fallback.
+      const bg = this.add.rectangle(
+        MINIMAP_SIZE / 2, MINIMAP_SIZE / 2, MINIMAP_SIZE, MINIMAP_SIZE, 0x000000, 0.6,
+      ).setStrokeStyle(1, 0x446644);
+      this.minimapContainer.add(bg);
+    }
 
     for (const npc of TOWN_NPCS) {
       const dotX = (npc.x / 1280) * MINIMAP_SIZE;
       const dotY = (npc.y / 720) * MINIMAP_SIZE;
-      this.minimapContainer.add(this.add.circle(dotX, dotY, 3, npc.color));
+      this.minimapContainer.add(this._addLobbyMinimapNpcMarker(npc, dotX, dotY));
     }
 
     this.minimapContainer.add(this.add.text(MINIMAP_SIZE / 2, -8, '미니맵', {
       fontSize: '10px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5));
+
+    if (this._isLobbyMinimapMarkerQaRoute()) {
+      this._writeLobbyMinimapMarkerQaProbe();
+    }
+  }
+
+  private _addLobbyMinimapNpcMarker(
+    npc: NpcEntry,
+    dotX: number,
+    dotY: number,
+  ): Phaser.GameObjects.Image | Phaser.GameObjects.Arc {
+    const resource = getSpriteResourceForLobbyNpc(npc.id);
+    if (resource && this.textures.exists(resource.key)) {
+      const marker = this.add.image(dotX, dotY, resource.key, 0)
+        .setName(`lobby_minimap_npc_marker_${npc.id}`)
+        .setOrigin(0.5);
+      marker.setDisplaySize(10, 10);
+      marker.setFrame(0);
+      marker.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.lobbyMinimapNpcMarkerKeys.push(resource.key);
+      return marker;
+    }
+
+    this.lobbyMinimapNpcMarkerMissingTextureKeys.push(resource?.key ?? `npc_${npc.id}`);
+    this.lobbyMinimapNpcMarkerFallbackIds.push(npc.id);
+    return this.add.circle(dotX, dotY, 3, npc.color)
+      .setName(`lobby_minimap_npc_marker_fallback_${npc.id}`);
+  }
+
+  private _isLobbyMinimapMarkerQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('lobbyMinimapMarkerQa') === '1';
+  }
+
+  private _writeLobbyMinimapMarkerQaProbe(): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    document.body.dataset.aeternaLobbyMinimapMarkerQa = JSON.stringify({
+      status: 'ready',
+      expectedMarkerCount: TOWN_NPCS.length,
+      renderedMarkerCount: this.lobbyMinimapNpcMarkerKeys.length,
+      renderedMarkerKeys: this.lobbyMinimapNpcMarkerKeys,
+      missingMarkerTextureKeys: this.lobbyMinimapNpcMarkerMissingTextureKeys,
+      fallbackMarkerIds: this.lobbyMinimapNpcMarkerFallbackIds,
+      markerDisplaySize: { width: 10, height: 10 },
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
   }
 
   shutdown(): void {

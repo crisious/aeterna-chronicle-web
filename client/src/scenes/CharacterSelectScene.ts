@@ -68,13 +68,80 @@ const CARD_WIDTH = 180;
 const CARD_HEIGHT = 280;
 const CARD_GAP = 20;
 
+const CHARACTER_SELECT_UI_FRAME_TEXTURES = {
+  existingCharacterCard: {
+    key: 'ui_frame_UI-INV-001-DEF',
+    path: 'assets/generated/ui/frames/UI-INV-001-DEF.png',
+  },
+  classCard: {
+    key: 'ui_frame_UI-INV-002-DEF',
+    path: 'assets/generated/ui/frames/UI-INV-002-DEF.png',
+  },
+  nameInput: {
+    key: 'ui_frame_character_select_name_input',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+  actionButton: {
+    key: 'ui_frame_character_select_action_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+} as const;
+
+const CHARACTER_SELECT_EXPECTED_NAME_INPUT_FRAME_COUNT = 1;
+const CHARACTER_SELECT_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 1;
+const CHARACTER_SELECT_EXPECTED_EXISTING_AVATAR_COUNT = 1;
+
+const CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES = {
+  ether_knight: {
+    key: 'char_battle_ether_knight',
+    path: 'assets/generated/characters/class_main/battle/char_battle_ether_knight.png',
+  },
+  memory_weaver: {
+    key: 'char_battle_memory_weaver',
+    path: 'assets/generated/characters/class_main/battle/char_battle_memory_weaver.png',
+  },
+  shadow_weaver: {
+    key: 'char_battle_shadow_weaver',
+    path: 'assets/generated/characters/class_main/battle/char_battle_shadow_weaver.png',
+  },
+  memory_breaker: {
+    key: 'char_battle_memory_breaker',
+    path: 'assets/generated/characters/class_main/battle/char_battle_memory_breaker.png',
+  },
+  time_guardian: {
+    key: 'char_battle_time_guardian',
+    path: 'assets/generated/characters/class_main/battle/char_battle_time_guardian.png',
+  },
+  void_wanderer: {
+    key: 'char_battle_void_wanderer',
+    path: 'assets/generated/characters/class_main/battle/char_battle_void_wanderer.png',
+  },
+} as const;
+
+type CharacterSelectBattleAvatarResource =
+  typeof CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES[keyof typeof CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES];
+
+function getCharacterSelectBattleAvatarResource(classId: string): CharacterSelectBattleAvatarResource {
+  return CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES[classId as keyof typeof CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES]
+    ?? CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES.ether_knight;
+}
+
 // ── CharacterSelectScene ────────────────────────────────────
+
+interface CharacterSelectSceneData {
+  offlineQa?: boolean;
+  offlineExistingQa?: boolean;
+}
 
 export class CharacterSelectScene extends Phaser.Scene {
   private classes: CharacterClass[] = FALLBACK_CLASSES;
   private selectedClass: CharacterClass | null = null;
   private cards: Phaser.GameObjects.Container[] = [];
   private nameInput: HTMLInputElement | null = null;
+  private actionButtonFrames: Phaser.GameObjects.Image[] = [];
+  private existingCharacterAvatars: Phaser.GameObjects.Image[] = [];
+  private missingExistingAvatarKeys: string[] = [];
+  private fallbackExistingAvatarClassIds: string[] = [];
   private errorText!: Phaser.GameObjects.Text;
   private previewContainer!: Phaser.GameObjects.Container;
 
@@ -91,6 +158,8 @@ export class CharacterSelectScene extends Phaser.Scene {
   // FINDING-A4 ext2: create 모드(클래스 그리드) 키보드 nav state
   private classCardIndex = 0;
   private _createKeyboardCleanup: (() => void) | null = null;
+  private offlineQa = false;
+  private offlineExistingQa = false;
 
   // P33-A: 클래스 일러스트 키 매핑
   private static readonly CLASS_IDS = [
@@ -104,6 +173,15 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   // ── 라이프사이클 ─────────────────────────────────────────
 
+  init(data?: CharacterSelectSceneData): void {
+    this.offlineQa = data?.offlineQa === true;
+    this.offlineExistingQa = data?.offlineExistingQa === true;
+    this.actionButtonFrames = [];
+    this.existingCharacterAvatars = [];
+    this.missingExistingAvatarKeys = [];
+    this.fallbackExistingAvatarClassIds = [];
+  }
+
   preload(): void {
     // P33-A: 6클래스 front 일러스트 로드
     for (const classId of CharacterSelectScene.CLASS_IDS) {
@@ -111,6 +189,16 @@ export class CharacterSelectScene extends Phaser.Scene {
         `char_${classId}`,
         `assets/generated/characters/class_main/char_illust_${classId}_front.png`,
       );
+    }
+    for (const avatarResource of Object.values(CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES)) {
+      if (!this.textures.exists(avatarResource.key)) {
+        this.load.image(avatarResource.key, avatarResource.path);
+      }
+    }
+    for (const texture of Object.values(CHARACTER_SELECT_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
     }
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
@@ -121,6 +209,10 @@ export class CharacterSelectScene extends Phaser.Scene {
   async create(): Promise<void> {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#0d1117');
+    this.actionButtonFrames = [];
+    this.existingCharacterAvatars = [];
+    this.missingExistingAvatarKeys = [];
+    this.fallbackExistingAvatarClassIds = [];
 
     // 타이틀
     this.add.text(width / 2, 40, '캐릭터 선택', {
@@ -165,6 +257,26 @@ export class CharacterSelectScene extends Phaser.Scene {
   // ── P25-02: 서버 데이터 로딩 ────────────────────────────
 
   private async _loadServerData(): Promise<void> {
+    if (this.offlineQa) {
+      this.classes = FALLBACK_CLASSES;
+      this.existingCharacters = this.offlineExistingQa ? [{
+        id: 'qa-existing-ether-knight',
+        name: 'QA 에리언',
+        classId: 'ether_knight',
+        level: 15,
+        hp: 415,
+        maxHp: 415,
+        mp: 208,
+        maxMp: 208,
+        atk: 45,
+        def: 35,
+        exp: 0,
+        gold: 0,
+        zoneId: 'aether_plains',
+      }] : [];
+      return;
+    }
+
     // 클래스 목록 조회
     try {
       const serverClasses = await networkManager.getClasses();
@@ -213,19 +325,13 @@ export class CharacterSelectScene extends Phaser.Scene {
       const y = 140 + i * 80;
       const card = this.add.container(w / 2, y);
 
-      const bg = this.add.rectangle(0, 0, 500, 65, 0x1a1a2e, 0.9)
+      const frame = this._addCharacterSelectFrame(0, 0, 500, 65, CHARACTER_SELECT_UI_FRAME_TEXTURES.existingCharacterCard);
+      const bg = this.add.rectangle(0, 0, 500, 65, 0x000000, 0)
         .setStrokeStyle(1, 0x333366)
         .setInteractive({ useHandCursor: true });
 
       const classColor = CLASS_COLORS[char.classId] ?? 0x888888;
-      // P33-A: 캐릭터 목록에도 일러스트 사용
-      const charTexKey = `char_${char.classId}`;
-      let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
-      if (this.textures.exists(charTexKey)) {
-        icon = this.add.image(-210, 0, charTexKey).setScale(0.15);
-      } else {
-        icon = this.add.circle(-210, 0, 18, classColor);
-      }
+      const icon = this._addExistingCharacterAvatar(char.classId, -210, 0, classColor);
       const nameText = this.add.text(-170, -12, `${char.name} (Lv.${char.level})`, {
         fontSize: '16px', color: '#ffffff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       });
@@ -236,7 +342,7 @@ export class CharacterSelectScene extends Phaser.Scene {
         fontSize: '11px', color: '#aaaaaa', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       });
 
-      card.add([bg, icon, nameText, classText, statsText]);
+      card.add([frame, bg, icon, nameText, classText, statsText]);
 
       const cardIndex = i;
       const focusFn = () => bg.setStrokeStyle(2, 0xc8a2ff);
@@ -272,6 +378,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.selectables.push({ focus: createFocus, blur: createBlur, activate: createActivate });
 
     this.charListContainer.add(createBtn);
+    this._writeCharacterSelectFrameQaProbe();
 
     // FINDING-A4 ext: 키보드 nav 활성화 — Arrow Up/Down + Enter/Space
     // WCAG 2.1.1 — 캐릭터 선택 화면 키보드 진입 가능.
@@ -351,7 +458,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       const card = this._createClassCard(x, h * 0.38, cls);
       this.cards.push(card);
       // FINDING-A4 ext2: pointer hover 시 키보드 highlight 동기화
-      const bg = card.getAt(0) as Phaser.GameObjects.Rectangle;
+      const bg = this._getClassCardHitBox(card);
       bg.on('pointerover', () => this._setClassCardIndex(i));
     });
 
@@ -413,6 +520,8 @@ export class CharacterSelectScene extends Phaser.Scene {
       this.input.keyboard?.off('keydown-SPACE', onSelectKey);
       this.input.keyboard?.off('keydown-ESC', onEsc);
     };
+
+    this._writeCharacterSelectFrameQaProbe();
   }
 
   // FINDING-A4 ext2: create 모드 클래스 그리드 키보드 highlight 동기화
@@ -420,7 +529,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     if (!this.cards[idx]) return;
     this.classCardIndex = idx;
     this.cards.forEach((card, i) => {
-      const bg = card.getAt(0) as Phaser.GameObjects.Rectangle;
+      const bg = this._getClassCardHitBox(card);
       if (i === idx) {
         bg.setStrokeStyle(2, 0x6644aa);
       } else if (this.selectedClass?.id === this.classes[i].id) {
@@ -436,8 +545,10 @@ export class CharacterSelectScene extends Phaser.Scene {
   private _createClassCard(x: number, y: number, cls: CharacterClass): Phaser.GameObjects.Container {
     const container = this.add.container(x, y);
 
-    const bg = this.add.rectangle(0, 0, CARD_WIDTH, CARD_HEIGHT, 0x1a1a2e, 0.9)
+    const frame = this._addCharacterSelectFrame(0, 0, CARD_WIDTH, CARD_HEIGHT, CHARACTER_SELECT_UI_FRAME_TEXTURES.classCard);
+    const bg = this.add.rectangle(0, 0, CARD_WIDTH, CARD_HEIGHT, 0x000000, 0)
       .setStrokeStyle(2, 0x333366).setInteractive({ useHandCursor: true });
+    bg.setName('classCardHitBox');
 
     // P33-A: 실제 일러스트 사용 (텍스처 없으면 fallback 원형)
     const texKey = `char_${cls.id}`;
@@ -468,7 +579,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       fontSize: '11px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', align: 'center',
     }).setOrigin(0.5);
 
-    container.add([bg, icon, name, nameEn, desc, stats]);
+    container.add([frame, bg, icon, name, nameEn, desc, stats]);
 
     bg.on('pointerdown', () => this._selectClass(cls));
     bg.on('pointerover', () => bg.setStrokeStyle(2, 0x6644aa));
@@ -477,6 +588,51 @@ export class CharacterSelectScene extends Phaser.Scene {
     });
 
     return container;
+  }
+
+  private _addCharacterSelectFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof CHARACTER_SELECT_UI_FRAME_TEXTURES[keyof typeof CHARACTER_SELECT_UI_FRAME_TEXTURES],
+  ): Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle {
+    if (this.textures.exists(texture.key)) {
+      return this.add.image(x, y, texture.key)
+        .setDisplaySize(width, height)
+        .setAlpha(0.88);
+    }
+
+    // Aseprite character select UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    return this.add.rectangle(x, y, width, height, 0x1a1a2e, 0.9);
+  }
+
+  private _addExistingCharacterAvatar(
+    classId: string,
+    x: number,
+    y: number,
+    fallbackColor: number,
+  ): Phaser.GameObjects.Image | Phaser.GameObjects.Arc {
+    const avatarResource = getCharacterSelectBattleAvatarResource(classId);
+    if (this.textures.exists(avatarResource.key)) {
+      const avatar = this.add.image(x, y, avatarResource.key)
+        .setName(`character_select_existing_avatar_${classId}`)
+        .setOrigin(0.5, 0.62);
+      avatar.setDisplaySize(28, 42);
+      avatar.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.existingCharacterAvatars.push(avatar);
+      return avatar;
+    }
+
+    // Aseprite character battle thumbnail 로드 실패 시에만 사용하는 안전 fallback.
+    this.missingExistingAvatarKeys.push(avatarResource.key);
+    this.fallbackExistingAvatarClassIds.push(classId);
+    return this.add.circle(x, y, 18, fallbackColor)
+      .setName(`character_select_existing_avatar_fallback_${classId}`);
+  }
+
+  private _getClassCardHitBox(card: Phaser.GameObjects.Container): Phaser.GameObjects.Rectangle {
+    return card.getByName('classCardHitBox') as Phaser.GameObjects.Rectangle;
   }
 
   private _selectClass(cls: CharacterClass): void {
@@ -516,6 +672,11 @@ export class CharacterSelectScene extends Phaser.Scene {
   private _createNameInput(sceneW: number, sceneH: number): void {
     const canvas = this.game.canvas;
     const rect = canvas.getBoundingClientRect();
+    const scaleX = rect.width / sceneW;
+    const scaleY = rect.height / sceneH;
+    const inputW = 240 * scaleX;
+    const inputLeft = rect.left + (sceneW / 2) * scaleX - inputW / 2;
+    const inputTop = rect.top + sceneH * 0.82 * scaleY;
 
     this.nameInput = document.createElement('input');
     this.nameInput.type = 'text';
@@ -526,13 +687,29 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.nameInput.name = 'character-name';
     this.nameInput.setAttribute('aria-label', '캐릭터 이름');
     this.nameInput.autocomplete = 'off';
+    this.nameInput.dataset.aeternaFrameKey = CHARACTER_SELECT_UI_FRAME_TEXTURES.nameInput.key;
+    this.nameInput.dataset.aeternaFramePath = CHARACTER_SELECT_UI_FRAME_TEXTURES.nameInput.path;
     this.nameInput.style.cssText = `
       position: absolute;
-      left: ${rect.left + sceneW / 2 - 120}px;
-      top: ${rect.top + sceneH * 0.82}px;
-      width: 240px; padding: 8px 12px; font-size: 14px; font-family: monospace;
-      background: #1a1a2e; color: #ffffff; border: 1px solid #6644aa;
-      border-radius: 4px; text-align: center; outline: none; z-index: 100;
+      left: ${inputLeft}px;
+      top: ${inputTop}px;
+      width: ${inputW}px;
+      height: 34px;
+      box-sizing: border-box;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-family: monospace;
+      background-color: #1a1a2e;
+      background-image: url("/${CHARACTER_SELECT_UI_FRAME_TEXTURES.nameInput.path}");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      color: #ffffff;
+      border: 1px solid rgba(182, 221, 255, 0.62);
+      border-radius: 0;
+      text-align: center;
+      outline: none;
+      z-index: 100;
     `;
     document.body.appendChild(this.nameInput);
 
@@ -544,10 +721,157 @@ export class CharacterSelectScene extends Phaser.Scene {
       }
     });
 
-    this.add.text(sceneW / 2, sceneH * 0.9, '[ 캐릭터 생성 ]', {
-      fontSize: '18px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#88ff88',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this._onCreate());
+    this._addCharacterSelectActionButton(
+      sceneW / 2,
+      sceneH * 0.9,
+      230,
+      38,
+      '[ 캐릭터 생성 ]',
+      '#88ff88',
+      () => this._onCreate(),
+    );
+  }
+
+  private _addCharacterSelectActionButton(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    label: string,
+    color: string,
+    onPointerDown: () => void,
+  ): Phaser.GameObjects.Container {
+    const container = this.add.container(x, y);
+    const texture = CHARACTER_SELECT_UI_FRAME_TEXTURES.actionButton;
+    const frame = this._addCharacterSelectFrame(0, 0, width, height, texture);
+
+    if (frame instanceof Phaser.GameObjects.Image) {
+      frame.setName('character_select_action_button_frame');
+      this.actionButtonFrames.push(frame);
+    }
+
+    const hitArea = this.add.rectangle(0, 0, width, height, 0x000000, 0)
+      .setInteractive({ useHandCursor: true });
+    const text = this.add.text(0, 0, label, {
+      fontSize: '18px',
+      fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      color,
+    }).setOrigin(0.5);
+
+    hitArea.on('pointerdown', onPointerDown);
+    hitArea.on('pointerover', () => {
+      if (frame instanceof Phaser.GameObjects.Image) frame.setAlpha(1);
+      text.setColor('#ffffff');
+    });
+    hitArea.on('pointerout', () => {
+      if (frame instanceof Phaser.GameObjects.Image) frame.setAlpha(0.88);
+      text.setColor(color);
+    });
+
+    container.add([frame, hitArea, text]);
+
+    return container;
+  }
+
+  private _isCharacterSelectFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('characterSelectFrameQa') === '1';
+  }
+
+  private _writeCharacterSelectFrameQaProbe(): void {
+    if (!this._isCharacterSelectFrameQaRoute() || typeof document === 'undefined') return;
+
+    const nameInputFrame = CHARACTER_SELECT_UI_FRAME_TEXTURES.nameInput;
+    const actionButtonFrame = CHARACTER_SELECT_UI_FRAME_TEXTURES.actionButton;
+    const nameInputs = [this.nameInput].filter((input): input is HTMLInputElement => input instanceof HTMLInputElement);
+    const expectedNameInputFrameCount = this.mode === 'create'
+      ? CHARACTER_SELECT_EXPECTED_NAME_INPUT_FRAME_COUNT
+      : 0;
+    const expectedActionButtonFrameCount = this.mode === 'create'
+      ? CHARACTER_SELECT_EXPECTED_ACTION_BUTTON_FRAME_COUNT
+      : 0;
+    const expectedExistingAvatarCount = this.mode === 'select'
+      ? this.existingCharacters.length
+      : 0;
+    const expectedExistingAvatarKeys = this.existingCharacters
+      .map((char) => getCharacterSelectBattleAvatarResource(char.classId).key);
+    const hasExpectedExistingAvatars = expectedExistingAvatarCount === 0 || (
+      this.existingCharacterAvatars.length === expectedExistingAvatarCount
+      && this.existingCharacterAvatars.every((avatar, index) => avatar.texture.key === expectedExistingAvatarKeys[index])
+      && this.missingExistingAvatarKeys.length === 0
+    );
+    const hasExpectedNameInputFrames = expectedNameInputFrameCount === 0 || (
+      this.textures.exists(nameInputFrame.key)
+      && nameInputs.length === expectedNameInputFrameCount
+      && nameInputs.every((input) => (
+        input.dataset.aeternaFrameKey === nameInputFrame.key
+        && input.dataset.aeternaFramePath === nameInputFrame.path
+        && input.style.backgroundImage.includes(nameInputFrame.path)
+      ))
+    );
+    const hasExpectedActionButtonFrames = expectedActionButtonFrameCount === 0 || (
+      this.textures.exists(actionButtonFrame.key)
+      && this.actionButtonFrames.length === expectedActionButtonFrameCount
+    );
+    const missingFrameKeys = Array.from(new Set([
+      ...(hasExpectedNameInputFrames ? [] : [nameInputFrame.key]),
+      ...(hasExpectedActionButtonFrames ? [] : [actionButtonFrame.key]),
+    ]));
+    const missingExistingAvatarKeys = hasExpectedExistingAvatars
+      ? this.missingExistingAvatarKeys
+      : Array.from(new Set([...this.missingExistingAvatarKeys, ...expectedExistingAvatarKeys]));
+    const visibleCanvasCount = Array.from(document.querySelectorAll('canvas'))
+      .filter((canvas) => canvas instanceof HTMLCanvasElement && canvas.offsetWidth > 0 && canvas.offsetHeight > 0)
+      .length;
+
+    document.body.dataset.aeternaCharacterSelectFrameQa = JSON.stringify({
+      status: missingFrameKeys.length === 0 && missingExistingAvatarKeys.length === 0 ? 'ready' : 'missing-frame',
+      mode: this.mode,
+      missingFrameKeys,
+      missingExistingAvatarKeys,
+      nameInputFrame: {
+        key: nameInputFrame.key,
+        path: nameInputFrame.path,
+        renderedCount: nameInputs.length,
+        expectedCount: expectedNameInputFrameCount,
+        cssBackgrounds: nameInputs.map((input) => input.style.backgroundImage),
+        displaySizes: nameInputs.map((input) => {
+          const rect = input.getBoundingClientRect();
+          return {
+            width: rect.width,
+            height: rect.height,
+            visible: input.offsetWidth > 0 && input.offsetHeight > 0,
+          };
+        }),
+      },
+      actionButtonFrame: {
+        key: actionButtonFrame.key,
+        path: actionButtonFrame.path,
+        renderedCount: this.actionButtonFrames.length,
+        expectedCount: expectedActionButtonFrameCount,
+        displaySizes: this.actionButtonFrames.map((frame) => ({
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+          visible: frame.visible,
+        })),
+      },
+      existingCharacterAvatar: {
+        expectedCount: expectedExistingAvatarCount,
+        renderedCount: this.existingCharacterAvatars.length,
+        expectedKeys: expectedExistingAvatarKeys,
+        renderedKeys: this.existingCharacterAvatars.map((avatar) => avatar.texture.key),
+        displaySizes: this.existingCharacterAvatars.map((avatar) => ({
+          name: avatar.name,
+          width: avatar.displayWidth,
+          height: avatar.displayHeight,
+          visible: avatar.visible,
+        })),
+        fallbackExistingAvatarClassIds: this.fallbackExistingAvatarClassIds,
+      },
+      selectedClassId: this.selectedClass?.id ?? null,
+      errorText: this.errorText?.text ?? '',
+      visibleCanvasCount,
+    });
   }
 
   private async _onCreate(): Promise<void> {
@@ -555,18 +879,22 @@ export class CharacterSelectScene extends Phaser.Scene {
 
     if (!this.selectedClass) {
       this.errorText.setText('클래스를 선택해 주세요.');
+      this._writeCharacterSelectFrameQaProbe();
       return;
     }
     if (name.length < 2 || name.length > 12) {
       this.errorText.setText('이름은 2~12자로 입력해 주세요.');
+      this._writeCharacterSelectFrameQaProbe();
       return;
     }
     if (!/^[가-힣a-zA-Z0-9_]+$/.test(name)) {
       this.errorText.setText('한글, 영문, 숫자, _만 사용 가능합니다.');
+      this._writeCharacterSelectFrameQaProbe();
       return;
     }
 
     this.errorText.setText('생성 중...');
+    this._writeCharacterSelectFrameQaProbe();
 
     // P25-02: 서버에 캐릭터 생성 요청
     try {
@@ -595,6 +923,7 @@ export class CharacterSelectScene extends Phaser.Scene {
         if (parsed?.error) msg = parsed.error;
       } catch { /* 무시 */ }
       this.errorText.setText(msg);
+      this._writeCharacterSelectFrameQaProbe();
     }
   }
 }

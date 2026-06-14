@@ -9,6 +9,7 @@
 
 import * as Phaser from 'phaser';
 import { SkillSlot } from '../combat/CombatManager';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
@@ -31,13 +32,62 @@ const LOG_MAX_LINES = 4;          // Compact: 4 lines max
 const LOG_X = 1560;               // Top-right corner
 const LOG_Y = 10;
 
+const BATTLE_UTILITY_BUTTON_ICON_IDS = {
+  pause: 'skill_tg_stop',
+  resume: 'skill_mw_arrow',
+  flee: 'skill_vw_warp',
+} as const;
+const BATTLE_UTILITY_BUTTON_RENDERED_ICON_COUNT = 2;
+
+export const BATTLE_UI_FRAME_TEXTURES = {
+  skillSlot: {
+    key: 'ui_frame_UI-BTN-001-DEF',
+    path: 'assets/generated/ui/frames/UI-BTN-001-DEF.png',
+    width: 512,
+    height: 512,
+  },
+  logPanel: {
+    key: 'ui_frame_UI-HUD-008-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-008-DEF.png',
+    width: 512,
+    height: 512,
+  },
+  skillTooltip: {
+    key: 'ui_frame_battle_skill_tooltip',
+    path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png',
+    width: 512,
+    height: 512,
+  },
+  utilityButton: {
+    key: 'ui_frame_battle_utility_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+    width: 512,
+    height: 512,
+  },
+} as const;
+
+export function preloadBattleUiFrameTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(BATTLE_UI_FRAME_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+
+  for (const iconId of Object.values(BATTLE_UTILITY_BUTTON_ICON_IDS)) {
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    if (iconResource && !scene.textures.exists(iconResource.key)) {
+      scene.load.image(iconResource.key, iconResource.path);
+    }
+  }
+}
+
 // ─── BattleUI ──────────────────────────────────────────────────
 
 export class BattleUI {
   private scene: Phaser.Scene;
 
   // 스킬 슬롯 UI
-  private slotBgs: Phaser.GameObjects.Rectangle[] = [];
+  private slotBgs: Array<Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle> = [];
   private slotTexts: Phaser.GameObjects.Text[] = [];
   private cooldownOverlays: Phaser.GameObjects.Rectangle[] = [];
   private slotKeyLabels: Phaser.GameObjects.Text[] = [];
@@ -61,6 +111,10 @@ export class BattleUI {
   // 버튼
   private pauseBtn!: Phaser.GameObjects.Text;
   private fleeBtn!: Phaser.GameObjects.Text;
+  private utilityButtonFrames: Phaser.GameObjects.Image[] = [];
+  private utilityButtonIcons: Phaser.GameObjects.Image[] = [];
+  private pauseIcon?: Phaser.GameObjects.Image;
+  private fleeIcon?: Phaser.GameObjects.Image;
 
   // 스킬 툴팁
   private tooltipContainer: Phaser.GameObjects.Container | null = null;
@@ -73,6 +127,7 @@ export class BattleUI {
     this._createLogPanel();
     this._createStatusPanel();
     this._createButtons();
+    this._startBattleSkillTooltipFrameQaIfNeeded();
   }
 
   // ─── 스킬 바 생성 ─────────────────────────────────────────────
@@ -88,10 +143,20 @@ export class BattleUI {
       const slot = this.skillSlots[i];
       const elemColor = slot ? (ELEMENT_COLORS[slot.element ?? 'neutral'] ?? 0x6666aa) : 0x6666aa;
 
-      // 슬롯 배경
-      const bg = this.scene.add.rectangle(x, y, SKILL_SLOT_SIZE, SKILL_SLOT_SIZE, 0x222244)
-        .setStrokeStyle(2, elemColor)
-        .setInteractive({ useHandCursor: true });
+      // 슬롯 배경은 Aseprite UI frame을 우선 사용하고, 로드 실패 시 기존 절차 사각형으로 안전 fallback한다.
+      const frameTexture = BATTLE_UI_FRAME_TEXTURES.skillSlot;
+      const bg = this.scene.textures.exists(frameTexture.key)
+        ? this.scene.add.image(x, y, frameTexture.key)
+          .setDisplaySize(SKILL_SLOT_SIZE, SKILL_SLOT_SIZE)
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true })
+        : this.scene.add.rectangle(x, y, SKILL_SLOT_SIZE, SKILL_SLOT_SIZE, 0x222244)
+          .setStrokeStyle(2, elemColor)
+          .setInteractive({ useHandCursor: true });
+      if (bg instanceof Phaser.GameObjects.Image) {
+        this.scene.add.rectangle(x, y, SKILL_SLOT_SIZE, SKILL_SLOT_SIZE, 0x000000, 0)
+          .setStrokeStyle(2, elemColor);
+      }
       bg.on('pointerdown', () => {
         // 클릭으로 스킬 사용 — BattleScene에서 처리
         const battleScene = this.scene as unknown as { _useSkill: (idx: number) => void };
@@ -110,10 +175,18 @@ export class BattleUI {
       }
       this.slotBgs.push(bg);
 
+      const iconResource = slot?.icon ? getSpriteResourceForSkillIcon(slot.icon) : undefined;
+      const hasIcon = Boolean(iconResource && this.scene.textures.exists(iconResource.key));
+      if (slot && iconResource && hasIcon) {
+        this.scene.add.image(x, y - 7, iconResource.key)
+          .setDisplaySize(30, 30)
+          .setOrigin(0.5);
+      }
+
       // 스킬 이름 (슬롯 크기에 맞춰 최대 5자)
       const label = slot ? slot.name.slice(0, 5) : '—';
-      const txt = this.scene.add.text(x, y - 6, label, {
-        fontSize: '11px', color: '#ffffff',
+      const txt = this.scene.add.text(x, hasIcon ? y + 18 : y - 6, label, {
+        fontSize: hasIcon ? '8px' : '11px', color: '#ffffff',
         fontStyle: slot?.mpCost === 0 ? 'italic' : 'bold',
       }).setOrigin(0.5);
       this.slotTexts.push(txt);
@@ -146,9 +219,28 @@ export class BattleUI {
   // ─── 전투 로그 ────────────────────────────────────────────────
 
   private _createLogPanel(): void {
-    // 배경 — top-right corner, semi-transparent, compact (4 lines)
-    this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 340, 86, 0x000000, 0.35)
-      .setDepth(110);
+    const logPanelTexture = BATTLE_UI_FRAME_TEXTURES.logPanel;
+    const hasLogPanelTexture = this.scene.textures.exists(logPanelTexture.key);
+
+    if (hasLogPanelTexture) {
+      // Aseprite 로그 panel frame을 먼저 사용하고, 내부 로그 가독성은 어두운 오버레이로 보정한다.
+      this.scene.add.image(LOG_X + 160, LOG_Y + 38, logPanelTexture.key)
+        .setName(`battle_ui_log_frame_${logPanelTexture.key}`)
+        .setDisplaySize(340, 86)
+        .setAlpha(0.88)
+        .setDepth(108);
+      this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 316, 58, 0x020915, 0.42)
+        .setDepth(109);
+      this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 340, 86, 0x000000, 0)
+        .setStrokeStyle(1, 0x9bd4ff, 0.65)
+        .setDepth(110);
+    } else {
+      // Aseprite battle log UI frame 로드 실패 시에만 사용하는 안전 fallback.
+      this.scene.add.rectangle(LOG_X + 160, LOG_Y + 38, 340, 86, 0x000000, 0.35)
+        .setDepth(110);
+    }
+
+    this._writeBattleLogFrameQaProbe(logPanelTexture, hasLogPanelTexture);
 
     // UX(#11): 로그 패널 위 색상 하이라이트(중요 이벤트 1줄). 별도 객체라 회색 로그와 분리.
     this.logHighlight = this.scene.add.text(LOG_X, LOG_Y - 16, '', {
@@ -156,6 +248,29 @@ export class BattleUI {
     }).setDepth(112).setAlpha(0);
 
     this._makeLogText();
+  }
+
+  private _isBattleLogFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    try {
+      return new URLSearchParams(window.location.search).get('battleLogFrameQa') === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private _writeBattleLogFrameQaProbe(
+    texture: (typeof BATTLE_UI_FRAME_TEXTURES)['logPanel'],
+    hasTexture: boolean,
+  ): void {
+    if (!this._isBattleLogFrameQaRoute() || typeof document === 'undefined') return;
+
+    document.body.dataset.aeternaBattleLogFrameQa = JSON.stringify({
+      status: hasTexture ? 'ready' : 'missing',
+      renderedFrameKeys: hasTexture ? [texture.key] : [],
+      missingFrameKeys: hasTexture ? [] : [texture.key],
+    });
   }
 
   /** UX(#11): 메시지의 이모지/키워드로 중요 이벤트 색을 추론(평범한 줄은 null = 강조 안 함). */
@@ -257,12 +372,19 @@ export class BattleUI {
   // ─── 버튼 ────────────────────────────────────────────────────
 
   private _createButtons(): void {
+    const buttonY = LOG_Y + 96;
+    const pauseX = LOG_X + 56;
+    const fleeX = LOG_X + 132;
+
     // 일시정지 (battle log 아래) — 키보드 컷오버(감사 rank5): P 키 등가 추가.
-    this.pauseBtn = this.scene.add.text(LOG_X, LOG_Y + 84, '⏸ 일시정지 (P)', {
+    this._addBattleUtilityButtonFrame(pauseX, buttonY, 116, 26, 'pause');
+    this.pauseIcon = this._addBattleUtilityButtonIcon(pauseX - 44, buttonY, 'pause', BATTLE_UTILITY_BUTTON_ICON_IDS.pause);
+    this.pauseBtn = this.scene.add.text(this.pauseIcon ? pauseX + 8 : pauseX, buttonY, '', {
       fontSize: '10px', color: '#aaaaaa',
-      backgroundColor: '#222222', padding: { x: 4, y: 2 },
-    }).setDepth(112).setInteractive({ useHandCursor: true });
+      padding: { x: 4, y: 2 },
+    }).setOrigin(0.5).setDepth(112).setInteractive({ useHandCursor: true });
     this.pauseBtn.on('pointerdown', () => this.togglePause());
+    this.pauseIcon?.on('pointerdown', () => this.togglePause());
 
     // P 키는 Phaser 씬 키보드가 아니라 window 레벨에 바인딩 — scene.pause('BattleScene') 가
     // 씬 시스템(키보드 플러그인 포함)을 멈추므로, 씬 키였다면 "P로 정지 → P로 재개 불가" 트랩.
@@ -278,27 +400,175 @@ export class BattleUI {
     });
 
     // 도주
-    this.fleeBtn = this.scene.add.text(LOG_X + 100, LOG_Y + 84, '🏃 도주', {
+    this._addBattleUtilityButtonFrame(fleeX, buttonY, 72, 26, 'flee');
+    this.fleeIcon = this._addBattleUtilityButtonIcon(fleeX - 24, buttonY, 'flee', BATTLE_UTILITY_BUTTON_ICON_IDS.flee);
+    const fleeLabel = this.fleeIcon ? '도주' : '🏃 도주';
+    this.fleeBtn = this.scene.add.text(this.fleeIcon ? fleeX + 7 : fleeX, buttonY, fleeLabel, {
       fontSize: '10px', color: '#ff8888',
-      backgroundColor: '#222222', padding: { x: 4, y: 2 },
-    }).setDepth(112).setInteractive({ useHandCursor: true });
+      padding: { x: 4, y: 2 },
+    }).setOrigin(0.5).setDepth(112).setInteractive({ useHandCursor: true });
     // UX(#2): 단일 도주 경로로 위임. 이전엔 여기서 50% 고정확률 + scene.start('GameScene') 직행으로
     // BattleScene._attemptFlee(생존자 기반 확률·escapeNarration 로그·_exitBattle 의 combatEnd 서버정리/
     // returnScene 복귀)를 통째로 우회해, 서버 전투가 안 닫히고 던전 등으로 복귀 못 하는 버그였다.
     this.fleeBtn.on('pointerdown', () => {
       (this.scene as unknown as { _attemptFlee?: () => void })._attemptFlee?.();
     });
+    this.fleeIcon?.on('pointerdown', () => {
+      (this.scene as unknown as { _attemptFlee?: () => void })._attemptFlee?.();
+    });
+    this._setPauseButtonPausedState(false);
+    this._writeBattleUtilityButtonFrameQaProbe();
+  }
+
+  private _setPauseButtonPausedState(paused: boolean): void {
+    const pauseIconResource = getSpriteResourceForSkillIcon(BATTLE_UTILITY_BUTTON_ICON_IDS.pause);
+    const resumeIconResource = getSpriteResourceForSkillIcon(BATTLE_UTILITY_BUTTON_ICON_IDS.resume);
+    const targetIconResource = paused ? resumeIconResource : pauseIconResource;
+    const hasStateIcon = Boolean(this.pauseIcon && targetIconResource && this.scene.textures.exists(targetIconResource.key));
+
+    if (this.pauseIcon) {
+      this.pauseIcon.setVisible(hasStateIcon);
+      if (targetIconResource && this.scene.textures.exists(targetIconResource.key)) {
+        this.pauseIcon.setTexture(targetIconResource.key);
+        this.pauseIcon.setDisplaySize(14, 14);
+        this.pauseIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+    }
+
+    if (paused) {
+      this.pauseBtn.setText(hasStateIcon ? '재개 (P)' : '▶ 재개 (P)');
+      return;
+    }
+
+    this.pauseBtn.setText(hasStateIcon ? '일시정지 (P)' : '⏸ 일시정지 (P)');
+  }
+
+  private _addBattleUtilityButtonIcon(
+    x: number,
+    y: number,
+    name: 'pause' | 'flee',
+    iconId: string,
+  ): Phaser.GameObjects.Image | undefined {
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    if (!iconResource || !this.scene.textures.exists(iconResource.key)) return undefined;
+
+    const icon = this.scene.add.image(x, y, iconResource.key)
+      .setName(`battle_ui_utility_button_icon_${name}`)
+      .setOrigin(0.5)
+      .setDepth(112)
+      .setInteractive({ useHandCursor: true });
+    icon.setDisplaySize(14, 14);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.utilityButtonIcons.push(icon);
+    return icon;
+  }
+
+  private _addBattleUtilityButtonFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    name: 'pause' | 'flee',
+  ): void {
+    const texture = BATTLE_UI_FRAME_TEXTURES.utilityButton;
+    if (this.scene.textures.exists(texture.key)) {
+      const frame = this.scene.add.image(x, y, texture.key)
+        .setName(`battle_ui_utility_button_frame_${name}`)
+        .setDisplaySize(width, height)
+        .setAlpha(0.9)
+        .setDepth(111);
+      this.utilityButtonFrames.push(frame);
+      return;
+    }
+
+    // Aseprite utility button frame 로드 실패 시에만 사용하는 안전 fallback.
+    this.scene.add.rectangle(x, y, width, height, 0x222222, 0.88)
+      .setStrokeStyle(1, name === 'pause' ? 0x6666aa : 0xaa6666)
+      .setDepth(111);
+  }
+
+  private _isBattleUtilityButtonFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    try {
+      return new URLSearchParams(window.location.search).get('battleUtilityButtonFrameQa') === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private _writeBattleUtilityButtonFrameQaProbe(): void {
+    if (!this._isBattleUtilityButtonFrameQaRoute() || typeof document === 'undefined') return;
+
+    const texture = BATTLE_UI_FRAME_TEXTURES.utilityButton;
+    const hasTexture = this.scene.textures.exists(texture.key);
+    const expectedTextureKeys = this._getBattleUtilityButtonExpectedIconKeys();
+    const missingUtilityButtonIconKeys = this._getMissingBattleUtilityButtonIconKeys();
+    document.body.dataset.aeternaBattleUtilityButtonFrameQa = JSON.stringify({
+      status: hasTexture && missingUtilityButtonIconKeys.length === 0 ? 'ready' : 'missing',
+      renderedFrameKeys: hasTexture ? [texture.key] : [],
+      renderedFrameCount: this.utilityButtonFrames.length,
+      expectedFrameCount: 2,
+      missingFrameKeys: hasTexture ? [] : [texture.key],
+      utilityButtonFrame: {
+        key: texture.key,
+        path: texture.path,
+        rendered: hasTexture,
+        buttonNames: this.utilityButtonFrames.map((frame) => frame.name),
+        displaySizes: this.utilityButtonFrames.map((frame) => ({
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+        })),
+      },
+      utilityButtonIcon: {
+        renderedIconCount: this.utilityButtonIcons.length,
+        expectedIconCount: 2,
+        expectedRenderedIconCount: BATTLE_UTILITY_BUTTON_RENDERED_ICON_COUNT,
+        expectedTextureKeys,
+        iconNames: this.utilityButtonIcons.map((icon) => icon.name),
+        textureKeys: this.utilityButtonIcons.map((icon) => icon.texture.key),
+        pauseIconTextureKey: this.pauseIcon?.texture.key ?? null,
+        pauseLabelLegacyGlyphPresent: this.pauseBtn.text.includes('▶') || this.pauseBtn.text.includes('⏸'),
+        missingUtilityButtonIconKeys,
+        displaySizes: this.utilityButtonIcons.map((icon) => ({
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+      },
+      missingUtilityButtonIconKeys,
+      pauseLabel: this.pauseBtn.text,
+      fleeLabel: this.fleeBtn.text,
+      visibleCanvasCount: typeof document === 'undefined'
+        ? 0
+        : Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+          const rect = canvas.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        }).length,
+    });
+  }
+
+  private _getBattleUtilityButtonExpectedIconKeys(): string[] {
+    return Object.values(BATTLE_UTILITY_BUTTON_ICON_IDS)
+      .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key)
+      .filter((key): key is string => key !== undefined);
+  }
+
+  private _getMissingBattleUtilityButtonIconKeys(): string[] {
+    return Object.values(BATTLE_UTILITY_BUTTON_ICON_IDS)
+      .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key ?? iconId)
+      .filter((key) => !this.scene.textures.exists(key));
   }
 
   /** 일시정지 토글 — 마우스 버튼과 P 키(window)가 공유하는 단일 진입점(라벨 동기 포함). */
   togglePause(): void {
     if (this.scene.scene.isPaused('BattleScene')) {
       this.scene.scene.resume('BattleScene');
-      this.pauseBtn.setText('⏸ 일시정지 (P)');
+      this._setPauseButtonPausedState(false);
     } else {
       this.scene.scene.pause('BattleScene');
-      this.pauseBtn.setText('▶ 재개 (P)');
+      this._setPauseButtonPausedState(true);
     }
+    this._writeBattleUtilityButtonFrameQaProbe();
   }
 
   // ─── 스킬 쿨다운 표시 ────────────────────────────────────────
@@ -349,19 +619,130 @@ export class BattleUI {
     if (slot.mpCost > 0) lines.push(`MP ${slot.mpCost}  CD ${slot.cooldown}s`);
     else lines.push('패시브');
 
-    const bg = this.scene.add.rectangle(0, 0, 120, lines.length * 16 + 8, 0x111133, 0.9)
-      .setStrokeStyle(1, 0x6666aa).setOrigin(0.5);
+    const tooltipTexture = BATTLE_UI_FRAME_TEXTURES.skillTooltip;
+    const hasTooltipFrame = this.scene.textures.exists(tooltipTexture.key);
+    const tooltipW = 150;
+    const tooltipH = lines.length * 18 + 16;
+    const tooltipObjects: Phaser.GameObjects.GameObject[] = [];
+
+    if (hasTooltipFrame) {
+      tooltipObjects.push(
+        this.scene.add.image(0, 0, tooltipTexture.key)
+          .setName(`battle_ui_skill_tooltip_frame_${tooltipTexture.key}`)
+          .setDisplaySize(tooltipW, tooltipH)
+          .setAlpha(0.9)
+          .setOrigin(0.5),
+      );
+    }
+
+    // Aseprite frame이 있으면 rectangle은 텍스트 가독성 레이어로만 쓰고, 없으면 기존 stroke fallback을 유지한다.
+    const bg = this.scene.add.rectangle(0, 0, tooltipW - 20, tooltipH - 12, 0x05091a, hasTooltipFrame ? 0.48 : 0.9)
+      .setOrigin(0.5);
+    if (!hasTooltipFrame) {
+      bg.setStrokeStyle(1, 0x6666aa);
+    }
+    tooltipObjects.push(bg);
+
     const txt = this.scene.add.text(0, 0, lines.join('\n'), {
       fontSize: '10px', color: '#ffffff', align: 'center', lineSpacing: 2,
     }).setOrigin(0.5);
+    tooltipObjects.push(txt);
 
-    this.tooltipContainer = this.scene.add.container(x, y - 10, [bg, txt]).setDepth(200);
+    this.tooltipContainer = this.scene.add.container(x, y - 10, tooltipObjects).setDepth(200);
+    this._writeBattleSkillTooltipFrameQaProbe(
+      hasTooltipFrame ? 'ready' : 'missing',
+      tooltipTexture,
+      hasTooltipFrame,
+      {
+        slotName: slot.name,
+        lineCount: lines.length,
+        tooltipWidth: tooltipW,
+        tooltipHeight: tooltipH,
+      },
+    );
   }
 
   private _hideTooltip(): void {
     if (this.tooltipContainer) {
       this.tooltipContainer.destroy();
       this.tooltipContainer = null;
+      this._writeBattleSkillTooltipFrameQaProbe(
+        'hidden',
+        BATTLE_UI_FRAME_TEXTURES.skillTooltip,
+        this.scene.textures.exists(BATTLE_UI_FRAME_TEXTURES.skillTooltip.key),
+      );
     }
+  }
+
+  private _isBattleSkillTooltipFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    try {
+      return new URLSearchParams(window.location.search).get('battleTooltipFrameQa') === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private _startBattleSkillTooltipFrameQaIfNeeded(): void {
+    if (!this._isBattleSkillTooltipFrameQaRoute()) return;
+
+    const slotIndex = this.skillSlots.findIndex(Boolean);
+    if (slotIndex < 0) {
+      this._writeBattleSkillTooltipFrameQaProbe(
+        'missing',
+        BATTLE_UI_FRAME_TEXTURES.skillTooltip,
+        this.scene.textures.exists(BATTLE_UI_FRAME_TEXTURES.skillTooltip.key),
+      );
+      return;
+    }
+
+    const startX = 40;
+    const x = startX + slotIndex * (SKILL_SLOT_SIZE + SKILL_GAP) + SKILL_SLOT_SIZE / 2;
+    const y = SKILL_BAR_Y - SKILL_SLOT_SIZE - 10;
+    this.scene.time.delayedCall(80, () => {
+      const slot = this.skillSlots[slotIndex];
+      if (slot) {
+        this._showTooltip(x, y, slot);
+      }
+    });
+  }
+
+  private _writeBattleSkillTooltipFrameQaProbe(
+    status: 'ready' | 'missing' | 'hidden',
+    texture: (typeof BATTLE_UI_FRAME_TEXTURES)['skillTooltip'],
+    hasTexture: boolean,
+    tooltip?: {
+      slotName: string;
+      lineCount: number;
+      tooltipWidth: number;
+      tooltipHeight: number;
+    },
+  ): void {
+    if (!this._isBattleSkillTooltipFrameQaRoute() || typeof document === 'undefined') return;
+
+    document.body.dataset.aeternaBattleSkillTooltipFrameQa = JSON.stringify({
+      status,
+      visible: status === 'ready' || status === 'missing',
+      renderedFrameKeys: hasTexture && status !== 'hidden' ? [texture.key] : [],
+      renderedFrameCount: hasTexture && status !== 'hidden' ? 1 : 0,
+      expectedFrameCount: 1,
+      missingFrameKeys: hasTexture ? [] : [texture.key],
+      skillTooltipFrame: {
+        key: texture.key,
+        path: texture.path,
+        rendered: hasTexture && status !== 'hidden',
+        displayWidth: tooltip?.tooltipWidth ?? 0,
+        displayHeight: tooltip?.tooltipHeight ?? 0,
+      },
+      slotName: tooltip?.slotName ?? '',
+      lineCount: tooltip?.lineCount ?? 0,
+      visibleCanvasCount: typeof document === 'undefined'
+        ? 0
+        : Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+          const rect = canvas.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        }).length,
+    });
   }
 }

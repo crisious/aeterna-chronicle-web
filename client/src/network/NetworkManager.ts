@@ -357,7 +357,7 @@ export interface SocketEvents {
   // 월드 이벤트
   'world:move': { characterId: string; x: number; y: number; state: string };
   'world:teleport': { characterId: string; zoneId: string };
-  'world:playerJoined': { characterId: string; name: string; x: number; y: number };
+  'world:playerJoined': { characterId: string; name: string; x: number; y: number; characterClass?: string };
   'world:playerLeft': { characterId: string };
   'world:monsterSpawn': { monsterId: string; name: string; x: number; y: number; level: number };
   'world:monsterDespawn': { monsterId: string };

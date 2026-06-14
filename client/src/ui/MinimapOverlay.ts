@@ -18,6 +18,8 @@ import * as Phaser from 'phaser';
 /** 맵 마커 타입 */
 export type MarkerType = 'player' | 'npc' | 'monster' | 'monster_aggro' | 'dungeon' | 'quest_give' | 'quest_turn_in' | 'waypoint';
 
+type MinimapOverlayMarkerVisual = Phaser.GameObjects.Image;
+
 /** 맵 마커 */
 export interface MapMarker {
   id: string;
@@ -49,6 +51,116 @@ export interface MinimapConfig {
   bgColor: number;
   bgAlpha: number;
   fullscreenSize: number;
+  frameQa: boolean;
+}
+
+interface MinimapOverlayMarkerTexture {
+  key: string;
+  path: string;
+  kind: 'image' | 'spritesheet';
+  displayWidth: number;
+  displayHeight: number;
+  frame?: number;
+  frameWidth?: number;
+  frameHeight?: number;
+}
+
+export const MINIMAP_OVERLAY_UI_FRAME_TEXTURES = {
+  panel: {
+    key: 'ui_frame_minimap_overlay_panel',
+    path: 'assets/generated/ui/frames/UI-HUD-002-DEF.png',
+  },
+} as const;
+
+const MINIMAP_OVERLAY_MARKER_TEXTURES = {
+  player: {
+    key: 'char_battle_ether_knight',
+    path: 'assets/generated/characters/class_main/battle/char_battle_ether_knight.png',
+    kind: 'image',
+    displayWidth: 10,
+    displayHeight: 14,
+  },
+  npc: {
+    key: 'npc_ghost_merchant_gorodi_sprite',
+    path: 'assets/generated/characters/npc_sprites/npc_ghost_merchant_gorodi.png',
+    kind: 'spritesheet',
+    frame: 0,
+    frameWidth: 64,
+    frameHeight: 64,
+    displayWidth: 10,
+    displayHeight: 10,
+  },
+  monster: {
+    key: 'mon_erebos_memory_dust_normal_sprite',
+    path: 'assets/generated/monsters/sprites/mon_erebos_memory_dust_normal.png',
+    kind: 'spritesheet',
+    frame: 0,
+    frameWidth: 64,
+    frameHeight: 64,
+    displayWidth: 10,
+    displayHeight: 10,
+  },
+  monster_aggro: {
+    key: 'mon_erebos_memory_dust_normal_sprite',
+    path: 'assets/generated/monsters/sprites/mon_erebos_memory_dust_normal.png',
+    kind: 'spritesheet',
+    frame: 0,
+    frameWidth: 64,
+    frameHeight: 64,
+    displayWidth: 12,
+    displayHeight: 12,
+  },
+  dungeon: {
+    key: 'zone_crystal_cave',
+    path: 'assets/generated/ui/worldmap/zone_crystal_cave.png',
+    kind: 'image',
+    displayWidth: 12,
+    displayHeight: 12,
+  },
+  quest_give: {
+    key: 'icon_item_ITM-QST_004',
+    path: 'assets/generated/ui/icons/items/ITM-QST-004.png',
+    kind: 'image',
+    displayWidth: 11,
+    displayHeight: 11,
+  },
+  quest_turn_in: {
+    key: 'icon_item_ITM-QST_004',
+    path: 'assets/generated/ui/icons/items/ITM-QST-004.png',
+    kind: 'image',
+    displayWidth: 11,
+    displayHeight: 11,
+  },
+  waypoint: {
+    key: 'skill_vw_warp_icon',
+    path: 'assets/generated/ui/icons/skills/skill_vw_warp.png',
+    kind: 'image',
+    displayWidth: 11,
+    displayHeight: 11,
+  },
+} as const satisfies Record<MarkerType, MinimapOverlayMarkerTexture>;
+
+export function preloadMinimapOverlayUiFrameTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(MINIMAP_OVERLAY_UI_FRAME_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+
+  const queuedMarkerTextureKeys = new Set<string>();
+  for (const texture of Object.values(MINIMAP_OVERLAY_MARKER_TEXTURES)) {
+    if (queuedMarkerTextureKeys.has(texture.key) || scene.textures.exists(texture.key)) continue;
+    queuedMarkerTextureKeys.add(texture.key);
+
+    if (texture.kind === 'spritesheet') {
+      scene.load.spritesheet(texture.key, texture.path, {
+        frameWidth: texture.frameWidth,
+        frameHeight: texture.frameHeight,
+      });
+    } else {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
 }
 
 // ── 마커 색상 ──────────────────────────────────────────────────
@@ -85,7 +197,10 @@ const DEFAULT_CONFIG: MinimapConfig = {
   bgColor: 0x111122,
   bgAlpha: 0.85,
   fullscreenSize: 600,
+  frameQa: false,
 };
+
+const MINIMAP_FRAME_CONTENT_INSET = 12;
 
 // ── 미니맵 클래스 ──────────────────────────────────────────────
 
@@ -97,10 +212,18 @@ export class MinimapOverlay {
   // UI 요소
   private bgRect: Phaser.GameObjects.Rectangle;
   private border: Phaser.GameObjects.Rectangle;
+  private panelFrame: Phaser.GameObjects.Image | null = null;
   private mapImage: Phaser.GameObjects.Image | null = null;
   private markerGraphics: Phaser.GameObjects.Graphics;
+  private markerIconLayer: Phaser.GameObjects.Container;
   private zoneLabel: Phaser.GameObjects.Text;
   private coordsLabel: Phaser.GameObjects.Text;
+  private renderedFrameKeys: string[] = [];
+  private missingFrameKeys: string[] = [];
+  private markerIconObjects: MinimapOverlayMarkerVisual[] = [];
+  private renderedMarkerIconKeys: string[] = [];
+  private missingMarkerIconTextureKeys: string[] = [];
+  private fallbackMarkerIds: string[] = [];
 
   // 상태
   private currentZone: ZoneMapData | null = null;
@@ -130,17 +253,44 @@ export class MinimapOverlay {
     this.container.setDepth(900);
     this.container.setScrollFactor(0);  // UI 고정
 
-    // 배경
-    this.bgRect = scene.add.rectangle(0, 0, this.config.size, this.config.size, this.config.bgColor, this.config.bgAlpha);
+    const panelFrame = MINIMAP_OVERLAY_UI_FRAME_TEXTURES.panel;
+    const hasPanelFrame = scene.textures.exists(panelFrame.key);
+
+    // 배경: Aseprite 프레임이 로드되면 입력 hit area로만 쓰고, 누락 시 절차 사각형 fallback을 노출한다.
+    this.bgRect = scene.add.rectangle(
+      0,
+      0,
+      this.config.size,
+      this.config.size,
+      this.config.bgColor,
+      hasPanelFrame ? 0 : this.config.bgAlpha,
+    );
     this.container.add(this.bgRect);
+
+    if (hasPanelFrame) {
+      const frame = this.scene.add.image(0, 0, panelFrame.key);
+      frame.setDisplaySize(this.config.size, this.config.size);
+      this.panelFrame = frame;
+      this.renderedFrameKeys.push(panelFrame.key);
+      this.container.add(frame);
+    } else {
+      this.missingFrameKeys.push(panelFrame.key);
+    }
 
     // 마커 렌더링용 Graphics
     this.markerGraphics = scene.add.graphics();
     this.container.add(this.markerGraphics);
 
+    this.markerIconLayer = scene.add.container(0, 0);
+    this.container.add(this.markerIconLayer);
+
     // 테두리
     this.border = scene.add.rectangle(0, 0, this.config.size, this.config.size);
-    this.border.setStrokeStyle(this.config.borderWidth, this.config.borderColor);
+    if (hasPanelFrame) {
+      this.border.setVisible(false);
+    } else {
+      this.border.setStrokeStyle(this.config.borderWidth, this.config.borderColor);
+    }
     this.border.setFillStyle();
     this.container.add(this.border);
 
@@ -164,9 +314,11 @@ export class MinimapOverlay {
 
     // 마스크 (사각형 클리핑)
     this.maskGraphics = scene.make.graphics({ x: cx, y: cy });
-    this.maskGraphics.fillRect(-this.config.size / 2, -this.config.size / 2, this.config.size, this.config.size);
+    const contentSize = this.getMapContentSize(this.config.size);
+    this.maskGraphics.fillRect(-contentSize / 2, -contentSize / 2, contentSize, contentSize);
     this.maskGeom = new Phaser.Display.Masks.GeometryMask(scene, this.maskGraphics);
     this.markerGraphics.setMask(this.maskGeom);
+    this.markerIconLayer.setMask(this.maskGeom);
     if (this.mapImage) {
       this.mapImage.setMask(this.maskGeom);
     }
@@ -198,9 +350,9 @@ export class MinimapOverlay {
 
     if (this.scene.textures.exists(zoneData.textureKey)) {
       this.mapImage = this.scene.add.image(0, 0, zoneData.textureKey);
-      this.mapImage.setDisplaySize(this.config.size, this.config.size);
+      this.mapImage.setDisplaySize(this.getMapContentSize(), this.getMapContentSize());
       this.mapImage.setMask(this.maskGeom);
-      this.container.addAt(this.mapImage, 1);  // bgRect 위, markerGraphics 아래
+      this.container.addAt(this.mapImage, this.panelFrame ? 2 : 1);  // panel frame 위, markerGraphics 아래
     }
 
     // 마커 초기화
@@ -273,14 +425,16 @@ export class MinimapOverlay {
       this.container.setPosition(gameWidth / 2, gameHeight / 2);
       this.bgRect.setSize(size, size);
       this.border.setSize(size, size);
+      this.panelFrame?.setDisplaySize(size, size);
 
       // 마스크 리사이즈
       this.maskGraphics.clear();
-      this.maskGraphics.fillRect(-size / 2, -size / 2, size, size);
+      const contentSize = this.getMapContentSize(size);
+      this.maskGraphics.fillRect(-contentSize / 2, -contentSize / 2, contentSize, contentSize);
       this.maskGraphics.setPosition(gameWidth / 2, gameHeight / 2);
 
       if (this.mapImage) {
-        this.mapImage.setDisplaySize(size, size);
+        this.mapImage.setDisplaySize(contentSize, contentSize);
       }
 
       this.zoneLabel.setPosition(-size / 2 + 4, -size / 2 + 2);
@@ -292,13 +446,15 @@ export class MinimapOverlay {
       this.container.setPosition(cx, cy);
       this.bgRect.setSize(size, size);
       this.border.setSize(size, size);
+      this.panelFrame?.setDisplaySize(size, size);
 
       this.maskGraphics.clear();
-      this.maskGraphics.fillRect(-size / 2, -size / 2, size, size);
+      const contentSize = this.getMapContentSize(size);
+      this.maskGraphics.fillRect(-contentSize / 2, -contentSize / 2, contentSize, contentSize);
       this.maskGraphics.setPosition(cx, cy);
 
       if (this.mapImage) {
-        this.mapImage.setDisplaySize(size, size);
+        this.mapImage.setDisplaySize(contentSize, contentSize);
       }
 
       this.zoneLabel.setPosition(-size / 2 + 4, -size / 2 + 2);
@@ -320,39 +476,85 @@ export class MinimapOverlay {
 
   /** 리소스 정리 */
   destroy(): void {
+    this.clearMarkerIcons();
     this.container.destroy();
     this.maskGraphics.destroy();
+  }
+
+  /** QA probe: Aseprite 미니맵 프레임의 런타임 렌더 상태를 DOM dataset에 기록한다. */
+  writeFrameQaProbe(status: 'ready' | 'pending-zone' = 'ready'): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const panelSize = this.getPanelSize();
+    const panelFrame = MINIMAP_OVERLAY_UI_FRAME_TEXTURES.panel;
+    document.body.dataset.aeternaMinimapOverlayFrameQa = JSON.stringify({
+      status,
+      renderedFrameKeys: this.renderedFrameKeys,
+      renderedFrameCount: this.renderedFrameKeys.length,
+      expectedFrameCount: 1,
+      missingFrameKeys: this.missingFrameKeys,
+      panelFrame: {
+        key: panelFrame.key,
+        path: panelFrame.path,
+        rendered: this.panelFrame !== null,
+        displayWidth: this.panelFrame?.displayWidth ?? 0,
+        displayHeight: this.panelFrame?.displayHeight ?? 0,
+        panelSize,
+        contentSize: this.getMapContentSize(panelSize),
+      },
+      markerCount: this.markers.size + (this.waypointMarker ? 1 : 0) + 1,
+      markerIcon: {
+        renderedCount: this.renderedMarkerIconKeys.length,
+        expectedCount: this.getExpectedMarkerIconCount(),
+        renderedKeys: this.renderedMarkerIconKeys,
+        fallbackMarkerIds: this.fallbackMarkerIds,
+      },
+      missingMarkerIconTextureKeys: this.missingMarkerIconTextureKeys,
+      fallbackMarkerIds: this.fallbackMarkerIds,
+      isFullscreen: this.isFullscreen,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
   }
 
   // ── 내부: 렌더링 ─────────────────────────────────────────
 
   private render(): void {
     this.markerGraphics.clear();
+    this.clearMarkerIcons();
 
-    if (!this.currentZone) return;
+    if (!this.currentZone) {
+      this.writeFrameQaProbeIfEnabled('pending-zone');
+      return;
+    }
 
     const currentSize = this.isFullscreen
       ? Math.min(this.config.fullscreenSize, this.scene.scale.width - 40, this.scene.scale.height - 40)
       : this.config.size;
+    const contentSize = this.getMapContentSize(currentSize);
 
     // 월드 → 미니맵 좌표 변환
-    const scaleX = currentSize / this.currentZone.worldWidth;
-    const scaleY = currentSize / this.currentZone.worldHeight;
+    const scaleX = contentSize / this.currentZone.worldWidth;
+    const scaleY = contentSize / this.currentZone.worldHeight;
 
     // 마커 렌더링
     for (const marker of this.markers.values()) {
       if (!marker.active) continue;
-      this.renderMarker(marker, scaleX, scaleY, currentSize);
+      this.renderMarker(marker, scaleX, scaleY, contentSize);
     }
 
     // 웨이포인트
     if (this.waypointMarker) {
-      this.renderMarker(this.waypointMarker, scaleX, scaleY, currentSize);
+      this.renderMarker(this.waypointMarker, scaleX, scaleY, contentSize);
     }
 
     // 플레이어 (항상 맨 위)
-    const px = this.playerX * scaleX - currentSize / 2;
-    const py = this.playerY * scaleY - currentSize / 2;
+    const px = this.playerX * scaleX - contentSize / 2;
+    const py = this.playerY * scaleY - contentSize / 2;
+    if (this._createPlayerMarkerIcon(px, py)) {
+      this.writeFrameQaProbeIfEnabled('ready');
+      return;
+    }
+
     this.markerGraphics.fillStyle(MARKER_COLORS.player, 1);
     this.markerGraphics.fillCircle(px, py, MARKER_SIZES.player);
     // 방향 표시 (삼각형)
@@ -361,18 +563,27 @@ export class MinimapOverlay {
       px - 4, py + 2,
       px + 4, py + 2,
     );
+    this.writeFrameQaProbeIfEnabled('ready');
   }
 
   private renderMarker(
     marker: MapMarker,
     scaleX: number,
     scaleY: number,
-    currentSize: number,
+    contentSize: number,
   ): void {
-    const mx = marker.x * scaleX - currentSize / 2;
-    const my = marker.y * scaleY - currentSize / 2;
+    const mx = marker.x * scaleX - contentSize / 2;
+    const my = marker.y * scaleY - contentSize / 2;
     const color = MARKER_COLORS[marker.type] ?? 0xffffff;
     const size = MARKER_SIZES[marker.type] ?? 3;
+
+    if (this._createMarkerIcon(marker, mx, my)) {
+      if (marker.type === 'monster_aggro') {
+        this.markerGraphics.lineStyle(1, 0xff0000, 0.5);
+        this.markerGraphics.strokeCircle(mx, my, size + 5);
+      }
+      return;
+    }
 
     this.markerGraphics.fillStyle(color, 1);
 
@@ -416,23 +627,111 @@ export class MinimapOverlay {
     }
   }
 
+  private _createPlayerMarkerIcon(x: number, y: number): MinimapOverlayMarkerVisual | null {
+    const texture = MINIMAP_OVERLAY_MARKER_TEXTURES.player;
+
+    if (!this.scene.textures.exists(texture.key)) {
+      this.missingMarkerIconTextureKeys.push(texture.key);
+      this.fallbackMarkerIds.push('__player__');
+      return null;
+    }
+
+    const icon = this.scene.add.image(x, y, texture.key)
+      .setName('minimap_overlay_player_marker_icon')
+      .setOrigin(0.5);
+    icon.setDisplaySize(texture.displayWidth, texture.displayHeight);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    icon.setMask(this.maskGeom);
+    this.markerIconLayer.add(icon);
+    this.markerIconObjects.push(icon);
+    this.renderedMarkerIconKeys.push(texture.key);
+
+    return icon;
+  }
+
+  private _createMarkerIcon(marker: MapMarker, mx: number, my: number): MinimapOverlayMarkerVisual | null {
+    const texture = MINIMAP_OVERLAY_MARKER_TEXTURES[marker.type];
+
+    if (!this.scene.textures.exists(texture.key)) {
+      this.missingMarkerIconTextureKeys.push(texture.key);
+      this.fallbackMarkerIds.push(marker.id);
+      return null;
+    }
+
+    const icon = this.scene.add.image(mx, my, texture.key)
+      .setName(`minimap_overlay_marker_icon_${marker.type}_${marker.id}`)
+      .setOrigin(0.5);
+    icon.setDisplaySize(texture.displayWidth, texture.displayHeight);
+    if (texture.kind === 'spritesheet') {
+      icon.setFrame(texture.frame ?? 0);
+    }
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    icon.setMask(this.maskGeom);
+    this.markerIconLayer.add(icon);
+    this.markerIconObjects.push(icon);
+    this.renderedMarkerIconKeys.push(texture.key);
+
+    return icon;
+  }
+
+  private clearMarkerIcons(): void {
+    this.markerIconObjects.forEach((icon) => icon.destroy());
+    this.markerIconObjects = [];
+    this.renderedMarkerIconKeys = [];
+    this.missingMarkerIconTextureKeys = [];
+    this.fallbackMarkerIds = [];
+  }
+
+  private getExpectedMarkerIconCount(): number {
+    let count = 1;
+    for (const marker of this.markers.values()) {
+      if (marker.active) count += 1;
+    }
+    if (this.waypointMarker) count += 1;
+
+    return count;
+  }
+
   // ── 내부: 웨이포인트 ─────────────────────────────────────
 
   private setWaypointFromMinimap(minimapX: number, minimapY: number): void {
     if (!this.currentZone) return;
 
-    const currentSize = this.isFullscreen
-      ? Math.min(this.config.fullscreenSize, this.scene.scale.width - 40, this.scene.scale.height - 40)
-      : this.config.size;
+    const contentSize = this.getMapContentSize();
+    const clampedX = Phaser.Math.Clamp(minimapX, -contentSize / 2, contentSize / 2);
+    const clampedY = Phaser.Math.Clamp(minimapY, -contentSize / 2, contentSize / 2);
 
     // 미니맵 → 월드 좌표 변환
-    const worldX = ((minimapX + currentSize / 2) / currentSize) * this.currentZone.worldWidth;
-    const worldY = ((minimapY + currentSize / 2) / currentSize) * this.currentZone.worldHeight;
+    const worldX = ((clampedX + contentSize / 2) / contentSize) * this.currentZone.worldWidth;
+    const worldY = ((clampedY + contentSize / 2) / contentSize) * this.currentZone.worldHeight;
 
     this.setWaypoint(worldX, worldY);
 
     if (this.onWaypoint) {
       this.onWaypoint(worldX, worldY);
+    }
+  }
+
+  private getPanelSize(): number {
+    return this.isFullscreen
+      ? Math.min(this.config.fullscreenSize, this.scene.scale.width - 40, this.scene.scale.height - 40)
+      : this.config.size;
+  }
+
+  private getMapContentSize(panelSize = this.getPanelSize()): number {
+    if (!this.panelFrame) return panelSize;
+    return Math.max(32, panelSize - MINIMAP_FRAME_CONTENT_INSET * 2);
+  }
+
+  private isFrameQaEnabled(): boolean {
+    if (this.config.frameQa) return true;
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('minimapOverlayFrameQa') === '1';
+  }
+
+  private writeFrameQaProbeIfEnabled(status: 'ready' | 'pending-zone'): void {
+    if (this.isFrameQaEnabled()) {
+      this.writeFrameQaProbe(status);
     }
   }
 }

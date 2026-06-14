@@ -14,7 +14,19 @@ interface LoadingSceneData {
   nextScene: string;
   nextSceneData?: unknown;
   zoneId?: string;
+  qaHold?: boolean;
 }
+
+const LOADING_UI_FRAME_TEXTURES = {
+  panel: {
+    key: 'ui_frame_UI-HUD-005-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png',
+  },
+  progressTrack: {
+    key: 'ui_frame_UI-BTN-005-DEF',
+    path: 'assets/generated/ui/frames/UI-BTN-005-DEF.png',
+  },
+} as const;
 
 export class LoadingScene extends Phaser.Scene {
   private progressBar!: Phaser.GameObjects.Rectangle;
@@ -35,6 +47,11 @@ export class LoadingScene extends Phaser.Scene {
   // Phase 1: 배경 이미지만 로드
   preload(): void {
     this.load.image('loading_bg', 'assets/generated/environment/backgrounds/ABY-BG-FAR-NIGHT.png');
+    for (const texture of Object.values(LOADING_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
     this.load.on('loaderror', () => { /* 무시 */ });
   }
 
@@ -49,6 +66,7 @@ export class LoadingScene extends Phaser.Scene {
       bg.setDisplaySize(width, height).setAlpha(0.4);
     }
     this.add.rectangle(width / 2, height / 2, width, height, 0x050510, 0.5);
+    this._addLoadingFrame(width / 2, height * 0.54, 720, 620, LOADING_UI_FRAME_TEXTURES.panel);
 
     // ── 타이틀 ──
     this.add.text(width / 2, height * 0.28, 'AETERNA CHRONICLE', {
@@ -64,8 +82,7 @@ export class LoadingScene extends Phaser.Scene {
     const barW = 440, barH = 14;
     const barX = (width - barW) / 2, barY = height * 0.56;
 
-    this.add.rectangle(barX + barW / 2, barY, barW + 4, barH + 4, 0x1a1a3e)
-      .setStrokeStyle(1, 0x3a3a6e);
+    this._addLoadingFrame(barX + barW / 2, barY, barW + 34, barH + 26, LOADING_UI_FRAME_TEXTURES.progressTrack);
     this.add.rectangle(barX + barW / 2, barY, barW, barH, 0x0f0f2a);
 
     this.progressBar = this.add.rectangle(barX + 2, barY, 0, barH - 2, 0x7733cc)
@@ -112,6 +129,9 @@ export class LoadingScene extends Phaser.Scene {
       this.progressText.setText('100%');
       this.loadingDotsText.setText('COMPLETE');
       this.loadingDotsText.setColor('#cc88ff');
+      if (this.sceneData.qaHold === true) {
+        return;
+      }
 
       this.time.delayedCall(600, () => {
         this.cameras.main.fadeOut(400, 0, 0, 0);
@@ -139,6 +159,27 @@ export class LoadingScene extends Phaser.Scene {
 
     // 🔑 수동 start — create() 안에서 등록한 에셋은 자동 시작 안 됨
     this.load.start();
+  }
+
+  private _addLoadingFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof LOADING_UI_FRAME_TEXTURES[keyof typeof LOADING_UI_FRAME_TEXTURES],
+  ): void {
+    if (this.textures.exists(texture.key)) {
+      this.add.image(x, y, texture.key)
+        .setDisplaySize(width, height)
+        .setAlpha(0.9);
+      this.add.rectangle(x, y, width, height, 0x000000, 0)
+        .setStrokeStyle(1, 0x4a4a6a);
+      return;
+    }
+
+    // Aseprite loading UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    this.add.rectangle(x, y, width, height, 0x0a0a2e, 0.66)
+      .setStrokeStyle(1, 0x4a4a6a);
   }
 
   private _showRandomTip(): void {

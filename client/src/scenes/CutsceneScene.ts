@@ -9,6 +9,7 @@
  */
 
 import * as Phaser from 'phaser';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ── 타입 정의 ──────────────────────────────────────────────────
 
@@ -31,12 +32,37 @@ interface CutsceneConfig {
   returnData?: unknown;     // 복귀 씬에 전달할 데이터
 }
 
+const CUTSCENE_UI_FRAME_TEXTURES = {
+  dialogueBox: {
+    key: 'ui_frame_UI-HUD-006-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-006-DEF.png',
+  },
+  actionButton: {
+    key: 'ui_frame_cutscene_action_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+} as const;
+
+const CUTSCENE_ACTION_BUTTON_ICON_IDS = {
+  skip: 'skill_tg_haste',
+  next: 'skill_mw_arrow',
+} as const;
+
+type CutsceneActionButtonId = keyof typeof CUTSCENE_ACTION_BUTTON_ICON_IDS;
+
+const CUTSCENE_EXPECTED_DIALOGUE_BOX_FRAME_COUNT = 1;
+const CUTSCENE_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 2;
+const CUTSCENE_EXPECTED_ACTION_BUTTON_ICON_COUNT = 2;
+
 // ── 컷씬 씬 ─────────────────────────────────────────────────────
 
 export class CutsceneScene extends Phaser.Scene {
   private config!: CutsceneConfig;
   private currentIndex = 0;
-  private dialogueBox!: Phaser.GameObjects.Rectangle;
+  private dialogueBox!: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  private actionButtonFrames: Phaser.GameObjects.Image[] = [];
+  private actionButtonIcons: Partial<Record<CutsceneActionButtonId, Phaser.GameObjects.Image>> = {};
+  private actionButtonFallbackIds: CutsceneActionButtonId[] = [];
   private speakerText!: Phaser.GameObjects.Text;
   private bodyText!: Phaser.GameObjects.Text;
   private skipButton!: Phaser.GameObjects.Text;
@@ -56,8 +82,26 @@ export class CutsceneScene extends Phaser.Scene {
     this.isAutoPlay = false;
   }
 
+  preload(): void {
+    for (const texture of Object.values(CUTSCENE_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+
+    for (const iconId of Object.values(CUTSCENE_ACTION_BUTTON_ICON_IDS)) {
+      const iconResource = getSpriteResourceForSkillIcon(iconId);
+      if (iconResource && !this.textures.exists(iconResource.key)) {
+        this.load.image(iconResource.key, iconResource.path);
+      }
+    }
+  }
+
   create(): void {
     const { width, height } = this.cameras.main;
+    this.actionButtonFrames = [];
+    this.actionButtonIcons = {};
+    this.actionButtonFallbackIds = [];
 
     // ── 배경 ──
     // 배경 이미지가 로드되어 있으면 사용, 아니면 검정 배경
@@ -98,11 +142,15 @@ export class CutsceneScene extends Phaser.Scene {
     const boxHeight = height * 0.3;
     const boxY = height - boxHeight;
 
-    this.dialogueBox = this.add.rectangle(
-      width / 2, boxY + boxHeight / 2,
-      width - 40, boxHeight - 20,
-      0x000000, 0.8,
-    ).setStrokeStyle(2, 0x4488cc);
+    this.dialogueBox = this._addCutsceneFrame(
+      width / 2,
+      boxY + boxHeight / 2,
+      width - 40,
+      boxHeight - 20,
+      CUTSCENE_UI_FRAME_TEXTURES.dialogueBox,
+    );
+    this.add.rectangle(width / 2, boxY + boxHeight / 2, width - 40, boxHeight - 20, 0x000000, 0)
+      .setStrokeStyle(2, 0x4488cc);
 
     // 화자 이름
     this.speakerText = this.add.text(40, boxY + 10, '', {
@@ -120,23 +168,33 @@ export class CutsceneScene extends Phaser.Scene {
     });
 
     // ── 버튼 ──
-    // 스킵 버튼 (우상단)
-    this.skipButton = this.add.text(width - 100, 20, '[ 스킵 ]', {
-      fontSize: '16px',
-      color: '#888888',
-    })
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.skipCutscene())
-      .on('pointerover', () => this.skipButton.setColor('#ffffff'))
-      .on('pointerout', () => this.skipButton.setColor('#888888'));
+    this.skipButton = this._addCutsceneActionButton(
+      width - 94,
+      34,
+      120,
+      34,
+      '스킵',
+      '[ 스킵 ]',
+      '#b8c0d8',
+      '#ffffff',
+      () => this.skipCutscene(),
+      'cutscene_skip_action_button',
+      'skip',
+    );
 
-    // 다음 버튼 (우하단)
-    this.nextButton = this.add.text(width - 100, boxY + boxHeight - 40, '다음 ▶', {
-      fontSize: '16px',
-      color: '#cccccc',
-    })
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.advanceDialogue());
+    this.nextButton = this._addCutsceneActionButton(
+      width - 122,
+      boxY + boxHeight - 40,
+      184,
+      34,
+      '다음',
+      '다음 ▶',
+      '#d8d8e8',
+      '#ffffff',
+      () => this.advanceDialogue(),
+      'cutscene_next_action_button',
+      'next',
+    );
 
     // ── 키보드 입력 ──
     this.input.keyboard?.on('keydown-SPACE', () => this.advanceDialogue());
@@ -187,12 +245,199 @@ export class CutsceneScene extends Phaser.Scene {
 
     // 진행 표시
     const progress = `${index + 1}/${this.config.dialogue.length}`;
-    this.nextButton.setText(`다음 ▶  (${progress})`);
+    const nextIcon = this.actionButtonIcons.next?.active === true;
+    this.nextButton.setText(nextIcon ? `다음 (${progress})` : `다음 ▶  (${progress})`);
+    this._writeCutsceneFrameQaProbe('ready');
   }
 
   /** 다음 대화로 진행 */
   private advanceDialogue(): void {
     this.showDialogue(this.currentIndex + 1);
+  }
+
+  private _addCutsceneFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof CUTSCENE_UI_FRAME_TEXTURES[keyof typeof CUTSCENE_UI_FRAME_TEXTURES],
+  ): Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle {
+    if (this.textures.exists(texture.key)) {
+      return this.add.image(x, y, texture.key)
+        .setDisplaySize(width, height)
+        .setAlpha(0.9);
+    }
+
+    // Aseprite cutscene UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    return this.add.rectangle(x, y, width, height, 0x000000, 0.8);
+  }
+
+  private _addCutsceneActionButton(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    label: string,
+    fallbackLabel: string,
+    color: string,
+    hoverColor: string,
+    onClick: () => void,
+    name: string,
+    actionId: CutsceneActionButtonId,
+  ): Phaser.GameObjects.Text {
+    const texture = CUTSCENE_UI_FRAME_TEXTURES.actionButton;
+    const iconId = CUTSCENE_ACTION_BUTTON_ICON_IDS[actionId];
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    const hasIcon = Boolean(iconResource && this.textures.exists(iconResource.key));
+    let frameImage: Phaser.GameObjects.Image | null = null;
+    let fallbackFrame: Phaser.GameObjects.Rectangle | null = null;
+    let icon: Phaser.GameObjects.Image | null = null;
+
+    if (this.textures.exists(texture.key)) {
+      frameImage = this.add.image(x, y, texture.key)
+        .setName(`${name}_frame`)
+        .setDisplaySize(width, height)
+        .setAlpha(0.86)
+        .setInteractive({ useHandCursor: true });
+      this.actionButtonFrames.push(frameImage);
+    } else {
+      // Aseprite cutscene action button frame 로드 실패 시에만 사용하는 안전 fallback.
+      fallbackFrame = this.add.rectangle(x, y, width, height, 0x122038, 0.78)
+        .setName(`${name}_fallback_frame`)
+        .setStrokeStyle(1, 0x3b5f91)
+        .setInteractive({ useHandCursor: true });
+    }
+
+    if (hasIcon && iconResource) {
+      icon = this.add.image(x - width / 2 + 22, y, iconResource.key)
+        .setName(`${name}_icon`);
+      icon.setDisplaySize(16, 16);
+      icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      icon.setInteractive({ useHandCursor: true });
+      this.actionButtonIcons[actionId] = icon;
+    } else {
+      this.actionButtonFallbackIds.push(actionId);
+    }
+
+    const text = this.add.text(hasIcon ? x + 8 : x, y, hasIcon ? label : fallbackLabel, {
+      fontSize: '15px',
+      color,
+      fontStyle: 'bold',
+      stroke: '#08111f',
+      strokeThickness: 2,
+    })
+      .setName(`${name}_label`)
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    const setHoverState = (isHover: boolean): void => {
+      text.setColor(isHover ? hoverColor : color);
+      if (frameImage) {
+        if (isHover) {
+          frameImage.setTint(0xcfe8ff);
+        } else {
+          frameImage.clearTint();
+        }
+      }
+      if (icon) {
+        if (isHover) {
+          icon.setTint(0xcfe8ff);
+        } else {
+          icon.clearTint();
+        }
+      }
+      if (fallbackFrame) {
+        fallbackFrame.setFillStyle(isHover ? 0x1a3154 : 0x122038, isHover ? 0.9 : 0.78);
+      }
+    };
+
+    frameImage?.on('pointerdown', onClick)
+      .on('pointerover', () => setHoverState(true))
+      .on('pointerout', () => setHoverState(false));
+    fallbackFrame?.on('pointerdown', onClick)
+      .on('pointerover', () => setHoverState(true))
+      .on('pointerout', () => setHoverState(false));
+    icon?.on('pointerdown', onClick)
+      .on('pointerover', () => setHoverState(true))
+      .on('pointerout', () => setHoverState(false));
+    text.on('pointerdown', onClick)
+      .on('pointerover', () => setHoverState(true))
+      .on('pointerout', () => setHoverState(false));
+
+    return text;
+  }
+
+  private _isCutsceneFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    return new URLSearchParams(window.location.search).get('cutsceneFrameQa') === '1';
+  }
+
+  private _writeCutsceneFrameQaProbe(status: 'ready'): void {
+    if (!this._isCutsceneFrameQaRoute() || typeof document === 'undefined') return;
+
+    const dialogueBoxFrame = this.dialogueBox instanceof Phaser.GameObjects.Image
+      ? this.dialogueBox
+      : null;
+    const activeActionButtonFrames = this.actionButtonFrames.filter((frame) => frame.active);
+    const missingFrameKeys = Object.values(CUTSCENE_UI_FRAME_TEXTURES)
+      .filter((texture) => !this.textures.exists(texture.key))
+      .map((texture) => texture.key);
+    const actionButtonIconStates = (Object.keys(CUTSCENE_ACTION_BUTTON_ICON_IDS) as CutsceneActionButtonId[])
+      .map((actionId) => {
+        const iconId = CUTSCENE_ACTION_BUTTON_ICON_IDS[actionId];
+        const iconResource = getSpriteResourceForSkillIcon(iconId);
+        const icon = this.actionButtonIcons[actionId];
+
+        return {
+          actionId,
+          iconId,
+          key: iconResource?.key ?? null,
+          path: iconResource?.path ?? null,
+          rendered: icon?.active === true,
+          visible: icon?.visible ?? false,
+          displayWidth: icon?.displayWidth ?? 0,
+          displayHeight: icon?.displayHeight ?? 0,
+          fallbackRendered: this.actionButtonFallbackIds.includes(actionId),
+        };
+      });
+    const missingActionButtonIconKeys = actionButtonIconStates
+      .filter((entry) => !entry.rendered)
+      .map((entry) => entry.key ?? entry.iconId);
+
+    document.body.dataset.aeternaCutsceneFrameQa = JSON.stringify({
+      status: missingFrameKeys.length === 0 && missingActionButtonIconKeys.length === 0 ? status : 'missing-frame',
+      cutsceneId: this.config.id,
+      dialogueIndex: this.currentIndex,
+      dialogueBoxFrame: {
+        key: CUTSCENE_UI_FRAME_TEXTURES.dialogueBox.key,
+        path: CUTSCENE_UI_FRAME_TEXTURES.dialogueBox.path,
+        renderedCount: dialogueBoxFrame ? 1 : 0,
+        expectedCount: CUTSCENE_EXPECTED_DIALOGUE_BOX_FRAME_COUNT,
+        displayWidth: dialogueBoxFrame?.displayWidth ?? 0,
+        displayHeight: dialogueBoxFrame?.displayHeight ?? 0,
+      },
+      actionButtonFrame: {
+        key: CUTSCENE_UI_FRAME_TEXTURES.actionButton.key,
+        path: CUTSCENE_UI_FRAME_TEXTURES.actionButton.path,
+        renderedCount: activeActionButtonFrames.length,
+        expectedCount: CUTSCENE_EXPECTED_ACTION_BUTTON_FRAME_COUNT,
+        displaySizes: activeActionButtonFrames.map((frame) => ({
+          width: frame.displayWidth,
+          height: frame.displayHeight,
+        })),
+      },
+      actionButtonIcon: {
+        renderedCount: actionButtonIconStates.filter((entry) => entry.rendered).length,
+        expectedCount: CUTSCENE_EXPECTED_ACTION_BUTTON_ICON_COUNT,
+        icons: actionButtonIconStates,
+        fallbackActionIds: this.actionButtonFallbackIds,
+        missingIconKeys: missingActionButtonIconKeys,
+      },
+      missingFrameKeys,
+      missingActionButtonIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
   }
 
   // ── P7-09: 캐릭터 포트레이트 시스템 ─────────────────────────

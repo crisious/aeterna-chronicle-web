@@ -28,15 +28,51 @@ const DEFAULT_TRANSITION: TransitionConfig = {
   easing: 'Cubic.easeInOut',
 };
 
+interface TransitionLoadingFrameTexture {
+  key: string;
+  path: string;
+}
+
+export const TRANSITION_LOADING_UI_FRAME_TEXTURES = {
+  panel: {
+    key: 'ui_frame_transition_loading_panel',
+    path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png',
+  },
+  spinnerTrack: {
+    key: 'ui_frame_transition_loading_spinner_track',
+    path: 'assets/generated/ui/frames/UI-BTN-005-DEF.png',
+  },
+} as const satisfies Record<string, TransitionLoadingFrameTexture>;
+
+const TRANSITION_LOADING_EXPECTED_PANEL_FRAME_COUNT = 1;
+const TRANSITION_LOADING_EXPECTED_SPINNER_TRACK_FRAME_COUNT = 1;
+
+export function preloadTransitionLoadingUiFrameTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(TRANSITION_LOADING_UI_FRAME_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+}
+
+interface SceneTransitionManagerOptions {
+  frameQa?: boolean;
+}
+
 // ─── SceneTransitionManager ──────────────────────────────────
 
 export class SceneTransitionManager {
   private scene: Phaser.Scene;
   private overlay: Phaser.GameObjects.Rectangle | null = null;
   private isTransitioning = false;
+  private readonly frameQa: boolean;
+  private loadingIndicatorPanelFrame: Phaser.GameObjects.Image | null = null;
+  private loadingIndicatorSpinnerTrackFrame: Phaser.GameObjects.Image | null = null;
+  private loadingIndicatorVisible = false;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, options: SceneTransitionManagerOptions = {}) {
     this.scene = scene;
+    this.frameQa = options.frameQa === true;
   }
 
   /**
@@ -127,14 +163,55 @@ export class SceneTransitionManager {
     const { width, height } = this.scene.cameras.main;
     const cx = width / 2;
     const cy = height / 2;
+    const panelTexture = TRANSITION_LOADING_UI_FRAME_TEXTURES.panel;
+    const spinnerTrackTexture = TRANSITION_LOADING_UI_FRAME_TEXTURES.spinnerTrack;
+    const hasPanelFrame = this.scene.textures.exists(panelTexture.key);
+    const hasSpinnerTrackFrame = this.scene.textures.exists(spinnerTrackTexture.key);
+    this.loadingIndicatorPanelFrame = null;
+    this.loadingIndicatorSpinnerTrackFrame = null;
+    this.loadingIndicatorVisible = true;
 
     // 반투명 배경
     const bg = this.scene.add.rectangle(cx, cy, width, height, 0x000000, 0.7)
       .setDepth(9998).setScrollFactor(0);
+    const panelObjects: Phaser.GameObjects.GameObject[] = [bg];
+
+    // Aseprite frame이 로드되면 전환 로딩 패널/스피너 트랙을 먼저 렌더하고, 누락 시 기존 도형 UI로 fallback한다.
+    if (hasPanelFrame) {
+      this.loadingIndicatorPanelFrame = this.scene.add.image(cx, cy, panelTexture.key)
+        .setDisplaySize(360, 180)
+        .setAlpha(0.9)
+        .setDepth(9998.5)
+        .setScrollFactor(0);
+      panelObjects.push(this.loadingIndicatorPanelFrame);
+      panelObjects.push(this.scene.add.rectangle(cx, cy, 270, 102, 0x06101d, 0.42)
+        .setDepth(9998.6)
+        .setScrollFactor(0));
+    } else {
+      panelObjects.push(this.scene.add.rectangle(cx, cy, 320, 140, 0x0d1424, 0.88)
+        .setStrokeStyle(1, 0x4a88aa, 0.72)
+        .setDepth(9998.5)
+        .setScrollFactor(0));
+    }
+
+    if (hasSpinnerTrackFrame) {
+      this.loadingIndicatorSpinnerTrackFrame = this.scene.add.image(cx, cy - 20, spinnerTrackTexture.key)
+        .setDisplaySize(92, 38)
+        .setAlpha(0.82)
+        .setDepth(9998.7)
+        .setScrollFactor(0);
+      panelObjects.push(this.loadingIndicatorSpinnerTrackFrame);
+    } else {
+      panelObjects.push(this.scene.add.rectangle(cx, cy - 20, 92, 38, 0x111d33, 0.78)
+        .setStrokeStyle(1, 0x4a88aa, 0.56)
+        .setDepth(9998.7)
+        .setScrollFactor(0));
+    }
 
     // 스피너
     const spinner = this.scene.add.arc(cx, cy - 20, 24, 0, 270, false, 0x00ccff, 1)
       .setDepth(9999).setScrollFactor(0);
+    panelObjects.push(spinner);
 
     this.scene.tweens.add({
       targets: spinner,
@@ -150,6 +227,7 @@ export class SceneTransitionManager {
       color: '#ffffff',
       fontFamily: 'NanumGothic, sans-serif',
     }).setOrigin(0.5).setDepth(9999).setScrollFactor(0);
+    panelObjects.push(text);
 
     // 점 애니메이션
     let dots = 0;
@@ -162,16 +240,66 @@ export class SceneTransitionManager {
       },
     });
 
+    this.writeLoadingFrameQaProbeIfEnabled('ready');
+
     return {
       spinner,
       text,
       destroy: () => {
         dotTimer.destroy();
-        bg.destroy();
-        spinner.destroy();
-        text.destroy();
+        for (const gameObject of panelObjects) {
+          gameObject.destroy();
+        }
+        this.loadingIndicatorPanelFrame = null;
+        this.loadingIndicatorSpinnerTrackFrame = null;
+        this.loadingIndicatorVisible = false;
+        this.writeLoadingFrameQaProbeIfEnabled('hidden');
       },
     };
+  }
+
+  public writeLoadingFrameQaProbe(status: 'ready' | 'hidden' = 'ready'): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const panelTexture = TRANSITION_LOADING_UI_FRAME_TEXTURES.panel;
+    const spinnerTrackTexture = TRANSITION_LOADING_UI_FRAME_TEXTURES.spinnerTrack;
+    const missingFrameKeys = Object.values(TRANSITION_LOADING_UI_FRAME_TEXTURES)
+      .filter((texture) => !this.scene.textures.exists(texture.key))
+      .map((texture) => texture.key);
+
+    document.body.dataset.aeternaTransitionLoadingFrameQa = JSON.stringify({
+      status,
+      active: this.loadingIndicatorVisible,
+      panelFrame: {
+        key: panelTexture.key,
+        path: panelTexture.path,
+        renderedCount: this.loadingIndicatorPanelFrame?.active ? 1 : 0,
+        expectedCount: status === 'ready' ? TRANSITION_LOADING_EXPECTED_PANEL_FRAME_COUNT : 0,
+        displayWidth: this.loadingIndicatorPanelFrame?.displayWidth ?? 0,
+        displayHeight: this.loadingIndicatorPanelFrame?.displayHeight ?? 0,
+      },
+      spinnerTrackFrame: {
+        key: spinnerTrackTexture.key,
+        path: spinnerTrackTexture.path,
+        renderedCount: this.loadingIndicatorSpinnerTrackFrame?.active ? 1 : 0,
+        expectedCount: status === 'ready' ? TRANSITION_LOADING_EXPECTED_SPINNER_TRACK_FRAME_COUNT : 0,
+        displayWidth: this.loadingIndicatorSpinnerTrackFrame?.displayWidth ?? 0,
+        displayHeight: this.loadingIndicatorSpinnerTrackFrame?.displayHeight ?? 0,
+      },
+      missingFrameKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private writeLoadingFrameQaProbeIfEnabled(status: 'ready' | 'hidden'): void {
+    if (this.frameQa || this.isLoadingFrameQaRoute()) {
+      this.writeLoadingFrameQaProbe(status);
+    }
+  }
+
+  private isLoadingFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('transitionLoadingFrameQa') === '1';
   }
 }
 
@@ -285,6 +413,42 @@ export const VFX_CONFIGS: Record<VfxType, VfxConfig> = {
   revive_glow:      { atlasKey: 'vfx_atlas', framePrefix: 'revive_',         frameCount: 14, frameRate: 20, scale: 1.2, autoDestroy: true },
 };
 
+export type EnvironmentParticleType = 'rain' | 'snow' | 'ether_beam';
+
+export const ENVIRONMENT_PARTICLE_TEXTURES: Record<EnvironmentParticleType, {
+  key: string;
+  path: string;
+  width: number;
+  height: number;
+}> = {
+  rain: {
+    key: 'particle_rain',
+    path: 'assets/generated/vfx/particles/particle_rain.png',
+    width: 2,
+    height: 10,
+  },
+  snow: {
+    key: 'particle_snow',
+    path: 'assets/generated/vfx/particles/particle_snow.png',
+    width: 6,
+    height: 10,
+  },
+  ether_beam: {
+    key: 'particle_ether_beam',
+    path: 'assets/generated/vfx/particles/particle_ether_beam.png',
+    width: 6,
+    height: 16,
+  },
+};
+
+export function preloadEnvironmentParticleTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(ENVIRONMENT_PARTICLE_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+}
+
 /**
  * VFX 재생 유틸
  */
@@ -373,12 +537,13 @@ export class VfxPlayer {
   /**
    * 환경 파티클 이미터 생성 (비/눈/에테르 광선)
    */
-  createEnvironmentParticles(type: 'rain' | 'snow' | 'ether_beam'): Phaser.GameObjects.Particles.ParticleEmitter | null {
+  createEnvironmentParticles(type: EnvironmentParticleType): Phaser.GameObjects.Particles.ParticleEmitter | null {
     const { width, height: _height } = this.scene.cameras.main;
 
-    // generateTexture fallback
-    const texKey = `particle_${type}`;
+    const texture = ENVIRONMENT_PARTICLE_TEXTURES[type];
+    const texKey = texture.key;
     if (!this.scene.textures.exists(texKey)) {
+      // Aseprite particle PNG 로드 실패 시에만 사용하는 안전 fallback.
       const gfx = this.scene.add.graphics();
       switch (type) {
         case 'rain':
@@ -394,7 +559,7 @@ export class VfxPlayer {
           gfx.fillRect(0, 0, 3, 16);
           break;
       }
-      gfx.generateTexture(texKey, type === 'rain' ? 2 : 6, type === 'ether_beam' ? 16 : 10);
+      gfx.generateTexture(texKey, texture.width, texture.height);
       gfx.destroy();
     }
 

@@ -73,6 +73,33 @@ const HIT_COLOR_MAP: Record<HitEffectType, number> = {
   magic: 0x44aaff
 };
 
+export const EFFECT_FALLBACK_TEXTURES = [
+  {
+    key: 'hit_fallback_slash',
+    path: 'assets/generated/vfx/fallback/hit_fallback_slash.png',
+    width: 32,
+    height: 32,
+  },
+  {
+    key: 'hit_fallback_blunt',
+    path: 'assets/generated/vfx/fallback/hit_fallback_blunt.png',
+    width: 32,
+    height: 32,
+  },
+  {
+    key: 'hit_fallback_magic',
+    path: 'assets/generated/vfx/fallback/hit_fallback_magic.png',
+    width: 32,
+    height: 32,
+  },
+  {
+    key: 'buff_fallback',
+    path: 'assets/generated/vfx/fallback/buff_fallback.png',
+    width: 24,
+    height: 24,
+  },
+] as const;
+
 // ─── 매니저 ────────────────────────────────────────────
 
 export class EffectManager {
@@ -93,7 +120,7 @@ export class EffectManager {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
 
-    // 아틀라스 존재 여부 확인 — 없으면 fallback 텍스처 생성
+    // 아틀라스 존재 여부 확인 — Aseprite fallback PNG가 없을 때만 절차 텍스처 생성
     this.useEffectsAtlas = scene.textures.exists('effects');
     this.ensureFallbackTextures();
 
@@ -362,23 +389,29 @@ export class EffectManager {
 
   // ─── Fallback 텍스처 ───────────────────────────────
 
-  /** 아틀라스 이미지가 없을 때 사용할 generateTexture 생성 */
+  /** Aseprite fallback PNG 로드가 실패했을 때만 사용할 generateTexture 생성 */
   private ensureFallbackTextures(): void {
+    const missingHitTypes = (['slash', 'blunt', 'magic'] as HitEffectType[])
+      .filter((type) => !this.scene.textures.exists(`hit_fallback_${type}`));
+    const needsBuffFallback = !this.scene.textures.exists('buff_fallback');
+
+    if (missingHitTypes.length === 0 && !needsBuffFallback) {
+      return;
+    }
+
     const g = this.scene.add.graphics();
 
     // 히트 이펙트 fallback (타입별)
-    for (const type of ['slash', 'blunt', 'magic'] as HitEffectType[]) {
+    for (const type of missingHitTypes) {
       const key = `hit_fallback_${type}`;
-      if (!this.scene.textures.exists(key)) {
-        g.clear();
-        g.fillStyle(HIT_COLOR_MAP[type], 1);
-        g.fillCircle(16, 16, 16);
-        g.generateTexture(key, 32, 32);
-      }
+      g.clear();
+      g.fillStyle(HIT_COLOR_MAP[type], 1);
+      g.fillCircle(16, 16, 16);
+      g.generateTexture(key, 32, 32);
     }
 
     // 버프 아이콘 fallback
-    if (!this.scene.textures.exists('buff_fallback')) {
+    if (needsBuffFallback) {
       g.clear();
       g.fillStyle(0x44ff44, 1);
       g.fillRoundedRect(0, 0, 24, 24, 4);

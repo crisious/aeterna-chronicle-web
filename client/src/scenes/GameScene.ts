@@ -13,7 +13,14 @@ import { TelemetryEmitter } from '../services/TelemetryEmitter';
 import { CombatEffectManager } from '../services/CombatEffectManager';
 import { SoundManager } from '../sound/SoundManager';
 import { runPoolBenchmark } from '../utils/PoolBenchmark';
+import {
+  preloadZoneTeleportUiFrameTextures,
+  ZoneTeleportManager,
+} from '../gameplay/ZoneTeleportManager';
+import { CHARACTER_SPRITE_MANIFEST } from '../assets/characterSpriteManifest';
 import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
+import type { CharacterSpriteResource } from '../assets/characterSpriteManifest';
+import { getSpriteResourceForMonster, getSpriteResourceForNpc, getSpriteResourceForSkillIcon, getSpriteResourceForWorldZoneIcon, SPRITE_RESOURCE_MANIFEST } from '../assets/spriteResourceManifest';
 import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
 import { resolveZoneBackground, type ZoneBackgroundDescriptor } from '../data/zoneBackgrounds';
 import {
@@ -38,6 +45,11 @@ interface GameSceneData {
   baseStats?: { hp: number; mp: number; atk: number; def: number };
   level?: number;
   offlineQa?: boolean;
+  hudFrameQa?: boolean;
+  zoneTeleportFrameQa?: boolean;
+  envObjectQa?: boolean;
+  bossLabelIconQa?: boolean;
+  zoneLabelIconQa?: boolean;
   eraId?: ChronoEraId;
 }
 
@@ -57,6 +69,40 @@ const ZONE_CHAPTER_MAP: Record<string, ChapterTitleInfo> = {
   forgotten_citadel: { imageKey: 'ch_title_4', imagePath: 'assets/cg/chapters/ch4_argentium.png',   label: 'Chapter 4 — 아르겐티움' },
   chrono_spire:      { imageKey: 'ch_title_5', imagePath: 'assets/cg/chapters/ch5_plateau.png',     label: 'Chapter 5 — 망각의 고원' },
 };
+
+const CHARACTER_HUD_AVATAR_RESOURCES = {
+  ether_knight: {
+    key: 'char_battle_ether_knight',
+    path: 'assets/generated/characters/class_main/battle/char_battle_ether_knight.png',
+  },
+  memory_weaver: {
+    key: 'char_battle_memory_weaver',
+    path: 'assets/generated/characters/class_main/battle/char_battle_memory_weaver.png',
+  },
+  shadow_weaver: {
+    key: 'char_battle_shadow_weaver',
+    path: 'assets/generated/characters/class_main/battle/char_battle_shadow_weaver.png',
+  },
+  memory_breaker: {
+    key: 'char_battle_memory_breaker',
+    path: 'assets/generated/characters/class_main/battle/char_battle_memory_breaker.png',
+  },
+  time_guardian: {
+    key: 'char_battle_time_guardian',
+    path: 'assets/generated/characters/class_main/battle/char_battle_time_guardian.png',
+  },
+  void_wanderer: {
+    key: 'char_battle_void_wanderer',
+    path: 'assets/generated/characters/class_main/battle/char_battle_void_wanderer.png',
+  },
+} as const;
+
+const GAME_SCENE_BOSS_LABEL_ICON_ID = 'skill_ek_slash';
+
+function getCharacterHudAvatarResource(classId: string): { key: string; path: string } {
+  return CHARACTER_HUD_AVATAR_RESOURCES[classId as keyof typeof CHARACTER_HUD_AVATAR_RESOURCES]
+    ?? CHARACTER_HUD_AVATAR_RESOURCES.ether_knight;
+}
 
 /** 다른 플레이어 / 몬스터 표시 */
 interface RemoteEntity {
@@ -95,9 +141,14 @@ export class GameScene extends Phaser.Scene {
   private zoneInfo: ZoneInfo | null = null;
   private remoteEntities: Map<string, RemoteEntity> = new Map();
   private activeDialogueNpc: RemoteEntity | null = null;
+  private zoneTeleportFrameQaManager?: ZoneTeleportManager;
   private zoneBackground: ZoneBackgroundDescriptor = resolveZoneBackground('aether_plains');
   private zoneLabel!: Phaser.GameObjects.Text;
+  private zoneLabelIcon?: Phaser.GameObjects.Image;
+  private zoneLabelIconFallbackRendered = false;
   private connectionLabel!: Phaser.GameObjects.Text;
+  private bossLabelIcons: Phaser.GameObjects.Image[] = [];
+  private bossLabelIconFallbackCount = 0;
 
   // 소켓 cleanup 핸들
   private socketCleanups: Array<() => void> = [];
@@ -108,6 +159,10 @@ export class GameScene extends Phaser.Scene {
 
   init(data: GameSceneData): void {
     this.sceneData = data ?? {};
+    this.bossLabelIcons = [];
+    this.bossLabelIconFallbackCount = 0;
+    this.zoneLabelIcon = undefined;
+    this.zoneLabelIconFallbackRendered = false;
     if (data?.zoneId) this.currentZoneId = data.zoneId;
     this.currentCharacterClassId = data?.characterClass?.trim() || 'ether_knight';
     if (data?.eraId) this.currentEraId = data.eraId;
@@ -130,17 +185,47 @@ export class GameScene extends Phaser.Scene {
 
     // 주인공 캐릭터 이미지 (기본: 에테르 기사 front)
     this.load.image('player_sprite', 'assets/generated/characters/class_main/char_illust_ether_knight_front.png');
-    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
-    if (playerSpriteResource && !this.textures.exists(playerSpriteResource.textureKey)) {
-      this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath, {
-        frameWidth: playerSpriteResource.frameWidth,
-        frameHeight: playerSpriteResource.frameHeight,
+    const queuedCharacterTextureKeys = new Set<string>();
+    const queueCharacterSprite = (characterSpriteResource: CharacterSpriteResource): void => {
+      if (
+        queuedCharacterTextureKeys.has(characterSpriteResource.textureKey)
+        || this.textures.exists(characterSpriteResource.textureKey)
+      ) {
+        return;
+      }
+
+      queuedCharacterTextureKeys.add(characterSpriteResource.textureKey);
+      this.load.spritesheet(characterSpriteResource.textureKey, characterSpriteResource.imagePath, {
+        frameWidth: characterSpriteResource.frameWidth,
+        frameHeight: characterSpriteResource.frameHeight,
       });
+    };
+
+    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
+    if (playerSpriteResource) {
+      queueCharacterSprite(playerSpriteResource);
+    }
+    for (const characterSpriteResource of CHARACTER_SPRITE_MANIFEST) {
+      queueCharacterSprite(characterSpriteResource);
     }
 
-    // NPC 스프라이트
+    // NPC/몬스터 스프라이트
     this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_battle/04_mateus_sprite.png');
     this.load.image('npc_merchant_sprite', 'assets/generated/characters/npc_battle/01_cryo_sprite.png');
+    for (const resource of SPRITE_RESOURCE_MANIFEST) {
+      if ((resource.category !== 'npc' && resource.category !== 'monster') || this.textures.exists(resource.key)) {
+        continue;
+      }
+
+      if (resource.kind === 'spritesheet') {
+        this.load.spritesheet(resource.key, resource.path, {
+          frameWidth: resource.frameWidth,
+          frameHeight: resource.frameHeight,
+        });
+      } else {
+        this.load.image(resource.key, resource.path);
+      }
+    }
 
     // 존/시대별 고유 텍스처 키 사용: Phaser 캐시가 이전 지역 배경을 재사용하지 않게 한다.
     if (!this.textures.exists(this.zoneBackground.farKey)) {
@@ -150,15 +235,29 @@ export class GameScene extends Phaser.Scene {
       this.load.image(this.zoneBackground.skyKey, this.zoneBackground.skyPath);
     }
 
-    // 몬스터 이미지 preload 제거 — 프로그래매틱 아이콘 사용
+    // 존 환경 오브젝트는 현재 존에 필요한 Aseprite PNG만 preload한다.
+    const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
+    for (const obj of envConfig?.objects ?? []) {
+      if (!this.textures.exists(obj.key)) {
+        this.load.image(obj.key, obj.path);
+      }
+    }
+    preloadZoneTeleportUiFrameTextures(this);
+    const zoneLabelIconResource = getSpriteResourceForWorldZoneIcon(this.currentZoneId);
+    if (zoneLabelIconResource && !this.textures.exists(zoneLabelIconResource.key)) {
+      this.load.image(zoneLabelIconResource.key, zoneLabelIconResource.path);
+    }
+    const bossLabelIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_BOSS_LABEL_ICON_ID);
+    if (bossLabelIconResource && !this.textures.exists(bossLabelIconResource.key)) {
+      this.load.image(bossLabelIconResource.key, bossLabelIconResource.path);
+    }
+
+    // 몬스터는 Aseprite spritesheet를 우선 사용하고, 누락 시에만 프로그래매틱 아이콘으로 fallback한다.
 
     // P25-09: 아틀라스 로드 비활성화 — 개별 이미지 사용 (BattleScene 텍스처 캐시 충돌 방지)
     // this.load.atlas('characters', 'assets/atlas/characters.png', 'assets/atlas/characters.json');
     // this.load.atlas('effects', 'assets/atlas/effects.png', 'assets/atlas/effects.json');
     // this.load.atlas('ui', 'assets/atlas/ui.png', 'assets/atlas/ui.json');
-
-    // 환경 오브젝트 비활성화 — SD1.5 이미지가 pixelArt 스케일링에서 깨짐
-    // TODO: SDXL로 환경 오브젝트 재생성 후 복원
 
     // 챕터 타이틀 카드 이미지 로드
     const chapterInfo = ZONE_CHAPTER_MAP[this.currentZoneId];
@@ -258,8 +357,17 @@ export class GameScene extends Phaser.Scene {
 
     // 서비스 초기화 — 각각 독립적으로 실패 허용
     try {
-      this.hudOrchestrator = new HUDOrchestrator(this);
+      const hudAvatarResource = getCharacterHudAvatarResource(this.currentCharacterClassId);
+      this.hudOrchestrator = new HUDOrchestrator(this, {
+        avatarImageKey: hudAvatarResource?.key,
+        avatarUrl: hudAvatarResource?.path,
+      }, {
+        skipQuestLoad: this.sceneData.offlineQa === true,
+      });
       this.hudOrchestrator.init();
+      if (this.sceneData.hudFrameQa === true) {
+        this._startHudFrameQa();
+      }
     } catch (e) { console.warn('[GameScene] HUDOrchestrator 초기화 실패:', e); }
 
     // 퀘스트 트래커의 "월드맵 열기" 버튼 → 월드맵 진입.
@@ -334,9 +442,20 @@ export class GameScene extends Phaser.Scene {
     // 존 라벨 — 반드시 소켓 이벤트 등록 전에 생성해야 함
     const { width } = this.cameras.main;
     const era = getChronoEra(this.currentEraId);
-    this.zoneLabel = this.add.text(width / 2, 20, `📍 ${this.currentZoneName}  /  ${era.label}`, {
+    const zoneLabelIconResource = getSpriteResourceForWorldZoneIcon(this.currentZoneId);
+    const hasZoneLabelIcon = Boolean(zoneLabelIconResource && this.textures.exists(zoneLabelIconResource.key));
+    const zoneLabelText = hasZoneLabelIcon
+      ? `${this.currentZoneName}  /  ${era.label}`
+      : `📍 ${this.currentZoneName}  /  ${era.label}`;
+    this.zoneLabel = this.add.text(hasZoneLabelIcon ? width / 2 + 12 : width / 2, 20, zoneLabelText, {
       fontSize: '16px', color: '#88cc88', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setScrollFactor(0).setDepth(10000).setOrigin(0.5, 0);
+    if (hasZoneLabelIcon && zoneLabelIconResource) {
+      this.zoneLabelIcon = this._addZoneLabelIcon(this.zoneLabel.x - this.zoneLabel.displayWidth / 2 - 12, 30, zoneLabelIconResource);
+    } else {
+      this.zoneLabelIconFallbackRendered = true;
+    }
+    this._writeZoneLabelIconQaProbe({ hasZoneLabelIcon });
 
     this.connectionLabel = this.add.text(width - 10, 20, '', {
       fontSize: '10px', color: '#44cc44', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
@@ -346,6 +465,10 @@ export class GameScene extends Phaser.Scene {
     this._setupZone();
     this._setupSocketEvents();
 
+    if (this.sceneData.zoneTeleportFrameQa === true) {
+      this._startZoneTeleportFrameQa();
+    }
+
     // HUD 안내 텍스트
     this.add.text(20, 20, '[WASD] 이동  [1~6] 스킬  [T] 대화  몬스터 클릭: ATB 전투', {
       fontSize: '14px', color: '#F0F0F0', fontFamily: 'Noto Sans KR',
@@ -354,6 +477,31 @@ export class GameScene extends Phaser.Scene {
     if ((import.meta as unknown as Record<string, Record<string, unknown>>).env?.DEV) {
       runPoolBenchmark(1000);
     }
+  }
+
+  private _startHudFrameQa(): void {
+    this.hudOrchestrator?.showNpcDialogue({
+      id: 'npc_guide',
+      name: 'HUD Frame QA',
+      role: 'quest',
+    });
+  }
+
+  private _startZoneTeleportFrameQa(): void {
+    this.zoneTeleportFrameQaManager?.destroy();
+    this.zoneTeleportFrameQaManager = new ZoneTeleportManager(this, networkManager, { frameQa: true });
+    this.zoneTeleportFrameQaManager.init(this.sceneData.characterId ?? 'debug-zone-teleport-hero', this.currentZoneId);
+    this.zoneTeleportFrameQaManager.setPortals([
+      {
+        id: 'qa_portal_memory_forest',
+        name: '기억의 숲 관문',
+        targetZoneId: 'memory_forest',
+        x: 0,
+        y: 0,
+        unlocked: true,
+      },
+    ]);
+    this.zoneTeleportFrameQaManager.interactPortal(0, 0);
   }
 
   // ── 챕터 타이틀 카드 표시 ────────────────────────────────
@@ -417,16 +565,20 @@ export class GameScene extends Phaser.Scene {
   // ── P25-04: 존 정보 조회 ────────────────────────────────
 
   private async _setupZone(): Promise<void> {
-    try {
-      this.zoneInfo = await networkManager.getZoneInfo(this.currentZoneId);
-    } catch (err) {
-      console.warn('[GameScene] 존 정보 API 실패 — 오프라인 모드:', err);
+    if (this.sceneData.offlineQa === true) {
       this.zoneInfo = null;
+    } else {
+      try {
+        this.zoneInfo = await networkManager.getZoneInfo(this.currentZoneId);
+      } catch (err) {
+        console.warn('[GameScene] 존 정보 API 실패 — 오프라인 모드:', err);
+        this.zoneInfo = null;
+      }
     }
 
     if (this.zoneInfo) {
       const projection = projectZoneToEra(this.currentZoneId, this.currentEraId);
-      this.zoneLabel?.setText(`📍 ${projection.displayName}  /  ${getChronoEra(this.currentEraId).label}`);
+      this._setZoneLabelText(projection.displayName);
 
       this.zoneInfo.npcs?.forEach((npc, i) => {
         this._spawnNpc(npc.id, npc.name, 300 + i * 200, 400, npc.role);
@@ -462,6 +614,9 @@ export class GameScene extends Phaser.Scene {
       this._spawnMonster('mon_erebos_fog_rat', '기억 침식쥐 Lv.5', 700, 500);
       this._spawnMonster('mon_erebos_memory_beetle', '공허 박쥐 Lv.7', 850, 550);
       this._spawnMonster('mon_erebos_memory_dust', '망각 슬라임 Lv.8', 1000, 500);
+      if (this.sceneData.bossLabelIconQa === true) {
+        this._spawnMonster('mon_erebos_memory_dust', 'QA 보스 Lv.30', 1130, 560, true);
+      }
     }
   }
 
@@ -472,10 +627,17 @@ export class GameScene extends Phaser.Scene {
   };
 
   private _spawnNpc(id: string, name: string, x: number, y: number, role = 'dialogue'): void {
+    const resource = getSpriteResourceForNpc(id);
     const texKey = GameScene.NPC_SPRITE_MAP[id];
     let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
 
-    if (texKey && this.textures.exists(texKey)) {
+    if (resource && this.textures.exists(resource.key)) {
+      sprite = this.add.image(x, y, resource.key, 0)
+        .setScale(1)
+        .setInteractive({ useHandCursor: true });
+      sprite.setFrame(0);
+      sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else if (texKey && this.textures.exists(texKey)) {
       sprite = this.add.image(x, y, texKey)
         .setScale(1)
         .setInteractive({ useHandCursor: true });
@@ -563,33 +725,57 @@ export class GameScene extends Phaser.Scene {
 
   private _spawnMonster(id: string, name: string, x: number, y: number, isBoss = false): void {
     const battleSeed = buildChronoBattleSeed(this.currentZoneId, this.currentEraId, id, name);
-    // 이름 해시 기반 결정적 색상 + 이모지
-    const hash = battleSeed.monsterName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-    const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
-    const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
+    const cleanId = id.replace(/_\d+$/u, '');
+    const monsterResource = getSpriteResourceForMonster(cleanId);
 
-    // CHRONO-S125: 보스 sprite 시각 차별 (60×60 + gold stroke + BOSS 라벨)
-    const size = isBoss ? 60 : 40;
-    const sprite = this.add.rectangle(x, y, size, size, color, 0.85)
-      .setInteractive({ useHandCursor: true });
-    if (isBoss) {
-      sprite.setStrokeStyle(3, 0xffd54a, 1);
+    const size = isBoss ? 72 : 56;
+    let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+
+    if (monsterResource && this.textures.exists(monsterResource.key)) {
+      sprite = this.add.image(x, y, monsterResource.key, 0)
+        .setDisplaySize(size, size)
+        .setInteractive({ useHandCursor: true });
+      sprite.setFrame(0);
+      sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else {
+      // Aseprite field monster sprite 로드 실패 시에만 사용하는 안전 fallback.
+      const hash = battleSeed.monsterName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
+      const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
+
+      sprite = this.add.rectangle(x, y, isBoss ? 60 : 40, isBoss ? 60 : 40, color, 0.85)
+        .setInteractive({ useHandCursor: true });
+      if (isBoss) {
+        sprite.setStrokeStyle(3, 0xffd54a, 1);
+      }
+
+      const emojiText = this.add.text(x, y, emoji, { fontSize: isBoss ? '32px' : '22px' }).setOrigin(0.5);
+      sprite.once('destroy', () => emojiText.destroy());
     }
-
-    // 이모지 오버레이
-    const emojiText = this.add.text(x, y, emoji, { fontSize: isBoss ? '32px' : '22px' }).setOrigin(0.5);
-    sprite.once('destroy', () => emojiText.destroy());
 
     // 보스 BOSS 라벨
     if (isBoss) {
-      const bossLabel = this.add.text(x, y + size / 2 + 12, '⚔️ BOSS', {
+      const bossLabelIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_BOSS_LABEL_ICON_ID);
+      const hasBossLabelIcon = Boolean(bossLabelIconResource && this.textures.exists(bossLabelIconResource.key));
+      let bossLabelIcon: Phaser.GameObjects.Image | undefined;
+      if (hasBossLabelIcon && bossLabelIconResource) {
+        bossLabelIcon = this._addBossLabelIcon(x - 24, y + size / 2 + 12, bossLabelIconResource);
+      } else {
+        this.bossLabelIconFallbackCount += 1;
+      }
+      const bossLabelText = hasBossLabelIcon ? 'BOSS' : '⚔️ BOSS';
+      const bossLabel = this.add.text(hasBossLabelIcon ? x + 8 : x, y + size / 2 + 12, bossLabelText, {
         fontSize: '11px',
         color: '#ffd54a',
         fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
         stroke: '#000000',
         strokeThickness: 2,
       }).setOrigin(0.5);
+      if (bossLabelIcon) {
+        sprite.once('destroy', () => bossLabelIcon.destroy());
+      }
       sprite.once('destroy', () => bossLabel.destroy());
+      this._writeBossLabelIconQaProbe({ hasBossLabelIcon, bossLabel });
     }
 
     const tag = this.add.text(x, y - size / 2 - 14, battleSeed.monsterName, {
@@ -620,18 +806,137 @@ export class GameScene extends Phaser.Scene {
     this.remoteEntities.set(id, { id, name: battleSeed.monsterName, sprite, nameTag: tag, isMonster: true, engage });
   }
 
+  private _addZoneLabelIcon(
+    x: number,
+    y: number,
+    resource: { key: string; path: string },
+  ): Phaser.GameObjects.Image {
+    const icon = this.add.image(x, y, resource.key)
+      .setScrollFactor(0)
+      .setDepth(10000)
+      .setOrigin(0.5)
+      .setName('game_scene_zone_label_icon');
+    icon.setDisplaySize(18, 18);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return icon;
+  }
+
+  private _setZoneLabelText(zoneName: string): void {
+    if (!this.zoneLabel) return;
+
+    const hasZoneLabelIcon = this.zoneLabelIcon?.active === true;
+    const eraLabel = getChronoEra(this.currentEraId).label;
+    this.zoneLabel.setText(hasZoneLabelIcon ? `${zoneName}  /  ${eraLabel}` : `📍 ${zoneName}  /  ${eraLabel}`);
+    const { width } = this.cameras.main;
+    this.zoneLabel.setX(hasZoneLabelIcon ? width / 2 + 12 : width / 2);
+    if (hasZoneLabelIcon && this.zoneLabelIcon) {
+      this.zoneLabelIcon.setPosition(this.zoneLabel.x - this.zoneLabel.displayWidth / 2 - 12, 30);
+    }
+    this._writeZoneLabelIconQaProbe({ hasZoneLabelIcon });
+  }
+
+  private _writeZoneLabelIconQaProbe({ hasZoneLabelIcon }: { hasZoneLabelIcon: boolean }): void {
+    if (this.sceneData.zoneLabelIconQa !== true || typeof document === 'undefined') return;
+
+    const zoneLabelIconResource = getSpriteResourceForWorldZoneIcon(this.currentZoneId);
+    const missingZoneLabelIconKeys = hasZoneLabelIcon
+      ? []
+      : [zoneLabelIconResource?.key ?? this.currentZoneId];
+    const legacyGlyphPresent = this.zoneLabel?.text.includes('📍') ?? false;
+
+    document.body.dataset.aeternaGameZoneLabelIconQa = JSON.stringify({
+      status: hasZoneLabelIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      zoneId: this.currentZoneId,
+      zoneLabelText: this.zoneLabel?.text ?? null,
+      legacyGlyphPresent,
+      zoneLabelIcon: {
+        key: zoneLabelIconResource?.key ?? null,
+        path: zoneLabelIconResource?.path ?? null,
+        renderedCount: this.zoneLabelIcon?.active === true ? 1 : 0,
+        displaySizes: this.zoneLabelIcon
+          ? [{ width: this.zoneLabelIcon.displayWidth, height: this.zoneLabelIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.zoneLabelIconFallbackRendered,
+      },
+      missingZoneLabelIconKeys,
+    });
+  }
+
+  private _addBossLabelIcon(
+    x: number,
+    y: number,
+    resource: { key: string; path: string },
+  ): Phaser.GameObjects.Image {
+    const icon = this.add.image(x, y, resource.key)
+      .setOrigin(0.5)
+      .setDepth(100)
+      .setName('game_scene_boss_label_icon');
+    icon.setDisplaySize(18, 18);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.bossLabelIcons.push(icon);
+    return icon;
+  }
+
+  private _writeBossLabelIconQaProbe({
+    hasBossLabelIcon,
+    bossLabel,
+  }: {
+    hasBossLabelIcon: boolean;
+    bossLabel: Phaser.GameObjects.Text;
+  }): void {
+    if (this.sceneData.bossLabelIconQa !== true || typeof document === 'undefined') return;
+
+    const bossLabelIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_BOSS_LABEL_ICON_ID);
+    const missingBossLabelIconKeys = hasBossLabelIcon
+      ? []
+      : [bossLabelIconResource?.key ?? GAME_SCENE_BOSS_LABEL_ICON_ID];
+    const legacyGlyphPresent = bossLabel.text.includes('⚔');
+
+    document.body.dataset.aeternaGameBossLabelIconQa = JSON.stringify({
+      status: hasBossLabelIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      bossLabelText: bossLabel.text,
+      legacyGlyphPresent,
+      bossLabelIcon: {
+        iconId: GAME_SCENE_BOSS_LABEL_ICON_ID,
+        key: bossLabelIconResource?.key ?? null,
+        path: bossLabelIconResource?.path ?? null,
+        renderedCount: this.bossLabelIcons.length,
+        displaySizes: this.bossLabelIcons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+        fallbackRendered: this.bossLabelIconFallbackCount > 0,
+      },
+      missingBossLabelIconKeys,
+    });
+  }
+
   // ── P25-04: 소켓 이벤트 ─────────────────────────────────
 
   private _setupSocketEvents(): void {
+    if (this.sceneData.offlineQa === true) {
+      this.connectionLabel?.setText('● 로컬 QA').setColor('#ffcc44');
+      return;
+    }
+
     if (!networkManager.isConnected) {
       networkManager.connect();
     }
 
     // 월드 이동 브로드캐스트 수신
     const unsub1 = networkManager.on('world:playerJoined', (data) => {
-      const d = data as { characterId: string; name: string; x: number; y: number };
+      const d = data as { characterId: string; name: string; x: number; y: number; characterClass?: string };
       if (!this.remoteEntities.has(d.characterId)) {
-        const sprite = this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff);
+        const remoteClassId = d.characterClass?.trim() ?? '';
+        const remoteSpriteResource = remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined;
+        let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+
+        if (remoteSpriteResource && this.textures.exists(remoteSpriteResource.textureKey)) {
+          sprite = this.add.image(d.x, d.y, remoteSpriteResource.textureKey, 0)
+            .setDisplaySize(56, 56);
+          sprite.setFrame(0);
+          sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        } else {
+          // Aseprite remote player sprite 로드 실패 시에만 사용하는 안전 fallback.
+          sprite = this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff);
+        }
         const tag = this.add.text(d.x, d.y - 38, d.name, {
           fontSize: '11px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
         }).setOrigin(0.5);
@@ -726,6 +1031,8 @@ export class GameScene extends Phaser.Scene {
     this.socketCleanups = [];
     this.remoteEntities.clear();
     this.activeDialogueNpc = null;
+    this.zoneTeleportFrameQaManager?.destroy();
+    this.zoneTeleportFrameQaManager = undefined;
   }
 
   // ── 월드/플레이어/입력 생성 ──
@@ -764,8 +1071,7 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
-    // 환경 오브젝트 비활성화 — pixelArt 스케일링 깨짐 방지
-    // this._placeEnvironmentObjects(worldW, worldH);
+    this._placeEnvironmentObjects(worldW, worldH);
   }
 
   /** 환경 오브젝트 배치 — 존 설정 기반 동적 생성 */
@@ -773,7 +1079,16 @@ export class GameScene extends Phaser.Scene {
     // 지면: 제거 — 배경 이미지가 전체 커버
 
     const envConfig = ZONE_ENV_CONFIG[this.currentZoneId];
-    if (!envConfig) return;
+    if (!envConfig) {
+      this._writeEnvironmentObjectQaProbe({
+        status: 'missing',
+        expectedObjectCount: 0,
+        renderedObjectCount: 0,
+        missingTextureKeys: [`zone_env_config:${this.currentZoneId}`],
+        objects: [],
+      });
+      return;
+    }
 
     // 시드 기반 난수 — 존마다 같은 배치 보장
     const rng = new Phaser.Math.RandomDataGenerator([`${this.currentZoneId}_env_42`]);
@@ -791,8 +1106,27 @@ export class GameScene extends Phaser.Scene {
       return { x: rng.between(100, worldW - 100), y: rng.between(100, worldH - 100) };
     };
 
+    const objectStates: Array<{
+      key: string;
+      path: string;
+      expectedCount: number;
+      renderedCount: number;
+      textureLoaded: boolean;
+    }> = [];
+
     for (const obj of envConfig.objects) {
-      if (!this.textures.exists(obj.key)) continue;
+      const textureLoaded = this.textures.exists(obj.key);
+      let renderedCount = 0;
+      if (!textureLoaded) {
+        objectStates.push({
+          key: obj.key,
+          path: obj.path,
+          expectedCount: obj.count,
+          renderedCount,
+          textureLoaded,
+        });
+        continue;
+      }
 
       for (let i = 0; i < obj.count; i++) {
         const { x, y } = pickPos();
@@ -816,8 +1150,70 @@ export class GameScene extends Phaser.Scene {
             delay: rng.between(0, 1000),
           });
         }
+        renderedCount += 1;
       }
+
+      objectStates.push({
+        key: obj.key,
+        path: obj.path,
+        expectedCount: obj.count,
+        renderedCount,
+        textureLoaded,
+      });
     }
+
+    const expectedObjectCount = objectStates.reduce((sum, obj) => sum + obj.expectedCount, 0);
+    const renderedObjectCount = objectStates.reduce((sum, obj) => sum + obj.renderedCount, 0);
+    const missingTextureKeys = objectStates
+      .filter((obj) => !obj.textureLoaded || obj.renderedCount !== obj.expectedCount)
+      .map((obj) => obj.key);
+
+    this._writeEnvironmentObjectQaProbe({
+      status: missingTextureKeys.length === 0 ? 'ready' : 'missing',
+      expectedObjectCount,
+      renderedObjectCount,
+      missingTextureKeys,
+      objects: objectStates,
+    });
+  }
+
+  private _isEnvironmentObjectQaEnabled(): boolean {
+    if (this.sceneData.envObjectQa === true) {
+      return true;
+    }
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    try {
+      return new URLSearchParams(window.location.search).get('envObjectQa') === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  private _writeEnvironmentObjectQaProbe(payload: {
+    status: 'ready' | 'missing';
+    expectedObjectCount: number;
+    renderedObjectCount: number;
+    missingTextureKeys: string[];
+    objects: Array<{
+      key: string;
+      path: string;
+      expectedCount: number;
+      renderedCount: number;
+      textureLoaded: boolean;
+    }>;
+  }): void {
+    if (!this._isEnvironmentObjectQaEnabled() || typeof document === 'undefined') {
+      return;
+    }
+
+    document.body.dataset.aeternaEnvObjectQa = JSON.stringify({
+      zoneId: this.currentZoneId,
+      eraId: this.currentEraId,
+      ...payload,
+    });
   }
 
   private createPlayer(): void {

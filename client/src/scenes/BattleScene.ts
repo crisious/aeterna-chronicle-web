@@ -13,20 +13,21 @@
  */
 
 import * as Phaser from 'phaser';
-import { EffectManager } from '../effects/EffectManager';
+import { EffectManager, EFFECT_FALLBACK_TEXTURES } from '../effects/EffectManager';
 import { SoundManager } from '../sound/SoundManager';
-import { BattleUI } from '../ui/BattleUI';
+import { BattleUI, preloadBattleUiFrameTextures } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
 import { computeCritEchoDamage, computeReflectDamage, rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
 import { COMBO_MIRROR } from '../skills/comboMirror';
 import { StatusEffectRenderer, type StatusEffectData } from '../combat/StatusEffectRenderer';
 import { resolveStatusCategory } from '../combat/statusEffectCategory';
-import { ComboUI } from '../ui/ComboUI';
+import { ComboUI, preloadComboUiFrameTextures } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
 import { isScreenShakeEnabled } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
+import { preloadEnvironmentParticleTextures } from './TransitionEffects';
 import { getChronoEra, type ChronoEraId } from '../time/ChronoTimeline';
 import { chronoEraToSpeedTier } from '../../../shared/types/chronoEraAtb';
 import { loadLastEra } from '../time/eraStorage';
@@ -35,6 +36,10 @@ import { resolveFieldEncounter } from '../../../shared/types/chronoField';
 import { composeEscapeLog, escapeOutcomeFromResult } from '../combat/escapeNarration';
 import { getCombatPopupColor } from '../combat/combatResultPalette';
 import { formatDamageTypeTag, getDamageTypePopupColor } from '../combat/damageTypeNarration';
+import { getSpriteResourceForMonster, getSpriteResourceForSkillIcon, getSpriteResourceForVfx } from '../assets/spriteResourceManifest';
+import { getStatusIconResource, preloadStatusIconResources } from '../data/statusEffectIcons';
+import { getItemIconResource } from '../data/itemIconResources';
+import monsterManifest from '../data/monsterManifest.json';
 
 // CHRONO-S44: Dual Tech element → SFX 매핑 (대표 카테고리)
 const DUAL_TECH_SFX_BY_ELEMENT: Record<string, string> = {
@@ -94,10 +99,113 @@ export interface BattleSceneData {
   returnScene?: string;
   /** 복귀 시 전달할 데이터 (victory/allyState 자동 추가) */
   returnData?: Record<string, unknown>;
+  /** Aseprite 결과/패배 팝업 frame 브라우저 QA용 강제 표시 */
+  battleResultFrameQa?: 'victory' | 'defeat';
+  /** Aseprite 전투 종료 lead banner icon 브라우저 QA용 */
+  battleResultLeadQa?: 'victory' | 'defeat';
+  /** Aseprite 전투 페이싱 버튼 frame 브라우저 QA용 */
+  battlePaceFrameQa?: boolean;
+  /** Aseprite 협공 버튼 frame 브라우저 QA용 */
+  battleComboTechFrameQa?: boolean;
+  /** Aseprite 필드 ambient line icon 브라우저 QA용 */
+  battleAmbientLineQa?: boolean;
+  /** Aseprite 전투 시작 intro icon 브라우저 QA용 */
+  battleIntroIconQa?: boolean;
+  /** Aseprite 커맨드 메뉴 focus icon 브라우저 QA용 */
+  battleCommandFocusIconQa?: boolean;
+  /** Aseprite 마법/아이템 서브메뉴 focus icon 브라우저 QA용 */
+  battleSubMenuFocusIconQa?: 'magic' | 'item';
 }
 
 const DUNGEON_BATTLE_BG_KEY = 'battle_bg_dungeon';
 const DUNGEON_BATTLE_BG_PATH = 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png';
+const MONSTER_IMAGE_MANIFEST = monsterManifest as Record<string, string>;
+
+export const BATTLE_MONSTER_FALLBACK_TEXTURES = {
+  normal: {
+    key: 'battle_monster_fallback',
+    path: 'assets/generated/monsters/fallback/battle_monster_fallback.png',
+    displaySize: 60,
+  },
+  boss: {
+    key: 'battle_boss_fallback',
+    path: 'assets/generated/monsters/fallback/battle_boss_fallback.png',
+    displaySize: 90,
+  },
+} as const;
+
+const BATTLE_SCENE_UI_FRAME_TEXTURES = {
+  bottomPanel: {
+    key: 'ui_frame_UI-HUD-001-DEF',
+    path: 'assets/generated/ui/frames/UI-HUD-001-DEF.png',
+  },
+  commandMenu: {
+    key: 'ui_frame_UI-BTN-002-DEF',
+    path: 'assets/generated/ui/frames/UI-BTN-002-DEF.png',
+  },
+  magicSubMenu: {
+    key: 'ui_frame_UI-BTN-003-DEF',
+    path: 'assets/generated/ui/frames/UI-BTN-003-DEF.png',
+  },
+  itemSubMenu: {
+    key: 'ui_frame_UI-BTN-004-DEF',
+    path: 'assets/generated/ui/frames/UI-BTN-004-DEF.png',
+  },
+  resultPopup: {
+    key: 'ui_frame_UI-INV-005-DEF',
+    path: 'assets/generated/ui/frames/UI-INV-005-DEF.png',
+  },
+  defeatPopup: {
+    key: 'ui_frame_UI-INV-006-DEF',
+    path: 'assets/generated/ui/frames/UI-INV-006-DEF.png',
+  },
+  paceButton: {
+    key: 'ui_frame_battle_pace_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+  comboTechButton: {
+    key: 'ui_frame_battle_combo_tech_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+} as const;
+
+const BATTLE_ACTIVE_INDICATOR_ICON_ID = 'skill_mw_arrow';
+const BATTLE_COMMAND_FOCUS_ICON_ID = 'skill_mw_arrow';
+const BATTLE_COMMAND_FOCUS_ICON_EXPECTED_COUNT = 1;
+const BATTLE_SUB_MENU_FOCUS_ICON_ID = 'skill_mw_arrow';
+const BATTLE_SUB_MENU_FOCUS_ICON_EXPECTED_COUNT = 1;
+const BATTLE_INTRO_ICON_ID = 'skill_ek_slash';
+const BATTLE_FIELD_AMBIENT_ICON_ID = 'shield';
+const BATTLE_FIELD_BOSS_ICON_ID = 'skill_ek_slash';
+const BATTLE_COMBO_TECH_BUTTON_ICON_IDS = {
+  dual: 'skill_mw_storm',
+  triple: 'skill_ek_ultimate',
+} as const;
+const BATTLE_RESULT_REWARD_ICON_IDS = {
+  title: 'skill_ek_ultimate',
+  exp: 'skill_ek_passive',
+  gold: 'ITM-MAT-002',
+  loot: 'ITM-MAT-001',
+} as const;
+const BATTLE_RESULT_LEAD_ICON_IDS = {
+  victory: 'skill_ek_ultimate',
+  defeat: 'curse',
+} as const;
+const BATTLE_RESULT_REWARD_ICON_EXPECTED_COUNT = 4;
+const BATTLE_RESULT_REWARD_ICON_SIZE = 18;
+const BATTLE_RESULT_LEAD_ICON_SIZE = 34;
+const BATTLE_DEFEAT_TITLE_ICON_ID = 'curse';
+const BATTLE_DEFEAT_TITLE_ICON_EXPECTED_COUNT = 1;
+const BATTLE_DEFEAT_TITLE_ICON_SIZE = 18;
+
+type BattleFieldAmbientIconKind = 'ambient' | 'boss';
+type BattleResultRewardIconKind = keyof typeof BATTLE_RESULT_REWARD_ICON_IDS;
+type BattleResultLeadMode = keyof typeof BATTLE_RESULT_LEAD_ICON_IDS;
+
+interface BattleSceneFrameRender {
+  primary: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  stroke?: Phaser.GameObjects.Rectangle;
+}
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
@@ -162,24 +270,83 @@ interface UnitSprite {
   isDefending?: boolean;
   baseDefense?: number;
   defendToken?: number;
-  defendIcon?: Phaser.GameObjects.Text;
+  defendIcon?: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
 }
 
 // 커맨드 메뉴 항목
 type CommandType = 'attack' | 'magic' | 'item' | 'defend' | 'flee';
+type BattleCommandIconDescriptor =
+  | { kind: 'skill'; id: string }
+  | { kind: 'status'; id: string }
+  | { kind: 'item'; itemIconId: string };
+
+interface BattleIconResource {
+  key: string;
+  path: string;
+}
+
+interface BattleCommandIconResource extends BattleIconResource {}
 
 interface CommandOption {
   type: CommandType;
   label: string;
+  fallbackLabel: string;
+  icon: BattleCommandIconDescriptor;
+}
+
+interface BattleSubMenuItem {
+  text: Phaser.GameObjects.Text;
+  action: () => void;
+  label: string;
+  focusX: number;
+  focusY: number;
+  icon?: Phaser.GameObjects.Image;
 }
 
 const COMMANDS: CommandOption[] = [
-  { type: 'attack', label: '⚔ 공격' },
-  { type: 'magic',  label: '✨ 마법' },
-  { type: 'item',   label: '🎒 아이템' },
-  { type: 'defend', label: '🛡 방어' },
-  { type: 'flee',   label: '🏃 도주' },
+  { type: 'attack', label: '공격', fallbackLabel: '⚔ 공격', icon: { kind: 'skill', id: 'skill_ek_slash' } },
+  { type: 'magic',  label: '마법', fallbackLabel: '✨ 마법', icon: { kind: 'skill', id: 'skill_mw_bolt' } },
+  { type: 'item',   label: '아이템', fallbackLabel: '🎒 아이템', icon: { kind: 'item', itemIconId: 'ITM-CON-001' } },
+  { type: 'defend', label: '방어', fallbackLabel: '🛡 방어', icon: { kind: 'status', id: 'shield' } },
+  { type: 'flee',   label: '도주', fallbackLabel: '🏃 도주', icon: { kind: 'skill', id: 'skill_vw_warp' } },
 ];
+
+function getBattleCommandIconResource(cmd: CommandOption): BattleCommandIconResource | undefined {
+  switch (cmd.icon.kind) {
+    case 'skill':
+      return getSpriteResourceForSkillIcon(cmd.icon.id);
+    case 'status':
+      return getStatusIconResource(cmd.icon.id);
+    case 'item':
+      return getItemIconResource({ itemIconId: cmd.icon.itemIconId });
+    default:
+      return undefined;
+  }
+}
+
+function getBattleResultRewardIconResource(kind: BattleResultRewardIconKind): BattleIconResource | undefined {
+  switch (kind) {
+    case 'title':
+    case 'exp':
+      return getSpriteResourceForSkillIcon(BATTLE_RESULT_REWARD_ICON_IDS[kind]);
+    case 'gold':
+    case 'loot':
+      return getItemIconResource({ itemIconId: BATTLE_RESULT_REWARD_ICON_IDS[kind] });
+    default:
+      return undefined;
+  }
+}
+
+function getBattleResultLeadIconResource(mode: BattleResultLeadMode): BattleIconResource | undefined {
+  switch (mode) {
+    case 'victory':
+      return getSpriteResourceForSkillIcon(BATTLE_RESULT_LEAD_ICON_IDS.victory);
+    case 'defeat':
+      return getStatusIconResource(BATTLE_RESULT_LEAD_ICON_IDS.defeat);
+    default:
+      return undefined;
+  }
+}
 
 // ─── BattleScene ────────────────────────────────────────────────
 
@@ -205,10 +372,10 @@ export class BattleScene extends Phaser.Scene {
   private cmdMenuIndex = 0;
   private cmdSubMenu: Phaser.GameObjects.Container | null = null;
   // UX(#4): 행동 주체(activeCommander) sprite 위 펄싱 화살표 — 다인 파티에서 '내 턴' 가시화.
-  private activeIndicator: Phaser.GameObjects.Text | null = null;
+  private activeIndicator: Phaser.GameObjects.Image | Phaser.GameObjects.Text | null = null;
   private activeIndicatorTween: Phaser.Tweens.Tween | null = null;
   // 전키보드 UI: 서브메뉴(마법/아이템) 선택을 키보드로. update-폴링 패턴(커맨드 메뉴와 동일).
-  private subMenuItems: Array<{ text: Phaser.GameObjects.Text; action: () => void; label: string }> = [];
+  private subMenuItems: BattleSubMenuItem[] = [];
   private subMenuIndex = 0;
 
   // 상태 패널
@@ -283,6 +450,24 @@ export class BattleScene extends Phaser.Scene {
   private dualTechButton: Phaser.GameObjects.Container | null = null;
   // CHRONO-S65: 3인 협공 발동 버튼
   private tripleTechButton: Phaser.GameObjects.Container | null = null;
+  private comboTechButtonIcons: Phaser.GameObjects.Image[] = [];
+  private fieldAmbientIcons: Phaser.GameObjects.Image[] = [];
+  private fieldAmbientIconFallbackKinds: BattleFieldAmbientIconKind[] = [];
+  private battleIntroIcon?: Phaser.GameObjects.Image;
+  private battleIntroIconFallbackRendered = false;
+  private battleCommandFocusIcon: Phaser.GameObjects.Image | null = null;
+  private battleCommandFocusIconFallbackRendered = false;
+  private battleCommandFocusTexts: Phaser.GameObjects.Text[] = [];
+  private battleSubMenuFocusIcon: Phaser.GameObjects.Image | null = null;
+  private battleSubMenuFocusIconFallbackRendered = false;
+  private battleSubMenuFocusTexts: Phaser.GameObjects.Text[] = [];
+  private battleResultRewardIcons: Phaser.GameObjects.Image[] = [];
+  private battleResultRewardIconFallbackKinds: BattleResultRewardIconKind[] = [];
+  private battleDefeatTitleIcon: Phaser.GameObjects.Image | null = null;
+  private battleDefeatTitleIconFallbackRendered = false;
+  private battleResultLeadIcon: Phaser.GameObjects.Image | null = null;
+  private battleResultLeadIconFallbackRendered = false;
+  private battleResultLeadText: Phaser.GameObjects.Text | null = null;
   // CHRONO-S70: chain combo 카운터 + UI 라벨
   private chainCount = 0;
   private chainLabel: Phaser.GameObjects.Text | null = null;
@@ -297,6 +482,7 @@ export class BattleScene extends Phaser.Scene {
   private atbModeButton: Phaser.GameObjects.Text | null = null;
   private phaseText: Phaser.GameObjects.Text | null = null;
   private introFallbackTimer: Phaser.Time.TimerEvent | null = null;
+  private battleSceneFrameQaRenderedCounts = new Map<string, number>();
 
   private _initData!: BattleSceneData;
   private battleBackgroundKey = DUNGEON_BATTLE_BG_KEY;
@@ -338,6 +524,25 @@ export class BattleScene extends Phaser.Scene {
     this.atbModeButton = null;
     this.phaseText = null;
     this.introFallbackTimer = null;
+    this.comboTechButtonIcons = [];
+    this.fieldAmbientIcons = [];
+    this.fieldAmbientIconFallbackKinds = [];
+    this.battleIntroIcon = undefined;
+    this.battleIntroIconFallbackRendered = false;
+    this.battleCommandFocusIcon = null;
+    this.battleCommandFocusIconFallbackRendered = false;
+    this.battleCommandFocusTexts = [];
+    this.battleSubMenuFocusIcon = null;
+    this.battleSubMenuFocusIconFallbackRendered = false;
+    this.battleSubMenuFocusTexts = [];
+    this.battleResultRewardIcons = [];
+    this.battleResultRewardIconFallbackKinds = [];
+    this.battleDefeatTitleIcon = null;
+    this.battleDefeatTitleIconFallbackRendered = false;
+    this.battleResultLeadIcon = null;
+    this.battleResultLeadIconFallbackRendered = false;
+    this.battleResultLeadText = null;
+    this.battleSceneFrameQaRenderedCounts.clear();
 
     this.skillSlots = data.skillSlots ?? [];
     this.battleId = data.battleId;
@@ -363,12 +568,25 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // 몬스터 이미지 로드 제거 — 프로그래매틱 아이콘 스프라이트 사용
+    for (const texture of Object.values(BATTLE_MONSTER_FALLBACK_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+    preloadBattleUiFrameTextures(this);
+    preloadComboUiFrameTextures(this);
+    for (const texture of Object.values(BATTLE_SCENE_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
 
-    // 캐릭터 side 일러스트 (원본 256x384 사용)
+    // 몬스터별 리소스가 없으면 generic Aseprite fallback으로 내려간다.
+
+    // 캐릭터 전투 썸네일 (64x96) 로드
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
-      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/char_illust_${cid}_side.png`);
+      this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/battle/char_battle_${cid}.png`);
       const spriteResource = getCharacterSpriteResource(cid);
       if (spriteResource && !this.textures.exists(spriteResource.textureKey)) {
         this.load.spritesheet(spriteResource.textureKey, spriteResource.imagePath, {
@@ -379,17 +597,121 @@ export class BattleScene extends Phaser.Scene {
     }
 
     // 몬스터 스프라이트 이미지 로드 (128x128, 투명 배경)
-    const enemies = this._initData?.enemies ?? [];
+    const enemies = this._initData?.enemies ?? this._createDefaultEnemies();
     for (const enemy of enemies) {
       const cleanId = (enemy.id ?? '').replace(/_\d+$/, '');
+      const resource = getSpriteResourceForMonster(cleanId);
+      if (resource && !this.textures.exists(resource.key)) {
+        this.load.spritesheet(resource.key, resource.path, {
+          frameWidth: resource.frameWidth,
+          frameHeight: resource.frameHeight,
+        });
+        continue;
+      }
+
       const texKey = `mon_battle_${cleanId}`;
-      const path = `assets/generated/monsters/normal/${cleanId}_normal.png`;
-      if (!this.textures.exists(texKey)) {
-        this.load.image(texKey, path);
+      const legacyMonsterPath = MONSTER_IMAGE_MANIFEST[cleanId];
+      if (legacyMonsterPath && !this.textures.exists(texKey)) {
+        this.load.image(texKey, legacyMonsterPath);
+      }
+    }
+
+    const characterClass = this._initData?.characterClass ?? 'ether_knight';
+    const preloadedSkillSlots = this.skillSlots.length > 0
+      ? this.skillSlots
+      : (classSkills[characterClass] ?? classSkills['ether_knight']);
+    const queuedSkillIconKeys = new Set<string>();
+    for (const slot of preloadedSkillSlots) {
+      const skillIconResource = slot.icon ? getSpriteResourceForSkillIcon(slot.icon) : undefined;
+      if (skillIconResource && !this.textures.exists(skillIconResource.key) && !queuedSkillIconKeys.has(skillIconResource.key)) {
+        this.load.image(skillIconResource.key, skillIconResource.path);
+        queuedSkillIconKeys.add(skillIconResource.key);
+      }
+    }
+
+    const activeIndicatorResource = getSpriteResourceForSkillIcon(BATTLE_ACTIVE_INDICATOR_ICON_ID);
+    if (activeIndicatorResource && !this.textures.exists(activeIndicatorResource.key)) {
+      this.load.image(activeIndicatorResource.key, activeIndicatorResource.path);
+    }
+
+    const commandFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_COMMAND_FOCUS_ICON_ID);
+    if (
+      commandFocusIconResource
+      && commandFocusIconResource.key !== activeIndicatorResource?.key
+      && !this.textures.exists(commandFocusIconResource.key)
+    ) {
+      this.load.image(commandFocusIconResource.key, commandFocusIconResource.path);
+    }
+
+    const subMenuFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_SUB_MENU_FOCUS_ICON_ID);
+    if (
+      subMenuFocusIconResource
+      && subMenuFocusIconResource.key !== activeIndicatorResource?.key
+      && subMenuFocusIconResource.key !== commandFocusIconResource?.key
+      && !this.textures.exists(subMenuFocusIconResource.key)
+    ) {
+      this.load.image(subMenuFocusIconResource.key, subMenuFocusIconResource.path);
+    }
+
+    const introIconResource = getSpriteResourceForSkillIcon(BATTLE_INTRO_ICON_ID);
+    if (introIconResource && !this.textures.exists(introIconResource.key)) {
+      this.load.image(introIconResource.key, introIconResource.path);
+    }
+
+    const ambientIconResource = getStatusIconResource(BATTLE_FIELD_AMBIENT_ICON_ID);
+    if (ambientIconResource && !this.textures.exists(ambientIconResource.key)) {
+      this.load.image(ambientIconResource.key, ambientIconResource.path);
+    }
+
+    const bossIconResource = getSpriteResourceForSkillIcon(BATTLE_FIELD_BOSS_ICON_ID);
+    if (bossIconResource && !this.textures.exists(bossIconResource.key)) {
+      this.load.image(bossIconResource.key, bossIconResource.path);
+    }
+
+    for (const iconId of Object.values(BATTLE_COMBO_TECH_BUTTON_ICON_IDS)) {
+      const comboTechIconResource = getSpriteResourceForSkillIcon(iconId);
+      if (comboTechIconResource && !this.textures.exists(comboTechIconResource.key)) {
+        this.load.image(comboTechIconResource.key, comboTechIconResource.path);
+      }
+    }
+
+    const queuedResultRewardIconKeys = new Set(queuedSkillIconKeys);
+    for (const kind of Object.keys(BATTLE_RESULT_REWARD_ICON_IDS) as BattleResultRewardIconKind[]) {
+      const resultRewardIconResource = getBattleResultRewardIconResource(kind);
+      if (
+        resultRewardIconResource
+        && !this.textures.exists(resultRewardIconResource.key)
+        && !queuedResultRewardIconKeys.has(resultRewardIconResource.key)
+      ) {
+        this.load.image(resultRewardIconResource.key, resultRewardIconResource.path);
+        queuedResultRewardIconKeys.add(resultRewardIconResource.key);
+      }
+    }
+
+    for (const cmd of COMMANDS) {
+      const commandIconResource = getBattleCommandIconResource(cmd);
+      if (commandIconResource && !this.textures.exists(commandIconResource.key)) {
+        this.load.image(commandIconResource.key, commandIconResource.path);
       }
     }
 
     // VFX — 프로그래매틱 이펙트 사용
+    const hitSlashResource = getSpriteResourceForVfx('vfx_hit_slash');
+    if (hitSlashResource && !this.textures.exists(hitSlashResource.key)) {
+      this.load.spritesheet(hitSlashResource.key, hitSlashResource.path, {
+        frameWidth: hitSlashResource.frameWidth,
+        frameHeight: hitSlashResource.frameHeight,
+      });
+    }
+
+    for (const texture of EFFECT_FALLBACK_TEXTURES) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+    preloadEnvironmentParticleTextures(this);
+
+    preloadStatusIconResources(this);
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[Battle] 이미지 로드 실패: ${file.key}`);
@@ -439,13 +761,33 @@ export class BattleScene extends Phaser.Scene {
       const ambientShort = fieldEnc.ambientLine.length > 35
         ? `${fieldEnc.ambientLine.slice(0, 32)}…`
         : fieldEnc.ambientLine;
-      this.add.text(20, 12, `🛡 ${ambientShort}${fieldEnc.hasBossSlot ? ' ⚔️' : ''}`, {
+      const ambientIconResource = getStatusIconResource(BATTLE_FIELD_AMBIENT_ICON_ID);
+      const bossIconResource = getSpriteResourceForSkillIcon(BATTLE_FIELD_BOSS_ICON_ID);
+      const hasAmbientIcon = Boolean(ambientIconResource && this.textures.exists(ambientIconResource.key));
+      const hasBossIcon = Boolean(fieldEnc.hasBossSlot && bossIconResource && this.textures.exists(bossIconResource.key));
+      if (hasAmbientIcon && ambientIconResource) {
+        this._addFieldAmbientIcon(20, 20, ambientIconResource, 'ambient');
+      } else {
+        this.fieldAmbientIconFallbackKinds.push('ambient');
+      }
+
+      const ambientLabel = hasAmbientIcon ? ambientShort : `🛡 ${ambientShort}`;
+      const bossLabelSuffix = fieldEnc.hasBossSlot && !hasBossIcon ? ' ⚔️' : '';
+      const ambientText = this.add.text(hasAmbientIcon ? 42 : 20, 12, `${ambientLabel}${bossLabelSuffix}`, {
         fontSize: '12px',
         fontFamily: FONT_FAMILY,
         color: '#ffd54a',
         stroke: '#000000',
         strokeThickness: 2,
       }).setOrigin(0, 0).setDepth(250).setName('fieldAmbientLine');
+      if (fieldEnc.hasBossSlot) {
+        if (hasBossIcon && bossIconResource) {
+          this._addFieldAmbientIcon(ambientText.x + ambientText.displayWidth + 18, 20, bossIconResource, 'boss');
+        } else {
+          this.fieldAmbientIconFallbackKinds.push('boss');
+        }
+      }
+      this._writeBattleAmbientLineQaProbe({ fieldEnc, ambientText, hasAmbientIcon, hasBossIcon });
 
       // CHRONO-S113/S118/S127: ambientEffect 약한 색조 overlay
       // S127: isBossField 시 boss_room 강제 (visible 보스 진입)
@@ -505,33 +847,44 @@ export class BattleScene extends Phaser.Scene {
 
     // CHRONO-S31: 협공 발동 버튼 (우하단, 후보 있을 때만 표시)
     const btnContainer = this.add.container(scW - 90, scH - 50);
-    const btnBg = this.add.rectangle(0, 0, 160, 36, 0x6fd3ff, 0.85)
-      .setStrokeStyle(2, 0xffffff)
-      .setInteractive({ useHandCursor: true });
-    const btnText = this.add.text(0, 0, '✨ 협공 (D)', {
+    const btnFrame = this._addBattleSceneFrame(0, 0, 160, 36, BATTLE_SCENE_UI_FRAME_TEXTURES.comboTechButton, 0x6fd3ff, 0.85, 0x6fd3ff, 2, undefined, btnContainer);
+    btnFrame.primary.setInteractive({ useHandCursor: true });
+    const dualTechIcon = this._addComboTechButtonIcon(btnContainer, -52, 0, 'dual', BATTLE_COMBO_TECH_BUTTON_ICON_IDS.dual);
+    const btnLabel = dualTechIcon ? '협공 (D)' : '✨ 협공 (D)';
+    const btnText = this.add.text(dualTechIcon ? 12 : 0, 0, btnLabel, {
       fontSize: '14px',
       fontFamily: FONT_FAMILY,
-      color: '#1a0033',
-    }).setOrigin(0.5);
-    btnContainer.add([btnBg, btnText]);
+      color: '#dff7ff',
+      stroke: '#00141f',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setName('dualTechButtonLabel');
+    btnContainer.add(btnText);
+    this._bindComboTechButtonParts(btnContainer, btnFrame, btnText);
+    this._setComboTechButtonAccent(btnContainer, 0x6fd3ff, 0.85, 2);
     btnContainer.setDepth(260).setVisible(false).setName('dualTechButton');
-    btnBg.on('pointerdown', () => this._triggerFirstDualTech());
+    btnFrame.primary.on('pointerdown', () => this._triggerFirstDualTech());
     this.dualTechButton = btnContainer;
 
     // CHRONO-S65: 3인 협공 버튼 (Dual 위, 더 큰 강조)
     const tBtnContainer = this.add.container(scW - 90, scH - 92);
-    const tBtnBg = this.add.rectangle(0, 0, 180, 40, 0xffd54a, 0.92)
-      .setStrokeStyle(3, 0xffffff)
-      .setInteractive({ useHandCursor: true });
-    const tBtnText = this.add.text(0, 0, '🌟 3인 협공 (T)', {
+    const tBtnFrame = this._addBattleSceneFrame(0, 0, 180, 40, BATTLE_SCENE_UI_FRAME_TEXTURES.comboTechButton, 0xffd54a, 0.92, 0xffd54a, 3, undefined, tBtnContainer);
+    tBtnFrame.primary.setInteractive({ useHandCursor: true });
+    const tripleTechIcon = this._addComboTechButtonIcon(tBtnContainer, -62, 0, 'triple', BATTLE_COMBO_TECH_BUTTON_ICON_IDS.triple);
+    const tBtnLabel = tripleTechIcon ? '3인 협공 (T)' : '🌟 3인 협공 (T)';
+    const tBtnText = this.add.text(tripleTechIcon ? 14 : 0, 0, tBtnLabel, {
       fontSize: '15px',
       fontFamily: FONT_FAMILY,
-      color: '#1a0033',
-    }).setOrigin(0.5);
-    tBtnContainer.add([tBtnBg, tBtnText]);
+      color: '#fff3b0',
+      stroke: '#241900',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setName('tripleTechButtonLabel');
+    tBtnContainer.add(tBtnText);
+    this._bindComboTechButtonParts(tBtnContainer, tBtnFrame, tBtnText);
+    this._setComboTechButtonAccent(tBtnContainer, 0xffd54a, 0.92, 3);
     tBtnContainer.setDepth(261).setVisible(false).setName('tripleTechButton');
-    tBtnBg.on('pointerdown', () => this._triggerFirstTripleTech());
+    tBtnFrame.primary.on('pointerdown', () => this._triggerFirstTripleTech());
     this.tripleTechButton = tBtnContainer;
+    this._applyBattleComboTechFrameQa();
 
     // ── 매니저 초기화 (개별 try-catch) ────────────────────────
     try { this.effectManager = new EffectManager(this); } catch (e) { console.warn('[Battle] EffectManager init error:', e); }
@@ -556,9 +909,19 @@ export class BattleScene extends Phaser.Scene {
     this._spawnEnemies(enemies);
     this.allSprites = [...this.allySprites, ...this.enemySprites];
 
-    // ── 하단 UI 패널 배경 (반투명 검은 바) ─────────────────────
-    this.add.rectangle(scW / 2, (UI_PANEL_Y + SCREEN_H) / 2, scW, SCREEN_H - UI_PANEL_Y, 0x0a0a2e, 0.85)
-      .setDepth(100);
+    // ── 하단 UI 패널 배경 ───────────────────────────────────
+    this._addBattleSceneFrame(
+      scW / 2,
+      (UI_PANEL_Y + SCREEN_H) / 2,
+      scW,
+      SCREEN_H - UI_PANEL_Y,
+      BATTLE_SCENE_UI_FRAME_TEXTURES.bottomPanel,
+      0x0a0a2e,
+      0.85,
+      0x334488,
+      2,
+      100,
+    );
 
     // 구분선
     this.add.rectangle(scW / 2, UI_PANEL_Y, scW, 2, 0x334488, 0.8)
@@ -634,35 +997,156 @@ export class BattleScene extends Phaser.Scene {
     // ── Auto / Speed / ATB모드 버튼 ─────────────────────────
     // UX(rank18): 콜백을 명명 메서드로 추출해 마우스 클릭과 키보드 핫키(A/F/M)가 단일 진입점 공유.
     //   라벨에 핫키 힌트 병기('전키보드 UI' 목표 — 전투 페이싱 컨트롤도 키보드 등가).
+    this._addBattleSceneFrame(scW - 340 + 67, UI_PANEL_Y + 34, 134, 36, BATTLE_SCENE_UI_FRAME_TEXTURES.paceButton, 0x222244, 0.9, 0x88aaff, 1, 199);
     this.autoButton = this.add.text(scW - 220, UI_PANEL_Y + 20, 'AUTO: OFF (A)', {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#888888',
-      backgroundColor: '#222244',
       padding: { x: 6, y: 3 },
-    }).setDepth(200).setInteractive({ useHandCursor: true });
+    }).setDepth(201).setInteractive({ useHandCursor: true });
     this.autoButton.on('pointerdown', () => this._toggleAuto());
 
+    this._addBattleSceneFrame(scW - 220 + 58, UI_PANEL_Y + 34, 116, 36, BATTLE_SCENE_UI_FRAME_TEXTURES.paceButton, 0x222244, 0.9, 0x88aaff, 1, 199);
     this.speedButton = this.add.text(scW - 100, UI_PANEL_Y + 20, '1x (F)', {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#88ccff',
-      backgroundColor: '#222244',
       padding: { x: 6, y: 3 },
-    }).setDepth(200).setInteractive({ useHandCursor: true });
+    }).setDepth(201).setInteractive({ useHandCursor: true });
     this.speedButton.on('pointerdown', () => this._cycleSpeed());
 
+    this._addBattleSceneFrame(scW - 100 + 36, UI_PANEL_Y + 34, 72, 36, BATTLE_SCENE_UI_FRAME_TEXTURES.paceButton, 0x222244, 0.9, 0x88aaff, 1, 199);
     this.atbModeButton = this.add.text(scW - 340, UI_PANEL_Y + 20, `MODE: ${this.atbMode} (M)`, {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: '#c8a2ff',
-      backgroundColor: '#222244',
       padding: { x: 6, y: 3 },
-    }).setDepth(200).setInteractive({ useHandCursor: true });
+    }).setDepth(201).setInteractive({ useHandCursor: true });
     this.atbModeButton.on('pointerdown', () => this._cycleAtbMode());
+    this._writeBattlePaceFrameQaProbe();
 
     // ── 인트로 연출 ─────────────────────────────────────────
     this._playIntro();
+    this._startBattleResultFrameQa();
+    this._startBattleResultLeadQa();
+  }
+
+  private _addBattleSceneFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof BATTLE_SCENE_UI_FRAME_TEXTURES[keyof typeof BATTLE_SCENE_UI_FRAME_TEXTURES],
+    fallbackColor: number,
+    fallbackAlpha: number,
+    strokeColor: number,
+    strokeWidth = 2,
+    depth?: number,
+    container?: Phaser.GameObjects.Container,
+  ): BattleSceneFrameRender {
+    const addObject = (object: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle): Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle => {
+      if (depth !== undefined) {
+        object.setDepth(depth);
+      }
+      if (container) {
+        container.add(object);
+      }
+      return object;
+    };
+
+    if (this.textures.exists(texture.key)) {
+      const frame = this.add.image(x, y, texture.key)
+        .setName(`battle_scene_ui_frame_${texture.key}`)
+        .setDisplaySize(width, height)
+        .setAlpha(0.9);
+      addObject(frame);
+      this.battleSceneFrameQaRenderedCounts.set(texture.key, (this.battleSceneFrameQaRenderedCounts.get(texture.key) ?? 0) + 1);
+      const stroke = this.add.rectangle(x, y, width, height, 0x000000, 0)
+        .setName(`battle_scene_ui_frame_stroke_${texture.key}`)
+        .setStrokeStyle(strokeWidth, strokeColor);
+      addObject(stroke);
+      return { primary: frame, stroke };
+    }
+
+    // Aseprite battle scene UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    const fallback = this.add.rectangle(x, y, width, height, fallbackColor, fallbackAlpha)
+      .setName(`battle_scene_ui_frame_fallback_${texture.key}`)
+      .setStrokeStyle(strokeWidth, strokeColor);
+    addObject(fallback);
+    return { primary: fallback };
+  }
+
+  private _addFieldAmbientIcon(
+    x: number,
+    y: number,
+    resource: BattleCommandIconResource,
+    kind: BattleFieldAmbientIconKind,
+  ): Phaser.GameObjects.Image {
+    const icon = this.add.image(x, y, resource.key)
+      .setOrigin(0.5)
+      .setDepth(251)
+      .setName(`battle_field_ambient_${kind}_icon`);
+    icon.setDisplaySize(18, 18);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.fieldAmbientIcons.push(icon);
+    return icon;
+  }
+
+  private _addComboTechButtonIcon(
+    container: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    name: 'dual' | 'triple',
+    iconId: string,
+  ): Phaser.GameObjects.Image | undefined {
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    if (!iconResource || !this.textures.exists(iconResource.key)) return undefined;
+
+    const icon = this.add.image(x, y, iconResource.key)
+      .setName(`battle_combo_tech_button_icon_${name}`)
+      .setOrigin(0.5);
+    icon.setDisplaySize(18, 18);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    container.add(icon);
+    container.setData('icon', icon);
+    this.comboTechButtonIcons.push(icon);
+    return icon;
+  }
+
+  private _bindComboTechButtonParts(
+    container: Phaser.GameObjects.Container,
+    frame: BattleSceneFrameRender,
+    label: Phaser.GameObjects.Text,
+  ): void {
+    container.setData('framePrimary', frame.primary);
+    container.setData('frameStroke', frame.stroke);
+    container.setData('label', label);
+  }
+
+  private _getComboTechButtonLabel(container: Phaser.GameObjects.Container | null): Phaser.GameObjects.Text | undefined {
+    return container?.getData('label') as Phaser.GameObjects.Text | undefined;
+  }
+
+  private _hasComboTechButtonIcon(container: Phaser.GameObjects.Container | null): boolean {
+    return container?.getData('icon') instanceof Phaser.GameObjects.Image;
+  }
+
+  private _setComboTechButtonAccent(
+    container: Phaser.GameObjects.Container | null,
+    tint: number,
+    fallbackAlpha: number,
+    strokeWidth: number,
+  ): void {
+    const primary = container?.getData('framePrimary') as Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle | undefined;
+    const stroke = container?.getData('frameStroke') as Phaser.GameObjects.Rectangle | undefined;
+
+    if (primary instanceof Phaser.GameObjects.Image) {
+      primary.setTint(tint);
+      primary.setAlpha(0.92);
+    } else {
+      primary?.setFillStyle(tint, fallbackAlpha);
+    }
+    stroke?.setStrokeStyle(strokeWidth, tint);
   }
 
   // ─── 전투 페이싱 컨트롤(AUTO/속도/ATB모드) — 마우스 버튼 + 키보드 핫키 단일 진입점 ───
@@ -743,17 +1227,38 @@ export class BattleScene extends Phaser.Scene {
     // 화면 페이드인
     this.cameras.main.fadeIn(600, 0, 0, 0);
 
-    // "전투 시작!" 텍스트
-    const introText = this.add.text(scW / 2, scH / 2 - 40, '⚔ 전투 시작!', {
+    const introIconResource = getSpriteResourceForSkillIcon(BATTLE_INTRO_ICON_ID);
+    const hasIntroIcon = Boolean(introIconResource && this.textures.exists(introIconResource.key));
+    const introContainer = this.add.container(scW / 2, scH / 2 - 40)
+      .setAlpha(0)
+      .setDepth(500)
+      .setName('battle_intro_start_container');
+
+    if (hasIntroIcon && introIconResource) {
+      const introIcon = this.add.image(-132, 0, introIconResource.key)
+        .setOrigin(0.5)
+        .setName('battle_intro_start_icon');
+      introIcon.setDisplaySize(34, 34);
+      introIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      introContainer.add(introIcon);
+      this.battleIntroIcon = introIcon;
+    } else {
+      this.battleIntroIconFallbackRendered = true;
+    }
+
+    const introTextLabel = hasIntroIcon ? '전투 시작!' : '⚔ 전투 시작!';
+    const introText = this.add.text(hasIntroIcon ? 18 : 0, 0, introTextLabel, {
       fontSize: '36px',
       fontFamily: FONT_FAMILY,
       color: '#ffcc00',
       stroke: '#000000',
       strokeThickness: 4,
-    }).setOrigin(0.5).setAlpha(0).setDepth(500);
+    }).setOrigin(0.5).setName('battle_intro_start_text');
+    introContainer.add(introText);
+    this._writeBattleIntroIconQaProbe({ hasIntroIcon, introText });
 
     this.tweens.add({
-      targets: introText,
+      targets: introContainer,
       alpha: 1,
       y: scH / 2 - 60,
       duration: 400,
@@ -761,7 +1266,7 @@ export class BattleScene extends Phaser.Scene {
       hold: 600,
       yoyo: true,
       onComplete: () => {
-        introText.destroy();
+        introContainer.destroy();
         this.introFallbackTimer?.remove();
         this._startFighting();
       },
@@ -770,9 +1275,42 @@ export class BattleScene extends Phaser.Scene {
     // Fallback: 3초 안에 tween이 완료되지 않으면 강제 전환
     this.introFallbackTimer = this.time.delayedCall(3000, () => {
       if (this.phase === 'intro') {
-        introText.destroy();
+        introContainer.destroy();
         this._startFighting();
       }
+    });
+  }
+
+  private _writeBattleIntroIconQaProbe({
+    hasIntroIcon,
+    introText,
+  }: {
+    hasIntroIcon: boolean;
+    introText: Phaser.GameObjects.Text;
+  }): void {
+    if (this._initData.battleIntroIconQa !== true || typeof document === 'undefined') return;
+
+    const introIconResource = getSpriteResourceForSkillIcon(BATTLE_INTRO_ICON_ID);
+    const missingIntroIconKeys = hasIntroIcon
+      ? []
+      : [introIconResource?.key ?? BATTLE_INTRO_ICON_ID];
+    const legacyGlyphPresent = introText.text.includes('⚔');
+
+    document.body.dataset.aeternaBattleIntroIconQa = JSON.stringify({
+      status: hasIntroIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      introText: introText.text,
+      legacyGlyphPresent,
+      introIcon: {
+        iconId: BATTLE_INTRO_ICON_ID,
+        key: introIconResource?.key ?? null,
+        path: introIconResource?.path ?? null,
+        renderedCount: this.battleIntroIcon?.active === true ? 1 : 0,
+        displaySizes: this.battleIntroIcon
+          ? [{ width: this.battleIntroIcon.displayWidth, height: this.battleIntroIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.battleIntroIconFallbackRendered,
+      },
+      missingIntroIconKeys,
     });
   }
 
@@ -783,6 +1321,34 @@ export class BattleScene extends Phaser.Scene {
     for (const us of this.allSprites) {
       if (!us.isDead) {
         us.atb = Phaser.Math.Between(5, 20);
+      }
+    }
+
+    if (this._initData.battleSubMenuFocusIconQa) {
+      const firstAlly = this.allySprites.find((us) => !us.isDead);
+      if (firstAlly) {
+        firstAlly.atb = ATB_MAX;
+        this.commandQueue = [];
+        this._openCommandMenu(firstAlly);
+        if (this._initData.battleSubMenuFocusIconQa === 'item') {
+          this._showItemSubMenu();
+        } else {
+          this._showMagicSubMenu();
+        }
+      } else {
+        this._writeBattleSubMenuFocusIconQaProbe(this._initData.battleSubMenuFocusIconQa);
+      }
+      return;
+    }
+
+    if (this._initData.battleCommandFocusIconQa === true) {
+      const firstAlly = this.allySprites.find((us) => !us.isDead);
+      if (firstAlly) {
+        firstAlly.atb = ATB_MAX;
+        this.commandQueue = [];
+        this._openCommandMenu(firstAlly);
+      } else {
+        this._writeBattleCommandFocusIconQaProbe();
       }
     }
   }
@@ -953,13 +1519,38 @@ export class BattleScene extends Phaser.Scene {
     this._closeCommandMenu();
 
     const container = this.add.container(CMD_MENU_X, CMD_MENU_Y).setDepth(200);
+    this.battleCommandFocusIconFallbackRendered = false;
+    this.battleCommandFocusTexts = [];
 
     // 메뉴 배경 — 5 commands in a row, compact
     const menuW = COMMANDS.length * 120 + 20;
     const menuH = 50;
-    const bg = this.add.rectangle(menuW / 2, menuH / 2, menuW, menuH, 0x0a0a3e, 0.92)
-      .setStrokeStyle(2, 0x4466aa);
-    container.add(bg);
+    this._addBattleSceneFrame(
+      menuW / 2,
+      menuH / 2,
+      menuW,
+      menuH,
+      BATTLE_SCENE_UI_FRAME_TEXTURES.commandMenu,
+      0x0a0a3e,
+      0.92,
+      0x4466aa,
+      2,
+      undefined,
+      container,
+    );
+
+    const commandFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_COMMAND_FOCUS_ICON_ID);
+    if (commandFocusIconResource && this.textures.exists(commandFocusIconResource.key)) {
+      this.battleCommandFocusIcon = this._addBattleCommandFocusIcon(
+        container,
+        12,
+        24,
+        commandFocusIconResource,
+      ).setVisible(false);
+    } else {
+      this.battleCommandFocusIcon = null;
+      this.battleCommandFocusIconFallbackRendered = true;
+    }
 
     // 캐릭터 이름 표시 (위)
     const nameLabel = this.add.text(menuW / 2, -2, `${us.unit.name}`, {
@@ -972,11 +1563,36 @@ export class BattleScene extends Phaser.Scene {
     // 커맨드 항목 — horizontal row
     this.cmdMenuTexts = [];
     COMMANDS.forEach((cmd, i) => {
-      const text = this.add.text(16 + i * 120, 16, cmd.label, {
+      const itemX = 16 + i * 120;
+      const commandIconResource = getBattleCommandIconResource(cmd);
+      const hasCommandIcon = Boolean(commandIconResource && this.textures.exists(commandIconResource.key));
+      if (commandIconResource && hasCommandIcon) {
+        const icon = this.add.image(itemX + 12, 24, commandIconResource.key)
+          .setOrigin(0.5)
+          .setName(`battle_command_icon_${cmd.type}`)
+          .setInteractive({ useHandCursor: true });
+        icon.setDisplaySize(20, 20);
+        icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        icon.on('pointerdown', () => {
+          this.cmdMenuIndex = i;
+          this._executeCommand(COMMANDS[i].type);
+        });
+        icon.on('pointerover', () => {
+          this.cmdMenuIndex = i;
+          this._highlightCommand();
+        });
+        container.add(icon);
+      }
+
+      const label = hasCommandIcon ? cmd.label : cmd.fallbackLabel;
+      const text = this.add.text(hasCommandIcon ? itemX + 28 : itemX, 16, label, {
         fontSize: '14px',
         fontFamily: FONT_FAMILY,
         color: '#ffffff',
       }).setInteractive({ useHandCursor: true });
+      text.setData('commandLabel', label);
+      text.setData('commandFocusX', itemX - 4);
+      text.setData('commandFocusY', 24);
 
       text.on('pointerdown', () => {
         this.cmdMenuIndex = i;
@@ -991,6 +1607,7 @@ export class BattleScene extends Phaser.Scene {
       container.add(text);
       this.cmdMenuTexts.push(text);
     });
+    this.battleCommandFocusTexts = this.cmdMenuTexts;
 
     this.cmdMenuContainer = container;
     this._highlightCommand();
@@ -998,8 +1615,18 @@ export class BattleScene extends Phaser.Scene {
 
   private _highlightCommand(): void {
     this.cmdMenuTexts.forEach((t, i) => {
-      t.setColor(i === this.cmdMenuIndex ? '#ffff00' : '#ffffff');
-      t.setText(i === this.cmdMenuIndex ? `▶ ${COMMANDS[i].label}` : `  ${COMMANDS[i].label}`);
+      const label = (t.getData('commandLabel') as string | undefined) ?? COMMANDS[i].fallbackLabel;
+      const target = {
+        text: t,
+        label,
+        x: Number(t.getData('commandFocusX') ?? 12),
+        y: Number(t.getData('commandFocusY') ?? 24),
+      };
+      if (i === this.cmdMenuIndex) {
+        this._renderBattleCommandFocus({ activeIndex: i, target });
+        return;
+      }
+      t.setText(label).setColor('#ffffff');
     });
   }
 
@@ -1007,17 +1634,76 @@ export class BattleScene extends Phaser.Scene {
     this.cmdMenuContainer?.destroy();
     this.cmdMenuContainer = null;
     this.cmdMenuTexts = [];
+    this.battleCommandFocusIcon = null;
+    this.battleCommandFocusTexts = [];
+  }
+
+  private _renderBattleCommandFocus({
+    activeIndex,
+    target,
+  }: {
+    activeIndex: number;
+    target: {
+      text: Phaser.GameObjects.Text;
+      label: string;
+      x: number;
+      y: number;
+    };
+  }): void {
+    const focusIcon = this.battleCommandFocusIcon?.active === true
+      ? this.battleCommandFocusIcon
+      : null;
+
+    if (focusIcon) {
+      target.text.setText(target.label).setColor('#ffff00');
+      focusIcon.setPosition(target.x, target.y).setVisible(true);
+    } else {
+      target.text.setText(`▶ ${target.label}`).setColor('#ffff00');
+      this.battleCommandFocusIconFallbackRendered = true;
+    }
+
+    this._writeBattleCommandFocusIconQaProbe(activeIndex);
+  }
+
+  private _addBattleCommandFocusIcon(
+    container: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: BattleCommandIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('battle_command_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    container.add(focusIcon);
+    return focusIcon;
   }
 
   // UX(#4): 행동 주체 sprite 위 펄싱 화살표 표시/제거
   private _showActiveIndicator(us: UnitSprite): void {
     this._clearActiveIndicator();
     const spriteH = us.sprite.displayHeight ?? 60;
-    const arrow = this.add.text(us.sprite.x, us.sprite.y - spriteH / 2 - 30, '▼', {
-      fontSize: '20px', fontFamily: FONT_FAMILY, color: '#ffee44',
-      stroke: '#000000', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(160);
-    this.activeIndicator = arrow;
+    const indicatorY = us.sprite.y - spriteH / 2 - 30;
+    const activeIndicatorResource = getSpriteResourceForSkillIcon(BATTLE_ACTIVE_INDICATOR_ICON_ID);
+    if (activeIndicatorResource && this.textures.exists(activeIndicatorResource.key)) {
+      const indicator = this.add.image(us.sprite.x, indicatorY, activeIndicatorResource.key)
+        .setOrigin(0.5)
+        .setDepth(160)
+        .setName('battle_active_turn_indicator');
+      indicator.setDisplaySize(28, 28);
+      indicator.setAngle(90);
+      indicator.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.activeIndicator = indicator;
+    } else {
+      // Aseprite active turn indicator image 로드 실패 시에만 사용하는 안전 fallback.
+      this.activeIndicator = this.add.text(us.sprite.x, indicatorY, '▼', {
+        fontSize: '20px', fontFamily: FONT_FAMILY, color: '#ffee44',
+        stroke: '#000000', strokeThickness: 3,
+      }).setOrigin(0.5).setDepth(160).setName('battle_active_turn_indicator_fallback');
+    }
+
+    const arrow = this.activeIndicator;
     this.activeIndicatorTween = this.tweens.add({
       targets: arrow,
       y: arrow.y - 6,
@@ -1038,6 +1724,9 @@ export class BattleScene extends Phaser.Scene {
     this.cmdSubMenu = null;
     this.subMenuItems = [];
     this.subMenuIndex = 0;
+    this.battleSubMenuFocusIcon = null;
+    this.battleSubMenuFocusIconFallbackRendered = false;
+    this.battleSubMenuFocusTexts = [];
   }
 
   // ─── 커맨드 실행 ──────────────────────────────────────────────
@@ -1269,8 +1958,21 @@ export class BattleScene extends Phaser.Scene {
     // 머리 위 방어 아이콘 — 자체 수명이 복원 타이밍과 정확히 일치(StatusEffectRenderer 는 combat:tick 의존이라
     // 로컬 전투에서 안 줄어드는 미스매치가 있어 자체 관리). 위치는 아군 update 루프가 매프레임 추종.
     if (!us.defendIcon) {
-      us.defendIcon = this.add.text(us.sprite.x, us.sprite.y - 70, '🛡', { fontSize: '20px' })
-        .setOrigin(0.5).setDepth(8000);
+      const defendIconResource = getStatusIconResource('shield');
+      if (defendIconResource && this.textures.exists(defendIconResource.key)) {
+        const defendIcon = this.add.image(us.sprite.x, us.sprite.y - 70, defendIconResource.key)
+          .setOrigin(0.5)
+          .setDepth(8000)
+          .setName(`battle_defend_icon_${us.unit.id}`);
+        defendIcon.setDisplaySize(28, 28);
+        defendIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        us.defendIcon = defendIcon;
+      } else {
+        us.defendIcon = this.add.text(us.sprite.x, us.sprite.y - 70, '🛡', { fontSize: '20px' })
+          .setOrigin(0.5)
+          .setDepth(8000)
+          .setName(`battle_defend_icon_fallback_${us.unit.id}`);
+      }
     }
 
     const token = ++this._defendCounter;
@@ -1336,9 +2038,34 @@ export class BattleScene extends Phaser.Scene {
 
     const menuH = Math.max(80, skills.length * 24 + 30);
     const container = this.add.container(CMD_MENU_X, UI_PANEL_Y - menuH - 4).setDepth(210);
-    const bg = this.add.rectangle(100, menuH / 2, 220, menuH, 0x0a0a3e, 0.95)
-      .setStrokeStyle(2, 0x4466aa);
-    container.add(bg);
+    this._addBattleSceneFrame(
+      100,
+      menuH / 2,
+      220,
+      menuH,
+      BATTLE_SCENE_UI_FRAME_TEXTURES.magicSubMenu,
+      0x0a0a3e,
+      0.95,
+      0x4466aa,
+      2,
+      undefined,
+      container,
+    );
+
+    this.battleSubMenuFocusIconFallbackRendered = false;
+    this.battleSubMenuFocusTexts = [];
+    const subMenuFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_SUB_MENU_FOCUS_ICON_ID);
+    if (subMenuFocusIconResource && this.textures.exists(subMenuFocusIconResource.key)) {
+      this.battleSubMenuFocusIcon = this._addBattleSubMenuFocusIcon(
+        container,
+        8,
+        21,
+        subMenuFocusIconResource,
+      ).setVisible(false);
+    } else {
+      this.battleSubMenuFocusIcon = null;
+      this.battleSubMenuFocusIconFallbackRendered = true;
+    }
 
     if (skills.length === 0) {
       const t = this.add.text(80, 50, '보유한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: FONT_FAMILY }).setOrigin(0.5);
@@ -1352,11 +2079,8 @@ export class BattleScene extends Phaser.Scene {
         const label = onCd
           ? `${skill.name} ⏳${Math.ceil(skill.currentCooldown)}s`
           : `${skill.name} (MP:${skill.mpCost})`;
-        const t = this.add.text(10, 15 + i * 24, label, {
-          fontSize: '13px', fontFamily: FONT_FAMILY,
-          color: usable ? '#88ccff' : '#555555',
-        }).setInteractive({ useHandCursor: true });
-
+        const skillIconResource = skill.icon ? getSpriteResourceForSkillIcon(skill.icon) : undefined;
+        const hasSkillIcon = Boolean(skillIconResource && this.textures.exists(skillIconResource.key));
         const doSkill = (): void => {
           // 사용 불가 사유를 로그로 알림(핫키 _useSkill 과 동일 메시지 — 두 경로 일관)
           if (onCd) { this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`); return; }
@@ -1367,8 +2091,41 @@ export class BattleScene extends Phaser.Scene {
             this._endTurn();
           }, skill); // UX(#12-ext): 스킬 데미지 미리보기
         };
+
+        let skillIcon: Phaser.GameObjects.Image | undefined;
+        if (skillIconResource && hasSkillIcon) {
+          skillIcon = this.add.image(22, 21 + i * 24, skillIconResource.key)
+            .setOrigin(0.5)
+            .setName(`battle_magic_submenu_icon_${skill.skillId}`)
+            .setInteractive({ useHandCursor: true });
+          skillIcon.setDisplaySize(18, 18);
+          skillIcon.setAlpha(usable ? 1 : 0.4);
+          skillIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          skillIcon.on('pointerdown', doSkill);
+          skillIcon.on('pointerover', () => {
+            this.subMenuIndex = i;
+            this._highlightSubMenu();
+          });
+          container.add(skillIcon);
+        }
+
+        const t = this.add.text(hasSkillIcon ? 38 : 10, 15 + i * 24, label, {
+          fontSize: '13px', fontFamily: FONT_FAMILY,
+          color: usable ? '#88ccff' : '#555555',
+        }).setInteractive({ useHandCursor: true });
         t.on('pointerdown', doSkill);
-        this.subMenuItems.push({ text: t, action: doSkill, label });
+        t.on('pointerover', () => {
+          this.subMenuIndex = i;
+          this._highlightSubMenu();
+        });
+        this.subMenuItems.push({
+          text: t,
+          action: doSkill,
+          label,
+          focusX: hasSkillIcon ? 8 : -4,
+          focusY: 21 + i * 24,
+          icon: skillIcon,
+        });
 
         container.add(t);
       });
@@ -1376,6 +2133,7 @@ export class BattleScene extends Phaser.Scene {
 
     // ESC로 닫기 / 키보드 선택(update 폴링)
     this.cmdSubMenu = container;
+    this.battleSubMenuFocusTexts = this.subMenuItems.map((item) => item.text);
     this._highlightSubMenu();
   }
 
@@ -1385,15 +2143,41 @@ export class BattleScene extends Phaser.Scene {
     this.subMenuIndex = 0;
 
     const container = this.add.container(CMD_MENU_X, UI_PANEL_Y - 90).setDepth(210);
-    const bg = this.add.rectangle(100, 40, 220, 80, 0x0a0a3e, 0.95)
-      .setStrokeStyle(2, 0x4466aa);
-    container.add(bg);
+    this._addBattleSceneFrame(
+      100,
+      40,
+      220,
+      80,
+      BATTLE_SCENE_UI_FRAME_TEXTURES.itemSubMenu,
+      0x0a0a3e,
+      0.95,
+      0x4466aa,
+      2,
+      undefined,
+      container,
+    );
+
+    this.battleSubMenuFocusIconFallbackRendered = false;
+    this.battleSubMenuFocusTexts = [];
+    const subMenuFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_SUB_MENU_FOCUS_ICON_ID);
+    if (subMenuFocusIconResource && this.textures.exists(subMenuFocusIconResource.key)) {
+      this.battleSubMenuFocusIcon = this._addBattleSubMenuFocusIcon(
+        container,
+        20,
+        40,
+        subMenuFocusIconResource,
+      ).setVisible(false);
+    } else {
+      this.battleSubMenuFocusIcon = null;
+      this.battleSubMenuFocusIconFallbackRendered = true;
+    }
 
     // 간이: 포션만 표시
-    const label = '🧪 포션 (HP +100)';
-    const t = this.add.text(80, 40, label, { fontSize: '13px', fontFamily: FONT_FAMILY, color: '#88ff88' })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
+    const itemLabel = '포션 (HP +100)';
+    const itemFallbackLabel = '🧪 포션 (HP +100)';
+    const itemIconResource = getItemIconResource({ itemIconId: 'ITM-CON-001' });
+    const hasItemIcon = Boolean(itemIconResource && this.textures.exists(itemIconResource.key));
+    const label = hasItemIcon ? itemLabel : itemFallbackLabel;
     const doItem = (): void => {
       this._closeSubMenu();
       if (!this.activeCommander) return;
@@ -1406,19 +2190,102 @@ export class BattleScene extends Phaser.Scene {
         this._endTurn();
       });
     };
+    let itemIcon: Phaser.GameObjects.Image | undefined;
+    if (itemIconResource && hasItemIcon) {
+      itemIcon = this.add.image(34, 40, itemIconResource.key)
+        .setOrigin(0.5)
+        .setName('battle_item_submenu_icon_ITM-CON-001')
+        .setInteractive({ useHandCursor: true });
+      itemIcon.setDisplaySize(18, 18);
+      itemIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      itemIcon.on('pointerdown', doItem);
+      itemIcon.on('pointerover', () => {
+        this.subMenuIndex = 0;
+        this._highlightSubMenu();
+      });
+      container.add(itemIcon);
+    }
+
+    const t = this.add.text(hasItemIcon ? 52 : 80, 40, label, { fontSize: '13px', fontFamily: FONT_FAMILY, color: '#88ff88' })
+      .setOrigin(hasItemIcon ? 0 : 0.5, 0.5)
+      .setInteractive({ useHandCursor: true });
     t.on('pointerdown', doItem);
-    this.subMenuItems.push({ text: t, action: doItem, label });
+    t.on('pointerover', () => {
+      this.subMenuIndex = 0;
+      this._highlightSubMenu();
+    });
+    this.subMenuItems.push({
+      text: t,
+      action: doItem,
+      label,
+      focusX: hasItemIcon ? 20 : 50,
+      focusY: 40,
+      icon: itemIcon,
+    });
     container.add(t);
 
     this.cmdSubMenu = container;
+    this.battleSubMenuFocusTexts = this.subMenuItems.map((item) => item.text);
     this._highlightSubMenu();
   }
 
-  /** 서브메뉴 선택 표시(▶ prefix) — 커맨드 메뉴 _highlightCommand 와 동형. */
+  /** 서브메뉴 선택 표시 — Aseprite focus icon을 먼저 쓰고, 누락 시에만 prefix fallback을 사용한다. */
   private _highlightSubMenu(): void {
     this.subMenuItems.forEach((it, i) => {
-      it.text.setText(i === this.subMenuIndex ? `▶ ${it.label}` : `  ${it.label}`);
+      if (i === this.subMenuIndex) {
+        this._renderBattleSubMenuFocus({
+          activeIndex: i,
+          subMenuType: this._getActiveBattleSubMenuType(),
+          target: it,
+        });
+        return;
+      }
+
+      it.text.setText(this.battleSubMenuFocusIcon?.active === true ? it.label : `  ${it.label}`);
     });
+  }
+
+  private _renderBattleSubMenuFocus({
+    activeIndex,
+    subMenuType,
+    target,
+  }: {
+    activeIndex: number;
+    subMenuType: 'magic' | 'item';
+    target: BattleSubMenuItem;
+  }): void {
+    const focusIcon = this.battleSubMenuFocusIcon?.active === true
+      ? this.battleSubMenuFocusIcon
+      : null;
+
+    if (focusIcon) {
+      target.text.setText(target.label);
+      focusIcon.setPosition(target.focusX, target.focusY).setVisible(true);
+    } else {
+      target.text.setText(`▶ ${target.label}`);
+      this.battleSubMenuFocusIconFallbackRendered = true;
+    }
+
+    this._writeBattleSubMenuFocusIconQaProbe(subMenuType, activeIndex);
+  }
+
+  private _addBattleSubMenuFocusIcon(
+    container: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: BattleCommandIconResource,
+  ): Phaser.GameObjects.Image {
+    const focusIcon = this.add.image(x, y, resource.key)
+      .setName('battle_submenu_focus_icon')
+      .setOrigin(0.5);
+    focusIcon.setDisplaySize(14, 14);
+    focusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    container.add(focusIcon);
+    return focusIcon;
+  }
+
+  private _getActiveBattleSubMenuType(): 'magic' | 'item' {
+    return this._initData.battleSubMenuFocusIconQa === 'item' ? 'item' : 'magic';
   }
 
   private _performSkill(attacker: UnitSprite, target: UnitSprite, skill: SkillSlot): void {
@@ -1811,6 +2678,33 @@ export class BattleScene extends Phaser.Scene {
     };
     const elementColor = opts?.element ? ELEM_COLOR[opts.element] : undefined;
     const baseColor = crit ? 0xffe066 : (elementColor ?? 0xffffff);
+    const hitSlashResource = getSpriteResourceForVfx('vfx_hit_slash');
+
+    if (hitSlashResource && this.textures.exists(hitSlashResource.key)) {
+      const animKey = `${hitSlashResource.key}_play`;
+      if (!this.anims.exists(animKey)) {
+        this.anims.create({
+          key: animKey,
+          frames: this.anims.generateFrameNumbers(hitSlashResource.key, {
+            start: 0,
+            end: hitSlashResource.frameCount - 1,
+          }),
+          frameRate: crit ? 20 : 18,
+          repeat: 0,
+        });
+      }
+
+      const slash = this.add.sprite(x, y, hitSlashResource.key, 0)
+        .setName('vfx_hit_slash_instance')
+        .setDepth(8002)
+        .setScale(crit ? 2.1 : 1.7)
+        .setAlpha(crit ? 1 : 0.92)
+        .setRotation(Phaser.Math.DegToRad(crit ? -18 : -10));
+      slash.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      slash.setTint(baseColor);
+      slash.play(animKey);
+      slash.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => slash.destroy());
+    }
 
     const circle = this.add.circle(x, y, crit ? 14 : 8, baseColor, 0.85).setDepth(8000);
     this.tweens.add({
@@ -1965,35 +2859,55 @@ export class BattleScene extends Phaser.Scene {
 
       // 몬스터 이미지 키 찾기 (preload에서 로드됨)
       const cleanId = (unit.id ?? '').replace(/_\d+$/, '');
+      const monsterResource = getSpriteResourceForMonster(cleanId);
       const monTexKey = `mon_battle_${cleanId}`;
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
 
-      if (this.textures.exists(monTexKey)) {
+      if (monsterResource && this.textures.exists(monsterResource.key)) {
+        sprite = this.add.image(pos.x, pos.y, monsterResource.key, 0)
+          .setScale(isBoss ? 2 : 1.5)
+          .setInteractive({ useHandCursor: false })
+          .setDepth(50);
+        sprite.setFrame(0);
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      } else if (this.textures.exists(monTexKey)) {
         sprite = this.add.image(pos.x, pos.y, monTexKey)
           .setScale(isBoss ? 2 : 1)
           .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
           .setDepth(50);
         sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       } else {
-        // 폴백: 프로그래매틱 아이콘
-        const size = isBoss ? 90 : 60;
-        const color = this._monsterColor(unit.name ?? unit.id ?? 'monster');
-        const icon = this._monsterIcon(unit.id ?? '', unit.name ?? '');
-        const fallbackKey = `_mon_prog_${idx}_${this.sys.game.loop.frame}`;
-        const gfx = this.add.graphics().setVisible(false);
-        gfx.fillStyle(color, 1);
-        gfx.fillRoundedRect(0, 0, size, size, 10);
-        gfx.lineStyle(2, 0xffffff, 0.3);
-        gfx.strokeRoundedRect(0, 0, size, size, 10);
-        gfx.generateTexture(fallbackKey, size, size);
-        gfx.destroy();
-        sprite = this.add.image(pos.x, pos.y, fallbackKey)
-          .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
-          .setDepth(50);
-        this.add.text(pos.x, pos.y - 4, icon, {
-          fontSize: isBoss ? '36px' : '24px',
-          fontFamily: FONT_FAMILY,
-        }).setOrigin(0.5).setDepth(52);
+        const fallbackTexture = isBoss
+          ? BATTLE_MONSTER_FALLBACK_TEXTURES.boss
+          : BATTLE_MONSTER_FALLBACK_TEXTURES.normal;
+
+        if (this.textures.exists(fallbackTexture.key)) {
+          sprite = this.add.image(pos.x, pos.y, fallbackTexture.key)
+            .setDisplaySize(fallbackTexture.displaySize, fallbackTexture.displaySize)
+            .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
+            .setDepth(50);
+          sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        } else {
+          // Aseprite fallback 로드 실패 시에만 사용하는 안전 fallback.
+          const size = fallbackTexture.displaySize;
+          const color = this._monsterColor(unit.name ?? unit.id ?? 'monster');
+          const icon = this._monsterIcon(unit.id ?? '', unit.name ?? '');
+          const fallbackKey = `_mon_prog_${idx}_${this.sys.game.loop.frame}`;
+          const gfx = this.add.graphics().setVisible(false);
+          gfx.fillStyle(color, 1);
+          gfx.fillRoundedRect(0, 0, size, size, 10);
+          gfx.lineStyle(2, 0xffffff, 0.3);
+          gfx.strokeRoundedRect(0, 0, size, size, 10);
+          gfx.generateTexture(fallbackKey, size, size);
+          gfx.destroy();
+          sprite = this.add.image(pos.x, pos.y, fallbackKey)
+            .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
+            .setDepth(50);
+          this.add.text(pos.x, pos.y - 4, icon, {
+            fontSize: isBoss ? '36px' : '24px',
+            fontFamily: FONT_FAMILY,
+          }).setOrigin(0.5).setDepth(52);
+        }
       }
 
       const spriteH = sprite.displayHeight ?? 60;
@@ -2265,29 +3179,77 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 승리 연출 ───────────────────────────────────────────────
 
-  private _showVictory(): void {
-    const { width: scW, height: scH } = this.cameras.main;
+  private _addBattleResultLeadIcon(
+    mode: BattleResultLeadMode,
+    x: number,
+    y: number,
+    resource: BattleIconResource | undefined,
+  ): boolean {
+    if (!resource || !this.textures.exists(resource.key)) {
+      this.battleResultLeadIconFallbackRendered = true;
+      return false;
+    }
 
+    const leadIcon = this.add.image(x, y, resource.key)
+      .setName(`battle_result_lead_${mode}_icon`)
+      .setOrigin(0.5)
+      .setAlpha(0)
+      .setDepth(500);
+    leadIcon.setDisplaySize(BATTLE_RESULT_LEAD_ICON_SIZE, BATTLE_RESULT_LEAD_ICON_SIZE);
+    leadIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.battleResultLeadIcon = leadIcon;
+    return true;
+  }
+
+  private _showBattleResultLeadBanner(mode: BattleResultLeadMode): void {
+    const { width: scW, height: scH } = this.cameras.main;
+    const iconResource = getBattleResultLeadIconResource(mode);
+    this.battleResultLeadIcon = null;
+    this.battleResultLeadIconFallbackRendered = false;
+    this.battleResultLeadText = null;
+
+    if (mode === 'victory') {
+      const hasIcon = this._addBattleResultLeadIcon(mode, scW / 2 - 116, scH / 3, iconResource);
+      const label = hasIcon ? 'Victory!' : '🎉 Victory!';
+      this.battleResultLeadText = this.add.text(hasIcon ? scW / 2 + 20 : scW / 2, scH / 3, label, {
+        fontSize: '42px',
+        fontFamily: FONT_FAMILY,
+        color: '#ffd700',
+        stroke: '#000000',
+        strokeThickness: 4,
+      }).setOrigin(0.5).setAlpha(0).setDepth(500);
+    } else {
+      const hasIcon = this._addBattleResultLeadIcon(mode, scW / 2 - 92, scH / 3, iconResource);
+      const label = hasIcon ? '패배...' : '💔 패배...';
+      this.battleResultLeadText = this.add.text(hasIcon ? scW / 2 + 20 : scW / 2, scH / 3, label, {
+        fontSize: '36px',
+        fontFamily: FONT_FAMILY,
+        color: '#ff4444',
+        stroke: '#000000',
+        strokeThickness: 4,
+      }).setOrigin(0.5).setAlpha(0).setDepth(500);
+    }
+
+    const leadTweenTargets: Phaser.GameObjects.GameObject[] = [];
+    if (this.battleResultLeadText) leadTweenTargets.push(this.battleResultLeadText);
+    if (this.battleResultLeadIcon) leadTweenTargets.push(this.battleResultLeadIcon);
+
+    this.tweens.add({
+      targets: leadTweenTargets,
+      alpha: 1,
+      scaleX: mode === 'victory' ? 1.1 : 1,
+      scaleY: mode === 'victory' ? 1.1 : 1,
+      duration: mode === 'victory' ? 500 : 600,
+      ease: mode === 'victory' ? 'Back.easeOut' : undefined,
+    });
+  }
+
+  private _showVictory(): void {
     this.battleUI?.addLog('🎉 승리!');
     playSfx(this, COMBAT_VOICE.VICTORY, 0.8);
     playSfx(this, 'sfx_ui_quest_complete', 0.6);
 
-    // 승리 팡파르 텍스트
-    const victoryText = this.add.text(scW / 2, scH / 3, '🎉 Victory!', {
-      fontSize: '42px',
-      fontFamily: FONT_FAMILY,
-      color: '#ffd700',
-      stroke: '#000000',
-      strokeThickness: 4,
-    }).setOrigin(0.5).setAlpha(0).setDepth(500);
-
-    this.tweens.add({
-      targets: victoryText,
-      alpha: 1,
-      scaleX: 1.1, scaleY: 1.1,
-      duration: 500,
-      ease: 'Back.easeOut',
-    });
+    this._showBattleResultLeadBanner('victory');
 
     // 결과 화면 (1초 후)
     this.time.delayedCall(1200, () => {
@@ -2309,18 +3271,76 @@ export class BattleScene extends Phaser.Scene {
     kb.once('keydown-ESC', exit);
   }
 
+  private _addBattleResultRewardIcon(
+    container: Phaser.GameObjects.Container,
+    kind: BattleResultRewardIconKind,
+    x: number,
+    y: number,
+    resource: BattleIconResource | undefined,
+  ): boolean {
+    if (!resource || !this.textures.exists(resource.key)) {
+      this.battleResultRewardIconFallbackKinds.push(kind);
+      return false;
+    }
+
+    const rewardIcon = this.add.image(x, y, resource.key)
+      .setName(`battle_result_${kind}_icon`)
+      .setOrigin(0.5);
+    rewardIcon.setDisplaySize(BATTLE_RESULT_REWARD_ICON_SIZE, BATTLE_RESULT_REWARD_ICON_SIZE);
+    rewardIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    container.add(rewardIcon);
+    this.battleResultRewardIcons.push(rewardIcon);
+    return true;
+  }
+
+  private _addBattleDefeatTitleIcon(
+    container: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    resource: BattleIconResource | undefined,
+  ): boolean {
+    if (!resource || !this.textures.exists(resource.key)) {
+      this.battleDefeatTitleIconFallbackRendered = true;
+      return false;
+    }
+
+    const defeatIcon = this.add.image(x, y, resource.key)
+      .setName('battle_defeat_title_icon')
+      .setOrigin(0.5);
+    defeatIcon.setDisplaySize(BATTLE_DEFEAT_TITLE_ICON_SIZE, BATTLE_DEFEAT_TITLE_ICON_SIZE);
+    defeatIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    container.add(defeatIcon);
+    this.battleDefeatTitleIcon = defeatIcon;
+    return true;
+  }
+
   private _showResultPopup(): void {
     const cx = this.cameras.main.centerX;
     const cy = this.cameras.main.centerY;
 
     const container = this.add.container(cx, cy).setDepth(600);
+    this.battleResultRewardIcons = [];
+    this.battleResultRewardIconFallbackKinds = [];
 
     // 배경
-    const bg = this.add.rectangle(0, 0, 400, 320, 0x0a0a2e, 0.95)
-      .setStrokeStyle(2, 0xffcc00);
-    container.add(bg);
+    this._addBattleSceneFrame(
+      0,
+      0,
+      400,
+      320,
+      BATTLE_SCENE_UI_FRAME_TEXTURES.resultPopup,
+      0x0a0a2e,
+      0.95,
+      0xffcc00,
+      2,
+      undefined,
+      container,
+    );
 
-    const title = this.add.text(0, -130, '🏆 전투 결과', {
+    const titleIconResource = getBattleResultRewardIconResource('title');
+    const hasTitleIcon = this._addBattleResultRewardIcon(container, 'title', -88, -130, titleIconResource);
+    const titleLabel = hasTitleIcon ? '전투 결과' : '🏆 전투 결과';
+    const title = this.add.text(hasTitleIcon ? 18 : 0, -130, titleLabel, {
       fontSize: '22px', fontFamily: FONT_FAMILY, color: '#ffcc00',
     }).setOrigin(0.5);
     container.add(title);
@@ -2331,19 +3351,28 @@ export class BattleScene extends Phaser.Scene {
     const exp = Math.round((totalEnemyLevel * 25 + Phaser.Math.Between(10, 50)) * rewardMultiplier);
     const gold = Math.round((totalEnemyLevel * 10 + Phaser.Math.Between(5, 30)) * rewardMultiplier);
 
-    const expText = this.add.text(-150, -80, `✨ 경험치: +${exp}`, {
+    const expIconResource = getBattleResultRewardIconResource('exp');
+    const hasExpIcon = this._addBattleResultRewardIcon(container, 'exp', -158, -70, expIconResource);
+    const expLabel = hasExpIcon ? `경험치: +${exp}` : `✨ 경험치: +${exp}`;
+    const expText = this.add.text(hasExpIcon ? -132 : -150, -80, expLabel, {
       fontSize: '16px', fontFamily: FONT_FAMILY, color: '#88ccff',
     });
     container.add(expText);
 
-    const goldText = this.add.text(-150, -50, `💰 골드: +${gold}`, {
+    const goldIconResource = getBattleResultRewardIconResource('gold');
+    const hasGoldIcon = this._addBattleResultRewardIcon(container, 'gold', -158, -40, goldIconResource);
+    const goldLabel = hasGoldIcon ? `골드: +${gold}` : `💰 골드: +${gold}`;
+    const goldText = this.add.text(hasGoldIcon ? -132 : -150, -50, goldLabel, {
       fontSize: '16px', fontFamily: FONT_FAMILY, color: '#ffcc44',
     });
     container.add(goldText);
 
     // 전리품
     const loot = this.combatManager?.getLoot() ?? [];
-    const lootTitle = this.add.text(-150, -15, '📦 전리품:', {
+    const lootIconResource = getBattleResultRewardIconResource('loot');
+    const hasLootIcon = this._addBattleResultRewardIcon(container, 'loot', -158, -5, lootIconResource);
+    const lootTitleLabel = hasLootIcon ? '전리품:' : '📦 전리품:';
+    const lootTitle = this.add.text(hasLootIcon ? -132 : -150, -15, lootTitleLabel, {
       fontSize: '14px', fontFamily: FONT_FAMILY, color: '#ffffff',
     });
     container.add(lootTitle);
@@ -2376,6 +3405,328 @@ export class BattleScene extends Phaser.Scene {
     this._bindPopupExitKeys(); // 키보드 컷오버: Enter/ESC → _exitBattle
   }
 
+  private _writeBattleCommandFocusIconQaProbe(activeIndex = 0): void {
+    if (this._initData.battleCommandFocusIconQa !== true || typeof document === 'undefined' || !document.body) return;
+
+    const commandFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_COMMAND_FOCUS_ICON_ID);
+    const focusIcon = this.battleCommandFocusIcon?.active === true
+      ? this.battleCommandFocusIcon
+      : null;
+    const labels = this.battleCommandFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingBattleCommandFocusIconKeys = focusIcon && commandFocusIconResource
+      ? []
+      : [commandFocusIconResource?.key ?? BATTLE_COMMAND_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaBattleCommandFocusIconQa = JSON.stringify({
+      status: focusIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      activeIndex,
+      focusIcon: {
+        key: commandFocusIconResource?.key ?? null,
+        path: commandFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: BATTLE_COMMAND_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.battleCommandFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      labels,
+      legacyGlyphPresent,
+      missingBattleCommandFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _writeBattleSubMenuFocusIconQaProbe(
+    subMenuType: 'magic' | 'item' = this._getActiveBattleSubMenuType(),
+    activeIndex = 0,
+  ): void {
+    if (!this._initData.battleSubMenuFocusIconQa || typeof document === 'undefined' || !document.body) return;
+
+    const subMenuFocusIconResource = getSpriteResourceForSkillIcon(BATTLE_SUB_MENU_FOCUS_ICON_ID);
+    const focusIcon = this.battleSubMenuFocusIcon?.active === true
+      ? this.battleSubMenuFocusIcon
+      : null;
+    const labels = this.battleSubMenuFocusTexts.map((text) => text.text);
+    const legacyGlyphPresent = labels.some((label) => label.includes('▶'));
+    const missingBattleSubMenuFocusIconKeys = focusIcon && subMenuFocusIconResource
+      ? []
+      : [subMenuFocusIconResource?.key ?? BATTLE_SUB_MENU_FOCUS_ICON_ID];
+
+    document.body.dataset.aeternaBattleSubMenuFocusIconQa = JSON.stringify({
+      status: focusIcon && this.subMenuItems.length > 0 && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      subMenuType,
+      activeIndex,
+      itemCount: this.subMenuItems.length,
+      focusIcon: {
+        key: subMenuFocusIconResource?.key ?? null,
+        path: subMenuFocusIconResource?.path ?? null,
+        renderedCount: focusIcon ? 1 : 0,
+        expectedCount: BATTLE_SUB_MENU_FOCUS_ICON_EXPECTED_COUNT,
+        displaySizes: focusIcon ? [{ width: focusIcon.displayWidth, height: focusIcon.displayHeight }] : [],
+        fallbackRendered: this.battleSubMenuFocusIconFallbackRendered,
+        visible: focusIcon?.visible ?? false,
+        x: focusIcon?.x ?? null,
+        y: focusIcon?.y ?? null,
+      },
+      labels,
+      legacyGlyphPresent,
+      missingBattleSubMenuFocusIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _writeBattleAmbientLineQaProbe({
+    fieldEnc,
+    ambientText,
+    hasAmbientIcon,
+    hasBossIcon,
+  }: {
+    fieldEnc: NonNullable<ReturnType<typeof resolveFieldEncounter>>;
+    ambientText: Phaser.GameObjects.Text;
+    hasAmbientIcon: boolean;
+    hasBossIcon: boolean;
+  }): void {
+    if (this._initData.battleAmbientLineQa !== true || typeof document === 'undefined') return;
+
+    const ambientIconResource = getStatusIconResource(BATTLE_FIELD_AMBIENT_ICON_ID);
+    const bossIconResource = getSpriteResourceForSkillIcon(BATTLE_FIELD_BOSS_ICON_ID);
+    const ambientIcons = this.fieldAmbientIcons.filter((icon) => icon.name === 'battle_field_ambient_ambient_icon');
+    const bossIcons = this.fieldAmbientIcons.filter((icon) => icon.name === 'battle_field_ambient_boss_icon');
+    const missingAmbientIconKeys = hasAmbientIcon
+      ? []
+      : [ambientIconResource?.key ?? BATTLE_FIELD_AMBIENT_ICON_ID];
+    const missingBossIconKeys = fieldEnc.hasBossSlot && !hasBossIcon
+      ? [bossIconResource?.key ?? BATTLE_FIELD_BOSS_ICON_ID]
+      : [];
+    const legacyGlyphPresent = ambientText.text.includes('🛡') || ambientText.text.includes('⚔');
+
+    document.body.dataset.aeternaBattleAmbientLineQa = JSON.stringify({
+      status: missingAmbientIconKeys.length === 0 && missingBossIconKeys.length === 0 && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      ambientLine: fieldEnc.ambientLine,
+      hasBossSlot: fieldEnc.hasBossSlot,
+      text: ambientText.text,
+      legacyGlyphPresent,
+      ambientIcon: {
+        iconId: BATTLE_FIELD_AMBIENT_ICON_ID,
+        key: ambientIconResource?.key ?? null,
+        path: ambientIconResource?.path ?? null,
+        renderedCount: ambientIcons.length,
+        displaySizes: ambientIcons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+        fallbackRendered: this.fieldAmbientIconFallbackKinds.includes('ambient'),
+      },
+      bossIcon: {
+        iconId: BATTLE_FIELD_BOSS_ICON_ID,
+        key: bossIconResource?.key ?? null,
+        path: bossIconResource?.path ?? null,
+        expectedCount: fieldEnc.hasBossSlot ? 1 : 0,
+        renderedCount: bossIcons.length,
+        displaySizes: bossIcons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+        fallbackRendered: this.fieldAmbientIconFallbackKinds.includes('boss'),
+      },
+      missingAmbientIconKeys,
+      missingBossIconKeys,
+    });
+  }
+
+  private _startBattleResultFrameQa(): void {
+    const mode = this._initData.battleResultFrameQa;
+    if (mode !== 'victory' && mode !== 'defeat') return;
+
+    this.time.delayedCall(100, () => {
+      if (mode === 'victory') {
+        this._showResultPopup();
+      } else {
+        this._showDefeatPopup();
+      }
+      this._writeBattleResultFrameQaProbe(mode);
+    });
+  }
+
+  private _startBattleResultLeadQa(): void {
+    const mode = this._initData.battleResultLeadQa;
+    if (mode !== 'victory' && mode !== 'defeat') return;
+
+    this.time.delayedCall(100, () => {
+      this._showBattleResultLeadBanner(mode);
+      this._writeBattleResultLeadQaProbe(mode);
+    });
+  }
+
+  private _writeBattleResultLeadQaProbe(mode: BattleResultLeadMode): void {
+    if (typeof document === 'undefined') return;
+
+    const expectedIconResource = getBattleResultLeadIconResource(mode);
+    const expectedTextureKeys = expectedIconResource ? [expectedIconResource.key] : [];
+    const activeLeadIcons = this.battleResultLeadIcon?.active ? [this.battleResultLeadIcon] : [];
+    const renderedTextureKeys = activeLeadIcons.map((icon) => icon.texture.key);
+    const missingBattleResultLeadIconKeys = expectedTextureKeys
+      .filter((key) => !renderedTextureKeys.includes(key));
+    const leadLabel = this.battleResultLeadText?.text ?? '';
+    const leadLegacyGlyphPresent = leadLabel.includes('🎉') || leadLabel.includes('💔');
+    const hasExpectedIcon = activeLeadIcons.length >= 1
+      && missingBattleResultLeadIconKeys.length === 0
+      && !this.battleResultLeadIconFallbackRendered
+      && !leadLegacyGlyphPresent;
+
+    document.body.dataset.aeternaBattleResultLeadQa = JSON.stringify({
+      mode,
+      status: hasExpectedIcon ? 'ready' : 'missing-icon',
+      battleResultLeadIcon: {
+        expectedCount: 1,
+        renderedCount: activeLeadIcons.length,
+        expectedTextureKeys,
+        renderedTextureKeys,
+        displaySizes: activeLeadIcons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+        fallbackRendered: this.battleResultLeadIconFallbackRendered,
+      },
+      leadLabel,
+      leadLegacyGlyphPresent,
+      missingBattleResultLeadIconKeys,
+    });
+  }
+
+  private _writeBattleResultFrameQaProbe(mode: 'victory' | 'defeat'): void {
+    if (typeof document === 'undefined') return;
+
+    const frameTexture = mode === 'victory'
+      ? BATTLE_SCENE_UI_FRAME_TEXTURES.resultPopup
+      : BATTLE_SCENE_UI_FRAME_TEXTURES.defeatPopup;
+    const hasTexture = this.textures.exists(frameTexture.key);
+    const expectedRewardIconKeys = mode === 'victory'
+      ? (Object.keys(BATTLE_RESULT_REWARD_ICON_IDS) as BattleResultRewardIconKind[])
+        .map((kind) => getBattleResultRewardIconResource(kind)?.key)
+        .filter((key): key is string => typeof key === 'string')
+      : [];
+    const defeatTitleIconResource = getStatusIconResource(BATTLE_DEFEAT_TITLE_ICON_ID);
+    const expectedDefeatTitleIconKeys = mode === 'defeat' && defeatTitleIconResource
+      ? [defeatTitleIconResource.key]
+      : [];
+    const activeRewardIcons = mode === 'victory'
+      ? this.battleResultRewardIcons.filter((icon) => icon.active)
+      : [];
+    const renderedRewardIconKeys = activeRewardIcons.map((icon) => icon.texture.key);
+    const missingBattleResultRewardIconKeys = expectedRewardIconKeys
+      .filter((key) => !renderedRewardIconKeys.includes(key));
+    const activeDefeatTitleIcons = mode === 'defeat' && this.battleDefeatTitleIcon?.active
+      ? [this.battleDefeatTitleIcon]
+      : [];
+    const renderedDefeatTitleIconKeys = activeDefeatTitleIcons.map((icon) => icon.texture.key);
+    const missingBattleDefeatTitleIconKeys = expectedDefeatTitleIconKeys
+      .filter((key) => !renderedDefeatTitleIconKeys.includes(key));
+    const popupTexts = this.lootPopup?.list
+      .filter((child): child is Phaser.GameObjects.Text => child instanceof Phaser.GameObjects.Text)
+      .map((text) => text.text) ?? [];
+    const rewardLegacyGlyphPresent = mode === 'victory'
+      && popupTexts.some((label) => (
+        label.includes('🏆')
+        || label.includes('✨')
+        || label.includes('💰')
+        || label.includes('📦')
+      ));
+    const defeatTitleLegacyGlyphPresent = mode === 'defeat'
+      && popupTexts.some((label) => label.includes('💔'));
+    const hasExpectedRewardIcons = mode !== 'victory'
+      || (
+        activeRewardIcons.length >= BATTLE_RESULT_REWARD_ICON_EXPECTED_COUNT
+        && missingBattleResultRewardIconKeys.length === 0
+        && !rewardLegacyGlyphPresent
+      );
+    const hasExpectedDefeatTitleIcon = mode !== 'defeat'
+      || (
+        activeDefeatTitleIcons.length >= BATTLE_DEFEAT_TITLE_ICON_EXPECTED_COUNT
+        && missingBattleDefeatTitleIconKeys.length === 0
+        && !this.battleDefeatTitleIconFallbackRendered
+        && !defeatTitleLegacyGlyphPresent
+      );
+
+    document.body.dataset.aeternaBattleResultFrameQa = JSON.stringify({
+      mode,
+      status: hasTexture && hasExpectedRewardIcons && hasExpectedDefeatTitleIcon ? 'ready' : 'missing-texture-or-icon',
+      renderedFrameKeys: hasTexture ? [frameTexture.key] : [],
+      missingFrameKeys: hasTexture ? [] : [frameTexture.key],
+      resultRewardIcon: {
+        expectedCount: mode === 'victory' ? BATTLE_RESULT_REWARD_ICON_EXPECTED_COUNT : 0,
+        renderedCount: activeRewardIcons.length,
+        expectedTextureKeys: expectedRewardIconKeys,
+        renderedTextureKeys: renderedRewardIconKeys,
+        displaySizes: activeRewardIcons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+        fallbackKinds: this.battleResultRewardIconFallbackKinds,
+      },
+      defeatTitleIcon: {
+        expectedCount: mode === 'defeat' ? BATTLE_DEFEAT_TITLE_ICON_EXPECTED_COUNT : 0,
+        renderedCount: activeDefeatTitleIcons.length,
+        expectedTextureKeys: expectedDefeatTitleIconKeys,
+        renderedTextureKeys: renderedDefeatTitleIconKeys,
+        displaySizes: activeDefeatTitleIcons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+        fallbackRendered: this.battleDefeatTitleIconFallbackRendered,
+      },
+      rewardLabels: popupTexts,
+      rewardLegacyGlyphPresent,
+      rewardTitleLegacyGlyphPresent: rewardLegacyGlyphPresent,
+      defeatTitleLegacyGlyphPresent,
+      missingBattleResultRewardIconKeys,
+      missingBattleDefeatTitleIconKeys,
+    });
+  }
+
+  private _writeBattlePaceFrameQaProbe(): void {
+    if (this._initData.battlePaceFrameQa !== true || typeof document === 'undefined') return;
+
+    const frameTexture = BATTLE_SCENE_UI_FRAME_TEXTURES.paceButton;
+    const renderedFrameCount = this.battleSceneFrameQaRenderedCounts.get(frameTexture.key) ?? 0;
+    const hasExpectedFrames = this.textures.exists(frameTexture.key) && renderedFrameCount >= 3;
+    document.body.dataset.aeternaBattlePaceFrameQa = JSON.stringify({
+      status: hasExpectedFrames ? 'ready' : 'missing-frame',
+      renderedFrameKeys: renderedFrameCount > 0 ? [frameTexture.key] : [],
+      renderedFrameCount,
+      expectedFrameCount: 3,
+      missingFrameKeys: hasExpectedFrames ? [] : [frameTexture.key],
+      buttonLabels: ['MODE', 'AUTO', 'Speed'],
+    });
+  }
+
+  private _applyBattleComboTechFrameQa(): void {
+    if (this._initData.battleComboTechFrameQa !== true || typeof document === 'undefined') return;
+
+    this.dualTechButton?.setVisible(true);
+    this.tripleTechButton?.setVisible(true);
+
+    const frameTexture = BATTLE_SCENE_UI_FRAME_TEXTURES.comboTechButton;
+    const renderedFrameCount = this.battleSceneFrameQaRenderedCounts.get(frameTexture.key) ?? 0;
+    const hasExpectedFrames = this.textures.exists(frameTexture.key) && renderedFrameCount >= 2;
+    const renderedIconTextureKeys = this.comboTechButtonIcons.map((icon) => icon.texture.key);
+    const expectedIconTextureKeys = Object.values(BATTLE_COMBO_TECH_BUTTON_ICON_IDS)
+      .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key)
+      .filter((key): key is string => typeof key === 'string');
+    const missingIconTextureKeys = expectedIconTextureKeys.filter((key) => !renderedIconTextureKeys.includes(key));
+    const hasExpectedIcons = missingIconTextureKeys.length === 0 && this.comboTechButtonIcons.length >= 2;
+    document.body.dataset.aeternaBattleComboTechFrameQa = JSON.stringify({
+      status: hasExpectedFrames && hasExpectedIcons ? 'ready' : 'missing-frame-or-icon',
+      renderedFrameKeys: renderedFrameCount > 0 ? [frameTexture.key] : [],
+      renderedFrameCount,
+      expectedFrameCount: 2,
+      missingFrameKeys: hasExpectedFrames ? [] : [frameTexture.key],
+      buttonLabels: [
+        this._getComboTechButtonLabel(this.dualTechButton)?.text ?? '',
+        this._getComboTechButtonLabel(this.tripleTechButton)?.text ?? '',
+      ],
+      comboTechButtonIcon: {
+        renderedIconCount: this.comboTechButtonIcons.length,
+        expectedIconCount: 2,
+        iconNames: this.comboTechButtonIcons.map((icon) => icon.name),
+        textureKeys: renderedIconTextureKeys,
+        displaySizes: this.comboTechButtonIcons.map((icon) => ({
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        missingIconTextureKeys,
+      },
+    });
+  }
+
   // ─── 패배 연출 ───────────────────────────────────────────────
 
   private _showDefeat(): void {
@@ -2400,42 +3751,51 @@ export class BattleScene extends Phaser.Scene {
       this.tweens.add({ targets: flash, alpha: 0.15, duration: 400 });
     }
 
-    const defeatText = this.add.text(scW / 2, scH / 3, '💔 패배...', {
-      fontSize: '36px',
-      fontFamily: FONT_FAMILY,
-      color: '#ff4444',
-      stroke: '#000000',
-      strokeThickness: 4,
-    }).setOrigin(0.5).setAlpha(0).setDepth(500);
-
-    this.tweens.add({
-      targets: defeatText,
-      alpha: 1,
-      duration: 600,
-    });
+    this._showBattleResultLeadBanner('defeat');
 
     // 패배 팝업
     this.time.delayedCall(2000, () => {
-      const cx = this.cameras.main.centerX;
-      const cy = this.cameras.main.centerY;
-
-      const container = this.add.container(cx, cy).setDepth(600);
-      const bg = this.add.rectangle(0, 0, 280, 140, 0x000000, 0.9)
-        .setStrokeStyle(2, 0xff4444);
-      container.add(bg);
-
-      const title = this.add.text(0, -30, '💔 전투 실패', {
-        fontSize: '20px', fontFamily: FONT_FAMILY, color: '#ff4444',
-      }).setOrigin(0.5);
-      container.add(title);
-
-      const closeBtn = this.add.text(0, 30, '[ 돌아가기 ] (Enter)', {
-        fontSize: '16px', fontFamily: FONT_FAMILY, color: '#aaaaaa',
-      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      closeBtn.on('pointerdown', () => this._exitBattle());
-      container.add(closeBtn);
-      this._bindPopupExitKeys(); // 키보드 컷오버: Enter/ESC → _exitBattle (마우스 없이 패배 종료)
+      this._showDefeatPopup();
     });
+  }
+
+  private _showDefeatPopup(): void {
+    const cx = this.cameras.main.centerX;
+    const cy = this.cameras.main.centerY;
+
+    const container = this.add.container(cx, cy).setDepth(600);
+    this.battleDefeatTitleIcon = null;
+    this.battleDefeatTitleIconFallbackRendered = false;
+    this._addBattleSceneFrame(
+      0,
+      0,
+      280,
+      140,
+      BATTLE_SCENE_UI_FRAME_TEXTURES.defeatPopup,
+      0x000000,
+      0.9,
+      0xff4444,
+      2,
+      undefined,
+      container,
+    );
+
+    const defeatTitleIconResource = getStatusIconResource(BATTLE_DEFEAT_TITLE_ICON_ID);
+    const hasTitleIcon = this._addBattleDefeatTitleIcon(container, -64, -30, defeatTitleIconResource);
+    const titleLabel = hasTitleIcon ? '전투 실패' : '💔 전투 실패';
+    const title = this.add.text(hasTitleIcon ? 12 : 0, -30, titleLabel, {
+      fontSize: '20px', fontFamily: FONT_FAMILY, color: '#ff4444',
+    }).setOrigin(0.5);
+    container.add(title);
+
+    const closeBtn = this.add.text(0, 30, '[ 돌아가기 ] (Enter)', {
+      fontSize: '16px', fontFamily: FONT_FAMILY, color: '#aaaaaa',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => this._exitBattle());
+    container.add(closeBtn);
+
+    this.lootPopup = container;
+    this._bindPopupExitKeys(); // 키보드 컷오버: Enter/ESC → _exitBattle (마우스 없이 패배 종료)
   }
 
   // ─── 기본 유닛 생성 (폴백) ────────────────────────────────────
@@ -2735,10 +4095,9 @@ export class BattleScene extends Phaser.Scene {
     this.battleUI?.addLog(
       `🔁 3인 협공 선택: ${sel.name} (${this.tripleTechSelectedIndex + 1}/${this.lastTripleTechCandidates.length})`,
     );
-    const txt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-    const bg = this.tripleTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
-    const aoePrefix = sel.aoe ? '💥 🌟' : '🌟';
-    txt?.setText(`${aoePrefix} ${sel.name} (T)`);
+    const txt = this._getComboTechButtonLabel(this.tripleTechButton);
+    const aoePrefix = this._hasComboTechButtonIcon(this.tripleTechButton) ? '' : (sel.aoe ? '💥 🌟 ' : '🌟 ');
+    txt?.setText(`${aoePrefix}${sel.name} (T)`);
     const tint = (() => {
       switch (sel.element) {
         case 'chrono': return 0x6fd3ff;
@@ -2747,7 +4106,7 @@ export class BattleScene extends Phaser.Scene {
         default: return 0xffd54a;
       }
     })();
-    bg?.setFillStyle(tint, 0.92);
+    this._setComboTechButtonAccent(this.tripleTechButton, tint, 0.92, 3);
   }
 
   /**
@@ -2763,9 +4122,8 @@ export class BattleScene extends Phaser.Scene {
     this.battleUI?.addLog(
       `🔁 협공 선택: ${sel.name} (${this.dualTechSelectedIndex + 1}/${this.lastDualTechCandidates.length})`,
     );
-    const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-    const bg = this.dualTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
-    const aoePrefix = sel.aoe ? '💥 ' : '✨ ';
+    const txt = this._getComboTechButtonLabel(this.dualTechButton);
+    const aoePrefix = this._hasComboTechButtonIcon(this.dualTechButton) ? '' : (sel.aoe ? '💥 ' : '✨ ');
     txt?.setText(`${aoePrefix}${sel.name} (D)`);
     const tint = (() => {
       switch (sel.element) {
@@ -2775,7 +4133,7 @@ export class BattleScene extends Phaser.Scene {
         default: return 0x6fd3ff;
       }
     })();
-    bg?.setFillStyle(tint, 0.85);
+    this._setComboTechButtonAccent(this.dualTechButton, tint, 0.85, 2);
   }
 
   private _shouldUseServerCombat(): boolean {
@@ -2851,10 +4209,9 @@ export class BattleScene extends Phaser.Scene {
           }
           // CHRONO-S31/S46: 후보 있으면 버튼 visible + element 색조 + AOE 아이콘
           this.dualTechButton?.setVisible(true);
-          const txt = this.dualTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-          const bg = this.dualTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+          const txt = this._getComboTechButtonLabel(this.dualTechButton);
           const sel = d.dualTechCandidates[this.dualTechSelectedIndex] ?? d.dualTechCandidates[0];
-          const aoePrefix = sel.aoe ? '💥 ' : '✨ ';
+          const aoePrefix = this._hasComboTechButtonIcon(this.dualTechButton) ? '' : (sel.aoe ? '💥 ' : '✨ ');
           txt?.setText(`${aoePrefix}${sel.name} (D)`);
           const tint = (() => {
             switch (sel.element) {
@@ -2864,7 +4221,7 @@ export class BattleScene extends Phaser.Scene {
               default: return 0x6fd3ff;
             }
           })();
-          bg?.setFillStyle(tint, 0.85);
+          this._setComboTechButtonAccent(this.dualTechButton, tint, 0.85, 2);
         } else {
           this.lastDualTechCandidates = [];
           this.dualTechSelectedIndex = 0;
@@ -2879,11 +4236,10 @@ export class BattleScene extends Phaser.Scene {
             this.tripleTechSelectedIndex = 0;
           }
           this.tripleTechButton?.setVisible(true);
-          const tTxt = this.tripleTechButton?.list?.[1] as Phaser.GameObjects.Text | undefined;
-          const tBg = this.tripleTechButton?.list?.[0] as Phaser.GameObjects.Rectangle | undefined;
+          const tTxt = this._getComboTechButtonLabel(this.tripleTechButton);
           const tSel = d.tripleTechCandidates[this.tripleTechSelectedIndex] ?? d.tripleTechCandidates[0];
-          const aoePrefix = tSel.aoe ? '💥 🌟' : '🌟';
-          tTxt?.setText(`${aoePrefix} ${tSel.name} (T)`);
+          const aoePrefix = this._hasComboTechButtonIcon(this.tripleTechButton) ? '' : (tSel.aoe ? '💥 🌟 ' : '🌟 ');
+          tTxt?.setText(`${aoePrefix}${tSel.name} (T)`);
           const tint = (() => {
             switch (tSel.element) {
               case 'chrono': return 0x6fd3ff;
@@ -2892,7 +4248,7 @@ export class BattleScene extends Phaser.Scene {
               default: return 0xffd54a;
             }
           })();
-          tBg?.setFillStyle(tint, 0.92);
+          this._setComboTechButtonAccent(this.tripleTechButton, tint, 0.92, 3);
         } else {
           this.lastTripleTechCandidates = [];
           this.tripleTechSelectedIndex = 0;

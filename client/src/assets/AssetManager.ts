@@ -10,11 +10,29 @@
  */
 
 import * as Phaser from 'phaser';
+import { getAllCosmeticAssetSpecs } from '../data/cosmeticAssetSpecs';
+import { getAllItemIconSpecs } from '../data/itemIconSpecs';
+import { getAllStatusIconSpecs } from '../data/statusIconSpecs';
 
 // ── 에셋 경로 상수 ──────────────────────────────────────────
 
 const ASSET_BASE = 'assets';
 const GENERATED = `${ASSET_BASE}/generated`;
+
+export const FALLBACK_TEXTURES = [
+  {
+    key: 'placeholder',
+    path: `${GENERATED}/ui/placeholders/placeholder.png`,
+    width: 64,
+    height: 64,
+  },
+  {
+    key: 'placeholder_sm',
+    path: `${GENERATED}/ui/placeholders/placeholder_sm.png`,
+    width: 32,
+    height: 32,
+  },
+] as const;
 
 // ── P34-A: 클래스 ID 목록 (SSOT) ───────────────────────────
 const CLASS_IDS = [
@@ -200,45 +218,21 @@ export class AssetManager {
 
   /**
    * P34-A: 아이템 아이콘 preload (100장)
-   * 패턴: ITM-{type}-{num}.png (ACC 15, ARM 15, CSM 15, MAT 15, QST 10, WPN 15, SHD 15)
+   * Aseprite itemIcon 산출물과 동일한 파일명을 사용한다.
    */
   preloadItemIcons(): void {
-    const types = [
-      { prefix: 'ITM-ACC', count: 15 },
-      { prefix: 'ITM-ARM', count: 15 },
-      { prefix: 'ITM-CSM', count: 15 },
-      { prefix: 'ITM-MAT', count: 15 },
-      { prefix: 'ITM-QST', count: 10 },
-      { prefix: 'ITM-WPN', count: 15 },
-      { prefix: 'ITM-SHD', count: 15 },
-    ];
-    for (const t of types) {
-      for (let i = 1; i <= t.count; i++) {
-        const padded = String(i).padStart(3, '0');
-        const key = `icon_item_${t.prefix}_${padded}`;
-        const path = `${GENERATED}/ui/icons/items/${t.prefix}-${padded}.png`;
-        this._loadImage(key, path);
-      }
+    for (const spec of getAllItemIconSpecs()) {
+      this._loadImage(spec.runtimeKey, spec.runtimePath);
     }
   }
 
   /**
-   * P34-A: 상태 아이콘 preload (25장)
-   * 패턴: STS-BUF-{num}.png (5), STS-DBF-{num}.png (17), STS-CC-{num}.png (3)
+   * P34-A: 상태 아이콘 preload
+   * 전투 상태이상 15개와 legacy STS-* 아이콘을 실제 런타임 파일명으로 로드한다.
    */
   preloadStatusIcons(): void {
-    const types = [
-      { prefix: 'STS-BUF', count: 5 },
-      { prefix: 'STS-DBF', count: 17 },
-      { prefix: 'STS-CC', count: 3 },
-    ];
-    for (const t of types) {
-      for (let i = 1; i <= t.count; i++) {
-        const padded = String(i).padStart(3, '0');
-        const key = `icon_status_${t.prefix}_${padded}`;
-        const path = `${GENERATED}/ui/icons/status/${t.prefix}-${padded}.png`;
-        this._loadImage(key, path);
-      }
+    for (const spec of getAllStatusIconSpecs()) {
+      this._loadImage(spec.runtimeKey, spec.runtimePath);
     }
   }
 
@@ -265,34 +259,11 @@ export class AssetManager {
 
   /**
    * P34-A: 코스메틱 이미지 preload (3시즌 × 50장 = 150장)
-   * 파일명 패턴이 다양하므로 동적 로딩 (로드 에러 무시)
+   * 실제 런타임 파일명 SSOT만 로드한다.
    */
   preloadCosmetics(): void {
-    // 시즌1: COS-{type}_{num}.png 패턴
-    const s1Types = [
-      { prefix: 'COS-EMOTE', count: 7 },
-      { prefix: 'COS-MOUNT', count: 5 },
-      { prefix: 'COS-PET', count: 8 },
-      { prefix: 'COS-TITLE', count: 5 },
-      { prefix: 'COS-AURA', count: 5 },
-      { prefix: 'COS-SKIN_EK', count: 5 },
-      { prefix: 'COS-SKIN_MW', count: 5 },
-      { prefix: 'COS-WPN', count: 5 },
-      { prefix: 'COS-SKIN_SW', count: 5 },
-    ];
-    for (const t of s1Types) {
-      for (let i = 1; i <= t.count; i++) {
-        const padded = String(i).padStart(2, '0');
-        this._loadImage(`cos_s1_${t.prefix}_${padded}`, `${GENERATED}/cosmetics/season1/${t.prefix}_${padded}.png`);
-      }
-    }
-    // 시즌2, 시즌3: 유사 패턴 (로드 에러 무시로 모두 시도)
-    for (const season of [2, 3]) {
-      for (let i = 1; i <= 50; i++) {
-        const padded = String(i).padStart(2, '0');
-        // 범용 키로 등록 — 실제 파일명은 다양하나 에러 시 무시
-        this._loadImage(`cos_s${season}_${padded}`, `${GENERATED}/cosmetics/season${season}/COS-ITEM_S${season}_${padded}.png`);
-      }
+    for (const spec of getAllCosmeticAssetSpecs()) {
+      this._loadImage(spec.runtimeKey, spec.runtimePath);
     }
   }
 
@@ -310,27 +281,18 @@ export class AssetManager {
   }
 
   /**
-   * P25-14: placeholder 텍스처 생성 (누락 에셋 대체)
+   * P25-14: placeholder 텍스처 등록 (누락 에셋 대체)
    */
   createPlaceholders(): void {
-    const gfx = this.scene.add.graphics();
+    for (const texture of FALLBACK_TEXTURES) {
+      if (!this.scene.textures.exists(texture.key)) {
+        this._loadImage(texture.key, texture.path);
+      }
+    }
 
-    // 기본 placeholder (마젠타 사각형)
-    gfx.fillStyle(0xff00ff, 0.5);
-    gfx.fillRect(0, 0, 64, 64);
-    gfx.lineStyle(2, 0xff00ff, 1);
-    gfx.strokeRect(0, 0, 64, 64);
-    gfx.lineBetween(0, 0, 64, 64);
-    gfx.lineBetween(64, 0, 0, 64);
-    gfx.generateTexture('placeholder', 64, 64);
-
-    // 작은 placeholder
-    gfx.clear();
-    gfx.fillStyle(0xff00ff, 0.3);
-    gfx.fillRect(0, 0, 32, 32);
-    gfx.generateTexture('placeholder_sm', 32, 32);
-
-    gfx.destroy();
+    this.scene.load.once('complete', () => {
+      this._ensureProceduralPlaceholders();
+    });
   }
 
   /**
@@ -389,5 +351,28 @@ export class AssetManager {
     if (this.loadedKeys.has(key)) return;
     this.scene.load.image(key, path);
     this.loadedKeys.add(key);
+  }
+
+  private _ensureProceduralPlaceholders(): void {
+    for (const texture of FALLBACK_TEXTURES) {
+      if (this.scene.textures.exists(texture.key)) {
+        continue;
+      }
+
+      const gfx = this.scene.add.graphics();
+      const isSmall = texture.width <= 32;
+      const border = isSmall ? 1 : 2;
+      const inset = isSmall ? 2 : 4;
+
+      gfx.fillStyle(0x121826, 1);
+      gfx.fillRect(0, 0, texture.width, texture.height);
+      gfx.lineStyle(border, 0xe83dff, 1);
+      gfx.strokeRect(inset, inset, texture.width - inset * 2, texture.height - inset * 2);
+      gfx.lineStyle(border, 0x46e3ff, 1);
+      gfx.lineBetween(inset * 2, inset * 2, texture.width - inset * 2, texture.height - inset * 2);
+      gfx.lineBetween(texture.width - inset * 2, inset * 2, inset * 2, texture.height - inset * 2);
+      gfx.generateTexture(texture.key, texture.width, texture.height);
+      gfx.destroy();
+    }
   }
 }

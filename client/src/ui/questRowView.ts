@@ -9,6 +9,13 @@
  * mapZoneId(월드맵 진입 버튼)를 행에 렌더해 진행 방법을 명시한다.
  */
 
+import {
+  getSpriteResourceForSkillIcon,
+  getSpriteResourceForWorldZoneIcon,
+} from '../assets/spriteResourceManifest';
+
+const QUEST_ACTION_HINT_ICON_ID = 'skill_mw_arrow';
+
 export interface QuestItem {
   questId: string;
   title: string;
@@ -54,6 +61,26 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
+function buildQuestMapButtonIconHtml(zoneId: string): string | null {
+  const iconResource = getSpriteResourceForWorldZoneIcon(zoneId);
+  if (!iconResource) {
+    return null;
+  }
+
+  const iconPath = escapeHtml(iconResource.path);
+  return `<img class="hud-quest-map-icon" src="/${iconPath}" alt="" aria-hidden="true" decoding="async" loading="lazy" data-aeterna-icon-key="${escapeHtml(iconResource.key)}" data-aeterna-icon-path="${iconPath}" />`;
+}
+
+function buildQuestActionHintIconHtml(): string {
+  const iconResource = getSpriteResourceForSkillIcon(QUEST_ACTION_HINT_ICON_ID);
+  if (!iconResource) {
+    return '<span class="hud-quest-action-icon-fallback" aria-hidden="true">&gt;</span>';
+  }
+
+  const iconPath = escapeHtml(iconResource.path);
+  return `<img class="hud-quest-action-icon" src="/${iconPath}" alt="" aria-hidden="true" decoding="async" loading="lazy" data-aeterna-icon-key="${escapeHtml(iconResource.key)}" data-aeterna-icon-path="${iconPath}" />`;
+}
+
 export function buildQuestRowHtml(quest: QuestItem): string {
   const progress = `${quest.progressCurrent}/${quest.progressTarget}`;
   const typeBadge = quest.isMainQuest ? 'MAIN' : 'SUB';
@@ -61,12 +88,16 @@ export function buildQuestRowHtml(quest: QuestItem): string {
 
   // 진행 방법 안내 줄 — 완료된 퀘스트엔 불필요하므로 미완료일 때만.
   const actionHintHtml = (quest.actionHint && !quest.isCompleted)
-    ? `<div class="hud-quest-action">▶ ${escapeHtml(quest.actionHint)}</div>`
+    ? `<div class="hud-quest-action">${buildQuestActionHintIconHtml()}<span class="hud-quest-action-text">${escapeHtml(quest.actionHint)}</span></div>`
     : '';
 
+  const mapButtonIconHtml = quest.mapZoneId && !quest.isCompleted
+    ? buildQuestMapButtonIconHtml(quest.mapZoneId)
+    : null;
+
   // 월드맵으로 이동해야 진행되는 퀘스트엔 1-클릭 진입 버튼.
-  const mapButtonHtml = (quest.mapZoneId && !quest.isCompleted)
-    ? `<button type="button" class="hud-quest-map-btn" data-map-zone-id="${escapeHtml(quest.mapZoneId)}">🗺 월드맵 열기 (ESC)</button>`
+  const mapButtonHtml = (quest.mapZoneId && mapButtonIconHtml)
+    ? `<button type="button" class="hud-quest-map-btn" data-map-zone-id="${escapeHtml(quest.mapZoneId)}">${mapButtonIconHtml}<span class="hud-quest-map-label">월드맵 열기 (ESC)</span></button>`
     : '';
 
   return `

@@ -20,6 +20,8 @@ import type { CombatUnit } from '../combat/CombatManager';
 import type { BattleSceneData } from './BattleScene';
 import { classSkills } from '../data/classSkills';
 import { composeDungeonGameOverText } from '../gameplay/dungeonGameOverNarration';
+import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ── 타입 ────────────────────────────────────────────────────
 
@@ -40,6 +42,7 @@ interface DungeonResumeData {
   characterClass?: string;
   victory?: boolean;
   allyState?: Array<{ hp: number; mp: number }>;
+  dungeonFrameQa?: 'ready' | 'clear';
 }
 
 type DungeonPhase = 'ready' | 'fighting' | 'boss_warning' | 'boss' | 'clear' | 'timeout' | 'defeat';
@@ -95,6 +98,82 @@ const MONSTER_NAMES: Record<string, string> = {
   mon_erebos_memory_absorber_normal: '기억 흡수자',
 };
 
+interface DungeonMonsterPreviewTexture {
+  textureKey: string;
+  path: string;
+  displaySize: number;
+}
+
+interface DungeonUiFrameTexture {
+  key: string;
+  path: string;
+  width: number;
+  height: number;
+}
+
+interface DungeonFrameRender {
+  primary: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  stroke?: Phaser.GameObjects.Rectangle;
+}
+
+const DUNGEON_MONSTER_PREVIEW_TEXTURES: Record<string, DungeonMonsterPreviewTexture> = {
+  mon_erebos_ruin_skeleton_normal: {
+    textureKey: 'monster_battle_icon_mon_erebos_ruin_skeleton_normal',
+    path: 'assets/generated/monsters/battle/mon_erebos_ruin_skeleton_normal.png',
+    displaySize: 56,
+  },
+  mon_erebos_fog_wolf_normal: {
+    textureKey: 'monster_battle_icon_mon_erebos_fog_wolf_normal',
+    path: 'assets/generated/monsters/battle/mon_erebos_fog_wolf_normal.png',
+    displaySize: 56,
+  },
+  mon_erebos_memory_ghost_normal: {
+    textureKey: 'monster_battle_icon_mon_erebos_memory_ghost_normal',
+    path: 'assets/generated/monsters/battle/mon_erebos_memory_ghost_normal.png',
+    displaySize: 56,
+  },
+  mon_erebos_broken_golem_normal: {
+    textureKey: 'monster_battle_icon_mon_erebos_broken_golem_normal',
+    path: 'assets/generated/monsters/battle/mon_erebos_broken_golem_normal.png',
+    displaySize: 56,
+  },
+  mon_erebos_ruin_spider_normal: {
+    textureKey: 'monster_battle_icon_mon_erebos_ruin_spider_normal',
+    path: 'assets/generated/monsters/battle/mon_erebos_ruin_spider_normal.png',
+    displaySize: 56,
+  },
+  mon_erebos_memory_absorber_normal: {
+    textureKey: 'monster_battle_icon_mon_erebos_memory_absorber_normal',
+    path: 'assets/generated/monsters/battle/mon_erebos_memory_absorber_normal.png',
+    displaySize: 80,
+  },
+};
+
+const DUNGEON_UI_FRAME_TEXTURES = {
+  statusPanel: {
+    key: 'ui_frame_dungeon_status_panel',
+    path: 'assets/generated/ui/frames/UI-HUD-007-DEF.png',
+    width: 512,
+    height: 512,
+  },
+  actionButton: {
+    key: 'ui_frame_dungeon_action_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+    width: 512,
+    height: 512,
+  },
+  rewardPanel: {
+    key: 'ui_frame_dungeon_reward_panel',
+    path: 'assets/generated/ui/frames/UI-INV-005-DEF.png',
+    width: 512,
+    height: 512,
+  },
+} as const satisfies Record<string, DungeonUiFrameTexture>;
+
+const DUNGEON_ACTION_BUTTON_ICON_ID = 'skill_ek_slash';
+const DUNGEON_TITLE_ICON_ID = 'skill_ek_slash';
+const DUNGEON_CLEAR_TITLE_ICON_ID = 'skill_ek_ultimate';
+
 // ── DungeonScene ────────────────────────────────────────────
 
 export class DungeonScene extends Phaser.Scene {
@@ -128,7 +207,15 @@ export class DungeonScene extends Phaser.Scene {
   private playerMpText?: Phaser.GameObjects.Text;
   private playerIdleTween?: Phaser.Tweens.Tween;
   private battleBtn?: Phaser.GameObjects.Text;
+  private battleBtnFrame?: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  private battleBtnIcon?: Phaser.GameObjects.Image;
+  private dungeonTitleIcon?: Phaser.GameObjects.Image;
+  private dungeonTitleIconFallbackRendered = false;
+  private dungeonClearTitleIcon?: Phaser.GameObjects.Image;
+  private dungeonClearTitleIconFallbackRendered = false;
+  private dungeonClearTitleText?: Phaser.GameObjects.Text;
   private enemyPreviews: Phaser.GameObjects.GameObject[] = [];
+  private dungeonFrameQaRenderedKeys = new Set<string>();
 
   constructor() {
     super({ key: 'DungeonScene' });
@@ -145,15 +232,47 @@ export class DungeonScene extends Phaser.Scene {
       console.warn(`[Dungeon] 에셋 로드 실패: ${file.key}`);
     });
 
-    // 플레이어 캐릭터 (원본 256x384 side 일러스트)
-    const classId = this._sceneData.characterClass ?? 'ether_knight';
-    this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${classId}_side.png`);
+    const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource('ether_knight');
+    if (playerSpriteResource && !this.textures.exists(playerSpriteResource.textureKey)) {
+      this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath, {
+        frameWidth: playerSpriteResource.frameWidth,
+        frameHeight: playerSpriteResource.frameHeight,
+      });
+    }
+
+    const fallbackClassId = playerSpriteResource?.classId ?? 'ether_knight';
+    this.load.image('dungeon_player', `assets/generated/characters/class_main/char_illust_${fallbackClassId}_side.png`);
 
     // 배경
     this.load.image('dungeon_bg', 'assets/generated/environment/backgrounds/DUNGEON-BG-FAR.png');
 
-    // 몬스터 (원본 256x256)
-    // 몬스터 이미지 로드 제거 — 프로그래매틱 아이콘 사용
+    for (const preview of Object.values(DUNGEON_MONSTER_PREVIEW_TEXTURES)) {
+      if (!this.textures.exists(preview.textureKey)) {
+        this.load.image(preview.textureKey, preview.path);
+      }
+    }
+
+    for (const texture of Object.values(DUNGEON_UI_FRAME_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+
+    const actionButtonIconResource = getSpriteResourceForSkillIcon(DUNGEON_ACTION_BUTTON_ICON_ID);
+    if (actionButtonIconResource && !this.textures.exists(actionButtonIconResource.key)) {
+      this.load.image(actionButtonIconResource.key, actionButtonIconResource.path);
+    }
+    const titleIconResource = getSpriteResourceForSkillIcon(DUNGEON_TITLE_ICON_ID);
+    const isTitleIconQueuedByAction = actionButtonIconResource?.key === titleIconResource?.key;
+    if (titleIconResource && !isTitleIconQueuedByAction && !this.textures.exists(titleIconResource.key)) {
+      this.load.image(titleIconResource.key, titleIconResource.path);
+    }
+    const clearTitleIconResource = getSpriteResourceForSkillIcon(DUNGEON_CLEAR_TITLE_ICON_ID);
+    const isClearTitleIconQueuedByExisting = clearTitleIconResource?.key === actionButtonIconResource?.key
+      || clearTitleIconResource?.key === titleIconResource?.key;
+    if (clearTitleIconResource && !isClearTitleIconQueuedByExisting && !this.textures.exists(clearTitleIconResource.key)) {
+      this.load.image(clearTitleIconResource.key, clearTitleIconResource.path);
+    }
   }
 
   create(): void {
@@ -169,6 +288,14 @@ export class DungeonScene extends Phaser.Scene {
     this.earnedExp = 0;
     this.earnedGold = 0;
     this.enemyPreviews = [];
+    this.battleBtnFrame = undefined;
+    this.battleBtnIcon = undefined;
+    this.dungeonTitleIcon = undefined;
+    this.dungeonTitleIconFallbackRendered = false;
+    this.dungeonClearTitleIcon = undefined;
+    this.dungeonClearTitleIconFallbackRendered = false;
+    this.dungeonClearTitleText = undefined;
+    this.dungeonFrameQaRenderedKeys.clear();
 
     // 복귀 데이터 적용
     const isResume = this._sceneData.resumeWave != null;
@@ -195,7 +322,19 @@ export class DungeonScene extends Phaser.Scene {
     }
 
     // ── 던전 이름 ──
-    this.add.text(width / 2, 18, `⚔ ${this.config.dungeonName}`, {
+    const titleIconResource = getSpriteResourceForSkillIcon(DUNGEON_TITLE_ICON_ID);
+    const hasTitleIcon = Boolean(titleIconResource && this.textures.exists(titleIconResource.key));
+    if (hasTitleIcon && titleIconResource) {
+      this.dungeonTitleIcon = this.add.image(width / 2 - 138, 18, titleIconResource.key)
+        .setName('dungeon_title_icon');
+      this.dungeonTitleIcon.setDisplaySize(20, 20);
+      this.dungeonTitleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else {
+      this.dungeonTitleIconFallbackRendered = true;
+    }
+    const titleLabel = hasTitleIcon ? this.config.dungeonName : `⚔ ${this.config.dungeonName}`;
+    const titleX = hasTitleIcon ? width / 2 + 12 : width / 2;
+    this.add.text(titleX, 18, titleLabel, {
       fontSize: '20px',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#ff8844',
@@ -242,7 +381,18 @@ export class DungeonScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
 
     // ── 시작 또는 복귀 분기 ──
-    if (isResume) {
+    if (!isResume && this._getDungeonFrameQaMode() === 'ready') {
+      this.phase = 'fighting';
+      this._startNextWave();
+      this._writeDungeonFrameQaProbe();
+    } else if (!isResume && this._getDungeonFrameQaMode() === 'clear') {
+      this.currentWave = this.config.totalWaves;
+      this.earnedExp = EXP_PER_WAVE * this.config.totalWaves + BOSS_EXP_BONUS;
+      this.earnedGold = GOLD_PER_WAVE * this.config.totalWaves + BOSS_GOLD_BONUS;
+      this.phase = 'clear';
+      this._showVictory();
+      this._writeDungeonFrameQaProbe();
+    } else if (isResume) {
       if (this._sceneData.victory) {
         this._onBattleVictory();
       } else {
@@ -271,10 +421,22 @@ export class DungeonScene extends Phaser.Scene {
 
   // ── 플레이어 생성 ────────────────────────────────────────
 
+  private _getPlayerClassId(): string {
+    const classId = this._sceneData.characterClass?.trim();
+    return classId && classId.length > 0 ? classId : 'ether_knight';
+  }
+
   private _createPlayer(sceneHeight: number): void {
     const py = sceneHeight / 2;
+    const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource('ether_knight');
 
-    if (this.textures.exists('dungeon_player')) {
+    if (playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)) {
+      const sprite = this.add.image(PLAYER_X, py, playerSpriteResource.textureKey, 0)
+        .setScale(1.4);
+      sprite.setFrame(0);
+      sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.playerSprite = sprite;
+    } else if (this.textures.exists('dungeon_player')) {
       this.playerSprite = this.add.image(PLAYER_X, py, 'dungeon_player')
         .setScale(0.2);
       // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
@@ -308,6 +470,8 @@ export class DungeonScene extends Phaser.Scene {
     const baseY = height - 90;
     const barW = 160;
     const barH = 10;
+
+    this._addDungeonFrame(baseX + 145, baseY + 16, 300, 78, DUNGEON_UI_FRAME_TEXTURES.statusPanel, 0x101525, 0.82, 0x4466aa, 1);
 
     // HP
     this.add.text(baseX, baseY - 2, 'HP', {
@@ -389,6 +553,10 @@ export class DungeonScene extends Phaser.Scene {
     this.enemyPreviews = [];
     this.battleBtn?.destroy();
     this.battleBtn = undefined;
+    this.battleBtnIcon?.destroy();
+    this.battleBtnIcon = undefined;
+    this.battleBtnFrame?.destroy();
+    this.battleBtnFrame = undefined;
   }
 
   private _spawnEnemyPreview(isBoss: boolean): void {
@@ -402,27 +570,32 @@ export class DungeonScene extends Phaser.Scene {
       const y = pos.y;
       const _size = isBoss ? 64 : 40;
 
-      // 몬스터 이미지 사용 (fallback: 사각형)
       const monsterKeys = isBoss ? [DUNGEON_BOSS_IMAGE] : DUNGEON_MONSTER_IMAGES.default;
       const monKey = monsterKeys[i % monsterKeys.length];
       let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+      const preview = DUNGEON_MONSTER_PREVIEW_TEXTURES[monKey];
 
-      // 프로그래매틱 몬스터 아이콘 (이미지 의존 제거)
-      const color = isBoss ? 0xaa2233 : this._monColor(monKey);
-      const rectSize = isBoss ? 80 : 56;
-      const gfx = this.add.graphics();
-      gfx.fillStyle(color, 0.9);
-      gfx.fillRoundedRect(0, 0, rectSize, rectSize, 8);
-      gfx.generateTexture(`dmon_${i}`, rectSize, rectSize);
-      gfx.destroy();
-      sprite = this.add.image(x, y, `dmon_${i}`);
+      if (preview && this.textures.exists(preview.textureKey)) {
+        sprite = this.add.image(x, y, preview.textureKey)
+          .setDisplaySize(preview.displaySize, preview.displaySize);
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      } else {
+        // Aseprite preview 로드 실패 시에만 사용하는 안전 fallback.
+        const color = isBoss ? 0xaa2233 : this._monColor(monKey);
+        const rectSize = isBoss ? 80 : 56;
+        const gfx = this.add.graphics();
+        gfx.fillStyle(color, 0.9);
+        gfx.fillRoundedRect(0, 0, rectSize, rectSize, 8);
+        gfx.generateTexture(`dmon_${i}`, rectSize, rectSize);
+        gfx.destroy();
+        sprite = this.add.image(x, y, `dmon_${i}`);
 
-      // 이모지 아이콘
-      const icon = this._monIcon(monKey);
-      const iconText = this.add.text(x, y - 4, icon, {
-        fontSize: isBoss ? '28px' : '22px',
-      }).setOrigin(0.5);
-      this.enemyPreviews.push(iconText);
+        const icon = this._monIcon(monKey);
+        const iconText = this.add.text(x, y - 4, icon, {
+          fontSize: isBoss ? '28px' : '22px',
+        }).setOrigin(0.5);
+        this.enemyPreviews.push(iconText);
+      }
 
       // 이름 라벨
       const monName = MONSTER_NAMES[monKey] ?? monKey;
@@ -460,21 +633,53 @@ export class DungeonScene extends Phaser.Scene {
 
     // ── Battle! 버튼 ──
     const { width, height } = this.cameras.main;
-    this.battleBtn = this.add.text(width / 2, height - 55, '⚔ Battle!', {
+    const battleButtonY = height - 96;
+    const launchBattle = () => {
+      playSfx(this, UI_SFX.CLICK, 0.3);
+      this._launchBattle(isBoss);
+    };
+    const actionFrame = this._addDungeonFrame(width / 2, battleButtonY, 210, 64, DUNGEON_UI_FRAME_TEXTURES.actionButton, 0x882222, 0.9, 0xffbbbb, 1);
+    this.battleBtnFrame = actionFrame.primary;
+    const setActionFrameHover = (hovered: boolean) => {
+      if (!this.battleBtnFrame) return;
+
+      if (this.battleBtnFrame instanceof Phaser.GameObjects.Image) {
+        if (hovered) {
+          this.battleBtnFrame.setTint(0xffcccc);
+        } else {
+          this.battleBtnFrame.clearTint();
+        }
+        return;
+      }
+
+      this.battleBtnFrame.setFillStyle(hovered ? 0xaa3333 : 0x882222, 0.9);
+    };
+    this.battleBtnFrame
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', launchBattle)
+      .on('pointerover', () => setActionFrameHover(true))
+      .on('pointerout', () => setActionFrameHover(false));
+
+    const actionButtonIconResource = getSpriteResourceForSkillIcon(DUNGEON_ACTION_BUTTON_ICON_ID);
+    const hasActionButtonIcon = Boolean(actionButtonIconResource && this.textures.exists(actionButtonIconResource.key));
+    if (hasActionButtonIcon && actionButtonIconResource) {
+      this.battleBtnIcon = this.add.image(width / 2 - 45, battleButtonY, actionButtonIconResource.key)
+        .setName('dungeon_action_button_icon');
+      this.battleBtnIcon.setDisplaySize(22, 22);
+      this.battleBtnIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+
+    this.battleBtn = this.add.text(width / 2 + 16, battleButtonY, hasActionButtonIcon ? 'Battle!' : '⚔ Battle!', {
       fontSize: '22px',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#ffffff',
-      backgroundColor: '#882222',
       padding: { x: 24, y: 12 },
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        playSfx(this, UI_SFX.CLICK, 0.3);
-        this._launchBattle(isBoss);
-      })
-      .on('pointerover', () => this.battleBtn?.setStyle({ backgroundColor: '#aa3333' }))
-      .on('pointerout', () => this.battleBtn?.setStyle({ backgroundColor: '#882222' }));
+      .on('pointerdown', launchBattle)
+      .on('pointerover', () => setActionFrameHover(true))
+      .on('pointerout', () => setActionFrameHover(false));
 
     // 버튼 펄스 애니메이션
     this.tweens.add({
@@ -500,6 +705,7 @@ export class DungeonScene extends Phaser.Scene {
       this.input.keyboard?.off('keydown-ENTER', onBattleKey);
       this.input.keyboard?.off('keydown-SPACE', onBattleKey);
     });
+    this._writeDungeonFrameQaProbe();
   }
 
   // ── BattleScene 전환 ─────────────────────────────────────
@@ -653,15 +859,32 @@ export class DungeonScene extends Phaser.Scene {
     playRandomVoice(this, [COMBAT_VOICE.VICTORY], 0.5);
     playSfx(this, UI_SFX.QUEST_COMPLETE, 0.6);
 
+    const clearTitleIconResource = getSpriteResourceForSkillIcon(DUNGEON_CLEAR_TITLE_ICON_ID);
+    const hasClearTitleIcon = Boolean(clearTitleIconResource && this.textures.exists(clearTitleIconResource.key));
+    if (hasClearTitleIcon && clearTitleIconResource) {
+      this.dungeonClearTitleIcon = this.add.image(width / 2 - 112, height / 2 - 60, clearTitleIconResource.key)
+        .setName('dungeon_clear_title_icon')
+        .setOrigin(0.5)
+        .setAlpha(0);
+      this.dungeonClearTitleIcon.setDisplaySize(26, 26);
+      this.dungeonClearTitleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else {
+      this.dungeonClearTitleIcon = undefined;
+      this.dungeonClearTitleIconFallbackRendered = true;
+    }
+
     // 승리 텍스트
-    const victoryText = this.add.text(width / 2, height / 2 - 60, '🏆 던전 클리어!', {
+    const victoryLabel = hasClearTitleIcon ? '던전 클리어!' : '🏆 던전 클리어!';
+    const victoryText = this.add.text(hasClearTitleIcon ? width / 2 + 18 : width / 2, height / 2 - 60, victoryLabel, {
       fontSize: '32px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#ffdd44',
       stroke: '#000000', strokeThickness: 4,
     }).setOrigin(0.5).setAlpha(0);
+    this.dungeonClearTitleText = victoryText;
 
     // 보상 패널
-    const panelBg = this.add.rectangle(width / 2, height / 2 + 20, 300, 120, 0x111133, 0.9)
-      .setStrokeStyle(2, 0x4466aa).setAlpha(0);
+    const panelBg = this._addDungeonFrame(width / 2, height / 2 + 20, 300, 120, DUNGEON_UI_FRAME_TEXTURES.rewardPanel, 0x111133, 0.9, 0x4466aa, 2);
+    panelBg.primary.setAlpha(0);
+    panelBg.stroke?.setAlpha(0);
 
     const rewardText = this.add.text(width / 2, height / 2 + 20, [
       `━━━ 보상 ━━━`,
@@ -689,9 +912,18 @@ export class DungeonScene extends Phaser.Scene {
       alpha: 1, y: victoryText.y - 10,
       duration: 500,
     });
+    if (this.dungeonClearTitleIcon) {
+      this.tweens.add({
+        targets: this.dungeonClearTitleIcon,
+        alpha: 1, y: this.dungeonClearTitleIcon.y - 10,
+        duration: 500,
+      });
+    }
 
     this.tweens.add({
-      targets: [panelBg, rewardText],
+      targets: [panelBg.primary, panelBg.stroke, rewardText].filter((
+        target,
+      ): target is Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle | Phaser.GameObjects.Text => Boolean(target)),
       alpha: 1,
       duration: 500,
       delay: 400,
@@ -715,6 +947,8 @@ export class DungeonScene extends Phaser.Scene {
       this.input.keyboard?.once('keydown-ENTER', onReturnKey);
       this.input.keyboard?.once('keydown-SPACE', onReturnKey);
     });
+
+    this._writeDungeonFrameQaProbe();
   }
 
   // ── 패배 연출 ────────────────────────────────────────────
@@ -839,6 +1073,120 @@ export class DungeonScene extends Phaser.Scene {
       onComplete: () => {
         if (onDone) onDone();
       },
+    });
+  }
+
+  private _addDungeonFrame(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    texture: typeof DUNGEON_UI_FRAME_TEXTURES[keyof typeof DUNGEON_UI_FRAME_TEXTURES],
+    fallbackColor: number,
+    fallbackAlpha: number,
+    strokeColor: number,
+    strokeWidth = 1,
+  ): DungeonFrameRender {
+    if (this.textures.exists(texture.key)) {
+      const frame = this.add.image(x, y, texture.key)
+        .setName(`dungeon_ui_frame_${texture.key}`)
+        .setDisplaySize(width, height)
+        .setAlpha(0.9);
+      this.dungeonFrameQaRenderedKeys.add(texture.key);
+
+      const stroke = this.add.rectangle(x, y, width, height, 0x000000, 0)
+        .setName(`dungeon_ui_frame_stroke_${texture.key}`)
+        .setStrokeStyle(strokeWidth, strokeColor);
+      return { primary: frame, stroke };
+    }
+
+    // Aseprite dungeon UI frame 로드 실패 시에만 사용하는 안전 fallback.
+    const fallback = this.add.rectangle(x, y, width, height, fallbackColor, fallbackAlpha)
+      .setName(`dungeon_ui_frame_fallback_${texture.key}`)
+      .setStrokeStyle(strokeWidth, strokeColor);
+    return { primary: fallback };
+  }
+
+  private _getDungeonFrameQaMode(): 'ready' | 'clear' | undefined {
+    return this._sceneData.dungeonFrameQa === 'ready' || this._sceneData.dungeonFrameQa === 'clear'
+      ? this._sceneData.dungeonFrameQa
+      : undefined;
+  }
+
+  private _writeDungeonFrameQaProbe(): void {
+    const mode = this._getDungeonFrameQaMode();
+    if (!mode || typeof document === 'undefined') return;
+
+    const expectedTextures = mode === 'clear'
+      ? [DUNGEON_UI_FRAME_TEXTURES.statusPanel, DUNGEON_UI_FRAME_TEXTURES.rewardPanel]
+      : [DUNGEON_UI_FRAME_TEXTURES.statusPanel, DUNGEON_UI_FRAME_TEXTURES.actionButton];
+    const renderedFrameKeys = expectedTextures
+      .map((texture) => texture.key)
+      .filter((key) => this.dungeonFrameQaRenderedKeys.has(key));
+    const missingFrameKeys = expectedTextures
+      .filter((texture) => !this.textures.exists(texture.key) || !this.dungeonFrameQaRenderedKeys.has(texture.key))
+      .map((texture) => texture.key);
+    const actionButtonIconResource = getSpriteResourceForSkillIcon(DUNGEON_ACTION_BUTTON_ICON_ID);
+    const missingActionButtonIconKeys = mode === 'ready'
+      && (!actionButtonIconResource || !this.textures.exists(actionButtonIconResource.key) || this.battleBtnIcon === undefined)
+      ? [actionButtonIconResource?.key ?? DUNGEON_ACTION_BUTTON_ICON_ID]
+      : [];
+    const titleIconResource = getSpriteResourceForSkillIcon(DUNGEON_TITLE_ICON_ID);
+    const missingTitleIconKeys = !titleIconResource || !this.textures.exists(titleIconResource.key) || this.dungeonTitleIcon === undefined
+      ? [titleIconResource?.key ?? DUNGEON_TITLE_ICON_ID]
+      : [];
+    const clearTitleIconResource = getSpriteResourceForSkillIcon(DUNGEON_CLEAR_TITLE_ICON_ID);
+    const missingClearTitleIconKeys = mode === 'clear'
+      && (!clearTitleIconResource || !this.textures.exists(clearTitleIconResource.key) || this.dungeonClearTitleIcon === undefined)
+      ? [clearTitleIconResource?.key ?? DUNGEON_CLEAR_TITLE_ICON_ID]
+      : [];
+    const clearTitleLegacyGlyphPresent = this.dungeonClearTitleText?.text.includes('🏆') ?? false;
+
+    document.body.dataset.aeternaDungeonFrameQa = JSON.stringify({
+      status: missingFrameKeys.length === 0
+        && missingActionButtonIconKeys.length === 0
+        && missingTitleIconKeys.length === 0
+        && missingClearTitleIconKeys.length === 0
+        && !(mode === 'clear' && clearTitleLegacyGlyphPresent)
+        ? 'ready'
+        : 'missing-frame',
+      mode,
+      renderedFrameKeys,
+      missingFrameKeys,
+      titleIcon: {
+        iconId: DUNGEON_TITLE_ICON_ID,
+        key: titleIconResource?.key ?? null,
+        path: titleIconResource?.path ?? null,
+        rendered: this.dungeonTitleIcon !== undefined,
+        visible: this.dungeonTitleIcon?.visible ?? false,
+        displayWidth: this.dungeonTitleIcon?.displayWidth ?? 0,
+        displayHeight: this.dungeonTitleIcon?.displayHeight ?? 0,
+        fallbackRendered: this.dungeonTitleIconFallbackRendered,
+      },
+      missingTitleIconKeys,
+      clearTitleIcon: {
+        iconId: DUNGEON_CLEAR_TITLE_ICON_ID,
+        key: clearTitleIconResource?.key ?? null,
+        path: clearTitleIconResource?.path ?? null,
+        rendered: this.dungeonClearTitleIcon !== undefined,
+        visible: this.dungeonClearTitleIcon?.visible ?? false,
+        displayWidth: this.dungeonClearTitleIcon?.displayWidth ?? 0,
+        displayHeight: this.dungeonClearTitleIcon?.displayHeight ?? 0,
+        fallbackRendered: this.dungeonClearTitleIconFallbackRendered,
+      },
+      clearTitleLegacyGlyphPresent,
+      missingClearTitleIconKeys,
+      actionButtonIcon: {
+        iconId: DUNGEON_ACTION_BUTTON_ICON_ID,
+        key: actionButtonIconResource?.key ?? null,
+        path: actionButtonIconResource?.path ?? null,
+        rendered: this.battleBtnIcon !== undefined,
+        visible: this.battleBtnIcon?.visible ?? false,
+        displayWidth: this.battleBtnIcon?.displayWidth ?? 0,
+        displayHeight: this.battleBtnIcon?.displayHeight ?? 0,
+        fallbackRendered: this.battleBtnIcon === undefined,
+      },
+      missingActionButtonIconKeys,
     });
   }
 }

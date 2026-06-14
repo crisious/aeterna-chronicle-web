@@ -7,6 +7,37 @@
  */
 
 import * as Phaser from 'phaser';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
+
+export const TUTORIAL_FLOW_UI_FRAME_TEXTURES = {
+  panel: {
+    key: 'ui_frame_tutorial_flow_panel',
+    path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png',
+  },
+  skipButton: {
+    key: 'ui_frame_tutorial_flow_skip_button',
+    path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png',
+  },
+} as const;
+
+const TUTORIAL_FLOW_EXPECTED_PANEL_FRAME_COUNT = 1;
+const TUTORIAL_FLOW_EXPECTED_SKIP_BUTTON_FRAME_COUNT = 1;
+const TUTORIAL_FLOW_SKIP_BUTTON_ICON_ID = 'skill_tg_haste';
+const TUTORIAL_FLOW_EXPECTED_SKIP_BUTTON_ICON_COUNT = 1;
+const TUTORIAL_FLOW_EXPECTED_TOTAL_FRAME_COUNT =
+  TUTORIAL_FLOW_EXPECTED_PANEL_FRAME_COUNT + TUTORIAL_FLOW_EXPECTED_SKIP_BUTTON_FRAME_COUNT;
+
+export function preloadTutorialFlowUiFrameTextures(scene: Phaser.Scene): void {
+  for (const texture of Object.values(TUTORIAL_FLOW_UI_FRAME_TEXTURES)) {
+    if (!scene.textures.exists(texture.key)) {
+      scene.load.image(texture.key, texture.path);
+    }
+  }
+  const skipButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_FLOW_SKIP_BUTTON_ICON_ID);
+  if (skipButtonIconResource && !scene.textures.exists(skipButtonIconResource.key)) {
+    scene.load.image(skipButtonIconResource.key, skipButtonIconResource.path);
+  }
+}
 
 // ─── 튜토리얼 스텝 정의 ─────────────────────────────────────────
 
@@ -171,18 +202,40 @@ interface TutorialSaveData {
   skipped: boolean;
 }
 
+interface TutorialFlowConfig {
+  frameQa: boolean;
+}
+
+interface TutorialPanelContentBounds {
+  insetX: number;
+  insetTop: number;
+  insetBottom: number;
+  width: number;
+  height: number;
+  centerY: number;
+}
+
 // ─── TutorialFlowManager ─────────────────────────────────────────
 
 export class TutorialFlowManager {
   private scene: Phaser.Scene;
+  private config: TutorialFlowConfig;
   private currentStepIndex = 0;
   private isActive = false;
   private overlay: Phaser.GameObjects.Rectangle | null = null;
   private panel: Phaser.GameObjects.Container | null = null;
+  private panelFrame: Phaser.GameObjects.Image | null = null;
+  private skipButtonFrame: Phaser.GameObjects.Image | null = null;
+  private skipButtonIcon: Phaser.GameObjects.Image | null = null;
+  private skipButtonIconFallbackRendered = false;
+  private panelContentBounds: TutorialPanelContentBounds | null = null;
+  private renderedFrameKeys: string[] = [];
+  private missingFrameKeys: string[] = [];
   private eventListeners: Array<() => void> = [];
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, config?: Partial<TutorialFlowConfig>) {
     this.scene = scene;
+    this.config = { frameQa: false, ...config };
   }
 
   /**
@@ -209,6 +262,10 @@ export class TutorialFlowManager {
     this.scene.events.emit('tutorial:skipped');
   }
 
+  destroy(): void {
+    this.cleanup();
+  }
+
   /**
    * 외부 이벤트 트리거 (게임 시스템에서 호출)
    */
@@ -227,6 +284,14 @@ export class TutorialFlowManager {
     }
 
     this.clearPanel();
+    this.renderedFrameKeys = [];
+    this.missingFrameKeys = [];
+    this.panelFrame = null;
+    this.skipButtonFrame = null;
+    this.skipButtonIcon = null;
+    this.skipButtonIconFallbackRendered = false;
+    this.panelContentBounds = null;
+
     const step = TUTORIAL_STEPS[index];
     const { width, height } = this.scene.cameras.main;
 
@@ -235,38 +300,163 @@ export class TutorialFlowManager {
       .setDepth(9900).setScrollFactor(0).setInteractive();
 
     // 패널 컨테이너
-    const panelW = 420;
-    const panelH = 200;
+    const panelW = 620;
+    const panelH = 280;
     const px = width / 2;
     const py = height / 2;
+    const panelTexture = TUTORIAL_FLOW_UI_FRAME_TEXTURES.panel;
+    const hasPanelFrame = this.scene.textures.exists(panelTexture.key);
+    const contentInset = hasPanelFrame
+      ? { x: 78, top: 86, bottom: 60 }
+      : { x: 28, top: 32, bottom: 32 };
+    const contentW = panelW - contentInset.x * 2;
+    const contentH = panelH - contentInset.top - contentInset.bottom;
+    const contentCenterY = (contentInset.top - contentInset.bottom) / 2;
+    const contentTopY = -panelH / 2 + contentInset.top;
+    const contentBottomY = panelH / 2 - contentInset.bottom;
+    const contentLeftX = -contentW / 2;
+    const contentRightX = contentW / 2;
+    this.panelContentBounds = {
+      insetX: contentInset.x,
+      insetTop: contentInset.top,
+      insetBottom: contentInset.bottom,
+      width: contentW,
+      height: contentH,
+      centerY: contentCenterY,
+    };
 
-    const bg = this.scene.add.rectangle(0, 0, panelW, panelH, 0x1a1a2e, 0.95)
-      .setStrokeStyle(2, 0x00ccff);
+    // Aseprite frame이 있으면 rectangle은 readability/hit layer로만 두고, 누락 시 기존 stroke panel로 fallback한다.
+    const bg = this.scene.add.rectangle(0, 0, panelW, panelH, 0x1a1a2e, hasPanelFrame ? 0.18 : 0.95);
+    if (hasPanelFrame) {
+      this.panelFrame = this.scene.add.image(0, 0, panelTexture.key);
+      this.panelFrame.setDisplaySize(panelW, panelH);
+      this.panelFrame.setAlpha(0.9);
+      this.renderedFrameKeys.push(panelTexture.key);
+    } else {
+      bg.setStrokeStyle(2, 0x00ccff);
+      this.missingFrameKeys.push(panelTexture.key);
+    }
 
-    const title = this.scene.add.text(0, -panelH / 2 + 25, step.title, {
-      fontSize: '18px', fontStyle: 'bold', color: '#00ccff',
+    const contentScrim = this.scene.add.rectangle(
+      0,
+      contentCenterY,
+      contentW,
+      contentH,
+      0x071120,
+      hasPanelFrame ? 0.86 : 0,
+    );
+
+    const title = this.scene.add.text(contentLeftX + 12, contentTopY + 16, step.title, {
+      fontSize: '22px', fontStyle: 'bold', color: '#7bdcff',
       fontFamily: 'NanumGothic, sans-serif',
-    }).setOrigin(0.5);
+      wordWrap: { width: contentW - 24 },
+    }).setOrigin(0, 0.5);
 
-    const desc = this.scene.add.text(0, 0, step.description, {
-      fontSize: '14px', color: '#cccccc', wordWrap: { width: panelW - 40 },
-      fontFamily: 'NanumGothic, sans-serif', lineSpacing: 6,
+    const desc = this.scene.add.text(0, contentCenterY + 4, step.description, {
+      fontSize: '17px', color: '#e6edf5', wordWrap: { width: contentW - 24 },
+      fontFamily: 'NanumGothic, sans-serif', lineSpacing: 5, align: 'center',
     }).setOrigin(0.5);
 
     // 진행률 표시
-    const progress = this.scene.add.text(0, panelH / 2 - 25,
+    const progress = this.scene.add.text(contentLeftX + 12, contentBottomY - 14,
       `${index + 1} / ${TUTORIAL_STEPS.length}`, {
-        fontSize: '12px', color: '#666666', fontFamily: 'NanumGothic, sans-serif',
-      }).setOrigin(0.5);
+        fontSize: '15px', color: '#8aa1b8', fontFamily: 'NanumGothic, sans-serif',
+      }).setOrigin(0, 0.5);
 
     // 스킵 버튼
-    const skipBtn = this.scene.add.text(panelW / 2 - 15, -panelH / 2 + 15, '[스킵] (ESC)', {
-      fontSize: '12px', color: '#ff6666', fontFamily: 'NanumGothic, sans-serif',
-    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
-    skipBtn.on('pointerdown', () => this.skip());
+    const skipButtonTexture = TUTORIAL_FLOW_UI_FRAME_TEXTURES.skipButton;
+    const skipButtonWidth = 126;
+    const skipButtonHeight = 30;
+    const skipButtonY = contentBottomY - 14;
+    const skipButtonCenterX = contentRightX - 12 - skipButtonWidth / 2;
+    const hasSkipButtonFrame = this.scene.textures.exists(skipButtonTexture.key);
+    const skipButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_FLOW_SKIP_BUTTON_ICON_ID);
+    const hasSkipButtonIcon = Boolean(skipButtonIconResource && this.scene.textures.exists(skipButtonIconResource.key));
+    let skipButtonFallbackFrame: Phaser.GameObjects.Rectangle | null = null;
 
-    this.panel = this.scene.add.container(px, py, [bg, title, desc, progress, skipBtn])
-      .setDepth(9901);
+    if (hasSkipButtonFrame) {
+      this.skipButtonFrame = this.scene.add.image(skipButtonCenterX, skipButtonY, skipButtonTexture.key)
+        .setDisplaySize(skipButtonWidth, skipButtonHeight)
+        .setAlpha(0.86)
+        .setInteractive({ useHandCursor: true });
+      this.renderedFrameKeys.push(skipButtonTexture.key);
+    } else {
+      // Aseprite tutorial skip button frame 로드 실패 시에만 사용하는 안전 fallback.
+      skipButtonFallbackFrame = this.scene.add.rectangle(
+        skipButtonCenterX,
+        skipButtonY,
+        skipButtonWidth,
+        skipButtonHeight,
+        0x18253d,
+        0.78,
+      )
+        .setStrokeStyle(1, 0x5b789c, 0.65)
+        .setInteractive({ useHandCursor: true });
+      this.missingFrameKeys.push(skipButtonTexture.key);
+    }
+
+    if (hasSkipButtonIcon && skipButtonIconResource) {
+      this.skipButtonIcon = this.scene.add.image(skipButtonCenterX - 42, skipButtonY, skipButtonIconResource.key)
+        .setName('tutorial_flow_skip_button_icon')
+        .setInteractive({ useHandCursor: true });
+      this.skipButtonIcon.setDisplaySize(16, 16);
+      this.skipButtonIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else {
+      this.skipButtonIconFallbackRendered = true;
+    }
+
+    const skipButtonLabel = hasSkipButtonIcon ? '스킵 ESC' : '[스킵] ESC';
+    const skipButtonLabelX = hasSkipButtonIcon ? skipButtonCenterX + 12 : skipButtonCenterX;
+    const skipBtn = this.scene.add.text(skipButtonLabelX, skipButtonY, skipButtonLabel, {
+      fontSize: '15px', color: '#ff8b8b', fontFamily: 'NanumGothic, sans-serif',
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    const setSkipButtonHover = (isHover: boolean): void => {
+      skipBtn.setColor(isHover ? '#ffd0d0' : '#ff8b8b');
+      if (this.skipButtonIcon) {
+        if (isHover) {
+          this.skipButtonIcon.setTint(0xffd6d6);
+        } else {
+          this.skipButtonIcon.clearTint();
+        }
+      }
+      if (this.skipButtonFrame) {
+        if (isHover) {
+          this.skipButtonFrame.setTint(0xffd6d6);
+        } else {
+          this.skipButtonFrame.clearTint();
+        }
+      }
+      if (skipButtonFallbackFrame) {
+        skipButtonFallbackFrame.setFillStyle(isHover ? 0x223856 : 0x18253d, isHover ? 0.9 : 0.78);
+      }
+    };
+    this.skipButtonFrame?.on('pointerdown', () => this.skip())
+      .on('pointerover', () => setSkipButtonHover(true))
+      .on('pointerout', () => setSkipButtonHover(false));
+    skipButtonFallbackFrame?.on('pointerdown', () => this.skip())
+      .on('pointerover', () => setSkipButtonHover(true))
+      .on('pointerout', () => setSkipButtonHover(false));
+    this.skipButtonIcon?.on('pointerdown', () => this.skip())
+      .on('pointerover', () => setSkipButtonHover(true))
+      .on('pointerout', () => setSkipButtonHover(false));
+    skipBtn.on('pointerdown', () => this.skip());
+    skipBtn.on('pointerover', () => setSkipButtonHover(true));
+    skipBtn.on('pointerout', () => setSkipButtonHover(false));
+
+    const panelChildren: Phaser.GameObjects.GameObject[] = [
+      bg,
+      contentScrim,
+      title,
+      desc,
+      progress,
+    ];
+    if (this.panelFrame) panelChildren.splice(1, 0, this.panelFrame);
+    if (this.skipButtonFrame) panelChildren.push(this.skipButtonFrame);
+    if (skipButtonFallbackFrame) panelChildren.push(skipButtonFallbackFrame);
+    if (this.skipButtonIcon) panelChildren.push(this.skipButtonIcon);
+    panelChildren.push(skipBtn);
+
+    this.panel = this.scene.add.container(px, py, panelChildren).setDepth(9901);
 
     // 등장 애니메이션
     this.panel.setAlpha(0).setScale(0.9);
@@ -279,6 +469,7 @@ export class TutorialFlowManager {
     // 트리거 설정
     this.setupTrigger(step);
     this.saveProgress({ completed: false, lastStepIndex: index, skipped: false });
+    this.writeFrameQaProbeIfEnabled('ready');
   }
 
   private setupTrigger(step: TutorialStep): void {
@@ -344,6 +535,11 @@ export class TutorialFlowManager {
     this.overlay = null;
     this.panel?.destroy();
     this.panel = null;
+    this.panelFrame = null;
+    this.skipButtonFrame = null;
+    this.skipButtonIcon = null;
+    this.skipButtonIconFallbackRendered = false;
+    this.panelContentBounds = null;
     this.eventListeners.forEach(fn => fn());
     this.eventListeners = [];
   }
@@ -351,6 +547,7 @@ export class TutorialFlowManager {
   private cleanup(): void {
     this.clearPanel();
     this.isActive = false;
+    this.writeFrameQaProbeIfEnabled('hidden');
   }
 
   private loadProgress(): TutorialSaveData {
@@ -365,5 +562,71 @@ export class TutorialFlowManager {
     try {
       localStorage.setItem(TUTORIAL_STORAGE_KEY, JSON.stringify(data));
     } catch { /* ignore */ }
+  }
+
+  public writeFrameQaProbe(status: 'ready' | 'hidden' = 'ready'): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const step = TUTORIAL_STEPS[this.currentStepIndex] ?? null;
+    const panelTexture = TUTORIAL_FLOW_UI_FRAME_TEXTURES.panel;
+    const skipButtonTexture = TUTORIAL_FLOW_UI_FRAME_TEXTURES.skipButton;
+    const skipButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_FLOW_SKIP_BUTTON_ICON_ID);
+    const missingSkipButtonIconKeys = this.skipButtonIcon || status === 'hidden'
+      ? []
+      : [skipButtonIconResource?.key ?? TUTORIAL_FLOW_SKIP_BUTTON_ICON_ID];
+    document.body.dataset.aeternaTutorialFlowFrameQa = JSON.stringify({
+      status,
+      active: this.isActive,
+      renderedFrameKeys: this.renderedFrameKeys,
+      renderedFrameCount: this.renderedFrameKeys.length,
+      expectedFrameCount: TUTORIAL_FLOW_EXPECTED_TOTAL_FRAME_COUNT,
+      missingFrameKeys: this.missingFrameKeys,
+      missingSkipButtonIconKeys,
+      panelFrame: {
+        key: panelTexture.key,
+        path: panelTexture.path,
+        renderedCount: this.panelFrame ? 1 : 0,
+        expectedCount: TUTORIAL_FLOW_EXPECTED_PANEL_FRAME_COUNT,
+        rendered: this.panelFrame !== null,
+        displayWidth: this.panelFrame?.displayWidth ?? 0,
+        displayHeight: this.panelFrame?.displayHeight ?? 0,
+      },
+      skipButtonFrame: {
+        key: skipButtonTexture.key,
+        path: skipButtonTexture.path,
+        renderedCount: this.skipButtonFrame ? 1 : 0,
+        expectedCount: TUTORIAL_FLOW_EXPECTED_SKIP_BUTTON_FRAME_COUNT,
+        displayWidth: this.skipButtonFrame?.displayWidth ?? 0,
+        displayHeight: this.skipButtonFrame?.displayHeight ?? 0,
+      },
+      skipButtonIcon: {
+        key: skipButtonIconResource?.key ?? null,
+        path: skipButtonIconResource?.path ?? null,
+        iconId: TUTORIAL_FLOW_SKIP_BUTTON_ICON_ID,
+        renderedCount: this.skipButtonIcon ? 1 : 0,
+        expectedCount: TUTORIAL_FLOW_EXPECTED_SKIP_BUTTON_ICON_COUNT,
+        rendered: this.skipButtonIcon !== null,
+        displayWidth: this.skipButtonIcon?.displayWidth ?? 0,
+        displayHeight: this.skipButtonIcon?.displayHeight ?? 0,
+        fallbackRendered: this.skipButtonIconFallbackRendered,
+      },
+      panelContentBounds: this.panelContentBounds,
+      panelVisible: this.panel?.visible ?? false,
+      currentStepIndex: this.currentStepIndex,
+      currentStepId: step?.id ?? null,
+      trigger: step?.trigger ?? null,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private isFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('tutorialFlowFrameQa') === '1';
+  }
+
+  private writeFrameQaProbeIfEnabled(status: 'ready' | 'hidden'): void {
+    if (this.config.frameQa || this.isFrameQaRoute()) {
+      this.writeFrameQaProbe(status);
+    }
   }
 }
