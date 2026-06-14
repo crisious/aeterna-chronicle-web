@@ -6,7 +6,7 @@ if outputPath == nil or outputPath == "" then
 end
 
 local FRAME_SIZE = 64
-local BASE_FRAME_COUNT = 30
+local BASE_FRAME_COUNT = 40
 local CANVAS_WIDTH = FRAME_SIZE
 local CANVAS_HEIGHT = FRAME_SIZE
 
@@ -187,6 +187,18 @@ local basePoses = {
   { motion = "death", death = 4 },
   { motion = "death", death = 5 },
   { motion = "death", death = 6 },
+
+  { motion = "ready", bob = 0, sway = 0, void = 1, drift = 0, mote = 1, ready = 1 },
+  { motion = "ready", bob = -1, sway = 0, void = 2, drift = 1, mote = 2, ready = 1 },
+  { motion = "ready", bob = 0, sway = 0, void = 1, drift = 0, mote = 1, ready = 1 },
+  { motion = "ready", bob = -1, sway = 0, void = 2, drift = 1, mote = 2, ready = 1 },
+
+  { motion = "victory", bob = 0, sway = 0, void = 2, drift = 0, mote = 1, vic = 1 },
+  { motion = "victory", bob = -1, sway = 0, void = 3, drift = 1, mote = 2, vic = 2 },
+  { motion = "victory", bob = -2, sway = 0, void = 4, drift = 1, mote = 3, vic = 3 },
+  { motion = "victory", bob = -1, sway = 0, void = 3, drift = 0, mote = 2, vic = 3 },
+  { motion = "victory", bob = 0, sway = 0, void = 2, drift = 0, mote = 1, vic = 2 },
+  { motion = "victory", bob = -1, sway = 0, void = 3, drift = 1, mote = 2, vic = 3 },
 }
 
 local motionTags = {
@@ -196,6 +208,8 @@ local motionTags = {
   { name = "cast", from = 17, to = 21, color = colors.magentaDim },
   { name = "hit", from = 22, to = 24, color = colors.silverBlue },
   { name = "death", from = 25, to = 30, color = colors.hoodDark },
+  { name = "ready", from = 31, to = 34, color = colors.silverBlue },
+  { name = "victory", from = 35, to = 40, color = colors.star },
 }
 
 local function directedPose(basePose, direction)
@@ -500,6 +514,30 @@ local function drawAccent(image, pose)
     fillRect(image, 18 + dirX, 20, 4, 2, colors.hitRed)
     fillRect(image, 15 + dirX, 25, 5, 2, colors.magenta)
     fillRect(image, 20 + dirX, 18, 2, 4, colors.star)
+  end
+
+  -- Ready stance: a focused void glow gathered at the chest, nebula-edged.
+  if (pose.ready or 0) > 0 then
+    drawSpark(image, 32 + dirX, 34 + bob, colors.cyan)
+    fillRect(image, 28 + dirX, 33 + bob, 9, 1, colors.magenta)
+    fillPixel(image, 30 + dirX, 32 + bob, colors.starLight)
+    fillPixel(image, 34 + dirX, 32 + bob, colors.starLight)
+  end
+
+  -- Victory: a rising nebula-mote burst spiraling up out of the void cloak.
+  if (pose.vic or 0) > 0 then
+    drawSpark(image, 32 + dirX, 8 - pose.vic + bob, colors.starLight)
+    drawSpark(image, 24 + dirX - pose.vic, 16 + bob, colors.cyan)
+    drawSpark(image, 40 + dirX + pose.vic, 16 + bob, colors.magenta)
+    if pose.vic >= 2 then
+      fillRect(image, 26 + dirX, 4, 13, 1, colors.magenta)
+      drawSpark(image, 18 + dirX, 22 + bob, colors.magentaDim)
+      drawSpark(image, 46 + dirX, 22 + bob, colors.cyanDim)
+    end
+    if pose.vic >= 3 then
+      fillRect(image, 30 + dirX, 2, 5, 2, colors.cyan)
+      drawSpark(image, 32 + dirX, 12 + bob, colors.magenta)
+    end
   end
 end
 

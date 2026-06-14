@@ -5,7 +5,9 @@ export type CharacterMotion =
   | 'attack_ranged'
   | 'cast'
   | 'hit'
-  | 'death';
+  | 'death'
+  | 'ready'
+  | 'victory';
 
 export type CharacterDirection = 'D' | 'DL' | 'L' | 'UL' | 'U';
 
@@ -29,7 +31,7 @@ export const CHARACTER_SPRITE_MANIFEST = [
     frameWidth: 64,
     frameHeight: 64,
     directions: ['D', 'DL', 'L', 'UL', 'U'],
-    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'],
+    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'],
   },
   {
     classId: 'memory_weaver',
@@ -39,7 +41,7 @@ export const CHARACTER_SPRITE_MANIFEST = [
     frameWidth: 64,
     frameHeight: 64,
     directions: ['D', 'DL', 'L', 'UL', 'U'],
-    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'],
+    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'],
   },
   {
     classId: 'shadow_weaver',
@@ -49,7 +51,7 @@ export const CHARACTER_SPRITE_MANIFEST = [
     frameWidth: 64,
     frameHeight: 64,
     directions: ['D', 'DL', 'L', 'UL', 'U'],
-    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'],
+    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'],
   },
   {
     classId: 'memory_breaker',
@@ -59,7 +61,7 @@ export const CHARACTER_SPRITE_MANIFEST = [
     frameWidth: 64,
     frameHeight: 64,
     directions: ['D', 'DL', 'L', 'UL', 'U'],
-    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'],
+    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'],
   },
   {
     classId: 'time_guardian',
@@ -69,7 +71,7 @@ export const CHARACTER_SPRITE_MANIFEST = [
     frameWidth: 64,
     frameHeight: 64,
     directions: ['D', 'DL', 'L', 'UL', 'U'],
-    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'],
+    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'],
   },
   {
     classId: 'void_wanderer',
@@ -79,7 +81,7 @@ export const CHARACTER_SPRITE_MANIFEST = [
     frameWidth: 64,
     frameHeight: 64,
     directions: ['D', 'DL', 'L', 'UL', 'U'],
-    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'],
+    motions: ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'],
   },
 ] as const satisfies readonly CharacterSpriteResource[];
 

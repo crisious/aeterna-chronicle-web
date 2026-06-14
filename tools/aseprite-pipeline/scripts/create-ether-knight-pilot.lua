@@ -6,7 +6,7 @@ if outputPath == nil or outputPath == "" then
 end
 
 local FRAME_SIZE = 64
-local BASE_FRAME_COUNT = 30
+local BASE_FRAME_COUNT = 40
 local CANVAS_WIDTH = FRAME_SIZE
 local CANVAS_HEIGHT = FRAME_SIZE
 
@@ -165,6 +165,18 @@ local basePoses = {
   { motion = "death", death = 4 },
   { motion = "death", death = 5 },
   { motion = "death", death = 6 },
+
+  { motion = "ready", bob = 0, leftStep = 0, rightStep = 0, sword = "guard", ready = 1 },
+  { motion = "ready", bob = -1, leftStep = 0, rightStep = 0, sword = "guard", ready = 1 },
+  { motion = "ready", bob = 0, leftStep = 0, rightStep = 0, sword = "guard", ready = 1 },
+  { motion = "ready", bob = -1, leftStep = 0, rightStep = 0, sword = "guard", ready = 1 },
+
+  { motion = "victory", bob = 0, leftStep = 0, rightStep = 0, sword = "raise", vic = 1 },
+  { motion = "victory", bob = -1, leftStep = 0, rightStep = 0, sword = "raise", vic = 2 },
+  { motion = "victory", bob = -2, leftStep = 0, rightStep = 0, sword = "raise", vic = 3 },
+  { motion = "victory", bob = -1, leftStep = 0, rightStep = 0, sword = "raise", vic = 3 },
+  { motion = "victory", bob = 0, leftStep = 0, rightStep = 0, sword = "raise", vic = 2 },
+  { motion = "victory", bob = -1, leftStep = 0, rightStep = 0, sword = "raise", vic = 3 },
 }
 
 local motionTags = {
@@ -174,6 +186,8 @@ local motionTags = {
   { name = "cast", from = 17, to = 21, color = colors.magic },
   { name = "hit", from = 22, to = 24, color = colors.silver },
   { name = "death", from = 25, to = 30, color = colors.steelDark },
+  { name = "ready", from = 31, to = 34, color = colors.silver },
+  { name = "victory", from = 35, to = 40, color = colors.goldAccent },
 }
 
 local function directedPose(basePose, direction)
@@ -472,6 +486,30 @@ local function drawAccent(image, pose)
     fillRect(image, 18 + dirX, 20, 4, 2, colors.hitRed)
     fillRect(image, 15 + dirX, 25, 5, 2, colors.hitRed)
     fillRect(image, 20 + dirX, 18, 2, 4, colors.goldAccent)
+  end
+
+  -- Ready stance: a focused cyan glint at the blade-side with a steady chest spark.
+  if (pose.ready or 0) > 0 then
+    local rx = (pose.weaponSide or 1) < 0 and 16 + dirX or 48 + dirX
+    drawPlus(image, rx, 20 + bob, colors.memoryCyan)
+    fillRect(image, 30 + dirX, 33 + bob, 4, 2, colors.goldAccent)
+  end
+
+  -- Victory: a rising sparkle/celebration burst scaling with pose.vic.
+  if (pose.vic or 0) > 0 then
+    local vy = 10 - pose.vic * 2 + bob
+    drawPlus(image, 32 + dirX, vy, colors.goldAccent)
+    drawPlus(image, 24 + dirX, vy + 6, colors.memoryCyan)
+    drawPlus(image, 40 + dirX, vy + 6, colors.magic)
+    if pose.vic >= 2 then
+      fillRect(image, 27 + dirX, vy - 3, 11, 2, colors.goldAccent)
+      drawPlus(image, 18 + dirX, vy + 12, colors.cyanDim)
+      drawPlus(image, 46 + dirX, vy + 12, colors.cyanDim)
+    end
+    if pose.vic >= 3 then
+      fillRect(image, 30 + dirX, vy - 6, 5, 2, colors.memoryCyan)
+      fillRect(image, 22 + dirX, vy + 2, 21, 1, colors.magic)
+    end
   end
 end
 
