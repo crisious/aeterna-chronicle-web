@@ -71,6 +71,7 @@ describe('aseprite pipeline config', () => {
           frameHeight: 64,
           padding: 2,
           sheetType: 'rows',
+          sheetColumns: 40,
           requiredTags: ['idle_D', 'walk_D', 'attack_melee_D', 'cast_D', 'hit_D', 'death_D'],
         },
         npc: {

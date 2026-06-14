@@ -17,7 +17,7 @@ function readClientSource(relativePath: string): string {
 
 describe('character sprite manifest', () => {
   const expectedDirections = ['D', 'DL', 'L', 'UL', 'U'] as const;
-  const expectedMotions = ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death'] as const;
+  const expectedMotions = ['idle', 'walk', 'attack_melee', 'cast', 'hit', 'death', 'ready', 'victory'] as const;
   const motionRanges = {
     idle: { from: 0, to: 3 },
     walk: { from: 4, to: 9 },
@@ -25,6 +25,8 @@ describe('character sprite manifest', () => {
     cast: { from: 16, to: 20 },
     hit: { from: 21, to: 23 },
     death: { from: 24, to: 29 },
+    ready: { from: 30, to: 33 },
+    victory: { from: 34, to: 39 },
   } as const;
 
   it('Ether Knight full 5-direction runtime paths are defined', () => {
@@ -187,7 +189,7 @@ describe('character sprite manifest', () => {
     expect(getCharacterSpriteResource('unknown_class')).toBeUndefined();
   });
 
-  it('Ether Knight runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+  it('Ether Knight runtime JSON matches the 200-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('ether_knight');
     if (!resource) throw new Error('ether_knight sprite resource is missing');
 
@@ -200,9 +202,9 @@ describe('character sprite manifest', () => {
       tags: Array<{ name: string; from: number; to: number }>;
     };
 
-    expect(metadata.count).toBe(150);
-    expect(metadata.size).toEqual({ w: 1920, h: 320 });
-    expect(metadata.sprites).toHaveLength(150);
+    expect(metadata.count).toBe(200);
+    expect(metadata.size).toEqual({ w: 2560, h: 320 });
+    expect(metadata.sprites).toHaveLength(200);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
@@ -212,7 +214,7 @@ describe('character sprite manifest', () => {
       expectedDirections.flatMap((direction, directionIndex) => (
         expectedMotions.map((motion) => {
           const range = motionRanges[motion];
-          const frameOffset = directionIndex * 30;
+          const frameOffset = directionIndex * 40;
 
           return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
         })
@@ -221,7 +223,7 @@ describe('character sprite manifest', () => {
     expect(actualTags).toEqual(expectedTags);
   });
 
-  it('Memory Weaver runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+  it('Memory Weaver runtime JSON matches the 200-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('memory_weaver');
     if (!resource) throw new Error('memory_weaver sprite resource is missing');
 
@@ -234,9 +236,9 @@ describe('character sprite manifest', () => {
       tags: Array<{ name: string; from: number; to: number }>;
     };
 
-    expect(metadata.count).toBe(150);
-    expect(metadata.size).toEqual({ w: 1920, h: 320 });
-    expect(metadata.sprites).toHaveLength(150);
+    expect(metadata.count).toBe(200);
+    expect(metadata.size).toEqual({ w: 2560, h: 320 });
+    expect(metadata.sprites).toHaveLength(200);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
@@ -246,7 +248,7 @@ describe('character sprite manifest', () => {
       expectedDirections.flatMap((direction, directionIndex) => (
         expectedMotions.map((motion) => {
           const range = motionRanges[motion];
-          const frameOffset = directionIndex * 30;
+          const frameOffset = directionIndex * 40;
 
           return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
         })
@@ -255,7 +257,7 @@ describe('character sprite manifest', () => {
     expect(actualTags).toEqual(expectedTags);
   });
 
-  it('Shadow Weaver runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+  it('Shadow Weaver runtime JSON matches the 200-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('shadow_weaver');
     if (!resource) throw new Error('shadow_weaver sprite resource is missing');
 
@@ -268,9 +270,9 @@ describe('character sprite manifest', () => {
       tags: Array<{ name: string; from: number; to: number }>;
     };
 
-    expect(metadata.count).toBe(150);
-    expect(metadata.size).toEqual({ w: 1920, h: 320 });
-    expect(metadata.sprites).toHaveLength(150);
+    expect(metadata.count).toBe(200);
+    expect(metadata.size).toEqual({ w: 2560, h: 320 });
+    expect(metadata.sprites).toHaveLength(200);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
@@ -280,7 +282,7 @@ describe('character sprite manifest', () => {
       expectedDirections.flatMap((direction, directionIndex) => (
         expectedMotions.map((motion) => {
           const range = motionRanges[motion];
-          const frameOffset = directionIndex * 30;
+          const frameOffset = directionIndex * 40;
 
           return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
         })
@@ -289,7 +291,7 @@ describe('character sprite manifest', () => {
     expect(actualTags).toEqual(expectedTags);
   });
 
-  it('Memory Breaker runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+  it('Memory Breaker runtime JSON matches the 200-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('memory_breaker');
     if (!resource) throw new Error('memory_breaker sprite resource is missing');
 
@@ -302,9 +304,9 @@ describe('character sprite manifest', () => {
       tags: Array<{ name: string; from: number; to: number }>;
     };
 
-    expect(metadata.count).toBe(150);
-    expect(metadata.size).toEqual({ w: 1920, h: 320 });
-    expect(metadata.sprites).toHaveLength(150);
+    expect(metadata.count).toBe(200);
+    expect(metadata.size).toEqual({ w: 2560, h: 320 });
+    expect(metadata.sprites).toHaveLength(200);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
@@ -314,7 +316,7 @@ describe('character sprite manifest', () => {
       expectedDirections.flatMap((direction, directionIndex) => (
         expectedMotions.map((motion) => {
           const range = motionRanges[motion];
-          const frameOffset = directionIndex * 30;
+          const frameOffset = directionIndex * 40;
 
           return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
         })
@@ -323,7 +325,7 @@ describe('character sprite manifest', () => {
     expect(actualTags).toEqual(expectedTags);
   });
 
-  it('Time Guardian runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+  it('Time Guardian runtime JSON matches the 200-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('time_guardian');
     if (!resource) throw new Error('time_guardian sprite resource is missing');
 
@@ -336,9 +338,9 @@ describe('character sprite manifest', () => {
       tags: Array<{ name: string; from: number; to: number }>;
     };
 
-    expect(metadata.count).toBe(150);
-    expect(metadata.size).toEqual({ w: 1920, h: 320 });
-    expect(metadata.sprites).toHaveLength(150);
+    expect(metadata.count).toBe(200);
+    expect(metadata.size).toEqual({ w: 2560, h: 320 });
+    expect(metadata.sprites).toHaveLength(200);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
@@ -348,7 +350,7 @@ describe('character sprite manifest', () => {
       expectedDirections.flatMap((direction, directionIndex) => (
         expectedMotions.map((motion) => {
           const range = motionRanges[motion];
-          const frameOffset = directionIndex * 30;
+          const frameOffset = directionIndex * 40;
 
           return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
         })
@@ -357,7 +359,7 @@ describe('character sprite manifest', () => {
     expect(actualTags).toEqual(expectedTags);
   });
 
-  it('Void Wanderer runtime JSON matches the 150-frame 64x64 5-direction contract', () => {
+  it('Void Wanderer runtime JSON matches the 200-frame 64x64 5-direction contract', () => {
     const resource = getCharacterSpriteResource('void_wanderer');
     if (!resource) throw new Error('void_wanderer sprite resource is missing');
 
@@ -370,9 +372,9 @@ describe('character sprite manifest', () => {
       tags: Array<{ name: string; from: number; to: number }>;
     };
 
-    expect(metadata.count).toBe(150);
-    expect(metadata.size).toEqual({ w: 1920, h: 320 });
-    expect(metadata.sprites).toHaveLength(150);
+    expect(metadata.count).toBe(200);
+    expect(metadata.size).toEqual({ w: 2560, h: 320 });
+    expect(metadata.sprites).toHaveLength(200);
     for (const frame of metadata.sprites) {
       expect(frame.w).toBe(resource.frameWidth);
       expect(frame.h).toBe(resource.frameHeight);
@@ -382,7 +384,7 @@ describe('character sprite manifest', () => {
       expectedDirections.flatMap((direction, directionIndex) => (
         expectedMotions.map((motion) => {
           const range = motionRanges[motion];
-          const frameOffset = directionIndex * 30;
+          const frameOffset = directionIndex * 40;
 
           return [`${motion}_${direction}`, { from: frameOffset + range.from, to: frameOffset + range.to }];
         })

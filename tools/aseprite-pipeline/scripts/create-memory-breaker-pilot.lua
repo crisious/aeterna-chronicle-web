@@ -6,7 +6,7 @@ if outputPath == nil or outputPath == "" then
 end
 
 local FRAME_SIZE = 64
-local BASE_FRAME_COUNT = 30
+local BASE_FRAME_COUNT = 40
 local CANVAS_WIDTH = FRAME_SIZE
 local CANVAS_HEIGHT = FRAME_SIZE
 
@@ -195,6 +195,18 @@ local basePoses = {
   { motion = "death", death = 4 },
   { motion = "death", death = 5 },
   { motion = "death", death = 6 },
+
+  { motion = "ready", bob = 0, sway = -1, torso = -1, hammer = 0, crack = 1, ready = 1 },
+  { motion = "ready", bob = -1, sway = -1, torso = -1, hammer = -1, crack = 1, ready = 1 },
+  { motion = "ready", bob = 0, sway = -1, torso = -1, hammer = 0, crack = 1, ready = 1 },
+  { motion = "ready", bob = -1, sway = -1, torso = -1, hammer = -1, crack = 1, ready = 1 },
+
+  { motion = "victory", bob = 0, sway = 0, torso = 0, hammer = 1, crack = 1, vic = 1 },
+  { motion = "victory", bob = -1, sway = 0, torso = 1, hammer = 2, crack = 2, vic = 2 },
+  { motion = "victory", bob = -2, sway = 0, torso = 1, hammer = 3, crack = 3, vic = 3 },
+  { motion = "victory", bob = -1, sway = 0, torso = 1, hammer = 3, crack = 3, vic = 3 },
+  { motion = "victory", bob = 0, sway = 0, torso = 0, hammer = 2, crack = 2, vic = 2 },
+  { motion = "victory", bob = -1, sway = 0, torso = 1, hammer = 3, crack = 3, vic = 3 },
 }
 
 local motionTags = {
@@ -204,6 +216,8 @@ local motionTags = {
   { name = "cast", from = 17, to = 21, color = colors.hoodLight },
   { name = "hit", from = 22, to = 24, color = colors.etherDim },
   { name = "death", from = 25, to = 30, color = colors.hoodDark },
+  { name = "ready", from = 31, to = 34, color = colors.armorLight },
+  { name = "victory", from = 35, to = 40, color = colors.crimson },
 }
 
 local function directedPose(basePose, direction)
@@ -516,6 +530,34 @@ local function drawAccent(image, pose)
     fillRect(image, 15 + dirX, 25, 5, 2, colors.hoodLight)
     fillRect(image, 20 + dirX, 18, 2, 4, colors.gold)
     drawShard(image, 16 + dirX, 28, 2, colors.crimsonDark)
+  end
+
+  -- Ready stance: a focused crimson battle-focus glow gathering at the chest,
+  -- with a low menacing ether ember at the planted core.
+  if (pose.ready or 0) > 0 then
+    drawShard(image, 32 + dirX, 33 + bob, 2, colors.crimson)
+    fillRect(image, 27 + dirX, 31 + bob, 11, 1, colors.crimsonDark)
+    drawSpark(image, 32 + dirX, 38 + bob, colors.ether)
+    fillPixel(image, 28 + dirX, 33 + bob, colors.crimson)
+    fillPixel(image, 36 + dirX, 33 + bob, colors.crimson)
+  end
+
+  -- Victory: a rising crimson shard burst exploding upward, scaling with vic.
+  if (pose.vic or 0) > 0 then
+    drawShard(image, 32 + dirX, 8 - pose.vic + bob, 2 + pose.vic, colors.crimson)
+    drawShard(image, 22 + dirX, 14 + bob, 2, colors.crimsonDark)
+    drawShard(image, 42 + dirX, 14 + bob, 2, colors.crimson)
+    fillPixel(image, 32 + dirX, 4 - pose.vic + bob, colors.gold)
+    if pose.vic >= 2 then
+      drawShard(image, 16 + dirX, 20 + bob, 2, colors.crimsonDark)
+      drawShard(image, 48 + dirX, 20 + bob, 2, colors.crimson)
+      fillRect(image, 26 + dirX, 4, 13, 1, colors.crimson)
+    end
+    if pose.vic >= 3 then
+      drawShard(image, 12 + dirX, 26 + bob, 2, colors.ether)
+      drawShard(image, 52 + dirX, 26 + bob, 2, colors.ether)
+      fillRect(image, 30 + dirX, 1, 5, 2, colors.crimsonDark)
+    end
   end
 end
 

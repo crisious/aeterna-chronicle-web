@@ -17,7 +17,7 @@ const FRAME_WIDTH = 64;
 const FRAME_HEIGHT = 64;
 
 const ALLOWED_DIRECTIONS = new Set(['D', 'DL', 'L', 'UL', 'U']);
-const ALLOWED_MOTIONS = new Set(['idle', 'walk', 'attack_melee', 'attack_ranged', 'cast', 'hit', 'death']);
+const ALLOWED_MOTIONS = new Set(['idle', 'walk', 'attack_melee', 'attack_ranged', 'cast', 'hit', 'death', 'ready', 'victory']);
 const ALLOWED_PHASES = new Set(['pilot', 'full', 'production', 'full-production']);
 const ALLOWED_STATUSES = new Set(['planned', 'source-ready', 'exported', 'validated', 'published', 'in-game-verified']);
 const PILOT_REQUIRED_TAGS = ['idle_D', 'walk_D'];

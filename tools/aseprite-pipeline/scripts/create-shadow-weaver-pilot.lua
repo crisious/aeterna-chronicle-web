@@ -6,7 +6,7 @@ if outputPath == nil or outputPath == "" then
 end
 
 local FRAME_SIZE = 64
-local BASE_FRAME_COUNT = 30
+local BASE_FRAME_COUNT = 40
 local CANVAS_WIDTH = FRAME_SIZE
 local CANVAS_HEIGHT = FRAME_SIZE
 
@@ -196,6 +196,18 @@ local basePoses = {
   { motion = "death", death = 4 },
   { motion = "death", death = 5 },
   { motion = "death", death = 6 },
+
+  { motion = "ready", bob = 0, sway = 0, cloak = 0, veil = 1, ready = 1 },
+  { motion = "ready", bob = -1, sway = 0, cloak = 0, veil = 1, ready = 1 },
+  { motion = "ready", bob = 0, sway = 0, cloak = 0, veil = 1, ready = 1 },
+  { motion = "ready", bob = -1, sway = 0, cloak = 0, veil = 1, ready = 1 },
+
+  { motion = "victory", bob = 0, sway = 0, cloak = 0, veil = 1, vic = 1 },
+  { motion = "victory", bob = -1, sway = 0, cloak = 1, veil = 2, vic = 2 },
+  { motion = "victory", bob = -2, sway = 0, cloak = 1, veil = 2, vic = 3 },
+  { motion = "victory", bob = -1, sway = 0, cloak = 1, veil = 2, vic = 3 },
+  { motion = "victory", bob = 0, sway = 0, cloak = 0, veil = 1, vic = 2 },
+  { motion = "victory", bob = -1, sway = 0, cloak = 1, veil = 2, vic = 3 },
 }
 
 local motionTags = {
@@ -205,6 +217,8 @@ local motionTags = {
   { name = "cast", from = 17, to = 21, color = colors.purple },
   { name = "hit", from = 22, to = 24, color = colors.scarf },
   { name = "death", from = 25, to = 30, color = colors.cloakDark },
+  { name = "ready", from = 31, to = 34, color = colors.veilEdge },
+  { name = "victory", from = 35, to = 40, color = colors.shadowMagenta },
 }
 
 local function directedPose(basePose, direction)
@@ -515,6 +529,31 @@ local function drawAccent(image, pose)
     fillRect(image, 18 + dirX, 20, 4, 2, colors.shadowMagenta)
     fillRect(image, 15 + dirX, 25, 5, 2, colors.scarf)
     fillRect(image, 20 + dirX, 18, 2, 4, colors.shadowViolet)
+  end
+
+  -- Ready stance: a focused dark shadow glow gathered at the chest.
+  if (pose.ready or 0) > 0 then
+    fillRect(image, 28 + sway + dirX, 35 + bob, 9, 1, colors.shadowViolet)
+    drawSpark(image, 32 + sway + dirX, 34 + bob, colors.shadowMagenta)
+    fillPixel(image, 32 + sway + dirX, 36 + bob, colors.veilEdge)
+  end
+
+  -- Victory: shadow motes rising in a celebration burst above the figure,
+  -- scaling with pose.vic (1 -> 3).
+  if (pose.vic or 0) > 0 then
+    drawSpark(image, 32 + dirX, 8 - pose.vic + bob, colors.shadowMagenta)
+    drawSpark(image, 22 + dirX, 14 + bob, colors.shadowViolet)
+    drawSpark(image, 42 + dirX, 14 + bob, colors.purple)
+    if pose.vic >= 2 then
+      fillRect(image, 26 + dirX, 4, 13, 1, colors.shadowMagenta)
+      drawSpark(image, 16 + dirX, 20 + bob, colors.shadowViolet)
+      drawSpark(image, 48 + dirX, 20 + bob, colors.shadowViolet)
+    end
+    if pose.vic >= 3 then
+      fillRect(image, 30 + dirX, 2, 5, 2, colors.shadowViolet)
+      drawSpark(image, 12 + dirX, 26 + bob, colors.veilEdge)
+      drawSpark(image, 52 + dirX, 26 + bob, colors.veilEdge)
+    end
   end
 end
 

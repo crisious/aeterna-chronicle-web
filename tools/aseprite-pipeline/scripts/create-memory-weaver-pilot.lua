@@ -6,7 +6,7 @@ if outputPath == nil or outputPath == "" then
 end
 
 local FRAME_SIZE = 64
-local BASE_FRAME_COUNT = 30
+local BASE_FRAME_COUNT = 40
 local CANVAS_WIDTH = FRAME_SIZE
 local CANVAS_HEIGHT = FRAME_SIZE
 
@@ -175,6 +175,18 @@ local basePoses = {
   { motion = "death", death = 4 },
   { motion = "death", death = 5 },
   { motion = "death", death = 6 },
+
+  { motion = "ready", bob = 0, sway = 0, book = 1, robe = 0, ready = 1 },
+  { motion = "ready", bob = -1, sway = 0, book = 2, robe = 0, ready = 1 },
+  { motion = "ready", bob = 0, sway = 0, book = 1, robe = 0, ready = 1 },
+  { motion = "ready", bob = -1, sway = 0, book = 2, robe = 0, ready = 1 },
+
+  { motion = "victory", bob = 0, sway = 0, book = 2, robe = 0, vic = 1 },
+  { motion = "victory", bob = -1, sway = 0, book = 3, robe = 0, vic = 2 },
+  { motion = "victory", bob = -2, sway = 0, book = 4, robe = 1, vic = 3 },
+  { motion = "victory", bob = -1, sway = 0, book = 3, robe = 0, vic = 3 },
+  { motion = "victory", bob = 0, sway = 0, book = 2, robe = 0, vic = 2 },
+  { motion = "victory", bob = -1, sway = 0, book = 3, robe = 0, vic = 3 },
 }
 
 local motionTags = {
@@ -184,6 +196,8 @@ local motionTags = {
   { name = "cast", from = 17, to = 21, color = colors.robeLight },
   { name = "hit", from = 22, to = 24, color = colors.cyanDim },
   { name = "death", from = 25, to = 30, color = colors.robeDark },
+  { name = "ready", from = 31, to = 34, color = colors.tunicLight },
+  { name = "victory", from = 35, to = 40, color = colors.gold },
 }
 
 local function directedPose(basePose, direction)
@@ -453,6 +467,27 @@ local function drawAccent(image, pose)
     fillRect(image, 18 + dirX, 20, 4, 2, colors.magic)
     fillRect(image, 15 + dirX, 25, 5, 2, colors.memoryCyan)
     fillRect(image, 20 + dirX, 18, 2, 4, colors.gold)
+  end
+
+  -- Ready stance: focused memory glow at the chest.
+  if (pose.ready or 0) > 0 then
+    drawSpark(image, 32 + dirX, 34 + bob, colors.gold)
+    fillRect(image, 28 + dirX, 33 + bob, 9, 1, colors.memoryCyan)
+  end
+
+  -- Victory: rising sparkle burst above the weaver.
+  if (pose.vic or 0) > 0 then
+    drawSpark(image, 32 + dirX, 8 - pose.vic + bob, colors.gold)
+    drawSpark(image, 22 + dirX, 14 + bob, colors.memoryCyan)
+    drawSpark(image, 42 + dirX, 14 + bob, colors.magic)
+    if pose.vic >= 2 then
+      fillRect(image, 26 + dirX, 4, 13, 1, colors.gold)
+      drawSpark(image, 16 + dirX, 20 + bob, colors.cyanDim)
+      drawSpark(image, 48 + dirX, 20 + bob, colors.cyanDim)
+    end
+    if pose.vic >= 3 then
+      fillRect(image, 30 + dirX, 2, 5, 2, colors.memoryCyan)
+    end
   end
 end
 
