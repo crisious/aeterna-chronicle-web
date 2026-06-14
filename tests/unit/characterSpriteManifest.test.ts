@@ -558,7 +558,9 @@ describe('character sprite manifest', () => {
   it('DungeonScene prioritizes manifest character sprites before side illustration fallback', () => {
     const source = readSceneSource('DungeonScene.ts');
 
-    expect(source).toContain("import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';");
+    expect(source).toContain("from '../assets/characterSpriteManifest'");
+    expect(source).toContain('getCharacterSpriteAnimationKey');
+    expect(source).toContain('getCharacterFrameRange');
     expect(source).toContain('private _getPlayerClassId(): string');
     expect(source).toContain('getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource');
     expect(source).toContain('this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath');
@@ -566,8 +568,9 @@ describe('character sprite manifest', () => {
     expect(source).toContain('frameHeight: playerSpriteResource.frameHeight');
     expect(source).toContain("this.load.image('dungeon_player'");
     expect(source).toContain('this.textures.exists(playerSpriteResource.textureKey)');
-    expect(source).toContain('this.add.image(PLAYER_X, py, playerSpriteResource.textureKey, 0)');
-    expect(source).toContain('sprite.setFrame(0)');
+    // 던전 플레이어: 정적 add.image 가 아니라 add.sprite + idle 루프.
+    expect(source).toContain('this.add.sprite(PLAYER_X, py, playerSpriteResource.textureKey, 0)');
+    expect(source).toContain('this._ensureCharIdleAnim(playerSpriteResource.classId)');
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
     expect(source).toContain("this.add.image(PLAYER_X, py, 'dungeon_player')");
     expect(source).toContain('this.add.rectangle(PLAYER_X, py, 40, 50, 0x4488ff)');
