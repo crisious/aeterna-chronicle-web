@@ -400,7 +400,9 @@ describe('character sprite manifest', () => {
   it('GameScene integrates manifest sprite resources with the player fallback texture', () => {
     const source = readSceneSource('GameScene.ts');
 
-    expect(source).toContain("import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';");
+    expect(source).toContain("from '../assets/characterSpriteManifest'");
+    expect(source).toContain('getCharacterSpriteAnimationKey');
+    expect(source).toContain('getCharacterFrameRange');
     expect(source).toContain('getCharacterSpriteResource(this.currentCharacterClassId)');
     expect(source).toContain('queueCharacterSprite(playerSpriteResource)');
     expect(source).toContain('this.load.spritesheet(characterSpriteResource.textureKey, characterSpriteResource.imagePath');
@@ -410,6 +412,12 @@ describe('character sprite manifest', () => {
     expect(source).toContain('this.physics.add.sprite(640, 360, textureKey, 0)');
     expect(source).toContain('this.player.setFrame(0)');
     expect(source).toContain("'player_sprite'");
+    // 필드 애니메이션: 스폰 idle + 이동 시 walk/idle(방향 + flipX 미러).
+    expect(source).toContain("this._playPlayerAnim('idle')");
+    expect(source).toContain('const moving = this._updatePlayerFacing(!!isLeft, !!isRight, !!isUp, !!isDown)');
+    expect(source).toContain("this._playPlayerAnim(moving ? 'walk' : 'idle')");
+    expect(source).toContain('this.player.setFlipX(this._playerFlipX)');
+    expect(source).toContain('this.player.play(key, true)');
   });
 
   it('GameScene renders remote players with Aseprite character sprites before rectangle fallback', () => {

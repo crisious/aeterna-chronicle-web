@@ -18,7 +18,13 @@ import {
   ZoneTeleportManager,
 } from '../gameplay/ZoneTeleportManager';
 import { CHARACTER_SPRITE_MANIFEST } from '../assets/characterSpriteManifest';
-import { getCharacterSpriteResource } from '../assets/characterSpriteManifest';
+import {
+  getCharacterSpriteResource,
+  getCharacterSpriteAnimationKey,
+  getCharacterFrameRange,
+  type CharacterMotion,
+  type CharacterDirection,
+} from '../assets/characterSpriteManifest';
 import type { CharacterSpriteResource } from '../assets/characterSpriteManifest';
 import { getSpriteResourceForMonster, getSpriteResourceForNpc, getSpriteResourceForSkillIcon, getSpriteResourceForWorldZoneIcon, SPRITE_RESOURCE_MANIFEST } from '../assets/spriteResourceManifest';
 import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
@@ -120,6 +126,11 @@ export class GameScene extends Phaser.Scene {
   private static readonly NPC_INTERACTION_RANGE_PX = 420;
 
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  // 필드 캐릭터 애니메이션: 플레이어가 태그 스프라이트일 때만 walk/idle 재생.
+  // 5방향(D/DL/L/UL/U)을 flipX 로 미러링해 우향까지 커버 → 마지막 facing/flip 유지.
+  private _playerHasCharAnim = false;
+  private _playerFacing: CharacterDirection = 'D';
+  private _playerFlipX = false;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdKeys!: Record<string, Phaser.Input.Keyboard.Key>;
   private numberKeys: Phaser.Input.Keyboard.Key[] = [];
@@ -1007,6 +1018,10 @@ export class GameScene extends Phaser.Scene {
         this.player.body?.velocity.normalize().scale(moveSpeed);
       }
 
+      // 필드 애니메이션: 이동 방향으로 walk, 정지 시 직전 방향 idle.
+      const moving = this._updatePlayerFacing(!!isLeft, !!isRight, !!isUp, !!isDown);
+      this._playPlayerAnim(moving ? 'walk' : 'idle');
+
       this.hudOrchestrator?.update(delta);
       this.combatEffectManager?.update(delta);
 
@@ -1216,6 +1231,63 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * 필드 애니메이션 lazy 생성. BattleScene 과 동일하게 manifest SSOT
+   * (getCharacterFrameRange)에서 프레임 범위를 받는다. 필드에선 walk·idle
+   * 둘 다 루프(repeat -1) — 전투의 단발 모션과 달리 지속 상태다.
+   */
+  private _ensureCharFieldAnim(
+    classId: string,
+    motion: CharacterMotion,
+    direction: CharacterDirection,
+  ): string {
+    const resource = getCharacterSpriteResource(classId);
+    const key = getCharacterSpriteAnimationKey(classId, motion, direction);
+    if (!resource || this.anims.exists(key)) return key;
+    const { from, to } = getCharacterFrameRange(motion, direction);
+    this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers(resource.textureKey, { start: from, end: to }),
+      frameRate: motion === 'walk' ? 8 : 6,
+      repeat: -1,
+    });
+    return key;
+  }
+
+  /** 현재 facing/flip 으로 walk|idle 재생(같은 키면 ignoreIfPlaying 으로 미재시작). */
+  private _playPlayerAnim(motion: 'walk' | 'idle'): void {
+    if (!this._playerHasCharAnim) return;
+    this.player.setFlipX(this._playerFlipX);
+    const key = this._ensureCharFieldAnim(this.currentCharacterClassId, motion, this._playerFacing);
+    if (this.anims.exists(key)) this.player.play(key, true);
+  }
+
+  /**
+   * 이동 입력으로 facing/flip 갱신. 5방향(D/DL/L/UL/U)만 그려져 있어 우향은
+   * flipX 미러로 만든다. 이동 없으면 직전 facing 유지(제자리 idle 방향 보존).
+   * 반환: 이동 중인지.
+   */
+  private _updatePlayerFacing(isLeft: boolean, isRight: boolean, isUp: boolean, isDown: boolean): boolean {
+    const vx = (isRight ? 1 : 0) - (isLeft ? 1 : 0);
+    const vy = (isDown ? 1 : 0) - (isUp ? 1 : 0);
+    if (vx === 0 && vy === 0) return false;
+    let dir: CharacterDirection;
+    let flip = false;
+    if (vy > 0) {
+      if (vx === 0) dir = 'D';
+      else { dir = 'DL'; flip = vx > 0; }
+    } else if (vy < 0) {
+      if (vx === 0) dir = 'U';
+      else { dir = 'UL'; flip = vx > 0; }
+    } else {
+      dir = 'L';
+      flip = vx > 0;
+    }
+    this._playerFacing = dir;
+    this._playerFlipX = flip;
+    return true;
+  }
+
   private createPlayer(): void {
     const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
     const textureKey = playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)
@@ -1226,6 +1298,9 @@ export class GameScene extends Phaser.Scene {
     if (playerSpriteResource && textureKey === playerSpriteResource.textureKey) {
       this.player.setFrame(0);
       this.player.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      // 태그 스프라이트면 필드 idle 재생(이전엔 정적 frame 0). update 가 이동 시 walk 로 전환.
+      this._playerHasCharAnim = true;
+      this._playPlayerAnim('idle');
     }
     // 필드용 표시 크기 고정: 현재 에테르 기사 원본은 256x384 전신 일러스트라 원본 크기 표시 시 시야를 가림.
     const targetHeight = 112;
