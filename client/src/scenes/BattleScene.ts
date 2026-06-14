@@ -1397,15 +1397,11 @@ export class BattleScene extends Phaser.Scene {
       }
       if (us.atb >= ATB_MAX) {
         // 행동 가능: 밝게
-        if (us.sprite instanceof Phaser.GameObjects.Image) {
-          (us.sprite as Phaser.GameObjects.Image).clearTint();
-        }
+        if (this._canTint(us.sprite)) us.sprite.clearTint();
         us.sprite.setAlpha(1.0);
       } else {
         // 충전 중: 어둡게
-        if (us.sprite instanceof Phaser.GameObjects.Image) {
-          (us.sprite as Phaser.GameObjects.Image).setTint(0x666666);
-        }
+        if (this._canTint(us.sprite)) us.sprite.setTint(0x666666);
         us.sprite.setAlpha(0.7);
       }
       // UX(rank13/17): 방어 아이콘이 sprite(부유 트윈) 를 매프레임 추종 — 허공 고정 방지.
@@ -2740,12 +2736,10 @@ export class BattleScene extends Phaser.Scene {
 
   private _flashSprite(us: UnitSprite): void {
     // 번쩍임 (흰색 → 원래)
-    if (us.sprite instanceof Phaser.GameObjects.Image) {
-      (us.sprite as Phaser.GameObjects.Image).setTint(0xffffff);
+    if (this._canTint(us.sprite)) {
+      us.sprite.setTint(0xffffff);
       this.time.delayedCall(80, () => {
-        if (us.sprite instanceof Phaser.GameObjects.Image) {
-          (us.sprite as Phaser.GameObjects.Image).clearTint();
-        }
+        if (this._canTint(us.sprite)) us.sprite.clearTint();
       });
     }
 
@@ -2772,9 +2766,16 @@ export class BattleScene extends Phaser.Scene {
     const spr = us.sprite;
     us.nameText.setAlpha(0); // 이름 숨김(적 HP 바는 _updateEnemyHpBars 가 isDead 로 숨김)
     if (us.isAlly) {
-      // 아군: 그레이 tint + 옆으로 쓰러짐
-      if (spr instanceof Phaser.GameObjects.Image) spr.setTint(0x555555);
-      this.tweens.add({ targets: spr, angle: 90, alpha: 0.35, duration: 350, ease: 'Quad.easeIn' });
+      // 아군: 그레이 tint + 쓰러짐. 태그 스프라이트는 death 애니메이션이 붕괴를
+      // 표현하므로 angle 회전 없이 alpha 만 낮춘다(회전과 death 프레임 충돌 방지).
+      if (this._canTint(spr)) spr.setTint(0x555555);
+      const classId = us.unit.classId ?? '';
+      if (spr instanceof Phaser.GameObjects.Sprite && classId) {
+        this._playCharMotion(spr, classId, 'death', 'D');
+        this.tweens.add({ targets: spr, alpha: 0.5, duration: 350, ease: 'Quad.easeIn' });
+      } else {
+        this.tweens.add({ targets: spr, angle: 90, alpha: 0.35, duration: 350, ease: 'Quad.easeIn' });
+      }
     } else {
       // 적: 축소 + 회전 + 페이드아웃(보스는 더 느리게, 회전 없이 무게감)
       this.tweens.add({
@@ -2826,6 +2827,38 @@ export class BattleScene extends Phaser.Scene {
     if (this.anims.exists(key)) sprite.play(key);
   }
 
+  /**
+   * 전투 진입 포즈(FF6 표준): ready(무기 들고 대기) 1회 → idle 루프로 정착.
+   * ready 프레임이 없으면 곧장 idle. ready 완료 후에도 그 사이 victory/death
+   * 가 재생됐으면 idle 로 덮지 않도록 완료 애니 키를 확인한다.
+   */
+  private _playCharIntro(sprite: Phaser.GameObjects.Sprite, classId: string): void {
+    const readyKey = this._ensureCharAnim(classId, 'ready', 'D');
+    if (!this.anims.exists(readyKey)) {
+      this._playCharMotion(sprite, classId, 'idle', 'D');
+      return;
+    }
+    sprite.play(readyKey);
+    sprite.once(
+      Phaser.Animations.Events.ANIMATION_COMPLETE,
+      (anim: Phaser.Animations.Animation) => {
+        if (anim.key === readyKey) this._playCharMotion(sprite, classId, 'idle', 'D');
+      },
+    );
+  }
+
+  /**
+   * setTint/clearTint 가능 여부 타입가드. Image·Sprite 둘 다 Tint 컴포넌트를
+   * 갖지만 Rectangle 폴백은 없다. (#280 에서 아군이 Image→Sprite 로 바뀌며
+   * Sprite 는 Image 의 하위클래스가 아니라 instanceof Image 가 false — 틴트가
+   * 조용히 누락됐던 회귀를 이 가드로 일괄 차단.)
+   */
+  private _canTint(
+    s: Phaser.GameObjects.GameObject,
+  ): s is Phaser.GameObjects.Image | Phaser.GameObjects.Sprite {
+    return s instanceof Phaser.GameObjects.Image || s instanceof Phaser.GameObjects.Sprite;
+  }
+
   // ─── 유닛 스폰 ───────────────────────────────────────────────
 
   private _spawnAllies(units: CombatUnit[]): void {
@@ -2850,7 +2883,8 @@ export class BattleScene extends Phaser.Scene {
           .setInteractive({ useHandCursor: false })
           .setDepth(50);
         charSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        this._playCharMotion(charSprite, classId, 'idle', 'D');
+        // 전투 진입: ready 포즈 1회 → idle 루프 (Phase B 수용 기준).
+        this._playCharIntro(charSprite, classId);
         sprite = charSprite;
       } else if (classId && this.textures.exists(staticTexKey)) {
         sprite = this.add.image(pos.x, pos.y, staticTexKey)
@@ -3224,7 +3258,8 @@ export class BattleScene extends Phaser.Scene {
       this._closeSubMenu();
       this.targetSelectMode = false;
       this.activeCommander = null;
-      this._playAllyMotion(() => true, 'death');
+      // death 포즈는 각 아군 사망 시 _killUnit 이 이미 재생함(전멸 시 재호출하면
+      // 끝난 애니를 되감아 깜빡임 → 중복 제거). 패배 팝업만 띄운다.
       this._showDefeat();
     }
   }

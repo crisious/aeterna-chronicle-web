@@ -490,10 +490,16 @@ describe('character sprite manifest', () => {
     expect(source).toContain('this.textures.exists(spriteResource.textureKey)');
     // 애니메이션 배선: 정적 add.image 가 아니라 add.sprite 로 만들어 태그 재생.
     expect(source).toContain('this.add.sprite(pos.x, pos.y, spriteResource.textureKey, 0)');
-    expect(source).toContain("this._playCharMotion(charSprite, classId, 'idle', 'D')");
+    // 전투 진입: ready 포즈 1회 → idle 루프(Phase B 수용 기준).
+    expect(source).toContain('this._playCharIntro(charSprite, classId)');
+    expect(source).toContain("this._ensureCharAnim(classId, 'ready', 'D')");
     expect(source).toContain('this.anims.generateFrameNumbers(resource.textureKey, { start: from, end: to })');
+    // 승리=생존 아군 victory, 개별 사망=_killUnit 의 death 포즈.
     expect(source).toContain("this._playAllyMotion(a => !a.isDead, 'victory')");
-    expect(source).toContain("this._playAllyMotion(() => true, 'death')");
+    expect(source).toContain("this._playCharMotion(spr, classId, 'death', 'D')");
+    // #280 회귀 가드: Image|Sprite 둘 다 틴트 가능하도록 타입가드 경유.
+    expect(source).toContain('private _canTint(');
+    expect(source).toContain('if (this._canTint(us.sprite)) us.sprite.setTint(0x666666)');
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
     expect(source).toContain('Phaser.Textures.FilterMode.LINEAR');
     expect(source).toContain('this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)');
