@@ -100,3 +100,56 @@ export function getCharacterSpriteAnimationKey(
 ): string {
   return `char_sprite_${classId}_${motion}_${direction}`;
 }
+
+// --- Frame-range SSOT -------------------------------------------------------
+// The generated sheets lay out 40 frames per direction, in a fixed motion
+// order, with one direction after another. This block is the single source of
+// truth for that layout so the runtime (BattleScene anims) and the contract
+// tests agree on which frame indices belong to which motion. Changing the
+// sheet layout (e.g. Phase B's 30→40 expansion) means changing it *here* and
+// the consumers follow.
+
+/** Frames authored per direction in every full character sheet. */
+export const CHARACTER_BASE_FRAME_COUNT = 40;
+
+/**
+ * Direction order as laid out along the sheet. The frame offset for a
+ * direction is its index in this array × CHARACTER_BASE_FRAME_COUNT.
+ */
+export const CHARACTER_DIRECTION_ORDER = ['D', 'DL', 'L', 'UL', 'U'] as const;
+
+/**
+ * Inclusive frame index range for each motion, relative to a direction's
+ * block (direction D). death is appended after the 0–29 Phase A range so the
+ * original indices stay stable; ready/victory follow (Phase B).
+ */
+export const CHARACTER_MOTION_FRAMES: Readonly<
+  Record<CharacterMotion, { readonly from: number; readonly to: number }>
+> = {
+  idle: { from: 0, to: 3 },
+  walk: { from: 4, to: 9 },
+  attack_melee: { from: 10, to: 15 },
+  // attack_ranged shares the melee block: classes without a distinct ranged
+  // animation fall back to it rather than indexing past the authored frames.
+  attack_ranged: { from: 10, to: 15 },
+  cast: { from: 16, to: 20 },
+  hit: { from: 21, to: 23 },
+  death: { from: 24, to: 29 },
+  ready: { from: 30, to: 33 },
+  victory: { from: 34, to: 39 },
+};
+
+/**
+ * Absolute (sheet-wide) frame index range for a motion in a given direction.
+ * Returns inclusive { from, to } suitable for Phaser
+ * `generateFrameNumbers(key, { start, end })`.
+ */
+export function getCharacterFrameRange(
+  motion: CharacterMotion,
+  direction: CharacterDirection,
+): { from: number; to: number } {
+  const base = CHARACTER_MOTION_FRAMES[motion];
+  const dirIndex = CHARACTER_DIRECTION_ORDER.indexOf(direction);
+  const offset = (dirIndex < 0 ? 0 : dirIndex) * CHARACTER_BASE_FRAME_COUNT;
+  return { from: base.from + offset, to: base.to + offset };
+}
