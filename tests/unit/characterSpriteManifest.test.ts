@@ -556,6 +556,40 @@ describe('character sprite manifest', () => {
     });
   });
 
+  // SSOT 의 진짜 가치는 *실제 생성 시트와 일치할 때*만 성립한다. 단위 테스트
+  // (위)는 getCharacterFrameRange 의 내부 일관성만, 런타임 JSON 계약(다른
+  // 블록)은 프레임 *수*만 본다. 여기서는 manifest SSOT 의 범위가 각 클래스
+  // 생성 Aseprite 태그(<motion>_<direction>)의 from/to 와 정확히 같은지
+  // 교차검증해 "시트 레이아웃 변경 후 SSOT 미갱신"(또는 그 반대) 드리프트를
+  // 잡는다. 생성 JSON 은 LFS 가 아니라(PNG 만 LFS) CI 에서도 읽힌다.
+  describe('frame-range SSOT matches generated Aseprite tags', () => {
+    interface AsepriteTag {
+      name: string;
+      from: number;
+      to: number;
+    }
+
+    for (const resource of CHARACTER_SPRITE_MANIFEST) {
+      it(`${resource.classId}: every <motion>_<direction> tag range equals getCharacterFrameRange`, () => {
+        const json = JSON.parse(readFileSync(resolve(process.cwd(), resource.jsonPath), 'utf8')) as {
+          tags?: AsepriteTag[];
+        };
+        const tagByName = new Map((json.tags ?? []).map((t) => [t.name, t]));
+        expect(tagByName.size).toBeGreaterThan(0);
+
+        for (const motion of resource.motions) {
+          for (const direction of resource.directions) {
+            const tagName = `${motion}_${direction}`;
+            const tag = tagByName.get(tagName);
+            expect(tag, `missing generated tag ${tagName} in ${resource.jsonPath}`).toBeDefined();
+            const range = getCharacterFrameRange(motion, direction);
+            expect({ from: range.from, to: range.to }).toEqual({ from: tag!.from, to: tag!.to });
+          }
+        }
+      });
+    }
+  });
+
   it('DungeonScene prioritizes manifest character sprites before side illustration fallback', () => {
     const source = readSceneSource('DungeonScene.ts');
 
