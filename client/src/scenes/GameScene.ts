@@ -25,6 +25,7 @@ import {
   type CharacterMotion,
   type CharacterDirection,
 } from '../assets/characterSpriteManifest';
+import { getActiveCharacterSkin } from './SettingsScene';
 import type { CharacterSpriteResource } from '../assets/characterSpriteManifest';
 import { getSpriteResourceForMonster, getSpriteResourceForNpc, getSpriteResourceForSkillIcon, getSpriteResourceForWorldZoneIcon, SPRITE_RESOURCE_MANIFEST } from '../assets/spriteResourceManifest';
 import { ZONE_ENV_CONFIG } from '../data/zoneEnvironment';
@@ -215,6 +216,11 @@ export class GameScene extends Phaser.Scene {
     const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
     if (playerSpriteResource) {
       queueCharacterSprite(playerSpriteResource);
+    }
+    // 로컬 플레이어 활성 스킨 텍스처도 로드. skin='base' 면 base 와 같아 dedup.
+    const skinnedPlayerResource = getCharacterSpriteResource(this.currentCharacterClassId, getActiveCharacterSkin());
+    if (skinnedPlayerResource) {
+      queueCharacterSprite(skinnedPlayerResource);
     }
     for (const characterSpriteResource of CHARACTER_SPRITE_MANIFEST) {
       queueCharacterSprite(characterSpriteResource);
@@ -1249,8 +1255,10 @@ export class GameScene extends Phaser.Scene {
     classId: string,
     motion: CharacterMotion,
     direction: CharacterDirection,
+    skinId = 'base',
   ): string {
-    const resource = getCharacterSpriteResource(classId);
+    // 로컬 플레이어는 활성 스킨, 원격은 base(스킨 데이터 미전송) — 호출부가 결정.
+    const resource = getCharacterSpriteResource(classId, skinId);
     // 키는 textureKey 기반(스킨-안전). resource 없으면 classId 폴백.
     const key = getCharacterSpriteAnimationKey(resource?.textureKey ?? classId, motion, direction);
     if (!resource || this.anims.exists(key)) return key;
@@ -1268,7 +1276,7 @@ export class GameScene extends Phaser.Scene {
   private _playPlayerAnim(motion: 'walk' | 'idle'): void {
     if (!this._playerHasCharAnim) return;
     this.player.setFlipX(this._playerFlipX);
-    const key = this._ensureCharFieldAnim(this.currentCharacterClassId, motion, this._playerFacing);
+    const key = this._ensureCharFieldAnim(this.currentCharacterClassId, motion, this._playerFacing, getActiveCharacterSkin());
     if (this.anims.exists(key)) this.player.play(key, true);
   }
 
@@ -1299,7 +1307,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPlayer(): void {
-    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId);
+    // 로컬 플레이어는 활성 스킨으로 해석(스킨 텍스처는 preload 에서 로드됨).
+    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId, getActiveCharacterSkin());
     const textureKey = playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)
       ? playerSpriteResource.textureKey
       : 'player_sprite';
