@@ -40,6 +40,7 @@
     "art:aseprite:export": "node tools/aseprite-pipeline/export-aseprite.mjs",
     "art:aseprite:validate": "node tools/aseprite-pipeline/validate-aseprite-export.mjs",
     "art:sprite:roster": "node tools/aseprite-pipeline/validate-sprite-roster.mjs",
+    "art:zone:palette": "node tools/aseprite-pipeline/validate-zone-palette.mjs",
     "art:character:roster": "node tools/aseprite-pipeline/validate-character-sprite-roster.mjs",
     "art:character:build": "node tools/aseprite-pipeline/build-character-sprite.mjs",
     "art:character:illustrations": "node tools/aseprite-pipeline/build-character-illustration-library.mjs",
