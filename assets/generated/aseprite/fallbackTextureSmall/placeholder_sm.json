@@ -1,0 +1,26 @@
+{
+  "atlas": "placeholder_sm",
+  "image": "placeholder_sm.png",
+  "size": {
+    "w": 32,
+    "h": 32
+  },
+  "sprites": [
+    {
+      "name": "placeholder_sm.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "fallbackTexture",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

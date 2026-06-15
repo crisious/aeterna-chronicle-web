@@ -1,0 +1,25 @@
+{ "frames": [
+   {
+    "filename": "particle_snow.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 6, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 6, "h": 10 },
+    "sourceSize": { "w": 6, "h": 10 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.17.2-x64",
+  "image": "particle_snow.png",
+  "format": "RGBA8888",
+  "size": { "w": 6, "h": 10 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "environmentParticleTexture", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

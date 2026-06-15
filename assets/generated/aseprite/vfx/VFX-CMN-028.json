@@ -1,0 +1,107 @@
+{
+  "atlas": "VFX-CMN-028",
+  "image": "VFX-CMN-028.png",
+  "size": {
+    "w": 512,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "VFX-CMN-028 0.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 1.aseprite",
+      "x": 64,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 2.aseprite",
+      "x": 128,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 3.aseprite",
+      "x": 192,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 4.aseprite",
+      "x": 256,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 5.aseprite",
+      "x": 320,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 6.aseprite",
+      "x": 384,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-CMN-028 7.aseprite",
+      "x": 448,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [
+    {
+      "name": "start",
+      "from": 0,
+      "to": 1,
+      "direction": "forward",
+      "color": "#50de84de"
+    },
+    {
+      "name": "loop",
+      "from": 2,
+      "to": 5,
+      "direction": "forward",
+      "color": "#4ce8dce2"
+    },
+    {
+      "name": "end",
+      "from": 6,
+      "to": 7,
+      "direction": "forward",
+      "color": "#f8c64ce4"
+    }
+  ],
+  "layers": [
+    {
+      "name": "glow",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "core",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "particles",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 8
+}

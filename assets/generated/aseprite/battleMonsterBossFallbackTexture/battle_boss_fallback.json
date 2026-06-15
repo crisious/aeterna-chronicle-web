@@ -1,0 +1,26 @@
+{
+  "atlas": "battle_boss_fallback",
+  "image": "battle_boss_fallback.png",
+  "size": {
+    "w": 90,
+    "h": 90
+  },
+  "sprites": [
+    {
+      "name": "battle_boss_fallback.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 90,
+      "h": 90
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "battleMonsterFallbackTexture",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

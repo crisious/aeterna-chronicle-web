@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_background_syl_bg_near_dusk",
+  "image": "SYL-BG-NEAR-DUSK.png",
+  "size": {
+    "w": 1280,
+    "h": 720
+  },
+  "sprites": [
+    {
+      "name": "SYL-BG-NEAR-DUSK.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentBackground",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

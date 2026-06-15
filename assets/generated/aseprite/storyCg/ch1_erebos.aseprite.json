@@ -1,0 +1,25 @@
+{ "frames": [
+   {
+    "filename": "ch1_erebos.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 1216, "h": 832 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 1216, "h": 832 },
+    "sourceSize": { "w": 1216, "h": 832 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.17.2-x64",
+  "image": "ch1_erebos.png",
+  "format": "RGBA8888",
+  "size": { "w": 1216, "h": 832 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "storyCg", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

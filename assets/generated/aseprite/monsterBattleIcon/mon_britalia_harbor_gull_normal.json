@@ -1,0 +1,26 @@
+{
+  "atlas": "mon_britalia_harbor_gull_normal",
+  "image": "mon_britalia_harbor_gull_normal.png",
+  "size": {
+    "w": 64,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "mon_britalia_harbor_gull_normal.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "monsterImage",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

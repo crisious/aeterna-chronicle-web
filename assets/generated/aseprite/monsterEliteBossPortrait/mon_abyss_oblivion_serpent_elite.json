@@ -1,0 +1,26 @@
+{
+  "atlas": "mon_abyss_oblivion_serpent_elite",
+  "image": "mon_abyss_oblivion_serpent_elite.png",
+  "size": {
+    "w": 384,
+    "h": 384
+  },
+  "sprites": [
+    {
+      "name": "mon_abyss_oblivion_serpent_elite.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "monsterImage",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

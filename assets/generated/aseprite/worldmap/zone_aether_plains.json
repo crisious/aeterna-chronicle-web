@@ -1,0 +1,26 @@
+{
+  "atlas": "zone_aether_plains",
+  "image": "zone_aether_plains.png",
+  "size": {
+    "w": 64,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "zone_aether_plains.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "icon",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

@@ -1,0 +1,25 @@
+{ "frames": [
+   {
+    "filename": "19_kalen_sprite.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 256, "h": 384 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 384 },
+    "sourceSize": { "w": 256, "h": 384 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.17.2-x64",
+  "image": "19_kalen_sprite.png",
+  "format": "RGBA8888",
+  "size": { "w": 256, "h": 384 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "npcSprite", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

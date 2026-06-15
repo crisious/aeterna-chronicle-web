@@ -1,0 +1,26 @@
+{
+  "atlas": "ITM-QST-007",
+  "image": "ITM-QST-007.png",
+  "size": {
+    "w": 64,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "ITM-QST-007.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "itemIcon",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

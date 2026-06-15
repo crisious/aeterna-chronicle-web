@@ -1,0 +1,26 @@
+{
+  "atlas": "TEM-BG-FAR-DAY",
+  "image": "TEM-BG-FAR-DAY.png",
+  "size": {
+    "w": 1280,
+    "h": 720
+  },
+  "sprites": [
+    {
+      "name": "TEM-BG-FAR-DAY.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentBackground",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

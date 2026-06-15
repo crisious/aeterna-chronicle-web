@@ -1,0 +1,26 @@
+{
+  "atlas": "ARG-BG-FAR-DAY",
+  "image": "ARG-BG-FAR-DAY.png",
+  "size": {
+    "w": 1280,
+    "h": 720
+  },
+  "sprites": [
+    {
+      "name": "ARG-BG-FAR-DAY.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentBackground",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

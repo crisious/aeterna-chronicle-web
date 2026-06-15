@@ -1,0 +1,26 @@
+{
+  "atlas": "erb_fog_lantern",
+  "image": "erb_fog_lantern.png",
+  "size": {
+    "w": 256,
+    "h": 256
+  },
+  "sprites": [
+    {
+      "name": "erb_fog_lantern.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentObject",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

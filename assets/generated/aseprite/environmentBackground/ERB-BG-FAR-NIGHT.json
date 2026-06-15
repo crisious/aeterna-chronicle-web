@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_background_erb_bg_far_night",
+  "image": "ERB-BG-FAR-NIGHT.png",
+  "size": {
+    "w": 1280,
+    "h": 720
+  },
+  "sprites": [
+    {
+      "name": "ERB-BG-FAR-NIGHT.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentBackground",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

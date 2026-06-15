@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_tile_fog_g_02",
+  "image": "FOG-G-02.png",
+  "size": {
+    "w": 256,
+    "h": 256
+  },
+  "sprites": [
+    {
+      "name": "FOG-G-02.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentTile",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

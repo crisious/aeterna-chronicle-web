@@ -1,0 +1,26 @@
+{
+  "atlas": "char_battle_memory_breaker",
+  "image": "char_battle_memory_breaker.png",
+  "size": {
+    "w": 64,
+    "h": 96
+  },
+  "sprites": [
+    {
+      "name": "char_battle_memory_breaker.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 96
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "characterBattleThumbnail",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

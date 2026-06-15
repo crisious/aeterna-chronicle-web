@@ -1,0 +1,26 @@
+{
+  "atlas": "UI-SHP-001-SEA",
+  "image": "UI-SHP-001-SEA.png",
+  "size": {
+    "w": 512,
+    "h": 512
+  },
+  "sprites": [
+    {
+      "name": "UI-SHP-001-SEA.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "uiFrame",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

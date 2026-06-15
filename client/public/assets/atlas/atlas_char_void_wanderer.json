@@ -2,72 +2,79 @@
   "atlas": "atlas_char_void_wanderer",
   "size": {
     "w": 2048,
-    "h": 2048
+    "h": 1024
   },
   "sprites": [
     {
       "file": "char_illust_void_wanderer_adv1_front.png",
       "x": 0,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_illust_void_wanderer_adv2_front.png",
-      "x": 514,
+      "x": 258,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_illust_void_wanderer_adv3_front.png",
-      "x": 1028,
+      "x": 516,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_illust_void_wanderer_back.png",
-      "x": 0,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 774,
+      "y": 0,
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_illust_void_wanderer_front.png",
-      "x": 514,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 1032,
+      "y": 0,
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_illust_void_wanderer_side.png",
-      "x": 1028,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 1290,
+      "y": 0,
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_sprite_void_wanderer_adv1_sprite_sheet.png",
-      "x": 0,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 1548,
+      "y": 0,
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_sprite_void_wanderer_adv2_sprite_sheet.png",
-      "x": 514,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 0,
+      "y": 386,
+      "w": 256,
+      "h": 384
     },
     {
       "file": "char_sprite_void_wanderer_adv3_sprite_sheet.png",
-      "x": 1028,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 258,
+      "y": 386,
+      "w": 256,
+      "h": 384
+    },
+    {
+      "file": "char_sprite_void_wanderer_base_sprite_sheet.png",
+      "x": 516,
+      "y": 386,
+      "w": 256,
+      "h": 384
     }
   ],
-  "count": 9
+  "count": 10
 }

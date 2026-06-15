@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_background_fog_bg_sky_dusk",
+  "image": "FOG-BG-SKY-DUSK.png",
+  "size": {
+    "w": 1280,
+    "h": 720
+  },
+  "sprites": [
+    {
+      "name": "FOG-BG-SKY-DUSK.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentBackground",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

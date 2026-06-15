@@ -1,0 +1,26 @@
+{
+  "atlas": "obl_cracked_stone",
+  "image": "obl_cracked_stone.png",
+  "size": {
+    "w": 256,
+    "h": 256
+  },
+  "sprites": [
+    {
+      "name": "obl_cracked_stone.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentObject",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

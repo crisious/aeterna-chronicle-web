@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_tile_arg_g_06",
+  "image": "ARG-G-06.png",
+  "size": {
+    "w": 256,
+    "h": 256
+  },
+  "sprites": [
+    {
+      "name": "ARG-G-06.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentTile",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

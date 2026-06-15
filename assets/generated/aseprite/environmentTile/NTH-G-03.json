@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_tile_nth_g_03",
+  "image": "NTH-G-03.png",
+  "size": {
+    "w": 256,
+    "h": 256
+  },
+  "sprites": [
+    {
+      "name": "NTH-G-03.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentTile",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

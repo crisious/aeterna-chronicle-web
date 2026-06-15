@@ -1,17 +1,178 @@
 {
   "atlas": "atlas_monster_erebos",
   "size": {
-    "w": 512,
-    "h": 512
+    "w": 4096,
+    "h": 1024
   },
   "sprites": [
     {
       "file": "BOSS-ERB-SHADOW.png",
       "x": 0,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_fog_abyss_boss.png",
+      "x": 386,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_fog_guardian_elite.png",
+      "x": 772,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_fog_queen_spider_elite.png",
+      "x": 1158,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_memory_colossus_elite.png",
+      "x": 1544,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_memory_devourer_elite.png",
+      "x": 1930,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_memory_phantom_boss.png",
+      "x": 2316,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_oblivion_knight_elite.png",
+      "x": 2702,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_ruin_watcher_boss.png",
+      "x": 3088,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_erebos_afterimage_soldier_normal.png",
+      "x": 3474,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_broken_golem_normal.png",
+      "x": 3732,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_crumbling_shade_normal.png",
+      "x": 0,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_echo_wisp_normal.png",
+      "x": 258,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_floating_lantern_normal.png",
+      "x": 516,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_fog_rat_normal.png",
+      "x": 774,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_fog_wolf_normal.png",
+      "x": 1032,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_memory_absorber_normal.png",
+      "x": 1290,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_memory_beetle_normal.png",
+      "x": 1548,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_memory_dust_normal.png",
+      "x": 1806,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_memory_ghost_normal.png",
+      "x": 2064,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_petrified_wing_normal.png",
+      "x": 2322,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_ruin_skeleton_normal.png",
+      "x": 2580,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_ruin_spider_normal.png",
+      "x": 2838,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_erebos_ruin_vine_normal.png",
+      "x": 3096,
+      "y": 386,
+      "w": 256,
+      "h": 256
     }
   ],
-  "count": 1
+  "count": 24
 }

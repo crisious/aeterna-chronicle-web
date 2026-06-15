@@ -1,0 +1,107 @@
+{
+  "atlas": "VFX-VOI-029",
+  "image": "VFX-VOI-029.png",
+  "size": {
+    "w": 512,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "VFX-VOI-029 0.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 1.aseprite",
+      "x": 64,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 2.aseprite",
+      "x": 128,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 3.aseprite",
+      "x": 192,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 4.aseprite",
+      "x": 256,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 5.aseprite",
+      "x": 320,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 6.aseprite",
+      "x": 384,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "VFX-VOI-029 7.aseprite",
+      "x": 448,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [
+    {
+      "name": "start",
+      "from": 0,
+      "to": 1,
+      "direction": "forward",
+      "color": "#975ce8e2"
+    },
+    {
+      "name": "loop",
+      "from": 2,
+      "to": 5,
+      "direction": "forward",
+      "color": "#588cf5dc"
+    },
+    {
+      "name": "end",
+      "from": 6,
+      "to": 7,
+      "direction": "forward",
+      "color": "#d4acffeb"
+    }
+  ],
+  "layers": [
+    {
+      "name": "glow",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "core",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "particles",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 8
+}

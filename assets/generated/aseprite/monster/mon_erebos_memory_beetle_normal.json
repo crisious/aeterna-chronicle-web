@@ -1,0 +1,147 @@
+{
+  "atlas": "mon_erebos_memory_beetle_normal",
+  "image": "mon_erebos_memory_beetle_normal.png",
+  "size": {
+    "w": 768,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "mon_erebos_memory_beetle_normal 0.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 1.aseprite",
+      "x": 64,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 2.aseprite",
+      "x": 128,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 3.aseprite",
+      "x": 192,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 4.aseprite",
+      "x": 256,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 5.aseprite",
+      "x": 320,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 6.aseprite",
+      "x": 384,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 7.aseprite",
+      "x": 448,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 8.aseprite",
+      "x": 512,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 9.aseprite",
+      "x": 576,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 10.aseprite",
+      "x": 640,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "mon_erebos_memory_beetle_normal 11.aseprite",
+      "x": 704,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [
+    {
+      "name": "idle",
+      "from": 0,
+      "to": 3,
+      "direction": "forward",
+      "color": "#4ee6daf5"
+    },
+    {
+      "name": "attack",
+      "from": 4,
+      "to": 7,
+      "direction": "forward",
+      "color": "#ffcc50f5"
+    },
+    {
+      "name": "hit",
+      "from": 8,
+      "to": 9,
+      "direction": "forward",
+      "color": "#ff6a8ef5"
+    },
+    {
+      "name": "death",
+      "from": 10,
+      "to": 11,
+      "direction": "forward",
+      "color": "#965dd2f5"
+    }
+  ],
+  "layers": [
+    {
+      "name": "shadow",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "body",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "accent",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "effects",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 12
+}

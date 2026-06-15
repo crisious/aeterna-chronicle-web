@@ -1,17 +1,178 @@
 {
   "atlas": "atlas_monster_sylvanheim",
   "size": {
-    "w": 512,
-    "h": 512
+    "w": 4096,
+    "h": 1024
   },
   "sprites": [
     {
       "file": "BOSS-SYL-ELDER.png",
       "x": 0,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_ancient_ent_boss.png",
+      "x": 386,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_ancient_treant_elite.png",
+      "x": 772,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_blight_hydra_elite.png",
+      "x": 1158,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_forest_druid_elite.png",
+      "x": 1544,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_forest_judge_boss.png",
+      "x": 1930,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_root_horror_elite.png",
+      "x": 2316,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_spore_queen_elite.png",
+      "x": 2702,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_worldtree_parasite_boss.png",
+      "x": 3088,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_silvanhime_flower_trap_normal.png",
+      "x": 3474,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_forest_skeleton_normal.png",
+      "x": 3732,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_forest_wolf_normal.png",
+      "x": 0,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_fungus_golem_normal.png",
+      "x": 258,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_light_spider_normal.png",
+      "x": 516,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_luminous_moth_normal.png",
+      "x": 774,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_moss_rat_normal.png",
+      "x": 1032,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_moss_warrior_normal.png",
+      "x": 1290,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_root_spine_normal.png",
+      "x": 1548,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_spore_bat_normal.png",
+      "x": 1806,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_spore_bear_normal.png",
+      "x": 2064,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_spore_sphere_normal.png",
+      "x": 2322,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_thorn_crawler_normal.png",
+      "x": 2580,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_treant_sprout_normal.png",
+      "x": 2838,
+      "y": 386,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_silvanhime_vine_hunter_normal.png",
+      "x": 3096,
+      "y": 386,
+      "w": 256,
+      "h": 256
     }
   ],
-  "count": 1
+  "count": 24
 }
