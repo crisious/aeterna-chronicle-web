@@ -5,6 +5,7 @@ import { RECOLOR_SPECS } from './build-character-recolor.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SPRITE_DIR = 'assets/generated/characters/sprites';
+const RECOLOR_DIR = 'assets/generated/characters/recolors';
 
 // 팔레트 스왑 코스메틱 무결성(Phase D Part②). FF6 식 리컬러는 *같은 도트의
 // 색만 교체*이므로 반드시: (1) base 와 동일 치수, (2) 알파 실루엣 픽셀 단위
@@ -32,7 +33,7 @@ export function validateCharacterRecolor({
 
   for (const [specId, spec] of Object.entries(specs)) {
     const basePath = path.resolve(repoRoot, SPRITE_DIR, `${spec.base}.png`);
-    const variantPath = path.resolve(repoRoot, SPRITE_DIR, `char_${specId}.png`);
+    const variantPath = path.resolve(repoRoot, RECOLOR_DIR, `char_${specId}.png`);
     let base;
     let variant;
     try {

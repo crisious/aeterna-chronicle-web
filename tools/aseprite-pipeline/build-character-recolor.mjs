@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { decodePng } from './decode-png.mjs';
@@ -6,6 +6,9 @@ import { encodePng } from './encode-png.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SPRITE_DIR = 'assets/generated/characters/sprites';
+// 리컬러는 base 의 팔레트 스왑 파생물(Aseprite 소스 없음)이라 canonical sprites/
+// 와 분리된 recolors/ 에 둔다. 런타임 커버리지 테스트는 이 경로를 파생물로 제외.
+const OUT_DIR = 'assets/generated/characters/recolors';
 
 // FF6 Past/Esper 식 팔레트 스왑 코스메틱(Phase D Part②). base 도트는 그대로
 // 두고(실루엣/프레임 불변) 색만 정확-매칭 remap 해 시즌 스킨 파생물을 만든다.
@@ -45,8 +48,9 @@ export function buildRecolor(specId, { repoRoot = REPO_ROOT, spec = RECOLOR_SPEC
   const basePng = path.resolve(repoRoot, SPRITE_DIR, `${spec.base}.png`);
   const baseJson = path.resolve(repoRoot, SPRITE_DIR, `${spec.base}.json`);
   const outName = `char_${specId}`;
-  const outPng = path.resolve(repoRoot, SPRITE_DIR, `${outName}.png`);
-  const outJson = path.resolve(repoRoot, SPRITE_DIR, `${outName}.json`);
+  mkdirSync(path.resolve(repoRoot, OUT_DIR), { recursive: true });
+  const outPng = path.resolve(repoRoot, OUT_DIR, `${outName}.png`);
+  const outJson = path.resolve(repoRoot, OUT_DIR, `${outName}.json`);
 
   const img = decodePng(basePng);
   const lut = buildLookup(spec.map);

@@ -59,6 +59,9 @@ function isDerivedOrExportMirror(filePath: string): boolean {
     filePath.startsWith('client/public/assets/atlas/')
     || filePath.startsWith('client/public/assets/generated/atlas/')
     || filePath.startsWith('client/public/assets/generated/aseprite/')
+    // 리컬러 코스메틱(Phase D Part②)은 base 스프라이트의 팔레트 스왑 파생물로
+    // Aseprite 소스가 없어 source roster 모델에 안 맞는다. atlas 처럼 derived 로 제외.
+    || filePath.startsWith('client/public/assets/generated/characters/recolors/')
   );
 }
 
