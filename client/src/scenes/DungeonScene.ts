@@ -436,7 +436,8 @@ export class DungeonScene extends Phaser.Scene {
    */
   private _ensureCharIdleAnim(classId: string): string {
     const resource = getCharacterSpriteResource(classId);
-    const key = getCharacterSpriteAnimationKey(classId, 'idle', 'D');
+    // 키는 textureKey 기반(스킨-안전). resource 없으면 classId 폴백.
+    const key = getCharacterSpriteAnimationKey(resource?.textureKey ?? classId, 'idle', 'D');
     if (!resource || this.anims.exists(key)) return key;
     const { from, to } = getCharacterFrameRange('idle', 'D');
     this.anims.create({

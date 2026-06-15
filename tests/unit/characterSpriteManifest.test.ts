@@ -123,64 +123,35 @@ describe('character sprite manifest', () => {
     });
   });
 
-  it('builds Ether Knight animation keys', () => {
-    for (const direction of expectedDirections) {
-      for (const motion of expectedMotions) {
-        expect(getCharacterSpriteAnimationKey('ether_knight', motion, direction)).toBe(
-          `char_sprite_ether_knight_${motion}_${direction}`,
-        );
+  it('builds textureKey-based animation keys for every class (skin-safe)', () => {
+    for (const resource of CHARACTER_SPRITE_MANIFEST) {
+      for (const direction of expectedDirections) {
+        for (const motion of expectedMotions) {
+          expect(getCharacterSpriteAnimationKey(resource.textureKey, motion, direction)).toBe(
+            `${resource.textureKey}_${motion}_${direction}`,
+          );
+        }
       }
     }
   });
 
-  it('builds Memory Weaver animation keys', () => {
-    for (const direction of expectedDirections) {
-      for (const motion of expectedMotions) {
-        expect(getCharacterSpriteAnimationKey('memory_weaver', motion, direction)).toBe(
-          `char_sprite_memory_weaver_${motion}_${direction}`,
-        );
-      }
-    }
-  });
-
-  it('builds Shadow Weaver animation keys', () => {
-    for (const direction of expectedDirections) {
-      for (const motion of expectedMotions) {
-        expect(getCharacterSpriteAnimationKey('shadow_weaver', motion, direction)).toBe(
-          `char_sprite_shadow_weaver_${motion}_${direction}`,
-        );
-      }
-    }
-  });
-
-  it('builds Memory Breaker animation keys', () => {
-    for (const direction of expectedDirections) {
-      for (const motion of expectedMotions) {
-        expect(getCharacterSpriteAnimationKey('memory_breaker', motion, direction)).toBe(
-          `char_sprite_memory_breaker_${motion}_${direction}`,
-        );
-      }
-    }
-  });
-
-  it('builds Time Guardian animation keys', () => {
-    for (const direction of expectedDirections) {
-      for (const motion of expectedMotions) {
-        expect(getCharacterSpriteAnimationKey('time_guardian', motion, direction)).toBe(
-          `char_sprite_time_guardian_${motion}_${direction}`,
-        );
-      }
-    }
-  });
-
-  it('builds Void Wanderer animation keys', () => {
-    for (const direction of expectedDirections) {
-      for (const motion of expectedMotions) {
-        expect(getCharacterSpriteAnimationKey('void_wanderer', motion, direction)).toBe(
-          `char_sprite_void_wanderer_${motion}_${direction}`,
-        );
-      }
-    }
+  it('resolves recolor skin resources with distinct texture + animation keys', () => {
+    const base = getCharacterSpriteResource('ether_knight');
+    const ember = getCharacterSpriteResource('ether_knight', 'ember');
+    expect(base).toBeDefined();
+    expect(ember).toBeDefined();
+    // 스킨은 별도 textureKey + recolors/ 경로, 프레임 레이아웃은 base 와 동일.
+    expect(ember!.textureKey).toBe('char_sprite_ether_knight_ember');
+    expect(ember!.textureKey).not.toBe(base!.textureKey);
+    expect(ember!.imagePath).toBe('assets/generated/characters/recolors/char_ether_knight_ember.png');
+    expect(ember!.frameWidth).toBe(base!.frameWidth);
+    expect(ember!.motions).toEqual(base!.motions);
+    // anim 키가 스킨별로 분리돼야 base/스킨이 서로의 프레임을 재생하지 않는다.
+    expect(getCharacterSpriteAnimationKey(ember!.textureKey, 'idle', 'D'))
+      .not.toBe(getCharacterSpriteAnimationKey(base!.textureKey, 'idle', 'D'));
+    // 미지원 스킨/'base'/미지정은 base 로 폴백.
+    expect(getCharacterSpriteResource('ether_knight', 'base')!.textureKey).toBe(base!.textureKey);
+    expect(getCharacterSpriteResource('ether_knight', 'nonexistent')!.textureKey).toBe(base!.textureKey);
   });
 
   it('keeps texture keys unique', () => {

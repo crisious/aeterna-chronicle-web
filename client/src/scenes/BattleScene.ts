@@ -2875,7 +2875,8 @@ export class BattleScene extends Phaser.Scene {
     direction: CharacterDirection,
   ): string {
     const resource = getCharacterSpriteResource(classId);
-    const key = getCharacterSpriteAnimationKey(classId, motion, direction);
+    // 키는 textureKey 기반(스킨-안전). resource 없으면 classId 폴백(anim 미생성).
+    const key = getCharacterSpriteAnimationKey(resource?.textureKey ?? classId, motion, direction);
     if (!resource || this.anims.exists(key)) return key;
 
     const { from, to } = getCharacterFrameRange(motion, direction);

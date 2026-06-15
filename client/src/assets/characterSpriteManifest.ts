@@ -89,16 +89,49 @@ const CHARACTER_SPRITE_RESOURCE_BY_CLASS_ID: ReadonlyMap<string, CharacterSprite
   CHARACTER_SPRITE_MANIFEST.map((resource) => [resource.classId, resource] as const),
 );
 
-export function getCharacterSpriteResource(classId: string): CharacterSpriteResource | undefined {
-  return CHARACTER_SPRITE_RESOURCE_BY_CLASS_ID.get(classId);
+/**
+ * 팔레트 스왑 리컬러 스킨(Phase D Part②). 각 스킨은 6클래스 전부에 대해
+ * assets/generated/characters/recolors/char_<class>_<skin>.png 로 존재한다.
+ * 'base'(또는 미지정)는 원본. 새 시즌 스킨 = 이 목록에 추가 + 리컬러 생성.
+ */
+export const CHARACTER_RECOLOR_SKINS = ['ember'] as const;
+export type CharacterSkinId = (typeof CHARACTER_RECOLOR_SKINS)[number];
+
+export function isCharacterSkinId(skinId: string | undefined): skinId is CharacterSkinId {
+  return skinId !== undefined && (CHARACTER_RECOLOR_SKINS as readonly string[]).includes(skinId);
 }
 
-export function getCharacterSpriteAnimationKey(
+/**
+ * classId(+선택 skinId)로 스프라이트 리소스를 해석. 스킨이 유효하면 리컬러
+ * PNG/JSON 과 스킨 전용 textureKey 를 가진 파생 리소스를 반환(프레임 레이아웃은
+ * base 와 동일 — 리컬러는 색만 교체). 스킨 미지정/'base'/미지원이면 원본.
+ */
+export function getCharacterSpriteResource(
   classId: string,
+  skinId?: string,
+): CharacterSpriteResource | undefined {
+  const base = CHARACTER_SPRITE_RESOURCE_BY_CLASS_ID.get(classId);
+  if (!base || !isCharacterSkinId(skinId)) return base;
+  return {
+    ...base,
+    textureKey: `char_sprite_${classId}_${skinId}`,
+    imagePath: `assets/generated/characters/recolors/char_${classId}_${skinId}.png`,
+    jsonPath: `assets/generated/characters/recolors/char_${classId}_${skinId}.json`,
+  };
+}
+
+/**
+ * 애니메이션 키는 *textureKey 기반*이어야 한다 — Phaser 의
+ * generateFrameNumbers 는 textureKey 를 anim 에 굽기 때문에, base 와 스킨이
+ * 같은 키를 공유하면 먼저 생성된 텍스처가 고정돼 스킨이 base 프레임을 재생한다.
+ * textureKey 가 class+skin 을 인코딩하므로 키가 스킨별로 자동 분리된다.
+ */
+export function getCharacterSpriteAnimationKey(
+  textureKey: string,
   motion: CharacterMotion,
   direction: CharacterDirection,
 ): string {
-  return `char_sprite_${classId}_${motion}_${direction}`;
+  return `${textureKey}_${motion}_${direction}`;
 }
 
 // --- Frame-range SSOT -------------------------------------------------------
