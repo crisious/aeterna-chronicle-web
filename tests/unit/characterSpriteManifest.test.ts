@@ -375,6 +375,9 @@ describe('character sprite manifest', () => {
     expect(source).toContain('getCharacterSpriteAnimationKey');
     expect(source).toContain('getCharacterFrameRange');
     expect(source).toContain('getCharacterSpriteResource(this.currentCharacterClassId)');
+    // 로컬 플레이어는 활성 스킨으로 해석·로드(원격은 base 유지).
+    expect(source).toContain("import { getActiveCharacterSkin } from './SettingsScene'");
+    expect(source).toContain('getCharacterSpriteResource(this.currentCharacterClassId, getActiveCharacterSkin())');
     expect(source).toContain('queueCharacterSprite(playerSpriteResource)');
     expect(source).toContain('this.load.spritesheet(characterSpriteResource.textureKey, characterSpriteResource.imagePath');
     expect(source).toContain('frameWidth: characterSpriteResource.frameWidth');
@@ -462,11 +465,12 @@ describe('character sprite manifest', () => {
     expect(source).toContain('getCharacterSpriteResource');
     expect(source).toContain('getCharacterSpriteAnimationKey');
     expect(source).toContain('getCharacterFrameRange');
-    expect(source).toContain('const spriteResource = getCharacterSpriteResource(cid)');
+    // 아군은 로컬 파티 → 활성 스킨으로 해석(스킨='base'면 원본).
+    expect(source).toContain('const spriteResource = getCharacterSpriteResource(cid, getActiveCharacterSkin())');
     expect(source).toContain('this.load.spritesheet(spriteResource.textureKey, spriteResource.imagePath');
     expect(source).toContain('frameWidth: spriteResource.frameWidth');
     expect(source).toContain('frameHeight: spriteResource.frameHeight');
-    expect(source).toContain('const spriteResource = getCharacterSpriteResource(classId)');
+    expect(source).toContain('const spriteResource = getCharacterSpriteResource(classId, getActiveCharacterSkin())');
     expect(source).toContain('this.textures.exists(spriteResource.textureKey)');
     // 애니메이션 배선: 정적 add.image 가 아니라 add.sprite 로 만들어 태그 재생.
     expect(source).toContain('this.add.sprite(pos.x, pos.y, spriteResource.textureKey, 0)');
@@ -568,7 +572,9 @@ describe('character sprite manifest', () => {
     expect(source).toContain('getCharacterSpriteAnimationKey');
     expect(source).toContain('getCharacterFrameRange');
     expect(source).toContain('private _getPlayerClassId(): string');
-    expect(source).toContain('getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource');
+    // 활성 스킨으로 해석(스킨='base'면 원본).
+    expect(source).toContain('getCharacterSpriteResource(this._getPlayerClassId(), skin) ?? getCharacterSpriteResource(');
+    expect(source).toContain("import { getActiveCharacterSkin } from './SettingsScene'");
     expect(source).toContain('this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath');
     expect(source).toContain('frameWidth: playerSpriteResource.frameWidth');
     expect(source).toContain('frameHeight: playerSpriteResource.frameHeight');

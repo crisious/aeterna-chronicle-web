@@ -65,6 +65,21 @@ export function isScreenShakeEnabled(): boolean {
   }
 }
 
+// 활성 캐릭터 스킨(팔레트 스왑 코스메틱, Phase D Part②) 검사. 씬들이 preload·
+// spawn·anim 에서 getCharacterSpriteResource(classId, skin) 으로 사용한다.
+// 'base'(또는 미설정)는 원본. isScreenShakeEnabled 과 동일한 localStorage 패턴.
+export function getActiveCharacterSkin(): string {
+  if (typeof document === 'undefined') return 'base';
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return 'base';
+    const parsed = JSON.parse(raw) as { characterSkin?: string };
+    return typeof parsed.characterSkin === 'string' && parsed.characterSkin ? parsed.characterSkin : 'base';
+  } catch {
+    return 'base';
+  }
+}
+
 // ── 기본 설정 값 ─────────────────────────────────────────────
 
 interface GameSettings {

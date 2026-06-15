@@ -23,7 +23,7 @@ import { StatusEffectRenderer, type StatusEffectData } from '../combat/StatusEff
 import { resolveStatusCategory } from '../combat/statusEffectCategory';
 import { ComboUI, preloadComboUiFrameTextures } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
-import { isScreenShakeEnabled } from './SettingsScene';
+import { isScreenShakeEnabled, getActiveCharacterSkin } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 import {
@@ -596,7 +596,8 @@ export class BattleScene extends Phaser.Scene {
     const classIds = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
     for (const cid of classIds) {
       this.load.image(`char_battle_${cid}`, `assets/generated/characters/class_main/battle/char_battle_${cid}.png`);
-      const spriteResource = getCharacterSpriteResource(cid);
+      // 아군은 로컬 파티 → 활성 스킨으로 해석(스킨='base'면 원본).
+      const spriteResource = getCharacterSpriteResource(cid, getActiveCharacterSkin());
       if (spriteResource && !this.textures.exists(spriteResource.textureKey)) {
         this.load.spritesheet(spriteResource.textureKey, spriteResource.imagePath, {
           frameWidth: spriteResource.frameWidth,
@@ -2874,7 +2875,7 @@ export class BattleScene extends Phaser.Scene {
     motion: CharacterMotion,
     direction: CharacterDirection,
   ): string {
-    const resource = getCharacterSpriteResource(classId);
+    const resource = getCharacterSpriteResource(classId, getActiveCharacterSkin());
     // 키는 textureKey 기반(스킨-안전). resource 없으면 classId 폴백(anim 미생성).
     const key = getCharacterSpriteAnimationKey(resource?.textureKey ?? classId, motion, direction);
     if (!resource || this.anims.exists(key)) return key;
@@ -2977,7 +2978,7 @@ export class BattleScene extends Phaser.Scene {
     units.forEach((unit, idx) => {
       const pos = ALLY_POSITIONS[idx % ALLY_POSITIONS.length];
       const classId = unit.classId ?? '';
-      const spriteResource = getCharacterSpriteResource(classId);
+      const spriteResource = getCharacterSpriteResource(classId, getActiveCharacterSkin());
       const staticTexKey = `char_battle_${classId}`;
 
       // B-S4: ally 에 critEcho 부여 (default 30%)

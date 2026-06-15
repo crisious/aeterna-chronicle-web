@@ -25,6 +25,7 @@ import {
   getCharacterSpriteAnimationKey,
   getCharacterFrameRange,
 } from '../assets/characterSpriteManifest';
+import { getActiveCharacterSkin } from './SettingsScene';
 import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ── 타입 ────────────────────────────────────────────────────
@@ -236,7 +237,8 @@ export class DungeonScene extends Phaser.Scene {
       console.warn(`[Dungeon] 에셋 로드 실패: ${file.key}`);
     });
 
-    const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource('ether_knight');
+    const skin = getActiveCharacterSkin();
+    const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId(), skin) ?? getCharacterSpriteResource('ether_knight', skin);
     if (playerSpriteResource && !this.textures.exists(playerSpriteResource.textureKey)) {
       this.load.spritesheet(playerSpriteResource.textureKey, playerSpriteResource.imagePath, {
         frameWidth: playerSpriteResource.frameWidth,
@@ -435,7 +437,7 @@ export class DungeonScene extends Phaser.Scene {
    * (getCharacterFrameRange)에서 idle_D 프레임 범위를 받아 루프 생성.
    */
   private _ensureCharIdleAnim(classId: string): string {
-    const resource = getCharacterSpriteResource(classId);
+    const resource = getCharacterSpriteResource(classId, getActiveCharacterSkin());
     // 키는 textureKey 기반(스킨-안전). resource 없으면 classId 폴백.
     const key = getCharacterSpriteAnimationKey(resource?.textureKey ?? classId, 'idle', 'D');
     if (!resource || this.anims.exists(key)) return key;
@@ -451,7 +453,8 @@ export class DungeonScene extends Phaser.Scene {
 
   private _createPlayer(sceneHeight: number): void {
     const py = sceneHeight / 2;
-    const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId()) ?? getCharacterSpriteResource('ether_knight');
+    const skin = getActiveCharacterSkin();
+    const playerSpriteResource = getCharacterSpriteResource(this._getPlayerClassId(), skin) ?? getCharacterSpriteResource('ether_knight', skin);
 
     if (playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)) {
       // 태그 스프라이트: add.sprite 로 만들어 idle 루프 재생(이전엔 정적 frame 0).
