@@ -270,6 +270,9 @@ interface UnitSprite {
   /** UX: 적 머리 위 HP 바(보스는 더 큼). _spawnEnemies 에서 생성, _updateEnemyHpBars 가 매프레임 갱신. */
   enemyHpBar?: Phaser.GameObjects.Graphics;
   isBoss?: boolean;
+  /** Phase E Part②: 보스 공격 카운터(매 3번째 = 텔레그래프 강공) + 예고 아이콘 핸들. */
+  bossAtkCount?: number;
+  telegraphIcon?: Phaser.GameObjects.Text;
   /** UX(#9): 표시용 HP 보간값 — 실제 hp 로 lerp 해 바가 부드럽게 드레인(즉시 점프 방지). */
   displayedHp?: number;
   /** UX(rank13): 방어 상태. baseDefense=방어 전 원본(스냅샷 복원용), defendToken=최신 방어만 복원 유효. */
@@ -1870,7 +1873,7 @@ export class BattleScene extends Phaser.Scene {
 
   // ─── 전투 행동 ───────────────────────────────────────────────
 
-  private _performAttack(attacker: UnitSprite, target: UnitSprite): void {
+  private _performAttack(attacker: UnitSprite, target: UnitSprite, opts?: { strong?: boolean }): void {
     // 공격자 근접 스윙 모션(빗나가도 whiff 로 재생) → 완료 시 idle 복귀.
     this._playAttackerAction(attacker, 'attack_melee');
 
@@ -1888,7 +1891,9 @@ export class BattleScene extends Phaser.Scene {
     const rawDmg = Math.max(1, attacker.unit.attack - (target.unit.defense ?? 0));
     const isCritical = Math.random() < 0.15;
     const variance = 0.85 + Math.random() * 0.3;
-    const dmg = Math.round(rawDmg * variance * (isCritical ? 1.8 : 1));
+    // 보스 텔레그래프 강공: 예고 후 1.6배 타격(Phase E Part② / B11).
+    const strongMult = opts?.strong ? 1.6 : 1;
+    const dmg = Math.round(rawDmg * variance * (isCritical ? 1.8 : 1) * strongMult);
 
     // 서버 동기화
     this.combatManager?.requestAttack(attacker.unit.id, target.unit.id, dmg);
@@ -1938,7 +1943,8 @@ export class BattleScene extends Phaser.Scene {
 
     // 로그
     const critLabel = isCritical ? ' 💥크리티컬!' : '';
-    this.battleUI?.addLog(`${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`);
+    const strongLabel = opts?.strong ? '💢강공! ' : '';
+    this.battleUI?.addLog(`${strongLabel}${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`);
 
     // 대상 피격 연출 (번쩍임 + 흔들림)
     this._flashSprite(target);
@@ -2364,9 +2370,67 @@ export class BattleScene extends Phaser.Scene {
       if (livingAllies.length === 0) continue;
 
       const target = livingAllies[Math.floor(Math.random() * livingAllies.length)];
-      this._performAttack(es, target);
       es.atb = 0;
+
+      // Phase E Part②(B11): 보스는 매 3번째 공격을 텔레그래프된 강공으로.
+      // 예고(아이콘+색+모션) 후 지연 타격 → 플레이어가 방어/회피를 준비할 수 있게.
+      if (es.isBoss) {
+        es.bossAtkCount = (es.bossAtkCount ?? 0) + 1;
+        if (es.bossAtkCount % 3 === 0) {
+          this._telegraphBossStrike(es, target);
+          continue;
+        }
+      }
+      this._performAttack(es, target);
     }
+  }
+
+  /** 보스 강공 예고 → TELEGRAPH_MS 후 1.6배 타격. atb 는 호출부에서 이미 0(중복 진입 방지). */
+  private _telegraphBossStrike(boss: UnitSprite, target: UnitSprite): void {
+    const TELEGRAPH_MS = 900;
+    this._showBossTelegraph(boss);
+    this.time.delayedCall(TELEGRAPH_MS, () => {
+      this._clearBossTelegraph(boss);
+      if (boss.isDead) return;
+      // 예고 중 원래 타겟이 죽었으면 생존 아군으로 재지정.
+      const living = this.allySprites.filter(a => !a.isDead);
+      if (living.length === 0) return;
+      const t = target.isDead ? living[Math.floor(Math.random() * living.length)] : target;
+      this._performAttack(boss, t, { strong: true });
+    });
+  }
+
+  /** 예고 비주얼: ⚠ 아이콘 + 붉은 틴트 + (reduce-motion 아니면) 펄스 모션 + 경고음/로그. */
+  private _showBossTelegraph(boss: UnitSprite): void {
+    if (this._canTint(boss.sprite)) boss.sprite.setTint(0xff5533);
+    const icon = this.add.text(boss.sprite.x, boss.sprite.y - (boss.isBoss ? 92 : 60), '⚠', {
+      fontSize: '40px',
+      fontFamily: FONT_FAMILY,
+      color: '#ff4422',
+    }).setOrigin(0.5).setDepth(9000);
+    boss.telegraphIcon = icon;
+    this.battleUI?.addLog(`💢 ${boss.unit.name} 강공 준비!`);
+    playSfx(this, 'sfx_ui_error', 0.5);
+    // 모션은 reduce-motion(=screen shake 설정) 게이트. 색·아이콘·소리는 항상(색맹 대응).
+    if (isScreenShakeEnabled()) {
+      this.tweens.add({
+        targets: boss.sprite,
+        scaleX: boss.sprite.scaleX * 1.12,
+        scaleY: boss.sprite.scaleY * 1.12,
+        duration: 300, yoyo: true, repeat: 1, ease: 'Sine.easeInOut',
+      });
+      this.tweens.add({ targets: icon, alpha: 0.3, duration: 220, yoyo: true, repeat: -1 });
+    }
+  }
+
+  private _clearBossTelegraph(boss: UnitSprite): void {
+    if (boss.telegraphIcon) {
+      this.tweens.killTweensOf(boss.telegraphIcon);
+      boss.telegraphIcon.destroy();
+      boss.telegraphIcon = undefined;
+    }
+    // 사망 시엔 _killUnit 의 그레이 틴트를 보존(여기서 clear 하면 덮어씀).
+    if (!boss.isDead && this._canTint(boss.sprite)) boss.sprite.clearTint();
   }
 
   // ─── 키보드 입력 ──────────────────────────────────────────────
