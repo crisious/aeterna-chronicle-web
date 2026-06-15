@@ -87,6 +87,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        # 자산 테스트(atlasPackerAssets/zoneBackgrounds/품질 게이트 등)가 PNG
+        # 바이트에서 치수를 파싱하므로 LFS 실물이 필요. PNG 는 *.png filter=lfs.
+        with:
+          lfs: true
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v5
