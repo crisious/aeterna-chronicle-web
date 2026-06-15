@@ -30,6 +30,59 @@ export const RECOLOR_SPECS = {
       { from: [13, 13, 26], to: [28, 15, 22] },
     ],
   },
+  // memory_weaver "ember" — 보라 로브/이더 블루 → 러스트/앰버.
+  memory_weaver_ember: {
+    base: 'char_memory_weaver_base',
+    map: [
+      { from: [57, 43, 103], to: [103, 60, 38] },
+      { from: [48, 35, 91], to: [91, 52, 34] },
+      { from: [126, 85, 181], to: [200, 130, 70] },
+      { from: [151, 183, 207], to: [207, 170, 130] },
+      { from: [137, 207, 240], to: [255, 150, 70] },
+    ],
+  },
+  // shadow_weaver "ember" — 그림자 보라 → 앰버(다크 뉴트럴은 유지).
+  shadow_weaver_ember: {
+    base: 'char_shadow_weaver_base',
+    map: [
+      { from: [31, 19, 47], to: [47, 28, 18] },
+      { from: [28, 15, 42], to: [42, 24, 14] },
+      { from: [124, 58, 173], to: [190, 100, 55] },
+      { from: [59, 41, 82], to: [82, 55, 38] },
+    ],
+  },
+  // memory_breaker "ember" — 회색 아머 → 브론즈(이미 따뜻한 레드는 유지).
+  memory_breaker_ember: {
+    base: 'char_memory_breaker_base',
+    map: [
+      { from: [149, 157, 164], to: [170, 140, 105] },
+      { from: [157, 160, 164], to: [175, 150, 115] },
+      { from: [74, 85, 92], to: [95, 78, 58] },
+      { from: [36, 45, 50], to: [52, 42, 32] },
+    ],
+  },
+  // time_guardian "ember" — 블루 → 앰버(골드는 ember 와 어울려 유지).
+  time_guardian_ember: {
+    base: 'char_time_guardian_base',
+    map: [
+      { from: [45, 83, 124], to: [124, 85, 45] },
+      { from: [78, 128, 175], to: [178, 128, 78] },
+    ],
+  },
+  // void_wanderer "ember" — 보이드 보라/마젠타/시안 → 앰버/크림슨.
+  void_wanderer_ember: {
+    base: 'char_void_wanderer_base',
+    map: [
+      { from: [55, 31, 84], to: [88, 55, 30] },
+      { from: [102, 54, 139], to: [160, 95, 50] },
+      { from: [130, 39, 164], to: [205, 90, 40] },
+      { from: [154, 86, 180], to: [210, 130, 75] },
+      { from: [255, 0, 255], to: [255, 120, 40] },
+      { from: [45, 72, 89], to: [110, 82, 52] },
+      { from: [0, 206, 209], to: [235, 150, 60] },
+      { from: [26, 26, 46], to: [46, 30, 24] },
+    ],
+  },
 };
 
 function key(r, g, b) {

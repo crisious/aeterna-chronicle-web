@@ -1,0 +1,1720 @@
+{
+  "atlas": "char_memory_breaker_ember",
+  "image": "char_memory_breaker_ember.png",
+  "size": {
+    "w": 2560,
+    "h": 320
+  },
+  "sprites": [
+    {
+      "name": "char_memory_breaker_base 0.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 1.aseprite",
+      "x": 64,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 2.aseprite",
+      "x": 128,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 3.aseprite",
+      "x": 192,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 4.aseprite",
+      "x": 256,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 5.aseprite",
+      "x": 320,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 6.aseprite",
+      "x": 384,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 7.aseprite",
+      "x": 448,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 8.aseprite",
+      "x": 512,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 9.aseprite",
+      "x": 576,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 10.aseprite",
+      "x": 640,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 11.aseprite",
+      "x": 704,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 12.aseprite",
+      "x": 768,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 13.aseprite",
+      "x": 832,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 14.aseprite",
+      "x": 896,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 15.aseprite",
+      "x": 960,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 16.aseprite",
+      "x": 1024,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 17.aseprite",
+      "x": 1088,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 18.aseprite",
+      "x": 1152,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 19.aseprite",
+      "x": 1216,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 20.aseprite",
+      "x": 1280,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 21.aseprite",
+      "x": 1344,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 22.aseprite",
+      "x": 1408,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 23.aseprite",
+      "x": 1472,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 24.aseprite",
+      "x": 1536,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 25.aseprite",
+      "x": 1600,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 26.aseprite",
+      "x": 1664,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 27.aseprite",
+      "x": 1728,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 28.aseprite",
+      "x": 1792,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 29.aseprite",
+      "x": 1856,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 30.aseprite",
+      "x": 1920,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 31.aseprite",
+      "x": 1984,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 32.aseprite",
+      "x": 2048,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 33.aseprite",
+      "x": 2112,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 34.aseprite",
+      "x": 2176,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 35.aseprite",
+      "x": 2240,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 36.aseprite",
+      "x": 2304,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 37.aseprite",
+      "x": 2368,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 38.aseprite",
+      "x": 2432,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 39.aseprite",
+      "x": 2496,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 40.aseprite",
+      "x": 0,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 41.aseprite",
+      "x": 64,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 42.aseprite",
+      "x": 128,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 43.aseprite",
+      "x": 192,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 44.aseprite",
+      "x": 256,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 45.aseprite",
+      "x": 320,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 46.aseprite",
+      "x": 384,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 47.aseprite",
+      "x": 448,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 48.aseprite",
+      "x": 512,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 49.aseprite",
+      "x": 576,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 50.aseprite",
+      "x": 640,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 51.aseprite",
+      "x": 704,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 52.aseprite",
+      "x": 768,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 53.aseprite",
+      "x": 832,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 54.aseprite",
+      "x": 896,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 55.aseprite",
+      "x": 960,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 56.aseprite",
+      "x": 1024,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 57.aseprite",
+      "x": 1088,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 58.aseprite",
+      "x": 1152,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 59.aseprite",
+      "x": 1216,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 60.aseprite",
+      "x": 1280,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 61.aseprite",
+      "x": 1344,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 62.aseprite",
+      "x": 1408,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 63.aseprite",
+      "x": 1472,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 64.aseprite",
+      "x": 1536,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 65.aseprite",
+      "x": 1600,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 66.aseprite",
+      "x": 1664,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 67.aseprite",
+      "x": 1728,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 68.aseprite",
+      "x": 1792,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 69.aseprite",
+      "x": 1856,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 70.aseprite",
+      "x": 1920,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 71.aseprite",
+      "x": 1984,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 72.aseprite",
+      "x": 2048,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 73.aseprite",
+      "x": 2112,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 74.aseprite",
+      "x": 2176,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 75.aseprite",
+      "x": 2240,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 76.aseprite",
+      "x": 2304,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 77.aseprite",
+      "x": 2368,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 78.aseprite",
+      "x": 2432,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 79.aseprite",
+      "x": 2496,
+      "y": 64,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 80.aseprite",
+      "x": 0,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 81.aseprite",
+      "x": 64,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 82.aseprite",
+      "x": 128,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 83.aseprite",
+      "x": 192,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 84.aseprite",
+      "x": 256,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 85.aseprite",
+      "x": 320,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 86.aseprite",
+      "x": 384,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 87.aseprite",
+      "x": 448,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 88.aseprite",
+      "x": 512,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 89.aseprite",
+      "x": 576,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 90.aseprite",
+      "x": 640,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 91.aseprite",
+      "x": 704,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 92.aseprite",
+      "x": 768,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 93.aseprite",
+      "x": 832,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 94.aseprite",
+      "x": 896,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 95.aseprite",
+      "x": 960,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 96.aseprite",
+      "x": 1024,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 97.aseprite",
+      "x": 1088,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 98.aseprite",
+      "x": 1152,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 99.aseprite",
+      "x": 1216,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 100.aseprite",
+      "x": 1280,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 101.aseprite",
+      "x": 1344,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 102.aseprite",
+      "x": 1408,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 103.aseprite",
+      "x": 1472,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 104.aseprite",
+      "x": 1536,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 105.aseprite",
+      "x": 1600,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 106.aseprite",
+      "x": 1664,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 107.aseprite",
+      "x": 1728,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 108.aseprite",
+      "x": 1792,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 109.aseprite",
+      "x": 1856,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 110.aseprite",
+      "x": 1920,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 111.aseprite",
+      "x": 1984,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 112.aseprite",
+      "x": 2048,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 113.aseprite",
+      "x": 2112,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 114.aseprite",
+      "x": 2176,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 115.aseprite",
+      "x": 2240,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 116.aseprite",
+      "x": 2304,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 117.aseprite",
+      "x": 2368,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 118.aseprite",
+      "x": 2432,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 119.aseprite",
+      "x": 2496,
+      "y": 128,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 120.aseprite",
+      "x": 0,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 121.aseprite",
+      "x": 64,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 122.aseprite",
+      "x": 128,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 123.aseprite",
+      "x": 192,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 124.aseprite",
+      "x": 256,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 125.aseprite",
+      "x": 320,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 126.aseprite",
+      "x": 384,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 127.aseprite",
+      "x": 448,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 128.aseprite",
+      "x": 512,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 129.aseprite",
+      "x": 576,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 130.aseprite",
+      "x": 640,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 131.aseprite",
+      "x": 704,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 132.aseprite",
+      "x": 768,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 133.aseprite",
+      "x": 832,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 134.aseprite",
+      "x": 896,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 135.aseprite",
+      "x": 960,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 136.aseprite",
+      "x": 1024,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 137.aseprite",
+      "x": 1088,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 138.aseprite",
+      "x": 1152,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 139.aseprite",
+      "x": 1216,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 140.aseprite",
+      "x": 1280,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 141.aseprite",
+      "x": 1344,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 142.aseprite",
+      "x": 1408,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 143.aseprite",
+      "x": 1472,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 144.aseprite",
+      "x": 1536,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 145.aseprite",
+      "x": 1600,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 146.aseprite",
+      "x": 1664,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 147.aseprite",
+      "x": 1728,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 148.aseprite",
+      "x": 1792,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 149.aseprite",
+      "x": 1856,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 150.aseprite",
+      "x": 1920,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 151.aseprite",
+      "x": 1984,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 152.aseprite",
+      "x": 2048,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 153.aseprite",
+      "x": 2112,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 154.aseprite",
+      "x": 2176,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 155.aseprite",
+      "x": 2240,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 156.aseprite",
+      "x": 2304,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 157.aseprite",
+      "x": 2368,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 158.aseprite",
+      "x": 2432,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 159.aseprite",
+      "x": 2496,
+      "y": 192,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 160.aseprite",
+      "x": 0,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 161.aseprite",
+      "x": 64,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 162.aseprite",
+      "x": 128,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 163.aseprite",
+      "x": 192,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 164.aseprite",
+      "x": 256,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 165.aseprite",
+      "x": 320,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 166.aseprite",
+      "x": 384,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 167.aseprite",
+      "x": 448,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 168.aseprite",
+      "x": 512,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 169.aseprite",
+      "x": 576,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 170.aseprite",
+      "x": 640,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 171.aseprite",
+      "x": 704,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 172.aseprite",
+      "x": 768,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 173.aseprite",
+      "x": 832,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 174.aseprite",
+      "x": 896,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 175.aseprite",
+      "x": 960,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 176.aseprite",
+      "x": 1024,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 177.aseprite",
+      "x": 1088,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 178.aseprite",
+      "x": 1152,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 179.aseprite",
+      "x": 1216,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 180.aseprite",
+      "x": 1280,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 181.aseprite",
+      "x": 1344,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 182.aseprite",
+      "x": 1408,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 183.aseprite",
+      "x": 1472,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 184.aseprite",
+      "x": 1536,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 185.aseprite",
+      "x": 1600,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 186.aseprite",
+      "x": 1664,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 187.aseprite",
+      "x": 1728,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 188.aseprite",
+      "x": 1792,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 189.aseprite",
+      "x": 1856,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 190.aseprite",
+      "x": 1920,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 191.aseprite",
+      "x": 1984,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 192.aseprite",
+      "x": 2048,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 193.aseprite",
+      "x": 2112,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 194.aseprite",
+      "x": 2176,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 195.aseprite",
+      "x": 2240,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 196.aseprite",
+      "x": 2304,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 197.aseprite",
+      "x": 2368,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 198.aseprite",
+      "x": 2432,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "char_memory_breaker_base 199.aseprite",
+      "x": 2496,
+      "y": 256,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [
+    {
+      "name": "idle_D",
+      "from": 0,
+      "to": 3,
+      "direction": "forward",
+      "color": "#89cff0ff"
+    },
+    {
+      "name": "walk_D",
+      "from": 4,
+      "to": 9,
+      "direction": "forward",
+      "color": "#b98126ff"
+    },
+    {
+      "name": "attack_melee_D",
+      "from": 10,
+      "to": 15,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "cast_D",
+      "from": 16,
+      "to": 20,
+      "direction": "forward",
+      "color": "#d7332dff"
+    },
+    {
+      "name": "hit_D",
+      "from": 21,
+      "to": 23,
+      "direction": "forward",
+      "color": "#2d7da5ff"
+    },
+    {
+      "name": "death_D",
+      "from": 24,
+      "to": 29,
+      "direction": "forward",
+      "color": "#5c0509ff"
+    },
+    {
+      "name": "ready_D",
+      "from": 30,
+      "to": 33,
+      "direction": "forward",
+      "color": "#959da4ff"
+    },
+    {
+      "name": "victory_D",
+      "from": 34,
+      "to": 39,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "idle_DL",
+      "from": 40,
+      "to": 43,
+      "direction": "forward",
+      "color": "#89cff0ff"
+    },
+    {
+      "name": "walk_DL",
+      "from": 44,
+      "to": 49,
+      "direction": "forward",
+      "color": "#b98126ff"
+    },
+    {
+      "name": "attack_melee_DL",
+      "from": 50,
+      "to": 55,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "cast_DL",
+      "from": 56,
+      "to": 60,
+      "direction": "forward",
+      "color": "#d7332dff"
+    },
+    {
+      "name": "hit_DL",
+      "from": 61,
+      "to": 63,
+      "direction": "forward",
+      "color": "#2d7da5ff"
+    },
+    {
+      "name": "death_DL",
+      "from": 64,
+      "to": 69,
+      "direction": "forward",
+      "color": "#5c0509ff"
+    },
+    {
+      "name": "ready_DL",
+      "from": 70,
+      "to": 73,
+      "direction": "forward",
+      "color": "#959da4ff"
+    },
+    {
+      "name": "victory_DL",
+      "from": 74,
+      "to": 79,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "idle_L",
+      "from": 80,
+      "to": 83,
+      "direction": "forward",
+      "color": "#89cff0ff"
+    },
+    {
+      "name": "walk_L",
+      "from": 84,
+      "to": 89,
+      "direction": "forward",
+      "color": "#b98126ff"
+    },
+    {
+      "name": "attack_melee_L",
+      "from": 90,
+      "to": 95,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "cast_L",
+      "from": 96,
+      "to": 100,
+      "direction": "forward",
+      "color": "#d7332dff"
+    },
+    {
+      "name": "hit_L",
+      "from": 101,
+      "to": 103,
+      "direction": "forward",
+      "color": "#2d7da5ff"
+    },
+    {
+      "name": "death_L",
+      "from": 104,
+      "to": 109,
+      "direction": "forward",
+      "color": "#5c0509ff"
+    },
+    {
+      "name": "ready_L",
+      "from": 110,
+      "to": 113,
+      "direction": "forward",
+      "color": "#959da4ff"
+    },
+    {
+      "name": "victory_L",
+      "from": 114,
+      "to": 119,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "idle_UL",
+      "from": 120,
+      "to": 123,
+      "direction": "forward",
+      "color": "#89cff0ff"
+    },
+    {
+      "name": "walk_UL",
+      "from": 124,
+      "to": 129,
+      "direction": "forward",
+      "color": "#b98126ff"
+    },
+    {
+      "name": "attack_melee_UL",
+      "from": 130,
+      "to": 135,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "cast_UL",
+      "from": 136,
+      "to": 140,
+      "direction": "forward",
+      "color": "#d7332dff"
+    },
+    {
+      "name": "hit_UL",
+      "from": 141,
+      "to": 143,
+      "direction": "forward",
+      "color": "#2d7da5ff"
+    },
+    {
+      "name": "death_UL",
+      "from": 144,
+      "to": 149,
+      "direction": "forward",
+      "color": "#5c0509ff"
+    },
+    {
+      "name": "ready_UL",
+      "from": 150,
+      "to": 153,
+      "direction": "forward",
+      "color": "#959da4ff"
+    },
+    {
+      "name": "victory_UL",
+      "from": 154,
+      "to": 159,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "idle_U",
+      "from": 160,
+      "to": 163,
+      "direction": "forward",
+      "color": "#89cff0ff"
+    },
+    {
+      "name": "walk_U",
+      "from": 164,
+      "to": 169,
+      "direction": "forward",
+      "color": "#b98126ff"
+    },
+    {
+      "name": "attack_melee_U",
+      "from": 170,
+      "to": 175,
+      "direction": "forward",
+      "color": "#c6262cff"
+    },
+    {
+      "name": "cast_U",
+      "from": 176,
+      "to": 180,
+      "direction": "forward",
+      "color": "#d7332dff"
+    },
+    {
+      "name": "hit_U",
+      "from": 181,
+      "to": 183,
+      "direction": "forward",
+      "color": "#2d7da5ff"
+    },
+    {
+      "name": "death_U",
+      "from": 184,
+      "to": 189,
+      "direction": "forward",
+      "color": "#5c0509ff"
+    },
+    {
+      "name": "ready_U",
+      "from": 190,
+      "to": 193,
+      "direction": "forward",
+      "color": "#959da4ff"
+    },
+    {
+      "name": "victory_U",
+      "from": 194,
+      "to": 199,
+      "direction": "forward",
+      "color": "#c6262cff"
+    }
+  ],
+  "layers": [
+    {
+      "name": "shadow",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "body",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "armor_shard",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "warhammer",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "memory_cracks",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 200
+}
