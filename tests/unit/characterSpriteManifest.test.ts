@@ -430,8 +430,9 @@ describe('character sprite manifest', () => {
     expect(source).toContain("characterClass?: string");
     expect(source).toContain("const remoteClassId = d.characterClass?.trim() ?? ''");
     expect(source).toContain('const remoteSpriteResource = remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined');
-    expect(source).toContain('this.add.image(d.x, d.y, remoteSpriteResource.textureKey, 0)');
-    expect(source).toContain('sprite.setFrame(0)');
+    // 원격 플레이어도 정적 add.image 가 아니라 add.sprite + idle 루프.
+    expect(source).toContain('this.add.sprite(d.x, d.y, remoteSpriteResource.textureKey, 0)');
+    expect(source).toContain("this._ensureCharFieldAnim(remoteClassId, 'idle', 'D')");
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
     expect(source).toContain('Aseprite remote player sprite 로드 실패 시에만 사용하는 안전 fallback');
     expect(source).toContain('this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff)');

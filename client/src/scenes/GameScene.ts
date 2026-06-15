@@ -115,7 +115,7 @@ interface RemoteEntity {
   id: string;
   name: string;
   role?: string;
-  sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   nameTag: Phaser.GameObjects.Text;
   isMonster: boolean;
   /** 키보드 컷오버(감사 rank2): 몬스터 전투 진입 액션 — pointerdown 클로저와 동일 페이로드 공유. */
@@ -937,13 +937,17 @@ export class GameScene extends Phaser.Scene {
       if (!this.remoteEntities.has(d.characterId)) {
         const remoteClassId = d.characterClass?.trim() ?? '';
         const remoteSpriteResource = remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined;
-        let sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+        let sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
 
         if (remoteSpriteResource && this.textures.exists(remoteSpriteResource.textureKey)) {
-          sprite = this.add.image(d.x, d.y, remoteSpriteResource.textureKey, 0)
+          // 원격 플레이어도 idle 루프(이전엔 정적 frame 0). 원격은 이 클라에서
+          // 위치 이동 수신 핸들러가 없어 화면상 정지 → walk 없이 idle 만 의미 있음.
+          const remoteSprite = this.add.sprite(d.x, d.y, remoteSpriteResource.textureKey, 0)
             .setDisplaySize(56, 56);
-          sprite.setFrame(0);
-          sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          remoteSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          const idleKey = this._ensureCharFieldAnim(remoteClassId, 'idle', 'D');
+          if (this.anims.exists(idleKey)) remoteSprite.play(idleKey);
+          sprite = remoteSprite;
         } else {
           // Aseprite remote player sprite 로드 실패 시에만 사용하는 안전 fallback.
           sprite = this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff);
