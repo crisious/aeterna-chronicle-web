@@ -1006,7 +1006,12 @@ export class GameScene extends Phaser.Scene {
       this.player.setVelocity(0);
 
       // 모달 패널(인벤토리 등)이 열려 있으면 화살표/WASD 를 패널 포커스 이동에 양보(이동 정지).
-      if (isUiModalOpen()) return;
+      // 이동 중 모달을 열면 velocity 는 0 이 되지만 anim 갱신(아래) 전에 return 하므로
+      // walk 루프가 계속 돌아 '제자리 뛰기'가 된다 → idle 로 정착시키고 나간다.
+      if (isUiModalOpen()) {
+        this._playPlayerAnim('idle');
+        return;
+      }
 
       const isLeft = this.cursors.left?.isDown || this.wasdKeys.left?.isDown;
       const isRight = this.cursors.right?.isDown || this.wasdKeys.right?.isDown;
