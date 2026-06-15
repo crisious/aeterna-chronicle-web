@@ -9,7 +9,35 @@
       "padding": 2,
       "sheetType": "rows",
       "sheetColumns": 40,
-      "requiredTags": ["idle_D", "walk_D", "attack_melee_D", "cast_D", "hit_D", "death_D"]
+      "requiredTags": ["idle_D", "walk_D", "attack_melee_D", "cast_D", "hit_D", "death_D", "ready_D", "victory_D"]
+    },
+    "characterIllustration": {
+      "frameWidth": 256,
+      "frameHeight": 384,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "characterBattleThumbnail": {
+      "frameWidth": 64,
+      "frameHeight": 96,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "characterSpriteSheet": {
+      "frameWidth": 256,
+      "frameHeight": 384,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "npcBattleThumbnail": {
+      "frameWidth": 64,
+      "frameHeight": 96,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
     },
     "npc": {
       "frameWidth": 64,
@@ -18,12 +46,54 @@
       "sheetType": "rows",
       "requiredTags": ["idle_D", "talk_D"]
     },
+    "npcPortrait": {
+      "frameWidth": 512,
+      "frameHeight": 512,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "npcSprite": {
+      "frameWidth": 256,
+      "frameHeight": 384,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
     "monster": {
       "frameWidth": 64,
       "frameHeight": 64,
       "padding": 2,
       "sheetType": "rows",
       "requiredTags": ["idle", "attack", "hit", "death"]
+    },
+    "monsterPortrait": {
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "monsterBattleIcon": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "monsterEliteBossPortrait": {
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "monsterRaidBossPortrait": {
+      "frameWidth": 512,
+      "frameHeight": 512,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
     },
     "vfx": {
       "frameWidth": 64,
@@ -37,6 +107,139 @@
       "frameHeight": 32,
       "padding": 1,
       "sheetType": "packed",
+      "requiredTags": []
+    },
+    "uiFrame": {
+      "frameWidth": 512,
+      "frameHeight": 512,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "cosmetic": {
+      "frameWidth": 512,
+      "frameHeight": 512,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "worldmap": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "skillIcon": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "itemIcon": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "statusIcon": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "environmentBackground": {
+      "frameWidth": 1280,
+      "frameHeight": 720,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "environmentTile": {
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "environmentObject": {
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "storyCg": {
+      "frameWidth": 1216,
+      "frameHeight": 832,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "fallbackTexture": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "fallbackTextureSmall": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "effectFallbackTexture": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "effectFallbackTextureSmall": {
+      "frameWidth": 24,
+      "frameHeight": 24,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "battleMonsterFallbackTexture": {
+      "frameWidth": 60,
+      "frameHeight": 60,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "battleMonsterBossFallbackTexture": {
+      "frameWidth": 90,
+      "frameHeight": 90,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "environmentParticleRainTexture": {
+      "frameWidth": 2,
+      "frameHeight": 10,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "environmentParticleSnowTexture": {
+      "frameWidth": 6,
+      "frameHeight": 10,
+      "padding": 0,
+      "sheetType": "rows",
+      "requiredTags": []
+    },
+    "environmentParticleEtherBeamTexture": {
+      "frameWidth": 6,
+      "frameHeight": 16,
+      "padding": 0,
+      "sheetType": "rows",
       "requiredTags": []
     },
     "tile": {

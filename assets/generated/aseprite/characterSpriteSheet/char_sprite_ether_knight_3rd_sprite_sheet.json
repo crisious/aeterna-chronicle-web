@@ -1,0 +1,26 @@
+{
+  "atlas": "char_sprite_ether_knight_3rd_sprite_sheet",
+  "image": "char_sprite_ether_knight_3rd_sprite_sheet.png",
+  "size": {
+    "w": 256,
+    "h": 384
+  },
+  "sprites": [
+    {
+      "name": "char_sprite_ether_knight_3rd_sprite_sheet.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 384
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "characterIllustration",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

@@ -12,6 +12,7 @@ import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CHARACTER_SPRITE_MANIFEST } from '../../client/src/assets/characterSpriteManifest';
+import { SPRITE_RESOURCE_MANIFEST } from '../../client/src/assets/spriteResourceManifest';
 
 const ROOT = path.resolve(__dirname, '../..');
 const CLIENT_SRC = path.join(ROOT, 'client/src');
@@ -176,6 +177,32 @@ describe('Asset Reference Integrity', () => {
           expect(frame.h).toBe(entry.frameHeight);
         }
       }
+    });
+
+    it('spriteResourceManifest 참조 파일이 client/public/ 에 존재해야 한다', () => {
+      const missing: { id: string; assetPath: string; type: string }[] = [];
+
+      expect(SPRITE_RESOURCE_MANIFEST.length).toBeGreaterThan(0);
+
+      for (const resource of SPRITE_RESOURCE_MANIFEST) {
+        const diskPath = path.join(CLIENT_PUBLIC, resource.path);
+        if (!fs.existsSync(diskPath)) {
+          missing.push({
+            id: resource.id,
+            assetPath: resource.path,
+            type: resource.kind,
+          });
+        }
+      }
+
+      if (missing.length > 0) {
+        console.warn('\n⚠️  누락된 스프라이트 리소스 매니페스트 파일:');
+        for (const m of missing) {
+          console.warn(`  [${m.type}] ${m.assetPath}  ← ${m.id}`);
+        }
+      }
+
+      expect(missing, `${missing.length}개 스프라이트 리소스 파일이 디스크에 없습니다`).toHaveLength(0);
     });
   });
 

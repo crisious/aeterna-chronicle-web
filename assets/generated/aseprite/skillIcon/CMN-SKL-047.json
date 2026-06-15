@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_skill_icon_cmn_skl_047",
+  "image": "CMN-SKL-047.png",
+  "size": {
+    "w": 64,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "CMN-SKL-047.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "genericSkillIcon",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

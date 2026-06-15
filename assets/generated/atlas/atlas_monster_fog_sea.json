@@ -2,135 +2,177 @@
   "atlas": "atlas_monster_fog_sea",
   "size": {
     "w": 4096,
-    "h": 2048
+    "h": 1024
   },
   "sprites": [
     {
       "file": "BOSS-FOG-LEVIATHAN.png",
       "x": 0,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_erebos_fog_rat_normal.png",
-      "x": 514,
+      "file": "mon_fog_sea_abyssal_siren_elite.png",
+      "x": 386,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_erebos_fog_wolf_normal.png",
-      "x": 1028,
+      "file": "mon_fog_sea_deep_anglerfish_boss.png",
+      "x": 772,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_fog_sea_drowned_titan_elite.png",
+      "x": 1158,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_fog_sea_fog_leviathan_spawn_elite.png",
+      "x": 1544,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_fog_sea_fog_siren_boss.png",
+      "x": 1930,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_fog_sea_ghost_admiral_elite.png",
+      "x": 2316,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_fog_sea_ghost_fleet_commander_boss.png",
+      "x": 2702,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_fog_sea_memory_kraken_elite.png",
+      "x": 3088,
+      "y": 0,
+      "w": 384,
+      "h": 384
     },
     {
       "file": "mon_fog_sea_abyssal_polyp_normal.png",
-      "x": 1542,
+      "x": 3474,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_barnacle_horror_normal.png",
-      "x": 2056,
+      "x": 3732,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_deep_angler_normal.png",
-      "x": 2570,
-      "y": 0,
-      "w": 512,
-      "h": 512
+      "x": 0,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_drowned_knight_normal.png",
-      "x": 3084,
-      "y": 0,
-      "w": 512,
-      "h": 512
+      "x": 258,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_fog_jellyfish_normal.png",
-      "x": 0,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 516,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_fog_mimic_normal.png",
-      "x": 514,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 774,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_fog_serpent_normal.png",
-      "x": 1028,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 1032,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_fog_wisp_normal.png",
-      "x": 1542,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 1290,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_ghost_crab_normal.png",
-      "x": 2056,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 1548,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_ghost_sailor_normal.png",
-      "x": 2570,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 1806,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_lost_soul_cluster_normal.png",
-      "x": 3084,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "x": 2064,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_memory_sponge_normal.png",
-      "x": 0,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 2322,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_phantom_fish_normal.png",
-      "x": 514,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 2580,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_spectral_eel_normal.png",
-      "x": 1028,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 2838,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
       "file": "mon_fog_sea_wraith_gull_normal.png",
-      "x": 1542,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "x": 3096,
+      "y": 386,
+      "w": 256,
+      "h": 256
     }
   ],
-  "count": 18
+  "count": 24
 }

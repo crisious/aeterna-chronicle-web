@@ -1,0 +1,26 @@
+{
+  "atlas": "raid_boss_lethe_abyssal_phase4",
+  "image": "raid_boss_lethe_abyssal_phase4.png",
+  "size": {
+    "w": 512,
+    "h": 512
+  },
+  "sprites": [
+    {
+      "name": "raid_boss_lethe_abyssal_phase4.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "monsterImage",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

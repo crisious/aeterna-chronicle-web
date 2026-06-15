@@ -1,0 +1,26 @@
+{
+  "atlas": "particle_ether_beam",
+  "image": "particle_ether_beam.png",
+  "size": {
+    "w": 6,
+    "h": 16
+  },
+  "sprites": [
+    {
+      "name": "particle_ether_beam.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 6,
+      "h": 16
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentParticleTexture",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

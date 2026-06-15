@@ -1,0 +1,96 @@
+{
+  "atlas": "npc_memory_fragment_board",
+  "image": "npc_memory_fragment_board.png",
+  "size": {
+    "w": 384,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "npc_memory_fragment_board 0.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "npc_memory_fragment_board 1.aseprite",
+      "x": 64,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "npc_memory_fragment_board 2.aseprite",
+      "x": 128,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "npc_memory_fragment_board 3.aseprite",
+      "x": 192,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "npc_memory_fragment_board 4.aseprite",
+      "x": 256,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    },
+    {
+      "name": "npc_memory_fragment_board 5.aseprite",
+      "x": 320,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [
+    {
+      "name": "idle_D",
+      "from": 0,
+      "to": 3,
+      "direction": "forward",
+      "color": "#68e2ffff"
+    },
+    {
+      "name": "talk_D",
+      "from": 4,
+      "to": 5,
+      "direction": "forward",
+      "color": "#ffcc50ff"
+    }
+  ],
+  "layers": [
+    {
+      "name": "shadow",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "body",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "clothing",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "prop",
+      "opacity": 255,
+      "blendMode": "normal"
+    },
+    {
+      "name": "accent",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 6
+}

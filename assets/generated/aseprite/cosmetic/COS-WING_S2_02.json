@@ -1,0 +1,26 @@
+{
+  "atlas": "season2_COS-WING_S2_02",
+  "image": "COS-WING_S2_02.png",
+  "size": {
+    "w": 512,
+    "h": 512
+  },
+  "sprites": [
+    {
+      "name": "COS-WING_S2_02.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "cosmetic",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

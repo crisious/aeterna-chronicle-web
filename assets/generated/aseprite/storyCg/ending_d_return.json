@@ -1,0 +1,26 @@
+{
+  "atlas": "ending_d_return",
+  "image": "ending_d_return.png",
+  "size": {
+    "w": 1216,
+    "h": 832
+  },
+  "sprites": [
+    {
+      "name": "ending_d_return.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1216,
+      "h": 832
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "storyCg",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

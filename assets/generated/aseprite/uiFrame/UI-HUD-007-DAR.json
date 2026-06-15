@@ -1,0 +1,26 @@
+{
+  "atlas": "UI-HUD-007-DAR",
+  "image": "UI-HUD-007-DAR.png",
+  "size": {
+    "w": 512,
+    "h": 512
+  },
+  "sprites": [
+    {
+      "name": "UI-HUD-007-DAR.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "uiFrame",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

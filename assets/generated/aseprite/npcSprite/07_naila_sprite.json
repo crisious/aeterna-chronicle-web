@@ -1,0 +1,26 @@
+{
+  "atlas": "07_naila_sprite",
+  "image": "07_naila_sprite.png",
+  "size": {
+    "w": 256,
+    "h": 384
+  },
+  "sprites": [
+    {
+      "name": "07_naila_sprite.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 384
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "npcSprite",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_environment_background_obl_bg_sky_day",
+  "image": "OBL-BG-SKY-DAY.png",
+  "size": {
+    "w": 1280,
+    "h": 720
+  },
+  "sprites": [
+    {
+      "name": "OBL-BG-SKY-DAY.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "environmentBackground",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

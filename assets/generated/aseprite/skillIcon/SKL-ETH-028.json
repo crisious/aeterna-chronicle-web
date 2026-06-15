@@ -1,0 +1,26 @@
+{
+  "atlas": "atlas_skill_icon_skl_eth_028",
+  "image": "SKL-ETH-028.png",
+  "size": {
+    "w": 64,
+    "h": 64
+  },
+  "sprites": [
+    {
+      "name": "SKL-ETH-028.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "genericSkillIcon",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

@@ -156,6 +156,8 @@ Atlas JSON 구조:
 패턴: mon_{region}_{name}_{grade}.png
 
 예시:
+  mon_erebos_fog_rat_normal.png           — 에레보스 기억 침식쥐 (일반)
+  mon_erebos_memory_beetle_normal.png     — 에레보스 공허 박쥐 (일반)
   mon_erebos_memory_dust_normal.png       — 에레보스 기억 먼지 (일반)
   mon_erebos_fog_guardian_elite.png        — 에레보스 안개 수호자 (엘리트)
   mon_erebos_ruin_watcher_boss.png         — 에레보스 폐허의 감시자 (보스)
@@ -222,6 +224,8 @@ assets/
 │   │   └── ...
 │   ├── monsters/
 │   │   ├── erebos/
+│   │   │   ├── mon_erebos_fog_rat_normal.png
+│   │   │   ├── mon_erebos_memory_beetle_normal.png
 │   │   │   ├── mon_erebos_memory_dust_normal.png
 │   │   │   └── ...
 │   │   └── ...

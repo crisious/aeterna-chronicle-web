@@ -2,352 +2,177 @@
   "atlas": "atlas_monster_northland",
   "size": {
     "w": 4096,
-    "h": 4096
+    "h": 1024
   },
   "sprites": [
     {
       "file": "BOSS-NOR-FROST.png",
       "x": 0,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_data_worm_normal.png",
-      "x": 514,
+      "file": "mon_northland_aurora_valkyrie_boss.png",
+      "x": 386,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_distortion_shade_normal.png",
-      "x": 1028,
+      "file": "mon_northland_aurora_valkyrie_lesser_elite.png",
+      "x": 772,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_echo_phantom_normal.png",
-      "x": 1542,
+      "file": "mon_northland_blizzard_mammoth_elite.png",
+      "x": 1158,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_ether_serpent_normal.png",
-      "x": 2056,
+      "file": "mon_northland_crystal_titan_elite.png",
+      "x": 1544,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_ether_wisp_normal.png",
-      "x": 2570,
+      "file": "mon_northland_frost_dragon_boss.png",
+      "x": 1930,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_forgotten_warrior_normal.png",
-      "x": 3084,
+      "file": "mon_northland_frost_wyrm_elite.png",
+      "x": 2316,
       "y": 0,
-      "w": 512,
-      "h": 512
+      "w": 384,
+      "h": 384
     },
     {
-      "file": "mon_abyss_fracture_elemental_normal.png",
+      "file": "mon_northland_frozen_king_boss.png",
+      "x": 2702,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_northland_ice_witch_elite.png",
+      "x": 3088,
+      "y": 0,
+      "w": 384,
+      "h": 384
+    },
+    {
+      "file": "mon_northland_aurora_wisp_normal.png",
+      "x": 3474,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_northland_avalanche_golem_normal.png",
+      "x": 3732,
+      "y": 0,
+      "w": 256,
+      "h": 256
+    },
+    {
+      "file": "mon_northland_blizzard_raven_normal.png",
       "x": 0,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_glitch_spider_normal.png",
-      "x": 514,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_crystal_beetle_normal.png",
+      "x": 258,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_memory_bloom_normal.png",
-      "x": 1028,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_frost_bat_normal.png",
+      "x": 516,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_memory_fragment_mob_normal.png",
-      "x": 1542,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_frost_lichen_normal.png",
+      "x": 774,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_memory_golem_normal.png",
-      "x": 2056,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_frost_wolf_normal.png",
+      "x": 1032,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_null_slime_normal.png",
-      "x": 2570,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_frozen_skeleton_normal.png",
+      "x": 1290,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_paradox_bat_normal.png",
-      "x": 3084,
-      "y": 514,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_frozen_warrior_normal.png",
+      "x": 1548,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_void_beetle_normal.png",
-      "x": 0,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_ice_elemental_normal.png",
+      "x": 1806,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_abyss_void_moth_normal.png",
-      "x": 514,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_icicle_spider_normal.png",
+      "x": 2064,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_argentium_automaton_soldier_normal.png",
-      "x": 1028,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_permafrost_shade_normal.png",
+      "x": 2322,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_argentium_brass_wasp_normal.png",
-      "x": 1542,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_polar_bear_spirit_normal.png",
+      "x": 2580,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_argentium_clockwork_bird_normal.png",
-      "x": 2056,
-      "y": 1028,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_snow_hare_normal.png",
+      "x": 2838,
+      "y": 386,
+      "w": 256,
+      "h": 256
     },
     {
-      "file": "mon_argentium_cogwork_sentinel_normal.png",
-      "x": 2570,
-      "y": 1028,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_furnace_imp_normal.png",
-      "x": 3084,
-      "y": 1028,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_gear_rat_normal.png",
-      "x": 0,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_gear_spider_normal.png",
-      "x": 514,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_overheated_core_normal.png",
-      "x": 1028,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_pipe_worm_normal.png",
-      "x": 1542,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_piston_hound_normal.png",
-      "x": 2056,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_rust_beetle_normal.png",
-      "x": 2570,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_scrap_golem_normal.png",
-      "x": 3084,
-      "y": 1542,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_steam_sprite_normal.png",
-      "x": 0,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_tesla_orb_normal.png",
-      "x": 514,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_argentium_tin_soldier_normal.png",
-      "x": 1028,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_anchor_mimic_normal.png",
-      "x": 1542,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_barnacle_crab_normal.png",
-      "x": 2056,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_drowned_sailor_normal.png",
-      "x": 2570,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_harbor_gull_normal.png",
-      "x": 3084,
-      "y": 2056,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_jellyfish_drifter_normal.png",
-      "x": 0,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_pirate_ghost_normal.png",
-      "x": 514,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_pufferfish_mine_normal.png",
-      "x": 1028,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_reef_golem_normal.png",
-      "x": 1542,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_saltwater_slime_normal.png",
-      "x": 2056,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_sea_rat_normal.png",
-      "x": 2570,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_sea_serpent_young_normal.png",
-      "x": 3084,
-      "y": 2570,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_seaweed_strangler_normal.png",
-      "x": 0,
-      "y": 3084,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_shipwreck_crab_normal.png",
-      "x": 514,
-      "y": 3084,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_siren_hatchling_normal.png",
-      "x": 1028,
-      "y": 3084,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_britalia_tide_elemental_normal.png",
-      "x": 1542,
-      "y": 3084,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_erebos_afterimage_soldier_normal.png",
-      "x": 2056,
-      "y": 3084,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_erebos_broken_golem_normal.png",
-      "x": 2570,
-      "y": 3084,
-      "w": 512,
-      "h": 512
-    },
-    {
-      "file": "mon_erebos_crumbling_shade_normal.png",
-      "x": 3084,
-      "y": 3084,
-      "w": 512,
-      "h": 512
+      "file": "mon_northland_snow_serpent_normal.png",
+      "x": 3096,
+      "y": 386,
+      "w": 256,
+      "h": 256
     }
   ],
-  "count": 49
+  "count": 24
 }

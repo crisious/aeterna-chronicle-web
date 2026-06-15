@@ -72,7 +72,35 @@ describe('aseprite pipeline config', () => {
           padding: 2,
           sheetType: 'rows',
           sheetColumns: 40,
-          requiredTags: ['idle_D', 'walk_D', 'attack_melee_D', 'cast_D', 'hit_D', 'death_D'],
+          requiredTags: ['idle_D', 'walk_D', 'attack_melee_D', 'cast_D', 'hit_D', 'death_D', 'ready_D', 'victory_D'],
+        },
+        characterIllustration: {
+          frameWidth: 256,
+          frameHeight: 384,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        characterBattleThumbnail: {
+          frameWidth: 64,
+          frameHeight: 96,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        characterSpriteSheet: {
+          frameWidth: 256,
+          frameHeight: 384,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        npcBattleThumbnail: {
+          frameWidth: 64,
+          frameHeight: 96,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
         },
         npc: {
           frameWidth: 64,
@@ -81,12 +109,54 @@ describe('aseprite pipeline config', () => {
           sheetType: 'rows',
           requiredTags: ['idle_D', 'talk_D'],
         },
+        npcPortrait: {
+          frameWidth: 512,
+          frameHeight: 512,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        npcSprite: {
+          frameWidth: 256,
+          frameHeight: 384,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
         monster: {
           frameWidth: 64,
           frameHeight: 64,
           padding: 2,
           sheetType: 'rows',
           requiredTags: ['idle', 'attack', 'hit', 'death'],
+        },
+        monsterPortrait: {
+          frameWidth: 256,
+          frameHeight: 256,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        monsterBattleIcon: {
+          frameWidth: 64,
+          frameHeight: 64,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        monsterEliteBossPortrait: {
+          frameWidth: 384,
+          frameHeight: 384,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        monsterRaidBossPortrait: {
+          frameWidth: 512,
+          frameHeight: 512,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
         },
         vfx: {
           frameWidth: 64,
@@ -102,6 +172,139 @@ describe('aseprite pipeline config', () => {
           sheetType: 'packed',
           requiredTags: [],
         },
+        uiFrame: {
+          frameWidth: 512,
+          frameHeight: 512,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        cosmetic: {
+          frameWidth: 512,
+          frameHeight: 512,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        worldmap: {
+          frameWidth: 64,
+          frameHeight: 64,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        skillIcon: {
+          frameWidth: 64,
+          frameHeight: 64,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        itemIcon: {
+          frameWidth: 64,
+          frameHeight: 64,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        statusIcon: {
+          frameWidth: 32,
+          frameHeight: 32,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        environmentBackground: {
+          frameWidth: 1280,
+          frameHeight: 720,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        environmentTile: {
+          frameWidth: 256,
+          frameHeight: 256,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        environmentObject: {
+          frameWidth: 256,
+          frameHeight: 256,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        storyCg: {
+          frameWidth: 1216,
+          frameHeight: 832,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        fallbackTexture: {
+          frameWidth: 64,
+          frameHeight: 64,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        fallbackTextureSmall: {
+          frameWidth: 32,
+          frameHeight: 32,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        effectFallbackTexture: {
+          frameWidth: 32,
+          frameHeight: 32,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        effectFallbackTextureSmall: {
+          frameWidth: 24,
+          frameHeight: 24,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        battleMonsterFallbackTexture: {
+          frameWidth: 60,
+          frameHeight: 60,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        battleMonsterBossFallbackTexture: {
+          frameWidth: 90,
+          frameHeight: 90,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        environmentParticleRainTexture: {
+          frameWidth: 2,
+          frameHeight: 10,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        environmentParticleSnowTexture: {
+          frameWidth: 6,
+          frameHeight: 10,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
+        environmentParticleEtherBeamTexture: {
+          frameWidth: 6,
+          frameHeight: 16,
+          padding: 0,
+          sheetType: 'rows',
+          requiredTags: [],
+        },
         tile: {
           frameWidth: 32,
           frameHeight: 32,
@@ -111,6 +314,526 @@ describe('aseprite pipeline config', () => {
         },
       },
     });
+  });
+});
+
+describe('sprite production roster contract', () => {
+  test('accepts a planned Gorodi NPC sprite entry', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'npc_ghost_merchant_gorodi',
+          category: 'npc',
+          priority: 1,
+          source: 'assets/source/aseprite/npc/erebos/npc_ghost_merchant_gorodi.aseprite',
+          generatedPng: 'assets/generated/aseprite/npc/npc_ghost_merchant_gorodi.png',
+          generatedJson: 'assets/generated/aseprite/npc/npc_ghost_merchant_gorodi.json',
+          runtimePng: 'client/public/assets/generated/characters/npc_sprites/npc_ghost_merchant_gorodi.png',
+          runtimeKey: 'npc_ghost_merchant_gorodi_sprite',
+          status: 'planned',
+          requiredTags: ['idle_D', 'talk_D'],
+          npcId: 'npc_ghost_merchant',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame NPC portrait entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'npc_portrait_01_cryo_portrait',
+          category: 'npcPortrait',
+          priority: 2,
+          source: 'assets/source/aseprite/npcPortrait/01_cryo/npc_portrait_01_cryo_portrait.aseprite',
+          generatedPng: 'assets/generated/aseprite/npcPortrait/npc_portrait_01_cryo_portrait.png',
+          generatedJson: 'assets/generated/aseprite/npcPortrait/npc_portrait_01_cryo_portrait.json',
+          runtimePng: 'client/public/assets/generated/characters/npc/npc_portrait_01_cryo_portrait.png',
+          runtimeKey: 'npc_portrait_01_cryo_portrait',
+          status: 'planned',
+          requiredTags: [],
+          npcPortraitId: 'npc_portrait_01_cryo_portrait',
+          npcId: '01_cryo',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame NPC sprite entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'npc_sprite_01_cryo',
+          category: 'npcSprite',
+          priority: 3,
+          source: 'assets/source/aseprite/npcSprite/01_cryo/01_cryo_sprite.aseprite',
+          generatedPng: 'assets/generated/aseprite/npcSprite/01_cryo_sprite.png',
+          generatedJson: 'assets/generated/aseprite/npcSprite/01_cryo_sprite.json',
+          runtimePng: 'client/public/assets/generated/characters/npc_sprites/01_cryo_sprite.png',
+          runtimeKey: '01_cryo_sprite',
+          status: 'planned',
+          requiredTags: [],
+          npcSpriteId: '01_cryo_sprite',
+          npcId: '01_cryo',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame NPC battle thumbnail entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'npc_battle_thumbnail_04_mateus',
+          category: 'npcBattleThumbnail',
+          priority: 4,
+          source: 'assets/source/aseprite/npcBattleThumbnail/04_mateus/04_mateus_sprite.aseprite',
+          generatedPng: 'assets/generated/aseprite/npcBattleThumbnail/04_mateus_sprite.png',
+          generatedJson: 'assets/generated/aseprite/npcBattleThumbnail/04_mateus_sprite.json',
+          runtimePng: 'client/public/assets/generated/characters/npc_battle/04_mateus_sprite.png',
+          runtimeKey: 'npc_guide_sprite',
+          status: 'planned',
+          requiredTags: [],
+          npcBattleThumbnailId: '04_mateus_sprite',
+          npcId: '04_mateus',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame character illustration entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'character_illustration_char_illust_ether_knight_front',
+          category: 'characterIllustration',
+          priority: 2,
+          source: 'assets/source/aseprite/characterIllustration/class_main/ether_knight/char_illust_ether_knight_front.aseprite',
+          generatedPng: 'assets/generated/aseprite/characterIllustration/char_illust_ether_knight_front.png',
+          generatedJson: 'assets/generated/aseprite/characterIllustration/char_illust_ether_knight_front.json',
+          runtimePng: 'client/public/assets/generated/characters/class_main/char_illust_ether_knight_front.png',
+          runtimeKey: 'char_ether_knight',
+          status: 'planned',
+          requiredTags: [],
+          characterIllustrationId: 'char_illust_ether_knight_front',
+          characterClassId: 'ether_knight',
+          characterIllustrationView: 'front',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame character battle thumbnail entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'character_battle_thumbnail_ether_knight',
+          category: 'characterBattleThumbnail',
+          priority: 3,
+          source: 'assets/source/aseprite/characterBattleThumbnail/class_main/ether_knight/char_battle_ether_knight.aseprite',
+          generatedPng: 'assets/generated/aseprite/characterBattleThumbnail/char_battle_ether_knight.png',
+          generatedJson: 'assets/generated/aseprite/characterBattleThumbnail/char_battle_ether_knight.json',
+          runtimePng: 'client/public/assets/generated/characters/class_main/battle/char_battle_ether_knight.png',
+          runtimeKey: 'char_battle_ether_knight',
+          status: 'planned',
+          requiredTags: [],
+          characterBattleThumbnailId: 'char_battle_ether_knight',
+          characterClassId: 'ether_knight',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame character sprite sheet entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'character_sprite_sheet_char_sprite_memory_weaver_base_sprite_sheet',
+          category: 'characterSpriteSheet',
+          priority: 4,
+          source: 'assets/source/aseprite/characterSpriteSheet/memory_weaver/char_sprite_memory_weaver_base_sprite_sheet.aseprite',
+          generatedPng: 'assets/generated/aseprite/characterSpriteSheet/char_sprite_memory_weaver_base_sprite_sheet.png',
+          generatedJson: 'assets/generated/aseprite/characterSpriteSheet/char_sprite_memory_weaver_base_sprite_sheet.json',
+          runtimePng: 'client/public/assets/generated/characters/sprites/char_sprite_memory_weaver_base_sprite_sheet.png',
+          runtimeKey: 'char_sprite_memory_weaver_base_sprite_sheet',
+          status: 'planned',
+          requiredTags: [],
+          characterSpriteSheetId: 'char_sprite_memory_weaver_base_sprite_sheet',
+          characterClassId: 'memory_weaver',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('rejects unknown categories and paths outside project roots', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'bad_entry',
+          category: 'portrait',
+          priority: 1,
+          source: '../bad.aseprite',
+          generatedPng: 'tmp/bad.png',
+          generatedJson: 'tmp/bad.json',
+          runtimePng: 'client/public/assets/generated/bad.png',
+          runtimeKey: 'bad_entry',
+          status: 'planned',
+          requiredTags: [],
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        'bad_entry: unknown category portrait',
+        'bad_entry: source must be inside assets/source/aseprite',
+        'bad_entry: generatedPng must be inside assets/generated/aseprite',
+        'bad_entry: generatedJson must be inside assets/generated/aseprite',
+        'bad_entry: requiredTags must be a non-empty array',
+      ]),
+    );
+  });
+
+  test('accepts a single-frame worldmap icon entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'zone_aether_plains',
+          category: 'worldmap',
+          priority: 11,
+          source: 'assets/source/aseprite/worldmap/zone_aether_plains.aseprite',
+          generatedPng: 'assets/generated/aseprite/worldmap/zone_aether_plains.png',
+          generatedJson: 'assets/generated/aseprite/worldmap/zone_aether_plains.json',
+          runtimePng: 'client/public/assets/generated/ui/worldmap/zone_aether_plains.png',
+          runtimeKey: 'zone_aether_plains',
+          status: 'planned',
+          requiredTags: [],
+          zoneId: 'aether_plains',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a VFX strip entry with start loop end tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'vfx_common_001',
+          category: 'vfx',
+          priority: 12,
+          source: 'assets/source/aseprite/vfx/library/common/VFX-CMN-001.aseprite',
+          generatedPng: 'assets/generated/aseprite/vfx/VFX-CMN-001.png',
+          generatedJson: 'assets/generated/aseprite/vfx/VFX-CMN-001.json',
+          runtimePng: 'client/public/assets/generated/vfx/common/VFX-CMN-001.png',
+          runtimeKey: 'vfx_common_001',
+          status: 'planned',
+          requiredTags: ['start', 'loop', 'end'],
+          vfxId: 'VFX-CMN-001',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame UI frame entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'ui_frame_UI-BTN-001-DEF',
+          category: 'uiFrame',
+          priority: 12,
+          source: 'assets/source/aseprite/uiFrame/def/btn/UI-BTN-001-DEF.aseprite',
+          generatedPng: 'assets/generated/aseprite/uiFrame/UI-BTN-001-DEF.png',
+          generatedJson: 'assets/generated/aseprite/uiFrame/UI-BTN-001-DEF.json',
+          runtimePng: 'client/public/assets/generated/ui/frames/UI-BTN-001-DEF.png',
+          runtimeKey: 'ui_frame_UI-BTN-001-DEF',
+          status: 'planned',
+          requiredTags: [],
+          uiFrameId: 'UI-BTN-001-DEF',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame cosmetic entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'cosmetic_s2_COS_AURA_S2_01',
+          category: 'cosmetic',
+          priority: 13,
+          source: 'assets/source/aseprite/cosmetic/season2/aura/COS-AURA_S2_01.aseprite',
+          generatedPng: 'assets/generated/aseprite/cosmetic/COS-AURA_S2_01.png',
+          generatedJson: 'assets/generated/aseprite/cosmetic/COS-AURA_S2_01.json',
+          runtimePng: 'client/public/assets/generated/cosmetics/season2/COS-AURA_S2_01.png',
+          runtimeKey: 'cosmetic_s2_COS_AURA_S2_01',
+          status: 'planned',
+          requiredTags: [],
+          cosmeticId: 'COS-AURA_S2_01',
+          cosmeticSeason: 2,
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame status effect icon entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'status_poison_icon',
+          category: 'statusIcon',
+          priority: 52,
+          source: 'assets/source/aseprite/statusIcon/debuff/status_poison.aseprite',
+          generatedPng: 'assets/generated/aseprite/statusIcon/status_poison.png',
+          generatedJson: 'assets/generated/aseprite/statusIcon/status_poison.json',
+          runtimePng: 'client/public/assets/generated/ui/icons/status/status_poison.png',
+          runtimeKey: 'status_poison_icon',
+          status: 'planned',
+          requiredTags: [],
+          statusIconId: 'poison',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame item icon entry without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'item_itm_wpn_001_icon',
+          category: 'itemIcon',
+          priority: 67,
+          source: 'assets/source/aseprite/itemIcon/weapon/ITM-WPN-001.aseprite',
+          generatedPng: 'assets/generated/aseprite/itemIcon/ITM-WPN-001.png',
+          generatedJson: 'assets/generated/aseprite/itemIcon/ITM-WPN-001.json',
+          runtimePng: 'client/public/assets/generated/ui/icons/items/ITM-WPN-001.png',
+          runtimeKey: 'icon_item_ITM-WPN_001',
+          status: 'planned',
+          requiredTags: [],
+          itemIconId: 'ITM-WPN-001',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts single-frame environment background, tile, and object entries without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'env_bg_erb_far_day',
+          category: 'environmentBackground',
+          priority: 167,
+          source: 'assets/source/aseprite/environmentBackground/erb/ERB-BG-FAR-DAY.aseprite',
+          generatedPng: 'assets/generated/aseprite/environmentBackground/ERB-BG-FAR-DAY.png',
+          generatedJson: 'assets/generated/aseprite/environmentBackground/ERB-BG-FAR-DAY.json',
+          runtimePng: 'client/public/assets/generated/environment/backgrounds/ERB-BG-FAR-DAY.png',
+          runtimeKey: 'env_bg_ERB_BG_FAR_DAY',
+          status: 'planned',
+          requiredTags: [],
+          environmentBackgroundId: 'ERB-BG-FAR-DAY',
+        },
+        {
+          id: 'env_tile_erb_g_01',
+          category: 'environmentTile',
+          priority: 168,
+          source: 'assets/source/aseprite/environmentTile/erb/ERB-G-01.aseprite',
+          generatedPng: 'assets/generated/aseprite/environmentTile/ERB-G-01.png',
+          generatedJson: 'assets/generated/aseprite/environmentTile/ERB-G-01.json',
+          runtimePng: 'client/public/assets/generated/environment/tiles/ERB-G-01.png',
+          runtimeKey: 'env_tile_ERB_G_01',
+          status: 'planned',
+          requiredTags: [],
+          environmentTileId: 'ERB-G-01',
+        },
+        {
+          id: 'env_object_erb_ruin_pillar',
+          category: 'environmentObject',
+          priority: 169,
+          source: 'assets/source/aseprite/environmentObject/erb/erb_ruin_pillar.aseprite',
+          generatedPng: 'assets/generated/aseprite/environmentObject/erb_ruin_pillar.png',
+          generatedJson: 'assets/generated/aseprite/environmentObject/erb_ruin_pillar.json',
+          runtimePng: 'client/public/assets/generated/environment/objects/erb_ruin_pillar.png',
+          runtimeKey: 'env_object_erb_ruin_pillar',
+          status: 'planned',
+          requiredTags: [],
+          environmentObjectId: 'erb_ruin_pillar',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts a single-frame story CG entry outside generated runtime folder', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'story_cg_ch1_erebos',
+          category: 'storyCg',
+          priority: 173,
+          source: 'assets/source/aseprite/storyCg/chapters/ch1_erebos.aseprite',
+          generatedPng: 'assets/generated/aseprite/storyCg/ch1_erebos.png',
+          generatedJson: 'assets/generated/aseprite/storyCg/ch1_erebos.json',
+          runtimePng: 'client/public/assets/cg/chapters/ch1_erebos.png',
+          runtimeKey: 'story_cg_ch1_erebos',
+          status: 'planned',
+          requiredTags: [],
+          storyCgId: 'ch1_erebos',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts single-frame monster portrait and battle icon entries without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'monster_portrait_mon_erebos_fog_rat_normal',
+          category: 'monsterPortrait',
+          priority: 169,
+          source: 'assets/source/aseprite/monsterPortrait/erebos/mon_erebos_fog_rat_normal.aseprite',
+          generatedPng: 'assets/generated/aseprite/monsterPortrait/mon_erebos_fog_rat_normal.png',
+          generatedJson: 'assets/generated/aseprite/monsterPortrait/mon_erebos_fog_rat_normal.json',
+          runtimePng: 'client/public/assets/generated/monsters/normal/mon_erebos_fog_rat_normal.png',
+          runtimeKey: 'monster_portrait_mon_erebos_fog_rat_normal',
+          status: 'planned',
+          requiredTags: [],
+          monsterPortraitId: 'mon_erebos_fog_rat_normal',
+        },
+        {
+          id: 'monster_battle_icon_mon_erebos_fog_rat_normal',
+          category: 'monsterBattleIcon',
+          priority: 170,
+          source: 'assets/source/aseprite/monsterBattleIcon/erebos/mon_erebos_fog_rat_normal.aseprite',
+          generatedPng: 'assets/generated/aseprite/monsterBattleIcon/mon_erebos_fog_rat_normal.png',
+          generatedJson: 'assets/generated/aseprite/monsterBattleIcon/mon_erebos_fog_rat_normal.json',
+          runtimePng: 'client/public/assets/generated/monsters/battle/mon_erebos_fog_rat_normal.png',
+          runtimeKey: 'monster_battle_icon_mon_erebos_fog_rat_normal',
+          status: 'planned',
+          requiredTags: [],
+          monsterBattleIconId: 'mon_erebos_fog_rat_normal',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
+  });
+
+  test('accepts single-frame monster boss portrait entries without animation tags', async () => {
+    const { validateSpriteRoster } = await import('../../tools/aseprite-pipeline/validate-sprite-roster.mjs');
+
+    const result = validateSpriteRoster({
+      version: 1,
+      items: [
+        {
+          id: 'monster_elite_boss_BOSS-ERB-SHADOW',
+          category: 'monsterEliteBossPortrait',
+          priority: 171,
+          source: 'assets/source/aseprite/monsterEliteBossPortrait/erebos/BOSS-ERB-SHADOW.aseprite',
+          generatedPng: 'assets/generated/aseprite/monsterEliteBossPortrait/BOSS-ERB-SHADOW.png',
+          generatedJson: 'assets/generated/aseprite/monsterEliteBossPortrait/BOSS-ERB-SHADOW.json',
+          runtimePng: 'client/public/assets/generated/monsters/elite_boss/BOSS-ERB-SHADOW.png',
+          runtimeKey: 'monster_elite_boss_BOSS-ERB-SHADOW',
+          status: 'planned',
+          requiredTags: [],
+          monsterEliteBossId: 'BOSS-ERB-SHADOW',
+        },
+        {
+          id: 'monster_raid_boss_raid_boss_chronos_prime_phase1',
+          category: 'monsterRaidBossPortrait',
+          priority: 172,
+          source: 'assets/source/aseprite/monsterRaidBossPortrait/temporal/raid_boss_chronos_prime_phase1.aseprite',
+          generatedPng: 'assets/generated/aseprite/monsterRaidBossPortrait/raid_boss_chronos_prime_phase1.png',
+          generatedJson: 'assets/generated/aseprite/monsterRaidBossPortrait/raid_boss_chronos_prime_phase1.json',
+          runtimePng: 'client/public/assets/generated/monsters/raid_boss/raid_boss_chronos_prime_phase1.png',
+          runtimeKey: 'monster_raid_boss_raid_boss_chronos_prime_phase1',
+          status: 'planned',
+          requiredTags: [],
+          monsterRaidBossId: 'raid_boss_chronos_prime_phase1',
+        },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, errors: [] });
   });
 });
 
@@ -642,6 +1365,25 @@ describe('aseprite export command builder', () => {
     expect(args).toContain('--sheet-pack');
   });
 
+  test('buildExportArgs supports fixed sprite sheet rows and columns', async () => {
+    const { buildExportArgs } = await import('../../tools/aseprite-pipeline/export-aseprite.mjs');
+
+    const args = buildExportArgs({
+      sourceFile: 'assets/source/aseprite/character/hero.aseprite',
+      sheetFile: 'assets/generated/aseprite/character/hero.png',
+      dataFile: 'assets/generated/aseprite/character/hero.aseprite.json',
+      categoryConfig: {
+        sheetType: 'rows',
+        sheetColumns: 30,
+        sheetRows: 5,
+      },
+    });
+
+    expect(args).toEqual(
+      expect.arrayContaining(['--sheet-columns', '30', '--sheet-rows', '5']),
+    );
+  });
+
   test('resolveExportTarget maps source files to generated category targets', async () => {
     const { resolveExportTarget } = await import('../../tools/aseprite-pipeline/export-aseprite.mjs');
     const config = JSON.parse(readFileSync(configPath, 'utf8'));
@@ -1090,6 +1832,8 @@ describe('aseprite export validation gate', () => {
             { name: 'cast_D' },
             { name: 'hit_D' },
             { name: 'death_D' },
+            { name: 'ready_D' },
+            { name: 'victory_D' },
           ],
         }),
         'utf8',

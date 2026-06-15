@@ -1,0 +1,26 @@
+{
+  "atlas": "STS-DBF-011",
+  "image": "STS-DBF-011.png",
+  "size": {
+    "w": 32,
+    "h": 32
+  },
+  "sprites": [
+    {
+      "name": "STS-DBF-011.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "statusIcon",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}

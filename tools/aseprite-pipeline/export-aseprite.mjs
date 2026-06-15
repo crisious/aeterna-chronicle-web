@@ -31,6 +31,14 @@ export function buildExportArgs({ sourceFile, sheetFile, dataFile, categoryConfi
     args.push('--sheet-pack');
   }
 
+  if (Number.isInteger(categoryConfig.sheetColumns) && categoryConfig.sheetColumns > 0) {
+    args.push('--sheet-columns', String(categoryConfig.sheetColumns));
+  }
+
+  if (Number.isInteger(categoryConfig.sheetRows) && categoryConfig.sheetRows > 0) {
+    args.push('--sheet-rows', String(categoryConfig.sheetRows));
+  }
+
   return args;
 }
 

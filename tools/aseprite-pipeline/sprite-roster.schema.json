@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["version", "items"],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "priority",
+          "source",
+          "generatedPng",
+          "generatedJson",
+          "runtimePng",
+          "runtimeKey",
+          "status",
+          "requiredTags"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "category": { "type": "string", "minLength": 1 },
+          "priority": { "type": "integer", "minimum": 1 },
+          "source": { "type": "string", "minLength": 1 },
+          "generatedPng": { "type": "string", "minLength": 1 },
+          "generatedJson": { "type": "string", "minLength": 1 },
+          "runtimePng": { "type": "string", "minLength": 1 },
+          "runtimeKey": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "minLength": 1 },
+          "requiredTags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "npcId": { "type": "string", "minLength": 1 },
+          "npcPortraitId": { "type": "string", "minLength": 1 },
+          "npcSpriteId": { "type": "string", "minLength": 1 },
+          "npcBattleThumbnailId": { "type": "string", "minLength": 1 },
+          "characterIllustrationId": { "type": "string", "minLength": 1 },
+          "characterBattleThumbnailId": { "type": "string", "minLength": 1 },
+          "characterSpriteSheetId": { "type": "string", "minLength": 1 },
+          "characterClassId": { "type": "string", "minLength": 1 },
+          "characterIllustrationView": { "type": "string", "minLength": 1 },
+          "characterAdvancement": { "type": "integer", "minimum": 1 },
+          "monsterId": { "type": "string", "minLength": 1 },
+          "monsterPortraitId": { "type": "string", "minLength": 1 },
+          "monsterBattleIconId": { "type": "string", "minLength": 1 },
+          "monsterEliteBossId": { "type": "string", "minLength": 1 },
+          "monsterRaidBossId": { "type": "string", "minLength": 1 },
+          "vfxId": { "type": "string", "minLength": 1 },
+          "zoneId": { "type": "string", "minLength": 1 },
+          "uiFrameId": { "type": "string", "minLength": 1 },
+          "cosmeticId": { "type": "string", "minLength": 1 },
+          "cosmeticSeason": { "type": "integer", "minimum": 1 },
+          "skillIconId": { "type": "string", "minLength": 1 },
+          "itemIconId": { "type": "string", "minLength": 1 },
+          "statusIconId": { "type": "string", "minLength": 1 },
+          "environmentBackgroundId": { "type": "string", "minLength": 1 },
+          "environmentTileId": { "type": "string", "minLength": 1 },
+          "environmentObjectId": { "type": "string", "minLength": 1 },
+          "storyCgId": { "type": "string", "minLength": 1 },
+          "fallbackTextureId": { "type": "string", "minLength": 1 },
+          "effectFallbackTextureId": { "type": "string", "minLength": 1 },
+          "battleMonsterFallbackTextureId": { "type": "string", "minLength": 1 },
+          "environmentParticleTextureId": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

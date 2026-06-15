@@ -1,0 +1,26 @@
+{
+  "atlas": "buff_fallback",
+  "image": "buff_fallback.png",
+  "size": {
+    "w": 24,
+    "h": 24
+  },
+  "sprites": [
+    {
+      "name": "buff_fallback.aseprite",
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 24
+    }
+  ],
+  "tags": [],
+  "layers": [
+    {
+      "name": "effectFallbackTexture",
+      "opacity": 255,
+      "blendMode": "normal"
+    }
+  ],
+  "count": 1
+}
