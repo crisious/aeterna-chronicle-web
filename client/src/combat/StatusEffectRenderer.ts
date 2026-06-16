@@ -83,6 +83,9 @@ interface UnitEffectDisplay {
   overlay: Phaser.GameObjects.Rectangle | null;
   /** 현재 표시 중인 효과 */
   currentEffects: StatusEffectData[];
+  /** 마지막 배치 기준 유닛 좌표 — reposition 이 델타 시프트의 기준으로 사용(r17). */
+  anchorX: number;
+  anchorY: number;
 }
 
 /** DoT 팝업 텍스트 */
@@ -121,6 +124,8 @@ export class StatusEffectRenderer {
       stackTexts: [],
       overlay: null,
       currentEffects: [],
+      anchorX: 0,
+      anchorY: 0,
     });
   }
 
@@ -155,6 +160,9 @@ export class StatusEffectRenderer {
     }
 
     display.currentEffects = effects;
+    // reposition 델타 기준 갱신(이 호출이 유닛 좌표로 재배치하므로).
+    display.anchorX = unitX;
+    display.anchorY = unitY;
 
     // 기존 표시 클리어
     this._clearDisplay(display);
@@ -234,6 +242,28 @@ export class StatusEffectRenderer {
         );
       }
     }
+  }
+
+  /**
+   * 상태이상 아이콘을 유닛 스프라이트에 추종시킨다(r17). updateEffects 가 매
+   * 호출 graphics 를 destroy+rebuild 하므로 매프레임 호출엔 부적합 → 이 메서드는
+   * 기존 오브젝트를 앵커 대비 *델타 시프트*만 한다(저비용, 매프레임 호출 가능).
+   * Phaser Graphics 의 draw 명령은 객체 로컬 좌표계라 .x/.y 이동 시 그려진 내용도
+   * 함께 옮겨진다 → 좌표 재계산/재드로우 불필요.
+   */
+  reposition(unitId: string, unitX: number, unitY: number): void {
+    const display = this.displays.get(unitId);
+    if (!display) return;
+    const dx = unitX - display.anchorX;
+    const dy = unitY - display.anchorY;
+    if (dx === 0 && dy === 0) return;
+    for (const o of display.icons) { o.x += dx; o.y += dy; }
+    for (const o of display.durationBars) { o.x += dx; o.y += dy; }
+    for (const o of display.labels) { o.x += dx; o.y += dy; }
+    for (const o of display.stackTexts) { o.x += dx; o.y += dy; }
+    if (display.overlay) { display.overlay.x += dx; display.overlay.y += dy; }
+    display.anchorX = unitX;
+    display.anchorY = unitY;
   }
 
   // ─── DoT 데미지 팝업 ────────────────────────────────────────
