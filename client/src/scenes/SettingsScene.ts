@@ -49,12 +49,26 @@ export function getSfxVolume(): number {
   }
 }
 
+// 모션 감소 신호의 단일 출처(WCAG 2.3.3): OS prefers-reduced-motion **또는**
+// 인게임 '모션 감소' 토글(AccessibilityManager). 전투의 데코레이티브/연속 트윈
+// (idle bob·AUTO 펄스 등) 게이트에 사용. 이전엔 prefers-reduced-motion 만 봤고
+// 인게임 토글은 전투 트윈에 미연동이었다(combat-ux r19).
+export function isMotionReduced(): boolean {
+  if (typeof document === 'undefined') return false;
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return true;
+  try {
+    return accessibilityManager.getSettings().reduceMotion === true;
+  } catch {
+    return false;
+  }
+}
+
 // FINDING-A4 ext11: screenShake 설정 검사 (BattleScene/ComboUI 의 cameras.shake() 전)
-// 또 prefers-reduced-motion 도 우선 — 사용자 OS 설정 존중.
+// 모션 감소(OS 또는 인게임 토글) 시 우선 false — 코드베이스가 이 함수를 전투
+// 모션의 사실상 게이트로 써왔으므로, 인게임 reduceMotion 토글도 여기로 연동됨.
 export function isScreenShakeEnabled(): boolean {
   if (typeof document === 'undefined') return true;
-  // prefers-reduced-motion 우선 (WCAG 2.3.3)
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+  if (isMotionReduced()) return false; // prefers-reduced-motion + 인게임 토글 (WCAG 2.3.3)
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return true; // default true
