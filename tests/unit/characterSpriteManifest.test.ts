@@ -149,6 +149,9 @@ describe('character sprite manifest', () => {
     // anim 키가 스킨별로 분리돼야 base/스킨이 서로의 프레임을 재생하지 않는다.
     expect(getCharacterSpriteAnimationKey(ember!.textureKey, 'idle', 'D'))
       .not.toBe(getCharacterSpriteAnimationKey(base!.textureKey, 'idle', 'D'));
+    // 2번째 시즌(frost)도 동일 패턴으로 해석.
+    expect(getCharacterSpriteResource('time_guardian', 'frost')!.textureKey).toBe('char_sprite_time_guardian_frost');
+    expect(getCharacterSpriteResource('time_guardian', 'frost')!.imagePath).toBe('assets/generated/characters/recolors/char_time_guardian_frost.png');
     // 미지원 스킨/'base'/미지정은 base 로 폴백.
     expect(getCharacterSpriteResource('ether_knight', 'base')!.textureKey).toBe(base!.textureKey);
     expect(getCharacterSpriteResource('ether_knight', 'nonexistent')!.textureKey).toBe(base!.textureKey);
