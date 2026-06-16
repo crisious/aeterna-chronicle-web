@@ -94,7 +94,7 @@ const CHARACTER_SPRITE_RESOURCE_BY_CLASS_ID: ReadonlyMap<string, CharacterSprite
  * assets/generated/characters/recolors/char_<class>_<skin>.png 로 존재한다.
  * 'base'(또는 미지정)는 원본. 새 시즌 스킨 = 이 목록에 추가 + 리컬러 생성.
  */
-export const CHARACTER_RECOLOR_SKINS = ['ember'] as const;
+export const CHARACTER_RECOLOR_SKINS = ['ember', 'frost'] as const;
 export type CharacterSkinId = (typeof CHARACTER_RECOLOR_SKINS)[number];
 
 export function isCharacterSkinId(skinId: string | undefined): skinId is CharacterSkinId {
