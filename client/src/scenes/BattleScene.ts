@@ -1223,6 +1223,13 @@ export class BattleScene extends Phaser.Scene {
     // 이펙트 업데이트
     this.effectManager?.update(delta);
     this.statusEffectRenderer?.update(delta);
+    // r17: 상태이상 아이콘이 유닛 스프라이트(idle bob·피격 흔들림 등)를 추종 —
+    // 저비용 델타 시프트(updateEffects 의 destroy+rebuild 와 달리 매프레임 안전).
+    if (this.statusEffectRenderer) {
+      for (const us of this.allSprites) {
+        this.statusEffectRenderer.reposition(us.unit.id, us.sprite.x, us.sprite.y);
+      }
+    }
     this.comboUI?.update(delta);
     // UX(rank14): 활성 commander MP(내 턴 아니면 null)를 스킬바에 push — 누르기 전 MP부족/내턴아님 dim.
     this.battleUI?.setSkillAvailability(this.activeCommander ? (this.activeCommander.unit.mp ?? 0) : null);
