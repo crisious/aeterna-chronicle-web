@@ -23,7 +23,7 @@ import { StatusEffectRenderer, type StatusEffectData } from '../combat/StatusEff
 import { resolveStatusCategory } from '../combat/statusEffectCategory';
 import { ComboUI, preloadComboUiFrameTextures } from '../ui/ComboUI';
 import { networkManager, CombatResult } from '../network/NetworkManager';
-import { isScreenShakeEnabled, getActiveCharacterSkin } from './SettingsScene';
+import { isScreenShakeEnabled, isMotionReduced, getActiveCharacterSkin } from './SettingsScene';
 import { playSfx, playRandomVoice, COMBAT_VOICE } from '../utils/SFXHelper';
 import { classSkills } from '../data/classSkills';
 import {
@@ -1710,12 +1710,16 @@ export class BattleScene extends Phaser.Scene {
     }
 
     const arrow = this.activeIndicator;
-    this.activeIndicatorTween = this.tweens.add({
-      targets: arrow,
-      y: arrow.y - 6,
-      alpha: { from: 1, to: 0.5 },
-      duration: 480, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
-    });
+    // 인디케이터 자체(누구 차례)는 필수 어포던스라 항상 표시. 연속 펄스만
+    // 모션 감소 시 생략 — 정지 화살표로 유지(WCAG 2.3.3, r19).
+    if (!isMotionReduced()) {
+      this.activeIndicatorTween = this.tweens.add({
+        targets: arrow,
+        y: arrow.y - 6,
+        alpha: { from: 1, to: 0.5 },
+        duration: 480, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   private _clearActiveIndicator(): void {
@@ -3013,15 +3017,18 @@ export class BattleScene extends Phaser.Scene {
           .setDepth(50);
       }
 
-      // 대기 애니메이션: 살짝 위아래 흔들림
-      this.tweens.add({
-        targets: sprite,
-        y: pos.y - 3,
-        duration: 1200,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
+      // 대기 애니메이션: 살짝 위아래 흔들림. 연속(repeat -1) 데코레이티브 모션이라
+      // 모션 감소(OS/인게임 토글) 시 생략 — 스프라이트는 기준 y 에 정지(WCAG 2.3.3, r19).
+      if (!isMotionReduced()) {
+        this.tweens.add({
+          targets: sprite,
+          y: pos.y - 3,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+      }
 
       const nameText = this.add.text(pos.x, pos.y + sprite.displayHeight / 2 + 4, unit.name, {
         fontSize: '11px',
