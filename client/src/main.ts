@@ -270,6 +270,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
         }
 
         const itemIconQaParam = params.get('itemIconQa');
+        const lobbyConnectionIconQaParam = params.get('lobbyConnectionIconQa');
         const lobbyData: LobbySceneData = {
             characterId: params.get('characterId') ?? 'debug-chrono-hero',
             characterName: params.get('name') ?? '크로노 테스터',
@@ -297,6 +298,9 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             questTitleIconQa: params.get('questTitleIconQa') === '1',
             questActionFocusIconQa: params.get('questActionFocusIconQa') === '1',
             goldIconQa: params.get('goldIconQa') === '1',
+            lobbyConnectionIconQa: lobbyConnectionIconQaParam === 'connected' || lobbyConnectionIconQaParam === 'offline' || lobbyConnectionIconQaParam === 'error'
+                ? lobbyConnectionIconQaParam
+                : undefined,
         };
         phaserGame.scene.stop('MainMenuScene');
         phaserGame.scene.start('LobbyScene', lobbyData);
@@ -310,6 +314,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
     }
 
     if (debugScene === 'game') {
+        const gameConnectionIconQaParam = params.get('gameConnectionIconQa');
         phaserGame.scene.stop('MainMenuScene');
         phaserGame.scene.start('GameScene', {
             zoneId,
@@ -327,6 +332,9 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             bossLabelIconQa: params.get('bossLabelIconQa') === '1',
             zoneLabelIconQa: params.get('zoneLabelIconQa') === '1',
             gameErrorIconQa: params.get('gameErrorIconQa') === '1',
+            gameConnectionIconQa: gameConnectionIconQaParam === 'connected' || gameConnectionIconQaParam === 'offline' || gameConnectionIconQaParam === 'error'
+                ? gameConnectionIconQaParam
+                : undefined,
         });
         return;
     }

@@ -6,7 +6,7 @@
  */
 
 import * as Phaser from 'phaser';
-import { networkManager, ZoneInfo } from '../network/NetworkManager';
+import { networkManager, type ConnectionState, type ZoneInfo } from '../network/NetworkManager';
 import { isUiModalOpen } from '../accessibility/uiModalLock';
 import { HUDOrchestrator } from '../services/HUDOrchestrator';
 import { TelemetryEmitter } from '../services/TelemetryEmitter';
@@ -58,6 +58,7 @@ interface GameSceneData {
   bossLabelIconQa?: boolean;
   zoneLabelIconQa?: boolean;
   gameErrorIconQa?: boolean;
+  gameConnectionIconQa?: 'connected' | 'offline' | 'error';
   eraId?: ChronoEraId;
 }
 
@@ -107,10 +108,54 @@ const CHARACTER_HUD_AVATAR_RESOURCES = {
 
 const GAME_SCENE_BOSS_LABEL_ICON_ID = 'skill_ek_slash';
 const GAME_SCENE_ERROR_ICON_ID = 'skill_ek_explode';
+const GAME_SCENE_CONNECTION_ICON_IDS = {
+  connected: 'skill_mw_arrow',
+  offline: 'skill_tg_stop',
+  error: 'skill_ek_explode',
+} as const;
+const GAME_SCENE_CONNECTION_ICON_SIZE = 14;
+
+type GameSceneConnectionIconMode = keyof typeof GAME_SCENE_CONNECTION_ICON_IDS;
+
+const GAME_SCENE_CONNECTION_STATES: Record<GameSceneConnectionIconMode, {
+  label: string;
+  fallbackLabel: string;
+  color: string;
+}> = {
+  connected: { label: '온라인', fallbackLabel: '● 온라인', color: '#44cc44' },
+  offline: { label: '오프라인', fallbackLabel: '○ 오프라인', color: '#cccc44' },
+  error: { label: '연결 실패', fallbackLabel: '✕ 연결 실패', color: '#ff4444' },
+};
 
 function getCharacterHudAvatarResource(classId: string): { key: string; path: string } {
   return CHARACTER_HUD_AVATAR_RESOURCES[classId as keyof typeof CHARACTER_HUD_AVATAR_RESOURCES]
     ?? CHARACTER_HUD_AVATAR_RESOURCES.ether_knight;
+}
+
+function getGameSceneConnectionIconResource(mode: GameSceneConnectionIconMode) {
+  return getSpriteResourceForSkillIcon(GAME_SCENE_CONNECTION_ICON_IDS[mode]);
+}
+
+function getGameSceneConnectionMode(state: ConnectionState): GameSceneConnectionIconMode {
+  if (state === 'connected') return 'connected';
+  if (state === 'error') return 'error';
+  return 'offline';
+}
+
+function getGameSceneConnectionStateLabel(state: ConnectionState): string {
+  switch (state) {
+    case 'connected':
+      return '온라인';
+    case 'connecting':
+      return '연결 중';
+    case 'reconnecting':
+      return '재연결 중';
+    case 'error':
+      return '연결 실패';
+    case 'disconnected':
+    default:
+      return '오프라인';
+  }
 }
 
 /** 다른 플레이어 / 몬스터 표시 */
@@ -161,6 +206,8 @@ export class GameScene extends Phaser.Scene {
   private zoneLabelIcon?: Phaser.GameObjects.Image;
   private zoneLabelIconFallbackRendered = false;
   private connectionLabel!: Phaser.GameObjects.Text;
+  private connectionStatusIcon?: Phaser.GameObjects.Image;
+  private connectionStatusIconFallbackRendered = false;
   private bossLabelIcons: Phaser.GameObjects.Image[] = [];
   private bossLabelIconFallbackCount = 0;
   private errorScreenIcon?: Phaser.GameObjects.Image;
@@ -179,6 +226,8 @@ export class GameScene extends Phaser.Scene {
     this.bossLabelIconFallbackCount = 0;
     this.zoneLabelIcon = undefined;
     this.zoneLabelIconFallbackRendered = false;
+    this.connectionStatusIcon = undefined;
+    this.connectionStatusIconFallbackRendered = false;
     this.errorScreenIcon = undefined;
     this.errorScreenIconFallbackRendered = false;
     if (data?.zoneId) this.currentZoneId = data.zoneId;
@@ -270,13 +319,27 @@ export class GameScene extends Phaser.Scene {
     if (zoneLabelIconResource && !this.textures.exists(zoneLabelIconResource.key)) {
       this.load.image(zoneLabelIconResource.key, zoneLabelIconResource.path);
     }
+    const queuedGameSceneIconKeys = new Set<string>();
     const bossLabelIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_BOSS_LABEL_ICON_ID);
     if (bossLabelIconResource && !this.textures.exists(bossLabelIconResource.key)) {
       this.load.image(bossLabelIconResource.key, bossLabelIconResource.path);
+      queuedGameSceneIconKeys.add(bossLabelIconResource.key);
     }
     const errorIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_ERROR_ICON_ID);
     if (errorIconResource && !this.textures.exists(errorIconResource.key)) {
       this.load.image(errorIconResource.key, errorIconResource.path);
+      queuedGameSceneIconKeys.add(errorIconResource.key);
+    }
+    for (const mode of Object.keys(GAME_SCENE_CONNECTION_ICON_IDS) as GameSceneConnectionIconMode[]) {
+      const connectionIconResource = getGameSceneConnectionIconResource(mode);
+      if (
+        connectionIconResource
+        && !this.textures.exists(connectionIconResource.key)
+        && !queuedGameSceneIconKeys.has(connectionIconResource.key)
+      ) {
+        this.load.image(connectionIconResource.key, connectionIconResource.path);
+        queuedGameSceneIconKeys.add(connectionIconResource.key);
+      }
     }
 
     // 몬스터는 Aseprite spritesheet를 우선 사용하고, 누락 시에만 프로그래매틱 아이콘으로 fallback한다.
@@ -994,11 +1057,98 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  private _addConnectionStatusIcon(resource: { key: string; path: string }): Phaser.GameObjects.Image {
+    const icon = this.add.image(0, 0, resource.key)
+      .setScrollFactor(0)
+      .setDepth(10000)
+      .setOrigin(0.5)
+      .setName('game_scene_connection_status_icon');
+    icon.setDisplaySize(14, 14);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return icon;
+  }
+
+  private _renderConnectionStatus(
+    mode: GameSceneConnectionIconMode,
+    labelOverride?: string,
+    colorOverride?: string,
+  ): void {
+    const state = GAME_SCENE_CONNECTION_STATES[mode];
+    const iconResource = getGameSceneConnectionIconResource(mode);
+    const hasConnectionIcon = Boolean(iconResource && this.textures.exists(iconResource.key));
+    const label = hasConnectionIcon
+      ? (labelOverride ?? state.label)
+      : (labelOverride ? `${state.fallbackLabel.split(' ')[0]} ${labelOverride}` : state.fallbackLabel);
+    const color = colorOverride ?? state.color;
+
+    this.connectionLabel?.setText(label).setColor(color);
+
+    if (hasConnectionIcon && iconResource && this.connectionLabel) {
+      if (!this.connectionStatusIcon || !this.connectionStatusIcon.active) {
+        this.connectionStatusIcon = this._addConnectionStatusIcon(iconResource);
+      } else {
+        this.connectionStatusIcon.setTexture(iconResource.key).setVisible(true);
+      }
+      this.connectionStatusIcon
+        .setPosition(
+          this.connectionLabel.x - this.connectionLabel.displayWidth - GAME_SCENE_CONNECTION_ICON_SIZE / 2 - 4,
+          this.connectionLabel.y + GAME_SCENE_CONNECTION_ICON_SIZE / 2,
+        )
+        .setAlpha(1);
+      this.connectionStatusIconFallbackRendered = false;
+    } else {
+      this.connectionStatusIcon?.setVisible(false);
+      this.connectionStatusIconFallbackRendered = true;
+    }
+
+    this._writeGameConnectionIconQaProbe({ mode, label, hasConnectionIcon });
+  }
+
+  private _writeGameConnectionIconQaProbe({
+    mode,
+    label,
+    hasConnectionIcon,
+  }: {
+    mode: GameSceneConnectionIconMode;
+    label: string;
+    hasConnectionIcon: boolean;
+  }): void {
+    if (this.sceneData.gameConnectionIconQa === undefined || typeof document === 'undefined') return;
+
+    const connectionIconResource = getGameSceneConnectionIconResource(mode);
+    const legacyGlyphPresent = label.includes('●') || label.includes('○') || label.includes('✕');
+    const missingGameConnectionIconKeys = hasConnectionIcon
+      ? []
+      : [connectionIconResource?.key ?? GAME_SCENE_CONNECTION_ICON_IDS[mode]];
+
+    document.body.dataset.aeternaGameConnectionIconQa = JSON.stringify({
+      status: hasConnectionIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      mode,
+      label,
+      legacyGlyphPresent,
+      connectionIcon: {
+        iconId: GAME_SCENE_CONNECTION_ICON_IDS[mode],
+        key: connectionIconResource?.key ?? null,
+        path: connectionIconResource?.path ?? null,
+        renderedCount: this.connectionStatusIcon?.active === true && this.connectionStatusIcon.visible ? 1 : 0,
+        displaySizes: this.connectionStatusIcon
+          ? [{ width: this.connectionStatusIcon.displayWidth, height: this.connectionStatusIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.connectionStatusIconFallbackRendered,
+      },
+      missingGameConnectionIconKeys,
+    });
+  }
+
   // ── P25-04: 소켓 이벤트 ─────────────────────────────────
 
   private _setupSocketEvents(): void {
     if (this.sceneData.offlineQa === true) {
-      this.connectionLabel?.setText('● 로컬 QA').setColor('#ffcc44');
+      if (this.sceneData.gameConnectionIconQa !== undefined) {
+        this._renderConnectionStatus(this.sceneData.gameConnectionIconQa);
+        return;
+      }
+      this._renderConnectionStatus('connected', '로컬 QA', '#ffcc44');
       return;
     }
 
@@ -1065,12 +1215,11 @@ export class GameScene extends Phaser.Scene {
 
     // 연결 상태 표시
     const unsub5 = networkManager.onConnectionChange((state) => {
-      const label = state === 'connected' ? '● 온라인' : `○ ${state}`;
-      const color = state === 'connected' ? '#44cc44' : '#cccc44';
-      this.connectionLabel?.setText(label).setColor(color);
+      const mode = getGameSceneConnectionMode(state);
+      this._renderConnectionStatus(mode, getGameSceneConnectionStateLabel(state));
     });
     this.socketCleanups.push(unsub5);
-    this.connectionLabel?.setText(networkManager.isConnected ? '● 온라인' : '○ 오프라인');
+    this._renderConnectionStatus(networkManager.isConnected ? 'connected' : 'offline');
   }
 
   update(_time: number, delta: number): void {

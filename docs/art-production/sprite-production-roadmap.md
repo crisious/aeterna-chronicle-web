@@ -5917,3 +5917,65 @@ Current QA state:
 - Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 136 tests across 4 files.
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 197: GameScene Connection Status Icon Runtime Wiring
+
+Runtime GameScene connection status icon coverage:
+
+- Online status icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+- Offline, connecting, and reconnecting status icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+- Connection error status icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `GameScene.preload()` queues all three connection status icon resources directly and de-duplicates keys already queued for boss/error title icons.
+- `_renderConnectionStatus()` is the single text/icon path used by offline QA startup, `networkManager.onConnectionChange()`, and `gameConnectionIconQa`.
+- Normal labels use `온라인`, `오프라인`, `연결 중`, `재연결 중`, or `연결 실패` without the old `●`/`○`/`✕` glyph prefix when the icon texture is present.
+- Texture-missing fallback keeps the old status glyph labels observable only through fallback/QA paths.
+
+Exit criteria:
+
+- Unit tests verify the connection icon id map, QA route, preload call, image object name, display size, nearest filtering, QA payload, legacy glyph detector, missing key list, and removal of the old direct `setText()` glyph branches.
+- Browser QA verifies `connected`, `offline`, and `error` status modes render exactly one `game_scene_connection_status_icon`, have no legacy glyph in the visible label, report no missing keys, and keep the field canvas nonblank.
+- Existing GameScene boss label, zone label, error title, runtime image reference, and UI frame contracts remain green.
+
+Current QA state:
+
+- Phase 197 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "GameScene connection status"` failed before implementation because `GameScene.ts` did not define the connection status icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "GameScene connection status"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 132 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=game&renderer=canvas&zone=aether_plains&class=ether_knight&gameConnectionIconQa=connected|offline|error` passes with `aeternaGameConnectionIconQa.status = ready`, one rendered icon, `legacyGlyphPresent = false`, empty missing key lists, no console/page errors, and nonblank canvas pixels for all three modes.
+
+## Phase 198: LobbyScene Connection Status Icon Runtime Wiring
+
+Runtime LobbyScene connection status icon coverage:
+
+- Online status icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+- Offline, connecting, and reconnecting status icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+- Connection error status icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `LobbyScene.preload()` queues all three connection status icon resources directly and de-duplicates keys already queued by existing lobby skill/icon UI paths.
+- `_renderLobbyConnectionStatus()` is the single text/icon path used by offline QA startup, `networkManager.onConnectionChange()`, and `lobbyConnectionIconQa`.
+- Normal labels use `온라인`, `오프라인`, `연결 중`, `재연결 중`, or `연결 실패` without the old `●`/`○`/`✕` glyph prefix when the icon texture is present.
+- Texture-missing fallback keeps the old status glyph labels observable only through fallback/QA paths.
+
+Exit criteria:
+
+- Unit tests verify the lobby connection icon id map, QA route, preload call, image object name, display size, nearest filtering, QA payload, legacy glyph detector, missing key list, and removal of the old direct `setText()` glyph branches.
+- Browser QA verifies `connected`, `offline`, and `error` status modes render exactly one `lobby_connection_status_icon`, have no legacy glyph in the visible label, report no missing keys, and keep the lobby canvas nonblank.
+- Existing LobbyScene NPC sprite, dialogue/title/focus icon, bottom nav, item icon, GameScene connection icon, runtime image reference, and UI frame contracts remain green.
+
+Current QA state:
+
+- Phase 198 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "LobbyScene connection status"` failed before implementation because `LobbyScene.ts` did not define the connection status icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "LobbyScene connection status"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 133 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=lobby&renderer=canvas&lobbyConnectionIconQa=connected|offline|error` passes with `aeternaLobbyConnectionIconQa.status = ready`, one rendered icon, `legacyGlyphPresent = false`, empty missing key lists, no console/page errors, and nonblank canvas pixels for all three modes.

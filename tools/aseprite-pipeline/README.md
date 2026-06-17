@@ -1353,6 +1353,8 @@ npm run art:atlas:pack
 - GameScene 필드 보스 라벨은 `skill_ek_slash.png` Aseprite skill icon을 재사용한다. 런타임 표시는 `18x18`이며, icon texture가 있으면 라벨 text는 `BOSS`만 사용하고 `⚔️ BOSS` glyph 문자열은 fallback에서만 유지한다.
 - GameScene 상단 존 라벨은 `worldmap` 카테고리의 `zone_<zoneId>.png` Aseprite icon을 재사용한다. 런타임 표시는 `18x18`이며, icon texture가 있으면 라벨 text는 `존명 / 시대명`만 사용하고 `📍` glyph 문자열은 fallback에서만 유지한다.
 - GameScene 에러 화면 타이틀은 `skill_ek_explode.png` Aseprite skill icon을 재사용한다. 런타임 표시는 `22x22`이며, icon texture가 있으면 title text는 `존 로딩 실패`만 사용하고 `⚠️ 존 로딩 실패` glyph 문자열은 fallback에서만 유지한다.
+- GameScene 상단 연결 상태 표시는 온라인에 `skill_mw_arrow.png`, 오프라인/연결 대기 계열에 `skill_tg_stop.png`, 연결 실패에 `skill_ek_explode.png`를 재사용한다. 런타임 표시는 `game_scene_connection_status_icon` `14x14`이며, icon texture가 있으면 label은 `온라인`, `오프라인`, `연결 실패`처럼 glyph 없는 텍스트만 사용하고 `●`/`○`/`✕` 문자열은 fallback에서만 유지한다. `?debugScene=game&renderer=canvas&gameConnectionIconQa=connected|offline|error`는 `aeternaGameConnectionIconQa`에 렌더 수, 표시 크기, fallback, legacy glyph, missing key 상태를 기록한다.
+- LobbyScene 하단 연결 상태 표시는 같은 skill icon 세트를 재사용한다. 런타임 표시는 `lobby_connection_status_icon` `14x14`이며, icon texture가 있으면 label은 `온라인`, `오프라인`, `연결 실패`처럼 glyph 없는 텍스트만 사용하고 `●`/`○`/`✕` 문자열은 fallback에서만 유지한다. `?debugScene=lobby&renderer=canvas&lobbyConnectionIconQa=connected|offline|error`는 `aeternaLobbyConnectionIconQa`에 렌더 수, 표시 크기, fallback, legacy glyph, missing key 상태를 기록한다.
 - export 후 raw Aseprite JSON을 정규화하고, PNG와 정규화 JSON을 함께 검증한다.
 - PNG/JSON 검증을 통과하지 못한 산출물은 publish 대상이 아니다.
 - 숨김 reference/background layer가 export에 섞이지 않도록 export 전 Aseprite 파일을 정리한다.

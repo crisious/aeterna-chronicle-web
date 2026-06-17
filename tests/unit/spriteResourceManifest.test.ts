@@ -365,6 +365,32 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("gameErrorIconQa: params.get('gameErrorIconQa') === '1'");
   });
 
+  it('GameScene connection status renders an Aseprite icon before circle/x glyph fallback', () => {
+    const source = readSceneSource('GameScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain("const GAME_SCENE_CONNECTION_ICON_IDS = {");
+    expect(source).toContain("connected: 'skill_mw_arrow'");
+    expect(source).toContain("offline: 'skill_tg_stop'");
+    expect(source).toContain("error: 'skill_ek_explode'");
+    expect(source).toContain("gameConnectionIconQa?: 'connected' | 'offline' | 'error'");
+    expect(source).toContain('private connectionStatusIcon?: Phaser.GameObjects.Image');
+    expect(source).toContain('private connectionStatusIconFallbackRendered = false');
+    expect(source).toContain('function getGameSceneConnectionIconResource(mode: GameSceneConnectionIconMode)');
+    expect(source).toContain('this.load.image(connectionIconResource.key, connectionIconResource.path)');
+    expect(source).toContain('this._renderConnectionStatus(this.sceneData.gameConnectionIconQa)');
+    expect(source).toContain("setName('game_scene_connection_status_icon')");
+    expect(source).toContain('icon.setDisplaySize(14, 14)');
+    expect(source).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(source).toContain('document.body.dataset.aeternaGameConnectionIconQa = JSON.stringify');
+    expect(source).toContain('legacyGlyphPresent');
+    expect(source).toContain('missingGameConnectionIconKeys');
+    expect(source).not.toContain("this.connectionLabel?.setText('● 로컬 QA')");
+    expect(source).not.toContain("this.connectionLabel?.setText(networkManager.isConnected ? '● 온라인' : '○ 오프라인')");
+    expect(mainSource).toContain("const gameConnectionIconQaParam = params.get('gameConnectionIconQa')");
+    expect(mainSource).toContain("gameConnectionIconQa: gameConnectionIconQaParam === 'connected' || gameConnectionIconQaParam === 'offline' || gameConnectionIconQaParam === 'error'");
+  });
+
   it('LobbyScene uses Aseprite sprite resources before legacy NPC PNG fallback', () => {
     const source = readSceneSource('LobbyScene.ts');
 
@@ -372,6 +398,32 @@ describe('sprite resource manifest', () => {
     expect(source).toContain('this.load.spritesheet(resource.key, resource.path');
     expect(source).toContain("getSpriteResourceForLobbyNpc(npc.id)");
     expect(source).toContain('body.setFrame(0)');
+  });
+
+  it('LobbyScene connection status renders an Aseprite icon before circle/x glyph fallback', () => {
+    const source = readSceneSource('LobbyScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain("const LOBBY_CONNECTION_ICON_IDS = {");
+    expect(source).toContain("connected: 'skill_mw_arrow'");
+    expect(source).toContain("offline: 'skill_tg_stop'");
+    expect(source).toContain("error: 'skill_ek_explode'");
+    expect(source).toContain("lobbyConnectionIconQa?: 'connected' | 'offline' | 'error'");
+    expect(source).toContain('private lobbyConnectionStatusIcon: Phaser.GameObjects.Image | null = null');
+    expect(source).toContain('private lobbyConnectionStatusIconFallbackRendered = false');
+    expect(source).toContain('function getLobbyConnectionIconResource(mode: LobbyConnectionIconMode)');
+    expect(source).toContain('this.load.image(connectionIconResource.key, connectionIconResource.path)');
+    expect(source).toContain('this._renderLobbyConnectionStatus(this.characterData.lobbyConnectionIconQa)');
+    expect(source).toContain("setName('lobby_connection_status_icon')");
+    expect(source).toContain('icon.setDisplaySize(14, 14)');
+    expect(source).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(source).toContain('document.body.dataset.aeternaLobbyConnectionIconQa = JSON.stringify');
+    expect(source).toContain('legacyGlyphPresent');
+    expect(source).toContain('missingLobbyConnectionIconKeys');
+    expect(source).not.toContain("this.connectionIndicator.setText('● 로컬 QA')");
+    expect(source).not.toContain("networkManager.isConnected ? '● 온라인' : '○ 연결 중...'");
+    expect(mainSource).toContain("const lobbyConnectionIconQaParam = params.get('lobbyConnectionIconQa')");
+    expect(mainSource).toContain("lobbyConnectionIconQa: lobbyConnectionIconQaParam === 'connected' || lobbyConnectionIconQaParam === 'offline' || lobbyConnectionIconQaParam === 'error'");
   });
 
   it('LobbyScene dialogue panel renders an Aseprite portrait title icon before the speech glyph fallback', () => {

@@ -11,7 +11,7 @@
 
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
-import { networkManager } from '../network/NetworkManager';
+import { networkManager, type ConnectionState } from '../network/NetworkManager';
 import type { QuestData } from '../network/NetworkManager';
 import { mergeActiveQuestStatus } from '../network/questTransforms';
 import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
@@ -61,6 +61,7 @@ export interface LobbySceneData {
   questTitleIconQa?: boolean;
   questActionFocusIconQa?: boolean;
   goldIconQa?: boolean;
+  lobbyConnectionIconQa?: 'connected' | 'offline' | 'error';
 }
 
 interface NpcEntry {
@@ -173,6 +174,50 @@ const LOBBY_QUEST_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
 const LOBBY_QUEST_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
 const LOBBY_GOLD_ICON_ID = 'ITM-MAT-002';
 const LOBBY_GOLD_ICON_EXPECTED_COUNT = 1;
+const LOBBY_CONNECTION_ICON_IDS = {
+  connected: 'skill_mw_arrow',
+  offline: 'skill_tg_stop',
+  error: 'skill_ek_explode',
+} as const;
+const LOBBY_CONNECTION_ICON_SIZE = 14;
+
+type LobbyConnectionIconMode = keyof typeof LOBBY_CONNECTION_ICON_IDS;
+
+const LOBBY_CONNECTION_STATES: Record<LobbyConnectionIconMode, {
+  label: string;
+  fallbackLabel: string;
+  color: string;
+}> = {
+  connected: { label: '온라인', fallbackLabel: '● 온라인', color: '#44cc44' },
+  offline: { label: '오프라인', fallbackLabel: '○ 오프라인', color: '#cccc44' },
+  error: { label: '연결 실패', fallbackLabel: '✕ 연결 실패', color: '#ff4444' },
+};
+
+function getLobbyConnectionIconResource(mode: LobbyConnectionIconMode) {
+  return getSpriteResourceForSkillIcon(LOBBY_CONNECTION_ICON_IDS[mode]);
+}
+
+function getLobbyConnectionMode(state: ConnectionState): LobbyConnectionIconMode {
+  if (state === 'connected') return 'connected';
+  if (state === 'error') return 'error';
+  return 'offline';
+}
+
+function getLobbyConnectionStateLabel(state: ConnectionState): string {
+  switch (state) {
+    case 'connected':
+      return '온라인';
+    case 'connecting':
+      return '연결 중';
+    case 'reconnecting':
+      return '재연결 중';
+    case 'error':
+      return '연결 실패';
+    case 'disconnected':
+    default:
+      return '오프라인';
+  }
+}
 
 // P33-A: NPC id → 스프라이트 파일명 매핑
 const NPC_SPRITE_MAP: Record<string, string> = {
@@ -302,6 +347,8 @@ export class LobbyScene extends Phaser.Scene {
   private lobbyNavFocusIcon: Phaser.GameObjects.Image | null = null;
   private lobbyNavFocusIconFallbackRendered = false;
   private connectionIndicator!: Phaser.GameObjects.Text;
+  private lobbyConnectionStatusIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyConnectionStatusIconFallbackRendered = false;
   private goldText!: Phaser.GameObjects.Text;
   private goldIcon: Phaser.GameObjects.Image | null = null;
   private goldIconFallbackRendered = false;
@@ -406,6 +453,8 @@ export class LobbyScene extends Phaser.Scene {
     this.lobbyQuestActionFocusIcon = null;
     this.lobbyQuestActionFocusIconFallbackRendered = false;
     this.lobbyQuestActionFocusTexts = [];
+    this.lobbyConnectionStatusIcon = null;
+    this.lobbyConnectionStatusIconFallbackRendered = false;
     this.goldIcon = null;
     this.goldIconFallbackRendered = false;
   }
@@ -509,6 +558,28 @@ export class LobbyScene extends Phaser.Scene {
       && !this.textures.exists(questActionFocusIconResource.key)
     ) {
       this.load.image(questActionFocusIconResource.key, questActionFocusIconResource.path);
+    }
+    const queuedLobbyIconKeys = new Set([
+      partyTitleIconResource?.key,
+      dialogueChoiceFocusIconResource?.key,
+      navFocusIconResource?.key,
+      partyActionFocusIconResource?.key,
+      storyActionFocusIconResource?.key,
+      shopActionFocusIconResource?.key,
+      enhanceActionFocusIconResource?.key,
+      inventoryActionFocusIconResource?.key,
+      questActionFocusIconResource?.key,
+    ].filter((key): key is string => Boolean(key)));
+    for (const mode of Object.keys(LOBBY_CONNECTION_ICON_IDS) as LobbyConnectionIconMode[]) {
+      const connectionIconResource = getLobbyConnectionIconResource(mode);
+      if (
+        connectionIconResource
+        && !this.textures.exists(connectionIconResource.key)
+        && !queuedLobbyIconKeys.has(connectionIconResource.key)
+      ) {
+        this.load.image(connectionIconResource.key, connectionIconResource.path);
+        queuedLobbyIconKeys.add(connectionIconResource.key);
+      }
     }
 
     // P33-A: NPC 스프라이트
@@ -1459,11 +1530,97 @@ export class LobbyScene extends Phaser.Scene {
     }
   }
 
+  private _addLobbyConnectionStatusIcon(resource: LobbyNavIconResource): Phaser.GameObjects.Image {
+    const icon = this.add.image(0, 0, resource.key)
+      .setOrigin(0.5)
+      .setDepth(10000)
+      .setName('lobby_connection_status_icon');
+    icon.setDisplaySize(14, 14);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return icon;
+  }
+
+  private _renderLobbyConnectionStatus(
+    mode: LobbyConnectionIconMode,
+    labelOverride?: string,
+    colorOverride?: string,
+  ): void {
+    const state = LOBBY_CONNECTION_STATES[mode];
+    const iconResource = getLobbyConnectionIconResource(mode);
+    const hasConnectionIcon = Boolean(iconResource && this.textures.exists(iconResource.key));
+    const label = hasConnectionIcon
+      ? (labelOverride ?? state.label)
+      : (labelOverride ? `${state.fallbackLabel.split(' ')[0]} ${labelOverride}` : state.fallbackLabel);
+    const color = colorOverride ?? state.color;
+
+    this.connectionIndicator.setText(label).setColor(color);
+
+    if (hasConnectionIcon && iconResource) {
+      if (!this.lobbyConnectionStatusIcon || !this.lobbyConnectionStatusIcon.active) {
+        this.lobbyConnectionStatusIcon = this._addLobbyConnectionStatusIcon(iconResource);
+      } else {
+        this.lobbyConnectionStatusIcon.setTexture(iconResource.key).setVisible(true);
+      }
+      this.lobbyConnectionStatusIcon
+        .setPosition(
+          this.connectionIndicator.x - this.connectionIndicator.displayWidth - LOBBY_CONNECTION_ICON_SIZE / 2 - 4,
+          this.connectionIndicator.y - LOBBY_CONNECTION_ICON_SIZE / 2,
+        )
+        .setAlpha(1);
+      this.lobbyConnectionStatusIconFallbackRendered = false;
+    } else {
+      this.lobbyConnectionStatusIcon?.setVisible(false);
+      this.lobbyConnectionStatusIconFallbackRendered = true;
+    }
+
+    this._writeLobbyConnectionIconQaProbe({ mode, label, hasConnectionIcon });
+  }
+
+  private _writeLobbyConnectionIconQaProbe({
+    mode,
+    label,
+    hasConnectionIcon,
+  }: {
+    mode: LobbyConnectionIconMode;
+    label: string;
+    hasConnectionIcon: boolean;
+  }): void {
+    if (this.characterData.lobbyConnectionIconQa === undefined || typeof document === 'undefined') return;
+
+    const connectionIconResource = getLobbyConnectionIconResource(mode);
+    const legacyGlyphPresent = label.includes('●') || label.includes('○') || label.includes('✕');
+    const missingLobbyConnectionIconKeys = hasConnectionIcon
+      ? []
+      : [connectionIconResource?.key ?? LOBBY_CONNECTION_ICON_IDS[mode]];
+
+    document.body.dataset.aeternaLobbyConnectionIconQa = JSON.stringify({
+      status: hasConnectionIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      mode,
+      label,
+      legacyGlyphPresent,
+      connectionIcon: {
+        iconId: LOBBY_CONNECTION_ICON_IDS[mode],
+        key: connectionIconResource?.key ?? null,
+        path: connectionIconResource?.path ?? null,
+        renderedCount: this.lobbyConnectionStatusIcon?.active === true && this.lobbyConnectionStatusIcon.visible ? 1 : 0,
+        displaySizes: this.lobbyConnectionStatusIcon
+          ? [{ width: this.lobbyConnectionStatusIcon.displayWidth, height: this.lobbyConnectionStatusIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.lobbyConnectionStatusIconFallbackRendered,
+      },
+      missingLobbyConnectionIconKeys,
+    });
+  }
+
   // ── P25-03: 서버 연결 ───────────────────────────────────
 
   private _connectToServer(): void {
     if (this.characterData?.offlineQa) {
-      this.connectionIndicator.setText('● 로컬 QA').setColor('#ffcc44');
+      if (this.characterData.lobbyConnectionIconQa !== undefined) {
+        this._renderLobbyConnectionStatus(this.characterData.lobbyConnectionIconQa);
+        return;
+      }
+      this._renderLobbyConnectionStatus('connected', '로컬 QA', '#ffcc44');
       return;
     }
 
@@ -1474,15 +1631,8 @@ export class LobbyScene extends Phaser.Scene {
 
     // 연결 상태 표시
     networkManager.onConnectionChange((state) => {
-      const labels: Record<string, { text: string; color: string }> = {
-        connected: { text: '● 온라인', color: '#44cc44' },
-        connecting: { text: '○ 연결 중...', color: '#cccc44' },
-        reconnecting: { text: '○ 재연결 중...', color: '#cc8844' },
-        disconnected: { text: '● 오프라인', color: '#cc4444' },
-        error: { text: '✕ 연결 실패', color: '#ff4444' },
-      };
-      const label = labels[state] ?? labels.disconnected;
-      this.connectionIndicator.setText(label.text).setColor(label.color);
+      const mode = getLobbyConnectionMode(state);
+      this._renderLobbyConnectionStatus(mode, getLobbyConnectionStateLabel(state));
     });
 
     // 소켓 이벤트 바인딩
@@ -1497,9 +1647,7 @@ export class LobbyScene extends Phaser.Scene {
     });
 
     // 초기 상태 표시
-    this.connectionIndicator.setText(
-      networkManager.isConnected ? '● 온라인' : '○ 연결 중...',
-    ).setColor(networkManager.isConnected ? '#44cc44' : '#cccc44');
+    this._renderLobbyConnectionStatus(networkManager.isConnected ? 'connected' : 'offline');
   }
 
   private _showNotification(msg: string): void {
