@@ -995,6 +995,49 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("battleCriticalPopupIconQa: params.get('battleCriticalPopupIconQa') === '1'");
   });
 
+  it('BattleScene connection badge uses Aseprite icons before circle/x glyph fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(getSpriteResourceForSkillIcon('skill_tg_stop')).toMatchObject({
+      id: 'skill_tg_stop_icon',
+      key: 'skill_tg_stop_icon',
+      path: 'assets/generated/ui/icons/skills/skill_tg_stop.png',
+      category: 'skillIcon',
+      skillIconId: 'skill_tg_stop',
+    });
+    expect(getSpriteResourceForStatusIcon('curse')).toMatchObject({
+      id: 'status_curse_icon',
+      key: 'status_curse_icon',
+      path: 'assets/generated/ui/icons/status/status_curse.png',
+      category: 'statusIcon',
+      statusIconId: 'curse',
+    });
+    expect(battleSource).toContain('type BattleConnectionBadgeIconMode = keyof typeof BATTLE_CONNECTION_BADGE_ICON_IDS');
+    expect(battleSource).toContain("reconnecting: 'skill_tg_stop'");
+    expect(battleSource).toContain("error: 'curse'");
+    expect(battleSource).toContain('const BATTLE_CONNECTION_BADGE_ICON_SIZE = 16');
+    expect(battleSource).toContain("battleConnectionBadgeIconQa?: 'reconnecting' | 'error'");
+    expect(battleSource).toContain('private connectionBadgeIcon?: Phaser.GameObjects.Image');
+    expect(battleSource).toContain('private connectionBadgeIconFallbackRendered = false');
+    expect(battleSource).toContain('function getBattleConnectionBadgeIconResource(mode: BattleConnectionBadgeIconMode)');
+    expect(battleSource).toContain('this.load.image(connectionBadgeReconnectIconResource.key, connectionBadgeReconnectIconResource.path)');
+    expect(battleSource).toContain('this.load.image(connectionBadgeErrorIconResource.key, connectionBadgeErrorIconResource.path)');
+    expect(battleSource).toContain('this._startBattleConnectionBadgeIconQa()');
+    expect(battleSource).toContain('private _renderConnectionBadgeState(mode: BattleConnectionBadgeIconMode): void');
+    expect(battleSource).toContain("setName('battle_connection_badge_icon')");
+    expect(battleSource).toContain('this.connectionBadgeIcon.setDisplaySize(BATTLE_CONNECTION_BADGE_ICON_SIZE, BATTLE_CONNECTION_BADGE_ICON_SIZE)');
+    expect(battleSource).toContain('this.connectionBadgeIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain("const label = hasIcon ? state.label : state.fallbackLabel");
+    expect(battleSource).toContain('private _writeBattleConnectionBadgeIconQaProbe(mode: BattleConnectionBadgeIconMode): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleConnectionBadgeIconQa = JSON.stringify');
+    expect(battleSource).toContain("const legacyGlyphPresent = label.includes('○') || label.includes('✕')");
+    expect(battleSource).not.toContain("?.setText(reconnecting ? '○ 재연결 중… 전투 일시정지' : '✕ 연결 실패 — 재시도 중')");
+    expect(mainSource).toContain("const battleConnectionBadgeIconQaParam = params.get('battleConnectionBadgeIconQa')");
+    expect(mainSource).toContain("battleConnectionBadgeIconQaParam === 'reconnecting' || battleConnectionBadgeIconQaParam === 'error'");
+    expect(mainSource).toContain('battleConnectionBadgeIconQa,');
+  });
+
   it('BattleScene 활성 턴 표시는 Aseprite arrow image를 텍스트 fallback보다 먼저 사용한다', () => {
     const battleSource = readSceneSource('BattleScene.ts');
 

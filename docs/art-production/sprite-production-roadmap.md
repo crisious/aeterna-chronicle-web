@@ -5888,3 +5888,32 @@ Current QA state:
 - Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 135 tests across 4 files.
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 196: BattleScene Connection Badge Status Icon Runtime Wiring
+
+Runtime BattleScene connection badge icon coverage:
+
+- Reconnecting badge icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+- Connection error badge icon: `status_curse.png` / texture key `status_curse_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` queues both connection badge icon resources directly so the network status badge does not depend on log highlight, magic submenu, or global status preload side effects.
+- `_renderConnectionBadgeState()` is the single path used by `networkManager.onConnectionChange()` and `battleConnectionBadgeIconQa`.
+- Reconnecting, connecting, and disconnected states render `battle_connection_badge_icon` with the stop skill icon and the glyph-free label `재연결 중… 전투 일시정지`.
+- Error state renders the same image slot with the curse status icon and the glyph-free label `연결 실패 — 재시도 중`.
+- Texture-missing fallback keeps the old `○`/`✕` labels observable only through fallback/QA paths.
+
+Exit criteria:
+
+- Unit tests verify the stop skill icon id, curse status icon id, icon mode map, preload calls, image object name, display size, nearest filtering, glyph-free label selection, QA route, QA payload, and removal of the old direct `setText()` glyph branch.
+- Existing BattleScene icon contracts, BattleUI log highlight contracts, boss telegraph coverage, and UI frame source contracts remain green.
+
+Current QA state:
+
+- Phase 196 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "connection badge"` failed before implementation because `BattleScene.ts` did not define the connection badge icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "connection badge"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 136 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.

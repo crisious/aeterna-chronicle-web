@@ -284,6 +284,8 @@ npm run art:aseprite:validate -- npc `
 
 `BattleScene` 마법 서브메뉴 쿨다운 상태는 `skill_tg_stop.png`를 `14x14` 이미지 `battle_magic_submenu_cooldown_icon_<skillId>`로 먼저 표시합니다. 쿨다운 row label은 `스킬명 CD Ns`처럼 텍스트만 유지하고, 기존 `⏳Ns` glyph 문자열은 normal render path에서 제거합니다. `skill_tg_stop_icon`은 BattleScene preload에서 직접 큐잉되어 BattleUI 로그 하이라이트 경로에 의존하지 않습니다.
 
+`BattleScene` 전투 연결 상태 배지는 Aseprite icon을 먼저 사용합니다. 재연결 계열 상태는 `skill_tg_stop.png` / `skill_tg_stop_icon`, 연결 실패 상태는 `status_curse.png` / `status_curse_icon`을 `battle_connection_badge_icon` `16x16` image로 표시하고, label은 `재연결 중… 전투 일시정지` 또는 `연결 실패 — 재시도 중`처럼 glyph 없는 텍스트만 유지합니다. icon texture가 없을 때만 기존 `○`/`✕` glyph fallback label을 사용합니다. `?debugScene=battle&renderer=canvas&battleConnectionBadgeIconQa=reconnecting|error`는 `aeternaBattleConnectionBadgeIconQa`에 icon key/path, rendered/fallback, legacy glyph, missing key 상태를 기록합니다.
+
 `BattleScene` 협공/3인 협공 버튼 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 협공 버튼은 `skill_mw_storm.png`, 3인 협공 버튼은 `skill_ek_ultimate.png`를 `18x18` 이미지로 렌더링하고, 아이콘이 있을 때 button label과 후보명은 `협공 (D)`, `3인 협공 (T)`, `<후보명> (D/T)`처럼 텍스트만 표시합니다. icon texture가 없을 때만 기존 `✨`, `🌟`, `💥` 기호/이모지 prefix fallback을 사용합니다.
 
 `BattleScene` CHAIN 라벨도 Aseprite skill icon을 먼저 사용합니다. 일반 chain은 `skill_mw_storm.png`, MAX chain은 `skill_ek_explode.png`를 `18x18` 이미지로 렌더링하고, 아이콘이 있을 때 label text는 `CHAIN ×N` 또는 `CHAIN ×N MAX`만 표시합니다. icon texture가 없을 때만 기존 `🔥`/`💥` glyph prefix fallback을 사용합니다. `?debugScene=battle&renderer=canvas&battleChainLabelIconQa=chain|max`는 `aeternaBattleChainLabelIconQa`에 icon key/path, 렌더 수, 표시 크기, fallback 여부, 누락 key, legacy glyph 존재 여부를 기록합니다.

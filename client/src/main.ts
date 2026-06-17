@@ -485,6 +485,10 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             : undefined;
         const battleSubMenuFocusIconQaParam = params.get('battleSubMenuFocusIconQa');
         const battleChainLabelIconQaParam = params.get('battleChainLabelIconQa');
+        const battleConnectionBadgeIconQaParam = params.get('battleConnectionBadgeIconQa');
+        const battleConnectionBadgeIconQa = battleConnectionBadgeIconQaParam === 'reconnecting' || battleConnectionBadgeIconQaParam === 'error'
+            ? battleConnectionBadgeIconQaParam
+            : undefined;
         phaserGame.scene.stop('MainMenuScene');
         phaserGame.scene.start('BattleScene', {
             zoneId,
@@ -507,6 +511,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             battleEchoPopupIconQa: params.get('battleEchoPopupIconQa') === '1',
             battleReflectPopupIconQa: params.get('battleReflectPopupIconQa') === '1',
             battleCriticalPopupIconQa: params.get('battleCriticalPopupIconQa') === '1',
+            battleConnectionBadgeIconQa,
             battleChainLabelIconQa: battleChainLabelIconQaParam === 'chain' || battleChainLabelIconQaParam === 'max'
                 ? battleChainLabelIconQaParam
                 : undefined,

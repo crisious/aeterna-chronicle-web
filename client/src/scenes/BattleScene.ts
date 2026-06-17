@@ -129,6 +129,8 @@ export interface BattleSceneData {
   battleReflectPopupIconQa?: boolean;
   /** Aseprite 크리티컬 피해 팝업 icon 브라우저 QA용 */
   battleCriticalPopupIconQa?: boolean;
+  /** Aseprite 전투 연결 상태 배지 icon 브라우저 QA용 */
+  battleConnectionBadgeIconQa?: 'reconnecting' | 'error';
   /** Aseprite CHAIN 라벨 icon 브라우저 QA용 */
   battleChainLabelIconQa?: 'chain' | 'max';
 }
@@ -209,6 +211,11 @@ const BATTLE_BOSS_RESIST_ICON_ID = 'shield';
 const BATTLE_BOSS_RESIST_ICON_SIZE = 16;
 const BATTLE_CRITICAL_POPUP_ICON_ID = 'skill_ek_explode';
 const BATTLE_CRITICAL_POPUP_ICON_SIZE = 20;
+const BATTLE_CONNECTION_BADGE_ICON_IDS = {
+  reconnecting: 'skill_tg_stop',
+  error: 'curse',
+} as const;
+const BATTLE_CONNECTION_BADGE_ICON_SIZE = 16;
 const BATTLE_BOSS_TELEGRAPH_ICON_ID = 'skill_ek_explode';
 const BATTLE_BOSS_TELEGRAPH_ICON_SIZE = 30;
 const BATTLE_HP_CRITICAL_ICON_ID = 'bleed';
@@ -243,6 +250,24 @@ type BattleFieldAmbientIconKind = 'ambient' | 'boss';
 type BattleResultRewardIconKind = keyof typeof BATTLE_RESULT_REWARD_ICON_IDS;
 type BattleResultLeadMode = keyof typeof BATTLE_RESULT_LEAD_ICON_IDS;
 type BattleChainLabelIconMode = keyof typeof BATTLE_CHAIN_LABEL_ICON_IDS;
+type BattleConnectionBadgeIconMode = keyof typeof BATTLE_CONNECTION_BADGE_ICON_IDS;
+
+const BATTLE_CONNECTION_BADGE_STATES: Record<BattleConnectionBadgeIconMode, {
+  label: string;
+  fallbackLabel: string;
+  color: string;
+}> = {
+  reconnecting: {
+    label: '재연결 중… 전투 일시정지',
+    fallbackLabel: '○ 재연결 중… 전투 일시정지',
+    color: '#ffaa44',
+  },
+  error: {
+    label: '연결 실패 — 재시도 중',
+    fallbackLabel: '✕ 연결 실패 — 재시도 중',
+    color: '#ff5555',
+  },
+};
 
 interface BattleSceneFrameRender {
   primary: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
@@ -398,6 +423,17 @@ function getBattleChainLabelIconResource(mode: BattleChainLabelIconMode): Battle
   return getSpriteResourceForSkillIcon(BATTLE_CHAIN_LABEL_ICON_IDS[mode]);
 }
 
+function getBattleConnectionBadgeIconResource(mode: BattleConnectionBadgeIconMode): BattleIconResource | undefined {
+  switch (mode) {
+    case 'reconnecting':
+      return getSpriteResourceForSkillIcon(BATTLE_CONNECTION_BADGE_ICON_IDS.reconnecting);
+    case 'error':
+      return getStatusIconResource(BATTLE_CONNECTION_BADGE_ICON_IDS.error);
+    default:
+      return undefined;
+  }
+}
+
 // ─── BattleScene ────────────────────────────────────────────────
 
 export class BattleScene extends Phaser.Scene {
@@ -475,6 +511,9 @@ export class BattleScene extends Phaser.Scene {
   private serverCombatId: string | null = null;
   // UX(#13): 전투 중 연결 끊김 — '재연결 중' 배지 + ATB 정지(입력/진행 잠금).
   private connectionBadge?: Phaser.GameObjects.Text;
+  private connectionBadgeIcon?: Phaser.GameObjects.Image;
+  private connectionBadgeIconFallbackRendered = false;
+  private missingConnectionBadgeIconKeys: string[] = [];
   private atbFrozenByConnection = false;
   // CHRONO-S23/S45: server 가 노출한 발동 가능 협공 후보 (마지막 tick 기준)
   private lastDualTechCandidates: Array<{
@@ -626,6 +665,9 @@ export class BattleScene extends Phaser.Scene {
     this.chainLabelIcon = null;
     this.chainLabelIconFallbackRendered = false;
     this.chainLabelIconMode = null;
+    this.connectionBadgeIcon = undefined;
+    this.connectionBadgeIconFallbackRendered = false;
+    this.missingConnectionBadgeIconKeys = [];
     this.battleSceneFrameQaRenderedCounts.clear();
 
     this.skillSlots = data.skillSlots ?? [];
@@ -732,6 +774,21 @@ export class BattleScene extends Phaser.Scene {
     ) {
       this.load.image(criticalPopupIconResource.key, criticalPopupIconResource.path);
       queuedSkillIconKeys.add(criticalPopupIconResource.key);
+    }
+
+    const connectionBadgeReconnectIconResource = getBattleConnectionBadgeIconResource('reconnecting');
+    if (
+      connectionBadgeReconnectIconResource
+      && !this.textures.exists(connectionBadgeReconnectIconResource.key)
+      && !queuedSkillIconKeys.has(connectionBadgeReconnectIconResource.key)
+    ) {
+      this.load.image(connectionBadgeReconnectIconResource.key, connectionBadgeReconnectIconResource.path);
+      queuedSkillIconKeys.add(connectionBadgeReconnectIconResource.key);
+    }
+
+    const connectionBadgeErrorIconResource = getBattleConnectionBadgeIconResource('error');
+    if (connectionBadgeErrorIconResource && !this.textures.exists(connectionBadgeErrorIconResource.key)) {
+      this.load.image(connectionBadgeErrorIconResource.key, connectionBadgeErrorIconResource.path);
     }
 
     const bossTelegraphIconResource = getSpriteResourceForSkillIcon(BATTLE_BOSS_TELEGRAPH_ICON_ID);
@@ -1223,6 +1280,7 @@ export class BattleScene extends Phaser.Scene {
     this._startBattleReflectPopupIconQa();
     this._startBattleCriticalPopupIconQa();
     this._startBattleChainLabelIconQa();
+    this._startBattleConnectionBadgeIconQa();
   }
 
   private _addBattleSceneFrame(
@@ -4829,28 +4887,99 @@ export class BattleScene extends Phaser.Scene {
 
   /** UX(#13): 전투 중 연결 끊김/재연결 상태를 상단 배지로 표시하고 ATB 를 정지(silent freeze 방지). */
   private _setupConnectionBadge(): void {
-    if (!this.connectionBadge) {
-      const cx = this.cameras.main.width / 2;
-      this.connectionBadge = this.add.text(cx, 64, '', {
-        fontSize: '14px', fontFamily: FONT_FAMILY, color: '#ffcc44',
-        backgroundColor: '#000000cc', padding: { x: 12, y: 6 }, stroke: '#000000', strokeThickness: 2,
-      }).setOrigin(0.5).setDepth(9500).setVisible(false);
-    }
+    this._ensureConnectionBadge();
     const unsub = networkManager.onConnectionChange((state) => {
       if (state === 'reconnecting' || state === 'connecting' || state === 'disconnected' || state === 'error') {
-        const reconnecting = state !== 'error';
-        this.connectionBadge
-          ?.setText(reconnecting ? '○ 재연결 중… 전투 일시정지' : '✕ 연결 실패 — 재시도 중')
-          .setColor(reconnecting ? '#ffaa44' : '#ff5555')
-          .setVisible(true);
+        this._renderConnectionBadgeState(state === 'error' ? 'error' : 'reconnecting');
         this.atbFrozenByConnection = true;
       } else if (state === 'connected') {
         if (this.atbFrozenByConnection) this.battleUI?.addLog('🔌 재연결됨 — 전투 재개');
         this.atbFrozenByConnection = false;
         this.connectionBadge?.setVisible(false);
+        this.connectionBadgeIcon?.setVisible(false);
       }
     });
     this.socketCleanups.push(unsub);
+  }
+
+  private _ensureConnectionBadge(): void {
+    if (this.connectionBadge) return;
+
+    const cx = this.cameras.main.width / 2;
+    this.connectionBadge = this.add.text(cx, 64, '', {
+      fontSize: '14px', fontFamily: FONT_FAMILY, color: '#ffcc44',
+      backgroundColor: '#000000cc', padding: { x: 12, y: 6 }, stroke: '#000000', strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(9500).setVisible(false);
+  }
+
+  private _renderConnectionBadgeState(mode: BattleConnectionBadgeIconMode): void {
+    this._ensureConnectionBadge();
+    const state = BATTLE_CONNECTION_BADGE_STATES[mode];
+    const iconResource = getBattleConnectionBadgeIconResource(mode);
+    const hasIcon = Boolean(iconResource && this.textures.exists(iconResource.key));
+    const label = hasIcon ? state.label : state.fallbackLabel;
+    const cx = this.cameras.main.width / 2;
+
+    this.connectionBadge
+      ?.setPosition(hasIcon ? cx + 10 : cx, 64)
+      .setText(label)
+      .setColor(state.color)
+      .setVisible(true);
+
+    if (hasIcon && iconResource) {
+      if (!this.connectionBadgeIcon) {
+        this.connectionBadgeIcon = this.add.image(0, 0, iconResource.key)
+          .setOrigin(0.5)
+          .setDepth(9501)
+          .setName('battle_connection_badge_icon');
+      } else if (this.connectionBadgeIcon.texture.key !== iconResource.key) {
+        this.connectionBadgeIcon.setTexture(iconResource.key);
+      }
+      this.connectionBadgeIcon.setDisplaySize(BATTLE_CONNECTION_BADGE_ICON_SIZE, BATTLE_CONNECTION_BADGE_ICON_SIZE);
+      this.connectionBadgeIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.connectionBadgeIcon
+        .setPosition((this.connectionBadge?.x ?? cx) - (this.connectionBadge?.displayWidth ?? 160) / 2 - 12, 64)
+        .setVisible(true);
+    } else {
+      this.connectionBadgeIcon?.setVisible(false);
+      this.connectionBadgeIconFallbackRendered = true;
+      this.missingConnectionBadgeIconKeys.push(iconResource?.key ?? BATTLE_CONNECTION_BADGE_ICON_IDS[mode]);
+    }
+
+    this._writeBattleConnectionBadgeIconQaProbe(mode);
+  }
+
+  private _startBattleConnectionBadgeIconQa(): void {
+    const mode = this._initData.battleConnectionBadgeIconQa;
+    if (!mode) return;
+    this._renderConnectionBadgeState(mode);
+  }
+
+  private _writeBattleConnectionBadgeIconQaProbe(mode: BattleConnectionBadgeIconMode): void {
+    if (this._initData.battleConnectionBadgeIconQa !== mode || typeof document === 'undefined') return;
+
+    const iconResource = getBattleConnectionBadgeIconResource(mode);
+    const label = this.connectionBadge?.text ?? '';
+    const hasIcon = this.connectionBadgeIcon?.visible === true;
+    const legacyGlyphPresent = label.includes('○') || label.includes('✕');
+    const missingBattleConnectionBadgeIconKeys = hasIcon && iconResource
+      ? []
+      : [iconResource?.key ?? BATTLE_CONNECTION_BADGE_ICON_IDS[mode]];
+
+    document.body.dataset.aeternaBattleConnectionBadgeIconQa = JSON.stringify({
+      status: hasIcon && !legacyGlyphPresent ? 'ready' : 'missing-icon',
+      mode,
+      label,
+      legacyGlyphPresent,
+      icon: {
+        iconId: BATTLE_CONNECTION_BADGE_ICON_IDS[mode],
+        key: iconResource?.key ?? null,
+        path: iconResource?.path ?? null,
+        rendered: hasIcon,
+        fallbackRendered: this.connectionBadgeIconFallbackRendered,
+      },
+      missingBattleConnectionBadgeIconKeys,
+    });
   }
 
   /**
