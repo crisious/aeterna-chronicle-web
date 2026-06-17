@@ -168,6 +168,9 @@ const SETTINGS_ACTION_BUTTON_ICON_IDS = {
   back: 'skill_tg_reverse',
 } as const;
 
+const SETTINGS_FOCUS_ICON_ID = 'skill_mw_arrow';
+const SETTINGS_FOCUS_ICON_SIZE = 14;
+
 type SettingsActionIconId = keyof typeof SETTINGS_ACTION_BUTTON_ICON_IDS;
 
 interface SettingsSceneData {
@@ -209,6 +212,9 @@ export class SettingsScene extends Phaser.Scene {
   private settingsActionIcons: Phaser.GameObjects.Image[] = [];
   private missingActionIconKeys: string[] = [];
   private fallbackActionIconIds: string[] = [];
+  private settingsFocusIcon: Phaser.GameObjects.Image | null = null;
+  private settingsFocusIconFallbackRendered = false;
+  private settingsFocusLabelTexts: Phaser.GameObjects.Text[] = [];
 
   // FINDING-A4 ext4: 키보드 nav state
   private settingsItems: SettingsSelectable[] = [];
@@ -226,6 +232,9 @@ export class SettingsScene extends Phaser.Scene {
     this.settingsActionIcons = [];
     this.missingActionIconKeys = [];
     this.fallbackActionIconIds = [];
+    this.settingsFocusIcon = null;
+    this.settingsFocusIconFallbackRendered = false;
+    this.settingsFocusLabelTexts = [];
   }
 
   preload(): void {
@@ -234,11 +243,22 @@ export class SettingsScene extends Phaser.Scene {
         this.load.image(texture.key, texture.path);
       }
     }
+    const queuedSettingsIconKeys = new Set<string>();
+    this._preloadSettingsSkillIcon(SETTINGS_FOCUS_ICON_ID, queuedSettingsIconKeys);
     for (const iconId of Object.values(SETTINGS_ACTION_BUTTON_ICON_IDS)) {
-      const actionIconResource = getSpriteResourceForSkillIcon(iconId);
-      if (actionIconResource && !this.textures.exists(actionIconResource.key)) {
-        this.load.image(actionIconResource.key, actionIconResource.path);
-      }
+      this._preloadSettingsSkillIcon(iconId, queuedSettingsIconKeys);
+    }
+  }
+
+  private _preloadSettingsSkillIcon(iconId: string, queuedSettingsIconKeys: Set<string>): void {
+    const actionIconResource = getSpriteResourceForSkillIcon(iconId);
+    if (
+      actionIconResource
+      && !this.textures.exists(actionIconResource.key)
+      && !queuedSettingsIconKeys.has(actionIconResource.key)
+    ) {
+      this.load.image(actionIconResource.key, actionIconResource.path);
+      queuedSettingsIconKeys.add(actionIconResource.key);
     }
   }
 
@@ -249,6 +269,9 @@ export class SettingsScene extends Phaser.Scene {
     this.settingsActionIcons = [];
     this.missingActionIconKeys = [];
     this.fallbackActionIconIds = [];
+    this.settingsFocusIcon = null;
+    this.settingsFocusIconFallbackRendered = false;
+    this.settingsFocusLabelTexts = [];
     // FINDING-A4 ext10: 색약 모드 진입 시 즉시 적용 (cb-simulator-filters.css SVG 필터)
     applyColorblindMode(this.settings.colorblindMode);
     const { width, height } = this.cameras.main;
@@ -572,6 +595,52 @@ export class SettingsScene extends Phaser.Scene {
     return icon;
   }
 
+  private _ensureSettingsFocusIcon(): Phaser.GameObjects.Image | null {
+    const iconResource = getSpriteResourceForSkillIcon(SETTINGS_FOCUS_ICON_ID);
+    if (!iconResource || !this.textures.exists(iconResource.key)) {
+      this.settingsFocusIconFallbackRendered = true;
+      this.settingsFocusIcon?.setVisible(false).setAlpha(0);
+      return null;
+    }
+
+    if (!this.settingsFocusIcon) {
+      this.settingsFocusIcon = this.add.image(0, 0, iconResource.key)
+        .setName('settings_focus_icon')
+        .setOrigin(0.5)
+        .setDepth(120)
+        .setVisible(false);
+      this.uiElements.push(this.settingsFocusIcon);
+    } else if (this.settingsFocusIcon.texture.key !== iconResource.key) {
+      this.settingsFocusIcon.setTexture(iconResource.key);
+    }
+
+    this.settingsFocusIcon.setDisplaySize(SETTINGS_FOCUS_ICON_SIZE, SETTINGS_FOCUS_ICON_SIZE);
+    this.settingsFocusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return this.settingsFocusIcon;
+  }
+
+  private _setSettingsFocusIconForText(
+    text: Phaser.GameObjects.Text,
+    highlighted: boolean,
+  ): boolean {
+    const focusIcon = this._ensureSettingsFocusIcon();
+    if (!focusIcon) {
+      if (highlighted) this.settingsFocusIconFallbackRendered = true;
+      return false;
+    }
+
+    if (!highlighted) {
+      focusIcon.setVisible(false).setAlpha(0);
+      return true;
+    }
+
+    focusIcon
+      .setPosition(text.x - SETTINGS_FOCUS_ICON_SIZE - 10, text.y + text.height / 2)
+      .setVisible(true)
+      .setAlpha(1);
+    return true;
+  }
+
   private _addSettingsFrame(
     x: number,
     y: number,
@@ -619,6 +688,14 @@ export class SettingsScene extends Phaser.Scene {
     const buttonRenderedFrameCount = this.frameQaRenderedCounts.get(buttonTexture.key) ?? 0;
     const sliderRenderedFrameCount = this.settingsSliderFrames.length;
     const actionIconRenderedCount = this.settingsActionIcons.length;
+    const settingsFocusIconResource = getSpriteResourceForSkillIcon(SETTINGS_FOCUS_ICON_ID);
+    const settingsFocusIconVisible = this.settingsFocusIcon?.active === true
+      && this.settingsFocusIcon.visible
+      && this.settingsFocusIcon.alpha > 0;
+    const settingsFocusLabelLegacyGlyphPresent = this.settingsFocusLabelTexts.some((text) => text.text.includes('▶'));
+    const missingSettingsFocusIconKeys = settingsFocusIconVisible && settingsFocusIconResource
+      ? []
+      : [settingsFocusIconResource?.key ?? SETTINGS_FOCUS_ICON_ID];
     const actionIconKeys = Object.values(SETTINGS_ACTION_BUTTON_ICON_IDS)
       .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key)
       .filter((key): key is NonNullable<typeof key> => key !== undefined);
@@ -639,10 +716,16 @@ export class SettingsScene extends Phaser.Scene {
       !this.textures.exists(buttonTexture.key) || buttonRenderedFrameCount < 2 ? buttonTexture.key : null,
       !this.textures.exists(sliderTexture.key) || sliderRenderedFrameCount < SETTINGS_EXPECTED_SLIDER_TRACK_FRAME_COUNT ? sliderTexture.key : null,
       actionIconRenderedCount < SETTINGS_EXPECTED_ACTION_ICON_COUNT ? 'settings_action_icons' : null,
+      missingSettingsFocusIconKeys.length > 0 ? 'settings_focus_icon' : null,
     ].filter((key): key is NonNullable<typeof key> => key !== null);
 
     document.body.dataset.aeternaSettingsFrameQa = JSON.stringify({
-      status: missingFrameKeys.length === 0 && this.missingActionIconKeys.length === 0 ? 'ready' : 'missing-frame',
+      status: missingFrameKeys.length === 0
+        && this.missingActionIconKeys.length === 0
+        && missingSettingsFocusIconKeys.length === 0
+        && !settingsFocusLabelLegacyGlyphPresent
+        ? 'ready'
+        : 'missing-frame',
       renderedFrameKeys,
       panelRenderedFrameCount,
       buttonRenderedFrameCount,
@@ -670,6 +753,18 @@ export class SettingsScene extends Phaser.Scene {
         })),
         fallbackActionIconIds: this.fallbackActionIconIds,
       },
+      settingsFocusIcon: {
+        iconId: SETTINGS_FOCUS_ICON_ID,
+        renderedCount: settingsFocusIconVisible ? 1 : 0,
+        expectedTextureKey: settingsFocusIconResource?.key ?? null,
+        renderedTextureKey: settingsFocusIconVisible && this.settingsFocusIcon ? this.settingsFocusIcon.texture.key : null,
+        displaySize: settingsFocusIconVisible && this.settingsFocusIcon
+          ? { width: this.settingsFocusIcon.displayWidth, height: this.settingsFocusIcon.displayHeight }
+          : null,
+        fallbackRendered: this.settingsFocusIconFallbackRendered,
+      },
+      settingsFocusLabelLegacyGlyphPresent,
+      missingSettingsFocusIconKeys,
       missingActionIconKeys: this.missingActionIconKeys,
       missingFrameKeys,
     });
@@ -697,8 +792,10 @@ export class SettingsScene extends Phaser.Scene {
     let highlighted = false;
     let currentRatio = value;
     const labelText = this._addText(x, y, '', 14, '#cccccc');
+    this.settingsFocusLabelTexts.push(labelText);
     const renderLabel = () => {
-      const prefix = highlighted ? '▶ ' : '   ';
+      const hasFocusIcon = this._setSettingsFocusIconForText(labelText, highlighted);
+      const prefix = highlighted && !hasFocusIcon ? '▶ ' : '   ';
       labelText.setText(`${prefix}${label}: ${Math.round(currentRatio * 100)}%`);
     };
     renderLabel();
@@ -751,8 +848,10 @@ export class SettingsScene extends Phaser.Scene {
     let current = value;
     let highlighted = false;
     const txt = this._addText(x, y, '', 14, current ? '#88ff88' : '#ff8888');
+    this.settingsFocusLabelTexts.push(txt);
     const renderLabel = () => {
-      const prefix = highlighted ? '▶ ' : '   ';
+      const hasFocusIcon = this._setSettingsFocusIconForText(txt, highlighted);
+      const prefix = highlighted && !hasFocusIcon ? '▶ ' : '   ';
       txt.setText(`${prefix}${label}: ${current ? 'ON' : 'OFF'}`);
       txt.setColor(current ? '#88ff88' : '#ff8888');
     };
@@ -778,8 +877,10 @@ export class SettingsScene extends Phaser.Scene {
     let idx = Math.max(0, currentIndex);
     let highlighted = false;
     const txt = this._addText(x, y, '', 14, '#cccccc');
+    this.settingsFocusLabelTexts.push(txt);
     const renderLabel = () => {
-      const prefix = highlighted ? '▶ ' : '   ';
+      const hasFocusIcon = this._setSettingsFocusIconForText(txt, highlighted);
+      const prefix = highlighted && !hasFocusIcon ? '▶ ' : '   ';
       txt.setText(`${prefix}${label}: < ${options[idx]} >`);
       txt.setColor(highlighted ? '#ffffff' : '#cccccc');
     };

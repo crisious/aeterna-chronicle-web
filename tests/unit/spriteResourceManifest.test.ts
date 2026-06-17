@@ -852,6 +852,76 @@ describe('sprite resource manifest', () => {
     expect(battleSource).toContain("this.add.text(us.sprite.x, us.sprite.y - 70, '🛡'");
   });
 
+  it('BattleScene reflect popup uses the Aseprite shield status icon before shield glyph fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(battleSource).toContain("const BATTLE_REFLECT_POPUP_ICON_ID = 'shield'");
+    expect(battleSource).toContain('const BATTLE_REFLECT_POPUP_ICON_SIZE = 18');
+    expect(battleSource).toContain('battleReflectPopupIconQa?: boolean');
+    expect(battleSource).toContain('private reflectPopupIcons: Phaser.GameObjects.Image[] = []');
+    expect(battleSource).toContain('private reflectPopupTexts: Phaser.GameObjects.Text[] = []');
+    expect(battleSource).toContain('private reflectPopupIconFallbackRendered = false');
+    expect(battleSource).toContain('const reflectPopupIconResource = getStatusIconResource(BATTLE_REFLECT_POPUP_ICON_ID)');
+    expect(battleSource).toContain("setName('battle_reflect_popup_icon')");
+    expect(battleSource).toContain('reflectPopupIcon.setDisplaySize(BATTLE_REFLECT_POPUP_ICON_SIZE, BATTLE_REFLECT_POPUP_ICON_SIZE)');
+    expect(battleSource).toContain('reflectPopupIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain('const reflectPopupLabel = reflectPopupIcon ? `-${dmg}` : `🛡 -${dmg}`');
+    expect(battleSource).toContain("setName('battle_reflect_popup_text')");
+    expect(battleSource).toContain('private _startBattleReflectPopupIconQa(): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleReflectPopupIconQa = JSON.stringify');
+    expect(battleSource).toContain('missingBattleReflectPopupIconKeys');
+    expect(battleSource).not.toContain('const text = this.add.text(x, y - 30, `🛡 -${dmg}`');
+    expect(mainSource).toContain("battleReflectPopupIconQa: params.get('battleReflectPopupIconQa') === '1'");
+  });
+
+  it('BattleScene echo popup uses the Aseprite storm skill icon before sparkle glyph fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(battleSource).toContain("const BATTLE_ECHO_POPUP_ICON_ID = 'skill_mw_storm'");
+    expect(battleSource).toContain('const BATTLE_ECHO_POPUP_ICON_SIZE = 18');
+    expect(battleSource).toContain('battleEchoPopupIconQa?: boolean');
+    expect(battleSource).toContain('private echoPopupIcons: Phaser.GameObjects.Image[] = []');
+    expect(battleSource).toContain('private echoPopupTexts: Phaser.GameObjects.Text[] = []');
+    expect(battleSource).toContain('private echoPopupIconFallbackRendered = false');
+    expect(battleSource).toContain('const echoPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_ECHO_POPUP_ICON_ID)');
+    expect(battleSource).toContain("setName('battle_echo_popup_icon')");
+    expect(battleSource).toContain('echoPopupIcon.setDisplaySize(BATTLE_ECHO_POPUP_ICON_SIZE, BATTLE_ECHO_POPUP_ICON_SIZE)');
+    expect(battleSource).toContain('echoPopupIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain('const echoPopupLabel = echoPopupIcon ? `ECHO +${dmg}` : `✨ ECHO +${dmg}`');
+    expect(battleSource).toContain("setName('battle_echo_popup_text')");
+    expect(battleSource).toContain('private _startBattleEchoPopupIconQa(): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleEchoPopupIconQa = JSON.stringify');
+    expect(battleSource).toContain('missingBattleEchoPopupIconKeys');
+    expect(battleSource).not.toContain('const text = this.add.text(x + 30, y - 10, `✨ ECHO +${dmg}`');
+    expect(mainSource).toContain("battleEchoPopupIconQa: params.get('battleEchoPopupIconQa') === '1'");
+  });
+
+  it('BattleScene critical damage popup uses the Aseprite explosion skill icon before burst glyph fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(battleSource).toContain("const BATTLE_CRITICAL_POPUP_ICON_ID = 'skill_ek_explode'");
+    expect(battleSource).toContain('const BATTLE_CRITICAL_POPUP_ICON_SIZE = 20');
+    expect(battleSource).toContain('battleCriticalPopupIconQa?: boolean');
+    expect(battleSource).toContain('private criticalPopupIcons: Phaser.GameObjects.Image[] = []');
+    expect(battleSource).toContain('private criticalPopupTexts: Phaser.GameObjects.Text[] = []');
+    expect(battleSource).toContain('private criticalPopupIconFallbackRendered = false');
+    expect(battleSource).toContain('const criticalPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_CRITICAL_POPUP_ICON_ID)');
+    expect(battleSource).toContain('queuedSkillIconKeys.has(criticalPopupIconResource.key)');
+    expect(battleSource).toContain("setName('battle_critical_popup_icon')");
+    expect(battleSource).toContain('criticalPopupIcon.setDisplaySize(BATTLE_CRITICAL_POPUP_ICON_SIZE, BATTLE_CRITICAL_POPUP_ICON_SIZE)');
+    expect(battleSource).toContain('criticalPopupIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain("const criticalPrefix = criticalPopupIcon ? '' : '💥'");
+    expect(battleSource).toContain("setName('battle_critical_popup_text')");
+    expect(battleSource).toContain('private _startBattleCriticalPopupIconQa(): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleCriticalPopupIconQa = JSON.stringify');
+    expect(battleSource).toContain('missingBattleCriticalPopupIconKeys');
+    expect(battleSource).not.toContain("prefix = '💥';");
+    expect(mainSource).toContain("battleCriticalPopupIconQa: params.get('battleCriticalPopupIconQa') === '1'");
+  });
+
   it('BattleScene 활성 턴 표시는 Aseprite arrow image를 텍스트 fallback보다 먼저 사용한다', () => {
     const battleSource = readSceneSource('BattleScene.ts');
 
@@ -1133,6 +1203,35 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain('missingUtilityButtonIconKeys');
   });
 
+  it('BattleUI log highlight uses Aseprite skill icons before event glyph fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS } from '../ui/BattleUI';");
+    expect(battleUiSource).toContain("export const BATTLE_LOG_HIGHLIGHT_ICON_IDS = {");
+    expect(battleUiSource).toContain("critical: 'skill_ek_explode'");
+    expect(battleUiSource).toContain("chain: 'skill_mw_storm'");
+    expect(battleUiSource).toContain("victory: 'skill_ek_ultimate'");
+    expect(battleUiSource).toContain("level: 'skill_ek_passive'");
+    expect(battleUiSource).toContain('const BATTLE_LOG_HIGHLIGHT_ICON_SIZE = 16');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('const logHighlightIconResource = getSpriteResourceForSkillIcon(iconId)');
+    expect(battleSource).toContain('queuedSkillIconKeys.has(logHighlightIconResource.key)');
+    expect(battleUiSource).toContain('type BattleLogHighlightIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ICON_IDS');
+    expect(battleUiSource).toContain('private logHighlightIcon?: Phaser.GameObjects.Image');
+    expect(battleUiSource).toContain('private logHighlightIconFallbackRendered = false');
+    expect(battleUiSource).toContain('private logHighlightIconKind: BattleLogHighlightIconKind | null = null');
+    expect(battleUiSource).toContain('private _inferHighlightIconKind(message: string): BattleLogHighlightIconKind | null');
+    expect(battleUiSource).toContain('private _addLogHighlightIcon(kind: BattleLogHighlightIconKind): Phaser.GameObjects.Image | undefined');
+    expect(battleUiSource).toContain("setName('battle_ui_log_highlight_icon')");
+    expect(battleUiSource).toContain('icon.setDisplaySize(BATTLE_LOG_HIGHLIGHT_ICON_SIZE, BATTLE_LOG_HIGHLIGHT_ICON_SIZE)');
+    expect(battleUiSource).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleUiSource).toContain('const highlightText = this._formatLogHighlightText(message, highlightIcon)');
+    expect(battleUiSource).toContain("document.body.dataset.aeternaBattleLogHighlightIconQa = JSON.stringify");
+    expect(battleUiSource).toContain('missingBattleLogHighlightIconKeys');
+    expect(battleUiSource).toContain("new URLSearchParams(window.location.search).get('battleLogHighlightIconQa')");
+  });
+
   it('BattleScene 협공 버튼은 Aseprite skill icons를 이모지 텍스트보다 먼저 사용한다', () => {
     const battleSource = readSceneSource('BattleScene.ts');
 
@@ -1153,6 +1252,35 @@ describe('sprite resource manifest', () => {
     expect(battleSource).toContain("const aoePrefix = this._hasComboTechButtonIcon(this.tripleTechButton) ? '' : (tSel.aoe ? '💥 🌟 ' : '🌟 ')");
     expect(battleSource).toContain('comboTechButtonIcon: {');
     expect(battleSource).toContain('renderedIconCount: this.comboTechButtonIcons.length');
+  });
+
+  it('BattleScene CHAIN 라벨은 Aseprite skill icons를 glyph fallback보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(battleSource).toContain("const BATTLE_CHAIN_LABEL_ICON_IDS = {");
+    expect(battleSource).toContain("chain: 'skill_mw_storm'");
+    expect(battleSource).toContain("max: 'skill_ek_explode'");
+    expect(battleSource).toContain('const BATTLE_CHAIN_LABEL_ICON_SIZE = 18');
+    expect(battleSource).toContain("battleChainLabelIconQa?: 'chain' | 'max'");
+    expect(battleSource).toContain('type BattleChainLabelIconMode = keyof typeof BATTLE_CHAIN_LABEL_ICON_IDS');
+    expect(battleSource).toContain('private chainLabelIcon: Phaser.GameObjects.Image | null = null');
+    expect(battleSource).toContain('private chainLabelIconFallbackRendered = false');
+    expect(battleSource).toContain('private chainLabelIconMode: BattleChainLabelIconMode | null = null');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_CHAIN_LABEL_ICON_IDS))');
+    expect(battleSource).toContain('const chainLabelIconResource = getSpriteResourceForSkillIcon(iconId)');
+    expect(battleSource).toContain('queuedSkillIconKeys.has(chainLabelIconResource.key)');
+    expect(battleSource).toContain('function getBattleChainLabelIconResource(mode: BattleChainLabelIconMode): BattleIconResource | undefined');
+    expect(battleSource).toContain("setName('battle_chain_label_icon')");
+    expect(battleSource).toContain('chainLabelIcon.setDisplaySize(BATTLE_CHAIN_LABEL_ICON_SIZE, BATTLE_CHAIN_LABEL_ICON_SIZE)');
+    expect(battleSource).toContain('chainLabelIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain("const chainPrefix = chainLabelIcon ? '' : (isMax ? '💥 ' : '🔥 ')");
+    expect(battleSource).toContain("?.setText(`${chainPrefix}CHAIN ×${this.chainCount}${isMax ? ' MAX' : ''}`)");
+    expect(battleSource).toContain('private _startBattleChainLabelIconQa(): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleChainLabelIconQa = JSON.stringify');
+    expect(battleSource).toContain('missingBattleChainLabelIconKeys');
+    expect(battleSource).not.toContain("?.setText(`${isMax ? '💥' : '🔥'} CHAIN ×${this.chainCount}${isMax ? ' MAX' : ''}`)");
+    expect(mainSource).toContain("battleChainLabelIconQa: battleChainLabelIconQaParam === 'chain' || battleChainLabelIconQaParam === 'max'");
   });
 
   it('AssetManager preloads Aseprite item and status icon specs without stale item prefixes', () => {
@@ -1202,6 +1330,7 @@ describe('sprite resource manifest', () => {
     expect(source).toContain("travel: 'skill_mw_arrow'");
     expect(source).toContain('WORLD_SCENE_EXPECTED_ACTION_BUTTON_ICON_COUNT = 4');
     expect(source).toContain('private worldActionButtonIcons: Phaser.GameObjects.Image[] = []');
+    expect(source).toContain('private worldActionButtonTexts: Phaser.GameObjects.Text[] = []');
     expect(source).toContain('for (const iconId of Object.values(WORLD_ACTION_BUTTON_ICON_IDS))');
     expect(source).toContain('const actionIconResource = getSpriteResourceForSkillIcon(iconId)');
     expect(source).toContain('this.load.image(actionIconResource.key, actionIconResource.path)');
@@ -1215,9 +1344,15 @@ describe('sprite resource manifest', () => {
     expect(source).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
     expect(source).toContain('const textX = icon ? x + (options.iconTextOffsetX ?? 10) : x');
     expect(source).toContain('const textLabel = icon ? (options.iconLabel ?? label) : label');
+    expect(source).toContain('this.worldActionButtonTexts.push(text)');
+    expect(source).toContain('const renderedActionButtonTexts = this.worldActionButtonTexts.filter(text => text.active)');
+    expect(source).toContain('const worldActionButtonLabelsLegacyGlyphPresent = renderedActionButtonTexts.some((text) => /[◀▶←]/u.test(text.text))');
     expect(source).toContain('actionButtonIcon: {');
     expect(source).toContain('renderedCount: renderedActionButtonIcons.length');
     expect(source).toContain('missingIconTextureKeys');
+    expect(source).toContain('actionButtonText: {');
+    expect(source).toContain('labels: renderedActionButtonTexts.map((text) => text.text)');
+    expect(source).toContain('legacyGlyphPresent: worldActionButtonLabelsLegacyGlyphPresent');
   });
 
   it('WorldScene locked zone markers render an Aseprite status icon before lock emoji fallback', () => {

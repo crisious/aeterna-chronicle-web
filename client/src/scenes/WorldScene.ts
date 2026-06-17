@@ -166,6 +166,7 @@ export class WorldScene extends Phaser.Scene {
   private worldBackgroundImage: Phaser.GameObjects.Image | null = null;
   private worldActionButtonFrames: Phaser.GameObjects.Image[] = [];
   private worldActionButtonIcons: Phaser.GameObjects.Image[] = [];
+  private worldActionButtonTexts: Phaser.GameObjects.Text[] = [];
   private worldLockedZoneIcons: Phaser.GameObjects.Image[] = [];
   private worldSelectedZonePanelIcons: Phaser.GameObjects.Image[] = [];
   private worldPlayerMarkerAvatar: Phaser.GameObjects.Image | null = null;
@@ -197,6 +198,7 @@ export class WorldScene extends Phaser.Scene {
     this.selectedZone = null;
     this.worldActionButtonFrames = [];
     this.worldActionButtonIcons = [];
+    this.worldActionButtonTexts = [];
     this.worldLockedZoneIcons = [];
     this.worldSelectedZonePanelIcons = [];
     this.worldPlayerMarkerAvatar = null;
@@ -460,6 +462,8 @@ export class WorldScene extends Phaser.Scene {
     const background = this._resolveWorldBackgroundDescriptor();
     const renderedActionButtonFrames = this.worldActionButtonFrames.filter(frame => frame.active);
     const renderedActionButtonIcons = this.worldActionButtonIcons.filter(icon => icon.active);
+    const renderedActionButtonTexts = this.worldActionButtonTexts.filter(text => text.active);
+    const worldActionButtonLabelsLegacyGlyphPresent = renderedActionButtonTexts.some((text) => /[◀▶←]/u.test(text.text));
     const renderedLockedZoneIcons = this.worldLockedZoneIcons.filter(icon => icon.active);
     const renderedSelectedZonePanelIcons = this.worldSelectedZonePanelIcons.filter(icon => icon.active);
     const renderedPlayerMarkerAvatar = this.worldPlayerMarkerAvatar?.active ? this.worldPlayerMarkerAvatar : null;
@@ -624,6 +628,10 @@ export class WorldScene extends Phaser.Scene {
           height: icon.displayHeight,
         })),
         missingIconTextureKeys,
+      },
+      actionButtonText: {
+        labels: renderedActionButtonTexts.map((text) => text.text),
+        legacyGlyphPresent: worldActionButtonLabelsLegacyGlyphPresent,
       },
       lockedZoneIcon: {
         iconId: WORLD_LOCKED_ZONE_STATUS_ICON_ID,
@@ -803,6 +811,7 @@ export class WorldScene extends Phaser.Scene {
       text.setColor(color);
       frame?.clearTint();
     });
+    this.worldActionButtonTexts.push(text);
 
     if (target) {
       target.add(text);

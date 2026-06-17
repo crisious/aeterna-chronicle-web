@@ -82,7 +82,7 @@ describe('UI frame runtime images', () => {
     expect(battleUiSource).toContain('Aseprite battle log UI frame 로드 실패 시에만 사용하는 안전 fallback');
     expect(battleUiSource).toContain("new URLSearchParams(window.location.search).get('battleLogFrameQa') === '1'");
     expect(battleUiSource).toContain('document.body.dataset.aeternaBattleLogFrameQa = JSON.stringify');
-    expect(battleSceneSource).toContain("import { BattleUI, preloadBattleUiFrameTextures } from '../ui/BattleUI'");
+    expect(battleSceneSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS } from '../ui/BattleUI'");
     expect(battleSceneSource).toContain('preloadBattleUiFrameTextures(this)');
   });
 
@@ -504,6 +504,26 @@ describe('UI frame runtime images', () => {
     expect(mainSource).toContain("import { ComboUiQaScene } from './scenes/ComboUiQaScene'");
     expect(mainSource).toContain("if (debugScene === 'combo')");
     expect(mainSource).toContain("phaserGame.scene.start('ComboUiQaScene')");
+  });
+
+  it('ComboUI 콤보 달성 라벨은 Aseprite skill icon을 flame glyph fallback보다 먼저 사용한다', () => {
+    const comboUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/ComboUI.ts'), 'utf8');
+
+    expect(comboUiSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';");
+    expect(comboUiSource).toContain("const COMBO_ACHIEVED_ICON_ID = 'skill_mw_storm'");
+    expect(comboUiSource).toContain('const COMBO_ACHIEVED_ICON_SIZE = 28');
+    expect(comboUiSource).toContain('private comboAchievedIcon: Phaser.GameObjects.Image | null = null');
+    expect(comboUiSource).toContain('private comboAchievedIconFallbackRendered = false');
+    expect(comboUiSource).toContain('const comboAchievedIconResource = getSpriteResourceForSkillIcon(COMBO_ACHIEVED_ICON_ID)');
+    expect(comboUiSource).toContain('scene.load.image(comboAchievedIconResource.key, comboAchievedIconResource.path)');
+    expect(comboUiSource).toContain('private _showComboAchievedIcon(): Phaser.GameObjects.Image | null');
+    expect(comboUiSource).toContain("setName('combo_ui_achieved_icon')");
+    expect(comboUiSource).toContain('this.comboAchievedIcon.setDisplaySize(COMBO_ACHIEVED_ICON_SIZE, COMBO_ACHIEVED_ICON_SIZE)');
+    expect(comboUiSource).toContain('this.comboAchievedIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(comboUiSource).toContain("const comboLabel = comboIcon ? `${event.comboName}!` : `🔥 ${event.comboName}!`");
+    expect(comboUiSource).toContain('comboTextLegacyGlyphPresent');
+    expect(comboUiSource).toContain('missingComboAchievedIconKeys');
+    expect(comboUiSource).not.toContain('this.comboText.setText(`🔥 ${event.comboName}!`)');
   });
 
   it('TutorialFlowManager는 Aseprite UI frame preload/render 경로와 QA route를 가진다', () => {
@@ -1025,6 +1045,26 @@ describe('UI frame runtime images', () => {
     expect(settingsSceneSource).toContain('fallbackActionIconIds');
     expect(mainSource).toContain("if (debugScene === 'settings')");
     expect(mainSource).toContain("phaserGame.scene.start('SettingsScene', { frameQa: true })");
+  });
+
+  it('SettingsScene 설정 항목 focus marker는 Aseprite skill icon을 legacy prefix보다 먼저 사용한다', () => {
+    const settingsSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/SettingsScene.ts'), 'utf8');
+
+    expect(settingsSceneSource).toContain("const SETTINGS_FOCUS_ICON_ID = 'skill_mw_arrow'");
+    expect(settingsSceneSource).toContain('const SETTINGS_FOCUS_ICON_SIZE = 14');
+    expect(settingsSceneSource).toContain('private settingsFocusIcon: Phaser.GameObjects.Image | null = null');
+    expect(settingsSceneSource).toContain('private settingsFocusLabelTexts: Phaser.GameObjects.Text[] = []');
+    expect(settingsSceneSource).toContain('const queuedSettingsIconKeys = new Set<string>();');
+    expect(settingsSceneSource).toContain('this._preloadSettingsSkillIcon(SETTINGS_FOCUS_ICON_ID, queuedSettingsIconKeys)');
+    expect(settingsSceneSource).toContain('private _ensureSettingsFocusIcon(): Phaser.GameObjects.Image | null');
+    expect(settingsSceneSource).toContain("setName('settings_focus_icon')");
+    expect(settingsSceneSource).toContain('this.settingsFocusIcon.setDisplaySize(SETTINGS_FOCUS_ICON_SIZE, SETTINGS_FOCUS_ICON_SIZE)');
+    expect(settingsSceneSource).toContain('this.settingsFocusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(settingsSceneSource).toContain('private _setSettingsFocusIconForText(');
+    expect(settingsSceneSource).toContain("const prefix = highlighted && !hasFocusIcon ? '▶ ' : '   ';");
+    expect(settingsSceneSource).toContain('settingsFocusLabelLegacyGlyphPresent');
+    expect(settingsSceneSource).toContain('missingSettingsFocusIconKeys');
+    expect(settingsSceneSource).not.toContain("const prefix = highlighted ? '▶ ' : '   ';");
   });
 
   it('피드백 폼 panel은 Aseprite UI frame preload/render 경로와 QA route를 가진다', () => {

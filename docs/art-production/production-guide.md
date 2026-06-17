@@ -248,7 +248,7 @@ npm run art:aseprite:validate -- npc `
 
 `WorldScene`의 시대 전환 Q/E 버튼, 마을 복귀 버튼, 선택 패널의 시간 이동 버튼은 `UI-BTN-006-DEF.png`를 `ui_frame_world_action_button` key로 preload해 Aseprite button frame을 먼저 표시합니다. 버튼 label, hover tint, 키보드 단축키, 지역 이동 callback, QA용 encounter 문구는 동적 Phaser UI 로직으로 유지합니다.
 
-`WorldScene` 액션 버튼 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 이전 시대 버튼은 `skill_tg_reverse.png`, 다음 시대 버튼은 `skill_tg_haste.png`, 마을 복귀 버튼은 `skill_vw_warp.png`, 시간 이동 버튼은 `skill_mw_arrow.png`를 `18x18` 이미지로 렌더링하고, 아이콘이 있을 때 label은 단축키/텍스트만 표시합니다. icon texture가 없을 때만 기존 `◀`, `▶`, `←` 기호 포함 label fallback을 사용합니다.
+`WorldScene` 액션 버튼 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 이전 시대 버튼은 `skill_tg_reverse.png`, 다음 시대 버튼은 `skill_tg_haste.png`, 마을 복귀 버튼은 `skill_vw_warp.png`, 시간 이동 버튼은 `skill_mw_arrow.png`를 `18x18` 이미지로 렌더링하고, 아이콘이 있을 때 label은 단축키/텍스트만 표시합니다. icon texture가 없을 때만 기존 `◀`, `▶`, `←` 기호 포함 label fallback을 사용합니다. `worldFrameQa=1` 경로는 `actionButtonIcon` 렌더 상태와 함께 `actionButtonText.labels`, `actionButtonText.legacyGlyphPresent`를 기록해 Aseprite icon 사용 시 버튼 label에 방향 glyph가 남지 않았는지 검증합니다.
 
 `WorldScene` 잠금 지역 마커는 Aseprite status icon을 먼저 사용합니다. `forgotten_citadel`, `chrono_spire`처럼 `unlocked: false`인 지역은 `status_stun.png`를 `22x22` 이미지로 노드 위에 표시하고, texture가 없을 때만 기존 `🔒` 텍스트 fallback을 사용합니다. `worldFrameQa=1` 경로는 `lockedZoneIcon`에 expected/rendered count, texture key, 표시 크기, 누락 key를 기록합니다.
 
@@ -270,11 +270,21 @@ npm run art:aseprite:validate -- npc `
 
 `BattleUI` utility button 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 일시정지 버튼은 active 상태에서 `skill_tg_stop.png`, paused/resume 상태에서 `skill_mw_arrow.png`, 도주 버튼은 `skill_vw_warp.png`를 `14x14` 이미지로 렌더링하고, 아이콘이 있을 때 label은 `일시정지 (P)`, `재개 (P)`, `도주`처럼 텍스트만 표시합니다. icon texture가 없을 때만 기존 `⏸`, `▶`, `🏃` 기호/이모지 포함 label fallback을 사용합니다. `battleUtilityButtonFrameQa=1`은 `utilityButtonIcon.expectedTextureKeys`, `pauseIconTextureKey`, `pauseLabelLegacyGlyphPresent`, `missingUtilityButtonIconKeys`로 pause/resume/flee 아이콘 상태를 기록합니다.
 
+`BattleUI` 전투 로그 하이라이트도 Aseprite skill icon을 먼저 사용합니다. 크리티컬은 `skill_ek_explode.png`, CHAIN/콤보는 `skill_mw_storm.png`, 승리는 `skill_ek_ultimate.png`, 레벨 업은 `skill_ek_passive.png`를 `16x16` 이미지로 렌더링하고, 아이콘이 있을 때 하이라이트 text는 `CRIT 88`, `CHAIN ×2`, `승리!`, `레벨 업`처럼 glyph 없는 텍스트만 표시합니다. icon texture가 없을 때만 기존 `💥`, `🔥`, `🎉`, `🆙`, `⚡` glyph fallback을 유지합니다. `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=critical|chain|victory|level`은 `aeternaBattleLogHighlightIconQa`에 icon key, 렌더 수, 표시 크기, fallback 여부, 누락 key, legacy glyph 존재 여부를 기록합니다.
+
 `BattleScene` 마법/아이템 서브메뉴 focus marker는 `skill_mw_arrow.png`를 `14x14` 이미지 `battle_submenu_focus_icon`으로 먼저 표시합니다. 마법/아이템 row 자체 icon은 기존 skill/item Aseprite image를 유지하고, 선택 focus만 별도 image object로 이동시켜 label에는 `▶` prefix를 넣지 않습니다. focus icon texture가 없을 때만 기존 `▶` prefix fallback을 사용합니다. `battleSubMenuFocusIconQa=magic|item`은 `aeternaBattleSubMenuFocusIconQa`에 `subMenuType`, `activeIndex`, `focusIcon`, `legacyGlyphPresent`, `missingBattleSubMenuFocusIconKeys`를 기록합니다.
 
 `BattleScene` 협공/3인 협공 버튼 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 협공 버튼은 `skill_mw_storm.png`, 3인 협공 버튼은 `skill_ek_ultimate.png`를 `18x18` 이미지로 렌더링하고, 아이콘이 있을 때 button label과 후보명은 `협공 (D)`, `3인 협공 (T)`, `<후보명> (D/T)`처럼 텍스트만 표시합니다. icon texture가 없을 때만 기존 `✨`, `🌟`, `💥` 기호/이모지 prefix fallback을 사용합니다.
 
+`BattleScene` CHAIN 라벨도 Aseprite skill icon을 먼저 사용합니다. 일반 chain은 `skill_mw_storm.png`, MAX chain은 `skill_ek_explode.png`를 `18x18` 이미지로 렌더링하고, 아이콘이 있을 때 label text는 `CHAIN ×N` 또는 `CHAIN ×N MAX`만 표시합니다. icon texture가 없을 때만 기존 `🔥`/`💥` glyph prefix fallback을 사용합니다. `?debugScene=battle&renderer=canvas&battleChainLabelIconQa=chain|max`는 `aeternaBattleChainLabelIconQa`에 icon key/path, 렌더 수, 표시 크기, fallback 여부, 누락 key, legacy glyph 존재 여부를 기록합니다.
+
 `BattleScene` 방어 커맨드의 머리 위 방어 상태 표시는 `getStatusIconResource('shield')`로 `status_shield.png` Aseprite status icon을 먼저 사용합니다. 방어 수명, 방어력 스냅샷 복원, 캐릭터 추종 위치 갱신은 기존 `_performDefend()` 로직으로 유지하고, `status_shield_icon` texture가 없을 때만 기존 `🛡` 텍스트 fallback을 생성합니다.
+
+`BattleScene` ECHO 피해 팝업은 `skill_mw_storm.png` Aseprite skill icon을 먼저 사용합니다. `_spawnEchoText()`는 `battle_echo_popup_icon`을 `18x18` image로 렌더하고, 아이콘이 있을 때 popup text는 `ECHO +N`만 표시합니다. `skill_mw_storm_icon` texture가 없을 때만 기존 `✨ ECHO +N` 문자열 fallback을 사용합니다. `?debugScene=battle&renderer=canvas&battleEchoPopupIconQa=1`는 `aeternaBattleEchoPopupIconQa`에 icon key/path, 렌더 수, 표시 크기, fallback 여부, 누락 key, legacy glyph 존재 여부를 기록합니다.
+
+`BattleScene` 반사 피해 팝업도 같은 `status_shield.png` Aseprite status icon을 먼저 사용합니다. `_spawnReflectText()`는 `battle_reflect_popup_icon`을 `18x18` image로 렌더하고, 아이콘이 있을 때 popup text는 `-N` 피해량만 표시합니다. `status_shield_icon` texture가 없을 때만 기존 `🛡 -N` 문자열 fallback을 사용합니다. `?debugScene=battle&renderer=canvas&battleReflectPopupIconQa=1`는 `aeternaBattleReflectPopupIconQa`에 icon key/path, 렌더 수, 표시 크기, fallback 여부, 누락 key, legacy glyph 존재 여부를 기록합니다.
+
+`BattleScene` 크리티컬 데미지 팝업은 `skill_ek_explode.png` Aseprite skill icon을 먼저 사용합니다. `_spawnDamageNumber()`는 critical 타입일 때 `battle_critical_popup_icon`을 `20x20` image로 렌더하고, 아이콘이 있을 때 popup text는 피해량 숫자만 표시합니다. `skill_ek_explode_icon` texture가 없을 때만 기존 `💥N` 문자열 fallback을 사용합니다. `?debugScene=battle&renderer=canvas&battleCriticalPopupIconQa=1`는 `aeternaBattleCriticalPopupIconQa`에 icon key/path, 렌더 수, 표시 크기, fallback 여부, 누락 key, legacy glyph 존재 여부를 기록합니다.
 
 `BattleScene` 활성 턴 머리 위 표시도 Aseprite `skill_mw_arrow.png`를 `skill_mw_arrow_icon` texture로 preload해 먼저 사용합니다. `_showActiveIndicator()`는 같은 아이콘을 `28x28` 이미지로 만들고 90도 회전해 하향 포인터로 쓰며, 위치 계산과 펄싱 tween은 기존 active commander 로직을 유지합니다. texture가 없을 때만 기존 `▼` 텍스트 fallback을 생성합니다.
 
@@ -338,7 +348,7 @@ npm run art:aseprite:validate -- npc `
 
 `SettingsScene` slider track은 `UI-BTN-005-DEF.png`를 `ui_frame_settings_slider_track` key로 preload해 BGM/SFX/자막 배경 불투명도 3개 slider의 track frame을 먼저 렌더합니다. 값에 따라 변하는 fill bar, label percentage, pointer/keyboard 조작은 기존 Phaser primitive와 설정 저장 로직을 유지합니다.
 
-`SettingsScene` 피드백/뒤로가기 액션 버튼 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 피드백 버튼은 `skill_mw_arrow.png`, 뒤로가기 버튼은 `skill_tg_reverse.png`를 `18x18` 이미지로 표시하고, texture가 있을 때 label은 텍스트만 유지합니다. icon texture가 없을 때만 기존 `📝`, `◀` 포함 label fallback을 사용하며, `?debugScene=settings&renderer=canvas&settingsFrameQa=1`는 `aeternaSettingsFrameQa.actionIcon`에 expected/rendered count, texture key, 표시 크기, fallback id, 누락 key를 기록합니다.
+`SettingsScene` 피드백/뒤로가기 액션 버튼 내부 아이콘은 Aseprite skill icon을 먼저 사용합니다. 피드백 버튼은 `skill_mw_arrow.png`, 뒤로가기 버튼은 `skill_tg_reverse.png`를 `18x18` 이미지로 표시하고, texture가 있을 때 label은 텍스트만 유지합니다. 설정 항목 focus marker도 `skill_mw_arrow.png`를 `settings_focus_icon` `14x14` 이미지로 재사용하고, texture가 있을 때 slider/toggle/cycle label에는 `▶` prefix를 붙이지 않습니다. icon texture가 없을 때만 기존 `📝`, `◀`, `▶` 포함 label fallback을 사용하며, `?debugScene=settings&renderer=canvas&settingsFrameQa=1`는 `aeternaSettingsFrameQa.actionIcon`, `settingsFocusIcon`, `settingsFocusLabelLegacyGlyphPresent`, `missingSettingsFocusIconKeys`에 expected/rendered count, texture key, 표시 크기, fallback id, 누락 key를 기록합니다.
 
 독립 `ChatUI`는 `UI-HUD-008-DEF.png`를 `ui_frame_chat_panel` key로, `UI-BTN-006-DEF.png`를 `ui_frame_chat_input`, `ui_frame_chat_tab_button`, `ui_frame_chat_emoji_button` key로 preload해 채팅 panel, 입력창, 채널 탭, 이모지 button frame을 먼저 표시합니다. 이모지 button 내부 아이콘은 `status_charm.png` / `status_charm_icon`을 `16x16` image로 먼저 렌더하고, texture가 없을 때만 기존 `😀` glyph fallback을 사용합니다. `?debugScene=chat&renderer=canvas&chatFrameQa=1`는 `aeternaChatFrameQa.emojiButtonIcon`에 texture key, 표시 크기, fallback/missing 상태를 기록합니다. 채널 전환 tint/alpha, 메시지 row, 미읽음 카운트, 이모지 선택, 입력 버퍼, 소켓 이벤트 처리는 기존 동적 Phaser UI 로직으로 유지합니다.
 
@@ -366,7 +376,7 @@ legacy `TutorialManager` DOM overlay는 `UI-HUD-005-DEF.png`를 `ui_frame_tutori
 
 `CoachmarkOverlay`는 `UI-HUD-005-DEF.png`를 `ui_frame_coachmark_panel` key로 preload해 온보딩 코치마크 panel frame을 먼저 표시하고, `UI-BTN-006-DEF.png`를 `ui_frame_coachmark_action_button` key로 preload해 스킵/다음 action button frame을 먼저 표시합니다. 스킵/다음 버튼 내부 아이콘은 `skill_tg_haste.png`와 `skill_mw_arrow.png`를 `16x16` Aseprite image로 먼저 렌더하고, texture 누락 시에만 텍스트 중심 label fallback을 사용합니다. highlight 영역, title/body/hint text, click/key/auto advance trigger, skip callback은 동적 Phaser UI 로직으로 유지하며, `?debugScene=coachmark&renderer=canvas&coachmarkFrameQa=1`에서 `aeternaCoachmarkFrameQa`로 panel/action button frame과 `actionButtonIcon` 렌더 상태를 기록합니다.
 
-`ComboUI`는 `UI-BTN-005-DEF.png`를 `ui_frame_combo_chain_gauge` key로 preload해 우측 상단 chain gauge track frame을 먼저 표시합니다. hit counter, multiplier, gauge fill 색상/감소, combo achieved text, hint row, screen shake setting은 기존 동적 Phaser UI 로직으로 유지합니다.
+`ComboUI`는 `UI-BTN-005-DEF.png`를 `ui_frame_combo_chain_gauge` key로 preload해 우측 상단 chain gauge track frame을 먼저 표시합니다. 콤보 달성 라벨은 `skill_mw_storm.png`를 `skill_mw_storm_icon` texture로 preload해 `28x28` 이미지로 먼저 표시하고, texture가 있으면 label text는 `전격 강타!`처럼 glyph 없는 텍스트만 사용합니다. texture가 없을 때만 기존 `🔥 전격 강타!` fallback을 사용합니다. hit counter, multiplier, gauge fill 색상/감소, hint row, screen shake setting은 기존 동적 Phaser UI 로직으로 유지합니다. `?debugScene=combo&renderer=canvas&comboFrameQa=1`는 `comboAchievedIcon`, `comboTextLegacyGlyphPresent`, `missingComboAchievedIconKeys`에 콤보 달성 아이콘 렌더 상태를 기록합니다.
 
 `LobbyScene` 상점과 인벤토리는 `itemIconSpecs.ts`의 100개 Aseprite item icon PNG를 `preloadItemIconResources()`로 로드합니다. 상점의 legacy `CON_HP_*`/`CON_MP_*` 코드와 인벤토리의 `WP-*`, `CS-*`, `MAT-*` 코드는 `itemIconResources.ts`에서 `ITM-CON-*`, `ITM-WPN-*`, `ITM-MAT-*`로 해석됩니다. UI row는 texture가 있으면 `28x28` 아이콘 이미지를 먼저 표시하고, texture가 없을 때만 텍스트 중심 row로 남깁니다.
 

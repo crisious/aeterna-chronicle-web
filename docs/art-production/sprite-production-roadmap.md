@@ -4795,3 +4795,249 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `http://127.0.0.1:5175/?debugScene=dungeon&renderer=canvas&dungeonFrameQa=clear&class=ether_knight&qaRun=phase157-clear-title-iab` reports `aeternaDungeonFrameQa.status=ready`, `mode=clear`, `clearTitleIcon.key=skill_ek_ultimate_icon`, path `assets/generated/ui/icons/skills/skill_ek_ultimate.png`, `displayWidth=26`, `displayHeight=26`, `fallbackRendered=false`, `clearTitleLegacyGlyphPresent=false`, `missingClearTitleIconKeys=[]`, one visible canvas, and no warn/error console logs.
+
+## Phase 158: BattleScene Reflect Popup Icon Runtime Wiring
+
+Runtime BattleScene reflect popup icon coverage:
+
+- Reflect popup icon: `status_shield.png` / texture key `status_shield_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` keeps using `preloadStatusIconResources(this)`, so the reflect popup icon is loaded with the shared status icon library without a duplicate loader entry.
+- `_spawnReflectText()` renders one `battle_reflect_popup_icon` image at `18x18` with nearest filtering before legacy fallback.
+- Normal Aseprite-backed reflect popup label stays text-only: `-N`.
+- Texture-missing fallback keeps the previous `🛡 -N` behavior.
+- `battleReflectPopupIconQa=1` records `reflectPopupIcon`, `legacyGlyphPresent`, and `missingBattleReflectPopupIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the shield icon id, debug route parser, render object name, display size, nearest filtering, text-only damage label, and QA payload fields.
+- Browser QA confirms one reflect popup icon renders during a debug battle, is `18x18`, no reflect popup icon key is missing, the popup label has no legacy `🛡` glyph, and no warn/error console logs appear.
+- Existing passive reflect damage calculation, attacker positioning, popup color, tween lifecycle, intro/result QA routes, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 158 implementation started on 2026-06-17.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "reflect popup"` failed before implementation because `BattleScene.ts` did not define the reflect popup icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "reflect popup"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 100 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&battleReflectPopupIconQa=1&class=ether_knight&qaRun=phase158-reflect-popup-iab` reports `aeternaBattleReflectPopupIconQa.status=ready`, `reflectPopupIcon.iconId=shield`, `expectedTextureKeys=["status_shield_icon"]`, matching rendered texture key, one `18x18` display size, `fallbackRendered=false`, `reflectPopupLabels=["-37"]`, `legacyGlyphPresent=false`, `missingBattleReflectPopupIconKeys=[]`, one visible canvas, and no warn/error console logs. Screenshot review confirms the battle scene rendered nonblank.
+
+## Phase 159: BattleScene Echo Popup Icon Runtime Wiring
+
+Runtime BattleScene echo popup icon coverage:
+
+- Echo popup icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` already loads `skill_mw_storm.png` through the combo-tech icon preload path, so the echo popup reuses the existing Aseprite skill icon without a duplicate loader entry.
+- `_spawnEchoText()` renders one `battle_echo_popup_icon` image at `18x18` with nearest filtering before legacy fallback.
+- Normal Aseprite-backed echo popup label stays text-only: `ECHO +N`.
+- Texture-missing fallback keeps the previous `✨ ECHO +N` behavior.
+- `battleEchoPopupIconQa=1` records `echoPopupIcon`, `legacyGlyphPresent`, and `missingBattleEchoPopupIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the storm icon id, debug route parser, render object name, display size, nearest filtering, text-only damage label, and QA payload fields.
+- Browser QA confirms one echo popup icon renders during a debug battle, is `18x18`, no echo popup icon key is missing, the popup label has no legacy `✨` glyph, and no warn/error console logs appear.
+- Existing critEcho damage calculation, popup color, attacker/target positioning, tween lifecycle, combo-tech button icon preload, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 159 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "echo popup"` failed before implementation because `BattleScene.ts` did not define the echo popup icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "echo popup"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 101 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&battleEchoPopupIconQa=1&class=ether_knight&qaRun=phase159-echo-popup-iab` reports `aeternaBattleEchoPopupIconQa.status=ready`, `echoPopupIcon.iconId=skill_mw_storm`, `expectedTextureKeys=["skill_mw_storm_icon"]`, matching rendered texture key, one `18x18` display size, `fallbackRendered=false`, `echoPopupLabels=["ECHO +29"]`, `legacyGlyphPresent=false`, `missingBattleEchoPopupIconKeys=[]`, one visible canvas, and no warn/error console logs. Screenshot review confirms the battle scene rendered nonblank.
+
+## Phase 160: BattleScene Critical Damage Popup Icon Runtime Wiring
+
+Runtime BattleScene critical damage popup icon coverage:
+
+- Critical popup icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` loads `skill_ek_explode.png` through the shared skill icon preload queue and checks `queuedSkillIconKeys` to avoid duplicate loader entries when Ether Knight skill slots already preload the same texture.
+- `_spawnDamageNumber()` renders one `battle_critical_popup_icon` image at `20x20` with nearest filtering before legacy fallback whenever the damage popup type is `critical`.
+- Normal Aseprite-backed critical popup label stays text-only: `N`.
+- Texture-missing fallback keeps the previous `💥N` behavior.
+- `battleCriticalPopupIconQa=1` records `criticalPopupIcon`, `legacyGlyphPresent`, and `missingBattleCriticalPopupIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the explosion icon id, debug route parser, render object name, display size, nearest filtering, text-only critical damage label, duplicate preload guard, and QA payload fields.
+- Browser QA confirms one critical popup icon renders during a debug battle, is `20x20`, no critical popup icon key is missing, the popup label has no legacy `💥` glyph, and no warn/error console logs appear.
+- Existing normal/heal damage number labels, critical damage color/font size, tween lifecycle, hit VFX, critEcho/reflect popup routes, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 160 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "critical damage popup"` failed before implementation because `BattleScene.ts` did not define the critical popup icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "critical damage popup"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 102 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&battleCriticalPopupIconQa=1&class=ether_knight&qaRun=phase160-critical-popup-iab` reports `aeternaBattleCriticalPopupIconQa.status=ready`, `criticalPopupIcon.iconId=skill_ek_explode`, `expectedTextureKeys=["skill_ek_explode_icon"]`, matching rendered texture key, one `20x20` display size, `fallbackRendered=false`, `criticalPopupLabels=["88"]`, `legacyGlyphPresent=false`, `missingBattleCriticalPopupIconKeys=[]`, one visible canvas, and no warn/error console logs. Screenshot review confirms the battle scene rendered nonblank.
+
+## Phase 161: BattleScene CHAIN Label Icon Runtime Wiring
+
+Runtime BattleScene CHAIN label icon coverage:
+
+- Normal CHAIN label icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+- MAX CHAIN label icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` loads CHAIN label icons through the shared skill icon preload queue and checks `queuedSkillIconKeys` so `skill_mw_storm.png` and `skill_ek_explode.png` are not queued twice when combo buttons, skill slots, or critical popup paths already request them.
+- `_renderChainLabel()` renders one `battle_chain_label_icon` image at `18x18` with nearest filtering before legacy fallback.
+- Normal Aseprite-backed labels stay text-only: `CHAIN ×N` and `CHAIN ×N MAX`.
+- Texture-missing fallback keeps the previous `🔥 CHAIN ×N` and `💥 CHAIN ×N MAX` behavior.
+- `battleChainLabelIconQa=chain|max` records `chainLabelIcon`, `legacyGlyphPresent`, and `missingBattleChainLabelIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the storm/explosion icon ids, debug route parser, render object name, display size, nearest filtering, text-only CHAIN labels, duplicate preload guard, and QA payload fields.
+- Browser QA confirms both normal and MAX CHAIN label icons render during a debug battle, each is `18x18`, no CHAIN label icon key is missing, labels have no legacy `🔥`/`💥` glyphs, and no warn/error console logs appear.
+- Existing chain count/expiry, MAX chain accent color/font size, ComboUI hit counter update, server combat event handling, combo-tech button icon behavior, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 161 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "CHAIN 라벨"` failed before implementation because `BattleScene.ts` did not define the CHAIN label icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "CHAIN 라벨"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 103 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA normal: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&battleChainLabelIconQa=chain&class=ether_knight&qaRun=phase161-chain-label-chain-iab` reports `aeternaBattleChainLabelIconQa.status=ready`, `mode=chain`, `chainLabelIcon.iconId=skill_mw_storm`, `expectedTextureKeys=["skill_mw_storm_icon"]`, matching rendered texture key, one `18x18` display size, `fallbackRendered=false`, `chainLabelText="CHAIN ×2"`, `legacyGlyphPresent=false`, `missingBattleChainLabelIconKeys=[]`, one visible canvas, and no warn/error console logs.
+- Browser QA MAX: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&battleChainLabelIconQa=max&class=ether_knight&qaRun=phase161-chain-label-max-iab` reports `aeternaBattleChainLabelIconQa.status=ready`, `mode=max`, `chainLabelIcon.iconId=skill_ek_explode`, `expectedTextureKeys=["skill_ek_explode_icon"]`, matching rendered texture key, one `18x18` display size, `fallbackRendered=false`, `chainLabelText="CHAIN ×4 MAX"`, `legacyGlyphPresent=false`, `missingBattleChainLabelIconKeys=[]`, one visible canvas, and no warn/error console logs. Screenshot review confirms the battle scene rendered nonblank.
+
+## Phase 162: BattleUI Log Highlight Icon Runtime Wiring
+
+Runtime BattleUI log highlight icon coverage:
+
+- Critical highlight icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+- CHAIN/combo highlight icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+- Victory highlight icon: `skill_ek_ultimate.png` / texture key `skill_ek_ultimate_icon`.
+- Level-up highlight icon: `skill_ek_passive.png` / texture key `skill_ek_passive_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` loads log highlight icons through the shared skill icon preload queue and checks `queuedSkillIconKeys` so existing skill slot, combo, critical popup, and result icon paths do not duplicate texture loads.
+- `BattleUI.addLog()` infers a highlight icon from critical, CHAIN/combo, victory, and level-up messages, then renders one `battle_ui_log_highlight_icon` image at `16x16` with nearest filtering before legacy fallback.
+- Normal Aseprite-backed highlight labels stay text-only: `CRIT 88`, `CHAIN ×2`, `승리!`, and `레벨 업`.
+- Texture-missing fallback keeps the previous `💥`, `🔥`, `🎉`, `🆙`, and `⚡` glyph behavior.
+- `battleLogHighlightIconQa=critical|chain|victory|level` records `logHighlightIcon`, `legacyGlyphPresent`, and `missingBattleLogHighlightIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the four highlight icon ids, preload loop, duplicate preload guard, render object name, display size, nearest filtering, text-only highlight labels, URL QA trigger, and QA payload fields.
+- Browser QA confirms all four highlight icons render during a debug battle, each is `16x16`, no highlight icon key is missing, highlight labels have no legacy glyphs, and no warn/error console logs appear.
+- Existing log panel frame rendering, normal log line history, color inference, fade tween lifecycle, death highlight text fallback, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 162 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "log highlight"` failed before implementation because `BattleScene.ts` did not import/preload `BATTLE_LOG_HIGHLIGHT_ICON_IDS` and `BattleUI.ts` did not define the log highlight icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "log highlight"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 104 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA critical: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&class=ether_knight&qaRun=phase162-log-highlight-critical&battleLogHighlightIconQa=critical` reports `aeternaBattleLogHighlightIconQa.status=ready`, `kind=critical`, `logHighlightIcon.iconId=skill_ek_explode`, `expectedTextureKeys=["skill_ek_explode_icon"]`, matching rendered texture key, one `16x16` display size, `fallbackRendered=false`, `highlightText="CRIT 88"`, `legacyGlyphPresent=false`, `missingBattleLogHighlightIconKeys=[]`, one visible canvas, and no warn/error console logs.
+- Browser QA chain: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&class=ether_knight&qaRun=phase162-log-highlight-chain&battleLogHighlightIconQa=chain` reports `aeternaBattleLogHighlightIconQa.status=ready`, `kind=chain`, `logHighlightIcon.iconId=skill_mw_storm`, `expectedTextureKeys=["skill_mw_storm_icon"]`, matching rendered texture key, one `16x16` display size, `fallbackRendered=false`, `highlightText="CHAIN ×2"`, `legacyGlyphPresent=false`, `missingBattleLogHighlightIconKeys=[]`, one visible canvas, and no warn/error console logs.
+- Browser QA victory: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&class=ether_knight&qaRun=phase162-log-highlight-victory&battleLogHighlightIconQa=victory` reports `aeternaBattleLogHighlightIconQa.status=ready`, `kind=victory`, `logHighlightIcon.iconId=skill_ek_ultimate`, `expectedTextureKeys=["skill_ek_ultimate_icon"]`, matching rendered texture key, one `16x16` display size, `fallbackRendered=false`, `highlightText="승리!"`, `legacyGlyphPresent=false`, `missingBattleLogHighlightIconKeys=[]`, one visible canvas, and no warn/error console logs.
+- Browser QA level: `http://127.0.0.1:5175/?debugScene=battle&renderer=canvas&class=ether_knight&qaRun=phase162-log-highlight-level&battleLogHighlightIconQa=level` reports `aeternaBattleLogHighlightIconQa.status=ready`, `kind=level`, `logHighlightIcon.iconId=skill_ek_passive`, `expectedTextureKeys=["skill_ek_passive_icon"]`, matching rendered texture key, one `16x16` display size, `fallbackRendered=false`, `highlightText="레벨 업"`, `legacyGlyphPresent=false`, `missingBattleLogHighlightIconKeys=[]`, one visible canvas, and no warn/error console logs. Screenshot review confirms the battle scene rendered nonblank.
+
+## Phase 163: ComboUI Combo Achieved Icon Runtime Wiring
+
+Runtime ComboUI combo achieved icon coverage:
+
+- Combo achieved icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+
+Production rule:
+
+- `preloadComboUiFrameTextures()` loads `skill_mw_storm.png` alongside the existing chain gauge frame texture.
+- `ComboUI.showComboAchieved()` renders one `combo_ui_achieved_icon` image at `28x28` with nearest filtering before the combo label.
+- Normal Aseprite-backed combo achieved label stays text-only: `전격 강타!`.
+- Texture-missing fallback keeps the previous `🔥 전격 강타!` glyph behavior.
+- `comboFrameQa=1` records `comboAchievedIcon`, `comboTextLegacyGlyphPresent`, and `missingComboAchievedIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the combo achieved icon id, preload call, render object name, display size, nearest filtering, text-only normal label, glyph fallback contract, and QA payload fields.
+- Browser QA confirms the combo achieved icon renders during the visible combo label window, is `28x28`, no icon key is missing, the combo label has no legacy flame glyph, and no warn/error console logs appear.
+- Existing chain gauge frame rendering, hit counter, multiplier, gauge decay, hint rows, screen shake setting, fade tween lifecycle, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 163 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "콤보 달성"` failed before implementation because `ComboUI.ts` did not import/preload/render the combo achieved skill icon.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "콤보 달성"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 105 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=combo&renderer=canvas&comboFrameQa=1&qaRun=phase163-combo-achieved-icon-fast` reports `aeternaComboFrameQa.status=ready`, `comboAchievedIcon.iconId=skill_mw_storm`, `expectedTextureKeys=["skill_mw_storm_icon"]`, matching rendered texture key, one `28x28` display size, `fallbackRendered=false`, `comboText="전격 강타!"`, `comboTextLegacyGlyphPresent=false`, `missingComboAchievedIconKeys=[]`, one visible canvas, and no warn/error console logs.
+
+## Phase 164: SettingsScene Focus Icon Runtime Wiring
+
+Runtime SettingsScene focus icon coverage:
+
+- Settings item focus marker: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `SettingsScene.preload()` queues the focus icon through the shared settings skill icon preload helper and de-duplicates it against the existing feedback action icon.
+- `SettingsScene` keeps one shared `settings_focus_icon` image and moves it beside the highlighted slider/toggle/cycle label instead of allocating one icon per item.
+- Normal Aseprite-backed setting labels stay text-only and do not include the legacy `▶` prefix.
+- Texture-missing fallback keeps the previous `▶` prefix behavior.
+- `settingsFrameQa=1` records `settingsFocusIcon`, `settingsFocusLabelLegacyGlyphPresent`, and `missingSettingsFocusIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the focus icon id, duplicate-safe preload helper, shared image object name, display size, nearest filtering, label fallback contract, QA payload fields, and removal of direct `highlighted ? '▶ '` assignments from SettingsScene label render paths.
+- Browser QA confirms the focus icon renders on the initial highlighted setting item, is `14x14`, no focus icon key is missing, setting labels have no legacy focus prefix, and no warn/error console logs appear.
+- Existing settings panel/action button/slider frame rendering, action button icons, slider fill bars, toggle/cycle values, keyboard navigation, feedback launch, back navigation, and settings persistence remain unchanged.
+
+Current QA state:
+
+- Phase 164 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "SettingsScene 설정 항목 focus"` failed before implementation because `SettingsScene.ts` did not define/preload/render the focus icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "SettingsScene 설정 항목 focus"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 106 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=settings&renderer=canvas&settingsFrameQa=1&qaRun=phase164-settings-focus-iab` reports `aeternaSettingsFrameQa.status=ready`, `settingsFocusIcon.iconId=skill_mw_arrow`, `expectedTextureKey=skill_mw_arrow_icon`, matching rendered texture key, one `14x14` display size, `fallbackRendered=false`, `settingsFocusLabelLegacyGlyphPresent=false`, `missingSettingsFocusIconKeys=[]`, one visible canvas, and no warn/error console logs.
+
+## Phase 165: WorldScene Action Button Label QA Contract
+
+Runtime WorldScene action button label coverage:
+
+- Action button icons: `skill_tg_reverse.png`, `skill_tg_haste.png`, `skill_vw_warp.png`, `skill_mw_arrow.png`.
+
+Production rule:
+
+- `WorldScene` tracks active action button text objects alongside the existing action button frame/icon arrays.
+- Aseprite-backed action buttons keep label text free of legacy direction glyphs: `[Q]`, `[E]`, `마을로 돌아가기 (ESC)`, `시간 이동 (Enter)`.
+- Texture-missing fallback keeps the previous `◀`, `▶`, and `←` label behavior.
+- `worldFrameQa=1` records `actionButtonText.labels` and `actionButtonText.legacyGlyphPresent` alongside `actionButtonIcon`.
+
+Exit criteria:
+
+- Unit tests verify the action button text tracking field, active text filtering, legacy glyph detection regex, and QA payload fields.
+- Browser QA confirms all four action button icons render, no action icon key is missing, action labels are text-only, one canvas is visible, and no warn/error console logs appear.
+- Existing background, title icon, action button frame, locked zone icon, selected zone panel icon, encounter line icon, and player marker avatar QA contracts remain unchanged.
+
+Current QA state:
+
+- Phase 165 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "WorldScene action buttons"` failed before implementation because `WorldScene.ts` did not expose action button text tracking or the `actionButtonText` QA payload.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "WorldScene action buttons"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 106 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=world&renderer=canvas&worldFrameQa=1&qaRun=phase165-world-action-label-iab` reports `aeternaWorldFrameQa.status=ready`, `actionButtonIcon.renderedCount=4`, `expectedCount=4`, `missingIconTextureKeys=[]`, labels `[Q]`, `[E]`, `마을로 돌아가기 (ESC)`, `시간 이동 (Enter)`, `actionButtonText.legacyGlyphPresent=false`, one visible canvas, and no warn/error console logs.

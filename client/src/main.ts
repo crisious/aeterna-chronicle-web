@@ -483,6 +483,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             ? battleResultLeadQaParam
             : undefined;
         const battleSubMenuFocusIconQaParam = params.get('battleSubMenuFocusIconQa');
+        const battleChainLabelIconQaParam = params.get('battleChainLabelIconQa');
         phaserGame.scene.stop('MainMenuScene');
         phaserGame.scene.start('BattleScene', {
             zoneId,
@@ -501,6 +502,12 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             battleAmbientLineQa: params.get('battleAmbientLineQa') === '1',
             battleIntroIconQa: params.get('battleIntroIconQa') === '1',
             battleCommandFocusIconQa: params.get('battleCommandFocusIconQa') === '1',
+            battleEchoPopupIconQa: params.get('battleEchoPopupIconQa') === '1',
+            battleReflectPopupIconQa: params.get('battleReflectPopupIconQa') === '1',
+            battleCriticalPopupIconQa: params.get('battleCriticalPopupIconQa') === '1',
+            battleChainLabelIconQa: battleChainLabelIconQaParam === 'chain' || battleChainLabelIconQaParam === 'max'
+                ? battleChainLabelIconQaParam
+                : undefined,
             battleSubMenuFocusIconQa: battleSubMenuFocusIconQaParam === 'magic' || battleSubMenuFocusIconQaParam === 'item'
                 ? battleSubMenuFocusIconQaParam
                 : undefined,

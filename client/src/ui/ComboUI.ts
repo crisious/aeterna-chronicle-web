@@ -9,6 +9,7 @@
 
 import * as Phaser from 'phaser';
 import { isScreenShakeEnabled } from '../scenes/SettingsScene';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 export const COMBO_UI_FRAME_TEXTURES = {
   chainGauge: {
@@ -22,6 +23,11 @@ export function preloadComboUiFrameTextures(scene: Phaser.Scene): void {
     if (!scene.textures.exists(texture.key)) {
       scene.load.image(texture.key, texture.path);
     }
+  }
+
+  const comboAchievedIconResource = getSpriteResourceForSkillIcon(COMBO_ACHIEVED_ICON_ID);
+  if (comboAchievedIconResource && !scene.textures.exists(comboAchievedIconResource.key)) {
+    scene.load.image(comboAchievedIconResource.key, comboAchievedIconResource.path);
   }
 }
 
@@ -56,6 +62,8 @@ const CHAIN_DECAY_SEC = 3; // 체인 게이지 전체 시간 (초)
 const COMBO_TEXT_DURATION = 1500; // "COMBO!" 표시 시간 (ms)
 const SHAKE_INTENSITY = 5;       // 화면 흔들림 강도
 const SHAKE_DURATION = 200;      // 화면 흔들림 시간 (ms)
+const COMBO_ACHIEVED_ICON_ID = 'skill_mw_storm';
+const COMBO_ACHIEVED_ICON_SIZE = 28;
 
 const HINT_Y_OFFSET = -30;       // 스킬바 위 힌트 오프셋
 
@@ -97,6 +105,8 @@ export class ComboUI {
   private comboText: Phaser.GameObjects.Text;
   private comboTimer: number = 0;
   private comboBonusText: Phaser.GameObjects.Text;
+  private comboAchievedIcon: Phaser.GameObjects.Image | null = null;
+  private comboAchievedIconFallbackRendered = false;
 
   // 콤보 힌트
   private hintContainer: Phaser.GameObjects.Container;
@@ -230,10 +240,13 @@ export class ComboUI {
 
   /** 콤보 달성 시 호출 */
   showComboAchieved(event: ComboAchievedEvent): void {
-    // "COMBO!" 텍스트
-    this.comboText.setText(`🔥 ${event.comboName}!`);
+    // "COMBO!" 텍스트. Aseprite icon이 있으면 legacy flame glyph는 fallback으로만 남긴다.
+    const comboIcon = this._showComboAchievedIcon();
+    const comboLabel = comboIcon ? `${event.comboName}!` : `🔥 ${event.comboName}!`;
+    this.comboText.setText(comboLabel);
     this.comboText.setAlpha(1).setScale(0.5);
     this.comboTimer = COMBO_TEXT_DURATION;
+    this._positionComboAchievedIcon();
 
     // 보너스 설명
     this.comboBonusText.setText(event.bonusDescription);
@@ -261,6 +274,38 @@ export class ComboUI {
       this.scene.cameras.main.shake(SHAKE_DURATION, SHAKE_INTENSITY / 1000);
     }
     this.writeFrameQaProbeIfEnabled('ready');
+  }
+
+  private _showComboAchievedIcon(): Phaser.GameObjects.Image | null {
+    const comboAchievedIconResource = getSpriteResourceForSkillIcon(COMBO_ACHIEVED_ICON_ID);
+    if (!comboAchievedIconResource || !this.scene.textures.exists(comboAchievedIconResource.key)) {
+      this.comboAchievedIconFallbackRendered = true;
+      this.comboAchievedIcon?.setVisible(false).setAlpha(0);
+      return null;
+    }
+
+    if (!this.comboAchievedIcon) {
+      this.comboAchievedIcon = this.scene.add.image(0, 0, comboAchievedIconResource.key)
+        .setName('combo_ui_achieved_icon')
+        .setOrigin(0.5)
+        .setDepth(201);
+    } else if (this.comboAchievedIcon.texture.key !== comboAchievedIconResource.key) {
+      this.comboAchievedIcon.setTexture(comboAchievedIconResource.key);
+    }
+
+    this.comboAchievedIcon.setDisplaySize(COMBO_ACHIEVED_ICON_SIZE, COMBO_ACHIEVED_ICON_SIZE);
+    this.comboAchievedIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.comboAchievedIcon.setVisible(true).setAlpha(1);
+    return this.comboAchievedIcon;
+  }
+
+  private _positionComboAchievedIcon(): void {
+    if (!this.comboAchievedIcon || !this.comboAchievedIcon.visible) return;
+
+    this.comboAchievedIcon.setPosition(
+      this.comboText.x - this.comboText.width / 2 - COMBO_ACHIEVED_ICON_SIZE / 2 - 10,
+      this.comboText.y,
+    );
   }
 
   // ─── 콤보 힌트 표시 ─────────────────────────────────────────
@@ -333,8 +378,12 @@ export class ComboUI {
     if (this.comboTimer > 0) {
       this.comboTimer -= delta;
       if (this.comboTimer <= 0) {
+        const comboFadeTargets: Phaser.GameObjects.GameObject[] = [this.comboText, this.comboBonusText];
+        if (this.comboAchievedIcon?.visible) {
+          comboFadeTargets.push(this.comboAchievedIcon);
+        }
         this.scene.tweens.add({
-          targets: [this.comboText, this.comboBonusText],
+          targets: comboFadeTargets,
           alpha: 0,
           duration: 300,
         });
@@ -385,6 +434,7 @@ export class ComboUI {
     this._hideCounter();
     this.comboText.setAlpha(0);
     this.comboBonusText.setAlpha(0);
+    this.comboAchievedIcon?.setVisible(false).setAlpha(0);
 
     for (const ht of this.hintTexts) ht.destroy();
     this.hintTexts = [];
@@ -395,6 +445,17 @@ export class ComboUI {
     if (typeof document === 'undefined' || !document.body) return;
 
     const chainGaugeTexture = COMBO_UI_FRAME_TEXTURES.chainGauge;
+    const comboAchievedIconResource = getSpriteResourceForSkillIcon(COMBO_ACHIEVED_ICON_ID);
+    const expectedComboAchievedIconKeys = comboAchievedIconResource ? [comboAchievedIconResource.key] : [];
+    const comboAchievedIconVisible = this.comboAchievedIcon?.active === true
+      && this.comboAchievedIcon.visible
+      && this.comboAchievedIcon.alpha > 0;
+    const renderedComboAchievedIconKeys = comboAchievedIconVisible && this.comboAchievedIcon
+      ? [this.comboAchievedIcon.texture.key]
+      : [];
+    const missingComboAchievedIconKeys = expectedComboAchievedIconKeys
+      .filter((key) => !renderedComboAchievedIconKeys.includes(key));
+    const comboTextLegacyGlyphPresent = this.comboText.text.includes('🔥');
     document.body.dataset.aeternaComboFrameQa = JSON.stringify({
       status,
       visible: this.isVisible,
@@ -414,6 +475,19 @@ export class ComboUI {
       gaugeFillWidth: this.gaugeFill.displayWidth,
       hintCount: this.hintTexts.length,
       comboTextVisible: this.comboText.alpha > 0,
+      comboText: this.comboText.text,
+      comboTextLegacyGlyphPresent,
+      comboAchievedIcon: {
+        iconId: COMBO_ACHIEVED_ICON_ID,
+        renderedCount: comboAchievedIconVisible ? 1 : 0,
+        expectedTextureKeys: expectedComboAchievedIconKeys,
+        renderedTextureKeys: renderedComboAchievedIconKeys,
+        displaySizes: comboAchievedIconVisible && this.comboAchievedIcon
+          ? [{ width: this.comboAchievedIcon.displayWidth, height: this.comboAchievedIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.comboAchievedIconFallbackRendered,
+      },
+      missingComboAchievedIconKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }
@@ -428,6 +502,7 @@ export class ComboUI {
     this.gaugeFill.destroy();
     this.comboText.destroy();
     this.comboBonusText.destroy();
+    this.comboAchievedIcon?.destroy();
     this.hintContainer.destroy();
 
     for (const ht of this.hintTexts) ht.destroy();

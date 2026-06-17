@@ -39,6 +39,15 @@ const BATTLE_UTILITY_BUTTON_ICON_IDS = {
 } as const;
 const BATTLE_UTILITY_BUTTON_RENDERED_ICON_COUNT = 2;
 
+export const BATTLE_LOG_HIGHLIGHT_ICON_IDS = {
+  critical: 'skill_ek_explode',
+  chain: 'skill_mw_storm',
+  victory: 'skill_ek_ultimate',
+  level: 'skill_ek_passive',
+} as const;
+const BATTLE_LOG_HIGHLIGHT_ICON_SIZE = 16;
+type BattleLogHighlightIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ICON_IDS;
+
 export const BATTLE_UI_FRAME_TEXTURES = {
   skillSlot: {
     key: 'ui_frame_UI-BTN-001-DEF',
@@ -101,6 +110,9 @@ export class BattleUI {
   private logText!: Phaser.GameObjects.Text;
   // UX(#11): 중요 이벤트(크리/콤보/사망/승리)를 색상으로 강조하는 1줄 하이라이트(회색 로그에 묻힘 방지).
   private logHighlight?: Phaser.GameObjects.Text;
+  private logHighlightIcon?: Phaser.GameObjects.Image;
+  private logHighlightIconFallbackRendered = false;
+  private logHighlightIconKind: BattleLogHighlightIconKind | null = null;
 
   // 미니 상태창
   private statusContainer!: Phaser.GameObjects.Container;
@@ -128,6 +140,7 @@ export class BattleUI {
     this._createStatusPanel();
     this._createButtons();
     this._startBattleSkillTooltipFrameQaIfNeeded();
+    this._startBattleLogHighlightIconQaIfNeeded();
   }
 
   // ─── 스킬 바 생성 ─────────────────────────────────────────────
@@ -283,6 +296,50 @@ export class BattleUI {
     return null;
   }
 
+  private _inferHighlightIconKind(message: string): BattleLogHighlightIconKind | null {
+    if (message.includes('💥') || message.includes('크리') || message.includes('CRIT')) return 'critical';
+    if (message.includes('🎉') || message.includes('승리')) return 'victory';
+    if (message.includes('🆙') || message.includes('레벨 업')) return 'level';
+    if (message.includes('⚡') || message.includes('콤보') || message.includes('🔥') || message.includes('CHAIN')) return 'chain';
+    return null;
+  }
+
+  private _addLogHighlightIcon(kind: BattleLogHighlightIconKind): Phaser.GameObjects.Image | undefined {
+    const iconResource = getSpriteResourceForSkillIcon(BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind]);
+    if (!iconResource || !this.scene.textures.exists(iconResource.key)) {
+      this.logHighlightIconFallbackRendered = true;
+      this.logHighlightIcon?.setVisible(false);
+      this.logHighlightIconKind = null;
+      return undefined;
+    }
+
+    if (!this.logHighlightIcon) {
+      this.logHighlightIcon = this.scene.add.image(LOG_X - 10, LOG_Y - 8, iconResource.key)
+        .setName('battle_ui_log_highlight_icon')
+        .setOrigin(0.5)
+        .setDepth(113)
+        .setAlpha(0);
+    } else if (this.logHighlightIcon.texture.key !== iconResource.key) {
+      this.logHighlightIcon.setTexture(iconResource.key);
+    }
+
+    const icon = this.logHighlightIcon;
+    icon.setDisplaySize(BATTLE_LOG_HIGHLIGHT_ICON_SIZE, BATTLE_LOG_HIGHLIGHT_ICON_SIZE);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    icon.setVisible(true).setAlpha(1);
+    this.logHighlightIconKind = kind;
+    return icon;
+  }
+
+  private _formatLogHighlightText(message: string, icon?: Phaser.GameObjects.Image): string {
+    if (!icon) return message;
+
+    return message
+      .replace(/[💥🔥🎉🆙⚡]/gu, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
   /** 로그 Text 게임오브젝트 생성(배경 제외) — 파괴 시 재생성용으로 분리 */
   private _makeLogText(): void {
     this.logText = this.scene.add.text(LOG_X, LOG_Y + 4, this.logLines.join('\n'), {
@@ -336,10 +393,103 @@ export class BattleUI {
     const hl = this.logHighlight as unknown as { scene?: unknown; frame?: { data?: unknown } | null } | undefined;
     if (hlColor && hl && hl.scene && hl.frame && hl.frame.data) {
       try {
-        this.logHighlight!.setText(message).setColor(hlColor).setAlpha(1);
-        this.scene.tweens.add({ targets: this.logHighlight, alpha: 0, duration: 1400, delay: 700, ease: 'Sine.easeIn' });
+        const highlightIconKind = this._inferHighlightIconKind(message);
+        const highlightIcon = highlightIconKind ? this._addLogHighlightIcon(highlightIconKind) : undefined;
+        const highlightText = this._formatLogHighlightText(message, highlightIcon);
+        const highlightTargets: Array<Phaser.GameObjects.Text | Phaser.GameObjects.Image> = highlightIcon
+          ? [this.logHighlight!, highlightIcon]
+          : [this.logHighlight!];
+        if (!highlightIcon) {
+          this.logHighlightIcon?.setVisible(false).setAlpha(0);
+          this.logHighlightIconKind = null;
+        }
+        this.scene.tweens.killTweensOf(highlightTargets);
+        this.logHighlight!
+          .setText(highlightText)
+          .setX(highlightIcon ? LOG_X + 12 : LOG_X)
+          .setColor(hlColor)
+          .setAlpha(1);
+        this.scene.tweens.add({ targets: highlightTargets, alpha: 0, duration: 1400, delay: 700, ease: 'Sine.easeIn' });
       } catch { /* 하이라이트 갱신 포기(비치명적) */ }
+    } else {
+      this.logHighlightIcon?.setVisible(false).setAlpha(0);
+      this.logHighlightIconKind = null;
     }
+  }
+
+  private _getBattleLogHighlightQaKind(): BattleLogHighlightIconKind | null {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const kind = new URLSearchParams(window.location.search).get('battleLogHighlightIconQa');
+      return kind === 'critical' || kind === 'chain' || kind === 'victory' || kind === 'level'
+        ? kind
+        : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private _startBattleLogHighlightIconQaIfNeeded(): void {
+    const kind = this._getBattleLogHighlightQaKind();
+    if (!kind) return;
+
+    const qaMessages: Record<BattleLogHighlightIconKind, string> = {
+      critical: '💥 CRIT 88',
+      chain: '🔥 CHAIN ×2',
+      victory: '🎉 승리!',
+      level: '🆙 레벨 업',
+    };
+
+    this.scene.time.delayedCall(80, () => {
+      const sourceMessage = qaMessages[kind];
+      this.addLog(sourceMessage);
+      this._writeBattleLogHighlightIconQaProbe(kind, sourceMessage);
+    });
+  }
+
+  private _writeBattleLogHighlightIconQaProbe(kind: BattleLogHighlightIconKind, sourceMessage: string): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const iconResource = getSpriteResourceForSkillIcon(BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind]);
+    const expectedTextureKeys = iconResource ? [iconResource.key] : [];
+    const activeIcon = this.logHighlightIcon?.active && this.logHighlightIcon.visible
+      ? this.logHighlightIcon
+      : undefined;
+    const renderedTextureKeys = activeIcon ? [activeIcon.texture.key] : [];
+    const missingBattleLogHighlightIconKeys = expectedTextureKeys
+      .filter((key) => !renderedTextureKeys.includes(key));
+    const highlightText = this.logHighlight?.active ? this.logHighlight.text : '';
+    const legacyGlyphPresent = /[💥🔥🎉🆙⚡]/u.test(highlightText);
+    const hasExpectedIcon = Boolean(activeIcon)
+      && missingBattleLogHighlightIconKeys.length === 0
+      && !this.logHighlightIconFallbackRendered
+      && !legacyGlyphPresent;
+
+    document.body.dataset.aeternaBattleLogHighlightIconQa = JSON.stringify({
+      status: hasExpectedIcon ? 'ready' : 'missing-icon',
+      kind,
+      sourceMessage,
+      highlightText,
+      legacyGlyphPresent,
+      logHighlightIcon: {
+        iconId: BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind],
+        expectedCount: 1,
+        renderedCount: activeIcon ? 1 : 0,
+        expectedTextureKeys,
+        renderedTextureKeys,
+        displaySizes: activeIcon
+          ? [{ width: activeIcon.displayWidth, height: activeIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.logHighlightIconFallbackRendered,
+        activeKind: this.logHighlightIconKind,
+      },
+      missingBattleLogHighlightIconKeys,
+      visibleCanvasCount: Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length,
+    });
   }
 
   // ─── 미니 상태창 ─────────────────────────────────────────────
