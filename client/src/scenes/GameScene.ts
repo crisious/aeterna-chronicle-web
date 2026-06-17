@@ -57,6 +57,7 @@ interface GameSceneData {
   envObjectQa?: boolean;
   bossLabelIconQa?: boolean;
   zoneLabelIconQa?: boolean;
+  gameErrorIconQa?: boolean;
   eraId?: ChronoEraId;
 }
 
@@ -105,6 +106,7 @@ const CHARACTER_HUD_AVATAR_RESOURCES = {
 } as const;
 
 const GAME_SCENE_BOSS_LABEL_ICON_ID = 'skill_ek_slash';
+const GAME_SCENE_ERROR_ICON_ID = 'skill_ek_explode';
 
 function getCharacterHudAvatarResource(classId: string): { key: string; path: string } {
   return CHARACTER_HUD_AVATAR_RESOURCES[classId as keyof typeof CHARACTER_HUD_AVATAR_RESOURCES]
@@ -161,6 +163,8 @@ export class GameScene extends Phaser.Scene {
   private connectionLabel!: Phaser.GameObjects.Text;
   private bossLabelIcons: Phaser.GameObjects.Image[] = [];
   private bossLabelIconFallbackCount = 0;
+  private errorScreenIcon?: Phaser.GameObjects.Image;
+  private errorScreenIconFallbackRendered = false;
 
   // 소켓 cleanup 핸들
   private socketCleanups: Array<() => void> = [];
@@ -175,6 +179,8 @@ export class GameScene extends Phaser.Scene {
     this.bossLabelIconFallbackCount = 0;
     this.zoneLabelIcon = undefined;
     this.zoneLabelIconFallbackRendered = false;
+    this.errorScreenIcon = undefined;
+    this.errorScreenIconFallbackRendered = false;
     if (data?.zoneId) this.currentZoneId = data.zoneId;
     this.currentCharacterClassId = data?.characterClass?.trim() || 'ether_knight';
     if (data?.eraId) this.currentEraId = data.eraId;
@@ -268,6 +274,10 @@ export class GameScene extends Phaser.Scene {
     if (bossLabelIconResource && !this.textures.exists(bossLabelIconResource.key)) {
       this.load.image(bossLabelIconResource.key, bossLabelIconResource.path);
     }
+    const errorIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_ERROR_ICON_ID);
+    if (errorIconResource && !this.textures.exists(errorIconResource.key)) {
+      this.load.image(errorIconResource.key, errorIconResource.path);
+    }
 
     // 몬스터는 Aseprite spritesheet를 우선 사용하고, 누락 시에만 프로그래매틱 아이콘으로 fallback한다.
 
@@ -326,6 +336,10 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     try {
       this._ensureFallbackTextures();
+      if (this.sceneData.gameErrorIconQa === true) {
+        this._showErrorScreen(new Error('QA error screen probe'));
+        return;
+      }
       this._createSafe();
     } catch (err) {
       console.error('[GameScene] create 에러:', err);
@@ -337,9 +351,18 @@ export class GameScene extends Phaser.Scene {
   private _showErrorScreen(err: Error): void {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#1a0a0a');
-    this.add.text(width / 2, height / 2 - 60, `⚠️ 존 로딩 실패`, {
+    const errorIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_ERROR_ICON_ID);
+    const hasErrorIcon = Boolean(errorIconResource && this.textures.exists(errorIconResource.key));
+    if (hasErrorIcon && errorIconResource) {
+      this.errorScreenIcon = this._addErrorScreenIcon(width / 2 - 96, height / 2 - 60, errorIconResource);
+    } else {
+      this.errorScreenIconFallbackRendered = true;
+    }
+
+    const errorTitleLabel = hasErrorIcon ? '존 로딩 실패' : '⚠️ 존 로딩 실패';
+    this.add.text(hasErrorIcon ? width / 2 + 12 : width / 2, height / 2 - 60, errorTitleLabel, {
       fontSize: '20px', color: '#ff6644', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setOrigin(0.5);
+    }).setName('game_scene_error_title_label').setOrigin(0.5);
     this.add.text(width / 2, height / 2 - 20, `존: ${this.currentZoneName ?? '알 수 없음'}`, {
       fontSize: '14px', color: '#cccccc', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     }).setOrigin(0.5);
@@ -365,6 +388,52 @@ export class GameScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ENTER', () => this.startWorldScene());
     this.input.keyboard?.on('keydown-SPACE', () => this.startWorldScene());
     this.input.keyboard?.on('keydown-ESC', () => this.startLobbyScene());
+    this._writeGameErrorIconQaProbe({ hasErrorIcon });
+  }
+
+  private _addErrorScreenIcon(
+    x: number,
+    y: number,
+    resource: { key: string; path: string },
+  ): Phaser.GameObjects.Image {
+    const icon = this.add.image(x, y, resource.key)
+      .setScrollFactor(0)
+      .setDepth(10000)
+      .setOrigin(0.5)
+      .setName('game_scene_error_title_icon');
+    icon.setDisplaySize(22, 22);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return icon;
+  }
+
+  private _writeGameErrorIconQaProbe({ hasErrorIcon }: { hasErrorIcon: boolean }): void {
+    if (this.sceneData.gameErrorIconQa !== true || typeof document === 'undefined') return;
+
+    const errorIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_ERROR_ICON_ID);
+    const missingGameErrorIconKeys = hasErrorIcon
+      ? []
+      : [errorIconResource?.key ?? GAME_SCENE_ERROR_ICON_ID];
+
+    document.body.dataset.aeternaGameErrorIconQa = JSON.stringify({
+      status: hasErrorIcon ? 'ready' : 'missing-icon',
+      errorIcon: {
+        iconId: GAME_SCENE_ERROR_ICON_ID,
+        key: errorIconResource?.key ?? null,
+        path: errorIconResource?.path ?? null,
+        renderedCount: this.errorScreenIcon?.active === true ? 1 : 0,
+        displaySizes: this.errorScreenIcon
+          ? [{ width: this.errorScreenIcon.displayWidth, height: this.errorScreenIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.errorScreenIconFallbackRendered,
+      },
+      missingGameErrorIconKeys,
+      visibleCanvasCount: typeof document === 'undefined'
+        ? 0
+        : Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+          const rect = canvas.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        }).length,
+    });
   }
 
   private _createSafe(): void {

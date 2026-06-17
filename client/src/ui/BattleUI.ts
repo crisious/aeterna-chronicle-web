@@ -10,6 +10,8 @@
 import * as Phaser from 'phaser';
 import { SkillSlot } from '../combat/CombatManager';
 import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
+import { getStatusIconResource } from '../data/statusEffectIcons';
+import { getItemIconResource } from '../data/itemIconResources';
 
 // ─── 상수 ──────────────────────────────────────────────────────
 
@@ -42,11 +44,33 @@ const BATTLE_UTILITY_BUTTON_RENDERED_ICON_COUNT = 2;
 export const BATTLE_LOG_HIGHLIGHT_ICON_IDS = {
   critical: 'skill_ek_explode',
   chain: 'skill_mw_storm',
+  echo: 'skill_mw_storm',
+  skillHit: 'skill_mw_storm',
+  mana: 'skill_mw_passive',
+  cooldown: 'skill_tg_stop',
+  wait: 'skill_tg_stop',
+  telegraph: 'skill_ek_explode',
   victory: 'skill_ek_ultimate',
   level: 'skill_ek_passive',
+  start: 'skill_ek_slash',
+  dualTech: 'skill_mw_storm',
+  tripleTech: 'skill_ek_ultimate',
+} as const;
+export const BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS = {
+  guard: 'shield',
+  death: 'curse',
+  defeat: 'curse',
+} as const;
+export const BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS = {
+  itemHeal: 'ITM-CON-001',
 } as const;
 const BATTLE_LOG_HIGHLIGHT_ICON_SIZE = 16;
-type BattleLogHighlightIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ICON_IDS;
+type BattleLogHighlightStatusIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS;
+type BattleLogHighlightItemIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS;
+type BattleLogHighlightIconKind =
+  | keyof typeof BATTLE_LOG_HIGHLIGHT_ICON_IDS
+  | BattleLogHighlightStatusIconKind
+  | BattleLogHighlightItemIconKind;
 
 export const BATTLE_UI_FRAME_TEXTURES = {
   skillSlot: {
@@ -289,23 +313,67 @@ export class BattleUI {
   /** UX(#11): 메시지의 이모지/키워드로 중요 이벤트 색을 추론(평범한 줄은 null = 강조 안 함). */
   private _inferHighlightColor(m: string): string | null {
     if (m.includes('💥') || m.includes('크리') || m.includes('CRIT')) return '#ffd700';   // 크리
-    if (m.includes('💀')) return '#ff5555';                                              // 사망
+    if (m.includes('⚔') || m.includes('전투 시작')) return '#ffd700';                     // 전투 시작
+    if (m.includes('💢') || m.includes('강공 준비') || m.includes('강공!')) return '#ff5533'; // 보스 강공 예고/피해
+    if (m.includes('💀') || m.includes('쓰러짐')) return '#ff5555';                       // 사망
+    if (m.includes('💔') || m.includes('패배')) return '#ff5555';                         // 패배
     if (m.includes('🎉') || m.includes('승리')) return '#55ff77';                         // 승리
     if (m.includes('🆙') || m.includes('레벨 업')) return '#55ddff';                       // 레벨업
+    if (m.includes('ECHO')) return '#6fd3ff';                                             // ECHO
+    if (m.includes('스킬 발동')) return '#6fd3ff';                                         // 스킬 피해
+    if (m.includes('💧') || m.includes('MP 부족')) return '#6699ff';                       // MP 부족
+    if (m.includes('🧪') || m.includes('회복')) return '#55ff99';                           // 아이템 회복
+    if (m.includes('⏳') || m.includes('쿨다운')) return '#c8a2ff';                         // 쿨다운
+    if (m.includes('⏭') || m.includes('대기')) return '#c8a2ff';                            // 턴 대기
     if (m.includes('⚡') || m.includes('콤보') || m.includes('🔥') || m.includes('CHAIN')) return '#ff9933'; // 콤보/체인
+    if (m.includes('3인 협공') || m.includes('협공')) return '#6fd3ff';                    // 협공
+    if (m.includes('방어') || m.includes('반사')) return '#90caf9';                         // 방어/반사
     return null;
   }
 
   private _inferHighlightIconKind(message: string): BattleLogHighlightIconKind | null {
     if (message.includes('💥') || message.includes('크리') || message.includes('CRIT')) return 'critical';
+    if (message.includes('⚔') || message.includes('전투 시작')) return 'start';
+    if (message.includes('💢') || message.includes('강공 준비') || message.includes('강공!')) return 'telegraph';
+    if (message.includes('💀') || message.includes('쓰러짐')) return 'death';
+    if (message.includes('💔') || message.includes('패배')) return 'defeat';
     if (message.includes('🎉') || message.includes('승리')) return 'victory';
     if (message.includes('🆙') || message.includes('레벨 업')) return 'level';
+    if (message.includes('ECHO')) return 'echo';
+    if (message.includes('스킬 발동')) return 'skillHit';
+    if (message.includes('💧') || message.includes('MP 부족')) return 'mana';
+    if (message.includes('🧪') || message.includes('회복')) return 'itemHeal';
+    if (message.includes('⏳') || message.includes('쿨다운')) return 'cooldown';
+    if (message.includes('⏭') || message.includes('대기')) return 'wait';
     if (message.includes('⚡') || message.includes('콤보') || message.includes('🔥') || message.includes('CHAIN')) return 'chain';
+    if (message.includes('3인 협공')) return 'tripleTech';
+    if (message.includes('협공')) return 'dualTech';
+    if (message.includes('방어') || message.includes('반사')) return 'guard';
     return null;
   }
 
+  private _isLogHighlightStatusIconKind(kind: BattleLogHighlightIconKind): kind is BattleLogHighlightStatusIconKind {
+    return kind in BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS;
+  }
+
+  private _isLogHighlightItemIconKind(kind: BattleLogHighlightIconKind): kind is BattleLogHighlightItemIconKind {
+    return kind in BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS;
+  }
+
+  private _getLogHighlightIconResource(kind: BattleLogHighlightIconKind) {
+    if (this._isLogHighlightStatusIconKind(kind)) {
+      return getStatusIconResource(BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS[kind]);
+    }
+
+    if (this._isLogHighlightItemIconKind(kind)) {
+      return getItemIconResource({ itemIconId: BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS[kind] });
+    }
+
+    return getSpriteResourceForSkillIcon(BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind]);
+  }
+
   private _addLogHighlightIcon(kind: BattleLogHighlightIconKind): Phaser.GameObjects.Image | undefined {
-    const iconResource = getSpriteResourceForSkillIcon(BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind]);
+    const iconResource = this._getLogHighlightIconResource(kind);
     if (!iconResource || !this.scene.textures.exists(iconResource.key)) {
       this.logHighlightIconFallbackRendered = true;
       this.logHighlightIcon?.setVisible(false);
@@ -335,7 +403,7 @@ export class BattleUI {
     if (!icon) return message;
 
     return message
-      .replace(/[💥🔥🎉🆙⚡]/gu, '')
+      .replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
   }
@@ -422,7 +490,10 @@ export class BattleUI {
 
     try {
       const kind = new URLSearchParams(window.location.search).get('battleLogHighlightIconQa');
-      return kind === 'critical' || kind === 'chain' || kind === 'victory' || kind === 'level'
+      return kind === 'critical' || kind === 'chain' || kind === 'victory' || kind === 'level' || kind === 'start'
+        || kind === 'dualTech' || kind === 'tripleTech' || kind === 'guard' || kind === 'death' || kind === 'defeat'
+        || kind === 'echo' || kind === 'telegraph' || kind === 'mana' || kind === 'skillHit'
+        || kind === 'cooldown' || kind === 'wait' || kind === 'itemHeal'
         ? kind
         : null;
     } catch {
@@ -439,6 +510,19 @@ export class BattleUI {
       chain: '🔥 CHAIN ×2',
       victory: '🎉 승리!',
       level: '🆙 레벨 업',
+      start: '⚔ 전투 시작!',
+      echo: '✨ ECHO! +29',
+      skillHit: '⚡ 스킬 발동: 에테르 슬래시 → 허수아비 : 88',
+      mana: '💧 MP 부족 — 에테르 슬래시(MP 15)',
+      itemHeal: '🧪 Erien HP +100 회복!',
+      cooldown: '⏳ 에테르 슬래시 쿨다운 중',
+      wait: '⏭ Erien 대기',
+      telegraph: '💢 보스 강공 준비!',
+      dualTech: '✨ 협공 발동: 크로노 블레이드',
+      tripleTech: '🌟 3인 협공 발동: 에테르나 파이널',
+      guard: '🛡 방어 태세!',
+      death: '💀 쓰러짐!',
+      defeat: '💔 패배...',
     };
 
     this.scene.time.delayedCall(80, () => {
@@ -451,7 +535,7 @@ export class BattleUI {
   private _writeBattleLogHighlightIconQaProbe(kind: BattleLogHighlightIconKind, sourceMessage: string): void {
     if (typeof document === 'undefined' || !document.body) return;
 
-    const iconResource = getSpriteResourceForSkillIcon(BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind]);
+    const iconResource = this._getLogHighlightIconResource(kind);
     const expectedTextureKeys = iconResource ? [iconResource.key] : [];
     const activeIcon = this.logHighlightIcon?.active && this.logHighlightIcon.visible
       ? this.logHighlightIcon
@@ -460,7 +544,7 @@ export class BattleUI {
     const missingBattleLogHighlightIconKeys = expectedTextureKeys
       .filter((key) => !renderedTextureKeys.includes(key));
     const highlightText = this.logHighlight?.active ? this.logHighlight.text : '';
-    const legacyGlyphPresent = /[💥🔥🎉🆙⚡]/u.test(highlightText);
+    const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText);
     const hasExpectedIcon = Boolean(activeIcon)
       && missingBattleLogHighlightIconKeys.length === 0
       && !this.logHighlightIconFallbackRendered
@@ -473,7 +557,11 @@ export class BattleUI {
       highlightText,
       legacyGlyphPresent,
       logHighlightIcon: {
-        iconId: BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind],
+        iconId: this._isLogHighlightStatusIconKind(kind)
+          ? BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS[kind]
+          : this._isLogHighlightItemIconKind(kind)
+            ? BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS[kind]
+          : BATTLE_LOG_HIGHLIGHT_ICON_IDS[kind],
         expectedCount: 1,
         renderedCount: activeIcon ? 1 : 0,
         expectedTextureKeys,

@@ -8,6 +8,7 @@
 
 import * as Phaser from 'phaser';
 import { AssetManager, LOADING_TIPS } from '../assets/AssetManager';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 import { SoundManager } from '../sound/SoundManager';
 
 interface LoadingSceneData {
@@ -28,11 +29,18 @@ const LOADING_UI_FRAME_TEXTURES = {
   },
 } as const;
 
+const LOADING_TIP_ICON_ID = 'skill_mw_bolt';
+const LOADING_TIP_ICON_RESOURCE = getSpriteResourceForSkillIcon(LOADING_TIP_ICON_ID);
+const LOADING_TIP_ICON_SIZE = 18;
+
 export class LoadingScene extends Phaser.Scene {
   private progressBar!: Phaser.GameObjects.Rectangle;
   private progressText!: Phaser.GameObjects.Text;
   private loadingDotsText!: Phaser.GameObjects.Text;
   private tipText!: Phaser.GameObjects.Text;
+  private tipIcon: Phaser.GameObjects.Image | null = null;
+  private tipIconFallbackRendered = false;
+  private missingTipIconKeys: string[] = [];
   private sceneData!: LoadingSceneData;
   private dotCount = 0;
 
@@ -42,6 +50,9 @@ export class LoadingScene extends Phaser.Scene {
 
   init(data: LoadingSceneData): void {
     this.sceneData = data ?? { nextScene: 'MainMenuScene' };
+    this.tipIcon = null;
+    this.tipIconFallbackRendered = false;
+    this.missingTipIconKeys = [];
   }
 
   // Phase 1: 배경 이미지만 로드
@@ -51,6 +62,9 @@ export class LoadingScene extends Phaser.Scene {
       if (!this.textures.exists(texture.key)) {
         this.load.image(texture.key, texture.path);
       }
+    }
+    if (LOADING_TIP_ICON_RESOURCE && !this.textures.exists(LOADING_TIP_ICON_RESOURCE.key)) {
+      this.load.image(LOADING_TIP_ICON_RESOURCE.key, LOADING_TIP_ICON_RESOURCE.path);
     }
     this.load.on('loaderror', () => { /* 무시 */ });
   }
@@ -101,9 +115,11 @@ export class LoadingScene extends Phaser.Scene {
       fontSize: '9px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#444466',
     }).setOrigin(0.5);
 
-    this.tipText = this.add.text(width / 2, height * 0.78, '', {
+    const tipY = height * 0.78;
+    this._addLoadingTipIcon(width / 2 - 270, tipY);
+    this.tipText = this.add.text(this.tipIcon?.active === true ? width / 2 + 12 : width / 2, tipY, '', {
       fontSize: '12px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#8888aa',
-      wordWrap: { width: 520 }, align: 'center',
+      wordWrap: { width: this.tipIcon?.active === true ? 500 : 520 }, align: 'center',
     }).setOrigin(0.5);
     this._showRandomTip();
 
@@ -182,8 +198,51 @@ export class LoadingScene extends Phaser.Scene {
       .setStrokeStyle(1, 0x4a4a6a);
   }
 
+  private _addLoadingTipIcon(x: number, y: number): void {
+    if (!LOADING_TIP_ICON_RESOURCE || !this.textures.exists(LOADING_TIP_ICON_RESOURCE.key)) {
+      this.tipIconFallbackRendered = true;
+      this.missingTipIconKeys.push(LOADING_TIP_ICON_RESOURCE?.key ?? 'loading_tip_icon');
+      return;
+    }
+
+    this.tipIcon = this.add.image(x, y, LOADING_TIP_ICON_RESOURCE.key)
+      .setName('loading_tip_icon')
+      .setAlpha(0.94);
+    this.tipIcon.setDisplaySize(LOADING_TIP_ICON_SIZE, LOADING_TIP_ICON_SIZE);
+    this.tipIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+  }
+
   private _showRandomTip(): void {
     const tip = LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)];
-    this.tipText?.setText(`💡 ${tip}`);
+    this.tipIconFallbackRendered = this.tipIcon?.active !== true;
+    this.tipText?.setText(this.tipIcon?.active === true ? tip : `💡 ${tip}`);
+    this._writeLoadingFrameQaProbe();
+  }
+
+  private _isLoadingFrameQaRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('debugScene') === 'loading' || params.get('loadingFrameQa') === '1';
+  }
+
+  private _writeLoadingFrameQaProbe(): void {
+    if (!this._isLoadingFrameQaRoute() || typeof document === 'undefined') return;
+
+    const tipLabel = this.tipText?.text ?? '';
+    document.body.dataset.aeternaLoadingFrameQa = JSON.stringify({
+      status: 'ready',
+      tipIcon: {
+        iconId: LOADING_TIP_ICON_ID,
+        expectedKey: LOADING_TIP_ICON_RESOURCE?.key ?? null,
+        renderedCount: this.tipIcon?.active === true ? 1 : 0,
+        renderedKey: this.tipIcon?.active === true ? this.tipIcon.texture.key : null,
+        displayWidth: this.tipIcon?.active === true ? this.tipIcon.displayWidth : 0,
+        displayHeight: this.tipIcon?.active === true ? this.tipIcon.displayHeight : 0,
+        fallbackRendered: this.tipIconFallbackRendered,
+        legacyGlyphPresent: tipLabel.includes('💡'),
+        label: tipLabel,
+      },
+      missingTipIconKeys: this.missingTipIconKeys,
+    });
   }
 }

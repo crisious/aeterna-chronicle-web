@@ -73,9 +73,13 @@ const MAIN_MENU_BUTTON_ICON_SPECS = [
   { kind: 'item', itemIconId: 'ITM-QST-004' },
 ] as const;
 
+const MAIN_MENU_FOCUS_ICON_ID = 'skill_mw_arrow';
+const MAIN_MENU_FOCUS_ICON_SIZE = 14;
+const MAIN_MENU_FOCUS_ICON_OFFSET_X = 114;
 const MAIN_MENU_MODAL_CLOSE_ICON_ID = 'skill_tg_reverse';
 const MAIN_MENU_EXPECTED_MENU_BUTTON_FRAME_COUNT = 3;
 const MAIN_MENU_EXPECTED_MENU_BUTTON_ICON_COUNT = 3;
+const MAIN_MENU_EXPECTED_FOCUS_ICON_COUNT = 1;
 const MAIN_MENU_EXPECTED_MODAL_CLOSE_ICON_COUNT = 1;
 const MAIN_MENU_EXPECTED_LOGIN_BUTTON_FRAME_COUNT = 3;
 const MAIN_MENU_EXPECTED_CREDITS_BUTTON_FRAME_COUNT = 1;
@@ -93,6 +97,7 @@ export class MainMenuScene extends Phaser.Scene {
   private menuButtonFrames: Phaser.GameObjects.Image[] = [];
   private menuButtonIcons: Phaser.GameObjects.Image[] = [];
   private menuButtonIconFallbackIndexes: number[] = [];
+  private menuFocusIcon: Phaser.GameObjects.Image | null = null;
   private modalButtonFrames: Phaser.GameObjects.Image[] = [];
   private modalCloseIcons: Phaser.GameObjects.Image[] = [];
   private fallbackModalCloseIconIds: string[] = [];
@@ -149,6 +154,13 @@ export class MainMenuScene extends Phaser.Scene {
         this.load.image(iconResource.key, iconResource.path);
       }
     }
+    const focusIconResource = getSpriteResourceForSkillIcon(MAIN_MENU_FOCUS_ICON_ID);
+    const isFocusIconQueuedByMenu = MAIN_MENU_BUTTON_ICON_SPECS.some((spec) => (
+      spec.kind === 'skill' && spec.iconId === MAIN_MENU_FOCUS_ICON_ID
+    ));
+    if (focusIconResource && !isFocusIconQueuedByMenu && !this.textures.exists(focusIconResource.key)) {
+      this.load.image(focusIconResource.key, focusIconResource.path);
+    }
     const modalCloseIconResource = getSpriteResourceForSkillIcon(MAIN_MENU_MODAL_CLOSE_ICON_ID);
     const isModalCloseIconQueuedByMenu = MAIN_MENU_BUTTON_ICON_SPECS.some((spec) => (
       spec.kind === 'skill' && spec.iconId === MAIN_MENU_MODAL_CLOSE_ICON_ID
@@ -175,6 +187,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuButtonFrames = [];
     this.menuButtonIcons = [];
     this.menuButtonIconFallbackIndexes = [];
+    this.menuFocusIcon = null;
     this.modalButtonFrames = [];
     this.modalCloseIcons = [];
     this.fallbackModalCloseIconIds = [];
@@ -257,6 +270,7 @@ export class MainMenuScene extends Phaser.Scene {
 
       this.menuItems.push(btn);
     });
+    this._addMenuFocusIcon(width / 2, menuStartY);
 
     // FINDING-A4 part 2 / 전키보드 UI: 메뉴 키보드 네비게이션을 KeyboardFocusRing 으로 일반화
     // (Arrow Up/Down + Enter/Space + Tab). WCAG 2.1.1 — 모든 기능 키보드 작동.
@@ -288,6 +302,15 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuButtonIcons.forEach((icon, i) => {
       this.tweens.add({ targets: icon, alpha: 1, duration: 500, delay: 800 + i * 150, ease: 'Power2' });
     });
+    if (this.menuFocusIcon) {
+      this.tweens.add({
+        targets: this.menuFocusIcon,
+        alpha: this._getMenuButtonFrameAlpha(this.menuHighlightIndex),
+        duration: 500,
+        delay: 800,
+        ease: 'Power2',
+      });
+    }
     this.menuItems.forEach((btn, i) => {
       this.tweens.add({ targets: btn, alpha: 1, duration: 500, delay: 800 + i * 150, ease: 'Power2' });
     });
@@ -361,6 +384,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuItems.forEach(btn => btn.setVisible(false));
     this.menuButtonFrames.forEach(frame => frame.setVisible(false));
     this.menuButtonIcons.forEach(icon => icon.setVisible(false));
+    this.menuFocusIcon?.setVisible(false);
     this.modalButtonFrames = [];
     this.modalCloseIcons = [];
     this.fallbackModalCloseIconIds = [];
@@ -579,6 +603,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuItems.forEach(btn => btn.setVisible(true));
     this.menuButtonFrames.forEach(frame => frame.setVisible(true));
     this.menuButtonIcons.forEach(icon => icon.setVisible(true));
+    this.menuFocusIcon?.setVisible(true);
     this._syncMenuButtonFrames();
     this._writeMainMenuFrameQaProbe();
   }
@@ -595,7 +620,7 @@ export class MainMenuScene extends Phaser.Scene {
   // FINDING-A4 fix part 2: 키보드 highlight 동기화 helper
   private _formatMenuLabel(i: number): string {
     const label = this.menuLabels[i] ?? '';
-    return this._hasMenuButtonIcon(i) ? label : (i === this.menuHighlightIndex ? `▶  ${label}` : `   ${label}`);
+    return this._hasMenuButtonIcon(i) || this._hasMenuFocusIcon() ? label : (i === this.menuHighlightIndex ? `▶  ${label}` : `   ${label}`);
   }
 
   private _setMenuHighlight(index: number): void {
@@ -637,6 +662,10 @@ export class MainMenuScene extends Phaser.Scene {
     return this.menuButtonIcons[index]?.active === true;
   }
 
+  private _hasMenuFocusIcon(): boolean {
+    return this.menuFocusIcon?.active === true;
+  }
+
   private _addMenuButtonIcon(x: number, y: number, index: number, action: () => void): void {
     const iconResource = this._resolveMenuButtonIconResource(index);
     if (!iconResource || !this.textures.exists(iconResource.key)) {
@@ -654,6 +683,18 @@ export class MainMenuScene extends Phaser.Scene {
     icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     this.menuButtonIcons[index] = icon;
+  }
+
+  private _addMenuFocusIcon(x: number, y: number): void {
+    const focusIconResource = getSpriteResourceForSkillIcon(MAIN_MENU_FOCUS_ICON_ID);
+    if (!focusIconResource || !this.textures.exists(focusIconResource.key)) return;
+
+    this.menuFocusIcon = this.add.image(x - MAIN_MENU_FOCUS_ICON_OFFSET_X, y, focusIconResource.key)
+      .setName('main_menu_focus_icon')
+      .setAlpha(0)
+      .setTint(0xffffff);
+    this.menuFocusIcon.setDisplaySize(MAIN_MENU_FOCUS_ICON_SIZE, MAIN_MENU_FOCUS_ICON_SIZE);
+    this.menuFocusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
 
   private _addMainMenuModalButtonFrame(
@@ -731,6 +772,12 @@ export class MainMenuScene extends Phaser.Scene {
       icon.setTint(index === this.menuHighlightIndex ? 0xffffff : 0xb8c0e8);
       icon.setAlpha(this._getMenuButtonFrameAlpha(index));
     });
+    const activeButton = this.menuItems[this.menuHighlightIndex];
+    if (activeButton) {
+      this.menuFocusIcon?.setPosition(activeButton.x - MAIN_MENU_FOCUS_ICON_OFFSET_X, activeButton.y);
+      this.menuFocusIcon?.setAlpha(this._getMenuButtonFrameAlpha(this.menuHighlightIndex));
+      this.menuFocusIcon?.setTint(0xffffff);
+    }
   }
 
   private _isMainMenuFrameQaRoute(): boolean {
@@ -756,6 +803,8 @@ export class MainMenuScene extends Phaser.Scene {
         ? MAIN_MENU_EXPECTED_CREDITS_BUTTON_FRAME_COUNT
         : 0;
     const expectedModalCloseIconCount = activeModal === 'none' ? 0 : MAIN_MENU_EXPECTED_MODAL_CLOSE_ICON_COUNT;
+    const focusIconResource = getSpriteResourceForSkillIcon(MAIN_MENU_FOCUS_ICON_ID);
+    const hasMenuFocusIcon = this.menuFocusIcon?.active === true;
     const modalCloseIconResource = getSpriteResourceForSkillIcon(MAIN_MENU_MODAL_CLOSE_ICON_ID);
     const activeModalCloseIcons = this.modalCloseIcons.filter((icon) => icon.active);
     const hasExpectedModalFrames = expectedModalButtonFrameCount === 0 || (
@@ -801,6 +850,10 @@ export class MainMenuScene extends Phaser.Scene {
     const missingMenuButtonIconKeys = menuButtonIconStates
       .filter((entry) => !entry.rendered)
       .map((entry) => entry.key ?? entry.iconId);
+    const missingMenuFocusIconKeys = hasMenuFocusIcon
+      ? []
+      : [focusIconResource?.key ?? MAIN_MENU_FOCUS_ICON_ID];
+    const menuLabelLegacyGlyphPresent = this.menuItems.some((text) => text.text.includes('▶'));
     const missingModalCloseIconKeys = expectedModalCloseIconCount > 0
       && (activeModalCloseIcons.length < expectedModalCloseIconCount || !modalCloseIconResource || !this.textures.exists(modalCloseIconResource.key))
       ? [modalCloseIconResource?.key ?? MAIN_MENU_MODAL_CLOSE_ICON_ID]
@@ -809,6 +862,7 @@ export class MainMenuScene extends Phaser.Scene {
     document.body.dataset.aeternaMainMenuFrameQa = JSON.stringify({
       status: missingFrameKeys.length === 0
         && missingMenuButtonIconKeys.length === 0
+        && missingMenuFocusIconKeys.length === 0
         && missingModalCloseIconKeys.length === 0
         && this.fallbackModalCloseIconIds.length === 0
         ? 'ready'
@@ -818,15 +872,32 @@ export class MainMenuScene extends Phaser.Scene {
       expectedFrameCount: MAIN_MENU_EXPECTED_MENU_BUTTON_FRAME_COUNT,
       missingFrameKeys,
       missingMenuButtonIconKeys,
+      missingMenuFocusIconKeys,
       activeMenuIndex: this.menuHighlightIndex,
       activeModal,
       menuLabels: this.menuLabels,
+      menuLabelLegacyGlyphPresent,
       menuButtonIcon: {
         renderedCount: menuButtonIconStates.filter((entry) => entry.rendered).length,
         expectedCount: MAIN_MENU_EXPECTED_MENU_BUTTON_ICON_COUNT,
         icons: menuButtonIconStates,
         fallbackIndexes: this.menuButtonIconFallbackIndexes,
         missingIconKeys: missingMenuButtonIconKeys,
+      },
+      menuFocusIcon: {
+        iconId: MAIN_MENU_FOCUS_ICON_ID,
+        key: focusIconResource?.key ?? null,
+        path: focusIconResource?.path ?? null,
+        renderedCount: hasMenuFocusIcon ? 1 : 0,
+        expectedCount: MAIN_MENU_EXPECTED_FOCUS_ICON_COUNT,
+        activeIndex: this.menuHighlightIndex,
+        displayWidth: this.menuFocusIcon?.displayWidth ?? 0,
+        displayHeight: this.menuFocusIcon?.displayHeight ?? 0,
+        x: this.menuFocusIcon?.x ?? null,
+        y: this.menuFocusIcon?.y ?? null,
+        visible: this.menuFocusIcon?.visible === true,
+        missingIconKeys: missingMenuFocusIconKeys,
+        menuLabelLegacyGlyphPresent,
       },
       modalCloseIcon: {
         iconId: MAIN_MENU_MODAL_CLOSE_ICON_ID,
@@ -1015,6 +1086,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuButtonFrames = [];
     this.menuButtonIcons = [];
     this.menuButtonIconFallbackIndexes = [];
+    this.menuFocusIcon = null;
     this.modalButtonFrames = [];
     this.modalCloseIcons = [];
     this.fallbackModalCloseIconIds = [];

@@ -63,6 +63,9 @@ const FEEDBACK_FORM_SUBMIT_ICON_ID = 'skill_mw_arrow';
 const FEEDBACK_FORM_SUBMIT_ICON_RESOURCE = getSpriteResourceForSkillIcon(FEEDBACK_FORM_SUBMIT_ICON_ID);
 const FEEDBACK_FORM_CLOSE_ICON_ID = 'skill_tg_reverse';
 const FEEDBACK_FORM_CLOSE_ICON_RESOURCE = getSpriteResourceForSkillIcon(FEEDBACK_FORM_CLOSE_ICON_ID);
+const FEEDBACK_FORM_TYPE_FOCUS_ICON_ID = 'skill_mw_arrow';
+const FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE = getSpriteResourceForSkillIcon(FEEDBACK_FORM_TYPE_FOCUS_ICON_ID);
+const FEEDBACK_FORM_TYPE_FOCUS_ICON_SIZE = 14;
 
 const FEEDBACK_FORM_TYPE_OPTIONS: readonly FeedbackTypeOption[] = [
   { key: 'bug', label: '버그', fallbackLabel: '🐛 버그', iconId: 'poison' },
@@ -143,6 +146,10 @@ export class FeedbackForm extends Phaser.Scene {
   private closeIcon: Phaser.GameObjects.Image | null = null;
   private closeIconFallback: Phaser.GameObjects.Text | null = null;
   private missingCloseIconKeys: string[] = [];
+  private typeFocusIcon: Phaser.GameObjects.Image | null = null;
+  private feedbackTypeFocusLabelTexts: Phaser.GameObjects.Text[] = [];
+  private feedbackTypeFocusIconFallbackRendered = false;
+  private missingTypeFocusIconKeys: string[] = [];
 
   constructor() {
     super({ key: 'FeedbackForm' });
@@ -163,6 +170,10 @@ export class FeedbackForm extends Phaser.Scene {
     this.closeIcon = null;
     this.closeIconFallback = null;
     this.missingCloseIconKeys = [];
+    this.typeFocusIcon = null;
+    this.feedbackTypeFocusLabelTexts = [];
+    this.feedbackTypeFocusIconFallbackRendered = false;
+    this.missingTypeFocusIconKeys = [];
   }
 
   preload(): void {
@@ -179,6 +190,9 @@ export class FeedbackForm extends Phaser.Scene {
     }
     if (FEEDBACK_FORM_CLOSE_ICON_RESOURCE && !this.textures.exists(FEEDBACK_FORM_CLOSE_ICON_RESOURCE.key)) {
       this.load.image(FEEDBACK_FORM_CLOSE_ICON_RESOURCE.key, FEEDBACK_FORM_CLOSE_ICON_RESOURCE.path);
+    }
+    if (FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE && !this.textures.exists(FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key)) {
+      this.load.image(FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key, FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.path);
     }
     for (const texture of Object.values(FEEDBACK_FORM_TYPE_ICON_TEXTURES)) {
       if (texture && !this.textures.exists(texture.key)) {
@@ -250,11 +264,27 @@ export class FeedbackForm extends Phaser.Scene {
       btnFrame.primary.on('pointerdown', selectType);
       btn.on('pointerdown', selectType);
       this.formContainer.add(btn);
+      this.feedbackTypeFocusLabelTexts.push(btn);
       focusables.push({
-        setFocused: (a) => btn.setText(a ? `▶ ${baseLabel}` : baseLabel),
+        setFocused: (a) => {
+          if (this.typeFocusIcon?.active) {
+            btn.setText(baseLabel);
+            if (a) {
+              this._setFeedbackTypeFocusIcon(x - 44, -220);
+            }
+            return;
+          }
+          if (a) {
+            btn.setText(`▶ ${baseLabel}`);
+            this.feedbackTypeFocusIconFallbackRendered = true;
+            return;
+          }
+          btn.setText(baseLabel);
+        },
         activate: selectType,
       });
     });
+    this._addFeedbackTypeFocusIcon(this.formContainer);
 
     // HTML DOM 입력 요소 생성 (Phaser 위에 오버레이)
     this.createHtmlInputs(width, height);
@@ -287,6 +317,7 @@ export class FeedbackForm extends Phaser.Scene {
     this.formContainer.add(submitBtn);
     focusables.push({
       setFocused: (a) => {
+        if (a) this._hideFeedbackTypeFocusIcon();
         submitBtn.setText(submitLabel);
         submitBtn.setColor(a ? '#ffffff' : '#eafff2');
       },
@@ -314,6 +345,7 @@ export class FeedbackForm extends Phaser.Scene {
     this.closeIconFallback?.on('pointerdown', () => this.closeFeedbackForm());
     focusables.push({
       setFocused: (a) => {
+        if (a) this._hideFeedbackTypeFocusIcon();
         closeIcon?.setTint(a ? 0xffffff : 0xffbbbb);
         this.closeIconFallback?.setColor(a ? '#ffffff' : '#ffbbbb');
       },
@@ -435,6 +467,33 @@ export class FeedbackForm extends Phaser.Scene {
     return icon;
   }
 
+  private _addFeedbackTypeFocusIcon(
+    container: Phaser.GameObjects.Container,
+  ): Phaser.GameObjects.Image | null {
+    if (!FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE || !this.textures.exists(FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key)) {
+      this.missingTypeFocusIconKeys.push(FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE?.key ?? 'feedback_form_type_focus_icon');
+      return null;
+    }
+
+    this.typeFocusIcon = this.add.image(0, 0, FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key)
+      .setName('feedback_form_type_focus_icon')
+      .setVisible(false);
+    this.typeFocusIcon.setDisplaySize(FEEDBACK_FORM_TYPE_FOCUS_ICON_SIZE, FEEDBACK_FORM_TYPE_FOCUS_ICON_SIZE);
+    this.typeFocusIcon.setAlpha(0.96);
+    this.typeFocusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    container.add(this.typeFocusIcon);
+    return this.typeFocusIcon;
+  }
+
+  private _setFeedbackTypeFocusIcon(x: number, y: number): void {
+    if (!this.typeFocusIcon?.active) return;
+    this.typeFocusIcon.setPosition(x, y).setVisible(true);
+  }
+
+  private _hideFeedbackTypeFocusIcon(): void {
+    this.typeFocusIcon?.setVisible(false);
+  }
+
   private _addFeedbackFormFrame(
     container: Phaser.GameObjects.Container,
     x: number,
@@ -500,6 +559,14 @@ export class FeedbackForm extends Phaser.Scene {
       && this.missingCloseIconKeys.length === 0,
     );
     const closeIconKey = FEEDBACK_FORM_CLOSE_ICON_RESOURCE?.key ?? null;
+    const hasTypeFocusIcon = Boolean(
+      FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE
+      && this.typeFocusIcon?.active
+      && this.typeFocusIcon.texture.key === FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key
+      && this.missingTypeFocusIconKeys.length === 0,
+    );
+    const typeFocusIconKey = FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE?.key ?? null;
+    const feedbackTypeFocusLabelLegacyGlyphPresent = this.feedbackTypeFocusLabelTexts.some((text) => text.text.includes('▶'));
     const expectedTypeIconKeys = Object.values(FEEDBACK_FORM_TYPE_ICON_TEXTURES)
       .map((texture) => texture?.key ?? null)
       .filter((key): key is NonNullable<typeof key> => key !== null);
@@ -513,7 +580,16 @@ export class FeedbackForm extends Phaser.Scene {
     ].filter((key): key is NonNullable<typeof key> => key !== null);
 
     document.body.dataset.aeternaFeedbackFrameQa = JSON.stringify({
-      status: hasPanel && hasButtons && hasTypeIcons && hasTitleIcon && hasSubmitIcon && hasCloseIcon ? 'ready' : 'missing-frame',
+      status: hasPanel
+        && hasButtons
+        && hasTypeIcons
+        && hasTitleIcon
+        && hasSubmitIcon
+        && hasCloseIcon
+        && hasTypeFocusIcon
+        && !feedbackTypeFocusLabelLegacyGlyphPresent
+        ? 'ready'
+        : 'missing-frame',
       renderedFrameKeys,
       panelRenderedFrameCount,
       buttonRenderedFrameCount,
@@ -552,7 +628,20 @@ export class FeedbackForm extends Phaser.Scene {
         renderedKeys: this.typeIconRenderedKeys,
         fallbackTypeIconIds: this.fallbackTypeIconIds,
       },
+      typeFocusIcon: {
+        iconId: FEEDBACK_FORM_TYPE_FOCUS_ICON_ID,
+        expectedKey: typeFocusIconKey,
+        renderedCount: this.typeFocusIcon?.active ? 1 : 0,
+        renderedKey: this.typeFocusIcon?.texture.key ?? null,
+        displayWidth: this.typeFocusIcon?.displayWidth ?? 0,
+        displayHeight: this.typeFocusIcon?.displayHeight ?? 0,
+        visible: this.typeFocusIcon?.visible ?? false,
+        fallbackRendered: this.feedbackTypeFocusIconFallbackRendered,
+        labels: this.feedbackTypeFocusLabelTexts.map((text) => text.text),
+        legacyGlyphPresent: feedbackTypeFocusLabelLegacyGlyphPresent,
+      },
       missingTypeIconKeys: this.missingTypeIconKeys,
+      missingTypeFocusIconKeys: this.missingTypeFocusIconKeys,
       missingFrameKeys,
     });
   }

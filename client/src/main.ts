@@ -326,13 +326,14 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             envObjectQa: params.get('envObjectQa') === '1',
             bossLabelIconQa: params.get('bossLabelIconQa') === '1',
             zoneLabelIconQa: params.get('zoneLabelIconQa') === '1',
+            gameErrorIconQa: params.get('gameErrorIconQa') === '1',
         });
         return;
     }
 
     if (debugScene === 'dungeon') {
         const dungeonFrameQaParam = params.get('dungeonFrameQa');
-        const dungeonFrameQa = dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear'
+        const dungeonFrameQa = dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss'
             ? dungeonFrameQaParam
             : undefined;
         phaserGame.scene.stop('MainMenuScene');
@@ -502,6 +503,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             battleAmbientLineQa: params.get('battleAmbientLineQa') === '1',
             battleIntroIconQa: params.get('battleIntroIconQa') === '1',
             battleCommandFocusIconQa: params.get('battleCommandFocusIconQa') === '1',
+            battleComboPopupIconQa: params.get('battleComboPopupIconQa') === '1',
             battleEchoPopupIconQa: params.get('battleEchoPopupIconQa') === '1',
             battleReflectPopupIconQa: params.get('battleReflectPopupIconQa') === '1',
             battleCriticalPopupIconQa: params.get('battleCriticalPopupIconQa') === '1',

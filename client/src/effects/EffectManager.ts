@@ -6,6 +6,7 @@
  */
 
 import * as Phaser from 'phaser';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 import { ObjectPool, PoolStats } from '../utils/ObjectPool';
 
 // ─── 내부 타입 ─────────────────────────────────────────
@@ -13,10 +14,15 @@ import { ObjectPool, PoolStats } from '../utils/ObjectPool';
 /** 풀링 가능한 데미지 텍스트 오브젝트 */
 interface DamageTextItem {
   text: Phaser.GameObjects.Text;
+  icon: Phaser.GameObjects.Image;
   /** 남은 수명 (ms) */
   ttl: number;
   /** 상승 속도 (px/s) */
   vy: number;
+  /** 텍스트 왼쪽에 붙는 Aseprite icon 크기 */
+  iconSize: number;
+  /** 텍스트와 icon 사이 간격 */
+  iconGap: number;
 }
 
 /** 히트 이펙트 타입 */
@@ -100,6 +106,26 @@ export const EFFECT_FALLBACK_TEXTURES = [
   },
 ] as const;
 
+const EFFECT_TEXT_ICON_IDS = {
+  critical: 'skill_ek_explode',
+  dualTech: 'skill_mw_storm',
+} as const;
+
+type EffectTextIconKind = keyof typeof EFFECT_TEXT_ICON_IDS;
+
+const EFFECT_TEXT_ICON_SIZE = 20;
+const EFFECT_TEXT_ICON_GAP = 6;
+
+export function preloadEffectTextIconResources(scene: Phaser.Scene, queuedTextureKeys?: Set<string>): void {
+  for (const iconId of Object.values(EFFECT_TEXT_ICON_IDS)) {
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    if (iconResource && !scene.textures.exists(iconResource.key) && !queuedTextureKeys?.has(iconResource.key)) {
+      scene.load.image(iconResource.key, iconResource.path);
+      queuedTextureKeys?.add(iconResource.key);
+    }
+  }
+}
+
 // ─── 매니저 ────────────────────────────────────────────
 
 export class EffectManager {
@@ -161,8 +187,8 @@ export class EffectManager {
     const item = this.damagePool.acquire();
     item.ttl = DAMAGE_TEXT_TTL;
     item.vy = DAMAGE_TEXT_VY;
-    item.text.setPosition(x, y);
-    item.text.setText(isCritical ? `💥${damage}` : `${damage}`);
+    item.text.setPosition(isCritical ? x + 8 : x, y);
+    item.text.setText(`${damage}`);
     item.text.setStyle({
       fontSize: isCritical ? '28px' : '20px',
       color: isCritical ? '#FF4444' : '#FFFFFF',
@@ -173,6 +199,11 @@ export class EffectManager {
     item.text.setAlpha(1);
     item.text.setVisible(true);
     item.text.setDepth(9000);
+    if (isCritical) {
+      this.setDamageTextIcon(item, 'critical');
+    } else {
+      this.hideDamageTextIcon(item);
+    }
     this.activeDamage.push(item);
   }
 
@@ -196,9 +227,9 @@ export class EffectManager {
     this.activeHits.push(item);
   }
 
-  /**
+   /**
    * CHRONO-S27: Dual Tech 협공 시각 효과.
-   * fxKey 별 색조 분기 (chrono=cyan, dark=purple, holy=gold) + 큰 magic hit + '✨' 강조 텍스트.
+   * fxKey 별 색조 분기 (chrono=cyan, dark=purple, holy=gold) + 큰 magic hit + Aseprite 강조 icon.
    * 실제 협공 아틀라스 부재 시 fallback magic effect 재사용.
    */
   spawnDualTechEffect(x: number, y: number, fxKey: string, techName: string): void {
@@ -216,12 +247,12 @@ export class EffectManager {
     this.spawnHitEffect(x - 20, y - 20, 'magic');
     this.spawnHitEffect(x + 20, y + 20, 'magic');
 
-    // 강조 텍스트 ✨{name}
+    // 강조 텍스트와 Aseprite icon.
     const item = this.damagePool.acquire();
     item.ttl = DAMAGE_TEXT_TTL * 1.5;
     item.vy = DAMAGE_TEXT_VY * 0.7;
-    item.text.setPosition(x, y - 40);
-    item.text.setText(`✨ ${techName}`);
+    item.text.setPosition(x + 12, y - 40);
+    item.text.setText(techName);
     item.text.setStyle({
       fontSize: '24px',
       color: `#${tint.toString(16).padStart(6, '0')}`,
@@ -232,6 +263,7 @@ export class EffectManager {
     item.text.setAlpha(1);
     item.text.setVisible(true);
     item.text.setDepth(9500);
+    this.setDamageTextIcon(item, 'dualTech');
     this.activeDamage.push(item);
   }
 
@@ -297,6 +329,7 @@ export class EffectManager {
       if (item.ttl < fadeThreshold) {
         item.text.setAlpha(Math.max(0, item.ttl / fadeThreshold));
       }
+      this.syncDamageTextIcon(item);
       if (item.ttl <= 0) {
         this.damagePool.release(item);
         this.activeDamage.splice(i, 1);
@@ -348,13 +381,61 @@ export class EffectManager {
     });
     text.setVisible(false);
     text.setOrigin(0.5);
-    return { text, ttl: 0, vy: 0 };
+    const icon = this.scene.add.image(0, 0, this.getInitialDamageTextIconTextureKey());
+    icon.setVisible(false);
+    icon.setOrigin(0.5);
+    icon.setDisplaySize(EFFECT_TEXT_ICON_SIZE, EFFECT_TEXT_ICON_SIZE);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return { text, icon, ttl: 0, vy: 0, iconSize: EFFECT_TEXT_ICON_SIZE, iconGap: EFFECT_TEXT_ICON_GAP };
   }
 
   private resetDamageText(item: DamageTextItem): void {
     item.text.setVisible(false);
     item.text.setAlpha(1);
+    this.hideDamageTextIcon(item);
     item.ttl = 0;
+  }
+
+  private getInitialDamageTextIconTextureKey(): string {
+    for (const iconId of Object.values(EFFECT_TEXT_ICON_IDS)) {
+      const iconResource = getSpriteResourceForSkillIcon(iconId);
+      if (iconResource && this.scene.textures.exists(iconResource.key)) {
+        return iconResource.key;
+      }
+    }
+
+    return 'buff_fallback';
+  }
+
+  private setDamageTextIcon(item: DamageTextItem, kind: EffectTextIconKind): boolean {
+    const iconResource = getSpriteResourceForSkillIcon(EFFECT_TEXT_ICON_IDS[kind]);
+    if (!iconResource || !this.scene.textures.exists(iconResource.key)) {
+      this.hideDamageTextIcon(item);
+      return false;
+    }
+
+    item.icon.setTexture(iconResource.key);
+    item.icon.setDisplaySize(item.iconSize, item.iconSize);
+    item.icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    item.icon.setDepth(item.text.depth);
+    item.icon.setVisible(true);
+    this.syncDamageTextIcon(item);
+    return true;
+  }
+
+  private syncDamageTextIcon(item: DamageTextItem): void {
+    if (!item.icon.visible) return;
+    item.icon.setPosition(
+      item.text.x - item.text.displayWidth / 2 - item.iconGap - item.iconSize / 2,
+      item.text.y,
+    );
+    item.icon.setAlpha(item.text.alpha);
+    item.icon.setDepth(item.text.depth);
+  }
+
+  private hideDamageTextIcon(item: DamageTextItem): void {
+    item.icon.setVisible(false);
+    item.icon.setAlpha(1);
   }
 
   private createHitEffect(): HitEffectItem {

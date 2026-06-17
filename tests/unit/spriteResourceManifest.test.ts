@@ -341,6 +341,30 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("zoneLabelIconQa: params.get('zoneLabelIconQa') === '1'");
   });
 
+  it('GameScene error screen title renders an Aseprite warning icon before the warning glyph fallback', () => {
+    const source = readSceneSource('GameScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain("const GAME_SCENE_ERROR_ICON_ID = 'skill_ek_explode'");
+    expect(source).toContain('gameErrorIconQa?: boolean');
+    expect(source).toContain('private errorScreenIcon?: Phaser.GameObjects.Image');
+    expect(source).toContain('private errorScreenIconFallbackRendered = false');
+    expect(source).toContain('const errorIconResource = getSpriteResourceForSkillIcon(GAME_SCENE_ERROR_ICON_ID)');
+    expect(source).toContain('this.load.image(errorIconResource.key, errorIconResource.path)');
+    expect(source).toContain("this._showErrorScreen(new Error('QA error screen probe'))");
+    expect(source).toContain('const hasErrorIcon = Boolean(errorIconResource && this.textures.exists(errorIconResource.key))');
+    expect(source).toContain("this._addErrorScreenIcon(width / 2 - 96, height / 2 - 60, errorIconResource)");
+    expect(source).toContain("const errorTitleLabel = hasErrorIcon ? '존 로딩 실패' : '⚠️ 존 로딩 실패'");
+    expect(source).toContain("setName('game_scene_error_title_icon')");
+    expect(source).toContain('icon.setDisplaySize(22, 22)');
+    expect(source).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(source).toContain('this._writeGameErrorIconQaProbe({ hasErrorIcon })');
+    expect(source).toContain('document.body.dataset.aeternaGameErrorIconQa = JSON.stringify');
+    expect(source).toContain('missingGameErrorIconKeys');
+    expect(source).not.toContain('this.add.text(width / 2, height / 2 - 60, `⚠️ 존 로딩 실패`');
+    expect(mainSource).toContain("gameErrorIconQa: params.get('gameErrorIconQa') === '1'");
+  });
+
   it('LobbyScene uses Aseprite sprite resources before legacy NPC PNG fallback', () => {
     const source = readSceneSource('LobbyScene.ts');
 
@@ -852,6 +876,31 @@ describe('sprite resource manifest', () => {
     expect(battleSource).toContain("this.add.text(us.sprite.x, us.sprite.y - 70, '🛡'");
   });
 
+  it('BattleScene 상태 패널 HP 위험 표시는 Aseprite bleed status icon을 경고 glyph보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+
+    expect(getSpriteResourceForStatusIcon('bleed')).toMatchObject({
+      id: 'status_bleed_icon',
+      key: 'status_bleed_icon',
+      path: 'assets/generated/ui/icons/status/status_bleed.png',
+      category: 'statusIcon',
+      statusIconId: 'bleed',
+    });
+    expect(battleSource).toContain("const BATTLE_HP_CRITICAL_ICON_ID = 'bleed'");
+    expect(battleSource).toContain('const BATTLE_HP_CRITICAL_ICON_SIZE = 12');
+    expect(battleSource).toContain('hpCriticalIcon?: Phaser.GameObjects.Image');
+    expect(battleSource).toContain('const hpCriticalIconResource = getStatusIconResource(BATTLE_HP_CRITICAL_ICON_ID)');
+    expect(battleSource).toContain("setName(`battle_hp_critical_icon_${us.unit.id}`)");
+    expect(battleSource).toContain('hpCriticalIcon.setDisplaySize(BATTLE_HP_CRITICAL_ICON_SIZE, BATTLE_HP_CRITICAL_ICON_SIZE)');
+    expect(battleSource).toContain('hpCriticalIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain('const hpTextX = hpCriticalIcon ? 176 : 160');
+    expect(battleSource).toContain('const hpLabel = `HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`');
+    expect(battleSource).toContain('const hasHpCriticalIcon = entry.hpCriticalIcon?.active === true');
+    expect(battleSource).toContain('entry.hpCriticalIcon?.setVisible(hpCritical)');
+    expect(battleSource).toContain('entry.hp.setText(hpCritical && !hasHpCriticalIcon ? `⚠ ${hpLabel}` : hpLabel)');
+    expect(battleSource).not.toContain("entry.hp.setText(`${hpCritical ? '⚠ ' : ''}HP");
+  });
+
   it('BattleScene reflect popup uses the Aseprite shield status icon before shield glyph fallback', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
@@ -898,6 +947,30 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("battleEchoPopupIconQa: params.get('battleEchoPopupIconQa') === '1'");
   });
 
+  it('BattleScene combo popup uses the Aseprite storm skill icon before lightning glyph fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(battleSource).toContain("const BATTLE_COMBO_POPUP_ICON_ID = 'skill_mw_storm'");
+    expect(battleSource).toContain('const BATTLE_COMBO_POPUP_ICON_SIZE = 18');
+    expect(battleSource).toContain('battleComboPopupIconQa?: boolean');
+    expect(battleSource).toContain('private comboPopupIcons: Phaser.GameObjects.Image[] = []');
+    expect(battleSource).toContain('private comboPopupTexts: Phaser.GameObjects.Text[] = []');
+    expect(battleSource).toContain('private comboPopupIconFallbackRendered = false');
+    expect(battleSource).toContain('const comboPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_COMBO_POPUP_ICON_ID)');
+    expect(battleSource).toContain('queuedSkillIconKeys.has(comboPopupIconResource.key)');
+    expect(battleSource).toContain("setName('battle_combo_popup_icon')");
+    expect(battleSource).toContain('comboPopupIcon.setDisplaySize(BATTLE_COMBO_POPUP_ICON_SIZE, BATTLE_COMBO_POPUP_ICON_SIZE)');
+    expect(battleSource).toContain('comboPopupIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain('const comboPopupLabel = comboPopupIcon ? `${name} +${bonus}%` : `⚡ ${name} +${bonus}%`');
+    expect(battleSource).toContain("setName('battle_combo_popup_text')");
+    expect(battleSource).toContain('private _startBattleComboPopupIconQa(): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleComboPopupIconQa = JSON.stringify');
+    expect(battleSource).toContain('missingBattleComboPopupIconKeys');
+    expect(battleSource).not.toContain('const text = this.add.text(x, y, `⚡ ${name} +${bonus}%`');
+    expect(mainSource).toContain("battleComboPopupIconQa: params.get('battleComboPopupIconQa') === '1'");
+  });
+
   it('BattleScene critical damage popup uses the Aseprite explosion skill icon before burst glyph fallback', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
@@ -934,6 +1007,55 @@ describe('sprite resource manifest', () => {
     expect(battleSource).toContain('indicator.setDisplaySize(28, 28)');
     expect(battleSource).toContain('indicator.setAngle(90)');
     expect(battleSource).toContain("this.add.text(us.sprite.x, indicatorY, '▼'");
+  });
+
+  it('BattleScene 타겟 선택 커서는 Aseprite arrow image를 절차 삼각형 fallback보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const targetCursorSource = battleSource.slice(
+      battleSource.indexOf('private _drawTargetCursor'),
+      battleSource.indexOf('private _confirmTarget'),
+    );
+
+    expect(battleSource).toContain("const BATTLE_TARGET_CURSOR_ICON_ID = 'skill_mw_arrow'");
+    expect(battleSource).toContain('const BATTLE_TARGET_CURSOR_ICON_SIZE = 24');
+    expect(battleSource).toContain('private targetCursorIcon: Phaser.GameObjects.Image | null = null');
+    expect(battleSource).toContain('const targetCursorIconResource = getSpriteResourceForSkillIcon(BATTLE_TARGET_CURSOR_ICON_ID)');
+    expect(battleSource).toContain('targetCursorIconResource.key !== activeIndicatorResource?.key');
+    expect(battleSource).toContain('targetCursorIconResource.key !== commandFocusIconResource?.key');
+    expect(battleSource).toContain('targetCursorIconResource.key !== subMenuFocusIconResource?.key');
+    expect(battleSource).toContain('this.load.image(targetCursorIconResource.key, targetCursorIconResource.path)');
+    expect(battleSource).toContain("setName('battle_target_cursor_icon')");
+    expect(battleSource).toContain('this.targetCursorIcon.setDisplaySize(BATTLE_TARGET_CURSOR_ICON_SIZE, BATTLE_TARGET_CURSOR_ICON_SIZE)');
+    expect(battleSource).toContain('this.targetCursorIcon.setAngle(90)');
+    expect(battleSource).toContain('this.targetCursorIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(targetCursorSource).toContain('this.targetCursorIcon?.setVisible(false)');
+    expect(targetCursorSource).toContain('if (this.targetCursorIcon?.active === true) {');
+    expect(targetCursorSource).toContain('this.targetCursorIcon.setPosition(target.sprite.x, target.sprite.y - 56).setVisible(true)');
+    expect(targetCursorSource).toContain('} else {');
+    expect(targetCursorSource).toContain('this.targetCursor?.strokeTriangle(');
+    expect(targetCursorSource).not.toContain('this.targetCursor?.strokeTriangle(\n      target.sprite.x, target.sprite.y - 50,');
+  });
+
+  it('BattleScene 타겟 예상 KILL 표식은 Aseprite curse status icon을 skull glyph보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const targetCursorSource = battleSource.slice(
+      battleSource.indexOf('private _drawTargetCursor'),
+      battleSource.indexOf('private _confirmTarget'),
+    );
+
+    expect(battleSource).toContain("const BATTLE_TARGET_PREVIEW_KILL_ICON_ID = 'curse'");
+    expect(battleSource).toContain('const BATTLE_TARGET_PREVIEW_KILL_ICON_SIZE = 14');
+    expect(battleSource).toContain('private targetPreviewKillIcon: Phaser.GameObjects.Image | null = null');
+    expect(battleSource).toContain('const targetPreviewKillIconResource = getStatusIconResource(BATTLE_TARGET_PREVIEW_KILL_ICON_ID)');
+    expect(battleSource).toContain("setName('battle_target_preview_kill_icon')");
+    expect(battleSource).toContain('this.targetPreviewKillIcon.setDisplaySize(BATTLE_TARGET_PREVIEW_KILL_ICON_SIZE, BATTLE_TARGET_PREVIEW_KILL_ICON_SIZE)');
+    expect(battleSource).toContain('this.targetPreviewKillIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(targetCursorSource).toContain('this.targetPreviewKillIcon?.setVisible(false)');
+    expect(targetCursorSource).toContain('const hasKillIcon = isKill && this.targetPreviewKillIcon?.active === true');
+    expect(targetCursorSource).toContain('.setText(isKill ? (hasKillIcon ? `~${expected} KILL` : `~${expected} 💀KILL`) : `~${expected}`)');
+    expect(targetCursorSource).toContain('this.targetPreviewKillIcon?.setPosition(target.sprite.x - 34, target.sprite.y - 72).setVisible(hasKillIcon)');
+    expect(targetCursorSource).not.toContain('.setText(isKill ? `~${expected} 💀KILL` : `~${expected}`)');
+    expect(battleSource).toContain('preloadStatusIconResources(this)');
   });
 
   it('BattleScene 필드 ambient 라인은 Aseprite shield/boss icon을 glyph fallback보다 먼저 사용한다', () => {
@@ -1075,6 +1197,28 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("battleSubMenuFocusIconQaParam === 'magic' || battleSubMenuFocusIconQaParam === 'item'");
   });
 
+  it('BattleScene 마법 서브메뉴 쿨다운 상태는 Aseprite stop icon을 쓰고 hourglass glyph를 라벨에 직접 넣지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const magicSubMenuSource = battleSource.slice(
+      battleSource.indexOf('private _showMagicSubMenu'),
+      battleSource.indexOf('private _showItemSubMenu'),
+    );
+
+    expect(battleSource).toContain("const BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_ID = 'skill_tg_stop'");
+    expect(battleSource).toContain('const BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_SIZE = 14');
+    expect(battleSource).toContain('cooldownIcon?: Phaser.GameObjects.Image');
+    expect(battleSource).toContain('const cooldownIconResource = getSpriteResourceForSkillIcon(BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_ID)');
+    expect(battleSource).toContain('this.load.image(cooldownIconResource.key, cooldownIconResource.path)');
+    expect(magicSubMenuSource).toContain('const hasCooldownIcon = Boolean(onCd && cooldownIconResource && this.textures.exists(cooldownIconResource.key))');
+    expect(magicSubMenuSource).toContain('this.add.image(hasSkillIcon ? 178 : 150, 21 + i * 24, cooldownIconResource.key)');
+    expect(magicSubMenuSource).toContain('setName(`battle_magic_submenu_cooldown_icon_${skill.skillId}`)');
+    expect(magicSubMenuSource).toContain('cooldownIcon.setDisplaySize(BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_SIZE, BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_SIZE)');
+    expect(magicSubMenuSource).toContain('cooldownIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(magicSubMenuSource).toContain('const label = onCd');
+    expect(magicSubMenuSource).toContain('? `${skill.name} CD ${Math.ceil(skill.currentCooldown)}s`');
+    expect(magicSubMenuSource).not.toContain('`${skill.name} ⏳${Math.ceil(skill.currentCooldown)}s`');
+  });
+
   it('BattleScene 전투 결과 팝업 보상 표식은 Aseprite icons를 glyph fallback보다 먼저 사용한다', () => {
     const battleSource = readSceneSource('BattleScene.ts');
 
@@ -1207,7 +1351,7 @@ describe('sprite resource manifest', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
 
-    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS } from '../ui/BattleUI';");
+    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI';");
     expect(battleUiSource).toContain("export const BATTLE_LOG_HIGHLIGHT_ICON_IDS = {");
     expect(battleUiSource).toContain("critical: 'skill_ek_explode'");
     expect(battleUiSource).toContain("chain: 'skill_mw_storm'");
@@ -1217,7 +1361,10 @@ describe('sprite resource manifest', () => {
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain('const logHighlightIconResource = getSpriteResourceForSkillIcon(iconId)');
     expect(battleSource).toContain('queuedSkillIconKeys.has(logHighlightIconResource.key)');
-    expect(battleUiSource).toContain('type BattleLogHighlightIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ICON_IDS');
+    expect(battleUiSource).toContain('type BattleLogHighlightItemIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS');
+    expect(battleUiSource).toContain('| keyof typeof BATTLE_LOG_HIGHLIGHT_ICON_IDS');
+    expect(battleUiSource).toContain('| BattleLogHighlightStatusIconKind');
+    expect(battleUiSource).toContain('| BattleLogHighlightItemIconKind');
     expect(battleUiSource).toContain('private logHighlightIcon?: Phaser.GameObjects.Image');
     expect(battleUiSource).toContain('private logHighlightIconFallbackRendered = false');
     expect(battleUiSource).toContain('private logHighlightIconKind: BattleLogHighlightIconKind | null = null');
@@ -1230,6 +1377,260 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("document.body.dataset.aeternaBattleLogHighlightIconQa = JSON.stringify");
     expect(battleUiSource).toContain('missingBattleLogHighlightIconKeys');
     expect(battleUiSource).toContain("new URLSearchParams(window.location.search).get('battleLogHighlightIconQa')");
+  });
+
+  it('BattleUI 협공 로그 하이라이트는 Aseprite dual/triple tech icons를 glyph fallback보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("dualTech: 'skill_mw_storm'");
+    expect(battleUiSource).toContain("tripleTech: 'skill_ek_ultimate'");
+    expect(battleUiSource).toContain("if (message.includes('3인 협공')) return 'tripleTech'");
+    expect(battleUiSource).toContain("if (message.includes('협공')) return 'dualTech'");
+    expect(battleUiSource).toContain("kind === 'dualTech' || kind === 'tripleTech'");
+    expect(battleUiSource).toContain("dualTech: '✨ 협공 발동: 크로노 블레이드'");
+    expect(battleUiSource).toContain("tripleTech: '🌟 3인 협공 발동: 에테르나 파이널'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).not.toContain('`✨ 협공 발동: ${cand.name}`');
+    expect(battleSource).not.toContain('`🌟 3인 협공 발동: ${cand.name}`');
+    expect(battleSource).not.toContain('`✨ 협공 가능: ${names}`');
+    expect(battleSource).not.toContain("`🌟 3인 협공 가능: ${tNames} ('T' 키)`");
+  });
+
+  it('BattleUI 방어/반사 로그 하이라이트는 Aseprite shield status icon을 glyph fallback보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("import { getStatusIconResource } from '../data/statusEffectIcons'");
+    expect(battleUiSource).toContain("export const BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS = {");
+    expect(battleUiSource).toContain("guard: 'shield'");
+    expect(battleUiSource).toContain("type BattleLogHighlightStatusIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS");
+    expect(battleUiSource).toContain('private _getLogHighlightIconResource(kind: BattleLogHighlightIconKind)');
+    expect(battleUiSource).toContain('return getStatusIconResource(BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS[kind])');
+    expect(battleUiSource).toContain("if (m.includes('방어') || m.includes('반사')) return '#90caf9'");
+    expect(battleUiSource).toContain("if (message.includes('방어') || message.includes('반사')) return 'guard'");
+    expect(battleUiSource).toContain("guard: '🛡 방어 태세!'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('preloadStatusIconResources(this)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`반사 → ${attacker.unit.name} : -${reflectDmg}`)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`${us.unit.name} 방어 태세!`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🛡 반사 → ${attacker.unit.name} : -${reflectDmg}`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🛡 ${us.unit.name} 방어 태세!`)');
+  });
+
+  it('BattleUI 사망 로그 하이라이트는 Aseprite curse status icon을 skull glyph보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("death: 'curse'");
+    expect(battleUiSource).toContain("if (m.includes('💀') || m.includes('쓰러짐')) return '#ff5555'");
+    expect(battleUiSource).toContain("if (message.includes('💀') || message.includes('쓰러짐')) return 'death'");
+    expect(battleUiSource).toContain("kind === 'dualTech' || kind === 'tripleTech' || kind === 'guard' || kind === 'death'");
+    expect(battleUiSource).toContain("death: '💀 쓰러짐!'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('preloadStatusIconResources(this)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`${us.unit.name} 쓰러짐!`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`💀 ${us.unit.name} 쓰러짐!`)');
+  });
+
+  it('BattleUI 패배 로그 하이라이트는 Aseprite curse status icon을 heart glyph보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("defeat: 'curse'");
+    expect(battleUiSource).toContain("if (m.includes('💔') || m.includes('패배')) return '#ff5555'");
+    expect(battleUiSource).toContain("if (message.includes('💔') || message.includes('패배')) return 'defeat'");
+    expect(battleUiSource).toContain("kind === 'guard' || kind === 'death' || kind === 'defeat'");
+    expect(battleUiSource).toContain("defeat: '💔 패배...'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('preloadStatusIconResources(this)');
+    expect(battleSource).toContain("this.battleUI?.addLog('패배...')");
+    expect(battleSource).not.toContain("this.battleUI?.addLog('💔 패배...')");
+  });
+
+  it('BattleScene 승리와 서버 결과 로그는 Aseprite log highlight 키워드만 남기고 legacy glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("if (message.includes('🎉') || message.includes('승리')) return 'victory'");
+    expect(battleUiSource).toContain("if (message.includes('⚡') || message.includes('콤보') || message.includes('🔥') || message.includes('CHAIN')) return 'chain'");
+    expect(battleUiSource).toContain("if (message.includes('🆙') || message.includes('레벨 업')) return 'level'");
+    expect(battleUiSource).toContain("victory: '🎉 승리!'");
+    expect(battleUiSource).toContain("chain: '🔥 CHAIN ×2'");
+    expect(battleUiSource).toContain("level: '🆙 레벨 업'");
+    expect(battleSource).toContain("this.battleUI?.addLog('승리!')");
+    expect(battleSource).toContain('this.battleUI?.addLog(`CHAIN ×${this.chainCount}! (${act.damage ?? 0})`)');
+    expect(battleSource).toContain("this.battleUI?.addLog('CHAIN MAX 도달! 다음 협공 +50% 데미지')");
+    expect(battleSource).toContain('this.battleUI?.addLog(`서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`)');
+    expect(battleSource).toContain("this.battleUI?.addLog('CHAIN 보너스 +20% 적용!')");
+    expect(battleSource).toContain('this.battleUI?.addLog(`레벨 업! Lv.${result.levelUp.newLevel}`)');
+    expect(battleSource).not.toContain("this.battleUI?.addLog('🎉 승리!')");
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🔥 CHAIN ×${this.chainCount}! (${act.damage ?? 0})`)');
+    expect(battleSource).not.toContain("this.battleUI?.addLog('💥 CHAIN MAX 도달! 다음 협공 +50% 데미지')");
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`)');
+    expect(battleSource).not.toContain("this.battleUI?.addLog('🔥 CHAIN 보너스 +20% 적용!')");
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`)');
+  });
+
+  it('BattleScene 전투 시작 로그는 Aseprite slash log highlight를 쓰고 sword glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("start: 'skill_ek_slash'");
+    expect(battleUiSource).toContain("if (m.includes('⚔') || m.includes('전투 시작')) return '#ffd700'");
+    expect(battleUiSource).toContain("if (message.includes('⚔') || message.includes('전투 시작')) return 'start'");
+    expect(battleUiSource).toContain("kind === 'critical' || kind === 'chain' || kind === 'victory' || kind === 'level' || kind === 'start'");
+    expect(battleUiSource).toContain("start: '⚔ 전투 시작!'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain("this.battleUI?.addLog('전투 시작!')");
+    expect(battleSource).not.toContain("this.battleUI?.addLog('⚔️ 전투 시작!')");
+  });
+
+  it('BattleScene ECHO 로그는 Aseprite storm log highlight를 쓰고 sparkle glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("echo: 'skill_mw_storm'");
+    expect(battleUiSource).toContain("if (m.includes('ECHO')) return '#6fd3ff'");
+    expect(battleUiSource).toContain("if (message.includes('ECHO')) return 'echo'");
+    expect(battleUiSource).toContain("kind === 'echo'");
+    expect(battleUiSource).toContain("echo: '✨ ECHO! +29'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('this.battleUI?.addLog(`ECHO! +${echoDmg}`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`✨ ECHO! +${echoDmg}`)');
+  });
+
+  it('BattleScene 보스 강공 준비 로그는 Aseprite explode log highlight를 쓰고 rage glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("telegraph: 'skill_ek_explode'");
+    expect(battleUiSource).toContain("if (m.includes('💢') || m.includes('강공 준비') || m.includes('강공!')) return '#ff5533'");
+    expect(battleUiSource).toContain("if (message.includes('💢') || message.includes('강공 준비') || message.includes('강공!')) return 'telegraph'");
+    expect(battleUiSource).toContain("kind === 'telegraph'");
+    expect(battleUiSource).toContain("telegraph: '💢 보스 강공 준비!'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('const BATTLE_BOSS_TELEGRAPH_ICON_ID = \'skill_ek_explode\'');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('this.battleUI?.addLog(`${boss.unit.name} 강공 준비!`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`💢 ${boss.unit.name} 강공 준비!`)');
+  });
+
+  it('BattleScene 보스 강공 피해 로그는 Aseprite explode log highlight를 쓰고 rage glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("telegraph: 'skill_ek_explode'");
+    expect(battleUiSource).toContain("if (m.includes('💢') || m.includes('강공 준비') || m.includes('강공!')) return '#ff5533'");
+    expect(battleUiSource).toContain("if (message.includes('💢') || message.includes('강공 준비') || message.includes('강공!')) return 'telegraph'");
+    expect(battleUiSource).toContain("telegraph: '💢 보스 강공 준비!'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain("const strongLabel = opts?.strong ? '강공! ' : ''");
+    expect(battleSource).toContain('this.battleUI?.addLog(`${strongLabel}${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`)');
+    expect(battleSource).not.toContain("const strongLabel = opts?.strong ? '💢강공! ' : ''");
+  });
+
+  it('BattleScene 크리티컬 피해 로그는 Aseprite explode log highlight를 쓰고 burst glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("critical: 'skill_ek_explode'");
+    expect(battleUiSource).toContain("if (m.includes('💥') || m.includes('크리') || m.includes('CRIT')) return '#ffd700'");
+    expect(battleUiSource).toContain("if (message.includes('💥') || message.includes('크리') || message.includes('CRIT')) return 'critical'");
+    expect(battleUiSource).toContain("critical: '💥 CRIT 88'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain("const critLabel = isCritical ? ' 크리티컬!' : ''");
+    expect(battleSource).toContain('this.battleUI?.addLog(`${strongLabel}${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`)');
+    expect(battleSource).not.toContain("const critLabel = isCritical ? ' 💥크리티컬!' : ''");
+  });
+
+  it('BattleScene MP 부족 로그는 Aseprite mana log highlight를 쓰고 water glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("mana: 'skill_mw_passive'");
+    expect(battleUiSource).toContain("if (m.includes('💧') || m.includes('MP 부족')) return '#6699ff'");
+    expect(battleUiSource).toContain("if (message.includes('💧') || message.includes('MP 부족')) return 'mana'");
+    expect(battleUiSource).toContain("kind === 'mana'");
+    expect(battleUiSource).toContain("mana: '💧 MP 부족 — 에테르 슬래시(MP 15)'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('this.battleUI?.addLog(`MP 부족 — ${skill.name}(MP ${skill.mpCost})`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`💧 MP 부족 — ${skill.name}(MP ${skill.mpCost})`)');
+  });
+
+  it('BattleScene 포션 회복 로그는 Aseprite item log highlight를 쓰고 flask glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI';");
+    expect(battleUiSource).toContain("import { getItemIconResource } from '../data/itemIconResources'");
+    expect(battleUiSource).toContain('export const BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS = {');
+    expect(battleUiSource).toContain("itemHeal: 'ITM-CON-001'");
+    expect(battleUiSource).toContain('type BattleLogHighlightItemIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS');
+    expect(battleUiSource).toContain('return getItemIconResource({ itemIconId: BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS[kind] })');
+    expect(battleUiSource).toContain("if (m.includes('🧪') || m.includes('회복')) return '#55ff99'");
+    expect(battleUiSource).toContain("if (message.includes('🧪') || message.includes('회복')) return 'itemHeal'");
+    expect(battleUiSource).toContain("kind === 'itemHeal'");
+    expect(battleUiSource).toContain("itemHeal: '🧪 Erien HP +100 회복!'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const itemIconId of Object.values(BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS))');
+    expect(battleSource).toContain('const logHighlightItemIconResource = getItemIconResource({ itemIconId })');
+    expect(battleSource).toContain('this.battleUI?.addLog(`${target.unit.name} HP +100 회복!`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🧪 ${target.unit.name} HP +100 회복!`)');
+  });
+
+  it('BattleScene 스킬/콤보 로그는 Aseprite storm log highlight를 쓰고 lightning glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("skillHit: 'skill_mw_storm'");
+    expect(battleUiSource).toContain("if (m.includes('스킬 발동')) return '#6fd3ff'");
+    expect(battleUiSource).toContain("if (message.includes('스킬 발동')) return 'skillHit'");
+    expect(battleUiSource).toContain("kind === 'skillHit'");
+    expect(battleUiSource).toContain("skillHit: '⚡ 스킬 발동: 에테르 슬래시 → 허수아비 : 88'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('this.battleUI?.addLog(`콤보: ${combo.name}! +${combo.damageBonus}%`)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`스킬 발동: ${skill.name} → ${target.unit.name} : ${dmg}`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`⚡ 콤보: ${combo.name}! +${combo.damageBonus}%`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`⚡ ${skill.name} → ${target.unit.name} : ${dmg}`)');
+  });
+
+  it('BattleScene 쿨다운/대기 로그는 Aseprite stop log highlight를 쓰고 legacy glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("cooldown: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("wait: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("if (m.includes('⏳') || m.includes('쿨다운')) return '#c8a2ff'");
+    expect(battleUiSource).toContain("if (m.includes('⏭') || m.includes('대기')) return '#c8a2ff'");
+    expect(battleUiSource).toContain("if (message.includes('⏳') || message.includes('쿨다운')) return 'cooldown'");
+    expect(battleUiSource).toContain("if (message.includes('⏭') || message.includes('대기')) return 'wait'");
+    expect(battleUiSource).toContain("kind === 'cooldown' || kind === 'wait'");
+    expect(battleUiSource).toContain("cooldown: '⏳ 에테르 슬래시 쿨다운 중'");
+    expect(battleUiSource).toContain("wait: '⏭ Erien 대기'");
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('this.battleUI?.addLog(`${skill.name} 쿨다운 중`)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`${this.activeCommander.unit.name} 대기`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`⏭ ${this.activeCommander.unit.name} 대기`)');
   });
 
   it('BattleScene 협공 버튼은 Aseprite skill icons를 이모지 텍스트보다 먼저 사용한다', () => {
@@ -1252,6 +1653,22 @@ describe('sprite resource manifest', () => {
     expect(battleSource).toContain("const aoePrefix = this._hasComboTechButtonIcon(this.tripleTechButton) ? '' : (tSel.aoe ? '💥 🌟 ' : '🌟 ')");
     expect(battleSource).toContain('comboTechButtonIcon: {');
     expect(battleSource).toContain('renderedIconCount: this.comboTechButtonIcons.length');
+  });
+
+  it('BattleScene 보스 협공 저항/면역 라벨은 Aseprite shield icon을 glyph fallback보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+
+    expect(battleSource).toContain("const BATTLE_BOSS_RESIST_ICON_ID = 'shield'");
+    expect(battleSource).toContain('const BATTLE_BOSS_RESIST_ICON_SIZE = 16');
+    expect(battleSource).toContain('private _syncBossResistIcon(');
+    expect(battleSource).toContain('const bossResistIconResource = getStatusIconResource(BATTLE_BOSS_RESIST_ICON_ID)');
+    expect(battleSource).toContain('setName(`battle_boss_resist_icon_${enemy.unit.id}`)');
+    expect(battleSource).toContain('bossResistIcon.setDisplaySize(BATTLE_BOSS_RESIST_ICON_SIZE, BATTLE_BOSS_RESIST_ICON_SIZE)');
+    expect(battleSource).toContain('bossResistIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain("const label = hasResistIcon ? '협공 면역' : '🛡 협공 면역'");
+    expect(battleSource).toContain("const label = hasResistIcon ? parts.join(' / ') : `🛡 ${parts.join(' / ')}`");
+    expect(battleSource).not.toContain("const label = '🛡 협공 면역';");
+    expect(battleSource).not.toContain("const label = `🛡 ${parts.join(' / ')}`;");
   });
 
   it('BattleScene CHAIN 라벨은 Aseprite skill icons를 glyph fallback보다 먼저 사용한다', () => {
@@ -1326,24 +1743,35 @@ describe('sprite resource manifest', () => {
     expect(source).toContain('const WORLD_ACTION_BUTTON_ICON_IDS = {');
     expect(source).toContain("eraPrev: 'skill_tg_reverse'");
     expect(source).toContain("eraNext: 'skill_tg_haste'");
-    expect(source).toContain("back: 'skill_vw_warp'");
+    expect(source).toContain("back: 'skill_tg_reverse'");
     expect(source).toContain("travel: 'skill_mw_arrow'");
     expect(source).toContain('WORLD_SCENE_EXPECTED_ACTION_BUTTON_ICON_COUNT = 4');
     expect(source).toContain('private worldActionButtonIcons: Phaser.GameObjects.Image[] = []');
     expect(source).toContain('private worldActionButtonTexts: Phaser.GameObjects.Text[] = []');
+    expect(source).toContain('fallbackLabel?: string;');
+    expect(source).toContain('const queuedActionIconKeys = new Set<string>();');
     expect(source).toContain('for (const iconId of Object.values(WORLD_ACTION_BUTTON_ICON_IDS))');
     expect(source).toContain('const actionIconResource = getSpriteResourceForSkillIcon(iconId)');
+    expect(source).toContain('queuedActionIconKeys.has(actionIconResource.key)');
     expect(source).toContain('this.load.image(actionIconResource.key, actionIconResource.path)');
     expect(source).toContain('iconId: WORLD_ACTION_BUTTON_ICON_IDS.eraPrev');
     expect(source).toContain('iconId: WORLD_ACTION_BUTTON_ICON_IDS.eraNext');
     expect(source).toContain('iconId: WORLD_ACTION_BUTTON_ICON_IDS.back');
     expect(source).toContain('iconId: WORLD_ACTION_BUTTON_ICON_IDS.travel');
+    expect(source).toContain("      '마을로 돌아가기 (ESC)',\n      '#c8c8d8',");
+    expect(source).toContain("      '[Q]',\n      '#88ccff',");
+    expect(source).toContain("      '[E]',\n      '#88ccff',");
+    expect(source).toContain("      '시간 이동 (Enter)',");
+    expect(source).toContain("fallbackLabel: '← 마을로 돌아가기 (ESC)'");
+    expect(source).toContain("fallbackLabel: '[Q] ◀'");
+    expect(source).toContain("fallbackLabel: '▶ [E]'");
+    expect(source).toContain("fallbackLabel: '▶ [ 시간 이동 ] (Enter)'");
     expect(source).toContain('private _addWorldActionButtonIcon(');
     expect(source).toContain('setName(`${options.name}_icon`)');
     expect(source).toContain('icon.setDisplaySize(18, 18)');
     expect(source).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
     expect(source).toContain('const textX = icon ? x + (options.iconTextOffsetX ?? 10) : x');
-    expect(source).toContain('const textLabel = icon ? (options.iconLabel ?? label) : label');
+    expect(source).toContain('const textLabel = icon ? (options.iconLabel ?? label) : (options.fallbackLabel ?? label)');
     expect(source).toContain('this.worldActionButtonTexts.push(text)');
     expect(source).toContain('const renderedActionButtonTexts = this.worldActionButtonTexts.filter(text => text.active)');
     expect(source).toContain('const worldActionButtonLabelsLegacyGlyphPresent = renderedActionButtonTexts.some((text) => /[◀▶←]/u.test(text.text))');

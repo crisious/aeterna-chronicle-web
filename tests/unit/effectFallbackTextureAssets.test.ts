@@ -117,4 +117,27 @@ describe('effect fallback texture runtime images', () => {
     expect(effectManagerSource).toContain('g.generateTexture(key, 32, 32)');
     expect(effectManagerSource).toContain("g.generateTexture('buff_fallback', 24, 24)");
   });
+
+  it('EffectManager damage/dual-tech popup은 Aseprite skill icon을 glyph prefix보다 먼저 사용한다', () => {
+    const effectManagerSource = readFileSync(resolve(process.cwd(), 'client/src/effects/EffectManager.ts'), 'utf8');
+    const battleSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/BattleScene.ts'), 'utf8');
+
+    expect(effectManagerSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest'");
+    expect(effectManagerSource).toContain("critical: 'skill_ek_explode'");
+    expect(effectManagerSource).toContain("dualTech: 'skill_mw_storm'");
+    expect(effectManagerSource).toContain('export function preloadEffectTextIconResources(scene: Phaser.Scene, queuedTextureKeys?: Set<string>): void');
+    expect(effectManagerSource).toContain('!queuedTextureKeys?.has(iconResource.key)');
+    expect(effectManagerSource).toContain('scene.load.image(iconResource.key, iconResource.path)');
+    expect(effectManagerSource).toContain('icon: Phaser.GameObjects.Image');
+    expect(effectManagerSource).toContain('private setDamageTextIcon(');
+    expect(effectManagerSource).toContain("this.setDamageTextIcon(item, 'critical')");
+    expect(effectManagerSource).toContain("this.setDamageTextIcon(item, 'dualTech')");
+    expect(effectManagerSource).toContain('private hideDamageTextIcon(item: DamageTextItem): void');
+    expect(effectManagerSource).toContain('item.text.setText(`${damage}`)');
+    expect(effectManagerSource).toContain('item.text.setText(techName)');
+    expect(effectManagerSource).not.toContain('item.text.setText(isCritical ? `💥${damage}` : `${damage}`)');
+    expect(effectManagerSource).not.toContain('item.text.setText(`✨ ${techName}`)');
+    expect(battleSceneSource).toContain("import { EffectManager, EFFECT_FALLBACK_TEXTURES, preloadEffectTextIconResources } from '../effects/EffectManager'");
+    expect(battleSceneSource).toContain('preloadEffectTextIconResources(this, queuedSkillIconKeys)');
+  });
 });

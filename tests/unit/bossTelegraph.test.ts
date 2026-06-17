@@ -27,9 +27,20 @@ describe('boss strong-attack telegraph (Phase E Part②)', () => {
     expect(source).toContain('opts?.strong ? 1.6 : 1');
   });
 
-  it('예고는 색맹/리듀스모션 대응 — 아이콘+색+소리는 항상, 모션만 게이트', () => {
-    // 아이콘(⚠) + 붉은 틴트 + 경고음은 무조건.
+  it('예고는 Aseprite 아이콘+색+소리를 항상 표시하고 텍스트 경고는 fallback 으로만 남긴다', () => {
+    expect(source).toContain("const BATTLE_BOSS_TELEGRAPH_ICON_ID = 'skill_ek_explode'");
+    expect(source).toContain('const BATTLE_BOSS_TELEGRAPH_ICON_SIZE = 30');
+    expect(source).toContain('const bossTelegraphIconResource = getSpriteResourceForSkillIcon(BATTLE_BOSS_TELEGRAPH_ICON_ID)');
+    expect(source).toContain('!queuedSkillIconKeys.has(bossTelegraphIconResource.key)');
+    expect(source).toContain('this.load.image(bossTelegraphIconResource.key, bossTelegraphIconResource.path)');
+    expect(source).toContain('private _addBossTelegraphIcon(boss: UnitSprite): Phaser.GameObjects.Image | undefined');
+    expect(source).toContain('this.add.image(');
+    expect(source).toContain("setName('battle_boss_telegraph_icon')");
+    expect(source).toContain('icon.setDisplaySize(BATTLE_BOSS_TELEGRAPH_ICON_SIZE, BATTLE_BOSS_TELEGRAPH_ICON_SIZE)');
+    expect(source).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(source).toContain('const icon = this._addBossTelegraphIcon(boss)');
     expect(source).toContain("'⚠'");
+    expect(source).not.toContain("const icon = this.add.text(boss.sprite.x, boss.sprite.y - (boss.isBoss ? 92 : 60), '⚠'");
     expect(source).toContain('boss.sprite.setTint(0xff5533)');
     expect(source).toContain("playSfx(this, 'sfx_ui_error'");
     // 펄스/스케일 모션은 reduce-motion(screen shake 설정) 게이트 안에서만.

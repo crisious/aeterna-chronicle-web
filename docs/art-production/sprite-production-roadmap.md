@@ -5017,13 +5017,13 @@ Current QA state:
 
 Runtime WorldScene action button label coverage:
 
-- Action button icons: `skill_tg_reverse.png`, `skill_tg_haste.png`, `skill_vw_warp.png`, `skill_mw_arrow.png`.
+- Action button icons: `skill_tg_reverse.png`, `skill_tg_haste.png`, `skill_mw_arrow.png`; the previous-era and town-back buttons both use `skill_tg_reverse.png`.
 
 Production rule:
 
 - `WorldScene` tracks active action button text objects alongside the existing action button frame/icon arrays.
 - Aseprite-backed action buttons keep label text free of legacy direction glyphs: `[Q]`, `[E]`, `마을로 돌아가기 (ESC)`, `시간 이동 (Enter)`.
-- Texture-missing fallback keeps the previous `◀`, `▶`, and `←` label behavior.
+- `WorldActionButtonOptions.fallbackLabel` keeps the previous `◀`, `▶`, and `←` label behavior only when the icon texture is missing.
 - `worldFrameQa=1` records `actionButtonText.labels` and `actionButtonText.legacyGlyphPresent` alongside `actionButtonIcon`.
 
 Exit criteria:
@@ -5041,3 +5041,850 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `http://127.0.0.1:5175/?debugScene=world&renderer=canvas&worldFrameQa=1&qaRun=phase165-world-action-label-iab` reports `aeternaWorldFrameQa.status=ready`, `actionButtonIcon.renderedCount=4`, `expectedCount=4`, `missingIconTextureKeys=[]`, labels `[Q]`, `[E]`, `마을로 돌아가기 (ESC)`, `시간 이동 (Enter)`, `actionButtonText.legacyGlyphPresent=false`, one visible canvas, and no warn/error console logs.
+
+## Phase 166: FeedbackForm Type Focus Icon Runtime Wiring
+
+Runtime FeedbackForm type focus icon coverage:
+
+- Type focus marker: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `FeedbackForm.preload()` queues the type focus icon alongside the existing panel/button frames, title/submit/close skill icons, and five type status icons.
+- `FeedbackForm` keeps one shared `feedback_form_type_focus_icon` image and moves it beside the focused type button instead of writing `▶` into the button label.
+- Normal Aseprite-backed type labels stay text-only: `버그`, `기능`, `밸런스`, `UX`, `기타`.
+- Texture-missing fallback keeps the previous `▶` prefix behavior.
+- `?debugScene=feedback&renderer=canvas` records `typeFocusIcon`, `typeFocusIcon.labels`, `typeFocusIcon.legacyGlyphPresent`, and `missingTypeFocusIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the focus icon id, preload call, shared image object name, display size, nearest filtering, focus movement helper, label tracking, QA payload fields, and removal of direct `btn.setText(a ? \`▶ ${baseLabel}\` : baseLabel)` assignment.
+- Browser QA confirms the type focus icon renders at `14x14`, no type focus icon key is missing, type labels have no legacy focus prefix, one canvas and two input controls are visible, and no warn/error console logs appear.
+- Existing feedback panel/button frame rendering, title/submit/close icons, type status icons, selected type restart flow, submit/close callbacks, HTML input/textarea behavior, and frame QA contract remain unchanged.
+
+Current QA state:
+
+- Phase 166 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "피드백 폼 panel"` failed before implementation because `FeedbackForm.ts` did not define/preload/render the type focus icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "피드백 폼 panel"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\spriteResourceManifest.test.ts` passes 106 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `http://127.0.0.1:5175/?debugScene=feedback&renderer=canvas&qaRun=phase166-feedback-type-focus-iab` reports `aeternaFeedbackFrameQa.status=ready`, `typeFocusIcon.iconId=skill_mw_arrow`, `expectedKey=skill_mw_arrow_icon`, matching rendered texture key, one visible `14x14` display size, `fallbackRendered=false`, labels `버그`, `기능`, `밸런스`, `UX`, `기타`, `legacyGlyphPresent=false`, `missingTypeFocusIconKeys=[]`, one visible canvas, two visible input controls, and no warn/error console logs.
+
+## Phase 167: EffectManager Damage Text Icon Pool Wiring
+
+Runtime EffectManager damage/dual-tech text icon coverage:
+
+- Critical damage text icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+- Dual Tech name text icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+
+Production rule:
+
+- `preloadEffectTextIconResources(scene, queuedTextureKeys)` queues the two skill icon PNGs and shares `BattleScene`'s existing queued skill icon set so the loader does not receive duplicate texture keys.
+- `DamageTextItem` owns one pooled `Phaser.GameObjects.Image` alongside its pooled text object.
+- `spawnDamageText(..., isCritical=true)` displays the damage number as text only and attaches the pooled `skill_ek_explode_icon` image.
+- `spawnDualTechEffect()` displays the tech name as text only and attaches the pooled `skill_mw_storm_icon` image.
+- Icon position, alpha, depth, visibility, and reset state follow the existing damage text update/release path to avoid per-popup allocations.
+
+Exit criteria:
+
+- Unit tests verify the skill icon ids, duplicate-safe preload helper, pooled image field, icon set/hide helpers, removal of direct `💥${damage}` and `✨ ${techName}` text assignment, and `BattleScene.preload()` integration.
+- Related EffectManager fallback texture coverage still verifies Aseprite fallback PNG dimensions, JSON frame metadata, roster entries, and procedural fallback safety.
+- Typecheck and client build continue to pass.
+
+Current QA state:
+
+- Phase 167 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\effectFallbackTextureAssets.test.ts -t "EffectManager damage/dual-tech"` failed before implementation because `EffectManager.ts` did not import `getSpriteResourceForSkillIcon` or define the damage text icon preload/render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\effectFallbackTextureAssets.test.ts -t "EffectManager damage/dual-tech"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\effectFallbackTextureAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes 108 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 168: LoadingScene Tip Icon Runtime Wiring
+
+Runtime LoadingScene tip icon coverage:
+
+- Loading tip icon: `skill_mw_bolt.png` / texture key `skill_mw_bolt_icon`.
+
+Production rule:
+
+- `LoadingScene.preload()` queues the tip icon during Phase 1 together with the loading background and UI frame textures so the first loading UI can render it before the bulk AssetManager queue starts.
+- `_addLoadingTipIcon()` renders one `loading_tip_icon` image at `18x18` with nearest filtering when the texture is available.
+- `_showRandomTip()` keeps tip text free of the legacy `💡` prefix when the Aseprite icon is active.
+- Texture-missing fallback keeps the previous `💡` prefix behavior.
+- `?debugScene=loading&renderer=canvas` records `aeternaLoadingFrameQa.tipIcon`, `tipIcon.legacyGlyphPresent`, and `missingTipIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the tip icon id, preload path, runtime image object name, display size, nearest filtering, text fallback contract, QA payload fields, and removal of direct `this.tipText?.setText(\`💡 ${tip}\`)`.
+- Existing LoadingScene panel/progress frame, qaHold route, progress fill, loading dots, AssetManager queue, SoundManager preload, and transition behavior remain unchanged.
+- Typecheck and client build continue to pass.
+
+Current QA state:
+
+- Phase 168 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "로딩 화면 panel"` failed before implementation because `LoadingScene.ts` did not import `getSpriteResourceForSkillIcon` or define the tip icon preload/render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "로딩 화면 panel"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\effectFallbackTextureAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\spriteResourceManifest.test.ts` passes 108 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 169: CharacterSelect Logout Icon Runtime Wiring
+
+Runtime CharacterSelect logout icon coverage:
+
+- Logout direction/action icon: `skill_tg_reverse.png` / texture key `skill_tg_reverse_icon`.
+
+Production rule:
+
+- `CharacterSelectScene.preload()` queues `skill_tg_reverse_icon` through `spriteResourceManifest`.
+- `_addLogoutButton()` renders one `character_select_logout_icon` image at `16x16` with nearest filtering when the texture is available.
+- Normal Aseprite-backed logout label stays text-only: `로그아웃`.
+- Texture-missing fallback keeps the previous `← 로그아웃` behavior.
+- `?debugScene=characterSelect&renderer=canvas&characterSelectFrameQa=1` records `logoutIcon`, `logoutIcon.legacyGlyphPresent`, and `missingLogoutIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the icon id, preload path, runtime image object name, display size, nearest filtering, text-only label, fallback label, QA payload fields, and existing CharacterSelect card/input/action/existing-avatar frame contracts.
+- Existing character selection, create-mode class cards, DOM name input, action button frame, validation error text, keyboard navigation, API selection flow, and existing avatar image contract remain unchanged.
+- Typecheck and client build continue to pass.
+
+Current QA state:
+
+- Phase 169 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "캐릭터 선택"` failed before implementation because `CharacterSelectScene.ts` did not import `getSpriteResourceForSkillIcon` or define the logout icon preload/render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "캐릭터 선택"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\effectFallbackTextureAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\spriteResourceManifest.test.ts` passes 108 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 170: WorldScene Action Button Fallback Label Split
+
+Runtime WorldScene action button glyph isolation coverage:
+
+- Previous-era icon: `skill_tg_reverse.png` / texture key `skill_tg_reverse_icon`.
+- Town-back icon: `skill_tg_reverse.png` / texture key `skill_tg_reverse_icon`.
+- Next-era icon: `skill_tg_haste.png` / texture key `skill_tg_haste_icon`.
+- Travel icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `WorldActionButtonOptions.fallbackLabel` separates normal text labels from legacy symbol fallback labels.
+- Normal Aseprite-backed action labels stay text-only: `[Q]`, `[E]`, `마을로 돌아가기 (ESC)`, `시간 이동 (Enter)`.
+- Texture-missing fallback keeps the previous `[Q] ◀`, `▶ [E]`, `← 마을로 돌아가기 (ESC)`, and `▶ [ 시간 이동 ] (Enter)` labels.
+- Town-back now uses `skill_tg_reverse` instead of `skill_vw_warp` so its action semantics match the reverse/back affordance.
+- `WorldScene.preload()` uses a queued texture-key set so the shared `skill_tg_reverse_icon` is not queued twice.
+
+Exit criteria:
+
+- Unit tests verify the back icon id, fallback label option, duplicate-safe action icon preload set, text-only normal labels, legacy fallback labels, and text label selection expression.
+- Existing world frame, title icon, action icon count, locked zone icon, selected zone panel icon, encounter line icon, player marker avatar, background image, keyboard shortcut, and travel callback contracts remain unchanged.
+
+Current QA state:
+
+- Phase 170 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "WorldScene action buttons"` failed before implementation because `WorldScene.ts` still mapped `back` to `skill_vw_warp` and did not define `fallbackLabel` or duplicate-safe action icon queuing.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "WorldScene action buttons"` passes after implementation.
+
+## Phase 171: ZoneTeleport Action Button Icon Runtime Wiring
+
+Runtime ZoneTeleport action button icon coverage:
+
+- Move action icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+- Cancel action icon: `skill_tg_reverse.png` / texture key `skill_tg_reverse_icon`.
+
+Production rule:
+
+- `preloadZoneTeleportUiFrameTextures()` queues the portal title icon and both action button icons through one duplicate-safe `queuedIconKeys` set.
+- `_addPortalButton()` now accepts an action id, text-only label, and bracket fallback label.
+- When the action icon texture is present, portal buttons render a `16x16` nearest-filtered image and keep labels as `이동` / `취소`.
+- When the action icon texture is missing, the button falls back to the previous `[ 이동 ]` / `[ 취소 ]` bracket labels.
+- Hover/click hit areas remain transparent Phaser rectangles, so teleport and cancel callbacks keep the existing behavior.
+- `zoneTeleportFrameQa=1` records `actionButtonIcon`, `missingActionIconKeys`, and `fallbackActionIconIds` in addition to the existing panel/button/title icon state.
+
+Exit criteria:
+
+- Unit tests verify the action icon id map, duplicate-safe preload queue, action icon render path, fallback labels, QA probe fields, and legacy move-button call removal.
+- Existing ZoneTeleport panel frame, button frame, title icon, portal metadata, target-zone label, hit area, hover color, and teleport callback contracts remain unchanged.
+
+Current QA state:
+
+- Phase 171 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "필드 포탈 이동/취소 버튼"` failed before implementation because `ZoneTeleportManager.ts` did not define the action icon id map or action icon render/QA contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "필드 포탈 이동/취소 버튼"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts` passes with 107 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 172: DungeonScene Nav Action Icon Runtime Wiring
+
+Runtime DungeonScene navigation action icon coverage:
+
+- Exit action icon: `skill_tg_reverse.png` / texture key `skill_tg_reverse_icon`.
+- Clear-return action icon: `skill_tg_reverse.png` / texture key `skill_tg_reverse_icon`.
+
+Production rule:
+
+- `DungeonScene.preload()` queues `DUNGEON_NAV_ACTION_ICON_IDS` through one duplicate-safe `queuedNavActionIconKeys` set so exit and return do not enqueue the shared reverse texture twice.
+- The bottom exit action renders `dungeon_exit_action_icon` at `16x16` with nearest filtering and keeps the visible label as `퇴장 (ESC)` when the texture is present.
+- The clear return action renders `dungeon_return_action_icon` at `18x18` with nearest filtering and keeps the visible label as `로비로 복귀` when the texture is present.
+- Texture-missing fallback keeps the previous `← 퇴장 (ESC)` and `[ 로비로 복귀 ]` labels.
+- `dungeonFrameQa=ready|clear` records `exitActionIcon`, `returnActionIcon`, `missingExitActionIconKeys`, `missingReturnActionIconKeys`, `exitActionLegacyGlyphPresent`, and `returnActionLegacyGlyphPresent` in addition to existing dungeon frame/title/action icon state.
+
+Exit criteria:
+
+- Unit tests verify the nav action icon id map, duplicate-safe preload queue, runtime image object fields, icon helper, text-only normal labels, legacy fallback labels, QA probe fields, and removal of direct legacy button creation strings.
+- Existing Dungeon status/reward frames, title/action/clear-title icons, wave start flow, ESC/Enter/Space navigation, return callback, reward text, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 172 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "던전 퇴장과 클리어 복귀"` failed before implementation because `DungeonScene.ts` did not define `DUNGEON_NAV_ACTION_ICON_IDS` or the nav action icon render/QA contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "던전 퇴장과 클리어 복귀"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts` passes with 108 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 173: DungeonScene Boss Warning Icon Runtime Wiring
+
+Runtime DungeonScene boss warning icon coverage:
+
+- Boss warning icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `DungeonScene.preload()` queues `DUNGEON_BOSS_WARNING_ICON_ID` through `spriteResourceManifest`.
+- `_showBossWarning()` renders `dungeon_boss_warning_icon` at `30x30` with nearest filtering when the texture is present.
+- Normal Aseprite-backed warning label stays text-only: `WARNING\n보스 등장!`.
+- Texture-missing fallback keeps the previous `⚠ WARNING ⚠\n보스 등장!` label.
+- `dungeonFrameQa=boss` opens the boss-warning state directly and records `bossWarningIcon`, `bossWarningLegacyGlyphPresent`, and `missingBossWarningIconKeys`.
+
+Exit criteria:
+
+- Unit tests verify the boss warning icon id, preload path, debug route parser, direct boss QA mode, runtime image object, display size, nearest filtering, text-only label, fallback label, QA payload fields, and removal of the direct warning-glyph text creation string.
+- Existing Dungeon status/reward frames, title/action/clear-title icons, nav action icons, normal wave start, boss callback, SFX, flash tween, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 173 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "던전 보스 경고"` failed before implementation because `DungeonScene.ts` did not define `DUNGEON_BOSS_WARNING_ICON_ID` or the boss warning icon render/QA contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "던전 보스 경고"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts` passes with 109 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 174: BattleScene Boss Telegraph Icon Runtime Wiring
+
+Runtime BattleScene boss telegraph icon coverage:
+
+- Boss telegraph icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` resolves `BATTLE_BOSS_TELEGRAPH_ICON_ID` through `getSpriteResourceForSkillIcon('skill_ek_explode')` and shares the existing `queuedSkillIconKeys` set so the critical-popup path and boss-telegraph path do not enqueue the same texture twice.
+- `_showBossTelegraph()` renders `battle_boss_telegraph_icon` at `30x30` with nearest filtering when the texture is present.
+- Red tint, warning SFX, battle log, delayed strong strike, reduce-motion gating for pulse tweens, and boss-death/target-retarget behavior remain unchanged.
+- Texture-missing fallback keeps the previous `⚠` warning text.
+
+Exit criteria:
+
+- Unit tests verify the boss telegraph icon id, display size, duplicate-safe preload path, runtime image object, nearest filtering, fallback text containment, and removal of direct text-warning creation from the normal render path.
+- Existing boss strong-attack cadence, 1.6x multiplier, retargeting during telegraph delay, cleanup behavior, critical popup icon path, CHAIN label path, and skill icon loader de-duplication remain unchanged.
+
+Current QA state:
+
+- Phase 174 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\bossTelegraph.test.ts -t "Aseprite 아이콘"` failed before implementation because `BattleScene.ts` did not define `BATTLE_BOSS_TELEGRAPH_ICON_ID` or the Aseprite boss telegraph render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\bossTelegraph.test.ts -t "Aseprite 아이콘"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\bossTelegraph.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts` passes with 76 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 175: BattleScene Target Cursor Icon Runtime Wiring
+
+Runtime BattleScene target cursor icon coverage:
+
+- Target cursor icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` resolves `BATTLE_TARGET_CURSOR_ICON_ID` through `getSpriteResourceForSkillIcon('skill_mw_arrow')` and skips duplicate loader entries when the active-turn, command-focus, or submenu-focus path already queues the same texture.
+- `_drawTargetCursor()` renders `battle_target_cursor_icon` at `24x24` with nearest filtering and a 90-degree rotation when the texture is present.
+- Target selection state, keyboard cycling, pointer target confirmation, expected damage/KILL preview text, and cancel/confirm cleanup behavior remain unchanged.
+- Texture-missing fallback keeps the previous `Graphics.strokeTriangle()` target marker.
+
+Exit criteria:
+
+- Unit tests verify the target cursor icon id, display size, duplicate-safe preload checks, runtime image object, rotation, nearest filtering, image-first draw path, cleanup hiding, and procedural triangle fallback isolation.
+- Existing active-turn indicator, command focus, submenu focus, target cycling, target confirmation, damage preview, and fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 175 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "타겟 선택 커서"` failed before implementation because `BattleScene.ts` did not define `BATTLE_TARGET_CURSOR_ICON_ID` or the Aseprite target cursor render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "타겟 선택 커서"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts` passes with 77 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 176: BattleScene Status Panel HP Critical Icon Runtime Wiring
+
+Runtime BattleScene status panel HP critical icon coverage:
+
+- HP critical icon: `status_bleed.png` / texture key `status_bleed_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` already queues all status icons through `preloadStatusIconResources(this)`, so the HP critical marker reuses the existing status icon preload contract.
+- `_createStatusPanel()` creates `battle_hp_critical_icon_<unitId>` at `12x12` with nearest filtering when `status_bleed_icon` exists.
+- `_updateStatusPanel()` shows that image when HP is below 25% and keeps the HP label as plain `HP current/max` on the normal texture-backed path.
+- Texture-missing or inactive-image fallback keeps the previous `⚠ HP current/max` text prefix.
+
+Exit criteria:
+
+- Unit tests verify the `bleed` status icon manifest entry, HP critical icon id/size constants, runtime image object field, image creation name, display size, nearest filtering, HP text x-offset, visibility update, and glyph fallback isolation.
+- Existing HP/MP text updates, HP/MP bar drawing, ATB bar drawing, status panel layout, and status icon preload behavior remain unchanged.
+
+Current QA state:
+
+- Phase 176 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "HP 위험"` failed before implementation because `BattleScene.ts` did not define `BATTLE_HP_CRITICAL_ICON_ID` or the Aseprite HP critical icon render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "HP 위험"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts` passes with 78 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 177: MainMenuScene Focus Icon Runtime Wiring
+
+Runtime MainMenuScene focus icon coverage:
+
+- Menu focus icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `MainMenuScene.preload()` resolves `MAIN_MENU_FOCUS_ICON_ID` through `getSpriteResourceForSkillIcon('skill_mw_arrow')` and skips duplicate loader entries when the menu button icon path already queues the same texture.
+- `create()` creates one `main_menu_focus_icon` at `14x14` with nearest filtering and places it to the left of the active menu button.
+- `_setMenuHighlight()` and `_syncMenuButtonFrames()` move the same image object as the keyboard/pointer focus index changes.
+- Texture-missing fallback keeps the previous `▶` label prefix path.
+- `mainMenuFrameQa=1` records `menuFocusIcon`, `missingMenuFocusIconKeys`, and `menuLabelLegacyGlyphPresent` with the existing menu frame/button icon state.
+
+Exit criteria:
+
+- Unit tests verify the focus icon id/size/offset constants, duplicate-safe preload path, runtime image object field, image name, display size, nearest filtering, label fallback isolation, sync position, and QA payload fields.
+- Existing title background, menu button frames, button internal icons, login/credits modal frames, DOM input frames, modal close icons, keyboard focus ring, pointer activation, and auth flow remain unchanged.
+
+Current QA state:
+
+- Phase 177 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\mainMenuAsepriteAssets.test.ts -t "메인 메뉴 배경"` failed before implementation because `MainMenuScene.ts` did not define `MAIN_MENU_FOCUS_ICON_ID` or the Aseprite focus icon render contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\mainMenuAsepriteAssets.test.ts -t "메인 메뉴 배경"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\mainMenuAsepriteAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 40 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 178: GameScene Error Screen Icon Runtime Wiring
+
+Runtime GameScene error screen title icon coverage:
+
+- Error title icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `GameScene.preload()` resolves `GAME_SCENE_ERROR_ICON_ID` through `getSpriteResourceForSkillIcon('skill_ek_explode')`.
+- `create()` supports `gameErrorIconQa=1` by opening the deterministic error screen directly through `_showErrorScreen(new Error('QA error screen probe'))`.
+- `_showErrorScreen()` renders `game_scene_error_title_icon` at `22x22` with nearest filtering when the texture is present.
+- The normal error title text is `존 로딩 실패`; texture-missing fallback keeps the previous `⚠️ 존 로딩 실패` label.
+- `gameErrorIconQa=1` records `aeternaGameErrorIconQa` with icon key/path, display size, fallback state, missing key list, and visible canvas count.
+
+Exit criteria:
+
+- Unit tests verify the error icon id, preload path, deterministic QA route, runtime image object field, image name, display size, nearest filtering, glyph fallback isolation, and QA payload fields.
+- Existing GameScene error navigation buttons, Enter/Space/ESC keyboard recovery, zone/boss label icon contracts, HUD startup, and offline QA flow remain unchanged.
+
+Current QA state:
+
+- Phase 178 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "error screen title"` failed before implementation because `GameScene.ts` did not define `GAME_SCENE_ERROR_ICON_ID` or the Aseprite error title icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "error screen title"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 112 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 179: BattleScene Dual Tech Log and Boss Resist Icon Runtime Wiring
+
+Runtime BattleScene/BattleUI 협공 icon coverage:
+
+- Dual Tech log highlight icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+- Triple Tech log highlight icon: `skill_ek_ultimate.png` / texture key `skill_ek_ultimate_icon`.
+- Boss resist/immune label icon: `status_shield.png` / texture key `status_shield_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `dualTech` and `tripleTech`, so 협공 로그 하이라이트 reuses the existing pooled `battle_ui_log_highlight_icon` image path.
+- 협공 로그 highlight text strips legacy glyphs and renders plain strings such as `협공 발동: 크로노 블레이드` or `3인 협공 발동: 에테르나 파이널` when the texture is present.
+- `BattleScene` emits 협공 발동/가능/선택/통계/AOE logs without `✨`, `🌟`, `🔁`, `🏆`, or `💥` prefixes on the normal texture-backed path.
+- `_updateBossImmuneLabel()` and `_updateBossResistLabel()` call `_syncBossResistIcon()` to cache `battle_boss_resist_icon_<unitId>` at `16x16` with nearest filtering.
+- Texture-missing fallback keeps the previous `🛡 협공 면역` / `🛡 Dual +N%` label strings.
+
+Exit criteria:
+
+- Unit tests verify the dual/triple tech log icon ids, inference paths, QA route expansion, glyph stripping, BattleScene log glyph isolation, boss resist icon id/size, cached image name, display size, nearest filtering, and shield glyph fallback isolation.
+- Existing BattleUI critical/chain/victory/level highlight icons, BattleScene 협공 button icons, CHAIN labels, boss telegraph, runtime image references, and UI frame contracts remain unchanged.
+
+Current QA state:
+
+- Phase 179 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "협공 로그|보스 협공"` failed before implementation because `BattleUI.ts` did not define `dualTech`/`tripleTech` log highlight ids and `BattleScene.ts` did not define `BATTLE_BOSS_RESIST_ICON_ID`.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "협공 로그|보스 협공"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 119 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 180: BattleUI Guard Log Highlight Status Icon Runtime Wiring
+
+Runtime BattleUI guard/reflect log icon coverage:
+
+- Guard/reflect log highlight icon: `status_shield.png` / texture key `status_shield_icon`.
+
+Production rule:
+
+- `BattleUI` adds `BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS.guard = 'shield'` and resolves it through `getStatusIconResource()` instead of the skill icon manifest.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` route `방어` and `반사` log messages to the guard highlight path.
+- `_formatLogHighlightText()` strips the legacy `🛡` glyph when an icon is rendered, and the log highlight QA legacy glyph detector includes `🛡`.
+- `BattleScene` emits reflect and defend logs as plain text: `반사 → ...` and `<name> 방어 태세!`.
+- Texture-missing fallback still supports the existing shield glyph paths in head-over defend markers, reflect popups, ambient lines, and boss resist labels.
+
+Exit criteria:
+
+- Unit tests verify the status icon import, guard status id, status resolver path, color/icon inference, QA message, glyph stripping, QA legacy detector, BattleScene status icon preload, and glyph-free defense/reflect log calls.
+- Existing skill-icon log highlights, 협공 log highlights, reflect popup icons, defend head markers, boss resist labels, and BattleScene status icon preload remain unchanged.
+
+Current QA state:
+
+- Phase 180 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "방어/반사 로그"` failed before implementation because `BattleUI.ts` did not import `getStatusIconResource` or define the guard status icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "방어/반사 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 120 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 181: BattleUI Death Log Highlight Status Icon Runtime Wiring
+
+Runtime BattleUI death log icon coverage:
+
+- Death log highlight icon: `status_curse.png` / texture key `status_curse_icon`.
+
+Production rule:
+
+- `BattleUI` adds `BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS.death = 'curse'` and resolves it through the same `getStatusIconResource()` status icon path used by guard/reflect log highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` route `💀` and `쓰러짐` log messages to the death highlight path, preserving the red highlight color.
+- `_formatLogHighlightText()` strips the legacy `💀` glyph when an icon is rendered, and the log highlight QA legacy glyph detector includes `💀`.
+- `BattleScene` emits death logs as plain text: `<name> 쓰러짐!`.
+- Texture-missing fallback still supports the existing curse status icon failure path through the BattleUI highlight fallback bookkeeping.
+
+Exit criteria:
+
+- Unit tests verify the death status id, color/icon inference, QA route expansion, QA message, glyph stripping, QA legacy detector, BattleScene status icon preload, and glyph-free death log call.
+- Existing skill-icon log highlights, 협공 log highlights, guard/reflect log highlights, defeat popup curse icon, and BattleScene status icon preload remain unchanged.
+
+Current QA state:
+
+- Phase 181 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "사망 로그"` failed before implementation because `BattleUI.ts` did not define the death status icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "사망 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 121 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 182: BattleScene Target Preview Kill Status Icon Runtime Wiring
+
+Runtime BattleScene target preview kill icon coverage:
+
+- Target preview KILL icon: `status_curse.png` / texture key `status_curse_icon`.
+
+Production rule:
+
+- `BattleScene` defines `BATTLE_TARGET_PREVIEW_KILL_ICON_ID = 'curse'` and reuses the shared status icon preload path from `preloadStatusIconResources(this)`.
+- `create()` creates one hidden `battle_target_preview_kill_icon` image at `14x14` with nearest filtering when the curse status texture is present.
+- `_drawTargetCursor()` shows the curse icon beside the expected damage preview only when the selected enemy would be killed by the pending action.
+- With the icon present, expected damage text renders as `~N KILL`; texture-missing fallback keeps the previous `~N 💀KILL` string.
+- `_drawTargetCursor()`, `_confirmTarget()`, and `_cancelTargetSelect()` all hide the icon to avoid stale target preview state.
+
+Exit criteria:
+
+- Unit tests verify the kill icon id/size, runtime image object, status icon resolver path, image name, display size, nearest filtering, glyph-free text path, fallback text path, and cleanup hiding.
+- Existing target cursor arrow icon, damage preview calculation, target cycling, target confirmation, status icon preload, and fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 182 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "예상 KILL"` failed before implementation because `BattleScene.ts` did not define the target preview kill icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "예상 KILL"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 122 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 183: BattleUI Defeat Log Highlight Status Icon Runtime Wiring
+
+Runtime BattleUI defeat log highlight icon coverage:
+
+- Defeat log highlight icon: `status_curse.png` / texture key `status_curse_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS` with `defeat = 'curse'`, reusing the same shared status icon resolver path as guard/death highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `패배` and the legacy `💔` fallback glyph as defeat highlight signals.
+- `_formatLogHighlightText()` strips `💔` when an icon is rendered, so Aseprite-backed defeat highlights display `패배...` as text only.
+- `_getBattleLogHighlightQaKind()` accepts `battleLogHighlightIconQa=defeat` and the QA source message still includes `💔 패배...` to prove glyph stripping.
+- `_showDefeat()` sends `패배...` to `BattleUI.addLog()` so normal runtime logs no longer inject the legacy heart glyph before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the defeat status icon id, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene status icon preload, and glyph-free defeat log call.
+- Existing death/guard/critical/chain/victory/level/dual-tech/triple-tech highlight icons, defeat lead banner, defeat popup title icon, red flash handling, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 183 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "패배 로그"` failed before implementation because `BattleUI.ts` did not define the defeat log status icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "패배 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 123 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 184: BattleScene Victory And Server Result Log Glyph Isolation
+
+Runtime BattleScene log source cleanup coverage:
+
+- Victory log highlight icon: `skill_ek_ultimate.png` / texture key `skill_ek_ultimate_icon`.
+- CHAIN log highlight icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+- Level-up log highlight icon: `skill_ek_passive.png` / texture key `skill_ek_passive_icon`.
+
+Production rule:
+
+- `_showVictory()` sends `승리!` to `BattleUI.addLog()` so the visible highlight can render the Aseprite victory icon instead of relying on a `🎉` source glyph.
+- Server chain tick logs send `CHAIN ×N!`, `CHAIN MAX 도달! ...`, and `CHAIN 보너스 ...` as text-only messages; BattleUI still infers the chain icon from the `CHAIN` keyword.
+- Server result victory and level-up logs send `서버 승리 확인!...` and `레벨 업!...` as text-only messages; BattleUI still infers victory/level icons from the Korean keywords.
+- BattleUI QA source messages keep `🎉`, `🔥`, and `🆙` fallback glyph strings so glyph stripping and texture-missing fallback contracts remain testable.
+
+Exit criteria:
+
+- Unit tests verify BattleUI still maps `승리`, `CHAIN`, and `레벨 업` to existing Aseprite log highlight icon kinds while BattleScene no longer injects `🎉`, `🔥`, `💥`, or `🆙` into those runtime log calls.
+- Existing local victory flow, server victory result handling, chain counter updates, max-chain SFX/shake, level-up SFX, and texture-missing QA fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 184 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "승리와 서버 결과 로그"` failed before implementation because `BattleScene.ts` still sent `🎉 승리!` and other glyph-prefixed server result logs.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "승리와 서버 결과 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 124 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 185: BattleScene Battle Start Log Highlight Slash Icon Runtime Wiring
+
+Runtime BattleScene battle-start log highlight icon coverage:
+
+- Battle-start log highlight icon: `skill_ek_slash.png` / texture key `skill_ek_slash_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `start = 'skill_ek_slash'`, reusing the same Aseprite skill icon resolver and pooled `battle_ui_log_highlight_icon` image path as other skill-backed log highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `전투 시작` and the legacy `⚔` fallback glyph as battle-start highlight signals.
+- `_formatLogHighlightText()` strips `⚔` when an icon is rendered, and the log highlight QA legacy glyph detector includes `⚔`.
+- `_getBattleLogHighlightQaKind()` accepts `battleLogHighlightIconQa=start`; its QA source message keeps `⚔ 전투 시작!` to prove glyph stripping.
+- `_startFighting()` sends `전투 시작!` to `BattleUI.addLog()` so normal runtime logs no longer inject the legacy sword glyph before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the start skill icon id, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free battle-start log call.
+- Existing intro overlay slash icon, critical/chain/victory/level/dual-tech/triple-tech/guard/death/defeat log highlights, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 185 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "전투 시작 로그"` failed before implementation because `BattleUI.ts` did not define the start slash icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "전투 시작 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 125 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 186: BattleScene ECHO Log Highlight Storm Icon Runtime Wiring
+
+Runtime BattleScene ECHO log highlight icon coverage:
+
+- ECHO log highlight icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `echo = 'skill_mw_storm'`, reusing the same pooled `battle_ui_log_highlight_icon` image path as CHAIN and 2인 협공 highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `ECHO` as a log highlight signal and route it to the storm icon.
+- `_formatLogHighlightText()` already strips the legacy `✨` glyph when an icon is rendered, and the QA legacy glyph detector already includes `✨`.
+- `_getBattleLogHighlightQaKind()` accepts `battleLogHighlightIconQa=echo`; its QA source message keeps `✨ ECHO! +29` to prove glyph stripping.
+- The crit echo runtime log sends `ECHO! +N` to `BattleUI.addLog()` so normal runtime logs no longer inject the legacy sparkle glyph before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the echo skill icon id, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free crit echo log call.
+- Existing ECHO popup storm icon, CHAIN/dual-tech storm icon reuse, critical/level/victory/start/guard/death/defeat log highlights, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 186 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "ECHO 로그"` failed before implementation because `BattleUI.ts` did not define the echo storm icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "ECHO 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 126 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 187: BattleScene Boss Telegraph Log Highlight Explode Icon Runtime Wiring
+
+Runtime BattleScene boss telegraph log highlight icon coverage:
+
+- Boss telegraph log highlight icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `telegraph = 'skill_ek_explode'`, reusing the same pooled `battle_ui_log_highlight_icon` image path as critical highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `강공 준비` and the legacy `💢` fallback glyph as boss telegraph highlight signals.
+- `_formatLogHighlightText()` strips `💢` when an icon is rendered, and the log highlight QA legacy glyph detector includes `💢`.
+- `_getBattleLogHighlightQaKind()` accepts `battleLogHighlightIconQa=telegraph`; its QA source message keeps `💢 보스 강공 준비!` to prove glyph stripping.
+- `_showBossTelegraph()` sends `<boss name> 강공 준비!` to `BattleUI.addLog()` so normal runtime logs no longer inject the legacy rage glyph before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the telegraph skill icon id, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene boss telegraph icon constant, log highlight preload loop, and glyph-free boss telegraph log call.
+- Existing boss telegraph overhead icon, critical log highlight, critical damage popup, ECHO/CHAIN/dual-tech storm icon reuse, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 187 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "강공 준비 로그"` failed before implementation because `BattleUI.ts` did not define the telegraph explode icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "강공 준비 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 127 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 188: BattleScene Boss Strong Damage Log Highlight Explode Icon Runtime Wiring
+
+Runtime BattleScene boss strong damage log highlight icon coverage:
+
+- Boss strong damage log highlight icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `BattleUI` reuses `BATTLE_LOG_HIGHLIGHT_ICON_IDS.telegraph = 'skill_ek_explode'` and the pooled `battle_ui_log_highlight_icon` image path for both boss strong prepare and boss strong damage highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `강공!`, `강공 준비`, and the legacy `💢` fallback glyph as boss strong highlight signals.
+- `_formatLogHighlightText()` continues to strip `💢` when an icon is rendered, and the log highlight QA legacy glyph detector keeps `💢`.
+- `_applyDamage(..., { strong: true })` sends `강공! <attacker> → <target> : <damage>` to `BattleUI.addLog()` so normal runtime damage logs no longer inject the legacy rage glyph before the icon path can render.
+- The QA source message still keeps `💢 보스 강공 준비!` through the telegraph highlight route to prove glyph stripping and texture-missing fallback behavior.
+
+Exit criteria:
+
+- Unit tests verify the telegraph skill icon id, color/icon inference for both `강공 준비` and `강공!`, QA fallback glyph stripping, BattleScene log highlight preload loop, and glyph-free boss strong damage log call.
+- Existing boss telegraph overhead icon, boss strong prepare log highlight, critical log highlight, critical damage popup, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 188 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "강공 피해 로그"` failed before implementation because `BattleUI.ts` did not route `강공!` damage logs to the telegraph explode icon branch.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "강공 피해 로그|강공 준비 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 128 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 189: BattleScene MP Shortage Log Highlight Mana Icon Runtime Wiring
+
+Runtime BattleScene MP shortage log highlight icon coverage:
+
+- MP shortage log highlight icon: `skill_mw_passive.png` / texture key `skill_mw_passive_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `mana = 'skill_mw_passive'`, reusing the same pooled `battle_ui_log_highlight_icon` image path as other skill-backed log highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `MP 부족` and the legacy `💧` fallback glyph as MP shortage highlight signals.
+- `_formatLogHighlightText()` strips `💧` when an icon is rendered, and the log highlight QA legacy glyph detector includes `💧`.
+- `_getBattleLogHighlightQaKind()` accepts `battleLogHighlightIconQa=mana`; its QA source message keeps `💧 MP 부족 — 에테르 슬래시(MP 15)` to prove glyph stripping.
+- Both direct skill use and magic submenu no-MP paths send `MP 부족 — <skill name>(MP <cost>)` to `BattleUI.addLog()` so normal runtime logs no longer inject the legacy water glyph before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the mana skill icon id, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free MP shortage log calls.
+- Existing magic/item submenu row icons, skill slot MP cost labels, ECHO/CHAIN/critical/start/telegraph log highlights, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 189 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "MP 부족 로그"` failed before implementation because `BattleUI.ts` did not define the mana log highlight icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "MP 부족 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 129 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 190: BattleScene Skill And Combo Log Highlight Storm Icon Runtime Wiring
+
+Runtime BattleScene skill/combo log highlight icon coverage:
+
+- Skill hit log highlight icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+- Combo log highlight icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `skillHit = 'skill_mw_storm'`, reusing the same pooled `battle_ui_log_highlight_icon` image path as CHAIN, ECHO, and 2인 협공 highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `스킬 발동` as a skill damage highlight signal; existing `콤보` inference continues to route combo logs to the `chain` storm icon branch.
+- `_formatLogHighlightText()` already strips the legacy `⚡` glyph when an icon is rendered, and the log highlight QA legacy glyph detector includes `⚡`.
+- `_getBattleLogHighlightQaKind()` accepts `battleLogHighlightIconQa=skillHit`; its QA source message keeps `⚡ 스킬 발동: 에테르 슬래시 → 허수아비 : 88` to prove glyph stripping.
+- Combo bonus logs send `콤보: <combo name>! +<bonus>%`, and skill damage logs send `스킬 발동: <skill name> → <target> : <damage>` so normal runtime logs no longer inject the legacy lightning glyph before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the skillHit skill icon id, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free combo/skill damage log calls.
+- Existing CHAIN label icon, ECHO popup/log highlight, combo button icons, skill slot icons, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 190 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "스킬/콤보 로그"` failed before implementation because `BattleUI.ts` did not define the `skillHit` storm icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "스킬/콤보 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 130 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 191: BattleScene Critical Damage Log Highlight Explode Icon Runtime Wiring
+
+Runtime BattleScene critical damage log highlight icon coverage:
+
+- Critical damage log highlight icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+
+Production rule:
+
+- `BattleUI` continues to route `크리`, `CRIT`, and legacy `💥` fallback glyph messages to `BATTLE_LOG_HIGHLIGHT_ICON_IDS.critical = 'skill_ek_explode'`.
+- `_formatLogHighlightText()` strips `💥` when an icon is rendered, and the log highlight QA legacy glyph detector includes `💥`.
+- `_applyDamage()` sends `<attacker> → <target> : <damage> 크리티컬!` for critical hits, so normal runtime damage logs no longer inject the legacy burst glyph before the icon path can render.
+- The QA source message still keeps `💥 CRIT 88` through the critical highlight route to prove glyph stripping and texture-missing fallback behavior.
+
+Exit criteria:
+
+- Unit tests verify the critical skill icon id, color/icon inference, QA message, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free critical damage log call.
+- Existing critical damage popup icon, boss strong damage log highlight, skill/combo storm highlight, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 191 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "크리티컬 피해 로그"` failed before implementation because `BattleScene.ts` still injected `💥` into the critical damage log label.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "크리티컬 피해 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 131 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 192: BattleScene Combo Popup Storm Icon Runtime Wiring
+
+Runtime BattleScene combo bonus popup icon coverage:
+
+- Combo bonus popup icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+
+Production rule:
+
+- `_spawnComboText()` renders `battle_combo_popup_icon` at `18x18` with nearest filtering before legacy fallback.
+- The combo popup shares the storm skill icon resource already used by CHAIN/ECHO/skill log highlights, but preloads it through the popup contract as well so the popup does not depend on another UI path.
+- When the icon texture exists, the popup label is `<combo name> +<bonus>%` and no longer injects the legacy `⚡` glyph.
+- Texture-missing fallback keeps the previous `⚡ <combo name> +<bonus>%` string.
+- `?debugScene=battle&renderer=canvas&battleComboPopupIconQa=1` records `aeternaBattleComboPopupIconQa` with rendered icon keys, display sizes, fallback state, missing texture keys, labels, and legacy glyph detection.
+
+Exit criteria:
+
+- Unit tests verify the storm skill icon id, preload guard, popup image object, nearest filtering, glyph-free label branch, fallback branch, QA dataset writer, missing texture key reporting, and debug query param wiring.
+- Existing ECHO popup, critical popup, combo log highlight, CHAIN label, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 192 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "combo popup"` failed before implementation because `BattleScene.ts` did not define the combo popup icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "combo popup"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 132 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 193: BattleScene Cooldown And Wait Log Highlight Stop Icon Runtime Wiring
+
+Runtime BattleScene cooldown/wait log highlight icon coverage:
+
+- Cooldown log highlight icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+- Wait log highlight icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `cooldown = 'skill_tg_stop'` and `wait = 'skill_tg_stop'`, reusing the pooled `battle_ui_log_highlight_icon` image path.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `쿨다운` and `대기` keywords, while legacy `⏳` and `⏭` QA/fallback messages still route through the same icon kind.
+- `_formatLogHighlightText()` strips `⏳` and `⏭` when an icon is rendered, and the log highlight QA legacy glyph detector includes both glyphs.
+- BattleScene cooldown logs send `<skill name> 쿨다운 중`, and the command-menu wait shortcut sends `<unit name> 대기`, so normal runtime logs no longer inject the legacy hourglass/skip glyphs before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the stop skill icon ids, color/icon inference, QA route expansion, QA messages, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free cooldown/wait log calls.
+- Existing pause utility button icons, skill cooldown overlays, magic submenu disabled rows, MP shortage logs, skill/combo logs, and texture-missing fallback behavior remain unchanged.
+
+Current QA state:
+
+- Phase 193 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "쿨다운/대기 로그"` failed before implementation because `BattleUI.ts` did not define the cooldown/wait stop icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "쿨다운/대기 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 133 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 194: BattleScene Magic Submenu Cooldown Stop Icon Runtime Wiring
+
+Runtime BattleScene magic submenu cooldown icon coverage:
+
+- Magic submenu cooldown icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+
+Production rule:
+
+- `BattleScene.preload()` queues `BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_ID = 'skill_tg_stop'` directly so the magic submenu does not depend on BattleUI log highlight preloading.
+- `_showMagicSubMenu()` renders `battle_magic_submenu_cooldown_icon_<skillId>` at `14x14` for rows whose `SkillSlot.currentCooldown > 0`.
+- Cooldown row labels use `스킬명 CD Ns` text and no longer inject the legacy `⏳Ns` glyph in the normal render path.
+- Existing skill row icon, focus arrow icon, MP 부족/쿨다운 click feedback logs, keyboard navigation, and texture-missing behavior remain unchanged.
+
+Exit criteria:
+
+- Unit tests verify the cooldown stop skill icon id, preload call, submenu image object, display size, nearest filtering, glyph-free cooldown label, and absence of the old `⏳Ns` label branch.
+- Existing BattleUI cooldown/wait log highlight and magic/item submenu focus icon coverage remain green.
+
+Current QA state:
+
+- Phase 194 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "마법 서브메뉴 쿨다운"` failed before implementation because `BattleScene.ts` did not define the magic submenu cooldown stop icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "마법 서브메뉴 쿨다운"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 134 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+
+## Phase 195: BattleScene Potion Heal Log Highlight Item Icon Runtime Wiring
+
+Runtime BattleScene potion heal log highlight icon coverage:
+
+- Potion heal log highlight icon: `ITM-CON-001.png` / texture key `icon_item_ITM-CON_001`.
+
+Production rule:
+
+- `BattleUI` adds `BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS.itemHeal = 'ITM-CON-001'` and resolves that kind through `getItemIconResource()`.
+- `BattleScene.preload()` queues `BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS` directly so the heal log highlight does not rely on command menu or item submenu icon preloading.
+- Potion use logs now send `<unit name> HP +100 회복!`, so the normal runtime log no longer injects the legacy flask glyph before the Aseprite item icon path can render.
+- `_formatLogHighlightText()` strips `🧪` only when an icon is rendered, and the QA legacy glyph detector includes `🧪` to keep texture-missing fallback observable.
+- Existing item submenu row icon, potion click behavior, heal popup number, SFX, and BattleUI skill/status log highlight paths remain unchanged.
+
+Exit criteria:
+
+- Unit tests verify the item icon id map, item icon resolver, color/icon inference, QA route expansion, QA message, glyph stripping regex, legacy detector, BattleScene item icon preload loop, and glyph-free potion heal log call.
+- Existing MP shortage, cooldown/wait, skill/combo, guard/death/defeat, and texture-missing fallback behavior remain green.
+
+Current QA state:
+
+- Phase 195 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "포션 회복 로그"` failed before implementation because `BattleScene.ts` and `BattleUI.ts` did not define the item log highlight contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "포션 회복 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\bossTelegraph.test.ts tests\unit\uiFrameAssets.test.ts` passes with 135 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.

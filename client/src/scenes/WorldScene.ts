@@ -59,6 +59,7 @@ interface WorldActionButtonOptions {
   iconXOffset?: number;
   iconTextOffsetX?: number;
   iconLabel?: string;
+  fallbackLabel?: string;
 }
 
 interface WorldPlayerMarkerAvatarResource {
@@ -113,7 +114,7 @@ const WORLD_SCENE_EXPECTED_ENCOUNTER_BOSS_ICON_COUNT = 1;
 const WORLD_ACTION_BUTTON_ICON_IDS = {
   eraPrev: 'skill_tg_reverse',
   eraNext: 'skill_tg_haste',
-  back: 'skill_vw_warp',
+  back: 'skill_tg_reverse',
   travel: 'skill_mw_arrow',
 } as const;
 const WORLD_LOCKED_ZONE_STATUS_ICON_ID = 'stun';
@@ -227,10 +228,16 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
+    const queuedActionIconKeys = new Set<string>();
     for (const iconId of Object.values(WORLD_ACTION_BUTTON_ICON_IDS)) {
       const actionIconResource = getSpriteResourceForSkillIcon(iconId);
-      if (actionIconResource && !this.textures.exists(actionIconResource.key)) {
+      if (
+        actionIconResource
+        && !this.textures.exists(actionIconResource.key)
+        && !queuedActionIconKeys.has(actionIconResource.key)
+      ) {
         this.load.image(actionIconResource.key, actionIconResource.path);
+        queuedActionIconKeys.add(actionIconResource.key);
       }
     }
 
@@ -343,7 +350,7 @@ export class WorldScene extends Phaser.Scene {
       height - 30,
       220,
       30,
-      '← 마을로 돌아가기 (ESC)',
+      '마을로 돌아가기 (ESC)',
       '#c8c8d8',
       () => this.startLobbyScene(),
       {
@@ -353,6 +360,7 @@ export class WorldScene extends Phaser.Scene {
         iconXOffset: -88,
         iconTextOffsetX: 12,
         iconLabel: '마을로 돌아가기 (ESC)',
+        fallbackLabel: '← 마을로 돌아가기 (ESC)',
       },
     );
 
@@ -705,7 +713,7 @@ export class WorldScene extends Phaser.Scene {
       70,
       76,
       28,
-      '[Q] ◀',
+      '[Q]',
       '#88ccff',
       () => this._setChronoEra(cycleChronoEra(this.currentEraId, -1)),
       {
@@ -715,6 +723,7 @@ export class WorldScene extends Phaser.Scene {
         iconXOffset: -22,
         iconTextOffsetX: 12,
         iconLabel: '[Q]',
+        fallbackLabel: '[Q] ◀',
       },
     );
 
@@ -737,7 +746,7 @@ export class WorldScene extends Phaser.Scene {
       70,
       76,
       28,
-      '▶ [E]',
+      '[E]',
       '#88ccff',
       () => this._setChronoEra(cycleChronoEra(this.currentEraId, 1)),
       {
@@ -747,6 +756,7 @@ export class WorldScene extends Phaser.Scene {
         iconXOffset: -22,
         iconTextOffsetX: 12,
         iconLabel: '[E]',
+        fallbackLabel: '▶ [E]',
       },
     );
 
@@ -789,7 +799,7 @@ export class WorldScene extends Phaser.Scene {
         })
       : null;
     const textX = icon ? x + (options.iconTextOffsetX ?? 10) : x;
-    const textLabel = icon ? (options.iconLabel ?? label) : label;
+    const textLabel = icon ? (options.iconLabel ?? label) : (options.fallbackLabel ?? label);
 
     const text = this.add.text(textX, y, textLabel, {
       fontSize: options.fontSize ?? '14px',
@@ -1208,13 +1218,13 @@ export class WorldScene extends Phaser.Scene {
       }).catch(() => encounterLine.setText('필드 데이터 미정의'));
     }
 
-    // ▶ + (Enter) 힌트: 패널이 열린 상태에서 한 번 더 ENTER 누르면 이동한다는 키보드 단서.
+    // Aseprite action icon + Enter 힌트: 패널이 열린 상태에서 한 번 더 ENTER 누르면 이동한다는 키보드 단서.
     this._addWorldActionButton(
       288,
       30,
       194,
       32,
-      '▶ [ 시간 이동 ] (Enter)',
+      '시간 이동 (Enter)',
       '#88ff88',
       () => this._travelToZone(zone),
       {
@@ -1225,6 +1235,7 @@ export class WorldScene extends Phaser.Scene {
         iconXOffset: -76,
         iconTextOffsetX: 12,
         iconLabel: '시간 이동 (Enter)',
+        fallbackLabel: '▶ [ 시간 이동 ] (Enter)',
       },
     );
 

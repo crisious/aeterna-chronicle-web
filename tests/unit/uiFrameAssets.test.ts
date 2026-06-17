@@ -82,7 +82,7 @@ describe('UI frame runtime images', () => {
     expect(battleUiSource).toContain('Aseprite battle log UI frame 로드 실패 시에만 사용하는 안전 fallback');
     expect(battleUiSource).toContain("new URLSearchParams(window.location.search).get('battleLogFrameQa') === '1'");
     expect(battleUiSource).toContain('document.body.dataset.aeternaBattleLogFrameQa = JSON.stringify');
-    expect(battleSceneSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS } from '../ui/BattleUI'");
+    expect(battleSceneSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI'");
     expect(battleSceneSource).toContain('preloadBattleUiFrameTextures(this)');
   });
 
@@ -901,7 +901,8 @@ describe('UI frame runtime images', () => {
     expect(teleportSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';");
     expect(teleportSource).toContain("const ZONE_TELEPORT_TITLE_ICON_ID = 'skill_vw_warp'");
     expect(teleportSource).toContain('const titleIconResource = getSpriteResourceForSkillIcon(ZONE_TELEPORT_TITLE_ICON_ID)');
-    expect(teleportSource).toContain('scene.load.image(titleIconResource.key, titleIconResource.path)');
+    expect(teleportSource).toContain('for (const iconId of [ZONE_TELEPORT_TITLE_ICON_ID, ...Object.values(ZONE_TELEPORT_ACTION_ICON_IDS)])');
+    expect(teleportSource).toContain('scene.load.image(iconResource.key, iconResource.path)');
     expect(teleportSource).toContain("setName('zone_teleport_title_icon')");
     expect(teleportSource).toContain('this.portalTitleIcon.setDisplaySize(18, 18)');
     expect(teleportSource).toContain('this.portalTitleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
@@ -910,6 +911,37 @@ describe('UI frame runtime images', () => {
     expect(teleportSource).toContain('titleIcon: {');
     expect(teleportSource).toContain('fallbackRendered: this.portalTitleIconFallback !== null');
     expect(teleportSource).toContain('missingTitleIconKeys');
+  });
+
+  it('필드 포탈 이동/취소 버튼은 Aseprite action icon을 bracket label보다 먼저 사용한다', () => {
+    const teleportSource = readFileSync(resolve(process.cwd(), 'client/src/gameplay/ZoneTeleportManager.ts'), 'utf8');
+
+    expect(teleportSource).toContain('const ZONE_TELEPORT_ACTION_ICON_IDS = {');
+    expect(teleportSource).toContain("move: 'skill_mw_arrow'");
+    expect(teleportSource).toContain("cancel: 'skill_tg_reverse'");
+    expect(teleportSource).toContain('const ZONE_TELEPORT_EXPECTED_ACTION_ICON_COUNT = 2');
+    expect(teleportSource).toContain('const queuedIconKeys = new Set<string>();');
+    expect(teleportSource).toContain('for (const iconId of [ZONE_TELEPORT_TITLE_ICON_ID, ...Object.values(ZONE_TELEPORT_ACTION_ICON_IDS)])');
+    expect(teleportSource).toContain('scene.load.image(iconResource.key, iconResource.path)');
+    expect(teleportSource).toContain('private portalActionIcons: Phaser.GameObjects.Image[] = []');
+    expect(teleportSource).toContain('private portalActionIconFallbackIds: ZoneTeleportActionButtonId[] = []');
+    expect(teleportSource).toContain('this.portalActionIcons = []');
+    expect(teleportSource).toContain('this.portalActionIconFallbackIds = []');
+    expect(teleportSource).toContain("this._addPortalButton(this.portalUI, cx - 56, cy + 35, 86, 30, 'move', '이동', '[ 이동 ]'");
+    expect(teleportSource).toContain("this._addPortalButton(this.portalUI, cx + 56, cy + 35, 86, 30, 'cancel', '취소', '[ 취소 ]'");
+    expect(teleportSource).toContain('const actionIconResource = getSpriteResourceForSkillIcon(ZONE_TELEPORT_ACTION_ICON_IDS[actionId])');
+    expect(teleportSource).toContain('const textLabel = actionIcon ? label : fallbackLabel;');
+    expect(teleportSource).toContain('setName(`zone_teleport_${actionId}_action_icon`)');
+    expect(teleportSource).toContain('actionIcon.setDisplaySize(16, 16)');
+    expect(teleportSource).toContain('actionIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(teleportSource).toContain('this.portalActionIcons.push(actionIcon)');
+    expect(teleportSource).toContain('this.portalActionIconFallbackIds.push(actionId)');
+    expect(teleportSource).toContain('const hasExpectedActionIcons = missingActionIconKeys.length === 0');
+    expect(teleportSource).toContain('actionButtonIcon: {');
+    expect(teleportSource).toContain('fallbackActionIconIds: this.portalActionIconFallbackIds');
+    expect(teleportSource).toContain('missingActionIconKeys');
+    expect(teleportSource).toContain("status: hasExpectedPanelFrame && hasExpectedButtonFrames && hasExpectedTitleIcon && hasExpectedActionIcons ? 'ready' : 'missing'");
+    expect(teleportSource).not.toContain("this._addPortalButton(this.portalUI, cx - 56, cy + 35, 86, 30, '[ 이동 ]'");
   });
 
   it('던전 HUD와 보상 패널은 Aseprite UI frame preload/render 경로와 QA route를 가진다', () => {
@@ -924,7 +956,7 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain("path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png'");
     expect(dungeonSceneSource).toContain("key: 'ui_frame_dungeon_reward_panel'");
     expect(dungeonSceneSource).toContain("path: 'assets/generated/ui/frames/UI-INV-005-DEF.png'");
-    expect(dungeonSceneSource).toContain("dungeonFrameQa?: 'ready' | 'clear'");
+    expect(dungeonSceneSource).toContain("dungeonFrameQa?: 'ready' | 'clear' | 'boss'");
     expect(dungeonSceneSource).toContain('this.load.image(texture.key, texture.path)');
     expect(dungeonSceneSource).toContain('this._addDungeonFrame(baseX + 145, baseY + 16, 300, 78, DUNGEON_UI_FRAME_TEXTURES.statusPanel');
     expect(dungeonSceneSource).toContain('this._addDungeonFrame(width / 2, battleButtonY, 210, 64, DUNGEON_UI_FRAME_TEXTURES.actionButton');
@@ -961,7 +993,7 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'ready'");
     expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'clear'");
     expect(mainSource).toContain("const dungeonFrameQaParam = params.get('dungeonFrameQa')");
-    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear'");
+    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss'");
     expect(mainSource).toContain('dungeonFrameQa,');
   });
 
@@ -983,6 +1015,73 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain('clearTitleLegacyGlyphPresent');
     expect(dungeonSceneSource).toContain('missingClearTitleIconKeys');
     expect(dungeonSceneSource).not.toContain("this.add.text(width / 2, height / 2 - 60, '🏆 던전 클리어!'");
+  });
+
+  it('던전 퇴장과 클리어 복귀 버튼은 Aseprite reverse icon을 legacy glyph fallback보다 우선 렌더링한다', () => {
+    const dungeonSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/DungeonScene.ts'), 'utf8');
+
+    expect(dungeonSceneSource).toContain('const DUNGEON_NAV_ACTION_ICON_IDS = {');
+    expect(dungeonSceneSource).toContain("exit: 'skill_tg_reverse'");
+    expect(dungeonSceneSource).toContain("return: 'skill_tg_reverse'");
+    expect(dungeonSceneSource).toContain('type DungeonNavActionId = keyof typeof DUNGEON_NAV_ACTION_ICON_IDS');
+    expect(dungeonSceneSource).toContain('const queuedNavActionIconKeys = new Set<string>();');
+    expect(dungeonSceneSource).toContain('for (const iconId of Object.values(DUNGEON_NAV_ACTION_ICON_IDS))');
+    expect(dungeonSceneSource).toContain('const navActionIconResource = getSpriteResourceForSkillIcon(iconId)');
+    expect(dungeonSceneSource).toContain('this.load.image(navActionIconResource.key, navActionIconResource.path)');
+    expect(dungeonSceneSource).toContain('private dungeonExitActionIcon?: Phaser.GameObjects.Image');
+    expect(dungeonSceneSource).toContain('private dungeonExitActionIconFallbackRendered = false');
+    expect(dungeonSceneSource).toContain('private dungeonExitActionLabel?: Phaser.GameObjects.Text');
+    expect(dungeonSceneSource).toContain('private dungeonReturnActionIcon?: Phaser.GameObjects.Image');
+    expect(dungeonSceneSource).toContain('private dungeonReturnActionIconFallbackRendered = false');
+    expect(dungeonSceneSource).toContain('private dungeonReturnActionLabel?: Phaser.GameObjects.Text');
+    expect(dungeonSceneSource).toContain("this.dungeonExitActionIcon = this._addDungeonNavActionIcon(28, height - 24, 'exit')");
+    expect(dungeonSceneSource).toContain("const exitLabel = this.dungeonExitActionIcon ? '퇴장 (ESC)' : '← 퇴장 (ESC)'");
+    expect(dungeonSceneSource).toContain("this.dungeonReturnActionIcon = this._addDungeonNavActionIcon(width / 2 - 64, height / 2 + 100, 'return')");
+    expect(dungeonSceneSource).toContain("const returnLabel = this.dungeonReturnActionIcon ? '로비로 복귀' : '[ 로비로 복귀 ]'");
+    expect(dungeonSceneSource).toContain('private _addDungeonNavActionIcon(');
+    expect(dungeonSceneSource).toContain('const iconResource = getSpriteResourceForSkillIcon(DUNGEON_NAV_ACTION_ICON_IDS[actionId])');
+    expect(dungeonSceneSource).toContain('setName(`dungeon_${actionId}_action_icon`)');
+    expect(dungeonSceneSource).toContain('icon.setDisplaySize(displaySize, displaySize)');
+    expect(dungeonSceneSource).toContain('icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(dungeonSceneSource).toContain("if (actionId === 'exit') {");
+    expect(dungeonSceneSource).toContain('this.dungeonExitActionIconFallbackRendered = true');
+    expect(dungeonSceneSource).toContain('this.dungeonReturnActionIconFallbackRendered = true');
+    expect(dungeonSceneSource).toContain('exitActionIcon: {');
+    expect(dungeonSceneSource).toContain('returnActionIcon: {');
+    expect(dungeonSceneSource).toContain('missingExitActionIconKeys');
+    expect(dungeonSceneSource).toContain('missingReturnActionIconKeys');
+    expect(dungeonSceneSource).toContain('exitActionLegacyGlyphPresent');
+    expect(dungeonSceneSource).toContain('returnActionLegacyGlyphPresent');
+    expect(dungeonSceneSource).not.toContain("this.add.text(20, height - 30, '← 퇴장 (ESC)'");
+    expect(dungeonSceneSource).not.toContain("const returnBtn = this.add.text(width / 2, height / 2 + 100, '[ 로비로 복귀 ]'");
+  });
+
+  it('던전 보스 경고는 Aseprite explode icon을 warning glyph fallback보다 우선 렌더링한다', () => {
+    const dungeonSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/DungeonScene.ts'), 'utf8');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(dungeonSceneSource).toContain("const DUNGEON_BOSS_WARNING_ICON_ID = 'skill_ek_explode'");
+    expect(dungeonSceneSource).toContain('const bossWarningIconResource = getSpriteResourceForSkillIcon(DUNGEON_BOSS_WARNING_ICON_ID)');
+    expect(dungeonSceneSource).toContain('this.load.image(bossWarningIconResource.key, bossWarningIconResource.path)');
+    expect(dungeonSceneSource).toContain('private dungeonBossWarningIcon?: Phaser.GameObjects.Image');
+    expect(dungeonSceneSource).toContain('private dungeonBossWarningIconFallbackRendered = false');
+    expect(dungeonSceneSource).toContain('private dungeonBossWarningText?: Phaser.GameObjects.Text');
+    expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'boss'");
+    expect(dungeonSceneSource).toContain('this.currentWave = this.config.bossWave - 1');
+    expect(dungeonSceneSource).toContain('const hasBossWarningIcon = Boolean(bossWarningIconResource && this.textures.exists(bossWarningIconResource.key))');
+    expect(dungeonSceneSource).toContain('this.dungeonBossWarningIcon = this.add.image(-116, 0, bossWarningIconResource.key)');
+    expect(dungeonSceneSource).toContain("setName('dungeon_boss_warning_icon')");
+    expect(dungeonSceneSource).toContain('this.dungeonBossWarningIcon.setDisplaySize(30, 30)');
+    expect(dungeonSceneSource).toContain('this.dungeonBossWarningIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(dungeonSceneSource).toContain("const warningLabel = hasBossWarningIcon ? 'WARNING\\n보스 등장!' : '⚠ WARNING ⚠\\n보스 등장!'");
+    expect(dungeonSceneSource).toContain('this.dungeonBossWarningText = text');
+    expect(dungeonSceneSource).toContain('targets: [text, this.dungeonBossWarningIcon].filter');
+    expect(dungeonSceneSource).toContain('bossWarningIcon: {');
+    expect(dungeonSceneSource).toContain('fallbackRendered: this.dungeonBossWarningIconFallbackRendered');
+    expect(dungeonSceneSource).toContain('bossWarningLegacyGlyphPresent');
+    expect(dungeonSceneSource).toContain('missingBossWarningIconKeys');
+    expect(dungeonSceneSource).not.toContain("this.add.text(0, 0, '⚠ WARNING ⚠\\n보스 등장!'");
+    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss'");
   });
 
   it('설정 화면 panel, action button, slider track은 Aseprite UI frame preload/render 경로와 QA route를 가진다', () => {
@@ -1084,6 +1183,9 @@ describe('UI frame runtime images', () => {
     expect(feedbackFormSource).toContain('FEEDBACK_FORM_SUBMIT_ICON_RESOURCE = getSpriteResourceForSkillIcon(FEEDBACK_FORM_SUBMIT_ICON_ID)');
     expect(feedbackFormSource).toContain("const FEEDBACK_FORM_CLOSE_ICON_ID = 'skill_tg_reverse'");
     expect(feedbackFormSource).toContain('FEEDBACK_FORM_CLOSE_ICON_RESOURCE = getSpriteResourceForSkillIcon(FEEDBACK_FORM_CLOSE_ICON_ID)');
+    expect(feedbackFormSource).toContain("const FEEDBACK_FORM_TYPE_FOCUS_ICON_ID = 'skill_mw_arrow'");
+    expect(feedbackFormSource).toContain('FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE = getSpriteResourceForSkillIcon(FEEDBACK_FORM_TYPE_FOCUS_ICON_ID)');
+    expect(feedbackFormSource).toContain('const FEEDBACK_FORM_TYPE_FOCUS_ICON_SIZE = 14');
     expect(feedbackFormSource).toContain('FEEDBACK_FORM_TYPE_ICON_TEXTURES');
     expect(feedbackFormSource).toContain("bug: getStatusIconResource('poison')");
     expect(feedbackFormSource).toContain("feature: getStatusIconResource('haste')");
@@ -1095,6 +1197,7 @@ describe('UI frame runtime images', () => {
     expect(feedbackFormSource).toContain('this.load.image(FEEDBACK_FORM_TITLE_ICON_RESOURCE.key, FEEDBACK_FORM_TITLE_ICON_RESOURCE.path)');
     expect(feedbackFormSource).toContain('this.load.image(FEEDBACK_FORM_SUBMIT_ICON_RESOURCE.key, FEEDBACK_FORM_SUBMIT_ICON_RESOURCE.path)');
     expect(feedbackFormSource).toContain('this.load.image(FEEDBACK_FORM_CLOSE_ICON_RESOURCE.key, FEEDBACK_FORM_CLOSE_ICON_RESOURCE.path)');
+    expect(feedbackFormSource).toContain('this.load.image(FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key, FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.path)');
     expect(feedbackFormSource).toContain('this._addFeedbackFormFrame(this.formContainer, 0, 0, 500, 600, FEEDBACK_FORM_UI_FRAME_TEXTURES.panel)');
     expect(feedbackFormSource).toContain('this._addFeedbackFormTitleIcon(this.formContainer, -138, -270)');
     expect(feedbackFormSource).toContain("this.add.text(0, -270, '피드백 보내기'");
@@ -1113,6 +1216,10 @@ describe('UI frame runtime images', () => {
     expect(feedbackFormSource).toContain('private closeIcon: Phaser.GameObjects.Image | null = null');
     expect(feedbackFormSource).toContain('private closeIconFallback: Phaser.GameObjects.Text | null = null');
     expect(feedbackFormSource).toContain('private missingCloseIconKeys: string[] = []');
+    expect(feedbackFormSource).toContain('private typeFocusIcon: Phaser.GameObjects.Image | null = null');
+    expect(feedbackFormSource).toContain('private feedbackTypeFocusLabelTexts: Phaser.GameObjects.Text[] = []');
+    expect(feedbackFormSource).toContain('private feedbackTypeFocusIconFallbackRendered = false');
+    expect(feedbackFormSource).toContain('private missingTypeFocusIconKeys: string[] = []');
     expect(feedbackFormSource).toContain('private _addFeedbackFormTitleIcon(');
     expect(feedbackFormSource).toContain('this.add.image(x, y, FEEDBACK_FORM_TITLE_ICON_RESOURCE.key)');
     expect(feedbackFormSource).toContain("setName('feedback_form_title_icon')");
@@ -1135,6 +1242,15 @@ describe('UI frame runtime images', () => {
     expect(feedbackFormSource).toContain('this.add.image(x, y, texture.key)');
     expect(feedbackFormSource).toContain('setName(`feedback_form_type_icon_${typeKey}`)');
     expect(feedbackFormSource).toContain('icon.setDisplaySize(18, 18)');
+    expect(feedbackFormSource).toContain('this.feedbackTypeFocusLabelTexts.push(btn)');
+    expect(feedbackFormSource).toContain('this._addFeedbackTypeFocusIcon(this.formContainer)');
+    expect(feedbackFormSource).toContain('private _addFeedbackTypeFocusIcon(');
+    expect(feedbackFormSource).toContain('private _setFeedbackTypeFocusIcon(');
+    expect(feedbackFormSource).toContain('private _hideFeedbackTypeFocusIcon(): void');
+    expect(feedbackFormSource).toContain('this.add.image(0, 0, FEEDBACK_FORM_TYPE_FOCUS_ICON_RESOURCE.key)');
+    expect(feedbackFormSource).toContain("setName('feedback_form_type_focus_icon')");
+    expect(feedbackFormSource).toContain('this.typeFocusIcon.setDisplaySize(FEEDBACK_FORM_TYPE_FOCUS_ICON_SIZE, FEEDBACK_FORM_TYPE_FOCUS_ICON_SIZE)');
+    expect(feedbackFormSource).toContain('this.typeFocusIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
     expect(feedbackFormSource).toContain('this.add.image(x, y, texture.key)');
     expect(feedbackFormSource).toContain('setDisplaySize(width, height)');
     expect(feedbackFormSource).toContain('Aseprite feedback form UI frame 로드 실패 시에만 사용하는 안전 fallback');
@@ -1151,12 +1267,20 @@ describe('UI frame runtime images', () => {
     expect(feedbackFormSource).toContain('typeIcon: {');
     expect(feedbackFormSource).toContain('missingTypeIconKeys');
     expect(feedbackFormSource).toContain('fallbackTypeIconIds');
+    expect(feedbackFormSource).toContain('const feedbackTypeFocusLabelLegacyGlyphPresent = this.feedbackTypeFocusLabelTexts.some((text) => text.text.includes(\'▶\'))');
+    expect(feedbackFormSource).toContain('typeFocusIcon: {');
+    expect(feedbackFormSource).toContain('iconId: FEEDBACK_FORM_TYPE_FOCUS_ICON_ID');
+    expect(feedbackFormSource).toContain('fallbackRendered: this.feedbackTypeFocusIconFallbackRendered');
+    expect(feedbackFormSource).toContain('labels: this.feedbackTypeFocusLabelTexts.map((text) => text.text)');
+    expect(feedbackFormSource).toContain('legacyGlyphPresent: feedbackTypeFocusLabelLegacyGlyphPresent');
+    expect(feedbackFormSource).toContain('missingTypeFocusIconKeys: this.missingTypeFocusIconKeys');
     expect(feedbackFormSource).toContain("const submitLabel = '제출'");
     expect(feedbackFormSource).toContain('submitBtn.setText(submitLabel)');
     expect(feedbackFormSource).toContain("submitBtn.setColor(a ? '#ffffff' : '#eafff2')");
     expect(feedbackFormSource).not.toContain("this.add.text(0, 230, '✅ 제출'");
     expect(feedbackFormSource).not.toContain("'▶ ✅ 제출'");
     expect(feedbackFormSource).not.toContain("this.add.text(220, -270, '✕'");
+    expect(feedbackFormSource).not.toContain('btn.setText(a ? `▶ ${baseLabel}` : baseLabel)');
     expect(mainSource).toContain("if (debugScene === 'feedback')");
     expect(mainSource).toContain("phaserGame.scene.start('FeedbackForm'");
     expect(mainSource).toContain('frameQa: true');
@@ -1178,11 +1302,27 @@ describe('UI frame runtime images', () => {
     expect(characterSelectSource).toContain('CHARACTER_SELECT_EXPECTED_NAME_INPUT_FRAME_COUNT = 1');
     expect(characterSelectSource).toContain('CHARACTER_SELECT_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 1');
     expect(characterSelectSource).toContain('CHARACTER_SELECT_EXPECTED_EXISTING_AVATAR_COUNT = 1');
+    expect(characterSelectSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest'");
+    expect(characterSelectSource).toContain("const CHARACTER_SELECT_LOGOUT_ICON_ID = 'skill_tg_reverse'");
+    expect(characterSelectSource).toContain('const CHARACTER_SELECT_LOGOUT_ICON_RESOURCE = getSpriteResourceForSkillIcon(CHARACTER_SELECT_LOGOUT_ICON_ID)');
+    expect(characterSelectSource).toContain('const CHARACTER_SELECT_LOGOUT_ICON_SIZE = 16');
     expect(characterSelectSource).toContain('CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES');
     expect(characterSelectSource).toContain("key: 'char_battle_ether_knight'");
     expect(characterSelectSource).toContain("path: 'assets/generated/characters/class_main/battle/char_battle_ether_knight.png'");
     expect(characterSelectSource).toContain('const avatarResource = getCharacterSelectBattleAvatarResource(classId)');
     expect(characterSelectSource).toContain('this.load.image(avatarResource.key, avatarResource.path)');
+    expect(characterSelectSource).toContain('private logoutIcon: Phaser.GameObjects.Image | null = null');
+    expect(characterSelectSource).toContain('private logoutText: Phaser.GameObjects.Text | null = null');
+    expect(characterSelectSource).toContain('private logoutIconFallbackRendered = false');
+    expect(characterSelectSource).toContain('private missingLogoutIconKeys: string[] = []');
+    expect(characterSelectSource).toContain('this.load.image(CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.key, CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.path)');
+    expect(characterSelectSource).toContain('this._addLogoutButton();');
+    expect(characterSelectSource).toContain('this._addLogoutButton();\n\n    this._writeCharacterSelectFrameQaProbe();');
+    expect(characterSelectSource).toContain("setName('character_select_logout_icon')");
+    expect(characterSelectSource).toContain('this.logoutIcon.setDisplaySize(CHARACTER_SELECT_LOGOUT_ICON_SIZE, CHARACTER_SELECT_LOGOUT_ICON_SIZE)');
+    expect(characterSelectSource).toContain('this.logoutIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(characterSelectSource).toContain("this.logoutText = this.add.text(42, 20, '로그아웃'");
+    expect(characterSelectSource).toContain("this.logoutText = this.add.text(20, 20, '← 로그아웃'");
     expect(characterSelectSource).toContain('this._addExistingCharacterAvatar(char.classId, -210, 0, classColor)');
     expect(characterSelectSource).toContain("setName(`character_select_existing_avatar_${classId}`)");
     expect(characterSelectSource).toContain('avatar.setDisplaySize(28, 42)');
@@ -1206,6 +1346,10 @@ describe('UI frame runtime images', () => {
     expect(characterSelectSource).toContain('nameInputFrame');
     expect(characterSelectSource).toContain('actionButtonFrame');
     expect(characterSelectSource).toContain('existingCharacterAvatar');
+    expect(characterSelectSource).toContain('logoutIcon: {');
+    expect(characterSelectSource).toContain('iconId: CHARACTER_SELECT_LOGOUT_ICON_ID');
+    expect(characterSelectSource).toContain("legacyGlyphPresent: logoutLabel.includes('←')");
+    expect(characterSelectSource).toContain('missingLogoutIconKeys: this.missingLogoutIconKeys');
     expect(characterSelectSource).toContain('missingExistingAvatarKeys');
     expect(characterSelectSource).toContain('fallbackExistingAvatarClassIds');
     expect(characterSelectSource).toContain('expectedCount: expectedNameInputFrameCount');
@@ -1324,18 +1468,36 @@ describe('UI frame runtime images', () => {
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
 
     expect(loadingSceneSource).toContain('LOADING_UI_FRAME_TEXTURES');
+    expect(loadingSceneSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest'");
+    expect(loadingSceneSource).toContain("const LOADING_TIP_ICON_ID = 'skill_mw_bolt'");
+    expect(loadingSceneSource).toContain('const LOADING_TIP_ICON_RESOURCE = getSpriteResourceForSkillIcon(LOADING_TIP_ICON_ID)');
+    expect(loadingSceneSource).toContain('const LOADING_TIP_ICON_SIZE = 18');
+    expect(loadingSceneSource).toContain('private tipIcon: Phaser.GameObjects.Image | null = null');
+    expect(loadingSceneSource).toContain('private tipIconFallbackRendered = false');
+    expect(loadingSceneSource).toContain('private missingTipIconKeys: string[] = []');
     expect(loadingSceneSource).toContain("key: 'ui_frame_UI-HUD-005-DEF'");
     expect(loadingSceneSource).toContain("path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png'");
     expect(loadingSceneSource).toContain("key: 'ui_frame_UI-BTN-005-DEF'");
     expect(loadingSceneSource).toContain("path: 'assets/generated/ui/frames/UI-BTN-005-DEF.png'");
     expect(loadingSceneSource).toContain('this.load.image(texture.key, texture.path)');
+    expect(loadingSceneSource).toContain('this.load.image(LOADING_TIP_ICON_RESOURCE.key, LOADING_TIP_ICON_RESOURCE.path)');
     expect(loadingSceneSource).toContain('this._addLoadingFrame(width / 2, height * 0.54, 720, 620, LOADING_UI_FRAME_TEXTURES.panel)');
     expect(loadingSceneSource).toContain('this._addLoadingFrame(barX + barW / 2, barY, barW + 34, barH + 26, LOADING_UI_FRAME_TEXTURES.progressTrack)');
+    expect(loadingSceneSource).toContain('this._addLoadingTipIcon(width / 2 - 270, tipY)');
+    expect(loadingSceneSource).toContain("setName('loading_tip_icon')");
+    expect(loadingSceneSource).toContain('this.tipIcon.setDisplaySize(LOADING_TIP_ICON_SIZE, LOADING_TIP_ICON_SIZE)');
+    expect(loadingSceneSource).toContain('this.tipIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
     expect(loadingSceneSource).toContain('this.add.image(x, y, texture.key)');
     expect(loadingSceneSource).toContain('setDisplaySize(width, height)');
     expect(loadingSceneSource).toContain('Aseprite loading UI frame 로드 실패 시에만 사용하는 안전 fallback');
+    expect(loadingSceneSource).toContain('this.tipText?.setText(this.tipIcon?.active === true ? tip : `💡 ${tip}`)');
+    expect(loadingSceneSource).toContain('tipIcon: {');
+    expect(loadingSceneSource).toContain('iconId: LOADING_TIP_ICON_ID');
+    expect(loadingSceneSource).toContain('legacyGlyphPresent: tipLabel.includes(\'💡\')');
+    expect(loadingSceneSource).toContain('missingTipIconKeys: this.missingTipIconKeys');
     expect(loadingSceneSource).toContain('qaHold?: boolean');
     expect(loadingSceneSource).toContain('this.sceneData.qaHold === true');
+    expect(loadingSceneSource).not.toContain('this.tipText?.setText(`💡 ${tip}`)');
     expect(mainSource).toContain("if (debugScene === 'loading')");
     expect(mainSource).toContain("phaserGame.scene.start('LoadingScene'");
     expect(mainSource).toContain('qaHold: true');

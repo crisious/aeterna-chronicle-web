@@ -11,6 +11,7 @@
 
 import * as Phaser from 'phaser';
 import { SceneManager } from './SceneManager';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 import { networkManager, CharacterData } from '../network/NetworkManager';
 
 // ── 클래스 정의 (로컬 폴백) ─────────────────────────────────
@@ -90,6 +91,9 @@ const CHARACTER_SELECT_UI_FRAME_TEXTURES = {
 const CHARACTER_SELECT_EXPECTED_NAME_INPUT_FRAME_COUNT = 1;
 const CHARACTER_SELECT_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 1;
 const CHARACTER_SELECT_EXPECTED_EXISTING_AVATAR_COUNT = 1;
+const CHARACTER_SELECT_LOGOUT_ICON_ID = 'skill_tg_reverse';
+const CHARACTER_SELECT_LOGOUT_ICON_RESOURCE = getSpriteResourceForSkillIcon(CHARACTER_SELECT_LOGOUT_ICON_ID);
+const CHARACTER_SELECT_LOGOUT_ICON_SIZE = 16;
 
 const CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES = {
   ether_knight: {
@@ -142,6 +146,10 @@ export class CharacterSelectScene extends Phaser.Scene {
   private existingCharacterAvatars: Phaser.GameObjects.Image[] = [];
   private missingExistingAvatarKeys: string[] = [];
   private fallbackExistingAvatarClassIds: string[] = [];
+  private logoutIcon: Phaser.GameObjects.Image | null = null;
+  private logoutText: Phaser.GameObjects.Text | null = null;
+  private logoutIconFallbackRendered = false;
+  private missingLogoutIconKeys: string[] = [];
   private errorText!: Phaser.GameObjects.Text;
   private previewContainer!: Phaser.GameObjects.Container;
 
@@ -180,6 +188,10 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.existingCharacterAvatars = [];
     this.missingExistingAvatarKeys = [];
     this.fallbackExistingAvatarClassIds = [];
+    this.logoutIcon = null;
+    this.logoutText = null;
+    this.logoutIconFallbackRendered = false;
+    this.missingLogoutIconKeys = [];
   }
 
   preload(): void {
@@ -200,6 +212,9 @@ export class CharacterSelectScene extends Phaser.Scene {
         this.load.image(texture.key, texture.path);
       }
     }
+    if (CHARACTER_SELECT_LOGOUT_ICON_RESOURCE && !this.textures.exists(CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.key)) {
+      this.load.image(CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.key, CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.path);
+    }
 
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
       console.warn(`[CharSelect] 이미지 로드 실패: ${file.key}`);
@@ -213,6 +228,10 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.existingCharacterAvatars = [];
     this.missingExistingAvatarKeys = [];
     this.fallbackExistingAvatarClassIds = [];
+    this.logoutIcon = null;
+    this.logoutText = null;
+    this.logoutIconFallbackRendered = false;
+    this.missingLogoutIconKeys = [];
 
     // 타이틀
     this.add.text(width / 2, 40, '캐릭터 선택', {
@@ -233,14 +252,9 @@ export class CharacterSelectScene extends Phaser.Scene {
       this._showCreateMode(width, height);
     }
 
-    // 뒤로가기 버튼
-    this.add.text(20, 20, '← 로그아웃', {
-      fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-    }).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        networkManager.logout();
-        this.scene.start('MainMenuScene');
-      });
+    this._addLogoutButton();
+
+    this._writeCharacterSelectFrameQaProbe();
 
     SceneManager.fadeIn(this, 300);
   }
@@ -631,6 +645,48 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setName(`character_select_existing_avatar_fallback_${classId}`);
   }
 
+  private _addLogoutButton(): void {
+    const onLogout = () => {
+      networkManager.logout();
+      this.scene.start('MainMenuScene');
+    };
+
+    if (CHARACTER_SELECT_LOGOUT_ICON_RESOURCE && this.textures.exists(CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.key)) {
+      this.logoutIcon = this.add.image(28, 28, CHARACTER_SELECT_LOGOUT_ICON_RESOURCE.key)
+        .setName('character_select_logout_icon')
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true });
+      this.logoutIcon.setDisplaySize(CHARACTER_SELECT_LOGOUT_ICON_SIZE, CHARACTER_SELECT_LOGOUT_ICON_SIZE);
+      this.logoutIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+
+      this.logoutText = this.add.text(42, 20, '로그아웃', {
+        fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+      }).setInteractive({ useHandCursor: true });
+
+      const setHover = (isHover: boolean) => {
+        this.logoutText?.setColor(isHover ? '#ffffff' : '#888888');
+        this.logoutIcon?.setAlpha(isHover ? 1 : 0.86);
+      };
+
+      this.logoutIcon.on('pointerdown', onLogout);
+      this.logoutText.on('pointerdown', onLogout);
+      this.logoutIcon.on('pointerover', () => setHover(true));
+      this.logoutText.on('pointerover', () => setHover(true));
+      this.logoutIcon.on('pointerout', () => setHover(false));
+      this.logoutText.on('pointerout', () => setHover(false));
+      this.logoutIconFallbackRendered = false;
+      return;
+    }
+
+    this.logoutIcon = null;
+    this.logoutIconFallbackRendered = true;
+    this.missingLogoutIconKeys.push(CHARACTER_SELECT_LOGOUT_ICON_RESOURCE?.key ?? CHARACTER_SELECT_LOGOUT_ICON_ID);
+    this.logoutText = this.add.text(20, 20, '← 로그아웃', {
+      fontSize: '14px', color: '#888888', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setInteractive({ useHandCursor: true })
+      .on('pointerdown', onLogout);
+  }
+
   private _getClassCardHitBox(card: Phaser.GameObjects.Container): Phaser.GameObjects.Rectangle {
     return card.getByName('classCardHitBox') as Phaser.GameObjects.Rectangle;
   }
@@ -820,15 +876,19 @@ export class CharacterSelectScene extends Phaser.Scene {
     const missingExistingAvatarKeys = hasExpectedExistingAvatars
       ? this.missingExistingAvatarKeys
       : Array.from(new Set([...this.missingExistingAvatarKeys, ...expectedExistingAvatarKeys]));
+    const logoutLabel = this.logoutText?.text ?? '';
     const visibleCanvasCount = Array.from(document.querySelectorAll('canvas'))
       .filter((canvas) => canvas instanceof HTMLCanvasElement && canvas.offsetWidth > 0 && canvas.offsetHeight > 0)
       .length;
 
     document.body.dataset.aeternaCharacterSelectFrameQa = JSON.stringify({
-      status: missingFrameKeys.length === 0 && missingExistingAvatarKeys.length === 0 ? 'ready' : 'missing-frame',
+      status: missingFrameKeys.length === 0 && missingExistingAvatarKeys.length === 0 && this.missingLogoutIconKeys.length === 0
+        ? 'ready'
+        : 'missing-frame',
       mode: this.mode,
       missingFrameKeys,
       missingExistingAvatarKeys,
+      missingLogoutIconKeys: this.missingLogoutIconKeys,
       nameInputFrame: {
         key: nameInputFrame.key,
         path: nameInputFrame.path,
@@ -867,6 +927,17 @@ export class CharacterSelectScene extends Phaser.Scene {
           visible: avatar.visible,
         })),
         fallbackExistingAvatarClassIds: this.fallbackExistingAvatarClassIds,
+      },
+      logoutIcon: {
+        iconId: CHARACTER_SELECT_LOGOUT_ICON_ID,
+        expectedKey: CHARACTER_SELECT_LOGOUT_ICON_RESOURCE?.key ?? null,
+        renderedCount: this.logoutIcon?.active === true ? 1 : 0,
+        renderedKey: this.logoutIcon?.active === true ? this.logoutIcon.texture.key : null,
+        displayWidth: this.logoutIcon?.active === true ? this.logoutIcon.displayWidth : 0,
+        displayHeight: this.logoutIcon?.active === true ? this.logoutIcon.displayHeight : 0,
+        fallbackRendered: this.logoutIconFallbackRendered,
+        legacyGlyphPresent: logoutLabel.includes('←'),
+        label: logoutLabel,
       },
       selectedClassId: this.selectedClass?.id ?? null,
       errorText: this.errorText?.text ?? '',

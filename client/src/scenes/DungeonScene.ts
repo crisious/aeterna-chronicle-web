@@ -47,7 +47,7 @@ interface DungeonResumeData {
   characterClass?: string;
   victory?: boolean;
   allyState?: Array<{ hp: number; mp: number }>;
-  dungeonFrameQa?: 'ready' | 'clear';
+  dungeonFrameQa?: 'ready' | 'clear' | 'boss';
 }
 
 type DungeonPhase = 'ready' | 'fighting' | 'boss_warning' | 'boss' | 'clear' | 'timeout' | 'defeat';
@@ -178,6 +178,13 @@ const DUNGEON_UI_FRAME_TEXTURES = {
 const DUNGEON_ACTION_BUTTON_ICON_ID = 'skill_ek_slash';
 const DUNGEON_TITLE_ICON_ID = 'skill_ek_slash';
 const DUNGEON_CLEAR_TITLE_ICON_ID = 'skill_ek_ultimate';
+const DUNGEON_BOSS_WARNING_ICON_ID = 'skill_ek_explode';
+const DUNGEON_NAV_ACTION_ICON_IDS = {
+  exit: 'skill_tg_reverse',
+  return: 'skill_tg_reverse',
+} as const;
+
+type DungeonNavActionId = keyof typeof DUNGEON_NAV_ACTION_ICON_IDS;
 
 // ── DungeonScene ────────────────────────────────────────────
 
@@ -219,6 +226,15 @@ export class DungeonScene extends Phaser.Scene {
   private dungeonClearTitleIcon?: Phaser.GameObjects.Image;
   private dungeonClearTitleIconFallbackRendered = false;
   private dungeonClearTitleText?: Phaser.GameObjects.Text;
+  private dungeonExitActionIcon?: Phaser.GameObjects.Image;
+  private dungeonExitActionIconFallbackRendered = false;
+  private dungeonExitActionLabel?: Phaser.GameObjects.Text;
+  private dungeonReturnActionIcon?: Phaser.GameObjects.Image;
+  private dungeonReturnActionIconFallbackRendered = false;
+  private dungeonReturnActionLabel?: Phaser.GameObjects.Text;
+  private dungeonBossWarningIcon?: Phaser.GameObjects.Image;
+  private dungeonBossWarningIconFallbackRendered = false;
+  private dungeonBossWarningText?: Phaser.GameObjects.Text;
   private enemyPreviews: Phaser.GameObjects.GameObject[] = [];
   private dungeonFrameQaRenderedKeys = new Set<string>();
 
@@ -279,6 +295,22 @@ export class DungeonScene extends Phaser.Scene {
     if (clearTitleIconResource && !isClearTitleIconQueuedByExisting && !this.textures.exists(clearTitleIconResource.key)) {
       this.load.image(clearTitleIconResource.key, clearTitleIconResource.path);
     }
+    const bossWarningIconResource = getSpriteResourceForSkillIcon(DUNGEON_BOSS_WARNING_ICON_ID);
+    if (bossWarningIconResource && !this.textures.exists(bossWarningIconResource.key)) {
+      this.load.image(bossWarningIconResource.key, bossWarningIconResource.path);
+    }
+    const queuedNavActionIconKeys = new Set<string>();
+    for (const iconId of Object.values(DUNGEON_NAV_ACTION_ICON_IDS)) {
+      const navActionIconResource = getSpriteResourceForSkillIcon(iconId);
+      if (
+        navActionIconResource
+        && !this.textures.exists(navActionIconResource.key)
+        && !queuedNavActionIconKeys.has(navActionIconResource.key)
+      ) {
+        this.load.image(navActionIconResource.key, navActionIconResource.path);
+        queuedNavActionIconKeys.add(navActionIconResource.key);
+      }
+    }
   }
 
   create(): void {
@@ -301,6 +333,15 @@ export class DungeonScene extends Phaser.Scene {
     this.dungeonClearTitleIcon = undefined;
     this.dungeonClearTitleIconFallbackRendered = false;
     this.dungeonClearTitleText = undefined;
+    this.dungeonExitActionIcon = undefined;
+    this.dungeonExitActionIconFallbackRendered = false;
+    this.dungeonExitActionLabel = undefined;
+    this.dungeonReturnActionIcon = undefined;
+    this.dungeonReturnActionIconFallbackRendered = false;
+    this.dungeonReturnActionLabel = undefined;
+    this.dungeonBossWarningIcon = undefined;
+    this.dungeonBossWarningIconFallbackRendered = false;
+    this.dungeonBossWarningText = undefined;
     this.dungeonFrameQaRenderedKeys.clear();
 
     // 복귀 데이터 적용
@@ -375,13 +416,20 @@ export class DungeonScene extends Phaser.Scene {
     this._createPlayerStatusBars(width, height);
 
     // ── 뒤로가기 ──
-    this.add.text(20, height - 30, '← 퇴장 (ESC)', {
+    const exitDungeon = () => this.scene.start('LobbyScene');
+    this.dungeonExitActionIcon = this._addDungeonNavActionIcon(28, height - 24, 'exit');
+    this.dungeonExitActionIcon
+      ?.setInteractive({ useHandCursor: true })
+      .on('pointerdown', exitDungeon);
+
+    const exitLabel = this.dungeonExitActionIcon ? '퇴장 (ESC)' : '← 퇴장 (ESC)';
+    this.dungeonExitActionLabel = this.add.text(this.dungeonExitActionIcon ? 42 : 20, height - 30, exitLabel, {
       fontSize: '13px',
       color: '#888888',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
     })
       .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.scene.start('LobbyScene'));
+      .on('pointerdown', exitDungeon);
 
     // FINDING-A4 ext6: ESC 로 던전 퇴장 (WCAG 2.1.1)
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
@@ -398,6 +446,11 @@ export class DungeonScene extends Phaser.Scene {
       this.phase = 'clear';
       this._showVictory();
       this._writeDungeonFrameQaProbe();
+    } else if (!isResume && this._getDungeonFrameQaMode() === 'boss') {
+      this.currentWave = this.config.bossWave - 1;
+      this._showBossWarning(() => {
+        this.phase = 'boss';
+      });
     } else if (isResume) {
       if (this._sceneData.victory) {
         this._onBattleVictory();
@@ -927,14 +980,24 @@ export class DungeonScene extends Phaser.Scene {
     }).setOrigin(0.5).setAlpha(0);
 
     // 복귀 버튼
-    const returnBtn = this.add.text(width / 2, height / 2 + 100, '[ 로비로 복귀 ]', {
+    const returnToLobby = () => {
+      playSfx(this, UI_SFX.CLICK, 0.3);
+      this.scene.start('LobbyScene');
+    };
+    this.dungeonReturnActionIcon = this._addDungeonNavActionIcon(width / 2 - 64, height / 2 + 100, 'return');
+    this.dungeonReturnActionIcon
+      ?.setAlpha(0)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', returnToLobby);
+
+    const returnLabel = this.dungeonReturnActionIcon ? '로비로 복귀' : '[ 로비로 복귀 ]';
+    const returnLabelX = this.dungeonReturnActionIcon ? width / 2 + 12 : width / 2;
+    const returnBtn = this.add.text(returnLabelX, height / 2 + 100, returnLabel, {
       fontSize: '16px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#88ccff',
       backgroundColor: '#223355', padding: { x: 20, y: 10 },
     }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => {
-        playSfx(this, UI_SFX.CLICK, 0.3);
-        this.scene.start('LobbyScene');
-      });
+      .on('pointerdown', returnToLobby);
+    this.dungeonReturnActionLabel = returnBtn;
 
     // 연출 시퀀스
     this.tweens.add({
@@ -960,7 +1023,9 @@ export class DungeonScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: returnBtn,
+      targets: [returnBtn, this.dungeonReturnActionIcon].filter((
+        target,
+      ): target is Phaser.GameObjects.Text | Phaser.GameObjects.Image => Boolean(target)),
       alpha: 1,
       duration: 300,
       delay: 800,
@@ -970,12 +1035,8 @@ export class DungeonScene extends Phaser.Scene {
     // ESC 는 이미 _create() 의 globally 등록 — 여기엔 Enter/Space 만.
     // 1100ms 지연(연출 끝나고) 후 listener once 등록.
     this.time.delayedCall(1100, () => {
-      const onReturnKey = () => {
-        playSfx(this, UI_SFX.CLICK, 0.3);
-        this.scene.start('LobbyScene');
-      };
-      this.input.keyboard?.once('keydown-ENTER', onReturnKey);
-      this.input.keyboard?.once('keydown-SPACE', onReturnKey);
+      this.input.keyboard?.once('keydown-ENTER', returnToLobby);
+      this.input.keyboard?.once('keydown-SPACE', returnToLobby);
     });
 
     this._writeDungeonFrameQaProbe();
@@ -1021,7 +1082,22 @@ export class DungeonScene extends Phaser.Scene {
     const flash = this.add.rectangle(0, 0, width, height, 0xff0000, 0);
     container.add(flash);
 
-    const text = this.add.text(0, 0, '⚠ WARNING ⚠\n보스 등장!', {
+    const bossWarningIconResource = getSpriteResourceForSkillIcon(DUNGEON_BOSS_WARNING_ICON_ID);
+    const hasBossWarningIcon = Boolean(bossWarningIconResource && this.textures.exists(bossWarningIconResource.key));
+    if (hasBossWarningIcon && bossWarningIconResource) {
+      this.dungeonBossWarningIcon = this.add.image(-116, 0, bossWarningIconResource.key)
+        .setName('dungeon_boss_warning_icon')
+        .setAlpha(0);
+      this.dungeonBossWarningIcon.setDisplaySize(30, 30);
+      this.dungeonBossWarningIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      container.add(this.dungeonBossWarningIcon);
+    } else {
+      this.dungeonBossWarningIcon = undefined;
+      this.dungeonBossWarningIconFallbackRendered = true;
+    }
+
+    const warningLabel = hasBossWarningIcon ? 'WARNING\n보스 등장!' : '⚠ WARNING ⚠\n보스 등장!';
+    const text = this.add.text(hasBossWarningIcon ? 18 : 0, 0, warningLabel, {
       fontSize: '36px',
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
       color: '#ff2222',
@@ -1030,6 +1106,7 @@ export class DungeonScene extends Phaser.Scene {
       strokeThickness: 4,
     }).setOrigin(0.5).setAlpha(0);
     container.add(text);
+    this.dungeonBossWarningText = text;
 
     // 플래시 + 텍스트 애니메이션
     this.tweens.add({
@@ -1044,7 +1121,9 @@ export class DungeonScene extends Phaser.Scene {
     playSfx(this, UI_SFX.NOTIFICATION, 0.7);
 
     this.tweens.add({
-      targets: text,
+      targets: [text, this.dungeonBossWarningIcon].filter((
+        target,
+      ): target is Phaser.GameObjects.Text | Phaser.GameObjects.Image => Boolean(target)),
       alpha: 1,
       scaleX: 1.1,
       scaleY: 1.1,
@@ -1056,6 +1135,7 @@ export class DungeonScene extends Phaser.Scene {
         onComplete();
       },
     });
+    this._writeDungeonFrameQaProbe();
   }
 
   // ── 타이머 ───────────────────────────────────────────────
@@ -1137,8 +1217,33 @@ export class DungeonScene extends Phaser.Scene {
     return { primary: fallback };
   }
 
-  private _getDungeonFrameQaMode(): 'ready' | 'clear' | undefined {
-    return this._sceneData.dungeonFrameQa === 'ready' || this._sceneData.dungeonFrameQa === 'clear'
+  private _addDungeonNavActionIcon(
+    x: number,
+    y: number,
+    actionId: DungeonNavActionId,
+  ): Phaser.GameObjects.Image | undefined {
+    const iconResource = getSpriteResourceForSkillIcon(DUNGEON_NAV_ACTION_ICON_IDS[actionId]);
+    if (!iconResource || !this.textures.exists(iconResource.key)) {
+      if (actionId === 'exit') {
+        this.dungeonExitActionIconFallbackRendered = true;
+      } else {
+        this.dungeonReturnActionIconFallbackRendered = true;
+      }
+      return undefined;
+    }
+
+    const icon = this.add.image(x, y, iconResource.key)
+      .setName(`dungeon_${actionId}_action_icon`);
+    const displaySize = actionId === 'return' ? 18 : 16;
+    icon.setDisplaySize(displaySize, displaySize);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return icon;
+  }
+
+  private _getDungeonFrameQaMode(): 'ready' | 'clear' | 'boss' | undefined {
+    return this._sceneData.dungeonFrameQa === 'ready'
+      || this._sceneData.dungeonFrameQa === 'clear'
+      || this._sceneData.dungeonFrameQa === 'boss'
       ? this._sceneData.dungeonFrameQa
       : undefined;
   }
@@ -1149,7 +1254,9 @@ export class DungeonScene extends Phaser.Scene {
 
     const expectedTextures = mode === 'clear'
       ? [DUNGEON_UI_FRAME_TEXTURES.statusPanel, DUNGEON_UI_FRAME_TEXTURES.rewardPanel]
-      : [DUNGEON_UI_FRAME_TEXTURES.statusPanel, DUNGEON_UI_FRAME_TEXTURES.actionButton];
+      : mode === 'boss'
+        ? [DUNGEON_UI_FRAME_TEXTURES.statusPanel]
+        : [DUNGEON_UI_FRAME_TEXTURES.statusPanel, DUNGEON_UI_FRAME_TEXTURES.actionButton];
     const renderedFrameKeys = expectedTextures
       .map((texture) => texture.key)
       .filter((key) => this.dungeonFrameQaRenderedKeys.has(key));
@@ -1171,13 +1278,39 @@ export class DungeonScene extends Phaser.Scene {
       ? [clearTitleIconResource?.key ?? DUNGEON_CLEAR_TITLE_ICON_ID]
       : [];
     const clearTitleLegacyGlyphPresent = this.dungeonClearTitleText?.text.includes('🏆') ?? false;
+    const exitActionIconResource = getSpriteResourceForSkillIcon(DUNGEON_NAV_ACTION_ICON_IDS.exit);
+    const missingExitActionIconKeys = !exitActionIconResource
+      || !this.textures.exists(exitActionIconResource.key)
+      || this.dungeonExitActionIcon === undefined
+      ? [exitActionIconResource?.key ?? DUNGEON_NAV_ACTION_ICON_IDS.exit]
+      : [];
+    const returnActionIconResource = getSpriteResourceForSkillIcon(DUNGEON_NAV_ACTION_ICON_IDS.return);
+    const missingReturnActionIconKeys = mode === 'clear'
+      && (!returnActionIconResource || !this.textures.exists(returnActionIconResource.key) || this.dungeonReturnActionIcon === undefined)
+      ? [returnActionIconResource?.key ?? DUNGEON_NAV_ACTION_ICON_IDS.return]
+      : [];
+    const exitActionLegacyGlyphPresent = this.dungeonExitActionLabel?.text.includes('←') ?? false;
+    const returnActionLabelText = this.dungeonReturnActionLabel?.text ?? '';
+    const returnActionLegacyGlyphPresent = returnActionLabelText.includes('[') || returnActionLabelText.includes(']');
+    const bossWarningIconResource = getSpriteResourceForSkillIcon(DUNGEON_BOSS_WARNING_ICON_ID);
+    const missingBossWarningIconKeys = mode === 'boss'
+      && (!bossWarningIconResource || !this.textures.exists(bossWarningIconResource.key) || this.dungeonBossWarningIcon === undefined)
+      ? [bossWarningIconResource?.key ?? DUNGEON_BOSS_WARNING_ICON_ID]
+      : [];
+    const bossWarningLegacyGlyphPresent = this.dungeonBossWarningText?.text.includes('⚠') ?? false;
 
     document.body.dataset.aeternaDungeonFrameQa = JSON.stringify({
       status: missingFrameKeys.length === 0
         && missingActionButtonIconKeys.length === 0
         && missingTitleIconKeys.length === 0
         && missingClearTitleIconKeys.length === 0
+        && missingExitActionIconKeys.length === 0
+        && missingReturnActionIconKeys.length === 0
+        && !exitActionLegacyGlyphPresent
+        && !(mode === 'clear' && returnActionLegacyGlyphPresent)
         && !(mode === 'clear' && clearTitleLegacyGlyphPresent)
+        && missingBossWarningIconKeys.length === 0
+        && !(mode === 'boss' && bossWarningLegacyGlyphPresent)
         ? 'ready'
         : 'missing-frame',
       mode,
@@ -1217,6 +1350,42 @@ export class DungeonScene extends Phaser.Scene {
         fallbackRendered: this.battleBtnIcon === undefined,
       },
       missingActionButtonIconKeys,
+      exitActionIcon: {
+        iconId: DUNGEON_NAV_ACTION_ICON_IDS.exit,
+        key: exitActionIconResource?.key ?? null,
+        path: exitActionIconResource?.path ?? null,
+        rendered: this.dungeonExitActionIcon !== undefined,
+        visible: this.dungeonExitActionIcon?.visible ?? false,
+        displayWidth: this.dungeonExitActionIcon?.displayWidth ?? 0,
+        displayHeight: this.dungeonExitActionIcon?.displayHeight ?? 0,
+        fallbackRendered: this.dungeonExitActionIconFallbackRendered,
+      },
+      missingExitActionIconKeys,
+      exitActionLegacyGlyphPresent,
+      returnActionIcon: {
+        iconId: DUNGEON_NAV_ACTION_ICON_IDS.return,
+        key: returnActionIconResource?.key ?? null,
+        path: returnActionIconResource?.path ?? null,
+        rendered: this.dungeonReturnActionIcon !== undefined,
+        visible: this.dungeonReturnActionIcon?.visible ?? false,
+        displayWidth: this.dungeonReturnActionIcon?.displayWidth ?? 0,
+        displayHeight: this.dungeonReturnActionIcon?.displayHeight ?? 0,
+        fallbackRendered: this.dungeonReturnActionIconFallbackRendered,
+      },
+      missingReturnActionIconKeys,
+      returnActionLegacyGlyphPresent,
+      bossWarningIcon: {
+        iconId: DUNGEON_BOSS_WARNING_ICON_ID,
+        key: bossWarningIconResource?.key ?? null,
+        path: bossWarningIconResource?.path ?? null,
+        rendered: this.dungeonBossWarningIcon !== undefined,
+        visible: this.dungeonBossWarningIcon?.visible ?? false,
+        displayWidth: this.dungeonBossWarningIcon?.displayWidth ?? 0,
+        displayHeight: this.dungeonBossWarningIcon?.displayHeight ?? 0,
+        fallbackRendered: this.dungeonBossWarningIconFallbackRendered,
+      },
+      missingBossWarningIconKeys,
+      bossWarningLegacyGlyphPresent,
     });
   }
 }

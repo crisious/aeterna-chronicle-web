@@ -13,9 +13,9 @@
  */
 
 import * as Phaser from 'phaser';
-import { EffectManager, EFFECT_FALLBACK_TEXTURES } from '../effects/EffectManager';
+import { EffectManager, EFFECT_FALLBACK_TEXTURES, preloadEffectTextIconResources } from '../effects/EffectManager';
 import { SoundManager } from '../sound/SoundManager';
-import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS } from '../ui/BattleUI';
+import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
 import { computeCritEchoDamage, computeReflectDamage, rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
 import { COMBO_MIRROR } from '../skills/comboMirror';
@@ -121,6 +121,8 @@ export interface BattleSceneData {
   battleCommandFocusIconQa?: boolean;
   /** Aseprite 마법/아이템 서브메뉴 focus icon 브라우저 QA용 */
   battleSubMenuFocusIconQa?: 'magic' | 'item';
+  /** Aseprite 콤보 팝업 icon 브라우저 QA용 */
+  battleComboPopupIconQa?: boolean;
   /** Aseprite ECHO 피해 팝업 icon 브라우저 QA용 */
   battleEchoPopupIconQa?: boolean;
   /** Aseprite 반사 피해 팝업 icon 브라우저 QA용 */
@@ -184,19 +186,33 @@ const BATTLE_SCENE_UI_FRAME_TEXTURES = {
 } as const;
 
 const BATTLE_ACTIVE_INDICATOR_ICON_ID = 'skill_mw_arrow';
+const BATTLE_TARGET_CURSOR_ICON_ID = 'skill_mw_arrow';
+const BATTLE_TARGET_CURSOR_ICON_SIZE = 24;
+const BATTLE_TARGET_PREVIEW_KILL_ICON_ID = 'curse';
+const BATTLE_TARGET_PREVIEW_KILL_ICON_SIZE = 14;
 const BATTLE_COMMAND_FOCUS_ICON_ID = 'skill_mw_arrow';
 const BATTLE_COMMAND_FOCUS_ICON_EXPECTED_COUNT = 1;
 const BATTLE_SUB_MENU_FOCUS_ICON_ID = 'skill_mw_arrow';
 const BATTLE_SUB_MENU_FOCUS_ICON_EXPECTED_COUNT = 1;
+const BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_ID = 'skill_tg_stop';
+const BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_SIZE = 14;
 const BATTLE_INTRO_ICON_ID = 'skill_ek_slash';
 const BATTLE_FIELD_AMBIENT_ICON_ID = 'shield';
 const BATTLE_FIELD_BOSS_ICON_ID = 'skill_ek_slash';
+const BATTLE_COMBO_POPUP_ICON_ID = 'skill_mw_storm';
+const BATTLE_COMBO_POPUP_ICON_SIZE = 18;
 const BATTLE_ECHO_POPUP_ICON_ID = 'skill_mw_storm';
 const BATTLE_ECHO_POPUP_ICON_SIZE = 18;
 const BATTLE_REFLECT_POPUP_ICON_ID = 'shield';
 const BATTLE_REFLECT_POPUP_ICON_SIZE = 18;
+const BATTLE_BOSS_RESIST_ICON_ID = 'shield';
+const BATTLE_BOSS_RESIST_ICON_SIZE = 16;
 const BATTLE_CRITICAL_POPUP_ICON_ID = 'skill_ek_explode';
 const BATTLE_CRITICAL_POPUP_ICON_SIZE = 20;
+const BATTLE_BOSS_TELEGRAPH_ICON_ID = 'skill_ek_explode';
+const BATTLE_BOSS_TELEGRAPH_ICON_SIZE = 30;
+const BATTLE_HP_CRITICAL_ICON_ID = 'bleed';
+const BATTLE_HP_CRITICAL_ICON_SIZE = 12;
 const BATTLE_CHAIN_LABEL_ICON_IDS = {
   chain: 'skill_mw_storm',
   max: 'skill_ek_explode',
@@ -292,7 +308,7 @@ interface UnitSprite {
   isBoss?: boolean;
   /** Phase E Part②: 보스 공격 카운터(매 3번째 = 텔레그래프 강공) + 예고 아이콘 핸들. */
   bossAtkCount?: number;
-  telegraphIcon?: Phaser.GameObjects.Text;
+  telegraphIcon?: Phaser.GameObjects.Image | Phaser.GameObjects.Text;
   /** UX(#9): 표시용 HP 보간값 — 실제 hp 로 lerp 해 바가 부드럽게 드레인(즉시 점프 방지). */
   displayedHp?: number;
   /** UX(rank13): 방어 상태. baseDefense=방어 전 원본(스냅샷 복원용), defendToken=최신 방어만 복원 유효. */
@@ -330,6 +346,7 @@ interface BattleSubMenuItem {
   focusX: number;
   focusY: number;
   icon?: Phaser.GameObjects.Image;
+  cooldownIcon?: Phaser.GameObjects.Image;
 }
 
 const COMMANDS: CommandOption[] = [
@@ -414,14 +431,16 @@ export class BattleScene extends Phaser.Scene {
   // 상태 패널
   private statusPanelContainer: Phaser.GameObjects.Container | null = null;
   private statusPanelGraphics: Phaser.GameObjects.Graphics | null = null;
-  private statusTexts: Map<string, { name: Phaser.GameObjects.Text; hp: Phaser.GameObjects.Text; mp: Phaser.GameObjects.Text; atb: Phaser.GameObjects.Graphics }> = new Map();
+  private statusTexts: Map<string, { name: Phaser.GameObjects.Text; hp: Phaser.GameObjects.Text; mp: Phaser.GameObjects.Text; atb: Phaser.GameObjects.Graphics; hpCriticalIcon?: Phaser.GameObjects.Image }> = new Map();
 
   // 타겟 선택 모드
   private targetSelectMode = false;
   private targetSelectCallback: ((target: UnitSprite) => void) | null = null;
   private targetCursor: Phaser.GameObjects.Graphics | null = null;
+  private targetCursorIcon: Phaser.GameObjects.Image | null = null;
   // UX(#12): 타겟 커서의 예상 데미지/KILL 미리보기 텍스트(확정 전 마무리 판단).
   private targetPreviewText?: Phaser.GameObjects.Text;
+  private targetPreviewKillIcon: Phaser.GameObjects.Image | null = null;
   // UX(#12-ext): 타겟 선택 진입 시점의 펜딩 스킬(있으면 미리보기를 스킬 공식으로 산정, 없으면 기본공격).
   private _previewSkill?: SkillSlot;
   private targetCandidates: UnitSprite[] = [];
@@ -486,6 +505,9 @@ export class BattleScene extends Phaser.Scene {
   private comboTechButtonIcons: Phaser.GameObjects.Image[] = [];
   private fieldAmbientIcons: Phaser.GameObjects.Image[] = [];
   private fieldAmbientIconFallbackKinds: BattleFieldAmbientIconKind[] = [];
+  private comboPopupIcons: Phaser.GameObjects.Image[] = [];
+  private comboPopupTexts: Phaser.GameObjects.Text[] = [];
+  private comboPopupIconFallbackRendered = false;
   private echoPopupIcons: Phaser.GameObjects.Image[] = [];
   private echoPopupTexts: Phaser.GameObjects.Text[] = [];
   private echoPopupIconFallbackRendered = false;
@@ -561,6 +583,8 @@ export class BattleScene extends Phaser.Scene {
     this.cmdMenuTexts = [];
     this.cmdMenuIndex = 0;
     this.targetCursor = null;
+    this.targetCursorIcon = null;
+    this.targetPreviewKillIcon = null;
     this.autoMode = false;
     this.speedMultiplier = 1;
     this.atbMode = data.atbMode ?? 'WAIT';
@@ -572,6 +596,9 @@ export class BattleScene extends Phaser.Scene {
     this.comboTechButtonIcons = [];
     this.fieldAmbientIcons = [];
     this.fieldAmbientIconFallbackKinds = [];
+    this.comboPopupIcons = [];
+    this.comboPopupTexts = [];
+    this.comboPopupIconFallbackRendered = false;
     this.echoPopupIcons = [];
     this.echoPopupTexts = [];
     this.echoPopupIconFallbackRendered = false;
@@ -687,6 +714,16 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
+    const comboPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_COMBO_POPUP_ICON_ID);
+    if (
+      comboPopupIconResource
+      && !this.textures.exists(comboPopupIconResource.key)
+      && !queuedSkillIconKeys.has(comboPopupIconResource.key)
+    ) {
+      this.load.image(comboPopupIconResource.key, comboPopupIconResource.path);
+      queuedSkillIconKeys.add(comboPopupIconResource.key);
+    }
+
     const criticalPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_CRITICAL_POPUP_ICON_ID);
     if (
       criticalPopupIconResource
@@ -695,6 +732,16 @@ export class BattleScene extends Phaser.Scene {
     ) {
       this.load.image(criticalPopupIconResource.key, criticalPopupIconResource.path);
       queuedSkillIconKeys.add(criticalPopupIconResource.key);
+    }
+
+    const bossTelegraphIconResource = getSpriteResourceForSkillIcon(BATTLE_BOSS_TELEGRAPH_ICON_ID);
+    if (
+      bossTelegraphIconResource
+      && !this.textures.exists(bossTelegraphIconResource.key)
+      && !queuedSkillIconKeys.has(bossTelegraphIconResource.key)
+    ) {
+      this.load.image(bossTelegraphIconResource.key, bossTelegraphIconResource.path);
+      queuedSkillIconKeys.add(bossTelegraphIconResource.key);
     }
 
     const activeIndicatorResource = getSpriteResourceForSkillIcon(BATTLE_ACTIVE_INDICATOR_ICON_ID);
@@ -719,6 +766,27 @@ export class BattleScene extends Phaser.Scene {
       && !this.textures.exists(subMenuFocusIconResource.key)
     ) {
       this.load.image(subMenuFocusIconResource.key, subMenuFocusIconResource.path);
+    }
+
+    const cooldownIconResource = getSpriteResourceForSkillIcon(BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_ID);
+    if (
+      cooldownIconResource
+      && !this.textures.exists(cooldownIconResource.key)
+      && !queuedSkillIconKeys.has(cooldownIconResource.key)
+    ) {
+      this.load.image(cooldownIconResource.key, cooldownIconResource.path);
+      queuedSkillIconKeys.add(cooldownIconResource.key);
+    }
+
+    const targetCursorIconResource = getSpriteResourceForSkillIcon(BATTLE_TARGET_CURSOR_ICON_ID);
+    if (
+      targetCursorIconResource
+      && targetCursorIconResource.key !== activeIndicatorResource?.key
+      && targetCursorIconResource.key !== commandFocusIconResource?.key
+      && targetCursorIconResource.key !== subMenuFocusIconResource?.key
+      && !this.textures.exists(targetCursorIconResource.key)
+    ) {
+      this.load.image(targetCursorIconResource.key, targetCursorIconResource.path);
     }
 
     const introIconResource = getSpriteResourceForSkillIcon(BATTLE_INTRO_ICON_ID);
@@ -760,6 +828,19 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
+    const queuedLogHighlightItemIconKeys = new Set<string>();
+    for (const itemIconId of Object.values(BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS)) {
+      const logHighlightItemIconResource = getItemIconResource({ itemIconId });
+      if (
+        logHighlightItemIconResource
+        && !this.textures.exists(logHighlightItemIconResource.key)
+        && !queuedLogHighlightItemIconKeys.has(logHighlightItemIconResource.key)
+      ) {
+        this.load.image(logHighlightItemIconResource.key, logHighlightItemIconResource.path);
+        queuedLogHighlightItemIconKeys.add(logHighlightItemIconResource.key);
+      }
+    }
+
     const queuedResultRewardIconKeys = new Set(queuedSkillIconKeys);
     for (const kind of Object.keys(BATTLE_RESULT_REWARD_ICON_IDS) as BattleResultRewardIconKind[]) {
       const resultRewardIconResource = getBattleResultRewardIconResource(kind);
@@ -794,6 +875,7 @@ export class BattleScene extends Phaser.Scene {
         this.load.image(texture.key, texture.path);
       }
     }
+    preloadEffectTextIconResources(this, queuedSkillIconKeys);
     preloadEnvironmentParticleTextures(this);
 
     preloadStatusIconResources(this);
@@ -1017,6 +1099,28 @@ export class BattleScene extends Phaser.Scene {
 
     // ── 타겟 커서 ──────────────────────────────────────────
     this.targetCursor = this.add.graphics().setDepth(200);
+    const targetCursorIconResource = getSpriteResourceForSkillIcon(BATTLE_TARGET_CURSOR_ICON_ID);
+    if (targetCursorIconResource && this.textures.exists(targetCursorIconResource.key)) {
+      this.targetCursorIcon = this.add.image(0, 0, targetCursorIconResource.key)
+        .setName('battle_target_cursor_icon')
+        .setOrigin(0.5)
+        .setDepth(200)
+        .setVisible(false);
+      this.targetCursorIcon.setDisplaySize(BATTLE_TARGET_CURSOR_ICON_SIZE, BATTLE_TARGET_CURSOR_ICON_SIZE);
+      this.targetCursorIcon.setAngle(90);
+      this.targetCursorIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+
+    const targetPreviewKillIconResource = getStatusIconResource(BATTLE_TARGET_PREVIEW_KILL_ICON_ID);
+    if (targetPreviewKillIconResource && this.textures.exists(targetPreviewKillIconResource.key)) {
+      this.targetPreviewKillIcon = this.add.image(0, 0, targetPreviewKillIconResource.key)
+        .setName('battle_target_preview_kill_icon')
+        .setOrigin(0.5)
+        .setDepth(8003)
+        .setVisible(false);
+      this.targetPreviewKillIcon.setDisplaySize(BATTLE_TARGET_PREVIEW_KILL_ICON_SIZE, BATTLE_TARGET_PREVIEW_KILL_ICON_SIZE);
+      this.targetPreviewKillIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
 
     // ── 페이즈 디버그 표시 ──────────────────────────────────
     this.phaseText = this.add.text(10, 10, `phase: ${this.phase}`, {
@@ -1114,6 +1218,7 @@ export class BattleScene extends Phaser.Scene {
     this._playIntro();
     this._startBattleResultFrameQa();
     this._startBattleResultLeadQa();
+    this._startBattleComboPopupIconQa();
     this._startBattleEchoPopupIconQa();
     this._startBattleReflectPopupIconQa();
     this._startBattleCriticalPopupIconQa();
@@ -1179,6 +1284,24 @@ export class BattleScene extends Phaser.Scene {
     icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.fieldAmbientIcons.push(icon);
     return icon;
+  }
+
+  private _addComboPopupIcon(x: number, y: number): Phaser.GameObjects.Image | null {
+    const comboPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_COMBO_POPUP_ICON_ID);
+    if (!comboPopupIconResource || !this.textures.exists(comboPopupIconResource.key)) {
+      this.comboPopupIconFallbackRendered = true;
+      return null;
+    }
+
+    const comboPopupIcon = this.add.image(x, y, comboPopupIconResource.key)
+      .setOrigin(0.5)
+      .setDepth(9101)
+      .setName('battle_combo_popup_icon')
+      .setAlpha(0);
+    comboPopupIcon.setDisplaySize(BATTLE_COMBO_POPUP_ICON_SIZE, BATTLE_COMBO_POPUP_ICON_SIZE);
+    comboPopupIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.comboPopupIcons.push(comboPopupIcon);
+    return comboPopupIcon;
   }
 
   private _addEchoPopupIcon(x: number, y: number): Phaser.GameObjects.Image | null {
@@ -1527,7 +1650,7 @@ export class BattleScene extends Phaser.Scene {
 
   private _startFighting(): void {
     this.phase = 'fighting';
-    this.battleUI?.addLog('⚔️ 전투 시작!');
+    this.battleUI?.addLog('전투 시작!');
     // 첫 프레임 ATB 킥: 각 유닛에 5~20 랜덤 시작값
     for (const us of this.allSprites) {
       if (!us.isDead) {
@@ -1994,17 +2117,27 @@ export class BattleScene extends Phaser.Scene {
 
   private _drawTargetCursor(): void {
     this.targetCursor?.clear();
+    this.targetCursorIcon?.setVisible(false);
+    this.targetPreviewKillIcon?.setVisible(false);
     if (!this.targetSelectMode || this.targetCandidates.length === 0) return;
 
     const target = this.targetCandidates[this.targetIndex];
-    if (!target) { this.targetPreviewText?.setVisible(false); return; }
+    if (!target) {
+      this.targetPreviewText?.setVisible(false);
+      this.targetPreviewKillIcon?.setVisible(false);
+      return;
+    }
 
-    this.targetCursor?.lineStyle(2, 0xffff00, 1);
-    this.targetCursor?.strokeTriangle(
-      target.sprite.x, target.sprite.y - 50,
-      target.sprite.x - 8, target.sprite.y - 60,
-      target.sprite.x + 8, target.sprite.y - 60,
-    );
+    if (this.targetCursorIcon?.active === true) {
+      this.targetCursorIcon.setPosition(target.sprite.x, target.sprite.y - 56).setVisible(true);
+    } else {
+      this.targetCursor?.lineStyle(2, 0xffff00, 1);
+      this.targetCursor?.strokeTriangle(
+        target.sprite.x, target.sprite.y - 50,
+        target.sprite.x - 8, target.sprite.y - 60,
+        target.sprite.x + 8, target.sprite.y - 60,
+      );
+    }
 
     // UX(#12): 적 타겟이면 예상 데미지 + KILL 미리보기(확정 전이라 실행과 무관·안전).
     // 적 HP 바(#1)와 결합해 '마무리 가능' 적이 한눈에.
@@ -2022,20 +2155,25 @@ export class BattleScene extends Phaser.Scene {
           fontSize: '11px', fontFamily: FONT_FAMILY, stroke: '#000000', strokeThickness: 3,
         }).setOrigin(0.5).setDepth(8002);
       }
+      const hasKillIcon = isKill && this.targetPreviewKillIcon?.active === true;
       this.targetPreviewText
-        .setText(isKill ? `~${expected} 💀KILL` : `~${expected}`)
+        .setText(isKill ? (hasKillIcon ? `~${expected} KILL` : `~${expected} 💀KILL`) : `~${expected}`)
         .setColor(isKill ? '#ff5555' : '#ffffff')
-        .setPosition(target.sprite.x, target.sprite.y - 72)
+        .setPosition(hasKillIcon ? target.sprite.x + 6 : target.sprite.x, target.sprite.y - 72)
         .setVisible(true);
+      this.targetPreviewKillIcon?.setPosition(target.sprite.x - 34, target.sprite.y - 72).setVisible(hasKillIcon);
     } else {
       this.targetPreviewText?.setVisible(false);
+      this.targetPreviewKillIcon?.setVisible(false);
     }
   }
 
   private _confirmTarget(target: UnitSprite): void {
     this.targetSelectMode = false;
     this.targetCursor?.clear();
+    this.targetCursorIcon?.setVisible(false);
     this.targetPreviewText?.setVisible(false); // UX(#12)
+    this.targetPreviewKillIcon?.setVisible(false);
     this._previewSkill = undefined; // UX(#12-ext)
     this.targetSelectCallback?.(target);
     this.targetSelectCallback = null;
@@ -2051,7 +2189,9 @@ export class BattleScene extends Phaser.Scene {
   private _cancelTargetSelect(): void {
     this.targetSelectMode = false;
     this.targetCursor?.clear();
+    this.targetCursorIcon?.setVisible(false);
     this.targetPreviewText?.setVisible(false); // UX(#12)
+    this.targetPreviewKillIcon?.setVisible(false);
     this._previewSkill = undefined; // UX(#12-ext)
     this.targetSelectCallback = null;
     for (const c of this.targetCandidates) {
@@ -2115,7 +2255,7 @@ export class BattleScene extends Phaser.Scene {
     if (echoDmg > 0 && target.unit.hp > 0) {
       target.unit.hp = Math.max(0, target.unit.hp - echoDmg);
       this._spawnEchoText(target.sprite.x, target.sprite.y, echoDmg);
-      this.battleUI?.addLog(`✨ ECHO! +${echoDmg}`);
+      this.battleUI?.addLog(`ECHO! +${echoDmg}`);
     }
 
     // B-S4: reflect — target 의 reflectPercent 만큼 attacker 에 반사
@@ -2123,7 +2263,7 @@ export class BattleScene extends Phaser.Scene {
     if (reflectDmg > 0 && !attacker.isDead) {
       attacker.unit.hp = Math.max(0, attacker.unit.hp - reflectDmg);
       this._spawnReflectText(attacker.sprite.x, attacker.sprite.y, reflectDmg);
-      this.battleUI?.addLog(`🛡 반사 → ${attacker.unit.name} : -${reflectDmg}`);
+      this.battleUI?.addLog(`반사 → ${attacker.unit.name} : -${reflectDmg}`);
       if (attacker.unit.hp <= 0) this._killUnit(attacker);
     }
 
@@ -2148,8 +2288,8 @@ export class BattleScene extends Phaser.Scene {
     if (target.isDefending) playSfx(this, 'sfx_combat_guard_block', 0.4);
 
     // 로그
-    const critLabel = isCritical ? ' 💥크리티컬!' : '';
-    const strongLabel = opts?.strong ? '💢강공! ' : '';
+    const critLabel = isCritical ? ' 크리티컬!' : '';
+    const strongLabel = opts?.strong ? '강공! ' : '';
     this.battleUI?.addLog(`${strongLabel}${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`);
 
     // 대상 피격 연출 (번쩍임 + 흔들림)
@@ -2171,7 +2311,7 @@ export class BattleScene extends Phaser.Scene {
     us.isDefending = true;
     const base = us.baseDefense ?? 0;
     us.unit.defense = base > 0 ? base * 2 : 10;
-    this.battleUI?.addLog(`🛡 ${us.unit.name} 방어 태세!`);
+    this.battleUI?.addLog(`${us.unit.name} 방어 태세!`);
     playSfx(this, 'sfx_combat_guard_block', 0.5);
 
     // 머리 위 방어 아이콘 — 자체 수명이 복원 타이밍과 정확히 일치(StatusEffectRenderer 는 combat:tick 의존이라
@@ -2230,11 +2370,11 @@ export class BattleScene extends Phaser.Scene {
     const skill = this.skillSlots[idx];
     if (!skill) return;
     if (skill.currentCooldown > 0) {
-      this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`);
+      this.battleUI?.addLog(`${skill.name} 쿨다운 중`);
       return;
     }
     if ((this.activeCommander.unit.mp ?? 0) < skill.mpCost) {
-      this.battleUI?.addLog(`💧 MP 부족 — ${skill.name}(MP ${skill.mpCost})`);
+      this.battleUI?.addLog(`MP 부족 — ${skill.name}(MP ${skill.mpCost})`);
       return;
     }
     this._closeCommandMenu();
@@ -2285,6 +2425,7 @@ export class BattleScene extends Phaser.Scene {
       this.battleSubMenuFocusIcon = null;
       this.battleSubMenuFocusIconFallbackRendered = true;
     }
+    const cooldownIconResource = getSpriteResourceForSkillIcon(BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_ID);
 
     if (skills.length === 0) {
       const t = this.add.text(80, 50, '보유한 마법 없음', { fontSize: '12px', color: '#888888', fontFamily: FONT_FAMILY }).setOrigin(0.5);
@@ -2296,14 +2437,15 @@ export class BattleScene extends Phaser.Scene {
         const usable = !onCd && !noMp;
         // 쿨다운 중이면 남은 초(올림)를, 아니면 MP 코스트를 표기
         const label = onCd
-          ? `${skill.name} ⏳${Math.ceil(skill.currentCooldown)}s`
+          ? `${skill.name} CD ${Math.ceil(skill.currentCooldown)}s`
           : `${skill.name} (MP:${skill.mpCost})`;
         const skillIconResource = skill.icon ? getSpriteResourceForSkillIcon(skill.icon) : undefined;
         const hasSkillIcon = Boolean(skillIconResource && this.textures.exists(skillIconResource.key));
+        const hasCooldownIcon = Boolean(onCd && cooldownIconResource && this.textures.exists(cooldownIconResource.key));
         const doSkill = (): void => {
           // 사용 불가 사유를 로그로 알림(핫키 _useSkill 과 동일 메시지 — 두 경로 일관)
-          if (onCd) { this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`); return; }
-          if (noMp) { this.battleUI?.addLog(`💧 MP 부족 — ${skill.name}(MP ${skill.mpCost})`); return; }
+          if (onCd) { this.battleUI?.addLog(`${skill.name} 쿨다운 중`); return; }
+          if (noMp) { this.battleUI?.addLog(`MP 부족 — ${skill.name}(MP ${skill.mpCost})`); return; }
           this._closeSubMenu();
           this._enterTargetSelect(this.enemySprites.filter(e => !e.isDead), (target) => {
             if (this.activeCommander) this._performSkill(this.activeCommander, target, skill);
@@ -2328,6 +2470,23 @@ export class BattleScene extends Phaser.Scene {
           container.add(skillIcon);
         }
 
+        let cooldownIcon: Phaser.GameObjects.Image | undefined;
+        if (cooldownIconResource && hasCooldownIcon) {
+          cooldownIcon = this.add.image(hasSkillIcon ? 178 : 150, 21 + i * 24, cooldownIconResource.key)
+            .setOrigin(0.5)
+            .setName(`battle_magic_submenu_cooldown_icon_${skill.skillId}`)
+            .setInteractive({ useHandCursor: true });
+          cooldownIcon.setDisplaySize(BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_SIZE, BATTLE_MAGIC_SUB_MENU_COOLDOWN_ICON_SIZE);
+          cooldownIcon.setAlpha(0.72);
+          cooldownIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          cooldownIcon.on('pointerdown', doSkill);
+          cooldownIcon.on('pointerover', () => {
+            this.subMenuIndex = i;
+            this._highlightSubMenu();
+          });
+          container.add(cooldownIcon);
+        }
+
         const t = this.add.text(hasSkillIcon ? 38 : 10, 15 + i * 24, label, {
           fontSize: '13px', fontFamily: FONT_FAMILY,
           color: usable ? '#88ccff' : '#555555',
@@ -2344,6 +2503,7 @@ export class BattleScene extends Phaser.Scene {
           focusX: hasSkillIcon ? 8 : -4,
           focusY: 21 + i * 24,
           icon: skillIcon,
+          cooldownIcon,
         });
 
         container.add(t);
@@ -2404,7 +2564,7 @@ export class BattleScene extends Phaser.Scene {
       this._enterTargetSelect(this.allySprites.filter(a => !a.isDead), (target) => {
         target.unit.hp = Math.min(target.unit.maxHp, target.unit.hp + 100);
         this._spawnDamageNumber(target.sprite.x, target.sprite.y, 100, 'heal');
-        this.battleUI?.addLog(`🧪 ${target.unit.name} HP +100 회복!`);
+        this.battleUI?.addLog(`${target.unit.name} HP +100 회복!`);
         playSfx(this, 'sfx_combat_magic_heal', 0.5);
         this._endTurn();
       });
@@ -2522,7 +2682,7 @@ export class BattleScene extends Phaser.Scene {
     if (combo) {
       comboBonus = 1 + combo.damageBonus / 100;
       this._spawnComboText(attacker.sprite.x, attacker.sprite.y - 60, combo.name, combo.damageBonus);
-      this.battleUI?.addLog(`⚡ 콤보: ${combo.name}! +${combo.damageBonus}%`);
+      this.battleUI?.addLog(`콤보: ${combo.name}! +${combo.damageBonus}%`);
       // UX(#8): ComboUI 중앙 "COMBO!" 연출 배선(이전엔 작은 _spawnComboText 팝업뿐, 354줄 ComboUI dead)
       this.comboUI?.showComboAchieved({
         comboName: combo.name,
@@ -2554,7 +2714,7 @@ export class BattleScene extends Phaser.Scene {
     playSfx(this, skill.sfxKey ?? 'sfx_combat_magic_cast', 0.6);
     playSfx(this, COMBAT_VOICE.SKILL_CAST, 0.6);
 
-    this.battleUI?.addLog(`⚡ ${skill.name} → ${target.unit.name} : ${dmg}`);
+    this.battleUI?.addLog(`스킬 발동: ${skill.name} → ${target.unit.name} : ${dmg}`);
     this.battleUI?.onSkillUsed(this.skillSlots.indexOf(skill), skill.cooldown);
 
     this._flashSprite(target);
@@ -2606,16 +2766,33 @@ export class BattleScene extends Phaser.Scene {
     });
   }
 
-  /** 예고 비주얼: ⚠ 아이콘 + 붉은 틴트 + (reduce-motion 아니면) 펄스 모션 + 경고음/로그. */
+  private _addBossTelegraphIcon(boss: UnitSprite): Phaser.GameObjects.Image | undefined {
+    const bossTelegraphIconResource = getSpriteResourceForSkillIcon(BATTLE_BOSS_TELEGRAPH_ICON_ID);
+    if (!bossTelegraphIconResource || !this.textures.exists(bossTelegraphIconResource.key)) {
+      return undefined;
+    }
+
+    const icon = this.add.image(
+      boss.sprite.x,
+      boss.sprite.y - (boss.isBoss ? 92 : 60),
+      bossTelegraphIconResource.key,
+    ).setName('battle_boss_telegraph_icon').setOrigin(0.5).setDepth(9000);
+    icon.setDisplaySize(BATTLE_BOSS_TELEGRAPH_ICON_SIZE, BATTLE_BOSS_TELEGRAPH_ICON_SIZE);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return icon;
+  }
+
+  /** 예고 비주얼: Aseprite 경고 아이콘 + 붉은 틴트 + (reduce-motion 아니면) 펄스 모션 + 경고음/로그. */
   private _showBossTelegraph(boss: UnitSprite): void {
     if (this._canTint(boss.sprite)) boss.sprite.setTint(0xff5533);
-    const icon = this.add.text(boss.sprite.x, boss.sprite.y - (boss.isBoss ? 92 : 60), '⚠', {
-      fontSize: '40px',
-      fontFamily: FONT_FAMILY,
-      color: '#ff4422',
-    }).setOrigin(0.5).setDepth(9000);
+    const icon = this._addBossTelegraphIcon(boss)
+      ?? this.add.text(boss.sprite.x, boss.sprite.y - (boss.isBoss ? 92 : 60), '⚠', {
+        fontSize: '40px',
+        fontFamily: FONT_FAMILY,
+        color: '#ff4422',
+      }).setOrigin(0.5).setDepth(9000);
     boss.telegraphIcon = icon;
-    this.battleUI?.addLog(`💢 ${boss.unit.name} 강공 준비!`);
+    this.battleUI?.addLog(`${boss.unit.name} 강공 준비!`);
     playSfx(this, 'sfx_ui_error', 0.5);
     // 모션은 reduce-motion(=screen shake 설정) 게이트. 색·아이콘·소리는 항상(색맹 대응).
     if (isScreenShakeEnabled()) {
@@ -2703,7 +2880,7 @@ export class BattleScene extends Phaser.Scene {
       // UX(rank5): ESC = 이 턴 대기/넘김(atb 리셋→재충전). 형제 분기(타겟/서브메뉴)는 ESC 를 처리하는데
       //   커맨드 메뉴만 누락이라 진입 후 빠져나갈 수 없었다(WAIT 모드에서 강제 커밋). _endTurn 재사용.
       if (this.escKey && Phaser.Input.Keyboard.JustDown(this.escKey)) {
-        this.battleUI?.addLog(`⏭ ${this.activeCommander.unit.name} 대기`);
+        this.battleUI?.addLog(`${this.activeCommander.unit.name} 대기`);
         this._endTurn();
       }
     }
@@ -2742,14 +2919,26 @@ export class BattleScene extends Phaser.Scene {
 
   private _spawnComboText(x: number, y: number, name: string, bonus: number): void {
     // SSOT wiring: combo popup 색은 SCENARIO_COMBAT_RESULT_LABELS 단일 출처
-    const text = this.add.text(x, y, `⚡ ${name} +${bonus}%`, {
+    const comboPopupIcon = this._addComboPopupIcon(x - 54, y);
+    const comboPopupLabel = comboPopupIcon ? `${name} +${bonus}%` : `⚡ ${name} +${bonus}%`;
+    const text = this.add.text(comboPopupIcon ? x + 10 : x, y, comboPopupLabel, {
       fontSize: '18px',
       fontFamily: FONT_FAMILY,
       color: getCombatPopupColor('combo'),
       stroke: '#000000',
       strokeThickness: 4,
       fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(9100).setAlpha(0).setScale(0.6);
+    }).setOrigin(0.5).setDepth(9100).setAlpha(0).setScale(0.6).setName('battle_combo_popup_text');
+    this.comboPopupTexts.push(text);
+
+    if (comboPopupIcon) {
+      this.tweens.add({
+        targets: comboPopupIcon,
+        alpha: 1,
+        duration: 300,
+      });
+    }
+
     this.tweens.add({
       targets: text,
       scale: 1.2,
@@ -2757,13 +2946,16 @@ export class BattleScene extends Phaser.Scene {
       duration: 300,
       ease: 'Back.easeOut',
       onComplete: () => {
+        const fadeTargets: Array<Phaser.GameObjects.Image | Phaser.GameObjects.Text> = comboPopupIcon
+          ? [text, comboPopupIcon]
+          : [text];
         this.tweens.add({
-          targets: text,
+          targets: fadeTargets,
           y: y - 50,
           alpha: 0,
           duration: 800,
           delay: 600,
-          onComplete: () => text.destroy(),
+          onComplete: () => fadeTargets.forEach((target) => target.destroy()),
         });
       },
     });
@@ -3087,7 +3279,7 @@ export class BattleScene extends Phaser.Scene {
 
   private _killUnit(us: UnitSprite): void {
     us.isDead = true; // 전투 종료 판정은 이 플래그로 즉시 — 아래 트윈은 표시뿐이라 로직 무영향
-    this.battleUI?.addLog(`💀 ${us.unit.name} 쓰러짐!`);
+    this.battleUI?.addLog(`${us.unit.name} 쓰러짐!`);
     playSfx(this, us.isAlly ? COMBAT_VOICE.DEATH : 'sfx_combat_enemy_death', us.isAlly ? 0.7 : 0.5);
 
     // UX(#5): 사망 연출 트윈(이전엔 setAlpha(0.2) 즉시 — 처치 피드백 약함). 깜빡임/shake 없이 mild.
@@ -3410,7 +3602,21 @@ export class BattleScene extends Phaser.Scene {
       });
       container.add(nameText);
 
-      const hpText = this.add.text(160, y + 2, `HP ${us.unit.hp}/${us.unit.maxHp}`, {
+      const hpCriticalIconResource = getStatusIconResource(BATTLE_HP_CRITICAL_ICON_ID);
+      const hpCriticalIcon = hpCriticalIconResource && this.textures.exists(hpCriticalIconResource.key)
+        ? this.add.image(160, y + 8, hpCriticalIconResource.key)
+          .setName(`battle_hp_critical_icon_${us.unit.id}`)
+          .setOrigin(0.5)
+          .setVisible(false)
+        : undefined;
+      if (hpCriticalIcon) {
+        hpCriticalIcon.setDisplaySize(BATTLE_HP_CRITICAL_ICON_SIZE, BATTLE_HP_CRITICAL_ICON_SIZE);
+        hpCriticalIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        container.add(hpCriticalIcon);
+      }
+
+      const hpTextX = hpCriticalIcon ? 176 : 160;
+      const hpText = this.add.text(hpTextX, y + 2, `HP ${us.unit.hp}/${us.unit.maxHp}`, {
         fontSize: '10px', fontFamily: FONT_FAMILY, color: '#ffcc44',
       });
       container.add(hpText);
@@ -3429,6 +3635,7 @@ export class BattleScene extends Phaser.Scene {
         hp: hpText,
         mp: mpText,
         atb: atbGfx,
+        hpCriticalIcon,
       });
     });
 
@@ -3450,8 +3657,11 @@ export class BattleScene extends Phaser.Scene {
       // HP/MP 텍스트 업데이트 (숫자는 실제 hp 로 즉시 — FF식 '숫자는 점프, 바는 드레인')
       const hpRatio = us.unit.hp / us.unit.maxHp;
       const hpCritical = hpRatio < 0.25;
-      // UX(rank7): 위급(<25%)을 색상만으로 표시하면 색약 사용자가 구분 불가 → ⚠ 접두로 색-독립 단서.
-      entry.hp.setText(`${hpCritical ? '⚠ ' : ''}HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`);
+      const hasHpCriticalIcon = entry.hpCriticalIcon?.active === true;
+      entry.hpCriticalIcon?.setVisible(hpCritical);
+      const hpLabel = `HP ${Math.max(0, us.unit.hp)}/${us.unit.maxHp}`;
+      // UX(rank7): 위급(<25%)은 Aseprite 아이콘을 우선 사용하고, 누락 시 텍스트 경고로 폴백한다.
+      entry.hp.setText(hpCritical && !hasHpCriticalIcon ? `⚠ ${hpLabel}` : hpLabel);
       entry.mp.setText(`MP ${Math.max(0, us.unit.mp)}/${us.unit.maxMp}`);
       entry.hp.setColor(hpCritical ? '#ff4444' : '#ffcc44');
 
@@ -3714,7 +3924,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private _showVictory(): void {
-    this.battleUI?.addLog('🎉 승리!');
+    this.battleUI?.addLog('승리!');
     playSfx(this, COMBAT_VOICE.VICTORY, 0.8);
     playSfx(this, 'sfx_ui_quest_complete', 0.6);
 
@@ -3997,6 +4207,57 @@ export class BattleScene extends Phaser.Scene {
       },
       missingAmbientIconKeys,
       missingBossIconKeys,
+    });
+  }
+
+  private _startBattleComboPopupIconQa(): void {
+    if (this._initData.battleComboPopupIconQa !== true) return;
+
+    this.time.delayedCall(120, () => {
+      const target = this.allySprites[0] ?? this.enemySprites[0] ?? null;
+      const x = target?.sprite.x ?? this.cameras.main.width / 2;
+      const y = target ? target.sprite.y - 60 : this.cameras.main.height / 2;
+      this._spawnComboText(x, y, '시간 절단', 35);
+      this._writeBattleComboPopupIconQaProbe();
+    });
+  }
+
+  private _writeBattleComboPopupIconQaProbe(): void {
+    if (this._initData.battleComboPopupIconQa !== true || typeof document === 'undefined' || !document.body) return;
+
+    const comboPopupIconResource = getSpriteResourceForSkillIcon(BATTLE_COMBO_POPUP_ICON_ID);
+    const expectedTextureKeys = comboPopupIconResource ? [comboPopupIconResource.key] : [];
+    const activeComboPopupIcons = this.comboPopupIcons.filter((icon) => icon.active);
+    const renderedTextureKeys = activeComboPopupIcons.map((icon) => icon.texture.key);
+    const missingBattleComboPopupIconKeys = expectedTextureKeys
+      .filter((key) => !renderedTextureKeys.includes(key));
+    const comboPopupLabels = this.comboPopupTexts
+      .filter((text) => text.active)
+      .map((text) => text.text);
+    const legacyGlyphPresent = comboPopupLabels.some((label) => label.includes('⚡'));
+    const hasExpectedIcon = activeComboPopupIcons.length >= 1
+      && missingBattleComboPopupIconKeys.length === 0
+      && !this.comboPopupIconFallbackRendered
+      && !legacyGlyphPresent;
+
+    document.body.dataset.aeternaBattleComboPopupIconQa = JSON.stringify({
+      status: hasExpectedIcon ? 'ready' : 'missing-icon',
+      comboPopupIcon: {
+        iconId: BATTLE_COMBO_POPUP_ICON_ID,
+        expectedCount: 1,
+        renderedCount: activeComboPopupIcons.length,
+        expectedTextureKeys,
+        renderedTextureKeys,
+        displaySizes: activeComboPopupIcons.map((icon) => ({
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        fallbackRendered: this.comboPopupIconFallbackRendered,
+      },
+      comboPopupLabels,
+      legacyGlyphPresent,
+      missingBattleComboPopupIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }
 
@@ -4407,7 +4668,7 @@ export class BattleScene extends Phaser.Scene {
   private _showDefeat(): void {
     const { width: scW, height: scH } = this.cameras.main;
 
-    this.battleUI?.addLog('💔 패배...');
+    this.battleUI?.addLog('패배...');
 
     // 화면 붉은 플래시 — UX(rank6): 전체화면 적색 점멸은 광과민성 최고위험 패턴이라 reduce-motion
     //   (흔들림 설정 off)일 땐 점멸 없이 정적 옅은 오버레이로 대체. 같은 파일의 모든 shake 는 이미 게이트됨.
@@ -4621,7 +4882,7 @@ export class BattleScene extends Phaser.Scene {
         targetId: targetSprite.unit.id,
       });
       if (resp.success) {
-        this.battleUI?.addLog(`✨ 협공 발동: ${cand.name}`);
+        this.battleUI?.addLog(`협공 발동: ${cand.name}`);
         // CHRONO-S27: target 위치에 시각 효과 재생
         const fxKey = `fx_${cand.techId}`;
         this.effectManager?.spawnDualTechEffect(
@@ -4658,24 +4919,53 @@ export class BattleScene extends Phaser.Scene {
   /**
    * CHRONO-S86: 협공 완전 면역 보스 라벨 (별도 색조 — 흰색 강조).
    */
+  private _syncBossResistIcon(
+    enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
+  ): Phaser.GameObjects.Image | undefined {
+    const cacheKey = '__bossResistIcon';
+    const cacheHost = enemy as unknown as Record<string, Phaser.GameObjects.Image | undefined>;
+    const existing = cacheHost[cacheKey];
+    const bossResistIconResource = getStatusIconResource(BATTLE_BOSS_RESIST_ICON_ID);
+    if (!bossResistIconResource || !this.textures.exists(bossResistIconResource.key)) {
+      existing?.setVisible(false);
+      return undefined;
+    }
+
+    const iconX = enemy.sprite.x - 44;
+    const iconY = enemy.sprite.y - 80;
+    const bossResistIcon = existing?.active
+      ? existing.setTexture(bossResistIconResource.key).setPosition(iconX, iconY).setVisible(true)
+      : this.add.image(iconX, iconY, bossResistIconResource.key)
+        .setOrigin(0.5)
+        .setDepth(8801)
+        .setName(`battle_boss_resist_icon_${enemy.unit.id}`);
+
+    cacheHost[cacheKey] = bossResistIcon;
+    bossResistIcon.setDisplaySize(BATTLE_BOSS_RESIST_ICON_SIZE, BATTLE_BOSS_RESIST_ICON_SIZE);
+    bossResistIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return bossResistIcon;
+  }
+
   private _updateBossImmuneLabel(
     enemy: { unit: { id: string }; sprite: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle },
   ): void {
     const cacheKey = '__bossResistText';
     const existing = (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey];
-    const label = '🛡 협공 면역';
+    const hasResistIcon = Boolean(this._syncBossResistIcon(enemy));
+    const label = hasResistIcon ? '협공 면역' : '🛡 협공 면역';
+    const labelX = hasResistIcon ? enemy.sprite.x - 28 : enemy.sprite.x;
     if (existing) {
-      existing.setText(label).setColor('#ffffff');
-      existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
+      existing.setText(label).setColor('#ffffff').setOrigin(hasResistIcon ? 0 : 0.5, 0.5);
+      existing.setPosition(labelX, enemy.sprite.y - 80);
       return;
     }
-    const t = this.add.text(enemy.sprite.x, enemy.sprite.y - 80, label, {
+    const t = this.add.text(labelX, enemy.sprite.y - 80, label, {
       fontSize: '12px',
       fontFamily: FONT_FAMILY,
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(8800).setName(`bossImmune_${enemy.unit.id}`);
+    }).setOrigin(hasResistIcon ? 0 : 0.5, 0.5).setDepth(8800).setName(`bossImmune_${enemy.unit.id}`);
     (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey] = t;
   }
 
@@ -4689,19 +4979,21 @@ export class BattleScene extends Phaser.Scene {
     const parts: string[] = [];
     if (dualHits > 0) parts.push(`Dual +${dualHits * 5}%`);
     if (tripleHits > 0) parts.push(`Triple +${tripleHits * 10}%`);
-    const label = `🛡 ${parts.join(' / ')}`;
+    const hasResistIcon = Boolean(this._syncBossResistIcon(enemy));
+    const label = hasResistIcon ? parts.join(' / ') : `🛡 ${parts.join(' / ')}`;
+    const labelX = hasResistIcon ? enemy.sprite.x - 28 : enemy.sprite.x;
     if (existing) {
-      existing.setText(label);
-      existing.setPosition(enemy.sprite.x, enemy.sprite.y - 80);
+      existing.setText(label).setOrigin(hasResistIcon ? 0 : 0.5, 0.5);
+      existing.setPosition(labelX, enemy.sprite.y - 80);
       return;
     }
-    const t = this.add.text(enemy.sprite.x, enemy.sprite.y - 80, label, {
+    const t = this.add.text(labelX, enemy.sprite.y - 80, label, {
       fontSize: '11px',
       fontFamily: FONT_FAMILY,
       color: '#ffd54a',
       stroke: '#000000',
       strokeThickness: 2,
-    }).setOrigin(0.5).setDepth(8800).setName(`bossResist_${enemy.unit.id}`);
+    }).setOrigin(hasResistIcon ? 0 : 0.5, 0.5).setDepth(8800).setName(`bossResist_${enemy.unit.id}`);
     (enemy as unknown as Record<string, Phaser.GameObjects.Text | undefined>)[cacheKey] = t;
   }
 
@@ -4731,7 +5023,7 @@ export class BattleScene extends Phaser.Scene {
         targetId: targetSprite.unit.id,
       });
       if (resp.success) {
-        this.battleUI?.addLog(`🌟 3인 협공 발동: ${cand.name}`);
+        this.battleUI?.addLog(`3인 협공 발동: ${cand.name}`);
         // 모든 적에 강한 시각 효과 (Triple Tech 는 항상 AOE 풍)
         for (const enemy of this.enemySprites) {
           if (!enemy.unit.alive) continue;
@@ -4768,7 +5060,7 @@ export class BattleScene extends Phaser.Scene {
     this.tripleTechSelectedIndex = (this.tripleTechSelectedIndex + 1) % this.lastTripleTechCandidates.length;
     const sel = this.lastTripleTechCandidates[this.tripleTechSelectedIndex];
     this.battleUI?.addLog(
-      `🔁 3인 협공 선택: ${sel.name} (${this.tripleTechSelectedIndex + 1}/${this.lastTripleTechCandidates.length})`,
+      `3인 협공 선택: ${sel.name} (${this.tripleTechSelectedIndex + 1}/${this.lastTripleTechCandidates.length})`,
     );
     const txt = this._getComboTechButtonLabel(this.tripleTechButton);
     const aoePrefix = this._hasComboTechButtonIcon(this.tripleTechButton) ? '' : (sel.aoe ? '💥 🌟 ' : '🌟 ');
@@ -4795,7 +5087,7 @@ export class BattleScene extends Phaser.Scene {
     this.dualTechSelectedIndex = (this.dualTechSelectedIndex + 1) % this.lastDualTechCandidates.length;
     const sel = this.lastDualTechCandidates[this.dualTechSelectedIndex];
     this.battleUI?.addLog(
-      `🔁 협공 선택: ${sel.name} (${this.dualTechSelectedIndex + 1}/${this.lastDualTechCandidates.length})`,
+      `협공 선택: ${sel.name} (${this.dualTechSelectedIndex + 1}/${this.lastDualTechCandidates.length})`,
     );
     const txt = this._getComboTechButtonLabel(this.dualTechButton);
     const aoePrefix = this._hasComboTechButtonIcon(this.dualTechButton) ? '' : (sel.aoe ? '💥 ' : '✨ ');
@@ -4871,12 +5163,12 @@ export class BattleScene extends Phaser.Scene {
         if (d.combatEnded && d.combatStats) {
           const cs = d.combatStats;
           this.battleUI?.addLog(
-            `🏆 협공 통계: Dual ${cs.dualTechFired}회 / Triple ${cs.tripleTechFired}회 / 최대 CHAIN ×${cs.maxChainReached}`,
+            `협공 통계: Dual ${cs.dualTechFired}회 / Triple ${cs.tripleTechFired}회 / 최대 CHAIN ×${cs.maxChainReached}`,
           );
         }
         if (d.dualTechCandidates && d.dualTechCandidates.length > 0) {
           const names = d.dualTechCandidates.map((c) => c.name).join(', ');
-          this.battleUI?.addLog(`✨ 협공 가능: ${names}`);
+          this.battleUI?.addLog(`협공 가능: ${names}`);
           this.lastDualTechCandidates = d.dualTechCandidates;
           // CHRONO-S36: 후보 목록 갱신 시 selectedIndex 가 범위 밖이면 0 으로 reset
           if (this.dualTechSelectedIndex >= d.dualTechCandidates.length) {
@@ -4905,7 +5197,7 @@ export class BattleScene extends Phaser.Scene {
         // CHRONO-S63/S65/S87/S91: Triple Tech 후보 수신 + 버튼 가시화 + element 색조 + AOE
         if (d.tripleTechCandidates && d.tripleTechCandidates.length > 0) {
           const tNames = d.tripleTechCandidates.map((c) => c.name).join(', ');
-          this.battleUI?.addLog(`🌟 3인 협공 가능: ${tNames} ('T' 키)`);
+          this.battleUI?.addLog(`3인 협공 가능: ${tNames} ('T' 키)`);
           this.lastTripleTechCandidates = d.tripleTechCandidates;
           if (this.tripleTechSelectedIndex >= d.tripleTechCandidates.length) {
             this.tripleTechSelectedIndex = 0;
@@ -4965,7 +5257,7 @@ export class BattleScene extends Phaser.Scene {
             const prevChain = this.chainCount;
             if (isChain) {
               this.chainCount += 1;
-              this.battleUI?.addLog(`🔥 CHAIN ×${this.chainCount}! (${act.damage ?? 0})`);
+              this.battleUI?.addLog(`CHAIN ×${this.chainCount}! (${act.damage ?? 0})`);
             } else {
               this.chainCount = 1;
             }
@@ -4981,10 +5273,10 @@ export class BattleScene extends Phaser.Scene {
               if (isScreenShakeEnabled()) {
                 this.cameras.main.shake(200, 0.012);
               }
-              this.battleUI?.addLog('💥 CHAIN MAX 도달! 다음 협공 +50% 데미지');
+              this.battleUI?.addLog('CHAIN MAX 도달! 다음 협공 +50% 데미지');
             }
             if (act.actorName?.includes('(AOE)')) {
-              this.battleUI?.addLog(`💥 광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
+              this.battleUI?.addLog(`광역 협공: ${act.targetName ?? ''} (총 ${act.damage ?? 0})`);
               const aoeName = (act.actorName ?? '').split(' (')[0];
               for (const enemy of this.enemySprites) {
                 if (!enemy.unit.alive) continue;
@@ -5006,13 +5298,13 @@ export class BattleScene extends Phaser.Scene {
       if (result.combatId === this.serverCombatId) {
         if (result.victory) {
           this.phase = 'victory';
-          this.battleUI?.addLog(`🎉 서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
+          this.battleUI?.addLog(`서버 승리 확인! EXP +${result.expGained}, 골드 +${result.goldGained}`);
           // CHRONO-S94: chain 보너스 적용 시 별도 강조 로그
           if (result.chainBonusApplied) {
-            this.battleUI?.addLog('🔥 CHAIN 보너스 +20% 적용!');
+            this.battleUI?.addLog('CHAIN 보너스 +20% 적용!');
           }
           if (result.levelUp) {
-            this.battleUI?.addLog(`🆙 레벨 업! Lv.${result.levelUp.newLevel}`);
+            this.battleUI?.addLog(`레벨 업! Lv.${result.levelUp.newLevel}`);
             playSfx(this, 'sfx_ui_level_up', 0.8);
           }
         }

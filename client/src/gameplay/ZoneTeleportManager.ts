@@ -52,6 +52,13 @@ const ZONE_TELEPORT_UI_FRAME_TEXTURES = {
 const ZONE_TELEPORT_EXPECTED_PANEL_FRAME_COUNT = 1;
 const ZONE_TELEPORT_EXPECTED_BUTTON_FRAME_COUNT = 2;
 const ZONE_TELEPORT_TITLE_ICON_ID = 'skill_vw_warp';
+const ZONE_TELEPORT_ACTION_ICON_IDS = {
+  move: 'skill_mw_arrow',
+  cancel: 'skill_tg_reverse',
+} as const;
+const ZONE_TELEPORT_EXPECTED_ACTION_ICON_COUNT = 2;
+
+type ZoneTeleportActionButtonId = keyof typeof ZONE_TELEPORT_ACTION_ICON_IDS;
 
 export function preloadZoneTeleportUiFrameTextures(scene: Phaser.Scene): void {
   for (const texture of Object.values(ZONE_TELEPORT_UI_FRAME_TEXTURES)) {
@@ -60,9 +67,13 @@ export function preloadZoneTeleportUiFrameTextures(scene: Phaser.Scene): void {
     }
   }
 
-  const titleIconResource = getSpriteResourceForSkillIcon(ZONE_TELEPORT_TITLE_ICON_ID);
-  if (titleIconResource && !scene.textures.exists(titleIconResource.key)) {
-    scene.load.image(titleIconResource.key, titleIconResource.path);
+  const queuedIconKeys = new Set<string>();
+  for (const iconId of [ZONE_TELEPORT_TITLE_ICON_ID, ...Object.values(ZONE_TELEPORT_ACTION_ICON_IDS)]) {
+    const iconResource = getSpriteResourceForSkillIcon(iconId);
+    if (iconResource && !scene.textures.exists(iconResource.key) && !queuedIconKeys.has(iconResource.key)) {
+      scene.load.image(iconResource.key, iconResource.path);
+      queuedIconKeys.add(iconResource.key);
+    }
   }
 }
 
@@ -85,6 +96,8 @@ export class ZoneTeleportManager {
   private portalButtonFrames: Phaser.GameObjects.Image[] = [];
   private portalTitleIcon: Phaser.GameObjects.Image | null = null;
   private portalTitleIconFallback: Phaser.GameObjects.Text | null = null;
+  private portalActionIcons: Phaser.GameObjects.Image[] = [];
+  private portalActionIconFallbackIds: ZoneTeleportActionButtonId[] = [];
   private onZoneChange?: ZoneChangeCallback;
 
   // 전환 중 플래그
@@ -207,6 +220,8 @@ export class ZoneTeleportManager {
     this.portalButtonFrames = [];
     this.portalTitleIcon = null;
     this.portalTitleIconFallback = null;
+    this.portalActionIcons = [];
+    this.portalActionIconFallbackIds = [];
 
     const cx = this.scene.scale.width / 2;
     const cy = this.scene.scale.height / 2;
@@ -237,11 +252,11 @@ export class ZoneTeleportManager {
     }).setOrigin(0.5);
     this.portalUI.add(desc);
 
-    this._addPortalButton(this.portalUI, cx - 56, cy + 35, 86, 30, '[ 이동 ]', '#8fd4ff', () => {
+    this._addPortalButton(this.portalUI, cx - 56, cy + 35, 86, 30, 'move', '이동', '[ 이동 ]', '#8fd4ff', () => {
       this._closePortalUI();
       this.teleportTo(portal.targetZoneId);
     });
-    this._addPortalButton(this.portalUI, cx + 56, cy + 35, 86, 30, '[ 취소 ]', '#ff8f8f', () => this._closePortalUI());
+    this._addPortalButton(this.portalUI, cx + 56, cy + 35, 86, 30, 'cancel', '취소', '[ 취소 ]', '#ff8f8f', () => this._closePortalUI());
     this._writeZoneTeleportFrameQaProbe(portal);
   }
 
@@ -251,7 +266,9 @@ export class ZoneTeleportManager {
     y: number,
     width: number,
     height: number,
+    actionId: ZoneTeleportActionButtonId,
     label: string,
+    fallbackLabel: string,
     color: string,
     onClick: () => void,
   ): void {
@@ -266,7 +283,21 @@ export class ZoneTeleportManager {
       0.92,
     );
 
-    const text = this.scene.add.text(x, y, label, {
+    const actionIconResource = getSpriteResourceForSkillIcon(ZONE_TELEPORT_ACTION_ICON_IDS[actionId]);
+    let actionIcon: Phaser.GameObjects.Image | null = null;
+    if (actionIconResource && this.scene.textures.exists(actionIconResource.key)) {
+      actionIcon = this.scene.add.image(x - 23, y, actionIconResource.key)
+        .setName(`zone_teleport_${actionId}_action_icon`);
+      actionIcon.setDisplaySize(16, 16);
+      actionIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.portalActionIcons.push(actionIcon);
+      container.add(actionIcon);
+    } else {
+      this.portalActionIconFallbackIds.push(actionId);
+    }
+
+    const textLabel = actionIcon ? label : fallbackLabel;
+    const text = this.scene.add.text(actionIcon ? x + 8 : x, y, textLabel, {
       fontSize: '14px',
       color,
       fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
@@ -274,8 +305,14 @@ export class ZoneTeleportManager {
     const hitArea = this.scene.add.rectangle(x, y, width, height, 0x000000, 0)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', onClick)
-      .on('pointerover', () => text.setColor('#ffffff'))
-      .on('pointerout', () => text.setColor(color));
+      .on('pointerover', () => {
+        text.setColor('#ffffff');
+        actionIcon?.setTint(0xffffff);
+      })
+      .on('pointerout', () => {
+        text.setColor(color);
+        actionIcon?.clearTint();
+      });
     container.add([text, hitArea]);
   }
 
@@ -344,6 +381,10 @@ export class ZoneTeleportManager {
     const panelFrame = ZONE_TELEPORT_UI_FRAME_TEXTURES.panel;
     const buttonFrame = ZONE_TELEPORT_UI_FRAME_TEXTURES.button;
     const titleIconResource = getSpriteResourceForSkillIcon(ZONE_TELEPORT_TITLE_ICON_ID);
+    const expectedActionIconKeys = Object.values(ZONE_TELEPORT_ACTION_ICON_IDS)
+      .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key)
+      .filter((key): key is string => typeof key === 'string');
+    const renderedActionIconKeys = this.portalActionIcons.map((icon) => icon.texture.key);
     const hasExpectedPanelFrame = (
       this.scene.textures.exists(panelFrame.key)
       && this.portalPanelFrame !== null
@@ -360,6 +401,11 @@ export class ZoneTeleportManager {
     const missingTitleIconKeys = hasExpectedTitleIcon
       ? []
       : [titleIconResource?.key ?? ZONE_TELEPORT_TITLE_ICON_ID];
+    const missingActionIconKeys = expectedActionIconKeys
+      .filter((key) => !this.scene.textures.exists(key) || !renderedActionIconKeys.includes(key));
+    const hasExpectedActionIcons = missingActionIconKeys.length === 0
+      && this.portalActionIcons.length === ZONE_TELEPORT_EXPECTED_ACTION_ICON_COUNT
+      && this.portalActionIconFallbackIds.length === 0;
     const visibleCanvasCount = Array.from(document.querySelectorAll('canvas'))
       .filter((canvas) => {
         const rect = canvas.getBoundingClientRect();
@@ -367,7 +413,7 @@ export class ZoneTeleportManager {
       }).length;
 
     document.body.dataset.aeternaZoneTeleportFrameQa = JSON.stringify({
-      status: hasExpectedPanelFrame && hasExpectedButtonFrames && hasExpectedTitleIcon ? 'ready' : 'missing',
+      status: hasExpectedPanelFrame && hasExpectedButtonFrames && hasExpectedTitleIcon && hasExpectedActionIcons ? 'ready' : 'missing',
       portalId: portal.id,
       portalName: portal.name,
       targetZoneId: portal.targetZoneId,
@@ -400,7 +446,22 @@ export class ZoneTeleportManager {
         displayHeight: this.portalTitleIcon?.displayHeight ?? 0,
         fallbackRendered: this.portalTitleIconFallback !== null,
       },
+      actionButtonIcon: {
+        renderedCount: this.portalActionIcons.length,
+        expectedCount: ZONE_TELEPORT_EXPECTED_ACTION_ICON_COUNT,
+        expectedKeys: expectedActionIconKeys,
+        renderedKeys: renderedActionIconKeys,
+        displaySizes: this.portalActionIcons.map((icon) => ({
+          name: icon.name,
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+          visible: icon.visible,
+        })),
+        fallbackActionIconIds: this.portalActionIconFallbackIds,
+        missingActionIconKeys,
+      },
       missingTitleIconKeys,
+      missingActionIconKeys,
       missingFrameKeys: [
         ...(hasExpectedPanelFrame ? [] : [panelFrame.key]),
         ...(hasExpectedButtonFrames ? [] : [buttonFrame.key]),
