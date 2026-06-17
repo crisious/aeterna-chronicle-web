@@ -976,6 +976,25 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("battleReflectPopupIconQa: params.get('battleReflectPopupIconQa') === '1'");
   });
 
+  it('ErrorBoundary DOM overlays render Aseprite icon images before warning/lightning glyph fallback', () => {
+    const source = readFileSync(resolve(process.cwd(), 'client/src/error/ErrorBoundary.ts'), 'utf8');
+
+    expect(source).toContain('type ErrorBoundaryOverlayIconKind = keyof typeof ERROR_BOUNDARY_ICON_ASSETS');
+    expect(source).toContain('const ERROR_BOUNDARY_ICON_ASSETS = {');
+    expect(source).toContain("id: 'status_curse_icon'");
+    expect(source).toContain("path: 'assets/generated/ui/icons/status/status_curse.png'");
+    expect(source).toContain("id: 'skill_tg_stop_icon'");
+    expect(source).toContain("path: 'assets/generated/ui/icons/skills/skill_tg_stop.png'");
+    expect(source).toContain('private _renderOverlayIcon(kind: ErrorBoundaryOverlayIconKind');
+    expect(source).toContain('id="error-title-icon"');
+    expect(source).toContain('id="reconnect-status-icon"');
+    expect(source).toContain('document.body.dataset.aeternaErrorBoundaryIconQa = JSON.stringify');
+    expect(source).toContain('document.body.dataset.aeternaReconnectIconQa = JSON.stringify');
+    expect(source).not.toContain('>⚠ 예기치 않은 오류</h2>');
+    expect(source).not.toContain('<span id="reconnect-text">⚡ 서버 연결이 끊어졌습니다. 재연결 중...</span>');
+    expect(source).not.toContain('el.textContent = `⚡ 재연결 중... (${attempt}/${max})`;');
+  });
+
   it('BattleScene echo popup uses the Aseprite storm skill icon before sparkle glyph fallback', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');

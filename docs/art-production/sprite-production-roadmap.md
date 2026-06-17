@@ -5979,3 +5979,33 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `?debugScene=lobby&renderer=canvas&lobbyConnectionIconQa=connected|offline|error` passes with `aeternaLobbyConnectionIconQa.status = ready`, one rendered icon, `legacyGlyphPresent = false`, empty missing key lists, no console/page errors, and nonblank canvas pixels for all three modes.
+
+## Phase 199: ErrorBoundary DOM Overlay Icon Runtime Wiring
+
+Runtime ErrorBoundary DOM overlay icon coverage:
+
+- Runtime error title icon: `status_curse.png` / DOM `#error-title-icon`.
+- Network reconnect badge icon: `skill_tg_stop.png` / DOM `#reconnect-status-icon`.
+
+Production rule:
+
+- `ErrorBoundary` renders error and reconnect overlay icons as generated Aseprite PNG `<img>` elements so these emergency DOM surfaces no longer depend on warning/lightning text glyphs during the normal path.
+- `_renderOverlayIcon()` is the single DOM icon HTML path used by both recovery and reconnect overlays.
+- `⚠` and `⚡` are only inserted into hidden fallback spans when the image load fails.
+- `aeternaErrorBoundaryIconQa` and `aeternaReconnectIconQa` record icon id/path, rendered count, fallback state, and legacy glyph state for browser automation.
+
+Exit criteria:
+
+- Unit tests verify the icon asset ids, runtime paths, DOM element ids, shared renderer, QA datasets, and removal of the old direct glyph strings.
+- Browser QA triggers both `ErrorEvent` and `offline` on a running page, verifies image `naturalWidth > 0`, `status = ready`, `renderedCount = 1`, `legacyGlyphPresent = false`, and no console/page errors.
+- Existing sprite manifest, ErrorBoundary capture, runtime image reference, and UI frame contracts remain green.
+
+Current QA state:
+
+- Phase 199 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "ErrorBoundary DOM overlays"` failed before implementation because `ErrorBoundary.ts` did not define the DOM overlay icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "ErrorBoundary DOM overlays"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\errorBoundaryCapture.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 140 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?renderer=canvas&qaRun=phase199-error-boundary-iab` triggers a runtime `ErrorEvent` and `offline` event; both `aeternaErrorBoundaryIconQa` and `aeternaReconnectIconQa` report `status = ready`, `renderedCount = 1`, `legacyGlyphPresent = false`, loaded image widths `32` and `64`, and no console/page errors.

@@ -45,6 +45,23 @@ const DEFAULT_RECONNECT: ReconnectConfig = {
   maxDelayMs: 30000,
 };
 
+const ERROR_BOUNDARY_ICON_ASSETS = {
+  crash: {
+    id: 'status_curse_icon',
+    path: 'assets/generated/ui/icons/status/status_curse.png',
+    alt: '오류',
+    fallback: '⚠',
+  },
+  reconnect: {
+    id: 'skill_tg_stop_icon',
+    path: 'assets/generated/ui/icons/skills/skill_tg_stop.png',
+    alt: '재연결',
+    fallback: '⚡',
+  },
+} as const;
+
+type ErrorBoundaryOverlayIconKind = keyof typeof ERROR_BOUNDARY_ICON_ASSETS;
+
 // ── ErrorBoundary 클래스 ────────────────────────────────────
 
 export class ErrorBoundary {
@@ -324,6 +341,79 @@ export class ErrorBoundary {
     return scenes.length > 0 ? scenes[0].scene.key : 'unknown';
   }
 
+  private _renderOverlayIcon(kind: ErrorBoundaryOverlayIconKind, size: number): string {
+    const asset = ERROR_BOUNDARY_ICON_ASSETS[kind];
+    const idAttribute = kind === 'crash' ? 'id="error-title-icon"' : 'id="reconnect-status-icon"';
+    return `
+      <span aria-hidden="true" style="
+        display:inline-flex; align-items:center; justify-content:center;
+        width:${size}px; height:${size}px; margin-right:8px; vertical-align:middle;
+      ">
+        <img ${idAttribute} src="${asset.path}" alt="${asset.alt}" data-icon-id="${asset.id}" style="
+          width:${size}px; height:${size}px; object-fit:contain; image-rendering:pixelated;
+        " />
+        <span data-icon-fallback="${kind}" style="display:none"></span>
+      </span>
+    `;
+  }
+
+  private _bindOverlayIconQa(kind: ErrorBoundaryOverlayIconKind): void {
+    const iconElementId = kind === 'crash' ? 'error-title-icon' : 'reconnect-status-icon';
+    const img = document.getElementById(iconElementId) as HTMLImageElement | null;
+    const fallback = document.querySelector(`[data-icon-fallback="${kind}"]`) as HTMLElement | null;
+
+    const write = (rendered: boolean, fallbackRendered: boolean): void => {
+      if (kind === 'crash') {
+        this._writeErrorBoundaryIconQa(rendered, fallbackRendered);
+        return;
+      }
+      this._writeReconnectIconQa(rendered, fallbackRendered);
+    };
+
+    if (!img) {
+      write(false, false);
+      return;
+    }
+
+    const markFallback = (): void => {
+      img.style.display = 'none';
+      if (fallback) {
+        fallback.textContent = ERROR_BOUNDARY_ICON_ASSETS[kind].fallback;
+        fallback.style.display = 'inline-block';
+      }
+      write(false, true);
+    };
+    const markReady = (): void => write(true, false);
+
+    img.addEventListener('load', markReady, { once: true });
+    img.addEventListener('error', markFallback, { once: true });
+    write(img.complete && img.naturalWidth > 0, false);
+  }
+
+  private _writeErrorBoundaryIconQa(rendered: boolean, fallbackRendered: boolean): void {
+    const asset = ERROR_BOUNDARY_ICON_ASSETS.crash;
+    document.body.dataset.aeternaErrorBoundaryIconQa = JSON.stringify({
+      status: rendered && !fallbackRendered ? 'ready' : 'missing-icon',
+      iconId: asset.id,
+      path: asset.path,
+      renderedCount: rendered ? 1 : 0,
+      legacyGlyphPresent: fallbackRendered,
+      fallbackRendered,
+    });
+  }
+
+  private _writeReconnectIconQa(rendered: boolean, fallbackRendered: boolean): void {
+    const asset = ERROR_BOUNDARY_ICON_ASSETS.reconnect;
+    document.body.dataset.aeternaReconnectIconQa = JSON.stringify({
+      status: rendered && !fallbackRendered ? 'ready' : 'missing-icon',
+      iconId: asset.id,
+      path: asset.path,
+      renderedCount: rendered ? 1 : 0,
+      legacyGlyphPresent: fallbackRendered,
+      fallbackRendered,
+    });
+  }
+
   /** 복구 화면 표시 (씬 에러 시) */
   private _showRecoveryScreen(message: string, scene?: string, stack?: string): void {
     if (!this.game) return;
@@ -348,7 +438,9 @@ export class ErrorBoundary {
 
     overlay.innerHTML = `
       <div style="text-align:center; max-width:500px; padding:20px;">
-        <h2 style="color:#ff6b6b; margin-bottom:16px;">⚠ 예기치 않은 오류</h2>
+        <h2 style="color:#ff6b6b; margin-bottom:16px; display:flex; align-items:center; justify-content:center;">
+          ${this._renderOverlayIcon('crash', 24)}<span>예기치 않은 오류</span>
+        </h2>
         <p style="color:#ccc; margin-bottom:8px;">씬: ${scene ?? 'unknown'}</p>
         <p style="color:#888; font-size:12px; margin-bottom:12px; word-break:break-all;">
           ${message.substring(0, 200)}
@@ -371,6 +463,7 @@ export class ErrorBoundary {
     `;
 
     document.body.appendChild(overlay);
+    this._bindOverlayIconQa('crash');
 
     document.getElementById('error-retry-btn')?.addEventListener('click', () => {
       this._removeOverlay('error-overlay');
@@ -397,17 +490,27 @@ export class ErrorBoundary {
       border: 1px solid #ffd93d;
     `;
     overlay.innerHTML = `
-      <span id="reconnect-text">⚡ 서버 연결이 끊어졌습니다. 재연결 중...</span>
+      <span style="display:inline-flex; align-items:center;">
+        ${this._renderOverlayIcon('reconnect', 18)}
+        <span id="reconnect-text">서버 연결이 끊어졌습니다. 재연결 중...</span>
+      </span>
     `;
 
     document.body.appendChild(overlay);
+    this._bindOverlayIconQa('reconnect');
   }
 
   /** 재연결 UI 업데이트 */
   private _updateReconnectUI(attempt: number, max: number): void {
     const el = document.getElementById('reconnect-text');
     if (el) {
-      el.textContent = `⚡ 재연결 중... (${attempt}/${max})`;
+      el.textContent = `재연결 중... (${attempt}/${max})`;
+      const img = document.getElementById('reconnect-status-icon') as HTMLImageElement | null;
+      const fallback = document.querySelector('[data-icon-fallback="reconnect"]') as HTMLElement | null;
+      this._writeReconnectIconQa(
+        Boolean(img && img.complete && img.naturalWidth > 0),
+        Boolean(fallback && fallback.style.display !== 'none'),
+      );
     }
   }
 

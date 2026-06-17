@@ -1355,6 +1355,7 @@ npm run art:atlas:pack
 - GameScene 에러 화면 타이틀은 `skill_ek_explode.png` Aseprite skill icon을 재사용한다. 런타임 표시는 `22x22`이며, icon texture가 있으면 title text는 `존 로딩 실패`만 사용하고 `⚠️ 존 로딩 실패` glyph 문자열은 fallback에서만 유지한다.
 - GameScene 상단 연결 상태 표시는 온라인에 `skill_mw_arrow.png`, 오프라인/연결 대기 계열에 `skill_tg_stop.png`, 연결 실패에 `skill_ek_explode.png`를 재사용한다. 런타임 표시는 `game_scene_connection_status_icon` `14x14`이며, icon texture가 있으면 label은 `온라인`, `오프라인`, `연결 실패`처럼 glyph 없는 텍스트만 사용하고 `●`/`○`/`✕` 문자열은 fallback에서만 유지한다. `?debugScene=game&renderer=canvas&gameConnectionIconQa=connected|offline|error`는 `aeternaGameConnectionIconQa`에 렌더 수, 표시 크기, fallback, legacy glyph, missing key 상태를 기록한다.
 - LobbyScene 하단 연결 상태 표시는 같은 skill icon 세트를 재사용한다. 런타임 표시는 `lobby_connection_status_icon` `14x14`이며, icon texture가 있으면 label은 `온라인`, `오프라인`, `연결 실패`처럼 glyph 없는 텍스트만 사용하고 `●`/`○`/`✕` 문자열은 fallback에서만 유지한다. `?debugScene=lobby&renderer=canvas&lobbyConnectionIconQa=connected|offline|error`는 `aeternaLobbyConnectionIconQa`에 렌더 수, 표시 크기, fallback, legacy glyph, missing key 상태를 기록한다.
+- ErrorBoundary DOM 오버레이는 오류 제목에 `status_curse.png`, 재연결 배지에 `skill_tg_stop.png` Aseprite icon을 `<img>`로 재사용한다. 정상 이미지 로드 경로에서는 `예기치 않은 오류`, `재연결 중...` 텍스트만 표시하고 `⚠`, `⚡` glyph는 image load 실패 fallback span에서만 채운다. 자동 QA는 `aeternaErrorBoundaryIconQa`와 `aeternaReconnectIconQa`에 icon id/path, 렌더 수, fallback, legacy glyph 상태를 기록한다.
 - export 후 raw Aseprite JSON을 정규화하고, PNG와 정규화 JSON을 함께 검증한다.
 - PNG/JSON 검증을 통과하지 못한 산출물은 publish 대상이 아니다.
 - 숨김 reference/background layer가 export에 섞이지 않도록 export 전 Aseprite 파일을 정리한다.
