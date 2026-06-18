@@ -1286,6 +1286,59 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("battleCriticalPopupIconQa: params.get('battleCriticalPopupIconQa') === '1'");
   });
 
+  it('BattleScene damage element tag uses Aseprite skill icons before element emoji fallback', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(getSpriteResourceForSkillIcon('skill_ek_explode')).toMatchObject({
+      key: 'skill_ek_explode_icon',
+      path: 'assets/generated/ui/icons/skills/skill_ek_explode.png',
+    });
+    expect(getSpriteResourceForSkillIcon('skill_mw_storm')).toMatchObject({
+      key: 'skill_mw_storm_icon',
+      path: 'assets/generated/ui/icons/skills/skill_mw_storm.png',
+    });
+    expect(getSpriteResourceForSkillIcon('skill_mw_bolt')).toMatchObject({
+      key: 'skill_mw_bolt_icon',
+      path: 'assets/generated/ui/icons/skills/skill_mw_bolt.png',
+    });
+    expect(getSpriteResourceForSkillIcon('skill_mw_ultimate')).toMatchObject({
+      key: 'skill_mw_ultimate_icon',
+      path: 'assets/generated/ui/icons/skills/skill_mw_ultimate.png',
+    });
+    expect(getSpriteResourceForSkillIcon('skill_mw_heal')).toMatchObject({
+      key: 'skill_mw_heal_icon',
+      path: 'assets/generated/ui/icons/skills/skill_mw_heal.png',
+    });
+
+    expect(battleSource).toContain('const BATTLE_ELEMENT_TAG_ICON_IDS = {');
+    expect(battleSource).toContain("fire: 'skill_ek_explode'");
+    expect(battleSource).toContain("ice: 'skill_mw_storm'");
+    expect(battleSource).toContain("lightning: 'skill_mw_bolt'");
+    expect(battleSource).toContain("shadow: 'skill_mw_ultimate'");
+    expect(battleSource).toContain("holy: 'skill_mw_heal'");
+    expect(battleSource).toContain('const BATTLE_ELEMENT_TAG_ICON_SIZE = 16');
+    expect(battleSource).toContain("battleElementTagIconQa?: 'fire' | 'ice' | 'lightning' | 'shadow' | 'holy'");
+    expect(battleSource).toContain('private elementTagIcons: Phaser.GameObjects.Image[] = []');
+    expect(battleSource).toContain('private elementTagTexts: Phaser.GameObjects.Text[] = []');
+    expect(battleSource).toContain('private elementTagIconFallbackRendered = false');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_ELEMENT_TAG_ICON_IDS))');
+    expect(battleSource).toContain('this.load.image(elementTagIconResource.key, elementTagIconResource.path)');
+    expect(battleSource).toContain('const elementTagIcon = this._addElementTagIcon(x - 28, y - 26, element)');
+    expect(battleSource).toContain('const tag = elementTagIcon ? getDamageTypeLabel(element) : formatDamageTypeTag(element)');
+    expect(battleSource).toContain("setName('battle_element_tag_icon')");
+    expect(battleSource).toContain('elementTagIcon.setDisplaySize(BATTLE_ELEMENT_TAG_ICON_SIZE, BATTLE_ELEMENT_TAG_ICON_SIZE)');
+    expect(battleSource).toContain('elementTagIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(battleSource).toContain("setName('battle_element_tag_text')");
+    expect(battleSource).toContain('private _startBattleElementTagIconQa(): void');
+    expect(battleSource).toContain('document.body.dataset.aeternaBattleElementTagIconQa = JSON.stringify');
+    expect(battleSource).toContain('missingBattleElementTagIconKeys');
+    expect(battleSource).toContain('elementTagLegacyGlyphPresent');
+    expect(battleSource).toContain('activeKind: resolveDamageElement(element)');
+    expect(mainSource).toContain("const battleElementTagIconQaParam = params.get('battleElementTagIconQa')");
+    expect(mainSource).toContain("battleElementTagIconQa: battleElementTagIconQaParam === 'fire' || battleElementTagIconQaParam === 'ice' || battleElementTagIconQaParam === 'lightning' || battleElementTagIconQaParam === 'shadow' || battleElementTagIconQaParam === 'holy'");
+  });
+
   it('BattleScene connection badge uses Aseprite icons before circle/x glyph fallback', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');

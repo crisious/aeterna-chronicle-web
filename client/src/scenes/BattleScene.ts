@@ -41,7 +41,7 @@ import { getDualTechById } from '../../../shared/types/dualTech';
 import { resolveFieldEncounter } from '../../../shared/types/chronoField';
 import { composeEscapeLog, escapeOutcomeFromResult } from '../combat/escapeNarration';
 import { getCombatPopupColor } from '../combat/combatResultPalette';
-import { formatDamageTypeTag, getDamageTypePopupColor } from '../combat/damageTypeNarration';
+import { formatDamageTypeTag, getDamageTypeLabel, getDamageTypePopupColor, resolveDamageElement } from '../combat/damageTypeNarration';
 import { getSpriteResourceForMonster, getSpriteResourceForSkillIcon, getSpriteResourceForUiIcon, getSpriteResourceForVfx } from '../assets/spriteResourceManifest';
 import { getStatusIconResource, preloadStatusIconResources } from '../data/statusEffectIcons';
 import { getItemIconResource } from '../data/itemIconResources';
@@ -129,6 +129,8 @@ export interface BattleSceneData {
   battleReflectPopupIconQa?: boolean;
   /** Aseprite 크리티컬 피해 팝업 icon 브라우저 QA용 */
   battleCriticalPopupIconQa?: boolean;
+  /** Aseprite 속성 데미지 태그 icon 브라우저 QA용 */
+  battleElementTagIconQa?: 'fire' | 'ice' | 'lightning' | 'shadow' | 'holy';
   /** Aseprite 전투 연결 상태 배지 icon 브라우저 QA용 */
   battleConnectionBadgeIconQa?: 'reconnecting' | 'error';
   /** Aseprite CHAIN 라벨 icon 브라우저 QA용 */
@@ -220,6 +222,14 @@ const BATTLE_BOSS_RESIST_ICON_ID = 'shield';
 const BATTLE_BOSS_RESIST_ICON_SIZE = 16;
 const BATTLE_CRITICAL_POPUP_ICON_ID = 'skill_ek_explode';
 const BATTLE_CRITICAL_POPUP_ICON_SIZE = 20;
+const BATTLE_ELEMENT_TAG_ICON_IDS = {
+  fire: 'skill_ek_explode',
+  ice: 'skill_mw_storm',
+  lightning: 'skill_mw_bolt',
+  shadow: 'skill_mw_ultimate',
+  holy: 'skill_mw_heal',
+} as const;
+const BATTLE_ELEMENT_TAG_ICON_SIZE = 16;
 const BATTLE_CONNECTION_BADGE_ICON_IDS = {
   reconnecting: 'skill_tg_stop',
   error: 'curse',
@@ -259,6 +269,7 @@ type BattleFieldAmbientIconKind = 'ambient' | 'boss';
 type BattleResultRewardIconKind = keyof typeof BATTLE_RESULT_REWARD_ICON_IDS;
 type BattleResultLeadMode = keyof typeof BATTLE_RESULT_LEAD_ICON_IDS;
 type BattleChainLabelIconMode = keyof typeof BATTLE_CHAIN_LABEL_ICON_IDS;
+type BattleElementTagIconKind = keyof typeof BATTLE_ELEMENT_TAG_ICON_IDS;
 type BattleConnectionBadgeIconMode = keyof typeof BATTLE_CONNECTION_BADGE_ICON_IDS;
 
 const BATTLE_CONNECTION_BADGE_STATES: Record<BattleConnectionBadgeIconMode, {
@@ -432,6 +443,17 @@ function getBattleChainLabelIconResource(mode: BattleChainLabelIconMode): Battle
   return getSpriteResourceForSkillIcon(BATTLE_CHAIN_LABEL_ICON_IDS[mode]);
 }
 
+function isBattleElementTagIconKind(element: ReturnType<typeof resolveDamageElement>): element is BattleElementTagIconKind {
+  return element in BATTLE_ELEMENT_TAG_ICON_IDS;
+}
+
+function getBattleElementTagIconResource(element: string | undefined): BattleIconResource | undefined {
+  const resolved = resolveDamageElement(element);
+  return isBattleElementTagIconKind(resolved)
+    ? getSpriteResourceForSkillIcon(BATTLE_ELEMENT_TAG_ICON_IDS[resolved])
+    : undefined;
+}
+
 function getBattleConnectionBadgeIconResource(mode: BattleConnectionBadgeIconMode): BattleIconResource | undefined {
   switch (mode) {
     case 'reconnecting':
@@ -567,6 +589,9 @@ export class BattleScene extends Phaser.Scene {
   private criticalPopupIcons: Phaser.GameObjects.Image[] = [];
   private criticalPopupTexts: Phaser.GameObjects.Text[] = [];
   private criticalPopupIconFallbackRendered = false;
+  private elementTagIcons: Phaser.GameObjects.Image[] = [];
+  private elementTagTexts: Phaser.GameObjects.Text[] = [];
+  private elementTagIconFallbackRendered = false;
   private battleIntroIcon?: Phaser.GameObjects.Image;
   private battleIntroIconFallbackRendered = false;
   private battleCommandFocusIcon: Phaser.GameObjects.Image | null = null;
@@ -660,6 +685,9 @@ export class BattleScene extends Phaser.Scene {
     this.criticalPopupIcons = [];
     this.criticalPopupTexts = [];
     this.criticalPopupIconFallbackRendered = false;
+    this.elementTagIcons = [];
+    this.elementTagTexts = [];
+    this.elementTagIconFallbackRendered = false;
     this.battleIntroIcon = undefined;
     this.battleIntroIconFallbackRendered = false;
     this.battleCommandFocusIcon = null;
@@ -790,6 +818,18 @@ export class BattleScene extends Phaser.Scene {
     ) {
       this.load.image(criticalPopupIconResource.key, criticalPopupIconResource.path);
       queuedSkillIconKeys.add(criticalPopupIconResource.key);
+    }
+
+    for (const iconId of Object.values(BATTLE_ELEMENT_TAG_ICON_IDS)) {
+      const elementTagIconResource = getSpriteResourceForSkillIcon(iconId);
+      if (
+        elementTagIconResource
+        && !this.textures.exists(elementTagIconResource.key)
+        && !queuedSkillIconKeys.has(elementTagIconResource.key)
+      ) {
+        this.load.image(elementTagIconResource.key, elementTagIconResource.path);
+        queuedSkillIconKeys.add(elementTagIconResource.key);
+      }
     }
 
     const connectionBadgeReconnectIconResource = getBattleConnectionBadgeIconResource('reconnecting');
@@ -1308,6 +1348,7 @@ export class BattleScene extends Phaser.Scene {
     this._startBattleEchoPopupIconQa();
     this._startBattleReflectPopupIconQa();
     this._startBattleCriticalPopupIconQa();
+    this._startBattleElementTagIconQa();
     this._startBattleChainLabelIconQa();
     this._startBattleConnectionBadgeIconQa();
   }
@@ -3240,18 +3281,32 @@ export class BattleScene extends Phaser.Scene {
    * 색/라벨은 SCENARIO_DAMAGE_TYPE_NARRATIVES 단일 출처. 무속성(physical 귀결)은 미표시.
    */
   private _spawnElementTag(x: number, y: number, element: string | undefined): void {
-    const tag = formatDamageTypeTag(element);
-    if (!tag) {
+    if (!formatDamageTypeTag(element)) {
       return;
     }
-    const text = this.add.text(x, y - 26, tag, {
+    const elementTagIcon = this._addElementTagIcon(x - 28, y - 26, element);
+    const tag = elementTagIcon ? getDamageTypeLabel(element) : formatDamageTypeTag(element);
+    if (!tag) {
+      elementTagIcon?.destroy();
+      return;
+    }
+    const text = this.add.text(elementTagIcon ? x + 8 : x, y - 26, tag, {
       fontSize: '13px',
       fontFamily: FONT_FAMILY,
       color: getDamageTypePopupColor(element),
       stroke: '#000000',
       strokeThickness: 3,
       fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(9050).setAlpha(0).setScale(0.7);
+    }).setName('battle_element_tag_text').setOrigin(0.5).setDepth(9050).setAlpha(0).setScale(0.7);
+    this.elementTagTexts.push(text);
+    if (elementTagIcon) {
+      this.tweens.add({
+        targets: elementTagIcon,
+        alpha: 1,
+        duration: 220,
+        ease: 'Back.easeOut',
+      });
+    }
     this.tweens.add({
       targets: text,
       scale: 1.0,
@@ -3260,16 +3315,37 @@ export class BattleScene extends Phaser.Scene {
       duration: 220,
       ease: 'Back.easeOut',
       onComplete: () => {
+        const elementTagTargets: Array<Phaser.GameObjects.Text | Phaser.GameObjects.Image> = elementTagIcon
+          ? [text, elementTagIcon]
+          : [text];
         this.tweens.add({
-          targets: text,
+          targets: elementTagTargets,
           y: y - 70,
           alpha: 0,
           duration: 500,
           delay: 350,
-          onComplete: () => text.destroy(),
+          onComplete: () => elementTagTargets.forEach((target) => target.destroy()),
         });
       },
     });
+  }
+
+  private _addElementTagIcon(x: number, y: number, element: string | undefined): Phaser.GameObjects.Image | undefined {
+    const elementTagIconResource = getBattleElementTagIconResource(element);
+    if (!elementTagIconResource || !this.textures.exists(elementTagIconResource.key)) {
+      this.elementTagIconFallbackRendered = true;
+      return undefined;
+    }
+
+    const elementTagIcon = this.add.image(x, y, elementTagIconResource.key)
+      .setName('battle_element_tag_icon')
+      .setOrigin(0.5)
+      .setDepth(9050)
+      .setAlpha(0);
+    elementTagIcon.setDisplaySize(BATTLE_ELEMENT_TAG_ICON_SIZE, BATTLE_ELEMENT_TAG_ICON_SIZE);
+    elementTagIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.elementTagIcons.push(elementTagIcon);
+    return elementTagIcon;
   }
 
   // ─── 히트 VFX ────────────────────────────────────────────────
@@ -4545,6 +4621,61 @@ export class BattleScene extends Phaser.Scene {
       criticalPopupLabels,
       legacyGlyphPresent,
       missingBattleCriticalPopupIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _startBattleElementTagIconQa(): void {
+    const element = this._initData.battleElementTagIconQa;
+    if (element !== 'fire' && element !== 'ice' && element !== 'lightning' && element !== 'shadow' && element !== 'holy') return;
+
+    this.time.delayedCall(1700, () => {
+      const target = this.enemySprites[0] ?? this.allySprites[0] ?? null;
+      const x = target?.sprite.x ?? this.cameras.main.width / 2;
+      const y = target?.sprite.y ?? this.cameras.main.height / 2;
+      this._spawnElementTag(x, y, element);
+      this._writeBattleElementTagIconQaProbe(element);
+    });
+  }
+
+  private _writeBattleElementTagIconQaProbe(element: BattleElementTagIconKind): void {
+    if (typeof document === 'undefined' || !document.body) return;
+
+    const elementTagIconResource = getBattleElementTagIconResource(element);
+    const expectedTextureKeys = elementTagIconResource ? [elementTagIconResource.key] : [];
+    const activeElementTagIcons = this.elementTagIcons.filter((icon) => icon.active);
+    const renderedTextureKeys = activeElementTagIcons.map((icon) => icon.texture.key);
+    const missingBattleElementTagIconKeys = expectedTextureKeys
+      .filter((key) => !renderedTextureKeys.includes(key));
+    const elementTagLabels = this.elementTagTexts
+      .filter((text) => text.active)
+      .map((text) => text.text);
+    const elementTagLegacyGlyphPresent = elementTagLabels.some((label) => /[🔥❄⚡🌑✨]/u.test(label));
+    const hasExpectedIcon = activeElementTagIcons.length >= 1
+      && missingBattleElementTagIconKeys.length === 0
+      && !this.elementTagIconFallbackRendered
+      && !elementTagLegacyGlyphPresent;
+    const resolved = resolveDamageElement(element);
+
+    document.body.dataset.aeternaBattleElementTagIconQa = JSON.stringify({
+      status: hasExpectedIcon ? 'ready' : 'missing-icon',
+      kind: element,
+      activeKind: resolveDamageElement(element),
+      elementTagIcon: {
+        iconId: isBattleElementTagIconKind(resolved) ? BATTLE_ELEMENT_TAG_ICON_IDS[resolved] : null,
+        expectedCount: 1,
+        renderedCount: activeElementTagIcons.length,
+        expectedTextureKeys,
+        renderedTextureKeys,
+        displaySizes: activeElementTagIcons.map((icon) => ({
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        fallbackRendered: this.elementTagIconFallbackRendered,
+      },
+      elementTagLabels,
+      elementTagLegacyGlyphPresent,
+      missingBattleElementTagIconKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }

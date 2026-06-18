@@ -6761,3 +6761,41 @@ Current QA state:
 - Browser QA success route: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=escapeSuccess&class=ether_knight&qaRun=phase222-escapeSuccess-large-*` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = escapeSuccess`, `sourceMessage = 🏃 도주 성공!`, highlight text `도주 성공!`, icon id `skill_vw_warp`, texture key `skill_vw_warp_icon`, display size `16x16`, empty `missingBattleLogHighlightIconKeys`, `legacyGlyphPresent = false`, `escapeLegacyGlyphPresent = false`, `skill_vw_warp.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
 - Browser QA failure route: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=escapeFail&class=ether_knight&qaRun=phase222-escapeFail-large-*` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = escapeFail`, `sourceMessage = ❌ 도주 실패!`, highlight text `도주 실패!`, icon id `skill_tg_stop`, texture key `skill_tg_stop_icon`, display size `16x16`, empty `missingBattleLogHighlightIconKeys`, `legacyGlyphPresent = false`, `escapeLegacyGlyphPresent = false`, `skill_tg_stop.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
 - Visual QA screenshots: `logs/phase222-battle-escape-success-log-icon.png` and `logs/phase222-battle-escape-fail-log-icon.png` show BattleScene log highlights with image-backed Aseprite escape icons and text-only labels.
+
+## Phase 223: BattleScene Damage Element Tag Icon Runtime Wiring
+
+Runtime BattleScene damage element tag icon coverage:
+
+- Fire tag icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+- Ice tag icon: `skill_mw_storm.png` / texture key `skill_mw_storm_icon`.
+- Lightning tag icon: `skill_mw_bolt.png` / texture key `skill_mw_bolt_icon`.
+- Shadow tag icon: `skill_mw_ultimate.png` / texture key `skill_mw_ultimate_icon`.
+- Holy tag icon: `skill_mw_heal.png` / texture key `skill_mw_heal_icon`.
+- Current QA route coverage: `debugScene=battle&battleElementTagIconQa=fire|ice|lightning|shadow|holy` starts BattleScene and injects a deterministic element tag above the first enemy after the intro window.
+
+Production rule:
+
+- `BattleScene.preload()` resolves all element tag icons through the existing skill icon manifest and shares the same preload de-duplication queue used by skill slots, combo labels, critical popups, and other battle skill-icon surfaces.
+- `_spawnElementTag()` renders one `battle_element_tag_icon` as a `16x16` nearest-filtered Aseprite image beside the floating element tag whenever the icon texture exists.
+- If the icon texture is available, the visible label is text-only: `화염`, `얼음`, `번개`, `그림자`, or `신성`.
+- The previous visible `🔥 화염`, `❄ 얼음`, `⚡ 번개`, `🌑 그림자`, and `✨ 신성` strings remain only as missing-texture fallback behavior.
+- `formatDamageTypeTag()` remains unchanged for scenario narration and SSOT compatibility; `BattleScene` strips the glyph only at the display layer by using `getDamageTypeLabel()` after the icon path is selected.
+- `battleElementTagIconQa` writes `aeternaBattleElementTagIconQa.elementTagIcon`, `elementTagLegacyGlyphPresent`, `missingBattleElementTagIconKeys`, and `activeKind`.
+
+Exit criteria:
+
+- Unit tests verify the five skill icon manifest mappings, element tag icon id map, debug route parser, preload loop, render object names, display size, nearest filtering, text-only branch, fallback branch, and QA payload fields.
+- Browser QA verifies all five element tag modes render the expected icon key at `16x16`, record no missing texture keys, strip the legacy element glyph from the visible label, return `200` for the icon PNGs, and keep the canvas nonblank.
+- Existing damage type narration SSOT tests, sprite resource coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 223 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests/vitest.config.ts tests/unit/spriteResourceManifest.test.ts -t "damage element tag"` failed before implementation because `BattleScene.ts` did not define `BATTLE_ELEMENT_TAG_ICON_IDS` or the element tag icon QA contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests/vitest.config.ts tests/unit/spriteResourceManifest.test.ts tests/unit/damageTypeNarration.test.ts tests/unit/runtimeImageReferenceCoverage.test.ts tests/unit/runtimeImageRosterCoverage.test.ts` passes with 120 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA fire/ice/lightning/shadow/holy routes report `aeternaBattleElementTagIconQa.status = ready`, one `16x16` element tag icon, empty `missingBattleElementTagIconKeys`, `elementTagLegacyGlyphPresent = false`, expected skill-icon PNG response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshots: `logs/phase223-battle-element-tag-fire.png`, `logs/phase223-battle-element-tag-ice.png`, `logs/phase223-battle-element-tag-lightning.png`, `logs/phase223-battle-element-tag-shadow.png`, and `logs/phase223-battle-element-tag-holy.png` show BattleScene floating element tags with image-backed Aseprite icons and text-only labels.
