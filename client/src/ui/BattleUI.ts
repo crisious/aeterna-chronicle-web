@@ -33,6 +33,7 @@ const ELEMENT_COLORS: Record<string, number> = {
 const LOG_MAX_LINES = 4;          // Compact: 4 lines max
 const LOG_X = 1560;               // Top-right corner
 const LOG_Y = 10;
+const BATTLE_LOG_HIGHLIGHT_ICON_QA_DELAY_MS = 1700;
 
 const BATTLE_UTILITY_BUTTON_ICON_IDS = {
   pause: 'skill_tg_stop',
@@ -56,6 +57,11 @@ export const BATTLE_LOG_HIGHLIGHT_ICON_IDS = {
   victory: 'skill_ek_ultimate',
   level: 'skill_ek_passive',
   start: 'skill_ek_slash',
+  escapeSuccess: 'skill_vw_warp',
+  escapeFail: 'skill_tg_stop',
+  escapeBlocked: 'skill_tg_stop',
+  escapeForbidden: 'skill_tg_stop',
+  escapeCritical: 'skill_vw_warp',
   dualTech: 'skill_mw_storm',
   tripleTech: 'skill_ek_ultimate',
 } as const;
@@ -339,6 +345,8 @@ export class BattleUI {
     if (m.includes('⏱') || m.includes('ATB 모드')) return '#c8a2ff';                         // ATB 모드
     if (m.includes('🎵') || m.includes('BGM:')) return '#6fd3ff';                             // BGM 재생
     if (m.includes('🔇') || m.includes('BGM 미존재')) return '#ff8888';                        // BGM 누락
+    if (m.includes('도주 성공') || m.includes('비상 도주')) return '#55ff77';                  // 도주 성공
+    if (m.includes('도주 실패') || m.includes('도주 차단') || m.includes('도주 불가')) return '#ff8888'; // 도주 실패/차단
     if (m.includes('⚡') || m.includes('콤보') || m.includes('🔥') || m.includes('CHAIN')) return '#ff9933'; // 콤보/체인
     if (m.includes('3인 협공') || m.includes('협공')) return '#6fd3ff';                    // 협공
     if (m.includes('방어') || m.includes('반사')) return '#90caf9';                         // 방어/반사
@@ -364,6 +372,11 @@ export class BattleUI {
     if (message.includes('⏱') || message.includes('ATB 모드')) return 'atbMode';
     if (message.includes('🎵') || message.includes('BGM:')) return 'bgmTrack';
     if (message.includes('🔇') || message.includes('BGM 미존재')) return 'bgmMissing';
+    if (message.includes('도주 성공')) return 'escapeSuccess';
+    if (message.includes('도주 실패')) return 'escapeFail';
+    if (message.includes('도주 차단')) return 'escapeBlocked';
+    if (message.includes('도주 불가')) return 'escapeForbidden';
+    if (message.includes('비상 도주')) return 'escapeCritical';
     if (message.includes('⚡') || message.includes('콤보') || message.includes('🔥') || message.includes('CHAIN')) return 'chain';
     if (message.includes('3인 협공')) return 'tripleTech';
     if (message.includes('협공')) return 'dualTech';
@@ -431,6 +444,7 @@ export class BattleUI {
 
     return message
       .replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, '')
+      .replace(/[🏃❌🚧🔒🆘]/gu, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
   }
@@ -523,6 +537,7 @@ export class BattleUI {
         || kind === 'cooldown' || kind === 'wait' || kind === 'itemHeal' || kind === 'reconnect'
         || kind === 'autoMode' || kind === 'atbMode'
         || kind === 'bgmTrack' || kind === 'bgmMissing'
+        || kind === 'escapeSuccess' || kind === 'escapeFail' || kind === 'escapeBlocked' || kind === 'escapeForbidden' || kind === 'escapeCritical'
         ? kind
         : null;
     } catch {
@@ -551,6 +566,11 @@ export class BattleUI {
       atbMode: '⏱ ATB 모드: WAIT — 메뉴/조준 중 정지',
       bgmTrack: '🎵 BGM: bgm_ancient_field',
       bgmMissing: '🔇 BGM 미존재: bgm_missing',
+      escapeSuccess: '🏃 도주 성공!',
+      escapeFail: '❌ 도주 실패!',
+      escapeBlocked: '🚧 도주 차단!',
+      escapeForbidden: '🔒 도주 불가!',
+      escapeCritical: '🆘 비상 도주!',
       telegraph: '💢 보스 강공 준비!',
       dualTech: '✨ 협공 발동: 크로노 블레이드',
       tripleTech: '🌟 3인 협공 발동: 에테르나 파이널',
@@ -559,7 +579,7 @@ export class BattleUI {
       defeat: '💔 패배...',
     };
 
-    this.scene.time.delayedCall(80, () => {
+    this.scene.time.delayedCall(BATTLE_LOG_HIGHLIGHT_ICON_QA_DELAY_MS, () => {
       const sourceMessage = qaMessages[kind];
       this.addLog(sourceMessage);
       this._writeBattleLogHighlightIconQaProbe(kind, sourceMessage);
@@ -579,17 +599,20 @@ export class BattleUI {
       .filter((key) => !renderedTextureKeys.includes(key));
     const highlightText = this.logHighlight?.active ? this.logHighlight.text : '';
     const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText);
+    const escapeLegacyGlyphPresent = /[🏃❌🚧🔒🆘]/u.test(highlightText);
     const hasExpectedIcon = Boolean(activeIcon)
       && missingBattleLogHighlightIconKeys.length === 0
       && !this.logHighlightIconFallbackRendered
-      && !legacyGlyphPresent;
+      && !legacyGlyphPresent
+      && !escapeLegacyGlyphPresent;
 
     document.body.dataset.aeternaBattleLogHighlightIconQa = JSON.stringify({
       status: hasExpectedIcon ? 'ready' : 'missing-icon',
       kind,
       sourceMessage,
       highlightText,
-      legacyGlyphPresent,
+      legacyGlyphPresent: legacyGlyphPresent || escapeLegacyGlyphPresent,
+      escapeLegacyGlyphPresent,
       logHighlightIcon: {
         iconId: this._isLogHighlightStatusIconKind(kind)
           ? BATTLE_LOG_HIGHLIGHT_STATUS_ICON_IDS[kind]

@@ -6238,3 +6238,526 @@ Current QA state:
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `?debugScene=combo&renderer=canvas&comboFrameQa=1&qaRun=phase206-combo-hint-separator-icon` reports `aeternaComboFrameQa.status = ready`, `hintCount = 2`, `hintSeparatorIcon.iconId = skill_mw_arrow`, rendered keys `skill_mw_arrow_icon`, `renderedCount = 2`, `expectedCount = 2`, display sizes `14x14`, `hintTextLegacyArrowPresent = false`, empty `missingHintSeparatorIconKeys`, `skill_mw_arrow.png` response status `200`, one visible nonblank canvas, and no console/page errors.
 - Visual QA screenshot: `logs/phase206-combo-hint-separator-icon.png` shows the ComboUI QA scene with image-backed hint separators.
+
+## Phase 207: GameScene Field Monster Fallback Image Runtime Wiring
+
+Runtime GameScene missing field monster fallback coverage:
+
+- Normal fallback image: `battle_monster_fallback.png` / texture key `battle_monster_fallback`.
+- Boss fallback image: `battle_boss_fallback.png` / texture key `battle_boss_fallback`.
+
+Production rule:
+
+- `GameScene.preload()` queues the same Aseprite battle monster fallback PNGs used by `BattleScene`.
+- `_spawnMonster()` still uses the monster spritesheet manifest first. If a field monster id has no manifest sprite, it now renders `battle_monster_fallback` or `battle_boss_fallback` before the older color rectangle plus emoji fallback.
+- Field display sizes are `56x56` for normal missing monsters and `72x72` for boss missing monsters.
+- Texture-missing fallback keeps the old procedural rectangle and `GameScene.MONSTER_EMOJIS` path observable only when the generic Aseprite fallback texture is also unavailable.
+- `?debugScene=game&renderer=canvas&fieldMonsterFallbackQa=1` spawns one missing normal monster and one missing boss monster, then writes `aeternaGameFieldMonsterFallbackQa` with rendered count, image keys, display sizes, legacy emoji presence, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify `GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES`, preload wiring, debug-scene QA route, image object names, display sizes through QA, legacy emoji fallback gate, and QA payload fields.
+- Browser QA verifies two fallback images render with `battle_monster_fallback` and `battle_boss_fallback`, no legacy emoji fallback is visible, both runtime PNG requests return `200`, and the canvas is nonblank.
+- Existing GameScene monster sprite manifest, boss label icon, zone label icon, connection icon, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 207 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "missing field monster"` failed before implementation because `GameScene.ts` did not define `fieldMonsterFallbackQa` or `GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 144 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=game&renderer=canvas&fieldMonsterFallbackQa=1&qaRun=phase207-field-monster-fallback` reports `aeternaGameFieldMonsterFallbackQa.status = ready`, `renderedCount = 2`, rendered keys `battle_monster_fallback` and `battle_boss_fallback`, display sizes `56x56` and `72x72`, `legacyEmojiPresent = false`, empty `missingFieldMonsterFallbackKeys`, both fallback PNG responses `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase207-field-monster-fallback.png` shows the GameScene field with image-backed missing normal and boss monster fallback sprites.
+
+## Phase 208: GameScene Field NPC Placeholder Runtime Wiring
+
+Runtime GameScene missing field NPC fallback coverage:
+
+- Missing NPC fallback image: `placeholder.png` / texture key `placeholder`.
+
+Production rule:
+
+- `GameScene.preload()` queues the common Aseprite placeholder PNG from `assets/generated/ui/placeholders/placeholder.png`.
+- `_spawnNpc()` still uses the NPC spritesheet manifest first, then legacy `NPC_SPRITE_MAP` textures for existing field NPCs.
+- If a field NPC id has neither manifest sprite nor legacy texture, `_spawnNpc()` renders the Aseprite `placeholder` image at `48x64` before the older green procedural rectangle fallback.
+- Texture-missing fallback keeps the old `32x48` procedural rectangle path observable only when the common Aseprite placeholder texture is also unavailable.
+- `?debugScene=game&renderer=canvas&fieldNpcFallbackQa=1` spawns one missing NPC, then writes `aeternaGameFieldNpcFallbackQa` with rendered count, image key, display size, procedural rectangle presence, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify `GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE`, preload wiring, debug-scene QA route, image object names, display sizes through QA, procedural rectangle fallback gate, and QA payload fields.
+- Browser QA verifies one fallback image renders with `placeholder`, no procedural rectangle fallback is active, the runtime PNG request returns `200`, and the canvas is nonblank.
+- Existing GameScene NPC sprite manifest, field monster fallback, fallback texture, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 208 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "missing field NPC"` failed before implementation because `GameScene.ts` did not define `fieldNpcFallbackQa`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\fallbackTextureAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 146 tests across 5 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=game&renderer=canvas&fieldNpcFallbackQa=1&qaRun=phase208-field-npc-fallback` reports `aeternaGameFieldNpcFallbackQa.status = ready`, `renderedCount = 1`, rendered key `placeholder`, display size `48x64`, `proceduralRectanglePresent = false`, empty `missingFieldNpcFallbackKeys`, `placeholder.png` response `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase208-field-npc-fallback.png` shows the GameScene field with an image-backed missing NPC placeholder fallback.
+
+## Phase 209: DungeonScene Player Thumbnail Fallback Runtime Wiring
+
+Runtime DungeonScene missing player spritesheet fallback coverage:
+
+- Player fallback image: `char_battle_<classId>.png` / texture key `char_battle_<classId>`.
+- Current QA route coverage: `ether_knight` uses `char_battle_ether_knight.png`.
+
+Production rule:
+
+- `DungeonScene.preload()` queues the current class id's Aseprite battle thumbnail from `assets/generated/characters/class_main/battle/char_battle_<classId>.png`.
+- `_createPlayer()` still uses `characterSpriteManifest` full character spritesheet frame `0` first.
+- If the full spritesheet is unavailable, `_createPlayer()` renders `dungeon_player_thumbnail_fallback` as a `56x84` image before the legacy `dungeon_player` side illustration and rectangle fallback.
+- `dungeonPlayerThumbnailFallbackQa=1` intentionally skips the manifest sheet so the thumbnail fallback path can be tested deterministically.
+- `aeternaDungeonPlayerThumbnailFallbackQa` records class id, texture key/path, rendered count, display size, legacy side illustration fallback state, rectangle fallback state, visible canvas count, and missing thumbnail keys.
+
+Exit criteria:
+
+- Unit tests verify the thumbnail resource table, preload wiring, debug-scene QA route, fallback object name, display size, legacy fallback gates, and QA payload fields.
+- Browser QA verifies one thumbnail fallback image renders with `char_battle_ether_knight`, the side illustration and rectangle fallback stay inactive, the runtime PNG request returns `200`, and the canvas is nonblank.
+- Existing DungeonScene player spritesheet behavior, Dungeon frame QA, character battle thumbnail assets, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 209 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts -t "battle thumbnail before side illustration"` failed before implementation because `DungeonScene.ts` did not define `dungeonPlayerThumbnailFallbackQa`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts tests\unit\characterBattleThumbnailAssets.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\fallbackTextureAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 186 tests across 7 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=dungeon&renderer=canvas&dungeonFrameQa=ready&dungeonPlayerThumbnailFallbackQa=1&class=ether_knight&qaRun=phase209-dungeon-player-thumbnail-fallback` reports `aeternaDungeonPlayerThumbnailFallbackQa.status = ready`, `renderedCount = 1`, texture key `char_battle_ether_knight`, path `assets/generated/characters/class_main/battle/char_battle_ether_knight.png`, display size `56x84`, `illustrationFallbackRendered = false`, `rectangleFallbackRendered = false`, empty `missingDungeonPlayerThumbnailKeys`, `char_battle_ether_knight.png` response `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase209-dungeon-player-thumbnail-fallback.png` shows DungeonScene with an image-backed player battle thumbnail fallback.
+
+## Phase 210: DungeonScene Clear Reward Icon Runtime Wiring
+
+Runtime DungeonScene clear reward marker coverage:
+
+- EXP reward marker: `skill_ek_passive.png` / texture key `skill_ek_passive_icon`.
+- Gold reward marker: `ITM-MAT-002.png` / texture key `icon_item_ITM-MAT_002`.
+
+Production rule:
+
+- `DungeonScene.preload()` queues the EXP skill icon and Gold item icon through the same Aseprite resource helpers used by battle reward UI.
+- `_showVictory()` renders `dungeon_reward_exp_icon` and `dungeon_reward_gold_icon` as `18x18` nearest-filtered images beside the reward value text.
+- Reward text, lobby return input, and reward calculation stay in the existing dynamic Phaser UI flow.
+- If an icon texture is unavailable, the QA probe records the fallback kind and missing texture key instead of silently reporting success.
+- `dungeonFrameQa=clear` records `rewardIcon`, `missingRewardIconKeys`, and `rewardLabelLegacyGlyphPresent` so the clear reward panel remains image-backed and free of legacy reward emoji labels.
+
+Exit criteria:
+
+- Unit tests verify reward icon resource ids, preload wiring, image object names, display sizes, fallback tracking, and QA payload fields.
+- Browser QA verifies two reward icons render with `skill_ek_passive_icon` and `icon_item_ITM-MAT_002`, both runtime PNG requests return `200`, no reward legacy glyphs are present, and the canvas is nonblank.
+- Existing DungeonScene frame/title/return icon behavior, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 210 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "클리어 보상 패널"` failed before implementation because `DungeonScene.ts` did not import `getItemIconResource` or define the clear reward icon runtime contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 146 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Diff check: `git diff --check` passes with only existing Windows LF-to-CRLF working-copy warnings.
+- Browser QA: `?debugScene=dungeon&renderer=canvas&dungeonFrameQa=clear&class=ether_knight&qaRun=phase210-dungeon-clear-reward-icons` reports `aeternaDungeonFrameQa.status = ready`, mode `clear`, reward icon `expectedCount = 2`, `renderedCount = 2`, rendered keys `skill_ek_passive_icon` and `icon_item_ITM-MAT_002`, both display sizes `18x18`, empty `fallbackKinds`, empty `missingRewardIconKeys`, `rewardLabelLegacyGlyphPresent = false`, both reward PNG responses `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase210-dungeon-clear-reward-icons.png` shows DungeonScene clear rewards with image-backed EXP and Gold markers.
+
+## Phase 211: DungeonScene Monster Preview Fallback Runtime Wiring
+
+Runtime DungeonScene missing monster preview fallback coverage:
+
+- Normal preview fallback image: `battle_monster_fallback.png` / texture key `battle_monster_fallback`.
+- Boss preview fallback image: `battle_boss_fallback.png` / texture key `battle_boss_fallback`.
+- Current QA route coverage: normal wave preview fallback uses 4 generic normal fallback images.
+
+Production rule:
+
+- `DungeonScene.preload()` queues both generic Aseprite monster fallback images alongside the normal preview textures.
+- `_spawnEnemyPreview()` still uses the monster-specific preview texture first.
+- If a preview texture is unavailable, or `dungeonMonsterFallbackQa=1` intentionally bypasses preview textures, the scene renders `dungeon_monster_fallback_normal_<index>` or `dungeon_monster_fallback_boss_<index>` image objects before the old generated texture plus emoji text fallback.
+- Normal fallback images render at `56x56`; boss fallback images render at `80x80`.
+- `aeternaDungeonMonsterFallbackQa` records expected/rendered count, fallback image texture keys, display sizes, legacy emoji fallback state, visible canvas count, and missing fallback keys.
+
+Exit criteria:
+
+- Unit tests verify `DUNGEON_MONSTER_FALLBACK_TEXTURES`, preload wiring, debug-scene QA route, preview bypass branch, image object names, display sizes through QA, legacy emoji fallback gate, and QA payload fields.
+- Browser QA verifies 4 normal fallback images render with `battle_monster_fallback`, no legacy emoji fallback is visible, both normal and boss fallback PNG requests return `200`, and the canvas is nonblank.
+- Existing DungeonScene frame/title/reward/player fallback behavior, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 211 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "DungeonScene missing monster previews"` failed before implementation because `DungeonScene.ts` did not define `dungeonMonsterFallbackQa` or the monster preview fallback runtime contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\characterSpriteManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 185 tests across 5 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Diff check: `git diff --check` passes with only existing Windows LF-to-CRLF working-copy warnings.
+- Browser QA: `?debugScene=dungeon&renderer=canvas&dungeonFrameQa=ready&dungeonMonsterFallbackQa=1&class=ether_knight&qaRun=phase211-dungeon-monster-fallback` reports `aeternaDungeonMonsterFallbackQa.status = ready`, `expectedFallbackCount = 4`, `renderedCount = 4`, fallback image key `battle_monster_fallback`, all display sizes `56x56`, `legacyEmojiPresent = false`, empty `missingDungeonMonsterFallbackKeys`, both fallback PNG responses `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase211-dungeon-monster-fallback.png` shows DungeonScene wave previews with image-backed generic monster fallback sprites.
+
+## Phase 212: GameScene Remote Player Thumbnail Fallback Runtime Wiring
+
+Runtime GameScene remote player fallback coverage:
+
+- Remote player fallback image: `char_battle_<classId>.png` / texture key `char_battle_<classId>`.
+- Current QA route coverage: `ether_knight` uses `char_battle_ether_knight.png`.
+
+Production rule:
+
+- `GameScene.preload()` queues the character battle thumbnail resources alongside the character spritesheet manifest.
+- `_spawnRemotePlayerPreview()` still uses `characterSpriteManifest` full character spritesheet frame `0` first when the remote class spritesheet texture is available.
+- If the remote class spritesheet is unavailable, or `remotePlayerFallbackQa=1` intentionally bypasses the spritesheet path, the scene renders `game_scene_remote_player_thumbnail_fallback_<characterId>` as a `40x60` image before the old `40x56` rectangle fallback.
+- `aeternaGameRemotePlayerFallbackQa` records class id, thumbnail texture key/path, rendered count, display size, rectangle fallback state, visible canvas count, and missing thumbnail keys.
+
+Exit criteria:
+
+- Unit tests verify debug-scene QA route wiring, character thumbnail preload, remote spawn helper, image object name, display size, rectangle fallback gate, and QA payload fields.
+- Browser QA verifies one thumbnail fallback image renders with `char_battle_ether_knight`, the rectangle fallback stays inactive, the runtime PNG request returns `200`, and the canvas is nonblank.
+- Existing GameScene remote player spritesheet behavior, Dungeon player/monster fallback behavior, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 212 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts -t "remote players"` failed before implementation because `GameScene.ts` did not define `remotePlayerFallbackQa`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts tests\unit\characterBattleThumbnailAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 187 tests across 6 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Diff check: `git diff --check` passes with only existing Windows LF-to-CRLF working-copy warnings.
+- Browser QA: `?debugScene=game&renderer=canvas&remotePlayerFallbackQa=1&class=ether_knight&qaRun=phase212-remote-player-thumbnail-fallback` reports `aeternaGameRemotePlayerFallbackQa.status = ready`, `expectedCount = 1`, `renderedCount = 1`, thumbnail key `char_battle_ether_knight`, path `assets/generated/characters/class_main/battle/char_battle_ether_knight.png`, display size `40x60`, `rectangleFallbackRendered = false`, empty `missingRemotePlayerThumbnailKeys`, two `char_battle_ether_knight.png` responses `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase212-remote-player-thumbnail-fallback.png` shows GameScene with an image-backed remote player battle thumbnail fallback.
+
+## Phase 213: GameScene Local Player Thumbnail Fallback Runtime Wiring
+
+Runtime GameScene local player fallback coverage:
+
+- Local player fallback image: `char_battle_<classId>.png` / texture key `char_battle_<classId>`.
+- Current QA route coverage: `ether_knight` uses `char_battle_ether_knight.png`.
+
+Production rule:
+
+- `GameScene.preload()` already queues the character battle thumbnail resources alongside the character spritesheet manifest.
+- `createPlayer()` still uses the active-skin `characterSpriteManifest` full character spritesheet frame `0` first when that spritesheet texture is available.
+- If the local class spritesheet is unavailable, or `localPlayerFallbackQa=1` intentionally bypasses the spritesheet path, the scene uses `char_battle_<classId>` as the local physics sprite texture before the legacy `player_sprite` front illustration/texture fallback.
+- The thumbnail fallback keeps the existing physics body, camera follow, input handling, HUD, and combat effect wiring unchanged.
+- `aeternaGameLocalPlayerFallbackQa` records class id, selected texture key, thumbnail texture key/path, rendered count, display size, legacy fallback state, visible canvas count, and missing thumbnail keys.
+
+Exit criteria:
+
+- Unit tests verify debug-scene QA route wiring, character thumbnail preload reuse, local player fallback branch, image object name, legacy fallback gate, and QA payload fields.
+- Browser QA verifies one local thumbnail fallback sprite renders with `char_battle_ether_knight`, the legacy fallback stays inactive, the runtime PNG request returns `200`, and the canvas is nonblank.
+- Existing GameScene local/remote spritesheet behavior, Dungeon player/monster fallback behavior, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 213 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts -t "player fallback texture"` failed before implementation because `GameScene.ts` did not define `localPlayerFallbackQa`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts tests\unit\characterBattleThumbnailAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 187 tests across 6 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=game&renderer=canvas&localPlayerFallbackQa=1&class=ether_knight&qaRun=phase213-local-player-thumbnail-fallback` reports `aeternaGameLocalPlayerFallbackQa.status = ready`, `classId = ether_knight`, selected texture key `char_battle_ether_knight`, `expectedCount = 1`, `renderedCount = 1`, path `assets/generated/characters/class_main/battle/char_battle_ether_knight.png`, display size `64x96`, `legacyFallbackRendered = false`, empty `missingLocalPlayerThumbnailKeys`, two `char_battle_ether_knight.png` responses `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase213-local-player-thumbnail-fallback.png` shows GameScene with an image-backed local player battle thumbnail fallback.
+
+## Phase 214: BattleScene Ally Placeholder Fallback Runtime Wiring
+
+Runtime BattleScene missing ally spritesheet/thumbnail fallback coverage:
+
+- Ally fallback image: `placeholder.png` / texture key `placeholder`.
+- Current QA route coverage: `missing_class` intentionally has no manifest sheet and no `char_battle_missing_class` thumbnail.
+
+Production rule:
+
+- `BattleScene.preload()` queues the common Aseprite placeholder PNG from `assets/generated/ui/placeholders/placeholder.png`.
+- `_spawnAllies()` still uses `characterSpriteManifest` full character spritesheet first, then `char_battle_<classId>.png` battle thumbnail if that static texture is available.
+- If both character resources are unavailable, `_spawnAllies()` renders `battle_ally_fallback_<unitId>` as a `48x64` `placeholder` image before the old blue procedural rectangle fallback.
+- Texture-missing fallback keeps the old `48x64` blue rectangle path observable only when the common Aseprite placeholder texture is also unavailable.
+- `?debugScene=battle&renderer=canvas&battleAllyFallbackQa=1&class=missing_class` writes `aeternaBattleAllyFallbackQa` with expected/rendered count, fallback image key/name, display size, rectangle fallback state, visible canvas count, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify `BATTLE_ALLY_FALLBACK_TEXTURE`, preload wiring, debug-scene QA route, fallback object name, display size, rectangle fallback gate, and QA payload fields.
+- Browser QA verifies one fallback image renders with `placeholder`, no rectangle fallback is active, the runtime PNG request returns `200`, and the canvas is nonblank.
+- Existing BattleScene character sheet/thumbnail behavior, GameScene and DungeonScene player fallback behavior, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 214 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts -t "BattleScene prioritizes"` failed before implementation because `BattleScene.ts` did not define `battleAllyFallbackQa`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\characterSpriteManifest.test.ts tests\unit\characterBattleThumbnailAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\fallbackTextureAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 188 tests across 7 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleAllyFallbackQa=1&class=missing_class&qaRun=phase214-battle-ally-placeholder-fallback` reports `aeternaBattleAllyFallbackQa.status = ready`, `expectedCount = 1`, `renderedCount = 1`, fallback texture key `placeholder`, path `assets/generated/ui/placeholders/placeholder.png`, fallback image name `battle_ally_fallback_player_1`, display size `48x64`, `rectangleFallbackRendered = false`, empty `missingBattleAllyFallbackKeys`, `placeholder.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase214-battle-ally-placeholder-fallback.png` shows BattleScene with an image-backed ally placeholder fallback.
+
+## Phase 215: CharacterSelect Class Card Avatar Runtime Wiring
+
+Runtime CharacterSelect create-mode class card avatar coverage:
+
+- Class card avatar images: `char_battle_<classId>.png` / texture keys `char_battle_ether_knight`, `char_battle_memory_weaver`, `char_battle_shadow_weaver`, `char_battle_memory_breaker`, `char_battle_time_guardian`, `char_battle_void_wanderer`.
+- Current QA route coverage: `debugScene=characterSelect` with no existing character enters create mode and renders all six class cards.
+
+Production rule:
+
+- `CharacterSelectScene.preload()` already queues all six class battle thumbnail PNGs.
+- `_createClassCard()` now renders `character_select_class_card_avatar_<classId>` as a `54x81` nearest-filtered Aseprite image before the older front illustration and color circle fallback.
+- Texture-missing fallback keeps the previous front illustration path, then the color circle path, observable only when the class battle thumbnail is unavailable.
+- `?debugScene=characterSelect&renderer=canvas&characterSelectFrameQa=1` writes `aeternaCharacterSelectFrameQa.classCardAvatar` with expected/rendered count, expected/rendered keys, display sizes, fallback class ids, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify class card avatar constants, preload reuse, runtime image object name, display size, fallback tracking arrays, and QA payload fields.
+- Browser QA verifies all six class card avatars render with `char_battle_*`, all six runtime PNG requests return `200`, no class card avatar fallback is active, and the canvas is nonblank.
+- Existing CharacterSelect card/input/action/logout/existing-avatar frame behavior, character battle thumbnail asset coverage, runtime image reference coverage, public runtime roster coverage, and typecheck remain green.
+
+Current QA state:
+
+- Phase 215 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "캐릭터 선택 카드는"` failed before implementation because `CharacterSelectScene.ts` did not define `CHARACTER_SELECT_CLASS_CARD_AVATAR_WIDTH`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\characterBattleThumbnailAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 45 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `?debugScene=characterSelect&renderer=canvas&characterSelectFrameQa=1&qaRun=phase215-character-select-class-card-avatar` reports `aeternaCharacterSelectFrameQa.status = ready`, mode `create`, class card avatar `expectedCount = 6`, `renderedCount = 6`, rendered keys `char_battle_ether_knight`, `char_battle_memory_weaver`, `char_battle_shadow_weaver`, `char_battle_memory_breaker`, `char_battle_time_guardian`, `char_battle_void_wanderer`, all display sizes `54x81`, empty `missingClassCardAvatarKeys`, empty `fallbackClassCardAvatarIds`, all six thumbnail PNG responses `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase215-character-select-class-card-avatar.png` shows CharacterSelect create-mode cards with image-backed Aseprite class battle thumbnails.
+
+## Phase 216: Cutscene Narrator Portrait Runtime Wiring
+
+Runtime Cutscene narrator portrait coverage:
+
+- Narrator portrait image: `npc_portrait_18_memory_fragment_portrait.png` / texture key `npc_portrait_18_memory_fragment_portrait`.
+- Current QA route coverage: `debugScene=cutscene` starts `CutsceneScene` with speaker `내레이터`.
+
+Production rule:
+
+- `CutsceneScene.preload()` queues the narrator NPC portrait from `assets/generated/characters/npc/npc_portrait_18_memory_fragment_portrait.png`.
+- `PORTRAIT_MAP` maps both `내레이터` and `narrator` to the Aseprite NPC portrait key instead of the old missing `portrait_narrator` key.
+- `_updatePortrait()` renders `cutscene_portrait_<key>` as a `96x96` nearest-filtered image and records missing portrait keys only when the Aseprite portrait texture is unavailable.
+- `?debugScene=cutscene&renderer=canvas&cutsceneFrameQa=1` writes `aeternaCutsceneFrameQa.portrait` with expected/rendered count, rendered keys, display sizes, and `missingCutscenePortraitKeys`.
+
+Exit criteria:
+
+- Unit tests verify narrator portrait constants, preload wiring, portrait key mapping, image render path, display size, nearest filter, and QA payload fields.
+- Browser QA verifies one narrator portrait renders with `npc_portrait_18_memory_fragment_portrait`, the runtime PNG request returns `200`, no portrait key is missing, and the canvas is nonblank.
+- Existing Cutscene UI frame/action button icon behavior, NPC portrait asset coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 216 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "컷씬 대화 박스"` failed before implementation because `CutsceneScene.ts` did not define `CUTSCENE_PORTRAIT_TEXTURES`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts tests\unit\npcPortraitAssets.test.ts` passes with 44 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=cutscene&renderer=canvas&cutsceneFrameQa=1&qaRun=phase216-cutscene-portrait` reports `aeternaCutsceneFrameQa.status = ready`, portrait `expectedCount = 1`, `renderedCount = 1`, rendered key `npc_portrait_18_memory_fragment_portrait`, display size `96x96`, empty `missingCutscenePortraitKeys`, `npc_portrait_18_memory_fragment_portrait.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase216-cutscene-portrait.png` shows CutsceneScene with an image-backed Aseprite narrator portrait.
+
+## Phase 217: Cutscene Class Portrait Runtime Wiring
+
+Runtime Cutscene class portrait coverage:
+
+- Class portrait images: `char_illust_<classId>_front.png` / texture keys `char_illust_ether_knight_front`, `char_illust_memory_weaver_front`, `char_illust_shadow_weaver_front`, `char_illust_memory_breaker_front`, `char_illust_time_guardian_front`, `char_illust_void_wanderer_front`.
+- Current QA route coverage: `debugScene=cutscene&cutsceneSpeaker=ether_knight` starts `CutsceneScene` with speaker `에테르 기사`.
+
+Production rule:
+
+- `CutsceneScene.preload()` queues the narrator portrait plus six basic class front illustration PNGs.
+- `PORTRAIT_MAP` maps official class names and legacy scenario role names to Aseprite class portrait keys instead of missing `portrait_*` keys.
+- Direct legacy `line.portrait` keys are normalized through `CUTSCENE_LEGACY_PORTRAIT_KEY_MAP`.
+- `?debugScene=cutscene&renderer=canvas&cutsceneFrameQa=1&cutsceneSpeaker=ether_knight` writes `aeternaCutsceneFrameQa.portrait` including `preloadedTextureCount`, rendered key, display size, and missing portrait keys.
+
+Exit criteria:
+
+- Unit tests verify class portrait constants, preload paths, speaker mapping, debug route speaker param, QA payload `preloadedTextureCount`, and legacy portrait key normalization.
+- Browser QA verifies one class portrait renders with `char_illust_ether_knight_front`, all six class front PNG preload requests return `200`, no missing portrait keys are recorded, and the canvas is nonblank.
+- Existing Cutscene UI frame/action icon/narrator portrait behavior, character illustration asset coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 217 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "컷씬 대화 박스"` failed before implementation because `CutsceneScene.ts` did not contain `key: 'char_illust_ether_knight_front'`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\characterIllustrationAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 45 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=cutscene&renderer=canvas&cutsceneFrameQa=1&cutsceneSpeaker=ether_knight&qaRun=phase217-cutscene-class-portrait` reports `aeternaCutsceneFrameQa.status = ready`, portrait `preloadedTextureCount = 7`, `expectedCount = 1`, `renderedCount = 1`, rendered key `char_illust_ether_knight_front`, display size `96x96`, empty `missingCutscenePortraitKeys`, all six class front PNG responses `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase217-cutscene-class-portrait.png` shows CutsceneScene with an image-backed Aseprite class portrait.
+
+## Phase 218: DungeonScene Boss Name Icon Runtime Wiring
+
+Runtime DungeonScene boss name icon coverage:
+
+- Boss name icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+- Current QA route coverage: `debugScene=dungeon&dungeonFrameQa=boss` enters the boss warning flow, then spawns the boss preview label.
+
+Production rule:
+
+- `DungeonScene.preload()` already queues `DUNGEON_BOSS_WARNING_ICON_ID` through `spriteResourceManifest`.
+- `_spawnEnemyPreview(true)` now renders `dungeon_boss_name_icon_<index>` as an `18x18` Aseprite image beside the boss name.
+- If the icon texture is available, the boss name label is text-only, e.g. `기억 흡수자`; the legacy `★ <보스명> ★` string is retained only as a missing-texture fallback.
+- `dungeonFrameQa=boss` now calls `_spawnEnemyPreview(true)` after the warning animation so `aeternaDungeonFrameQa.bossNameIcon` records the real boss preview label state.
+
+Exit criteria:
+
+- Unit tests verify the boss name icon size constant, image object name, nearest filtering, text-only label branch, fallback label branch, QA payload fields, and boss QA route preview spawn.
+- Browser QA verifies one boss name icon renders with `skill_ek_explode_icon`, display size is `18x18`, no boss name icon key is missing, the boss name label has no `★` glyph, the icon PNG request returns `200`, and the canvas is nonblank.
+- Existing Dungeon frame/title/action/reward/boss warning/monster fallback behavior, sprite resource coverage, runtime image reference coverage, public runtime roster coverage, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 218 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "던전 보스 경고"` failed before implementation because `DungeonScene.ts` did not define `DUNGEON_BOSS_NAME_ICON_SIZE`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 147 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=dungeon&renderer=canvas&dungeonFrameQa=boss&class=ether_knight&qaRun=phase218-dungeon-boss-name-icon` reports `aeternaDungeonFrameQa.status = ready`, `bossNameIcon.renderedCount = 1`, texture key `skill_ek_explode_icon`, display size `18x18`, empty `missingBossNameIconKeys`, `bossNameLegacyGlyphPresent = false`, `bossNameLabels = ["기억 흡수자"]`, `skill_ek_explode.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase218-dungeon-boss-name-icon.png` shows DungeonScene boss preview with an image-backed Aseprite boss name icon and a text-only boss name label.
+
+## Phase 219: LobbyScene Town Title Zone Icon Runtime Wiring
+
+Runtime LobbyScene town title icon coverage:
+
+- Town title icon: `zone_aether_plains.png` / texture key `zone_aether_plains`.
+- Current QA route coverage: `debugScene=lobby&lobbyTitleIconQa=1` starts LobbyScene and records the title icon render state.
+
+Production rule:
+
+- `LobbyScene.preload()` resolves `getSpriteResourceForWorldZoneIcon('aether_plains')`, queues `zone_aether_plains` once, and de-duplicates it against the existing bottom nav world icon preload path.
+- `_drawTownBackground()` renders `lobby_title_zone_icon` as a `20x20` nearest-filtered Aseprite image beside the town title.
+- If the icon texture is available, title text is `아에테리아 마을` with no `☆` decoration. The legacy `☆ 아에테리아 마을 ☆` string is retained only as a missing-texture fallback.
+- `lobbyTitleIconQa=1` writes `aeternaLobbyTitleIconQa` with rendered count, texture key/path, display size, fallback state, legacy glyph state, and missing icon keys.
+
+Exit criteria:
+
+- Unit tests verify the worldmap manifest resource, title icon constants, preload path, image object name, display size, nearest filtering, text-only label branch, QA payload fields, and debug route parameter.
+- Browser QA verifies one title icon renders with `zone_aether_plains`, display size is `20x20`, no title icon key is missing, the visible title has no `☆`/`★` glyph, the icon PNG request returns `200`, and the canvas is nonblank.
+- Existing LobbyScene NPC sprite, connection, dialogue/title/focus, nav, item, gold HUD, UI frame, runtime image reference, public runtime roster coverage, and typecheck remain green.
+
+Current QA state:
+
+- Phase 219 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "town title"` failed before implementation because `LobbyScene.ts` did not define `LOBBY_TITLE_ICON_ZONE_ID` or the title icon QA contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 148 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `?debugScene=lobby&renderer=canvas&lobbyTitleIconQa=1&qaRun=phase219-lobby-title-icon` reports `aeternaLobbyTitleIconQa.status = ready`, `titleIcon.renderedCount = 1`, texture key `zone_aether_plains`, display size `20x20`, title label `아에테리아 마을`, empty `missingLobbyTitleIconKeys`, `titleLabelLegacyGlyphPresent = false`, `zone_aether_plains.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase219-lobby-title-icon.png` shows LobbyScene with an image-backed Aseprite town title icon and a text-only town title label.
+
+## Phase 220: LobbyScene NPC Action Notification Icon Runtime Wiring
+
+Runtime LobbyScene NPC action notification icon coverage:
+
+- Shop notification icon: `ITM-CON-001.png` / texture key `icon_item_ITM-CON_001`.
+- Enhance notification icon: `ITM-MAT-001.png` / texture key `icon_item_ITM-MAT_001`.
+- Quest notification icon: `ITM-QST-004.png` / texture key `icon_item_ITM-QST_004`.
+- Party notification icon: `skill_ek_slash.png` / texture key `skill_ek_slash_icon`.
+- Story notification icon: `ITM-QST-001.png` / texture key `icon_item_ITM-QST_001`.
+- Current QA route coverage: `debugScene=lobby&lobbyNotificationIconQa=shop|enhance|quest|party|story` starts LobbyScene, opens a deterministic notification, and records the notification icon render state.
+
+Production rule:
+
+- `LobbyScene` resolves notification icons through the existing item and skill icon manifests, so the action toast reuses the same Aseprite source assets as the matching panel titles.
+- `_showNotification()` renders `lobby_notification_icon` as an `18x18` nearest-filtered Aseprite image before the notification label.
+- If the icon texture is available, notification labels are text-only, for example `모험가 길드: 파티원을 모집합니다.`. The legacy `🛒`, `🔨`, `📜`, `⚔`, and `📖` glyph prefixes are retained only as missing-texture fallback behavior.
+- `lobbyNotificationIconQa` writes `aeternaLobbyNotificationIconQa` with rendered count, texture key/path, display size, fallback state, legacy glyph state, and missing icon keys.
+
+Exit criteria:
+
+- Unit tests verify the item/skill manifest resources, notification icon union, constants, image object name, display size, nearest filtering, QA payload fields, debug route parameter, and removal of legacy glyph-prefixed action notification strings.
+- Browser QA verifies one notification icon renders with the expected texture key, display size is `18x18`, no notification icon key is missing, the visible label has no legacy glyph prefix, the PNG request returns `200`, and the canvas is nonblank.
+- Existing LobbyScene NPC sprite, connection, dialogue/title/focus, nav, item, gold HUD, town title, UI frame, runtime image reference, public runtime roster coverage, and typecheck remain green.
+
+Current QA state:
+
+- Phase 220 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "NPC action notifications"` failed before implementation because `LobbyScene.ts` did not define the notification icon type or QA contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 149 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `?debugScene=lobby&renderer=canvas&lobbyNotificationIconQa=party&qaRun=phase220-lobby-notification-icon` reports `aeternaLobbyNotificationIconQa.status = ready`, `notificationIcon.renderedCount = 1`, texture key `skill_ek_slash_icon`, display size `18x18`, notification label `모험가 길드: 파티원을 모집합니다.`, empty `missingLobbyNotificationIconKeys`, `notificationLegacyGlyphPresent = false`, `skill_ek_slash.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase220-lobby-notification-icon.png` shows LobbyScene with an image-backed Aseprite NPC action notification icon and a text-only notification label.
+
+## Phase 221: DungeonScene Failure Title Icon Runtime Wiring
+
+Runtime DungeonScene failure title icon coverage:
+
+- Party wipe title icon: `status_curse.png` / texture key `status_curse_icon`.
+- Time limit title icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+- Current QA route coverage: `debugScene=dungeon&dungeonFrameQa=defeat|timeout` starts DungeonScene directly in deterministic failure title states and records the failure title icon render state.
+
+Production rule:
+
+- `DungeonScene.preload()` queues both failure title icons through the existing status/skill icon manifests.
+- `_showDungeonFailureText()` renders `dungeon_failure_title_icon` as a `26x26` nearest-filtered Aseprite image beside the center failure title.
+- If the icon texture is available, the title label is text-only, e.g. `패배...` or `시간 초과!`. The legacy `💀` and `⏰` glyph prefixes are retained only as missing-texture fallback behavior.
+- `composeDungeonGameOverText()` remains unchanged so the existing dungeon game-over SSOT compatibility tests still preserve the legacy first-line lead strings. `DungeonScene` strips the glyph only at the display layer.
+- `dungeonFrameQa=defeat|timeout` writes `aeternaDungeonFrameQa.failureTitleIcon`, `failureTitleLegacyGlyphPresent`, `missingFailureTitleIconKeys`, and `failureLabel`.
+
+Exit criteria:
+
+- Unit tests verify the status/skill icon mapping, preload loop, image object name, display size, nearest filtering, text-only display branch, fallback branch, QA payload fields, and expanded debug route parameters.
+- Browser QA verifies each failure mode renders the expected icon key at `26x26`, records no missing failure title icon keys, strips the legacy glyph from the visible label, returns `200` for the icon PNG, and keeps the canvas nonblank.
+- Existing Dungeon frame/title/action/reward/boss warning/boss name/monster fallback/player fallback behavior, dungeon game-over SSOT tests, sprite resource coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 221 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests/vitest.config.ts tests/unit/uiFrameAssets.test.ts -t "던전 실패와 시간초과"` failed before implementation because `DungeonScene.ts` did not import `getStatusIconResource()` or define the failure title icon contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests/vitest.config.ts tests/unit/uiFrameAssets.test.ts tests/unit/spriteResourceManifest.test.ts tests/unit/runtimeImageReferenceCoverage.test.ts tests/unit/runtimeImageRosterCoverage.test.ts tests/unit/dungeonGameOverNarration.test.ts` passes with 156 tests across 5 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=dungeon&renderer=canvas&dungeonFrameQa=defeat&class=ether_knight&qaRun=phase221-defeat` reports `aeternaDungeonFrameQa.status = ready`, `failureTitleIcon.key = status_curse_icon`, display size `26x26`, empty `missingFailureTitleIconKeys`, `failureTitleLegacyGlyphPresent = false`, label `패배...\n— 기억의 끈이 끊어졌습니다.`, `status_curse.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Browser QA: `?debugScene=dungeon&renderer=canvas&dungeonFrameQa=timeout&class=ether_knight&qaRun=phase221-timeout` reports `aeternaDungeonFrameQa.status = ready`, `failureTitleIcon.key = skill_tg_stop_icon`, display size `26x26`, empty `missingFailureTitleIconKeys`, `failureTitleLegacyGlyphPresent = false`, label `시간 초과!\n— 기억의 끈이 끊어졌습니다.`, `skill_tg_stop.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshots: `logs/phase221-dungeon-defeat-failure-title-icon.png` and `logs/phase221-dungeon-timeout-failure-title-icon.png` show DungeonScene failure titles with image-backed Aseprite icons and text-only labels.
+
+## Phase 222: BattleUI Escape Log Highlight Icon Runtime Wiring
+
+Runtime BattleUI escape log highlight coverage:
+
+- Escape success / critical escape icon: `skill_vw_warp.png` / texture key `skill_vw_warp_icon`.
+- Escape fail / blocked / forbidden icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+- Current QA route coverage: `debugScene=battle&battleLogHighlightIconQa=escapeSuccess|escapeFail|escapeBlocked|escapeForbidden|escapeCritical` starts BattleScene, waits until the battle intro has written `전투 시작!`, then injects the deterministic escape log highlight state.
+
+Production rule:
+
+- `BattleUI` maps escape log highlight kinds to existing Aseprite skill icon resources and renders the highlight icon as a `16x16` nearest-filtered image.
+- `composeEscapeLog()` remains unchanged so the escape narration SSOT still preserves the legacy `🏃 도주 성공!` and `❌ 도주 실패!` source strings.
+- The display layer strips `🏃`, `❌`, `🚧`, `🔒`, and `🆘` only after the icon path is selected, so visible labels are text-only, e.g. `도주 성공!`, `도주 실패!`, `도주 차단!`, `도주 불가!`, and `비상 도주!`.
+- The browser QA delay is fixed at `1700ms` so escape log injection happens after the battle intro no longer overwrites the highlight screenshot state.
+- `battleLogHighlightIconQa` writes `aeternaBattleLogHighlightIconQa.escapeLegacyGlyphPresent` in addition to the existing legacy glyph field.
+
+Exit criteria:
+
+- Unit tests verify the escape icon mapping, highlight color and kind inference, QA route kinds, source messages, glyph stripping, `escapeLegacyGlyphPresent`, BattleScene escape log source preservation, and QA delay contract.
+- Browser QA verifies success and failure render the expected icon keys at `16x16`, record no missing texture keys, strip the escape glyph from the visible highlight, return `200` for the skill icon PNGs, and keep the canvas nonblank.
+- Existing escape narration SSOT compatibility, sprite resource coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 222 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests/vitest.config.ts tests/unit/spriteResourceManifest.test.ts -t "도주 로그 하이라이트"` failed before implementation because `BattleUI.ts` did not map escape log kinds to Aseprite icons. A second RED on the same focused command caught the missing `BATTLE_LOG_HIGHLIGHT_ICON_QA_DELAY_MS` visual-QA timing contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests/vitest.config.ts tests/unit/spriteResourceManifest.test.ts tests/unit/escapeNarration.test.ts tests/unit/runtimeImageReferenceCoverage.test.ts tests/unit/runtimeImageRosterCoverage.test.ts` passes with 115 tests across 4 files.
+- Browser QA success route: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=escapeSuccess&class=ether_knight&qaRun=phase222-escapeSuccess-large-*` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = escapeSuccess`, `sourceMessage = 🏃 도주 성공!`, highlight text `도주 성공!`, icon id `skill_vw_warp`, texture key `skill_vw_warp_icon`, display size `16x16`, empty `missingBattleLogHighlightIconKeys`, `legacyGlyphPresent = false`, `escapeLegacyGlyphPresent = false`, `skill_vw_warp.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Browser QA failure route: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=escapeFail&class=ether_knight&qaRun=phase222-escapeFail-large-*` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = escapeFail`, `sourceMessage = ❌ 도주 실패!`, highlight text `도주 실패!`, icon id `skill_tg_stop`, texture key `skill_tg_stop_icon`, display size `16x16`, empty `missingBattleLogHighlightIconKeys`, `legacyGlyphPresent = false`, `escapeLegacyGlyphPresent = false`, `skill_tg_stop.png` response `200`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshots: `logs/phase222-battle-escape-success-log-icon.png` and `logs/phase222-battle-escape-fail-log-icon.png` show BattleScene log highlights with image-backed Aseprite escape icons and text-only labels.

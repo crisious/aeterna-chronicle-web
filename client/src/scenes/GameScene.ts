@@ -56,6 +56,10 @@ interface GameSceneData {
   zoneTeleportFrameQa?: boolean;
   envObjectQa?: boolean;
   bossLabelIconQa?: boolean;
+  fieldMonsterFallbackQa?: boolean;
+  fieldNpcFallbackQa?: boolean;
+  localPlayerFallbackQa?: boolean;
+  remotePlayerFallbackQa?: boolean;
   zoneLabelIconQa?: boolean;
   gameErrorIconQa?: boolean;
   gameConnectionIconQa?: 'connected' | 'offline' | 'error';
@@ -126,6 +130,24 @@ const GAME_SCENE_CONNECTION_STATES: Record<GameSceneConnectionIconMode, {
   offline: { label: '오프라인', fallbackLabel: '○ 오프라인', color: '#cccc44' },
   error: { label: '연결 실패', fallbackLabel: '✕ 연결 실패', color: '#ff4444' },
 };
+
+const GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES = {
+  normal: {
+    key: 'battle_monster_fallback',
+    path: 'assets/generated/monsters/fallback/battle_monster_fallback.png',
+  },
+  boss: {
+    key: 'battle_boss_fallback',
+    path: 'assets/generated/monsters/fallback/battle_boss_fallback.png',
+  },
+} as const;
+
+const GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE = {
+  key: 'placeholder',
+  path: 'assets/generated/ui/placeholders/placeholder.png',
+  displayWidth: 48,
+  displayHeight: 64,
+} as const;
 
 function getCharacterHudAvatarResource(classId: string): { key: string; path: string } {
   return CHARACTER_HUD_AVATAR_RESOURCES[classId as keyof typeof CHARACTER_HUD_AVATAR_RESOURCES]
@@ -210,6 +232,14 @@ export class GameScene extends Phaser.Scene {
   private connectionStatusIconFallbackRendered = false;
   private bossLabelIcons: Phaser.GameObjects.Image[] = [];
   private bossLabelIconFallbackCount = 0;
+  private fieldMonsterFallbackImages: Phaser.GameObjects.Image[] = [];
+  private fieldMonsterFallbackEmojiTexts: Phaser.GameObjects.Text[] = [];
+  private fieldNpcFallbackImages: Phaser.GameObjects.Image[] = [];
+  private fieldNpcFallbackRectangles: Phaser.GameObjects.Rectangle[] = [];
+  private localPlayerThumbnailFallbackRendered = false;
+  private localPlayerLegacyFallbackRendered = false;
+  private remotePlayerThumbnailFallbackImages: Phaser.GameObjects.Image[] = [];
+  private remotePlayerRectangleFallbackRendered = false;
   private errorScreenIcon?: Phaser.GameObjects.Image;
   private errorScreenIconFallbackRendered = false;
 
@@ -224,6 +254,14 @@ export class GameScene extends Phaser.Scene {
     this.sceneData = data ?? {};
     this.bossLabelIcons = [];
     this.bossLabelIconFallbackCount = 0;
+    this.fieldMonsterFallbackImages = [];
+    this.fieldMonsterFallbackEmojiTexts = [];
+    this.fieldNpcFallbackImages = [];
+    this.fieldNpcFallbackRectangles = [];
+    this.localPlayerThumbnailFallbackRendered = false;
+    this.localPlayerLegacyFallbackRendered = false;
+    this.remotePlayerThumbnailFallbackImages = [];
+    this.remotePlayerRectangleFallbackRendered = false;
     this.zoneLabelIcon = undefined;
     this.zoneLabelIconFallbackRendered = false;
     this.connectionStatusIcon = undefined;
@@ -280,6 +318,11 @@ export class GameScene extends Phaser.Scene {
     for (const characterSpriteResource of CHARACTER_SPRITE_MANIFEST) {
       queueCharacterSprite(characterSpriteResource);
     }
+    for (const avatarResource of Object.values(CHARACTER_HUD_AVATAR_RESOURCES)) {
+      if (!this.textures.exists(avatarResource.key)) {
+        this.load.image(avatarResource.key, avatarResource.path);
+      }
+    }
 
     // NPC/몬스터 스프라이트
     this.load.image('npc_guide_sprite', 'assets/generated/characters/npc_battle/04_mateus_sprite.png');
@@ -297,6 +340,14 @@ export class GameScene extends Phaser.Scene {
       } else {
         this.load.image(resource.key, resource.path);
       }
+    }
+    for (const texture of Object.values(GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES)) {
+      if (!this.textures.exists(texture.key)) {
+        this.load.image(texture.key, texture.path);
+      }
+    }
+    if (!this.textures.exists(GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.key)) {
+      this.load.image(GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.key, GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.path);
     }
 
     // 존/시대별 고유 텍스처 키 사용: Phaser 캐시가 이전 지역 배경을 재사용하지 않게 한다.
@@ -767,6 +818,17 @@ export class GameScene extends Phaser.Scene {
         this._spawnMonster('mon_erebos_memory_dust', 'QA 보스 Lv.30', 1130, 560, true);
       }
     }
+
+    if (this.sceneData.fieldMonsterFallbackQa === true) {
+      this._spawnMonster('mon_missing_field_fallback', 'QA 누락 몬스터 Lv.1', 1160, 480);
+      this._spawnMonster('mon_missing_boss_field_fallback', 'QA 누락 보스 Lv.30', 1220, 560, true);
+      this._writeFieldMonsterFallbackQaProbe();
+    }
+
+    if (this.sceneData.fieldNpcFallbackQa === true) {
+      this._spawnNpc('npc_missing_field_fallback', 'QA 누락 NPC', 620, 470, 'dialogue');
+      this._writeFieldNpcFallbackQaProbe();
+    }
   }
 
   // NPC 이미지 키 매핑
@@ -791,8 +853,20 @@ export class GameScene extends Phaser.Scene {
         .setScale(1)
         .setInteractive({ useHandCursor: true });
     } else {
-      sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88)
-        .setInteractive({ useHandCursor: true });
+      // Aseprite NPC sprite 로드 실패 시 placeholder PNG를 먼저 사용하고, 그마저 없을 때만 절차 사각형으로 후퇴한다.
+      const fallbackTexture = GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE;
+      if (this.textures.exists(fallbackTexture.key)) {
+        sprite = this.add.image(x, y, fallbackTexture.key)
+          .setDisplaySize(fallbackTexture.displayWidth, fallbackTexture.displayHeight)
+          .setInteractive({ useHandCursor: true });
+        sprite.setName(`game_scene_field_npc_fallback_${id}`);
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.fieldNpcFallbackImages.push(sprite);
+      } else {
+        sprite = this.add.rectangle(x, y, 32, 48, 0x44cc88)
+          .setInteractive({ useHandCursor: true });
+        this.fieldNpcFallbackRectangles.push(sprite);
+      }
     }
 
     const tag = this.add.text(x, y - 42, name, {
@@ -804,6 +878,37 @@ export class GameScene extends Phaser.Scene {
       this._openNpcDialogue(entity);
     });
     this.remoteEntities.set(id, entity);
+  }
+
+  private _writeFieldNpcFallbackQaProbe(): void {
+    if (this.sceneData.fieldNpcFallbackQa !== true || typeof document === 'undefined') return;
+
+    const missingFieldNpcFallbackKeys = this.textures.exists(GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.key)
+      ? []
+      : [GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.key];
+    const proceduralRectanglePresent = this.fieldNpcFallbackRectangles.some((rect) => rect.active);
+
+    document.body.dataset.aeternaGameFieldNpcFallbackQa = JSON.stringify({
+      status: this.fieldNpcFallbackImages.length >= 1
+        && missingFieldNpcFallbackKeys.length === 0
+        && !proceduralRectanglePresent
+        ? 'ready'
+        : 'missing-fallback',
+      expectedCount: 1,
+      renderedCount: this.fieldNpcFallbackImages.length,
+      fallbackImages: this.fieldNpcFallbackImages.map((image) => ({
+        key: image.texture.key,
+        name: image.name,
+        displayWidth: image.displayWidth,
+        displayHeight: image.displayHeight,
+      })),
+      proceduralRectanglePresent,
+      missingFieldNpcFallbackKeys,
+      visibleCanvasCount: Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length,
+    });
   }
 
   private _openNpcDialogue(npc: RemoteEntity): void {
@@ -888,18 +993,30 @@ export class GameScene extends Phaser.Scene {
       sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     } else {
       // Aseprite field monster sprite 로드 실패 시에만 사용하는 안전 fallback.
-      const hash = battleSeed.monsterName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-      const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
-      const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
+      const fallbackTexture = isBoss ? GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES.boss : GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES.normal;
+      if (this.textures.exists(fallbackTexture.key)) {
+        sprite = this.add.image(x, y, fallbackTexture.key)
+          .setDisplaySize(size, size)
+          .setInteractive({ useHandCursor: true });
+        sprite.setName(`game_scene_field_monster_fallback_${cleanId}`);
+        sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.fieldMonsterFallbackImages.push(sprite);
+      } else {
+        // Aseprite field monster sprite와 fallback image 로드 실패 시에만 사용하는 안전 fallback.
+        const hash = battleSeed.monsterName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+        const color = GameScene.MONSTER_COLORS[hash % GameScene.MONSTER_COLORS.length];
+        const emoji = GameScene.MONSTER_EMOJIS[hash % GameScene.MONSTER_EMOJIS.length];
 
-      sprite = this.add.rectangle(x, y, isBoss ? 60 : 40, isBoss ? 60 : 40, color, 0.85)
-        .setInteractive({ useHandCursor: true });
-      if (isBoss) {
-        sprite.setStrokeStyle(3, 0xffd54a, 1);
+        sprite = this.add.rectangle(x, y, isBoss ? 60 : 40, isBoss ? 60 : 40, color, 0.85)
+          .setInteractive({ useHandCursor: true });
+        if (isBoss) {
+          sprite.setStrokeStyle(3, 0xffd54a, 1);
+        }
+
+        const emojiText = this.add.text(x, y, emoji, { fontSize: isBoss ? '32px' : '22px' }).setOrigin(0.5);
+        this.fieldMonsterFallbackEmojiTexts.push(emojiText);
+        sprite.once('destroy', () => emojiText.destroy());
       }
-
-      const emojiText = this.add.text(x, y, emoji, { fontSize: isBoss ? '32px' : '22px' }).setOrigin(0.5);
-      sprite.once('destroy', () => emojiText.destroy());
     }
 
     // 보스 BOSS 라벨
@@ -953,6 +1070,38 @@ export class GameScene extends Phaser.Scene {
     sprite.on('pointerdown', engage);
 
     this.remoteEntities.set(id, { id, name: battleSeed.monsterName, sprite, nameTag: tag, isMonster: true, engage });
+  }
+
+  private _writeFieldMonsterFallbackQaProbe(): void {
+    if (this.sceneData.fieldMonsterFallbackQa !== true || typeof document === 'undefined') return;
+
+    const expectedFallbackCount = 2;
+    const missingFieldMonsterFallbackKeys = Object.values(GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES)
+      .filter((texture) => !this.textures.exists(texture.key))
+      .map((texture) => texture.key);
+    const legacyEmojiPresent = this.fieldMonsterFallbackEmojiTexts.some((text) => text.active && text.text.length > 0);
+
+    document.body.dataset.aeternaGameFieldMonsterFallbackQa = JSON.stringify({
+      status: this.fieldMonsterFallbackImages.length >= expectedFallbackCount
+        && missingFieldMonsterFallbackKeys.length === 0
+        && !legacyEmojiPresent
+        ? 'ready'
+        : 'missing-fallback',
+      expectedCount: expectedFallbackCount,
+      renderedCount: this.fieldMonsterFallbackImages.length,
+      fallbackImages: this.fieldMonsterFallbackImages.map((image) => ({
+        key: image.texture.key,
+        name: image.name,
+        displayWidth: image.displayWidth,
+        displayHeight: image.displayHeight,
+      })),
+      legacyEmojiPresent,
+      missingFieldMonsterFallbackKeys,
+      visibleCanvasCount: Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length,
+    });
   }
 
   private _addZoneLabelIcon(
@@ -1142,7 +1291,97 @@ export class GameScene extends Phaser.Scene {
 
   // ── P25-04: 소켓 이벤트 ─────────────────────────────────
 
+  private _spawnRemotePlayerPreview(d: { characterId: string; name: string; x: number; y: number; characterClass?: string }): void {
+    if (this.remoteEntities.has(d.characterId)) return;
+
+    const remoteClassId = d.characterClass?.trim() ?? '';
+    const remoteSpriteResource = this.sceneData.remotePlayerFallbackQa === true
+      ? undefined
+      : (remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined);
+    const remoteThumbnailResource = getCharacterHudAvatarResource(remoteClassId);
+    let sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+
+    if (remoteSpriteResource && this.textures.exists(remoteSpriteResource.textureKey)) {
+      // 원격 플레이어도 idle 루프(이전엔 정적 frame 0). 원격은 이 클라에서
+      // 위치 이동 수신 핸들러가 없어 화면상 정지 → walk 없이 idle 만 의미 있음.
+      const remoteSprite = this.add.sprite(d.x, d.y, remoteSpriteResource.textureKey, 0)
+        .setDisplaySize(56, 56);
+      remoteSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const idleKey = this._ensureCharFieldAnim(remoteClassId, 'idle', 'D');
+      if (this.anims.exists(idleKey)) remoteSprite.play(idleKey);
+      sprite = remoteSprite;
+    } else if (this.textures.exists(remoteThumbnailResource.key)) {
+      // Aseprite remote player sprite 로드 실패 시 character battle thumbnail을 먼저 사용한다.
+      const thumbnail = this.add.image(d.x, d.y, remoteThumbnailResource.key)
+        .setName(`game_scene_remote_player_thumbnail_fallback_${d.characterId}`)
+        .setDisplaySize(40, 60);
+      thumbnail.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.remotePlayerThumbnailFallbackImages.push(thumbnail);
+      sprite = thumbnail;
+    } else {
+      // Aseprite remote player thumbnail까지 로드 실패 시에만 사용하는 안전 fallback.
+      sprite = this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff);
+      this.remotePlayerRectangleFallbackRendered = true;
+    }
+
+    const tag = this.add.text(d.x, d.y - 38, d.name, {
+      fontSize: '11px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
+    }).setOrigin(0.5);
+    this.remoteEntities.set(d.characterId, {
+      id: d.characterId, name: d.name, sprite, nameTag: tag, isMonster: false,
+    });
+  }
+
+  private _writeRemotePlayerFallbackQaProbe(classId: string): void {
+    if (this.sceneData.remotePlayerFallbackQa !== true || typeof document === 'undefined') return;
+
+    const thumbnailResource = getCharacterHudAvatarResource(classId);
+    const missingRemotePlayerThumbnailKeys = !this.textures.exists(thumbnailResource.key)
+      || this.remotePlayerThumbnailFallbackImages.length === 0
+      ? [thumbnailResource.key]
+      : [];
+
+    document.body.dataset.aeternaGameRemotePlayerFallbackQa = JSON.stringify({
+      status: this.remotePlayerThumbnailFallbackImages.length >= 1
+        && missingRemotePlayerThumbnailKeys.length === 0
+        && !this.remotePlayerRectangleFallbackRendered
+        ? 'ready'
+        : 'missing-thumbnail',
+      expectedCount: 1,
+      renderedCount: this.remotePlayerThumbnailFallbackImages.length,
+      remoteThumbnail: {
+        classId,
+        key: thumbnailResource.key,
+        path: thumbnailResource.path,
+        rendered: this.remotePlayerThumbnailFallbackImages.length > 0,
+        displaySizes: this.remotePlayerThumbnailFallbackImages.map((image) => ({
+          width: image.displayWidth,
+          height: image.displayHeight,
+        })),
+      },
+      missingRemotePlayerThumbnailKeys,
+      rectangleFallbackRendered: this.remotePlayerRectangleFallbackRendered,
+      visibleCanvasCount: Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length,
+    });
+  }
+
   private _setupSocketEvents(): void {
+    if (this.sceneData.remotePlayerFallbackQa === true) {
+      this._renderConnectionStatus('connected', '원격 QA', '#ffcc44');
+      this._spawnRemotePlayerPreview({
+        characterId: 'qa_remote_player_fallback',
+        name: 'QA 원격 플레이어',
+        x: 760,
+        y: 520,
+        characterClass: 'ether_knight',
+      });
+      this._writeRemotePlayerFallbackQaProbe('ether_knight');
+      return;
+    }
+
     if (this.sceneData.offlineQa === true) {
       if (this.sceneData.gameConnectionIconQa !== undefined) {
         this._renderConnectionStatus(this.sceneData.gameConnectionIconQa);
@@ -1159,31 +1398,7 @@ export class GameScene extends Phaser.Scene {
     // 월드 이동 브로드캐스트 수신
     const unsub1 = networkManager.on('world:playerJoined', (data) => {
       const d = data as { characterId: string; name: string; x: number; y: number; characterClass?: string };
-      if (!this.remoteEntities.has(d.characterId)) {
-        const remoteClassId = d.characterClass?.trim() ?? '';
-        const remoteSpriteResource = remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined;
-        let sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
-
-        if (remoteSpriteResource && this.textures.exists(remoteSpriteResource.textureKey)) {
-          // 원격 플레이어도 idle 루프(이전엔 정적 frame 0). 원격은 이 클라에서
-          // 위치 이동 수신 핸들러가 없어 화면상 정지 → walk 없이 idle 만 의미 있음.
-          const remoteSprite = this.add.sprite(d.x, d.y, remoteSpriteResource.textureKey, 0)
-            .setDisplaySize(56, 56);
-          remoteSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-          const idleKey = this._ensureCharFieldAnim(remoteClassId, 'idle', 'D');
-          if (this.anims.exists(idleKey)) remoteSprite.play(idleKey);
-          sprite = remoteSprite;
-        } else {
-          // Aseprite remote player sprite 로드 실패 시에만 사용하는 안전 fallback.
-          sprite = this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff);
-        }
-        const tag = this.add.text(d.x, d.y - 38, d.name, {
-          fontSize: '11px', color: '#88ccff', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-        }).setOrigin(0.5);
-        this.remoteEntities.set(d.characterId, {
-          id: d.characterId, name: d.name, sprite, nameTag: tag, isMonster: false,
-        });
-      }
+      this._spawnRemotePlayerPreview(d);
     });
 
     const unsub2 = networkManager.on('world:playerLeft', (data) => {
@@ -1526,10 +1741,15 @@ export class GameScene extends Phaser.Scene {
 
   private createPlayer(): void {
     // 로컬 플레이어는 활성 스킨으로 해석(스킨 텍스처는 preload 에서 로드됨).
-    const playerSpriteResource = getCharacterSpriteResource(this.currentCharacterClassId, getActiveCharacterSkin());
+    const playerSpriteResource = this.sceneData.localPlayerFallbackQa === true
+      ? undefined
+      : getCharacterSpriteResource(this.currentCharacterClassId, getActiveCharacterSkin());
+    const playerThumbnailResource = getCharacterHudAvatarResource(this.currentCharacterClassId);
     const textureKey = playerSpriteResource && this.textures.exists(playerSpriteResource.textureKey)
       ? playerSpriteResource.textureKey
-      : 'player_sprite';
+      : (this.textures.exists(playerThumbnailResource.key)
+        ? playerThumbnailResource.key
+        : 'player_sprite');
 
     this.player = this.physics.add.sprite(640, 360, textureKey, 0);
     if (playerSpriteResource && textureKey === playerSpriteResource.textureKey) {
@@ -1538,6 +1758,12 @@ export class GameScene extends Phaser.Scene {
       // 태그 스프라이트면 필드 idle 재생(이전엔 정적 frame 0). update 가 이동 시 walk 로 전환.
       this._playerHasCharAnim = true;
       this._playPlayerAnim('idle');
+    } else if (textureKey === playerThumbnailResource.key) {
+      this.player.setName('game_scene_local_player_thumbnail_fallback');
+      this.player.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.localPlayerThumbnailFallbackRendered = true;
+    } else {
+      this.localPlayerLegacyFallbackRendered = true;
     }
     // 필드용 표시 크기 고정: 현재 에테르 기사 원본은 256x384 전신 일러스트라 원본 크기 표시 시 시야를 가림.
     const targetHeight = 112;
@@ -1546,6 +1772,41 @@ export class GameScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    this._writeLocalPlayerFallbackQaProbe(playerThumbnailResource);
+  }
+
+  private _writeLocalPlayerFallbackQaProbe(thumbnailResource: { key: string; path: string }): void {
+    if (this.sceneData.localPlayerFallbackQa !== true || typeof document === 'undefined') return;
+
+    const missingLocalPlayerThumbnailKeys = !this.textures.exists(thumbnailResource.key)
+      || !this.localPlayerThumbnailFallbackRendered
+      ? [thumbnailResource.key]
+      : [];
+
+    document.body.dataset.aeternaGameLocalPlayerFallbackQa = JSON.stringify({
+      status: this.localPlayerThumbnailFallbackRendered
+        && missingLocalPlayerThumbnailKeys.length === 0
+        && !this.localPlayerLegacyFallbackRendered
+        ? 'ready'
+        : 'missing-thumbnail',
+      classId: this.currentCharacterClassId,
+      textureKey: this.player.texture.key,
+      expectedCount: 1,
+      renderedCount: this.localPlayerThumbnailFallbackRendered ? 1 : 0,
+      thumbnail: {
+        key: thumbnailResource.key,
+        path: thumbnailResource.path,
+        rendered: this.localPlayerThumbnailFallbackRendered,
+        displayWidth: this.player.displayWidth,
+        displayHeight: this.player.displayHeight,
+      },
+      legacyFallbackRendered: this.localPlayerLegacyFallbackRendered,
+      missingLocalPlayerThumbnailKeys,
+      visibleCanvasCount: Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length,
+    });
   }
 
   private createInputs(): void {

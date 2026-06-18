@@ -48,11 +48,71 @@ const CUTSCENE_ACTION_BUTTON_ICON_IDS = {
   next: 'skill_mw_arrow',
 } as const;
 
+const CUTSCENE_PORTRAIT_TEXTURES = {
+  narrator: {
+    key: 'npc_portrait_18_memory_fragment_portrait',
+    path: 'assets/generated/characters/npc/npc_portrait_18_memory_fragment_portrait.png',
+  },
+  etherKnight: {
+    key: 'char_illust_ether_knight_front',
+    path: 'assets/generated/characters/class_main/char_illust_ether_knight_front.png',
+  },
+  memoryWeaver: {
+    key: 'char_illust_memory_weaver_front',
+    path: 'assets/generated/characters/class_main/char_illust_memory_weaver_front.png',
+  },
+  shadowWeaver: {
+    key: 'char_illust_shadow_weaver_front',
+    path: 'assets/generated/characters/class_main/char_illust_shadow_weaver_front.png',
+  },
+  memoryBreaker: {
+    key: 'char_illust_memory_breaker_front',
+    path: 'assets/generated/characters/class_main/char_illust_memory_breaker_front.png',
+  },
+  timeGuardian: {
+    key: 'char_illust_time_guardian_front',
+    path: 'assets/generated/characters/class_main/char_illust_time_guardian_front.png',
+  },
+  voidWanderer: {
+    key: 'char_illust_void_wanderer_front',
+    path: 'assets/generated/characters/class_main/char_illust_void_wanderer_front.png',
+  },
+} as const;
+
+const CUTSCENE_PORTRAIT_KEYS = {
+  narrator: 'npc_portrait_18_memory_fragment_portrait',
+  '내레이터': 'npc_portrait_18_memory_fragment_portrait',
+  etherKnight: 'char_illust_ether_knight_front',
+  memoryWeaver: 'char_illust_memory_weaver_front',
+  shadowWeaver: 'char_illust_shadow_weaver_front',
+  memoryBreaker: 'char_illust_memory_breaker_front',
+  timeGuardian: 'char_illust_time_guardian_front',
+  voidWanderer: 'char_illust_void_wanderer_front',
+} as const;
+
+const CUTSCENE_LEGACY_PORTRAIT_KEY_MAP: Record<string, string> = {
+  portrait_narrator: CUTSCENE_PORTRAIT_KEYS.narrator,
+  portrait_ether_knight: CUTSCENE_PORTRAIT_KEYS.etherKnight,
+  portrait_memory_weaver: CUTSCENE_PORTRAIT_KEYS.memoryWeaver,
+  portrait_shadow_weaver: CUTSCENE_PORTRAIT_KEYS.shadowWeaver,
+  portrait_guardian: CUTSCENE_PORTRAIT_KEYS.timeGuardian,
+  portrait_destroyer: CUTSCENE_PORTRAIT_KEYS.memoryBreaker,
+  portrait_ether_berserker: CUTSCENE_PORTRAIT_KEYS.etherKnight,
+  portrait_memory_weaver_adv: CUTSCENE_PORTRAIT_KEYS.memoryWeaver,
+  portrait_time_tuner: CUTSCENE_PORTRAIT_KEYS.timeGuardian,
+  portrait_memory_lord: CUTSCENE_PORTRAIT_KEYS.memoryWeaver,
+  portrait_illusionist: CUTSCENE_PORTRAIT_KEYS.shadowWeaver,
+  portrait_soul_reaper: CUTSCENE_PORTRAIT_KEYS.shadowWeaver,
+  portrait_void_lord: CUTSCENE_PORTRAIT_KEYS.voidWanderer,
+};
+
 type CutsceneActionButtonId = keyof typeof CUTSCENE_ACTION_BUTTON_ICON_IDS;
 
 const CUTSCENE_EXPECTED_DIALOGUE_BOX_FRAME_COUNT = 1;
 const CUTSCENE_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 2;
 const CUTSCENE_EXPECTED_ACTION_BUTTON_ICON_COUNT = 2;
+const CUTSCENE_PRELOAD_PORTRAIT_TEXTURE_COUNT = 7;
+const CUTSCENE_EXPECTED_PORTRAIT_COUNT = 1;
 
 // ── 컷씬 씬 ─────────────────────────────────────────────────────
 
@@ -71,6 +131,8 @@ export class CutsceneScene extends Phaser.Scene {
   private autoTimer?: Phaser.Time.TimerEvent;
   private isAutoPlay = false;
   private portraitSprite?: Phaser.GameObjects.Image;
+  private cutscenePortraitImages: Phaser.GameObjects.Image[] = [];
+  private missingCutscenePortraitKeys: string[] = [];
 
   constructor() {
     super({ key: 'CutsceneScene' });
@@ -95,6 +157,12 @@ export class CutsceneScene extends Phaser.Scene {
         this.load.image(iconResource.key, iconResource.path);
       }
     }
+
+    for (const portrait of Object.values(CUTSCENE_PORTRAIT_TEXTURES)) {
+      if (!this.textures.exists(portrait.key)) {
+        this.load.image(portrait.key, portrait.path);
+      }
+    }
   }
 
   create(): void {
@@ -102,6 +170,8 @@ export class CutsceneScene extends Phaser.Scene {
     this.actionButtonFrames = [];
     this.actionButtonIcons = {};
     this.actionButtonFallbackIds = [];
+    this.cutscenePortraitImages = [];
+    this.missingCutscenePortraitKeys = [];
 
     // ── 배경 ──
     // 배경 이미지가 로드되어 있으면 사용, 아니면 검정 배경
@@ -404,9 +474,13 @@ export class CutsceneScene extends Phaser.Scene {
     const missingActionButtonIconKeys = actionButtonIconStates
       .filter((entry) => !entry.rendered)
       .map((entry) => entry.key ?? entry.iconId);
+    const portraitReady = this.cutscenePortraitImages.length >= CUTSCENE_EXPECTED_PORTRAIT_COUNT
+      && this.missingCutscenePortraitKeys.length === 0;
 
     document.body.dataset.aeternaCutsceneFrameQa = JSON.stringify({
-      status: missingFrameKeys.length === 0 && missingActionButtonIconKeys.length === 0 ? status : 'missing-frame',
+      status: missingFrameKeys.length === 0 && missingActionButtonIconKeys.length === 0 && portraitReady
+        ? status
+        : 'missing-frame',
       cutsceneId: this.config.id,
       dialogueIndex: this.currentIndex,
       dialogueBoxFrame: {
@@ -434,8 +508,20 @@ export class CutsceneScene extends Phaser.Scene {
         fallbackActionIds: this.actionButtonFallbackIds,
         missingIconKeys: missingActionButtonIconKeys,
       },
+      portrait: {
+        preloadedTextureCount: CUTSCENE_PRELOAD_PORTRAIT_TEXTURE_COUNT,
+        expectedCount: CUTSCENE_EXPECTED_PORTRAIT_COUNT,
+        renderedCount: this.cutscenePortraitImages.length,
+        renderedKeys: this.cutscenePortraitImages.map((image) => image.texture.key),
+        displaySizes: this.cutscenePortraitImages.map((image) => ({
+          width: image.displayWidth,
+          height: image.displayHeight,
+        })),
+        missingCutscenePortraitKeys: this.missingCutscenePortraitKeys,
+      },
       missingFrameKeys,
       missingActionButtonIconKeys,
+      missingCutscenePortraitKeys: this.missingCutscenePortraitKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }
@@ -444,25 +530,28 @@ export class CutsceneScene extends Phaser.Scene {
 
   /**
    * 캐릭터 이름 → 포트레이트 이미지 키 매핑.
-   * 에셋은 `assets/portraits/{key}.png` 에 배치한다.
+   * Aseprite runtime portrait가 있으면 먼저 사용하고, 없는 캐릭터만 legacy key를 유지한다.
    */
   private static readonly PORTRAIT_MAP: Record<string, string> = {
     // 주요 NPC / 플레이어 클래스
-    '에테르 기사':   'portrait_ether_knight',
-    '기억술사':     'portrait_memory_weaver',
-    '그림자 직조사': 'portrait_shadow_weaver',
-    '수호자':       'portrait_guardian',
-    '파멸자':       'portrait_destroyer',
-    '에테르 폭주자': 'portrait_ether_berserker',
-    '기억 직조사':  'portrait_memory_weaver_adv',
-    '시간 조율사':  'portrait_time_tuner',
-    '기억 지배자':  'portrait_memory_lord',
-    '환영사':       'portrait_illusionist',
-    '영혼 수확자':  'portrait_soul_reaper',
-    '공허의 군주':  'portrait_void_lord',
+    '에테르 기사':   CUTSCENE_PORTRAIT_KEYS.etherKnight,
+    '기억술사':     CUTSCENE_PORTRAIT_KEYS.memoryWeaver,
+    '그림자 직조사': CUTSCENE_PORTRAIT_KEYS.shadowWeaver,
+    '기억 파괴자':   CUTSCENE_PORTRAIT_KEYS.memoryBreaker,
+    '시간 수호자':   CUTSCENE_PORTRAIT_KEYS.timeGuardian,
+    '공허 방랑자':   CUTSCENE_PORTRAIT_KEYS.voidWanderer,
+    '수호자':       CUTSCENE_PORTRAIT_KEYS.timeGuardian,
+    '파멸자':       CUTSCENE_PORTRAIT_KEYS.memoryBreaker,
+    '에테르 폭주자': CUTSCENE_PORTRAIT_KEYS.etherKnight,
+    '기억 직조사':  CUTSCENE_PORTRAIT_KEYS.memoryWeaver,
+    '시간 조율사':  CUTSCENE_PORTRAIT_KEYS.timeGuardian,
+    '기억 지배자':  CUTSCENE_PORTRAIT_KEYS.memoryWeaver,
+    '환영사':       CUTSCENE_PORTRAIT_KEYS.shadowWeaver,
+    '영혼 수확자':  CUTSCENE_PORTRAIT_KEYS.shadowWeaver,
+    '공허의 군주':  CUTSCENE_PORTRAIT_KEYS.voidWanderer,
     // NPC (시나리오 확장 시 추가)
-    '내레이터':     'portrait_narrator',
-    'narrator':    'portrait_narrator',
+    '내레이터':     CUTSCENE_PORTRAIT_KEYS['내레이터'],
+    'narrator':    CUTSCENE_PORTRAIT_KEYS.narrator,
   };
 
   /**
@@ -471,7 +560,9 @@ export class CutsceneScene extends Phaser.Scene {
    */
   private _resolvePortraitKey(line: CutsceneDialogue): string | null {
     // 1) 대화 데이터에 portrait가 명시된 경우
-    if (line.portrait) return line.portrait;
+    if (line.portrait) {
+      return CUTSCENE_LEGACY_PORTRAIT_KEY_MAP[line.portrait] ?? line.portrait;
+    }
 
     // 2) speaker 이름으로 매핑
     const mapped = CutsceneScene.PORTRAIT_MAP[line.speaker];
@@ -479,7 +570,7 @@ export class CutsceneScene extends Phaser.Scene {
 
     // 3) speaker를 snake_case로 변환하여 시도
     const snakeKey = `portrait_${line.speaker.toLowerCase().replace(/\s+/g, '_')}`;
-    return snakeKey;
+    return CUTSCENE_LEGACY_PORTRAIT_KEY_MAP[snakeKey] ?? snakeKey;
   }
 
   /**
@@ -496,9 +587,17 @@ export class CutsceneScene extends Phaser.Scene {
       this.portraitSprite.destroy();
       this.portraitSprite = undefined;
     }
+    this.cutscenePortraitImages = this.cutscenePortraitImages.filter((image) => image.active);
 
     const key = this._resolvePortraitKey(line);
-    if (!key || !this.textures.exists(key)) return;
+    if (!key) return;
+
+    if (!this.textures.exists(key)) {
+      if (!this.missingCutscenePortraitKeys.includes(key)) {
+        this.missingCutscenePortraitKeys.push(key);
+      }
+      return;
+    }
 
     // 감정 변형이 있으면 '{key}_{emotion}' 시도
     const emotionKey = line.emotion ? `${key}_${line.emotion}` : null;
@@ -506,9 +605,12 @@ export class CutsceneScene extends Phaser.Scene {
 
     // 포트레이트 표시 (대화 박스 좌측)
     this.portraitSprite = this.add.image(100, boxY - 20, finalKey)
+      .setName(`cutscene_portrait_${key}`)
       .setOrigin(0.5, 1)
-      .setScale(0.5)
       .setAlpha(0);
+    this.portraitSprite.setDisplaySize(96, 96);
+    this.portraitSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.cutscenePortraitImages.push(this.portraitSprite);
 
     // 페이드 인 애니메이션
     this.tweens.add({

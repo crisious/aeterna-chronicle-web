@@ -94,6 +94,8 @@ const CHARACTER_SELECT_EXPECTED_EXISTING_AVATAR_COUNT = 1;
 const CHARACTER_SELECT_LOGOUT_ICON_ID = 'skill_tg_reverse';
 const CHARACTER_SELECT_LOGOUT_ICON_RESOURCE = getSpriteResourceForSkillIcon(CHARACTER_SELECT_LOGOUT_ICON_ID);
 const CHARACTER_SELECT_LOGOUT_ICON_SIZE = 16;
+const CHARACTER_SELECT_CLASS_CARD_AVATAR_WIDTH = 54;
+const CHARACTER_SELECT_CLASS_CARD_AVATAR_HEIGHT = 81;
 
 const CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES = {
   ether_knight: {
@@ -143,6 +145,9 @@ export class CharacterSelectScene extends Phaser.Scene {
   private cards: Phaser.GameObjects.Container[] = [];
   private nameInput: HTMLInputElement | null = null;
   private actionButtonFrames: Phaser.GameObjects.Image[] = [];
+  private classCardAvatars: Phaser.GameObjects.Image[] = [];
+  private missingClassCardAvatarKeys: string[] = [];
+  private fallbackClassCardAvatarIds: string[] = [];
   private existingCharacterAvatars: Phaser.GameObjects.Image[] = [];
   private missingExistingAvatarKeys: string[] = [];
   private fallbackExistingAvatarClassIds: string[] = [];
@@ -185,6 +190,9 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.offlineQa = data?.offlineQa === true;
     this.offlineExistingQa = data?.offlineExistingQa === true;
     this.actionButtonFrames = [];
+    this.classCardAvatars = [];
+    this.missingClassCardAvatarKeys = [];
+    this.fallbackClassCardAvatarIds = [];
     this.existingCharacterAvatars = [];
     this.missingExistingAvatarKeys = [];
     this.fallbackExistingAvatarClassIds = [];
@@ -225,6 +233,9 @@ export class CharacterSelectScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#0d1117');
     this.actionButtonFrames = [];
+    this.classCardAvatars = [];
+    this.missingClassCardAvatarKeys = [];
+    this.fallbackClassCardAvatarIds = [];
     this.existingCharacterAvatars = [];
     this.missingExistingAvatarKeys = [];
     this.fallbackExistingAvatarClassIds = [];
@@ -457,6 +468,10 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   private _showCreateMode(w: number, h: number): void {
     this.mode = 'create';
+    this.cards = [];
+    this.classCardAvatars = [];
+    this.missingClassCardAvatarKeys = [];
+    this.fallbackClassCardAvatarIds = [];
 
     // FINDING-A4 ext: select 모드 keyboard listener 잔존 방지 (이미 createActivate 에서
     // 호출되지만 직접 진입(existingCharacters.length===0) 경로 안전망)
@@ -564,10 +579,20 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setStrokeStyle(2, 0x333366).setInteractive({ useHandCursor: true });
     bg.setName('classCardHitBox');
 
-    // P33-A: 실제 일러스트 사용 (텍스처 없으면 fallback 원형)
+    // Aseprite 전투 썸네일을 카드의 주 아이콘으로 먼저 사용하고, 누락 시 기존 front illustration으로 후퇴한다.
+    const avatarResource = getCharacterSelectBattleAvatarResource(cls.id);
     const texKey = `char_${cls.id}`;
     let icon: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
-    if (this.textures.exists(texKey)) {
+    if (this.textures.exists(avatarResource.key)) {
+      const avatar = this.add.image(0, -82, avatarResource.key)
+        .setName(`character_select_class_card_avatar_${cls.id}`)
+        .setOrigin(0.5, 0.62);
+      avatar.setDisplaySize(CHARACTER_SELECT_CLASS_CARD_AVATAR_WIDTH, CHARACTER_SELECT_CLASS_CARD_AVATAR_HEIGHT);
+      avatar.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.classCardAvatars.push(avatar);
+      icon = avatar;
+    } else if (this.textures.exists(texKey)) {
+      this.missingClassCardAvatarKeys.push(avatarResource.key);
       const img = this.add.image(0, -70, texKey);
       // 카드 내 영역에 맞게 리사이즈
       // 카드 내부에 맞춤 (카드 180x280, 이미지 영역 상단 ~160x200)
@@ -576,6 +601,8 @@ export class CharacterSelectScene extends Phaser.Scene {
       img.setScale(Math.min(scaleX, scaleY));
       icon = img;
     } else {
+      this.missingClassCardAvatarKeys.push(avatarResource.key);
+      this.fallbackClassCardAvatarIds.push(cls.id);
       icon = this.add.circle(0, -80, 24, cls.color);
     }
     const name = this.add.text(0, -40, cls.name, {
@@ -846,6 +873,12 @@ export class CharacterSelectScene extends Phaser.Scene {
     const expectedActionButtonFrameCount = this.mode === 'create'
       ? CHARACTER_SELECT_EXPECTED_ACTION_BUTTON_FRAME_COUNT
       : 0;
+    const expectedClassCardAvatarCount = this.mode === 'create'
+      ? this.classes.length
+      : 0;
+    const expectedClassCardAvatarKeys = this.mode === 'create'
+      ? this.classes.map((cls) => getCharacterSelectBattleAvatarResource(cls.id).key)
+      : [];
     const expectedExistingAvatarCount = this.mode === 'select'
       ? this.existingCharacters.length
       : 0;
@@ -855,6 +888,11 @@ export class CharacterSelectScene extends Phaser.Scene {
       this.existingCharacterAvatars.length === expectedExistingAvatarCount
       && this.existingCharacterAvatars.every((avatar, index) => avatar.texture.key === expectedExistingAvatarKeys[index])
       && this.missingExistingAvatarKeys.length === 0
+    );
+    const hasExpectedClassCardAvatars = expectedClassCardAvatarCount === 0 || (
+      this.classCardAvatars.length === expectedClassCardAvatarCount
+      && this.classCardAvatars.every((avatar, index) => avatar.texture.key === expectedClassCardAvatarKeys[index])
+      && this.missingClassCardAvatarKeys.length === 0
     );
     const hasExpectedNameInputFrames = expectedNameInputFrameCount === 0 || (
       this.textures.exists(nameInputFrame.key)
@@ -876,17 +914,24 @@ export class CharacterSelectScene extends Phaser.Scene {
     const missingExistingAvatarKeys = hasExpectedExistingAvatars
       ? this.missingExistingAvatarKeys
       : Array.from(new Set([...this.missingExistingAvatarKeys, ...expectedExistingAvatarKeys]));
+    const missingClassCardAvatarKeys = hasExpectedClassCardAvatars
+      ? this.missingClassCardAvatarKeys
+      : Array.from(new Set([...this.missingClassCardAvatarKeys, ...expectedClassCardAvatarKeys]));
     const logoutLabel = this.logoutText?.text ?? '';
     const visibleCanvasCount = Array.from(document.querySelectorAll('canvas'))
       .filter((canvas) => canvas instanceof HTMLCanvasElement && canvas.offsetWidth > 0 && canvas.offsetHeight > 0)
       .length;
 
     document.body.dataset.aeternaCharacterSelectFrameQa = JSON.stringify({
-      status: missingFrameKeys.length === 0 && missingExistingAvatarKeys.length === 0 && this.missingLogoutIconKeys.length === 0
+      status: missingFrameKeys.length === 0
+        && missingExistingAvatarKeys.length === 0
+        && missingClassCardAvatarKeys.length === 0
+        && this.missingLogoutIconKeys.length === 0
         ? 'ready'
         : 'missing-frame',
       mode: this.mode,
       missingFrameKeys,
+      missingClassCardAvatarKeys,
       missingExistingAvatarKeys,
       missingLogoutIconKeys: this.missingLogoutIconKeys,
       nameInputFrame: {
@@ -927,6 +972,19 @@ export class CharacterSelectScene extends Phaser.Scene {
           visible: avatar.visible,
         })),
         fallbackExistingAvatarClassIds: this.fallbackExistingAvatarClassIds,
+      },
+      classCardAvatar: {
+        expectedCount: expectedClassCardAvatarCount,
+        renderedCount: this.classCardAvatars.length,
+        expectedKeys: expectedClassCardAvatarKeys,
+        renderedKeys: this.classCardAvatars.map((avatar) => avatar.texture.key),
+        displaySizes: this.classCardAvatars.map((avatar) => ({
+          name: avatar.name,
+          width: avatar.displayWidth,
+          height: avatar.displayHeight,
+          visible: avatar.visible,
+        })),
+        fallbackClassCardAvatarIds: this.fallbackClassCardAvatarIds,
       },
       logoutIcon: {
         iconId: CHARACTER_SELECT_LOGOUT_ICON_ID,

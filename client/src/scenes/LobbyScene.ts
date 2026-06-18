@@ -33,6 +33,7 @@ import { preloadSkillTreeIconResources } from '../data/skillTreeIcons';
 // ── 타입 ────────────────────────────────────────────────────
 
 type ItemIconQaMode = 'shop' | 'inventory';
+type LobbyNotificationIconId = 'shop' | 'enhance' | 'quest' | 'party' | 'story';
 
 export interface LobbySceneData {
   characterId?: string;
@@ -61,6 +62,8 @@ export interface LobbySceneData {
   questTitleIconQa?: boolean;
   questActionFocusIconQa?: boolean;
   goldIconQa?: boolean;
+  lobbyTitleIconQa?: boolean;
+  lobbyNotificationIconQa?: LobbyNotificationIconId;
   lobbyConnectionIconQa?: 'connected' | 'offline' | 'error';
 }
 
@@ -142,6 +145,9 @@ const LOBBY_NAV_ICON_TEXTURES = {
   quest: { kind: 'item', id: 'ITM-QST-004' },
 } as const;
 
+const LOBBY_TITLE_ICON_ZONE_ID = 'aether_plains';
+const LOBBY_TITLE_ICON_EXPECTED_COUNT = 1;
+const LOBBY_TITLE_ICON_SIZE = 20;
 const LOBBY_DIALOGUE_TITLE_ICON_NPC_ID = 'merchant';
 const LOBBY_DIALOGUE_TITLE_ICON_EXPECTED_COUNT = 1;
 const LOBBY_DIALOGUE_CHOICE_FOCUS_ICON_ID = 'skill_mw_arrow';
@@ -174,6 +180,22 @@ const LOBBY_QUEST_ACTION_FOCUS_ICON_ID = 'skill_mw_arrow';
 const LOBBY_QUEST_ACTION_FOCUS_ICON_EXPECTED_COUNT = 1;
 const LOBBY_GOLD_ICON_ID = 'ITM-MAT-002';
 const LOBBY_GOLD_ICON_EXPECTED_COUNT = 1;
+const LOBBY_NOTIFICATION_ICON_TEXTURES = {
+  shop: { kind: 'item', id: LOBBY_SHOP_TITLE_ICON_ID },
+  enhance: { kind: 'item', id: LOBBY_ENHANCE_TITLE_ICON_ID },
+  quest: { kind: 'item', id: LOBBY_QUEST_TITLE_ICON_ID },
+  party: { kind: 'skill', id: LOBBY_PARTY_RECRUIT_TITLE_ICON_ID },
+  story: { kind: 'item', id: LOBBY_STORY_TITLE_ICON_ID },
+} as const satisfies Record<LobbyNotificationIconId, LobbyNavIconDescriptor>;
+const LOBBY_NOTIFICATION_ICON_EXPECTED_COUNT = 1;
+const LOBBY_NOTIFICATION_ICON_SIZE = 18;
+const LOBBY_NOTIFICATION_QA_MESSAGES: Record<LobbyNotificationIconId, string> = {
+  shop: '상인 미라: 상점을 열었습니다. (아이템 80종 판매 중)',
+  enhance: '대장장이 칼렌: 장비 강화 서비스를 준비합니다.',
+  quest: '기억의 게시판: 의뢰 게시판을 엽니다.',
+  party: '모험가 길드: 파티원을 모집합니다.',
+  story: '장로 마테우스: 메인 스토리를 진행합니다.',
+};
 const LOBBY_CONNECTION_ICON_IDS = {
   connected: 'skill_mw_arrow',
   offline: 'skill_tg_stop',
@@ -217,6 +239,14 @@ function getLobbyConnectionStateLabel(state: ConnectionState): string {
     default:
       return '오프라인';
   }
+}
+
+function isLobbyNotificationIconId(value: string | undefined): value is LobbyNotificationIconId {
+  return value === 'shop'
+    || value === 'enhance'
+    || value === 'quest'
+    || value === 'party'
+    || value === 'story';
 }
 
 // P33-A: NPC id → 스프라이트 파일명 매핑
@@ -352,6 +382,12 @@ export class LobbyScene extends Phaser.Scene {
   private goldText!: Phaser.GameObjects.Text;
   private goldIcon: Phaser.GameObjects.Image | null = null;
   private goldIconFallbackRendered = false;
+  private lobbyTitleIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyTitleText: Phaser.GameObjects.Text | null = null;
+  private lobbyTitleIconFallbackRendered = false;
+  private lobbyNotificationIcon: Phaser.GameObjects.Image | null = null;
+  private lobbyNotificationText: Phaser.GameObjects.Text | null = null;
+  private lobbyNotificationIconFallbackRendered = false;
   private itemIconQaRenderedIconIds: string[] = [];
   private itemIconQaMissingIconIds: string[] = [];
   private lobbyDialogueTitleIcon: Phaser.GameObjects.Image | null = null;
@@ -457,6 +493,12 @@ export class LobbyScene extends Phaser.Scene {
     this.lobbyConnectionStatusIconFallbackRendered = false;
     this.goldIcon = null;
     this.goldIconFallbackRendered = false;
+    this.lobbyTitleIcon = null;
+    this.lobbyTitleText = null;
+    this.lobbyTitleIconFallbackRendered = false;
+    this.lobbyNotificationIcon = null;
+    this.lobbyNotificationText = null;
+    this.lobbyNotificationIconFallbackRendered = false;
   }
 
   preload(): void {
@@ -468,10 +510,21 @@ export class LobbyScene extends Phaser.Scene {
         this.load.image(texture.key, texture.path);
       }
     }
+    const lobbyTitleIconResource = getSpriteResourceForWorldZoneIcon(LOBBY_TITLE_ICON_ZONE_ID);
+    const queuedLobbyWorldIconKeys = new Set<string>();
+    if (lobbyTitleIconResource && !this.textures.exists(lobbyTitleIconResource.key)) {
+      this.load.image(lobbyTitleIconResource.key, lobbyTitleIconResource.path);
+      queuedLobbyWorldIconKeys.add(lobbyTitleIconResource.key);
+    }
     for (const icon of Object.values(LOBBY_NAV_ICON_TEXTURES)) {
       const navIconResource = this._resolveLobbyNavIconResource(icon);
-      if (navIconResource && !this.textures.exists(navIconResource.key)) {
+      if (
+        navIconResource
+        && !this.textures.exists(navIconResource.key)
+        && !queuedLobbyWorldIconKeys.has(navIconResource.key)
+      ) {
         this.load.image(navIconResource.key, navIconResource.path);
+        queuedLobbyWorldIconKeys.add(navIconResource.key);
       }
     }
     const partyTitleIconResource = getSpriteResourceForSkillIcon(LOBBY_PARTY_RECRUIT_TITLE_ICON_ID);
@@ -703,6 +756,11 @@ export class LobbyScene extends Phaser.Scene {
 
     if (this.characterData?.questActionFocusIconQa === true || this._isQuestActionFocusIconQaRoute()) {
       this.time.delayedCall(350, () => this._openQuestActionFocusIconQaPanel());
+    }
+
+    const lobbyNotificationIconQaMode = this._getLobbyNotificationIconQaMode();
+    if (lobbyNotificationIconQaMode) {
+      this.time.delayedCall(350, () => this._openLobbyNotificationIconQa(lobbyNotificationIconQaMode));
     }
 
     SceneManager.fadeIn(this, 300);
@@ -1650,17 +1708,98 @@ export class LobbyScene extends Phaser.Scene {
     this._renderLobbyConnectionStatus(networkManager.isConnected ? 'connected' : 'offline');
   }
 
-  private _showNotification(msg: string): void {
+  private _showNotification(msg: string, iconId?: LobbyNotificationIconId): void {
     const { width } = this.cameras.main;
-    const notif = this.add.text(width / 2, 110, msg, {
+    this.lobbyNotificationIcon = null;
+    this.lobbyNotificationText = null;
+    this.lobbyNotificationIconFallbackRendered = false;
+
+    const notificationIconResource = iconId ? this._resolveLobbyNotificationIconResource(iconId) : undefined;
+    const hasNotificationIcon = Boolean(notificationIconResource && this.textures.exists(notificationIconResource.key));
+    const notif = this.add.container(width / 2, 110).setAlpha(0);
+    const textOffsetX = hasNotificationIcon ? LOBBY_NOTIFICATION_ICON_SIZE / 2 + 8 : 0;
+
+    this.lobbyNotificationText = this.add.text(textOffsetX, 0, msg, {
       fontSize: '13px', color: '#ffcc44', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace',
-      backgroundColor: '#00000088', padding: { x: 8, y: 4 },
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5);
+
+    const notificationWidth = this.lobbyNotificationText.displayWidth
+      + (hasNotificationIcon ? LOBBY_NOTIFICATION_ICON_SIZE + 24 : 18);
+    const notificationHeight = Math.max(this.lobbyNotificationText.displayHeight + 10, LOBBY_NOTIFICATION_ICON_SIZE + 10);
+    notif.add(this.add.rectangle(0, 0, notificationWidth, notificationHeight, 0x000000, 0.56)
+      .setStrokeStyle(1, 0x334433, 0.65));
+
+    if (hasNotificationIcon && notificationIconResource) {
+      const iconX = this.lobbyNotificationText.x
+        - this.lobbyNotificationText.displayWidth / 2
+        - LOBBY_NOTIFICATION_ICON_SIZE / 2
+        - 8;
+      this.lobbyNotificationIcon = this.add.image(iconX, 0, notificationIconResource.key)
+        .setName('lobby_notification_icon')
+        .setOrigin(0.5);
+      this.lobbyNotificationIcon.setDisplaySize(LOBBY_NOTIFICATION_ICON_SIZE, LOBBY_NOTIFICATION_ICON_SIZE);
+      this.lobbyNotificationIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      notif.add(this.lobbyNotificationIcon);
+    } else if (iconId) {
+      this.lobbyNotificationIconFallbackRendered = true;
+    }
+
+    notif.add(this.lobbyNotificationText);
+    this._writeLobbyNotificationIconQaProbe(iconId, msg);
 
     this.tweens.add({
       targets: notif, alpha: 1, duration: 300,
       yoyo: true, hold: 2000,
       onComplete: () => notif.destroy(),
+    });
+  }
+
+  private _resolveLobbyNotificationIconResource(iconId: LobbyNotificationIconId): LobbyNavIconResource | undefined {
+    return this._resolveLobbyNavIconResource(LOBBY_NOTIFICATION_ICON_TEXTURES[iconId]);
+  }
+
+  private _getLobbyNotificationIconQaMode(): LobbyNotificationIconId | undefined {
+    if (isLobbyNotificationIconId(this.characterData?.lobbyNotificationIconQa)) {
+      return this.characterData.lobbyNotificationIconQa;
+    }
+    if (typeof window === 'undefined') return undefined;
+
+    const iconId = new URLSearchParams(window.location.search).get('lobbyNotificationIconQa') ?? undefined;
+    return isLobbyNotificationIconId(iconId) ? iconId : undefined;
+  }
+
+  private _openLobbyNotificationIconQa(iconId: LobbyNotificationIconId): void {
+    this._showNotification(LOBBY_NOTIFICATION_QA_MESSAGES[iconId], iconId);
+  }
+
+  private _writeLobbyNotificationIconQaProbe(
+    iconId: LobbyNotificationIconId | undefined,
+    message: string,
+  ): void {
+    const qaIconId = this._getLobbyNotificationIconQaMode();
+    if (!qaIconId || typeof document === 'undefined' || !document.body) return;
+
+    const notificationIconResource = this._resolveLobbyNotificationIconResource(iconId ?? qaIconId);
+    const rendered = this.lobbyNotificationIcon?.active === true;
+    const notificationLegacyGlyphPresent = /[🛒🔨📜⚔📖]/u.test(this.lobbyNotificationText?.text ?? message);
+    const missingLobbyNotificationIconKeys = rendered ? [] : [notificationIconResource?.key ?? (iconId ?? qaIconId)];
+
+    document.body.dataset.aeternaLobbyNotificationIconQa = JSON.stringify({
+      status: rendered && !notificationLegacyGlyphPresent ? 'ready' : 'missing-icon',
+      notificationLabel: this.lobbyNotificationText?.text ?? message,
+      notificationIcon: {
+        iconId: iconId ?? qaIconId,
+        expectedCount: LOBBY_NOTIFICATION_ICON_EXPECTED_COUNT,
+        renderedCount: rendered ? 1 : 0,
+        key: notificationIconResource?.key ?? null,
+        path: notificationIconResource?.path ?? null,
+        displaySizes: this.lobbyNotificationIcon
+          ? [{ width: this.lobbyNotificationIcon.displayWidth, height: this.lobbyNotificationIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.lobbyNotificationIconFallbackRendered,
+      },
+      missingLobbyNotificationIconKeys,
+      notificationLegacyGlyphPresent,
     });
   }
 
@@ -1689,9 +1828,68 @@ export class LobbyScene extends Phaser.Scene {
     // 반투명 오버레이 (UI 가독성)
     this.add.rectangle(w / 2, h / 2, w, h, 0x0a1a12, 0.4);
 
-    this.add.text(w / 2, 80, '☆ 아에테리아 마을 ☆', {
+    const lobbyTitleIconResource = getSpriteResourceForWorldZoneIcon(LOBBY_TITLE_ICON_ZONE_ID);
+    const hasLobbyTitleIcon = Boolean(lobbyTitleIconResource && this.textures.exists(lobbyTitleIconResource.key));
+    const titleLabel = hasLobbyTitleIcon ? '아에테리아 마을' : '☆ 아에테리아 마을 ☆';
+
+    this.lobbyTitleText = this.add.text(
+      hasLobbyTitleIcon ? w / 2 + LOBBY_TITLE_ICON_SIZE / 2 + 6 : w / 2,
+      80,
+      titleLabel,
+      {
       fontSize: '20px', fontFamily: '"Galmuri11", "Pretendard", "Noto Sans KR", monospace', color: '#88cc88',
-    }).setOrigin(0.5);
+      },
+    ).setOrigin(0.5);
+
+    if (hasLobbyTitleIcon && lobbyTitleIconResource) {
+      const iconX = this.lobbyTitleText.x
+        - this.lobbyTitleText.displayWidth / 2
+        - LOBBY_TITLE_ICON_SIZE / 2
+        - 8;
+      this.lobbyTitleIcon = this.add.image(iconX, 80, lobbyTitleIconResource.key)
+        .setName('lobby_title_zone_icon')
+        .setOrigin(0.5);
+      this.lobbyTitleIcon.setDisplaySize(LOBBY_TITLE_ICON_SIZE, LOBBY_TITLE_ICON_SIZE);
+      this.lobbyTitleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else {
+      this.lobbyTitleIcon = null;
+      this.lobbyTitleIconFallbackRendered = true;
+    }
+
+    this._writeLobbyTitleIconQaProbe();
+  }
+
+  private _isLobbyTitleIconQaRoute(): boolean {
+    if (this.characterData?.lobbyTitleIconQa === true) return true;
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('lobbyTitleIconQa') === '1';
+  }
+
+  private _writeLobbyTitleIconQaProbe(): void {
+    if (!this._isLobbyTitleIconQaRoute() || typeof document === 'undefined' || !document.body) return;
+
+    const lobbyTitleIconResource = getSpriteResourceForWorldZoneIcon(LOBBY_TITLE_ICON_ZONE_ID);
+    const rendered = this.lobbyTitleIcon?.active === true;
+    const titleLabelLegacyGlyphPresent = /[☆★]/u.test(this.lobbyTitleText?.text ?? '');
+    const missingLobbyTitleIconKeys = rendered ? [] : [lobbyTitleIconResource?.key ?? LOBBY_TITLE_ICON_ZONE_ID];
+
+    document.body.dataset.aeternaLobbyTitleIconQa = JSON.stringify({
+      status: rendered && !titleLabelLegacyGlyphPresent ? 'ready' : 'missing-icon',
+      titleLabel: this.lobbyTitleText?.text ?? null,
+      titleIcon: {
+        iconId: LOBBY_TITLE_ICON_ZONE_ID,
+        expectedCount: LOBBY_TITLE_ICON_EXPECTED_COUNT,
+        renderedCount: rendered ? 1 : 0,
+        key: lobbyTitleIconResource?.key ?? null,
+        path: lobbyTitleIconResource?.path ?? null,
+        displaySizes: this.lobbyTitleIcon
+          ? [{ width: this.lobbyTitleIcon.displayWidth, height: this.lobbyTitleIcon.displayHeight }]
+          : [],
+        fallbackRendered: this.lobbyTitleIconFallbackRendered,
+      },
+      missingLobbyTitleIconKeys,
+      titleLabelLegacyGlyphPresent,
+    });
   }
 
   private _drawHud(w: number): void {
@@ -2131,24 +2329,24 @@ export class LobbyScene extends Phaser.Scene {
   private _executeNpcAction(npc: NpcEntry): void {
     switch (npc.id) {
       case 'merchant':
-        this._showNotification(`🛒 ${npc.name}: 상점을 열었습니다. (아이템 ${80}종 판매 중)`);
+        this._showNotification(`${npc.name}: 상점을 열었습니다. (아이템 ${80}종 판매 중)`, 'shop');
         // P38: 인라인 ShopPanel — 소비 상점 API(gold) 연동(async)
         void this._showShopPanel(npc);
         break;
       case 'blacksmith':
-        this._showNotification(`🔨 ${npc.name}: 장비 강화 서비스를 준비합니다.`);
+        this._showNotification(`${npc.name}: 장비 강화 서비스를 준비합니다.`, 'enhance');
         this._showEnhancePanel(npc);
         break;
       case 'quest_board':
-        this._showNotification(`📜 ${npc.name}: 의뢰 게시판을 엽니다.`);
+        this._showNotification(`${npc.name}: 의뢰 게시판을 엽니다.`, 'quest');
         this._showQuests();
         break;
       case 'party_recruit':
-        this._showNotification(`⚔️ ${npc.name}: 파티원을 모집합니다.`);
+        this._showNotification(`${npc.name}: 파티원을 모집합니다.`, 'party');
         this._showPartyPanel(npc);
         break;
       case 'elder':
-        this._showNotification(`📖 ${npc.name}: 메인 스토리를 진행합니다.`);
+        this._showNotification(`${npc.name}: 메인 스토리를 진행합니다.`, 'story');
         this._showStoryPanel(npc);
         break;
       default:

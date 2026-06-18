@@ -133,6 +133,8 @@ export interface BattleSceneData {
   battleConnectionBadgeIconQa?: 'reconnecting' | 'error';
   /** Aseprite CHAIN 라벨 icon 브라우저 QA용 */
   battleChainLabelIconQa?: 'chain' | 'max';
+  /** Aseprite 아군 누락 리소스 fallback 브라우저 QA용 */
+  battleAllyFallbackQa?: boolean;
 }
 
 const DUNGEON_BATTLE_BG_KEY = 'battle_bg_dungeon';
@@ -150,6 +152,13 @@ export const BATTLE_MONSTER_FALLBACK_TEXTURES = {
     path: 'assets/generated/monsters/fallback/battle_boss_fallback.png',
     displaySize: 90,
   },
+} as const;
+
+const BATTLE_ALLY_FALLBACK_TEXTURE = {
+  key: 'placeholder',
+  path: 'assets/generated/ui/placeholders/placeholder.png',
+  displayWidth: 48,
+  displayHeight: 64,
 } as const;
 
 const BATTLE_SCENE_UI_FRAME_TEXTURES = {
@@ -542,6 +551,8 @@ export class BattleScene extends Phaser.Scene {
   // CHRONO-S65: 3인 협공 발동 버튼
   private tripleTechButton: Phaser.GameObjects.Container | null = null;
   private comboTechButtonIcons: Phaser.GameObjects.Image[] = [];
+  private battleAllyFallbackImages: Phaser.GameObjects.Image[] = [];
+  private battleAllyRectangleFallbackRendered = false;
   private fieldAmbientIcons: Phaser.GameObjects.Image[] = [];
   private fieldAmbientIconFallbackKinds: BattleFieldAmbientIconKind[] = [];
   private comboPopupIcons: Phaser.GameObjects.Image[] = [];
@@ -633,6 +644,8 @@ export class BattleScene extends Phaser.Scene {
     this.phaseText = null;
     this.introFallbackTimer = null;
     this.comboTechButtonIcons = [];
+    this.battleAllyFallbackImages = [];
+    this.battleAllyRectangleFallbackRendered = false;
     this.fieldAmbientIcons = [];
     this.fieldAmbientIconFallbackKinds = [];
     this.comboPopupIcons = [];
@@ -698,6 +711,9 @@ export class BattleScene extends Phaser.Scene {
       if (!this.textures.exists(texture.key)) {
         this.load.image(texture.key, texture.path);
       }
+    }
+    if (!this.textures.exists(BATTLE_ALLY_FALLBACK_TEXTURE.key)) {
+      this.load.image(BATTLE_ALLY_FALLBACK_TEXTURE.key, BATTLE_ALLY_FALLBACK_TEXTURE.path);
     }
     preloadBattleUiFrameTextures(this);
     preloadComboUiFrameTextures(this);
@@ -3523,10 +3539,20 @@ export class BattleScene extends Phaser.Scene {
           .setDepth(50);
         // LINEAR 필터로 pixelArt nearest-neighbor 오버라이드
         sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+      } else if (this.textures.exists(BATTLE_ALLY_FALLBACK_TEXTURE.key)) {
+        const fallbackImage = this.add.image(pos.x, pos.y, BATTLE_ALLY_FALLBACK_TEXTURE.key)
+          .setName(`battle_ally_fallback_${unit.id}`)
+          .setDisplaySize(BATTLE_ALLY_FALLBACK_TEXTURE.displayWidth, BATTLE_ALLY_FALLBACK_TEXTURE.displayHeight)
+          .setInteractive({ useHandCursor: false })
+          .setDepth(50);
+        fallbackImage.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.battleAllyFallbackImages.push(fallbackImage);
+        sprite = fallbackImage;
       } else {
         sprite = this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)
           .setInteractive({ useHandCursor: false }) // UX(rank11): 평소 손가락커서 끔
           .setDepth(50);
+        this.battleAllyRectangleFallbackRendered = true;
       }
 
       // 대기 애니메이션: 살짝 위아래 흔들림. 연속(repeat -1) 데코레이티브 모션이라
@@ -3554,6 +3580,44 @@ export class BattleScene extends Phaser.Scene {
         isAlly: true, isDead: false,
       };
       this.allySprites.push(us);
+    });
+    this._writeBattleAllyFallbackQaProbe(units);
+  }
+
+  private _writeBattleAllyFallbackQaProbe(units: CombatUnit[]): void {
+    if (this._initData.battleAllyFallbackQa !== true || typeof document === 'undefined') return;
+
+    const missingBattleAllyFallbackKeys = !this.textures.exists(BATTLE_ALLY_FALLBACK_TEXTURE.key)
+      || this.battleAllyFallbackImages.length === 0
+      ? [BATTLE_ALLY_FALLBACK_TEXTURE.key]
+      : [];
+
+    document.body.dataset.aeternaBattleAllyFallbackQa = JSON.stringify({
+      status: this.battleAllyFallbackImages.length >= 1
+        && missingBattleAllyFallbackKeys.length === 0
+        && !this.battleAllyRectangleFallbackRendered
+        ? 'ready'
+        : 'missing-fallback',
+      expectedCount: units.length,
+      renderedCount: this.battleAllyFallbackImages.length,
+      fallbackTexture: {
+        key: BATTLE_ALLY_FALLBACK_TEXTURE.key,
+        path: BATTLE_ALLY_FALLBACK_TEXTURE.path,
+        displayWidth: BATTLE_ALLY_FALLBACK_TEXTURE.displayWidth,
+        displayHeight: BATTLE_ALLY_FALLBACK_TEXTURE.displayHeight,
+      },
+      fallbackImages: this.battleAllyFallbackImages.map((image) => ({
+        key: image.texture.key,
+        name: image.name,
+        displayWidth: image.displayWidth,
+        displayHeight: image.displayHeight,
+      })),
+      rectangleFallbackRendered: this.battleAllyRectangleFallbackRendered,
+      missingBattleAllyFallbackKeys,
+      visibleCanvasCount: Array.from(document.querySelectorAll('canvas')).filter((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }).length,
     });
   }
 

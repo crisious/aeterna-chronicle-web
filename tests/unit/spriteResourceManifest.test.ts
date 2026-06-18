@@ -341,6 +341,31 @@ describe('sprite resource manifest', () => {
     expect(source).toContain('if (resource && this.textures.exists(resource.key))');
   });
 
+  it('GameScene missing field NPC resources use Aseprite placeholder before rectangle fallback', () => {
+    const source = readSceneSource('GameScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain('fieldNpcFallbackQa?: boolean');
+    expect(source).toContain('const GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE = {');
+    expect(source).toContain("key: 'placeholder'");
+    expect(source).toContain("path: 'assets/generated/ui/placeholders/placeholder.png'");
+    expect(source).toContain('displayWidth: 48');
+    expect(source).toContain('displayHeight: 64');
+    expect(source).toContain('private fieldNpcFallbackImages: Phaser.GameObjects.Image[] = []');
+    expect(source).toContain('private fieldNpcFallbackRectangles: Phaser.GameObjects.Rectangle[] = []');
+    expect(source).toContain('this.load.image(GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.key, GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE.path)');
+    expect(source).toContain("this._spawnNpc('npc_missing_field_fallback', 'QA 누락 NPC', 620, 470, 'dialogue')");
+    expect(source).toContain('const fallbackTexture = GAME_SCENE_FIELD_NPC_FALLBACK_TEXTURE');
+    expect(source).toContain('this.add.image(x, y, fallbackTexture.key)');
+    expect(source).toContain('sprite.setName(`game_scene_field_npc_fallback_${id}`)');
+    expect(source).toContain('this.fieldNpcFallbackImages.push(sprite)');
+    expect(source).toContain('this.fieldNpcFallbackRectangles.push(sprite)');
+    expect(source).toContain('document.body.dataset.aeternaGameFieldNpcFallbackQa = JSON.stringify');
+    expect(source).toContain('proceduralRectanglePresent');
+    expect(source).toContain('missingFieldNpcFallbackKeys');
+    expect(mainSource).toContain("fieldNpcFallbackQa: params.get('fieldNpcFallbackQa') === '1'");
+  });
+
   it('GameScene loads and renders Aseprite field monster resources before procedural fallback', () => {
     const source = readSceneSource('GameScene.ts');
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
@@ -359,6 +384,63 @@ describe('sprite resource manifest', () => {
     expect(mainSource).toContain("if (debugScene === 'game')");
     expect(mainSource).toContain("phaserGame.scene.start('GameScene', {");
     expect(mainSource).toContain('offlineQa: true');
+  });
+
+  it('GameScene missing field monster resources use Aseprite fallback images before emoji fallback', () => {
+    const source = readSceneSource('GameScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain('fieldMonsterFallbackQa?: boolean');
+    expect(source).toContain('const GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES = {');
+    expect(source).toContain("key: 'battle_monster_fallback'");
+    expect(source).toContain("path: 'assets/generated/monsters/fallback/battle_monster_fallback.png'");
+    expect(source).toContain("key: 'battle_boss_fallback'");
+    expect(source).toContain("path: 'assets/generated/monsters/fallback/battle_boss_fallback.png'");
+    expect(source).toContain('private fieldMonsterFallbackImages: Phaser.GameObjects.Image[] = []');
+    expect(source).toContain('private fieldMonsterFallbackEmojiTexts: Phaser.GameObjects.Text[] = []');
+    expect(source).toContain('for (const texture of Object.values(GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES))');
+    expect(source).toContain('this.load.image(texture.key, texture.path)');
+    expect(source).toContain("this._spawnMonster('mon_missing_field_fallback', 'QA 누락 몬스터 Lv.1', 1160, 480)");
+    expect(source).toContain("this._spawnMonster('mon_missing_boss_field_fallback', 'QA 누락 보스 Lv.30', 1220, 560, true)");
+    expect(source).toContain('const fallbackTexture = isBoss ? GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES.boss : GAME_SCENE_FIELD_MONSTER_FALLBACK_TEXTURES.normal');
+    expect(source).toContain('if (this.textures.exists(fallbackTexture.key))');
+    expect(source).toContain('this.add.image(x, y, fallbackTexture.key)');
+    expect(source).toContain('sprite.setName(`game_scene_field_monster_fallback_${cleanId}`)');
+    expect(source).toContain('this.fieldMonsterFallbackImages.push(sprite)');
+    expect(source).toContain('this.fieldMonsterFallbackEmojiTexts.push(emojiText)');
+    expect(source).toContain('document.body.dataset.aeternaGameFieldMonsterFallbackQa = JSON.stringify');
+    expect(source).toContain('legacyEmojiPresent');
+    expect(source).toContain('missingFieldMonsterFallbackKeys');
+    expect(mainSource).toContain("fieldMonsterFallbackQa: params.get('fieldMonsterFallbackQa') === '1'");
+  });
+
+  it('DungeonScene missing monster previews use Aseprite fallback images before emoji fallback', () => {
+    const source = readSceneSource('DungeonScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain('dungeonMonsterFallbackQa?: boolean');
+    expect(source).toContain('const DUNGEON_MONSTER_FALLBACK_TEXTURES = {');
+    expect(source).toContain("key: 'battle_monster_fallback'");
+    expect(source).toContain("path: 'assets/generated/monsters/fallback/battle_monster_fallback.png'");
+    expect(source).toContain("key: 'battle_boss_fallback'");
+    expect(source).toContain("path: 'assets/generated/monsters/fallback/battle_boss_fallback.png'");
+    expect(source).toContain('private dungeonMonsterFallbackImages: Phaser.GameObjects.Image[] = []');
+    expect(source).toContain('private dungeonMonsterEmojiFallbackTexts: Phaser.GameObjects.Text[] = []');
+    expect(source).toContain('for (const texture of Object.values(DUNGEON_MONSTER_FALLBACK_TEXTURES))');
+    expect(source).toContain('this.load.image(texture.key, texture.path)');
+    expect(source).toContain('const preview = this._sceneData.dungeonMonsterFallbackQa === true');
+    expect(source).toContain('const fallbackTexture = isBoss ? DUNGEON_MONSTER_FALLBACK_TEXTURES.boss : DUNGEON_MONSTER_FALLBACK_TEXTURES.normal');
+    expect(source).toContain('if (this.textures.exists(fallbackTexture.key))');
+    expect(source).toContain('this.add.image(x, y, fallbackTexture.key)');
+    expect(source).toContain('setName(`dungeon_monster_fallback_${isBoss ? \'boss\' : \'normal\'}_${i}`)');
+    expect(source).toContain('this.dungeonMonsterFallbackImages.push(sprite)');
+    expect(source).toContain('this.dungeonMonsterEmojiFallbackTexts.push(iconText)');
+    expect(source).toContain('document.body.dataset.aeternaDungeonMonsterFallbackQa = JSON.stringify');
+    expect(source).toContain('legacyEmojiPresent');
+    expect(source).toContain('missingDungeonMonsterFallbackKeys');
+    expect(source).toContain('expectedFallbackCount');
+    expect(source).toContain('this._writeDungeonMonsterFallbackQaProbe()');
+    expect(mainSource).toContain("dungeonMonsterFallbackQa: params.get('dungeonMonsterFallbackQa') === '1'");
   });
 
   it('GameScene boss field labels render an Aseprite skill icon before the sword glyph fallback', () => {
@@ -619,6 +701,76 @@ describe('sprite resource manifest', () => {
     expect(source).not.toContain("this.goldText.setText('💰 999 Gold')");
     expect(source).not.toContain("this.goldText.setText(`💰 ${gold.toLocaleString()} Gold`)");
     expect(mainSource).toContain("goldIconQa: params.get('goldIconQa') === '1'");
+  });
+
+  it('LobbyScene town title renders an Aseprite zone icon before star glyph fallback', () => {
+    const source = readSceneSource('LobbyScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(getSpriteResourceForWorldZoneIcon('aether_plains')).toMatchObject({
+      id: 'zone_aether_plains',
+      key: 'zone_aether_plains',
+      path: 'assets/generated/ui/worldmap/zone_aether_plains.png',
+    });
+    expect(source).toContain("const LOBBY_TITLE_ICON_ZONE_ID = 'aether_plains'");
+    expect(source).toContain('const LOBBY_TITLE_ICON_EXPECTED_COUNT = 1');
+    expect(source).toContain('const LOBBY_TITLE_ICON_SIZE = 20');
+    expect(source).toContain('lobbyTitleIconQa?: boolean');
+    expect(source).toContain('private lobbyTitleIcon: Phaser.GameObjects.Image | null = null');
+    expect(source).toContain('private lobbyTitleText: Phaser.GameObjects.Text | null = null');
+    expect(source).toContain('private lobbyTitleIconFallbackRendered = false');
+    expect(source).toContain('const lobbyTitleIconResource = getSpriteResourceForWorldZoneIcon(LOBBY_TITLE_ICON_ZONE_ID)');
+    expect(source).toContain('this.load.image(lobbyTitleIconResource.key, lobbyTitleIconResource.path)');
+    expect(source).toContain("setName('lobby_title_zone_icon')");
+    expect(source).toContain('this.lobbyTitleIcon.setDisplaySize(LOBBY_TITLE_ICON_SIZE, LOBBY_TITLE_ICON_SIZE)');
+    expect(source).toContain('this.lobbyTitleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(source).toContain("const titleLabel = hasLobbyTitleIcon ? '아에테리아 마을' : '☆ 아에테리아 마을 ☆'");
+    expect(source).toContain('this._writeLobbyTitleIconQaProbe()');
+    expect(source).toContain('document.body.dataset.aeternaLobbyTitleIconQa = JSON.stringify');
+    expect(source).toContain('missingLobbyTitleIconKeys');
+    expect(source).toContain('titleLabelLegacyGlyphPresent');
+    expect(source).not.toContain("this.add.text(w / 2, 80, '☆ 아에테리아 마을 ☆'");
+    expect(mainSource).toContain("lobbyTitleIconQa: params.get('lobbyTitleIconQa') === '1'");
+  });
+
+  it('LobbyScene NPC action notifications render Aseprite icons before action glyph prefixes', () => {
+    const source = readSceneSource('LobbyScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(getItemIconResource({ itemIconId: 'ITM-CON-001' })).toMatchObject({
+      key: 'icon_item_ITM-CON_001',
+      path: 'assets/generated/ui/icons/items/ITM-CON-001.png',
+    });
+    expect(getSpriteResourceForSkillIcon('skill_ek_slash')).toMatchObject({
+      key: 'skill_ek_slash_icon',
+      path: 'assets/generated/ui/icons/skills/skill_ek_slash.png',
+    });
+    expect(source).toContain("type LobbyNotificationIconId = 'shop' | 'enhance' | 'quest' | 'party' | 'story'");
+    expect(source).toContain('lobbyNotificationIconQa?: LobbyNotificationIconId');
+    expect(source).toContain('const LOBBY_NOTIFICATION_ICON_TEXTURES');
+    expect(source).toContain('const LOBBY_NOTIFICATION_ICON_EXPECTED_COUNT = 1');
+    expect(source).toContain('const LOBBY_NOTIFICATION_ICON_SIZE = 18');
+    expect(source).toContain('private lobbyNotificationIcon: Phaser.GameObjects.Image | null = null');
+    expect(source).toContain('private lobbyNotificationText: Phaser.GameObjects.Text | null = null');
+    expect(source).toContain('private lobbyNotificationIconFallbackRendered = false');
+    expect(source).toContain('private _showNotification(msg: string, iconId?: LobbyNotificationIconId): void');
+    expect(source).toContain('private _resolveLobbyNotificationIconResource(iconId: LobbyNotificationIconId): LobbyNavIconResource | undefined');
+    expect(source).toContain("setName('lobby_notification_icon')");
+    expect(source).toContain('this.lobbyNotificationIcon.setDisplaySize(LOBBY_NOTIFICATION_ICON_SIZE, LOBBY_NOTIFICATION_ICON_SIZE)');
+    expect(source).toContain('this.lobbyNotificationIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(source).toContain('this._writeLobbyNotificationIconQaProbe(iconId, msg)');
+    expect(source).toContain('document.body.dataset.aeternaLobbyNotificationIconQa = JSON.stringify');
+    expect(source).toContain('missingLobbyNotificationIconKeys');
+    expect(source).toContain('notificationLegacyGlyphPresent');
+    expect(source).toContain("this._showNotification(`${npc.name}: 파티원을 모집합니다.`, 'party')");
+    expect(source).not.toContain('`🛒 ${npc.name}: 상점을 열었습니다.');
+    expect(source).not.toContain('`🔨 ${npc.name}: 장비 강화 서비스를 준비합니다.`');
+    expect(source).not.toContain('`📜 ${npc.name}: 의뢰 게시판을 엽니다.`');
+    expect(source).not.toContain('`⚔️ ${npc.name}: 파티원을 모집합니다.`');
+    expect(source).not.toContain('`📖 ${npc.name}: 메인 스토리를 진행합니다.`');
+    expect(mainSource).toContain('function parseLobbyNotificationIconQa');
+    expect(mainSource).toContain("const lobbyNotificationIconQaParam = params.get('lobbyNotificationIconQa')");
+    expect(mainSource).toContain('lobbyNotificationIconQa: parseLobbyNotificationIconQa(lobbyNotificationIconQaParam)');
   });
 
   it('LobbyScene inventory panel renders an Aseprite title icon before the bag glyph fallback', () => {
@@ -1559,6 +1711,40 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("document.body.dataset.aeternaBattleLogHighlightIconQa = JSON.stringify");
     expect(battleUiSource).toContain('missingBattleLogHighlightIconKeys');
     expect(battleUiSource).toContain("new URLSearchParams(window.location.search).get('battleLogHighlightIconQa')");
+  });
+
+  it('BattleUI 도주 로그 하이라이트는 Aseprite escape icons를 legacy escape glyph보다 먼저 사용한다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+    const escapeNarrationSource = readFileSync(resolve(process.cwd(), 'client/src/combat/escapeNarration.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("escapeSuccess: 'skill_vw_warp'");
+    expect(battleUiSource).toContain("escapeFail: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("escapeBlocked: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("escapeForbidden: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("escapeCritical: 'skill_vw_warp'");
+    expect(battleUiSource).toContain('const BATTLE_LOG_HIGHLIGHT_ICON_QA_DELAY_MS = 1700;');
+    expect(battleUiSource).toContain('this.scene.time.delayedCall(BATTLE_LOG_HIGHLIGHT_ICON_QA_DELAY_MS, () => {');
+    expect(battleUiSource).toContain("if (m.includes('도주 성공') || m.includes('비상 도주')) return '#55ff77'");
+    expect(battleUiSource).toContain("if (m.includes('도주 실패') || m.includes('도주 차단') || m.includes('도주 불가')) return '#ff8888'");
+    expect(battleUiSource).toContain("if (message.includes('도주 성공')) return 'escapeSuccess'");
+    expect(battleUiSource).toContain("if (message.includes('도주 실패')) return 'escapeFail'");
+    expect(battleUiSource).toContain("if (message.includes('도주 차단')) return 'escapeBlocked'");
+    expect(battleUiSource).toContain("if (message.includes('도주 불가')) return 'escapeForbidden'");
+    expect(battleUiSource).toContain("if (message.includes('비상 도주')) return 'escapeCritical'");
+    expect(battleUiSource).toContain("kind === 'escapeSuccess' || kind === 'escapeFail' || kind === 'escapeBlocked' || kind === 'escapeForbidden' || kind === 'escapeCritical'");
+    expect(battleUiSource).toContain("escapeSuccess: '🏃 도주 성공!'");
+    expect(battleUiSource).toContain("escapeFail: '❌ 도주 실패!'");
+    expect(battleUiSource).toContain("escapeBlocked: '🚧 도주 차단!'");
+    expect(battleUiSource).toContain("escapeForbidden: '🔒 도주 불가!'");
+    expect(battleUiSource).toContain("escapeCritical: '🆘 비상 도주!'");
+    expect(battleUiSource).toContain(".replace(/[🏃❌🚧🔒🆘]/gu, '')");
+    expect(battleUiSource).toContain('const escapeLegacyGlyphPresent = /[🏃❌🚧🔒🆘]/u.test(highlightText)');
+    expect(battleUiSource).toContain('&& !escapeLegacyGlyphPresent');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain('this.battleUI?.addLog(composeEscapeLog(escapeOutcomeFromResult(succeeded)))');
+    expect(escapeNarrationSource).toContain("success: '🏃'");
+    expect(escapeNarrationSource).toContain("fail: '❌'");
   });
 
   it('BattleUI 협공 로그 하이라이트는 Aseprite dual/triple tech icons를 glyph fallback보다 먼저 사용한다', () => {

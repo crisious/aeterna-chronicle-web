@@ -373,6 +373,7 @@ describe('character sprite manifest', () => {
 
   it('GameScene integrates manifest sprite resources with the player fallback texture', () => {
     const source = readSceneSource('GameScene.ts');
+    const mainSource = readClientSource('main.ts');
 
     expect(source).toContain("from '../assets/characterSpriteManifest'");
     expect(source).toContain('getCharacterSpriteAnimationKey');
@@ -386,8 +387,21 @@ describe('character sprite manifest', () => {
     expect(source).toContain('frameWidth: characterSpriteResource.frameWidth');
     expect(source).toContain('frameHeight: characterSpriteResource.frameHeight');
     expect(source).toContain('this.textures.exists(characterSpriteResource.textureKey)');
+    expect(source).toContain('localPlayerFallbackQa?: boolean');
+    expect(source).toContain('private localPlayerThumbnailFallbackRendered = false');
+    expect(source).toContain('private localPlayerLegacyFallbackRendered = false');
+    expect(source).toContain('const playerSpriteResource = this.sceneData.localPlayerFallbackQa === true');
+    expect(source).toContain('const playerThumbnailResource = getCharacterHudAvatarResource(this.currentCharacterClassId)');
+    expect(source).toContain('this.textures.exists(playerThumbnailResource.key)');
+    expect(source).toContain('? playerThumbnailResource.key');
     expect(source).toContain('this.physics.add.sprite(640, 360, textureKey, 0)');
     expect(source).toContain('this.player.setFrame(0)');
+    expect(source).toContain("this.player.setName('game_scene_local_player_thumbnail_fallback')");
+    expect(source).toContain('this.localPlayerThumbnailFallbackRendered = true');
+    expect(source).toContain('this.localPlayerLegacyFallbackRendered = true');
+    expect(source).toContain('document.body.dataset.aeternaGameLocalPlayerFallbackQa = JSON.stringify');
+    expect(source).toContain('missingLocalPlayerThumbnailKeys');
+    expect(mainSource).toContain("localPlayerFallbackQa: params.get('localPlayerFallbackQa') === '1'");
     expect(source).toContain("'player_sprite'");
     // 필드 애니메이션: 스폰 idle + 이동 시 walk/idle(방향 + flipX 미러).
     expect(source).toContain("this._playPlayerAnim('idle')");
@@ -399,20 +413,39 @@ describe('character sprite manifest', () => {
 
   it('GameScene renders remote players with Aseprite character sprites before rectangle fallback', () => {
     const source = readSceneSource('GameScene.ts');
+    const mainSource = readClientSource('main.ts');
     const networkSource = readClientSource('network/NetworkManager.ts');
 
     expect(source).toContain("import { CHARACTER_SPRITE_MANIFEST } from '../assets/characterSpriteManifest';");
     expect(source).toContain('const queuedCharacterTextureKeys = new Set<string>()');
     expect(source).toContain('for (const characterSpriteResource of CHARACTER_SPRITE_MANIFEST)');
+    expect(source).toContain('remotePlayerFallbackQa?: boolean');
+    expect(source).toContain('private remotePlayerThumbnailFallbackImages: Phaser.GameObjects.Image[] = []');
+    expect(source).toContain('private remotePlayerRectangleFallbackRendered = false');
+    expect(source).toContain('for (const avatarResource of Object.values(CHARACTER_HUD_AVATAR_RESOURCES))');
+    expect(source).toContain('this.load.image(avatarResource.key, avatarResource.path)');
     expect(source).toContain("characterClass?: string");
     expect(source).toContain("const remoteClassId = d.characterClass?.trim() ?? ''");
-    expect(source).toContain('const remoteSpriteResource = remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined');
+    expect(source).toContain('const remoteSpriteResource = this.sceneData.remotePlayerFallbackQa === true');
+    expect(source).toContain(': (remoteClassId ? getCharacterSpriteResource(remoteClassId) : undefined)');
+    expect(source).toContain('const remoteThumbnailResource = getCharacterHudAvatarResource(remoteClassId)');
     // 원격 플레이어도 정적 add.image 가 아니라 add.sprite + idle 루프.
     expect(source).toContain('this.add.sprite(d.x, d.y, remoteSpriteResource.textureKey, 0)');
     expect(source).toContain("this._ensureCharFieldAnim(remoteClassId, 'idle', 'D')");
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
-    expect(source).toContain('Aseprite remote player sprite 로드 실패 시에만 사용하는 안전 fallback');
+    expect(source).toContain('Aseprite remote player sprite 로드 실패 시 character battle thumbnail을 먼저 사용한다');
+    expect(source).toContain('this.add.image(d.x, d.y, remoteThumbnailResource.key)');
+    expect(source).toContain("setName(`game_scene_remote_player_thumbnail_fallback_${d.characterId}`)");
+    expect(source).toContain('setDisplaySize(40, 60)');
+    expect(source).toContain('this.remotePlayerThumbnailFallbackImages.push(thumbnail)');
+    expect(source).toContain('Aseprite remote player thumbnail까지 로드 실패 시에만 사용하는 안전 fallback');
     expect(source).toContain('this.add.rectangle(d.x, d.y, 40, 56, 0x4488ff)');
+    expect(source).toContain('this.remotePlayerRectangleFallbackRendered = true');
+    expect(source).toContain("this._spawnRemotePlayerPreview({");
+    expect(source).toContain('document.body.dataset.aeternaGameRemotePlayerFallbackQa = JSON.stringify');
+    expect(source).toContain('missingRemotePlayerThumbnailKeys');
+    expect(source).toContain('rectangleFallbackRendered: this.remotePlayerRectangleFallbackRendered');
+    expect(mainSource).toContain("remotePlayerFallbackQa: params.get('remotePlayerFallbackQa') === '1'");
     expect(networkSource).toContain("'world:playerJoined': { characterId: string; name: string; x: number; y: number; characterClass?: string }");
   });
 
@@ -421,7 +454,7 @@ describe('character sprite manifest', () => {
     const hudSource = readClientSource('services/HUDOrchestrator.ts');
 
     expect(source).toContain('if (this.sceneData.offlineQa === true)');
-    expect(source).toContain("this.connectionLabel?.setText('● 로컬 QA').setColor('#ffcc44')");
+    expect(source).toContain("this._renderConnectionStatus('connected', '로컬 QA', '#ffcc44')");
     expect(source).toContain('return;');
     expect(source).toContain('this.zoneInfo = null;');
     expect(source).toContain('networkManager.getZoneInfo(this.currentZoneId)');
@@ -463,6 +496,7 @@ describe('character sprite manifest', () => {
 
   it('BattleScene prioritizes manifest sprite resources before static battle fallbacks', () => {
     const source = readSceneSource('BattleScene.ts');
+    const mainSource = readClientSource('main.ts');
 
     expect(source).toContain("from '../assets/characterSpriteManifest'");
     expect(source).toContain('getCharacterSpriteResource');
@@ -492,6 +526,23 @@ describe('character sprite manifest', () => {
     // #280 회귀 가드: Image|Sprite 둘 다 틴트 가능하도록 타입가드 경유.
     expect(source).toContain('private _canTint(');
     expect(source).toContain('if (this._canTint(us.sprite)) us.sprite.setTint(0x666666)');
+    expect(source).toContain('battleAllyFallbackQa?: boolean');
+    expect(source).toContain('const BATTLE_ALLY_FALLBACK_TEXTURE = {');
+    expect(source).toContain("key: 'placeholder'");
+    expect(source).toContain("path: 'assets/generated/ui/placeholders/placeholder.png'");
+    expect(source).toContain('this.load.image(BATTLE_ALLY_FALLBACK_TEXTURE.key, BATTLE_ALLY_FALLBACK_TEXTURE.path)');
+    expect(source).toContain('private battleAllyFallbackImages: Phaser.GameObjects.Image[] = []');
+    expect(source).toContain('private battleAllyRectangleFallbackRendered = false');
+    expect(source).toContain('this.textures.exists(BATTLE_ALLY_FALLBACK_TEXTURE.key)');
+    expect(source).toContain('this.add.image(pos.x, pos.y, BATTLE_ALLY_FALLBACK_TEXTURE.key)');
+    expect(source).toContain("setName(`battle_ally_fallback_${unit.id}`)");
+    expect(source).toContain('setDisplaySize(BATTLE_ALLY_FALLBACK_TEXTURE.displayWidth, BATTLE_ALLY_FALLBACK_TEXTURE.displayHeight)');
+    expect(source).toContain('this.battleAllyFallbackImages.push(fallbackImage)');
+    expect(source).toContain('this.battleAllyRectangleFallbackRendered = true');
+    expect(source).toContain('this._writeBattleAllyFallbackQaProbe(units)');
+    expect(source).toContain('document.body.dataset.aeternaBattleAllyFallbackQa = JSON.stringify');
+    expect(source).toContain('missingBattleAllyFallbackKeys');
+    expect(mainSource).toContain("battleAllyFallbackQa: params.get('battleAllyFallbackQa') === '1'");
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
     expect(source).toContain('Phaser.Textures.FilterMode.LINEAR');
     expect(source).toContain('this.add.rectangle(pos.x, pos.y, 48, 64, 0x4488ff)');
@@ -589,6 +640,31 @@ describe('character sprite manifest', () => {
     expect(source).toContain('Phaser.Textures.FilterMode.NEAREST');
     expect(source).toContain("this.add.image(PLAYER_X, py, 'dungeon_player')");
     expect(source).toContain('this.add.rectangle(PLAYER_X, py, 40, 50, 0x4488ff)');
+  });
+
+  it('DungeonScene uses an Aseprite battle thumbnail before side illustration player fallback', () => {
+    const source = readSceneSource('DungeonScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain('dungeonPlayerThumbnailFallbackQa?: boolean');
+    expect(source).toContain('const DUNGEON_PLAYER_THUMBNAIL_TEXTURES = {');
+    expect(source).toContain("key: 'char_battle_ether_knight'");
+    expect(source).toContain("path: 'assets/generated/characters/class_main/battle/char_battle_ether_knight.png'");
+    expect(source).toContain('function getDungeonPlayerThumbnailResource(classId: string)');
+    expect(source).toContain('private dungeonPlayerThumbnailFallbackImage?: Phaser.GameObjects.Image');
+    expect(source).toContain('private dungeonPlayerIllustrationFallbackRendered = false');
+    expect(source).toContain('private dungeonPlayerRectangleFallbackRendered = false');
+    expect(source).toContain('const playerThumbnailResource = getDungeonPlayerThumbnailResource(this._getPlayerClassId())');
+    expect(source).toContain('this.load.image(playerThumbnailResource.key, playerThumbnailResource.path)');
+    expect(source).toContain('this.add.image(PLAYER_X, py, playerThumbnailResource.key)');
+    expect(source).toContain("setName('dungeon_player_thumbnail_fallback')");
+    expect(source).toContain('this.dungeonPlayerThumbnailFallbackImage = thumbnail');
+    expect(source).toContain("this.add.image(PLAYER_X, py, 'dungeon_player')");
+    expect(source).toContain('this.dungeonPlayerIllustrationFallbackRendered = true');
+    expect(source).toContain('this.dungeonPlayerRectangleFallbackRendered = true');
+    expect(source).toContain('document.body.dataset.aeternaDungeonPlayerThumbnailFallbackQa = JSON.stringify');
+    expect(source).toContain('missingDungeonPlayerThumbnailKeys');
+    expect(mainSource).toContain("dungeonPlayerThumbnailFallbackQa: params.get('dungeonPlayerThumbnailFallbackQa') === '1'");
   });
 
   it('WorldScene forwards characterClass when entering GameScene', () => {

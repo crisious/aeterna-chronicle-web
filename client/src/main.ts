@@ -52,6 +52,29 @@ declare global {
     }
 }
 
+const CUTSCENE_DEBUG_SPEAKER_NAMES: Record<string, string> = {
+    narrator: '내레이터',
+    ether_knight: '에테르 기사',
+    memory_weaver: '기억술사',
+    shadow_weaver: '그림자 직조사',
+    memory_breaker: '기억 파괴자',
+    time_guardian: '시간 수호자',
+    void_wanderer: '공허 방랑자',
+};
+
+function parseLobbyNotificationIconQa(value: string | null): LobbySceneData['lobbyNotificationIconQa'] {
+    if (
+        value === 'shop'
+        || value === 'enhance'
+        || value === 'quest'
+        || value === 'party'
+        || value === 'story'
+    ) {
+        return value;
+    }
+    return undefined;
+}
+
 // 크로스브라우저 호환성 검출 — Phaser 인스턴스 전 가장 먼저 실행
 // body[data-renderer], [data-compat-mode] 부여 → CSS 폴백 활성화
 const caps = detectAndApply();
@@ -271,6 +294,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
 
         const itemIconQaParam = params.get('itemIconQa');
         const lobbyConnectionIconQaParam = params.get('lobbyConnectionIconQa');
+        const lobbyNotificationIconQaParam = params.get('lobbyNotificationIconQa');
         const lobbyData: LobbySceneData = {
             characterId: params.get('characterId') ?? 'debug-chrono-hero',
             characterName: params.get('name') ?? '크로노 테스터',
@@ -298,6 +322,8 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             questTitleIconQa: params.get('questTitleIconQa') === '1',
             questActionFocusIconQa: params.get('questActionFocusIconQa') === '1',
             goldIconQa: params.get('goldIconQa') === '1',
+            lobbyTitleIconQa: params.get('lobbyTitleIconQa') === '1',
+            lobbyNotificationIconQa: parseLobbyNotificationIconQa(lobbyNotificationIconQaParam),
             lobbyConnectionIconQa: lobbyConnectionIconQaParam === 'connected' || lobbyConnectionIconQaParam === 'offline' || lobbyConnectionIconQaParam === 'error'
                 ? lobbyConnectionIconQaParam
                 : undefined,
@@ -330,6 +356,10 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             zoneTeleportFrameQa: params.get('zoneTeleportFrameQa') === '1',
             envObjectQa: params.get('envObjectQa') === '1',
             bossLabelIconQa: params.get('bossLabelIconQa') === '1',
+            fieldMonsterFallbackQa: params.get('fieldMonsterFallbackQa') === '1',
+            fieldNpcFallbackQa: params.get('fieldNpcFallbackQa') === '1',
+            localPlayerFallbackQa: params.get('localPlayerFallbackQa') === '1',
+            remotePlayerFallbackQa: params.get('remotePlayerFallbackQa') === '1',
             zoneLabelIconQa: params.get('zoneLabelIconQa') === '1',
             gameErrorIconQa: params.get('gameErrorIconQa') === '1',
             gameConnectionIconQa: gameConnectionIconQaParam === 'connected' || gameConnectionIconQaParam === 'offline' || gameConnectionIconQaParam === 'error'
@@ -341,7 +371,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
 
     if (debugScene === 'dungeon') {
         const dungeonFrameQaParam = params.get('dungeonFrameQa');
-        const dungeonFrameQa = dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss'
+        const dungeonFrameQa = dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss' || dungeonFrameQaParam === 'defeat' || dungeonFrameQaParam === 'timeout'
             ? dungeonFrameQaParam
             : undefined;
         phaserGame.scene.stop('MainMenuScene');
@@ -352,6 +382,8 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             className: params.get('className') ?? '디버그 클래스',
             baseStats: { hp: 420, mp: 120, atk: 34, def: 22 },
             dungeonFrameQa,
+            dungeonPlayerThumbnailFallbackQa: params.get('dungeonPlayerThumbnailFallbackQa') === '1',
+            dungeonMonsterFallbackQa: params.get('dungeonMonsterFallbackQa') === '1',
         });
         return;
     }
@@ -391,6 +423,11 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
     }
 
     if (debugScene === 'cutscene') {
+        const cutsceneSpeakerParam = params.get('cutsceneSpeaker') ?? 'narrator';
+        const cutsceneDebugSpeaker = CUTSCENE_DEBUG_SPEAKER_NAMES[cutsceneSpeakerParam] ?? CUTSCENE_DEBUG_SPEAKER_NAMES.narrator;
+        const cutsceneDebugText = cutsceneSpeakerParam === 'narrator'
+            ? 'Aseprite HUD frame이 하단 대화 박스에 먼저 렌더되는지 확인합니다.'
+            : 'Aseprite 클래스 포트레이트가 컷씬 화자 이미지로 먼저 렌더되는지 확인합니다.';
         phaserGame.scene.stop('MainMenuScene');
         phaserGame.scene.start('CutsceneScene', {
             id: 'debug-cutscene-frame',
@@ -400,8 +437,8 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             characters: [],
             dialogue: [
                 {
-                    speaker: '내레이터',
-                    text: 'Aseprite HUD frame이 하단 대화 박스에 먼저 렌더되는지 확인합니다.',
+                    speaker: cutsceneDebugSpeaker,
+                    text: cutsceneDebugText,
                     delay: 999999,
                 },
             ],
@@ -523,6 +560,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             battleChainLabelIconQa: battleChainLabelIconQaParam === 'chain' || battleChainLabelIconQaParam === 'max'
                 ? battleChainLabelIconQaParam
                 : undefined,
+            battleAllyFallbackQa: params.get('battleAllyFallbackQa') === '1',
             battleSubMenuFocusIconQa: battleSubMenuFocusIconQaParam === 'magic' || battleSubMenuFocusIconQaParam === 'item'
                 ? battleSubMenuFocusIconQaParam
                 : undefined,

@@ -1001,7 +1001,7 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain("path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png'");
     expect(dungeonSceneSource).toContain("key: 'ui_frame_dungeon_reward_panel'");
     expect(dungeonSceneSource).toContain("path: 'assets/generated/ui/frames/UI-INV-005-DEF.png'");
-    expect(dungeonSceneSource).toContain("dungeonFrameQa?: 'ready' | 'clear' | 'boss'");
+    expect(dungeonSceneSource).toContain("dungeonFrameQa?: 'ready' | 'clear' | 'boss' | 'defeat' | 'timeout'");
     expect(dungeonSceneSource).toContain('this.load.image(texture.key, texture.path)');
     expect(dungeonSceneSource).toContain('this._addDungeonFrame(baseX + 145, baseY + 16, 300, 78, DUNGEON_UI_FRAME_TEXTURES.statusPanel');
     expect(dungeonSceneSource).toContain('this._addDungeonFrame(width / 2, battleButtonY, 210, 64, DUNGEON_UI_FRAME_TEXTURES.actionButton');
@@ -1038,7 +1038,7 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'ready'");
     expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'clear'");
     expect(mainSource).toContain("const dungeonFrameQaParam = params.get('dungeonFrameQa')");
-    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss'");
+    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss' || dungeonFrameQaParam === 'defeat' || dungeonFrameQaParam === 'timeout'");
     expect(mainSource).toContain('dungeonFrameQa,');
   });
 
@@ -1060,6 +1060,40 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain('clearTitleLegacyGlyphPresent');
     expect(dungeonSceneSource).toContain('missingClearTitleIconKeys');
     expect(dungeonSceneSource).not.toContain("this.add.text(width / 2, height / 2 - 60, '🏆 던전 클리어!'");
+  });
+
+  it('던전 클리어 보상 패널은 EXP/Gold Aseprite icons를 보상 text 옆에 렌더링한다', () => {
+    const dungeonSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/DungeonScene.ts'), 'utf8');
+
+    expect(dungeonSceneSource).toContain("import { getItemIconResource } from '../data/itemIconResources';");
+    expect(dungeonSceneSource).toContain('const DUNGEON_REWARD_ICON_IDS = {');
+    expect(dungeonSceneSource).toContain("exp: 'skill_ek_passive'");
+    expect(dungeonSceneSource).toContain("gold: 'ITM-MAT-002'");
+    expect(dungeonSceneSource).toContain('const DUNGEON_REWARD_ICON_EXPECTED_COUNT = 2');
+    expect(dungeonSceneSource).toContain('const DUNGEON_REWARD_ICON_SIZE = 18');
+    expect(dungeonSceneSource).toContain('type DungeonRewardIconKind = keyof typeof DUNGEON_REWARD_ICON_IDS');
+    expect(dungeonSceneSource).toContain('function getDungeonRewardIconResource(kind: DungeonRewardIconKind)');
+    expect(dungeonSceneSource).toContain('return getSpriteResourceForSkillIcon(DUNGEON_REWARD_ICON_IDS[kind])');
+    expect(dungeonSceneSource).toContain('return getItemIconResource({ itemIconId: DUNGEON_REWARD_ICON_IDS[kind] })');
+    expect(dungeonSceneSource).toContain('for (const kind of Object.keys(DUNGEON_REWARD_ICON_IDS) as DungeonRewardIconKind[])');
+    expect(dungeonSceneSource).toContain('const rewardIconResource = getDungeonRewardIconResource(kind)');
+    expect(dungeonSceneSource).toContain('this.load.image(rewardIconResource.key, rewardIconResource.path)');
+    expect(dungeonSceneSource).toContain('private dungeonRewardIcons: Phaser.GameObjects.Image[] = []');
+    expect(dungeonSceneSource).toContain('private dungeonRewardIconFallbackKinds: DungeonRewardIconKind[] = []');
+    expect(dungeonSceneSource).toContain('private dungeonRewardText?: Phaser.GameObjects.Text');
+    expect(dungeonSceneSource).toContain("this._addDungeonRewardIcon('exp'");
+    expect(dungeonSceneSource).toContain("this._addDungeonRewardIcon('gold'");
+    expect(dungeonSceneSource).toContain('private _addDungeonRewardIcon(');
+    expect(dungeonSceneSource).toContain('setName(`dungeon_reward_${kind}_icon`)');
+    expect(dungeonSceneSource).toContain('rewardIcon.setDisplaySize(DUNGEON_REWARD_ICON_SIZE, DUNGEON_REWARD_ICON_SIZE)');
+    expect(dungeonSceneSource).toContain('rewardIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(dungeonSceneSource).toContain('this.dungeonRewardIcons.push(rewardIcon)');
+    expect(dungeonSceneSource).toContain('this.dungeonRewardIconFallbackKinds.push(kind)');
+    expect(dungeonSceneSource).toContain('rewardIcon: {');
+    expect(dungeonSceneSource).toContain('expectedCount: DUNGEON_REWARD_ICON_EXPECTED_COUNT');
+    expect(dungeonSceneSource).toContain('missingRewardIconKeys');
+    expect(dungeonSceneSource).toContain('rewardLabelLegacyGlyphPresent');
+    expect(dungeonSceneSource).toContain('missingRewardIconKeys.length === 0');
   });
 
   it('던전 퇴장과 클리어 복귀 버튼은 Aseprite reverse icon을 legacy glyph fallback보다 우선 렌더링한다', () => {
@@ -1106,13 +1140,26 @@ describe('UI frame runtime images', () => {
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
 
     expect(dungeonSceneSource).toContain("const DUNGEON_BOSS_WARNING_ICON_ID = 'skill_ek_explode'");
+    expect(dungeonSceneSource).toContain('const DUNGEON_BOSS_NAME_ICON_SIZE = 18');
     expect(dungeonSceneSource).toContain('const bossWarningIconResource = getSpriteResourceForSkillIcon(DUNGEON_BOSS_WARNING_ICON_ID)');
     expect(dungeonSceneSource).toContain('this.load.image(bossWarningIconResource.key, bossWarningIconResource.path)');
     expect(dungeonSceneSource).toContain('private dungeonBossWarningIcon?: Phaser.GameObjects.Image');
     expect(dungeonSceneSource).toContain('private dungeonBossWarningIconFallbackRendered = false');
     expect(dungeonSceneSource).toContain('private dungeonBossWarningText?: Phaser.GameObjects.Text');
+    expect(dungeonSceneSource).toContain('private dungeonBossNameIcons: Phaser.GameObjects.Image[] = []');
+    expect(dungeonSceneSource).toContain('private dungeonBossNameLabels: Phaser.GameObjects.Text[] = []');
+    expect(dungeonSceneSource).toContain('private dungeonBossNameIconFallbackRendered = false');
     expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'boss'");
     expect(dungeonSceneSource).toContain('this.currentWave = this.config.bossWave - 1');
+    expect(dungeonSceneSource).toContain('this._spawnEnemyPreview(true)');
+    expect(dungeonSceneSource).toContain('const bossNameIconResource = isBoss ? getSpriteResourceForSkillIcon(DUNGEON_BOSS_WARNING_ICON_ID) : undefined');
+    expect(dungeonSceneSource).toContain('const hasBossNameIcon = Boolean(bossNameIconResource && this.textures.exists(bossNameIconResource.key))');
+    expect(dungeonSceneSource).toContain("const nameLabelText = isBoss && hasBossNameIcon ? monName : isBoss ? `★ ${monName} ★` : monName");
+    expect(dungeonSceneSource).toContain("setName(`dungeon_boss_name_icon_${i}`)");
+    expect(dungeonSceneSource).toContain('bossNameIcon.setDisplaySize(DUNGEON_BOSS_NAME_ICON_SIZE, DUNGEON_BOSS_NAME_ICON_SIZE)');
+    expect(dungeonSceneSource).toContain('bossNameIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(dungeonSceneSource).toContain('this.dungeonBossNameIcons.push(bossNameIcon)');
+    expect(dungeonSceneSource).toContain('this.dungeonBossNameLabels.push(nameLabel)');
     expect(dungeonSceneSource).toContain('const hasBossWarningIcon = Boolean(bossWarningIconResource && this.textures.exists(bossWarningIconResource.key))');
     expect(dungeonSceneSource).toContain('this.dungeonBossWarningIcon = this.add.image(-116, 0, bossWarningIconResource.key)');
     expect(dungeonSceneSource).toContain("setName('dungeon_boss_warning_icon')");
@@ -1125,8 +1172,57 @@ describe('UI frame runtime images', () => {
     expect(dungeonSceneSource).toContain('fallbackRendered: this.dungeonBossWarningIconFallbackRendered');
     expect(dungeonSceneSource).toContain('bossWarningLegacyGlyphPresent');
     expect(dungeonSceneSource).toContain('missingBossWarningIconKeys');
+    expect(dungeonSceneSource).toContain('bossNameIcon: {');
+    expect(dungeonSceneSource).toContain('renderedCount: this.dungeonBossNameIcons.length');
+    expect(dungeonSceneSource).toContain('fallbackRendered: this.dungeonBossNameIconFallbackRendered');
+    expect(dungeonSceneSource).toContain('bossNameLegacyGlyphPresent');
+    expect(dungeonSceneSource).toContain('missingBossNameIconKeys');
+    expect(dungeonSceneSource).toContain("bossNameLabels: this.dungeonBossNameLabels.map((label) => label.text)");
     expect(dungeonSceneSource).not.toContain("this.add.text(0, 0, '⚠ WARNING ⚠\\n보스 등장!'");
-    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss'");
+    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss' || dungeonFrameQaParam === 'defeat' || dungeonFrameQaParam === 'timeout'");
+  });
+
+  it('던전 실패와 시간초과 타이틀은 Aseprite failure icons를 legacy glyph fallback보다 우선 렌더링한다', () => {
+    const dungeonSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/DungeonScene.ts'), 'utf8');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(dungeonSceneSource).toContain("import { getStatusIconResource } from '../data/statusEffectIcons';");
+    expect(dungeonSceneSource).toContain("dungeonFrameQa?: 'ready' | 'clear' | 'boss' | 'defeat' | 'timeout'");
+    expect(dungeonSceneSource).toContain('const DUNGEON_FAILURE_TITLE_ICON_IDS = {');
+    expect(dungeonSceneSource).toContain("party_wipe: { kind: 'status', id: 'curse' }");
+    expect(dungeonSceneSource).toContain("time_limit: { kind: 'skill', id: 'skill_tg_stop' }");
+    expect(dungeonSceneSource).toContain('const DUNGEON_FAILURE_TITLE_ICON_SIZE = 26');
+    expect(dungeonSceneSource).toContain('type DungeonFailureIconKind = keyof typeof DUNGEON_FAILURE_TITLE_ICON_IDS');
+    expect(dungeonSceneSource).toContain('function getDungeonFailureTitleIconResource(kind: DungeonFailureIconKind)');
+    expect(dungeonSceneSource).toContain('return getStatusIconResource(DUNGEON_FAILURE_TITLE_ICON_IDS[kind].id)');
+    expect(dungeonSceneSource).toContain('return getSpriteResourceForSkillIcon(DUNGEON_FAILURE_TITLE_ICON_IDS[kind].id)');
+    expect(dungeonSceneSource).toContain('private dungeonFailureTitleIcon?: Phaser.GameObjects.Image');
+    expect(dungeonSceneSource).toContain('private dungeonFailureTitleIconFallbackRendered = false');
+    expect(dungeonSceneSource).toContain('private dungeonFailureText?: Phaser.GameObjects.Text');
+    expect(dungeonSceneSource).toContain('for (const kind of Object.keys(DUNGEON_FAILURE_TITLE_ICON_IDS) as DungeonFailureIconKind[])');
+    expect(dungeonSceneSource).toContain('const failureTitleIconResource = getDungeonFailureTitleIconResource(kind)');
+    expect(dungeonSceneSource).toContain('this.load.image(failureTitleIconResource.key, failureTitleIconResource.path)');
+    expect(dungeonSceneSource).toContain('private _showDungeonFailureText(');
+    expect(dungeonSceneSource).toContain('const failureTitleIconResource = getDungeonFailureTitleIconResource(kind)');
+    expect(dungeonSceneSource).toContain('this.dungeonFailureTitleIcon = this.add.image(width / 2 - 118, height / 2 - 18, failureTitleIconResource.key)');
+    expect(dungeonSceneSource).toContain("setName('dungeon_failure_title_icon')");
+    expect(dungeonSceneSource).toContain('this.dungeonFailureTitleIcon.setDisplaySize(DUNGEON_FAILURE_TITLE_ICON_SIZE, DUNGEON_FAILURE_TITLE_ICON_SIZE)');
+    expect(dungeonSceneSource).toContain('this.dungeonFailureTitleIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(dungeonSceneSource).toContain('const displayText = hasFailureTitleIcon ? this._stripDungeonFailureLeadGlyph(rawText) : rawText');
+    expect(dungeonSceneSource).toContain('private _stripDungeonFailureLeadGlyph(rawText: string): string');
+    expect(dungeonSceneSource).toContain("return rawText.replace(/^💀\\s*/u, '').replace(/^⏰\\s*/u, '')");
+    expect(dungeonSceneSource).toContain("this._showDungeonFailureText('party_wipe'");
+    expect(dungeonSceneSource).toContain("this._showDungeonFailureText('time_limit'");
+    expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'defeat'");
+    expect(dungeonSceneSource).toContain("this._getDungeonFrameQaMode() === 'timeout'");
+    expect(dungeonSceneSource).toContain('failureTitleIcon: {');
+    expect(dungeonSceneSource).toContain('fallbackRendered: this.dungeonFailureTitleIconFallbackRendered');
+    expect(dungeonSceneSource).toContain('failureTitleLegacyGlyphPresent');
+    expect(dungeonSceneSource).toContain('missingFailureTitleIconKeys');
+    expect(dungeonSceneSource).toContain('failureLabel: this.dungeonFailureText?.text ?? null');
+    expect(dungeonSceneSource).not.toContain("this._showPhaseText(composeDungeonGameOverText('party_wipe')");
+    expect(dungeonSceneSource).not.toContain("this._showPhaseText(composeDungeonGameOverText('time_limit')");
+    expect(mainSource).toContain("dungeonFrameQaParam === 'ready' || dungeonFrameQaParam === 'clear' || dungeonFrameQaParam === 'boss' || dungeonFrameQaParam === 'defeat' || dungeonFrameQaParam === 'timeout'");
   });
 
   it('설정 화면 panel, action button, slider track은 Aseprite UI frame preload/render 경로와 QA route를 가진다', () => {
@@ -1390,11 +1486,17 @@ describe('UI frame runtime images', () => {
     expect(characterSelectSource).toContain("const CHARACTER_SELECT_LOGOUT_ICON_ID = 'skill_tg_reverse'");
     expect(characterSelectSource).toContain('const CHARACTER_SELECT_LOGOUT_ICON_RESOURCE = getSpriteResourceForSkillIcon(CHARACTER_SELECT_LOGOUT_ICON_ID)');
     expect(characterSelectSource).toContain('const CHARACTER_SELECT_LOGOUT_ICON_SIZE = 16');
+    expect(characterSelectSource).toContain('const CHARACTER_SELECT_CLASS_CARD_AVATAR_WIDTH = 54');
+    expect(characterSelectSource).toContain('const CHARACTER_SELECT_CLASS_CARD_AVATAR_HEIGHT = 81');
     expect(characterSelectSource).toContain('CHARACTER_SELECT_BATTLE_AVATAR_RESOURCES');
     expect(characterSelectSource).toContain("key: 'char_battle_ether_knight'");
     expect(characterSelectSource).toContain("path: 'assets/generated/characters/class_main/battle/char_battle_ether_knight.png'");
     expect(characterSelectSource).toContain('const avatarResource = getCharacterSelectBattleAvatarResource(classId)');
+    expect(characterSelectSource).toContain('const avatarResource = getCharacterSelectBattleAvatarResource(cls.id)');
     expect(characterSelectSource).toContain('this.load.image(avatarResource.key, avatarResource.path)');
+    expect(characterSelectSource).toContain('private classCardAvatars: Phaser.GameObjects.Image[] = []');
+    expect(characterSelectSource).toContain('private missingClassCardAvatarKeys: string[] = []');
+    expect(characterSelectSource).toContain('private fallbackClassCardAvatarIds: string[] = []');
     expect(characterSelectSource).toContain('private logoutIcon: Phaser.GameObjects.Image | null = null');
     expect(characterSelectSource).toContain('private logoutText: Phaser.GameObjects.Text | null = null');
     expect(characterSelectSource).toContain('private logoutIconFallbackRendered = false');
@@ -1408,6 +1510,11 @@ describe('UI frame runtime images', () => {
     expect(characterSelectSource).toContain("this.logoutText = this.add.text(42, 20, '로그아웃'");
     expect(characterSelectSource).toContain("this.logoutText = this.add.text(20, 20, '← 로그아웃'");
     expect(characterSelectSource).toContain('this._addExistingCharacterAvatar(char.classId, -210, 0, classColor)');
+    expect(characterSelectSource).toContain("setName(`character_select_class_card_avatar_${cls.id}`)");
+    expect(characterSelectSource).toContain('avatar.setDisplaySize(CHARACTER_SELECT_CLASS_CARD_AVATAR_WIDTH, CHARACTER_SELECT_CLASS_CARD_AVATAR_HEIGHT)');
+    expect(characterSelectSource).toContain('this.classCardAvatars.push(avatar)');
+    expect(characterSelectSource).toContain('this.missingClassCardAvatarKeys.push(avatarResource.key)');
+    expect(characterSelectSource).toContain('this.fallbackClassCardAvatarIds.push(cls.id)');
     expect(characterSelectSource).toContain("setName(`character_select_existing_avatar_${classId}`)");
     expect(characterSelectSource).toContain('avatar.setDisplaySize(28, 42)');
     expect(characterSelectSource).toContain("setName(`character_select_existing_avatar_fallback_${classId}`)");
@@ -1436,6 +1543,12 @@ describe('UI frame runtime images', () => {
     expect(characterSelectSource).toContain('missingLogoutIconKeys: this.missingLogoutIconKeys');
     expect(characterSelectSource).toContain('missingExistingAvatarKeys');
     expect(characterSelectSource).toContain('fallbackExistingAvatarClassIds');
+    expect(characterSelectSource).toContain('missingClassCardAvatarKeys');
+    expect(characterSelectSource).toContain('fallbackClassCardAvatarIds');
+    expect(characterSelectSource).toContain('classCardAvatar: {');
+    expect(characterSelectSource).toContain('expectedCount: expectedClassCardAvatarCount');
+    expect(characterSelectSource).toContain('renderedCount: this.classCardAvatars.length');
+    expect(characterSelectSource).toContain('renderedKeys: this.classCardAvatars.map((avatar) => avatar.texture.key)');
     expect(characterSelectSource).toContain('expectedCount: expectedNameInputFrameCount');
     expect(characterSelectSource).toContain('expectedCount: expectedActionButtonFrameCount');
     expect(characterSelectSource).toContain('expectedCount: expectedExistingAvatarCount');
@@ -1513,10 +1626,32 @@ describe('UI frame runtime images', () => {
     expect(cutsceneSource).toContain('CUTSCENE_EXPECTED_DIALOGUE_BOX_FRAME_COUNT = 1');
     expect(cutsceneSource).toContain('CUTSCENE_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 2');
     expect(cutsceneSource).toContain('CUTSCENE_EXPECTED_ACTION_BUTTON_ICON_COUNT = 2');
+    expect(cutsceneSource).toContain('CUTSCENE_PORTRAIT_TEXTURES');
+    expect(cutsceneSource).toContain("key: 'npc_portrait_18_memory_fragment_portrait'");
+    expect(cutsceneSource).toContain("path: 'assets/generated/characters/npc/npc_portrait_18_memory_fragment_portrait.png'");
+    expect(cutsceneSource).toContain("key: 'char_illust_ether_knight_front'");
+    expect(cutsceneSource).toContain("path: 'assets/generated/characters/class_main/char_illust_ether_knight_front.png'");
+    expect(cutsceneSource).toContain("key: 'char_illust_memory_weaver_front'");
+    expect(cutsceneSource).toContain("key: 'char_illust_shadow_weaver_front'");
+    expect(cutsceneSource).toContain("key: 'char_illust_memory_breaker_front'");
+    expect(cutsceneSource).toContain("key: 'char_illust_time_guardian_front'");
+    expect(cutsceneSource).toContain("key: 'char_illust_void_wanderer_front'");
+    expect(cutsceneSource).toContain("narrator: 'npc_portrait_18_memory_fragment_portrait'");
+    expect(cutsceneSource).toContain("etherKnight: 'char_illust_ether_knight_front'");
+    expect(cutsceneSource).toContain("memoryBreaker: 'char_illust_memory_breaker_front'");
+    expect(cutsceneSource).toContain("const CUTSCENE_PRELOAD_PORTRAIT_TEXTURE_COUNT = 7");
+    expect(cutsceneSource).toContain("const CUTSCENE_EXPECTED_PORTRAIT_COUNT = 1");
+    expect(cutsceneSource).toContain("'에테르 기사':   CUTSCENE_PORTRAIT_KEYS.etherKnight");
+    expect(cutsceneSource).toContain("'기억 파괴자':   CUTSCENE_PORTRAIT_KEYS.memoryBreaker");
+    expect(cutsceneSource).toContain("'시간 수호자':   CUTSCENE_PORTRAIT_KEYS.timeGuardian");
+    expect(cutsceneSource).toContain("'공허 방랑자':   CUTSCENE_PORTRAIT_KEYS.voidWanderer");
     expect(cutsceneSource).toContain('private actionButtonFrames: Phaser.GameObjects.Image[] = []');
     expect(cutsceneSource).toContain('private actionButtonIcons: Partial<Record<CutsceneActionButtonId, Phaser.GameObjects.Image>> = {}');
     expect(cutsceneSource).toContain('private actionButtonFallbackIds: CutsceneActionButtonId[] = []');
+    expect(cutsceneSource).toContain('private cutscenePortraitImages: Phaser.GameObjects.Image[] = []');
+    expect(cutsceneSource).toContain('private missingCutscenePortraitKeys: string[] = []');
     expect(cutsceneSource).toContain('this.load.image(texture.key, texture.path)');
+    expect(cutsceneSource).toContain('this.load.image(portrait.key, portrait.path)');
     expect(cutsceneSource).toContain('const iconResource = getSpriteResourceForSkillIcon(iconId)');
     expect(cutsceneSource).toContain('this.load.image(iconResource.key, iconResource.path)');
     expect(cutsceneSource).toContain('this._addCutsceneFrame(');
@@ -1531,6 +1666,9 @@ describe('UI frame runtime images', () => {
     expect(cutsceneSource).toContain('this.actionButtonFrames.push(frameImage)');
     expect(cutsceneSource).toContain('this.actionButtonIcons[actionId] = icon');
     expect(cutsceneSource).toContain('this.actionButtonFallbackIds.push(actionId)');
+    expect(cutsceneSource).toContain('this.cutscenePortraitImages.push(this.portraitSprite)');
+    expect(cutsceneSource).toContain('this.portraitSprite.setDisplaySize(96, 96)');
+    expect(cutsceneSource).toContain('this.portraitSprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
     expect(cutsceneSource).toContain("this.nextButton.setText(nextIcon ? `다음 (${progress})` : `다음 ▶  (${progress})`)");
     expect(cutsceneSource).toContain('Aseprite cutscene UI frame 로드 실패 시에만 사용하는 안전 fallback');
     expect(cutsceneSource).toContain('Aseprite cutscene action button frame 로드 실패 시에만 사용하는 안전 fallback');
@@ -1539,12 +1677,23 @@ describe('UI frame runtime images', () => {
     expect(cutsceneSource).toContain('dialogueBoxFrame');
     expect(cutsceneSource).toContain('actionButtonFrame');
     expect(cutsceneSource).toContain('actionButtonIcon: {');
+    expect(cutsceneSource).toContain('portrait: {');
+    expect(cutsceneSource).toContain('preloadedTextureCount: CUTSCENE_PRELOAD_PORTRAIT_TEXTURE_COUNT');
+    expect(cutsceneSource).toContain('expectedCount: CUTSCENE_EXPECTED_PORTRAIT_COUNT');
+    expect(cutsceneSource).toContain('renderedCount: this.cutscenePortraitImages.length');
+    expect(cutsceneSource).toContain('renderedKeys: this.cutscenePortraitImages.map((image) => image.texture.key)');
+    expect(cutsceneSource).toContain('missingCutscenePortraitKeys: this.missingCutscenePortraitKeys');
     expect(cutsceneSource).toContain('fallbackActionIds: this.actionButtonFallbackIds');
     expect(cutsceneSource).toContain('missingActionButtonIconKeys');
     expect(cutsceneSource).toContain('visibleCanvasCount');
     expect(mainSource).toContain("if (debugScene === 'cutscene')");
+    expect(mainSource).toContain('CUTSCENE_DEBUG_SPEAKER_NAMES');
+    expect(mainSource).toContain("ether_knight: '에테르 기사'");
+    expect(mainSource).toContain("const cutsceneSpeakerParam = params.get('cutsceneSpeaker') ?? 'narrator'");
+    expect(mainSource).toContain("const cutsceneDebugSpeaker = CUTSCENE_DEBUG_SPEAKER_NAMES[cutsceneSpeakerParam] ?? CUTSCENE_DEBUG_SPEAKER_NAMES.narrator");
     expect(mainSource).toContain("phaserGame.scene.start('CutsceneScene'");
     expect(mainSource).toContain("id: 'debug-cutscene-frame'");
+    expect(mainSource).toContain('speaker: cutsceneDebugSpeaker');
   });
 
   it('로딩 화면 panel과 progress track은 Aseprite UI frame preload/render 경로를 가진다', () => {
