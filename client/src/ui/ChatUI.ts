@@ -11,7 +11,7 @@
  */
 
 import * as Phaser from 'phaser';
-import { getSpriteResourceForStatusIcon } from '../assets/spriteResourceManifest';
+import { getSpriteResourceForStatusIcon, getSpriteResourceForUiIcon } from '../assets/spriteResourceManifest';
 import type { NetworkManager } from '../network/NetworkManager';
 
 // ── 타입 ──────────────────────────────────────────────────────
@@ -61,6 +61,8 @@ export const CHAT_UI_FRAME_TEXTURES = {
 } as const;
 
 const CHAT_EMOJI_BUTTON_ICON_ID = 'charm';
+const CHAT_SYSTEM_MESSAGE_ICON_ID = 'chat_system';
+const CHAT_SYSTEM_MESSAGE_ICON_SIZE = 14;
 const CHAT_EXPECTED_RENDERED_FRAME_KEY_COUNT = 4;
 const CHAT_EXPECTED_TAB_FRAME_COUNT = 4;
 
@@ -74,6 +76,11 @@ export function preloadChatUiFrameTextures(scene: Phaser.Scene): void {
   const emojiButtonIconResource = getSpriteResourceForStatusIcon(CHAT_EMOJI_BUTTON_ICON_ID);
   if (emojiButtonIconResource && !scene.textures.exists(emojiButtonIconResource.key)) {
     scene.load.image(emojiButtonIconResource.key, emojiButtonIconResource.path);
+  }
+
+  const systemMessageIconResource = getSpriteResourceForUiIcon(CHAT_SYSTEM_MESSAGE_ICON_ID);
+  if (systemMessageIconResource && !scene.textures.exists(systemMessageIconResource.key)) {
+    scene.load.image(systemMessageIconResource.key, systemMessageIconResource.path);
   }
 }
 
@@ -98,6 +105,7 @@ export class ChatUI {
   private activeChannel: ChatChannel = 'general';
   private messages: Map<ChatChannel, ChatMessage[]> = new Map();
   private messageTexts: Phaser.GameObjects.Text[] = [];
+  private systemMessageIcons: Phaser.GameObjects.Image[] = [];
   private tabs: ChannelTab[] = [];
 
   private panelFrame: Phaser.GameObjects.Image | null = null;
@@ -113,6 +121,7 @@ export class ChatUI {
   private socketHandlers: Array<[string, (...args: any[]) => void]> = [];
   private renderedFrameKeys: string[] = [];
   private missingFrameKeys: string[] = [];
+  private missingSystemMessageIconKeys: string[] = [];
 
   private readonly PANEL_W = 380;
   private readonly PANEL_H = 260;
@@ -213,15 +222,36 @@ export class ChatUI {
     });
 
     // 메시지 영역
+    const systemMessageIconResource = getSpriteResourceForUiIcon(CHAT_SYSTEM_MESSAGE_ICON_ID);
+    const hasSystemMessageIcon = Boolean(
+      systemMessageIconResource && this.scene.textures.exists(systemMessageIconResource.key),
+    );
     for (let i = 0; i < MAX_VISIBLE; i++) {
+      const messageTextX = px + this.CONTENT_INSET_X;
+      const messageY = py + this.MESSAGE_TOP_INSET + i * this.MESSAGE_LINE_HEIGHT;
       const msgText = this.scene.add.text(
-        px + this.CONTENT_INSET_X,
-        py + this.MESSAGE_TOP_INSET + i * this.MESSAGE_LINE_HEIGHT,
+        messageTextX,
+        messageY,
         '',
         {
           fontSize: '10px', color: '#cccccc', wordWrap: { width: this.PANEL_W - this.CONTENT_INSET_X * 2 },
         },
       );
+      if (hasSystemMessageIcon && systemMessageIconResource) {
+        const systemIcon = this.scene.add.image(
+          messageTextX + CHAT_SYSTEM_MESSAGE_ICON_SIZE / 2,
+          messageY + CHAT_SYSTEM_MESSAGE_ICON_SIZE / 2,
+          systemMessageIconResource.key,
+        )
+          .setName(`chat_system_message_icon_${i + 1}`)
+          .setVisible(false);
+        systemIcon.setDisplaySize(CHAT_SYSTEM_MESSAGE_ICON_SIZE, CHAT_SYSTEM_MESSAGE_ICON_SIZE);
+        systemIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.container.add(systemIcon);
+        this.systemMessageIcons.push(systemIcon);
+      } else if (systemMessageIconResource && !this.missingSystemMessageIconKeys.includes(systemMessageIconResource.key)) {
+        this.missingSystemMessageIconKeys.push(systemMessageIconResource.key);
+      }
       this.container.add(msgText);
       this.messageTexts.push(msgText);
     }
@@ -445,11 +475,17 @@ export class ChatUI {
 
     this.messageTexts.forEach((text, i) => {
       const msg = visible[i];
+      const systemIcon = this.systemMessageIcons[i] ?? null;
       if (msg) {
         const color = msg.isSystem ? '#ffcc44' : CHANNEL_COLORS[msg.channel];
-        const prefix = msg.isSystem ? '⚙️ ' : `[${msg.senderName}] `;
-        text.setText(`${prefix}${msg.content}`).setColor(color);
+        const hasSystemMessageIcon = msg.isSystem && systemIcon?.active === true;
+        systemIcon?.setVisible(hasSystemMessageIcon);
+        text.setX(this.PANEL_X + this.CONTENT_INSET_X + (hasSystemMessageIcon ? CHAT_SYSTEM_MESSAGE_ICON_SIZE + 5 : 0));
+        const prefix = msg.isSystem && !hasSystemMessageIcon ? '⚙️ ' : `[${msg.senderName}] `;
+        text.setText(`${hasSystemMessageIcon ? '' : prefix}${msg.content}`).setColor(color);
       } else {
+        systemIcon?.setVisible(false);
+        text.setX(this.PANEL_X + this.CONTENT_INSET_X);
         text.setText('');
       }
     });
@@ -546,16 +582,36 @@ export class ChatUI {
   public writeFrameQaProbe(status: 'ready' | 'hidden' = 'ready'): void {
     if (typeof document === 'undefined' || !document.body) return;
     const emojiButtonIconResource = getSpriteResourceForStatusIcon(CHAT_EMOJI_BUTTON_ICON_ID);
+    const systemMessageIconResource = getSpriteResourceForUiIcon(CHAT_SYSTEM_MESSAGE_ICON_ID);
+    const activeMessages = this.messages.get(this.activeChannel) ?? [];
+    const visibleMessages = activeMessages.slice(-MAX_VISIBLE);
+    const visibleSystemMessageCount = visibleMessages.filter((msg) => msg.isSystem).length;
+    const renderedSystemMessageIcons = this.systemMessageIcons.filter((icon) => icon.visible && icon.active);
+    const systemMessageLegacyGlyphPresent = this.messageTexts.some((text) => text.text.includes('⚙'));
     const missingEmojiButtonIconKeys = emojiButtonIconResource && !this.emojiButtonIcon
       ? [emojiButtonIconResource.key]
       : [];
+    const missingSystemMessageIconKeys = visibleSystemMessageCount > 0
+      && systemMessageIconResource
+      && renderedSystemMessageIcons.length < visibleSystemMessageCount
+      ? Array.from(new Set([...this.missingSystemMessageIconKeys, systemMessageIconResource.key]))
+      : this.missingSystemMessageIconKeys;
     const missingFrameKeys = Array.from(new Set([
       ...this.missingFrameKeys,
       ...(this.tabFrames.length < CHAT_EXPECTED_TAB_FRAME_COUNT ? [CHAT_UI_FRAME_TEXTURES.tabButton.key] : []),
     ]));
+    const qaStatus = status === 'ready'
+      && (
+        missingFrameKeys.length > 0
+        || missingEmojiButtonIconKeys.length > 0
+        || missingSystemMessageIconKeys.length > 0
+        || systemMessageLegacyGlyphPresent
+      )
+      ? 'missing-frame'
+      : status;
 
     document.body.dataset.aeternaChatFrameQa = JSON.stringify({
-      status,
+      status: qaStatus,
       visible: this.container.visible,
       renderedFrameKeys: this.renderedFrameKeys,
       renderedFrameCount: this.renderedFrameKeys.length,
@@ -593,6 +649,21 @@ export class ChatUI {
         fallbackRendered: this.emojiButtonFallback !== null,
         missingIconKeys: missingEmojiButtonIconKeys,
       },
+      systemMessageIcon: {
+        iconId: CHAT_SYSTEM_MESSAGE_ICON_ID,
+        key: systemMessageIconResource?.key ?? null,
+        path: systemMessageIconResource?.path ?? null,
+        renderedCount: renderedSystemMessageIcons.length,
+        expectedVisibleCount: visibleSystemMessageCount,
+        renderedKeys: renderedSystemMessageIcons.map((icon) => icon.texture.key),
+        displaySizes: renderedSystemMessageIcons.map((icon) => ({
+          name: icon.name,
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+      },
+      systemMessageLegacyGlyphPresent,
+      missingSystemMessageIconKeys,
       tabButtonFrame: {
         key: CHAT_UI_FRAME_TEXTURES.tabButton.key,
         path: CHAT_UI_FRAME_TEXTURES.tabButton.path,
@@ -611,6 +682,7 @@ export class ChatUI {
       tabCount: this.tabs.length,
       messageCount: Array.from(this.messages.values()).reduce((sum, messages) => sum + messages.length, 0),
       visibleMessageRows: this.messageTexts.filter((text) => text.text.length > 0).length,
+      visibleMessages: this.messageTexts.map((text) => text.text).filter(Boolean),
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }

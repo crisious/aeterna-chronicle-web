@@ -9,6 +9,7 @@
  * - 진행도 localStorage 저장
  */
 import * as Phaser from 'phaser';
+import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
 
 // ─── 튜토리얼 단계 정의 ─────────────────────────────────────────
 
@@ -95,12 +96,18 @@ export const TUTORIAL_MANAGER_UI_FRAME_TEXTURES = {
 
 const TUTORIAL_MANAGER_EXPECTED_PANEL_FRAME_COUNT = 1;
 const TUTORIAL_MANAGER_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 2;
+const TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID = 'skill_mw_arrow';
 
 export function preloadTutorialManagerUiFrameTextures(scene: Phaser.Scene): void {
   for (const texture of Object.values(TUTORIAL_MANAGER_UI_FRAME_TEXTURES)) {
     if (!scene.textures.exists(texture.key)) {
       scene.load.image(texture.key, texture.path);
     }
+  }
+
+  const nextButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID);
+  if (nextButtonIconResource && !scene.textures.exists(nextButtonIconResource.key)) {
+    scene.load.image(nextButtonIconResource.key, nextButtonIconResource.path);
   }
 }
 
@@ -225,6 +232,10 @@ export class TutorialManager {
     const actionButtonTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.actionButton;
     const hasPanelFrame = this.scene.textures.exists(panelTexture.key);
     const hasActionButtonFrame = this.scene.textures.exists(actionButtonTexture.key);
+    const nextButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID);
+    const hasNextButtonIcon = Boolean(
+      nextButtonIconResource && this.scene.textures.exists(nextButtonIconResource.key),
+    );
     const panelFrameStyle = hasPanelFrame
       ? `
           background-color: rgba(7, 17, 32, 0.36);
@@ -243,6 +254,7 @@ export class TutorialManager {
     const buttonFrameStyle = hasActionButtonFrame
       ? `
               min-width: 96px; height: 34px; padding: 0 18px;
+              box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
               background-color: rgba(17, 31, 52, 0.58);
               background-image: linear-gradient(rgba(16,29,48,0.42), rgba(16,29,48,0.42)), url('/${actionButtonTexture.path}');
               background-repeat: no-repeat;
@@ -255,12 +267,25 @@ export class TutorialManager {
       : `
               padding: 8px 20px; background: #555; color: #fff; border: none;
               border-radius: 6px; cursor: pointer; font-size: 13px;
+              box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         `;
     const nextButtonColorStyle = hasActionButtonFrame
       ? ''
       : 'background: #FFD700; color: #000; font-weight: bold;';
     const safeLabel = this.escapeHtml(stepDef.label);
     const safeDescription = this.escapeHtml(stepDef.description);
+    const nextButtonContent = hasNextButtonIcon && nextButtonIconResource
+      ? `다음 <img
+              data-aeterna-icon-role="next-button-icon"
+              data-aeterna-icon-id="${TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID}"
+              data-aeterna-icon-key="${nextButtonIconResource.key}"
+              data-aeterna-icon-path="${nextButtonIconResource.path}"
+              src="/${nextButtonIconResource.path}"
+              alt=""
+              aria-hidden="true"
+              style="width: 24px; height: 24px; image-rendering: pixelated; object-fit: contain; flex: 0 0 auto;"
+            >`
+      : '다음 →';
 
     const html = `
       <div id="tutorial-overlay" style="
@@ -310,7 +335,7 @@ export class TutorialManager {
               style="
               ${buttonFrameStyle}
               ${nextButtonColorStyle}
-            ">다음 →</button>
+            ">${nextButtonContent}</button>
           </div>
         </div>
       </div>
@@ -470,17 +495,28 @@ export class TutorialManager {
 
     const root = this.overlay?.node as HTMLElement | undefined;
     const panel = root?.querySelector('[data-aeterna-frame-role="panel"]') as HTMLElement | null;
+    const nextButton = root?.querySelector('#tutorial-next-btn') as HTMLElement | null;
+    const nextButtonIcon = root?.querySelector('[data-aeterna-icon-role="next-button-icon"]') as HTMLImageElement | null;
     const actionButtons = Array.from(
       root?.querySelectorAll('[data-aeterna-frame-role="action-button"]') ?? [],
     ) as HTMLElement[];
     const panelTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.panel;
     const actionButtonTexture = TUTORIAL_MANAGER_UI_FRAME_TEXTURES.actionButton;
+    const nextButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID);
     const missingFrameKeys = Object.values(TUTORIAL_MANAGER_UI_FRAME_TEXTURES)
       .filter((texture) => !this.scene.textures.exists(texture.key))
       .map((texture) => texture.key);
+    const nextButtonLegacyGlyphPresent = nextButton?.textContent?.includes('→') === true;
+    const missingNextButtonIconKeys = status === 'ready' && nextButtonIconResource && !nextButtonIcon
+      ? [nextButtonIconResource.key]
+      : [];
+    const qaStatus = status === 'ready'
+      && (missingFrameKeys.length > 0 || missingNextButtonIconKeys.length > 0 || nextButtonLegacyGlyphPresent)
+      ? 'missing-frame'
+      : status;
 
     document.body.dataset.aeternaTutorialManagerFrameQa = JSON.stringify({
-      status,
+      status: qaStatus,
       active: this.isActive && this.overlay?.active === true,
       currentStep: this.currentStep,
       currentStepName: this.currentStepDef?.name ?? null,
@@ -504,6 +540,25 @@ export class TutorialManager {
           return { width: rect.width, height: rect.height };
         }),
       },
+      nextButtonIcon: {
+        iconId: TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID,
+        key: nextButtonIconResource?.key ?? null,
+        path: nextButtonIconResource?.path ?? null,
+        renderedCount: nextButtonIcon?.dataset.aeternaIconKey === nextButtonIconResource?.key ? 1 : 0,
+        expectedCount: status === 'ready' ? 1 : 0,
+        renderedKeys: nextButtonIcon ? [nextButtonIcon.dataset.aeternaIconKey ?? ''] : [],
+        displaySizes: nextButtonIcon
+          ? [{
+              width: nextButtonIcon.getBoundingClientRect().width,
+              height: nextButtonIcon.getBoundingClientRect().height,
+            }]
+          : [],
+        naturalSizes: nextButtonIcon
+          ? [{ width: nextButtonIcon.naturalWidth, height: nextButtonIcon.naturalHeight }]
+          : [],
+      },
+      nextButtonLegacyGlyphPresent,
+      missingNextButtonIconKeys,
       missingFrameKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });

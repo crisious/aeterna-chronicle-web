@@ -6104,3 +6104,137 @@ Current QA state:
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=bgmTrack&class=ether_knight&qaRun=phase202-bgm-track` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = bgmTrack`, `iconId = battle_bgm_playing`, `renderedTextureKeys = ui_icon_battle_bgm_playing`, `renderedCount = 1`, `displaySizes = 16x16`, `highlightText = BGM: bgm_ancient_field`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.
 - Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=bgmMissing&class=ether_knight&qaRun=phase202-bgm-missing` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = bgmMissing`, `iconId = battle_bgm_missing`, `renderedTextureKeys = ui_icon_battle_bgm_missing`, `renderedCount = 1`, `displaySizes = 16x16`, `highlightText = BGM 미존재: bgm_missing`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.
+
+## Phase 203: SettingsScene Section UI Icon Runtime Wiring
+
+Runtime SettingsScene section title icon coverage:
+
+- Settings title icon: `settings_title.png` / texture key `ui_icon_settings_title`.
+- Sound section icon: `settings_sound.png` / texture key `ui_icon_settings_sound`.
+- Language section icon: `settings_language.png` / texture key `ui_icon_settings_language`.
+- Accessibility section icon: `settings_accessibility.png` / texture key `ui_icon_settings_accessibility`.
+- Keybind section icon: `settings_keybind.png` / texture key `ui_icon_settings_keybind`.
+
+Production rule:
+
+- `tools/aseprite-pipeline/scripts/create-settings-ui-icon.lua` creates the five 32x32 Aseprite source files under `assets/source/aseprite/ui/icons/system/`, with generated mirror PNG/JSON and runtime PNGs under `client/public/assets/generated/ui/icons/system/`.
+- `spriteResourceManifest` maps the five `settings_*` `uiIconId` values through `getSpriteResourceForUiIcon()`.
+- `SettingsScene.preload()` queues the section title UI icons, and `_addSettingsSectionHeading()` renders them as Phaser images before text labels.
+- Normal labels are `설정`, `사운드`, `언어`, `접근성`, and `키바인드` without the old `⚙`/`🔊`/`🌐`/`♿`/`⌨` prefix glyphs.
+- Texture-missing fallback keeps the old section glyphs observable only through fallback/QA paths.
+- `aeternaSettingsFrameQa.settingsSectionIcon`, `settingsSectionLabelLegacyGlyphPresent`, and `missingSectionIconKeys` record expected/rendered keys, display sizes, fallback ids, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify the five UI icon manifest entries, SettingsScene preload/render helper contract, section image object names, expected section icon count, legacy glyph removal, and QA payload fields.
+- Browser QA verifies `settingsFrameQa=1` renders five section icons with `ui_icon_settings_*` texture keys, no section fallback ids, no section missing keys, and no legacy glyphs in section labels.
+- Existing SettingsScene frame/action/focus icon contracts, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 203 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts -t "SettingsScene 섹션|SettingsScene section|SettingsScene.*Aseprite ui icon|SettingsScene section UI|settings section UI"` failed before implementation because `SettingsScene.ts` did not import `getSpriteResourceForUiIcon()` and the `ui_icon_settings_title` manifest entry was undefined.
+- GREEN: the same focused command passes after implementation with 2 tests across 2 files.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 141 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=settings&renderer=canvas&settingsFrameQa=1&qaRun=phase203-settings-section-icons` reports `aeternaSettingsFrameQa.status = ready`, `settingsSectionIcon.renderedCount = 5`, rendered keys `ui_icon_settings_title`, `ui_icon_settings_sound`, `ui_icon_settings_language`, `ui_icon_settings_accessibility`, `ui_icon_settings_keybind`, display sizes `22x22` for title and `18x18` for the other four sections, `settingsSectionLabelLegacyGlyphPresent = false`, empty `missingSectionIconKeys`, empty `fallbackSectionIconIds`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase203-settings-section-icons-visual.png` shows the title and four section headings with icon-backed labels after the loading overlay clears.
+
+## Phase 204: ChatUI System Message UI Icon Runtime Wiring
+
+Runtime ChatUI system message icon coverage:
+
+- System message prefix icon: `chat_system.png` / texture key `ui_icon_chat_system`.
+
+Production rule:
+
+- `tools/aseprite-pipeline/scripts/create-chat-ui-icon.lua` creates the 32x32 Aseprite source file under `assets/source/aseprite/ui/icons/system/`, with generated mirror PNG/JSON and runtime PNG under `client/public/assets/generated/ui/icons/system/`.
+- `spriteResourceManifest` maps `chat_system` through `getSpriteResourceForUiIcon()`.
+- `preloadChatUiFrameTextures()` queues the system message UI icon with existing ChatUI frame and emoji icon assets.
+- `ChatUI` renders system messages with a `14x14` `chat_system_message_icon_*` image before text when the texture exists.
+- Normal system message text no longer injects the old `⚙️` prefix when the icon is rendered; texture-missing fallback keeps that glyph observable only through fallback/QA paths.
+- `aeternaChatFrameQa.systemMessageIcon`, `systemMessageLegacyGlyphPresent`, and `missingSystemMessageIconKeys` record expected/rendered count, texture keys, display sizes, legacy glyph presence, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify the `ui_icon_chat_system` manifest entry, ChatUI preload/render contract, system message image object names, display size, legacy glyph fallback gate, and QA payload fields.
+- Browser QA verifies `chatFrameQa=1` renders one system message icon with `ui_icon_chat_system`, `14x14` display size, no legacy `⚙` glyph in visible messages, and no missing system icon keys.
+- Existing ChatUI frame/emoji icon contracts, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 204 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts -t "ChatUI.*system|chat system|독립 ChatUI"` failed before implementation because `ChatUI.ts` did not import `getSpriteResourceForUiIcon()` and the `ui_icon_chat_system` manifest entry was undefined.
+- GREEN: the same focused command passes after implementation with 2 tests across 2 files.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 142 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=chat&renderer=canvas&chatFrameQa=1&qaRun=phase204-chat-system-icon` reports `aeternaChatFrameQa.status = ready`, `systemMessageIcon.iconId = chat_system`, `renderedCount = 1`, `expectedVisibleCount = 1`, rendered key `ui_icon_chat_system`, display size `14x14`, `systemMessageLegacyGlyphPresent = false`, empty `missingSystemMessageIconKeys`, `chat_system.png` response status `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase204-chat-system-icon.png` shows the standalone ChatUI panel with an image-backed system message row.
+
+## Phase 205: TutorialManager Next Button Icon Runtime Wiring
+
+Runtime TutorialManager next button icon coverage:
+
+- Next button icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `preloadTutorialManagerUiFrameTextures()` queues the existing Aseprite `skill_mw_arrow` skill icon with the TutorialManager DOM panel and action button frames.
+- `TutorialManager.renderOverlay()` renders the next button as text `다음` plus a DOM `img` backed by `skill_mw_arrow_icon` when the texture exists.
+- Phaser DOM layer scaling makes a `24x24` inline image render as `16x16` at the QA viewport; the QA probe records the actual `getBoundingClientRect()` display size.
+- Texture-missing fallback keeps the old `다음 →` label observable only through fallback/QA paths.
+- `aeternaTutorialManagerFrameQa.nextButtonIcon`, `nextButtonLegacyGlyphPresent`, and `missingNextButtonIconKeys` record expected/rendered count, texture key, display size, natural size, legacy glyph presence, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify the TutorialManager next icon preload contract, DOM `img` data attributes, CSS source size, removal of direct `다음 →` normal markup, and QA payload fields.
+- Browser QA verifies `tutorialManagerFrameQa=1` renders one next button icon with `skill_mw_arrow_icon`, actual display size `16x16`, no legacy `→` text in the next button, no missing icon keys, and nonblank canvas output.
+- Existing TutorialManager frame contracts, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 205 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "TutorialManager는 Aseprite UI frame"` failed before implementation because `TutorialManager.ts` did not import `getSpriteResourceForSkillIcon()` or define the next button icon contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 142 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=tutorialManager&renderer=canvas&tutorialManagerFrameQa=1&qaRun=phase205-tutorial-manager-next-icon` reports `aeternaTutorialManagerFrameQa.status = ready`, `nextButtonIcon.iconId = skill_mw_arrow`, rendered key `skill_mw_arrow_icon`, `renderedCount = 1`, `expectedCount = 1`, display size `16x16`, natural size `64x64`, `nextButtonLegacyGlyphPresent = false`, empty `missingNextButtonIconKeys`, `skill_mw_arrow.png` response status `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase205-tutorial-manager-next-icon.png` shows the TutorialManager DOM next button with an image-backed arrow.
+
+## Phase 206: ComboUI Hint Separator Icon Runtime Wiring
+
+Runtime ComboUI hint separator icon coverage:
+
+- Hint separator icon: `skill_mw_arrow.png` / texture key `skill_mw_arrow_icon`.
+
+Production rule:
+
+- `preloadComboUiFrameTextures()` queues the existing Aseprite `skill_mw_arrow` skill icon with the ComboUI chain gauge frame and combo achieved icon.
+- `ComboUI.updateHints()` splits each hint row into left text, a `14x14` `combo_ui_hint_separator_icon_*` image, and right text when the texture exists.
+- Normal hint rows no longer inject the old `→` separator glyph while the icon texture is available.
+- Texture-missing fallback keeps the old `→` separator observable only through fallback/QA paths.
+- `aeternaComboFrameQa.hintSeparatorIcon`, `hintTextLegacyArrowPresent`, and `missingHintSeparatorIconKeys` record expected/rendered count, texture keys, display sizes, legacy glyph presence, and missing texture keys.
+
+Exit criteria:
+
+- Unit tests verify the ComboUI hint separator icon id, preload call, render object names, display size, nearest filtering, removal of the direct normal `→` row string, and QA payload fields.
+- Browser QA verifies `comboFrameQa=1` renders two hint separator icons with `skill_mw_arrow_icon`, display size `14x14`, no legacy `→` text in hint rows, no missing icon keys, and nonblank canvas output.
+- Existing ComboUI chain gauge, combo achieved icon, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 206 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts -t "힌트 구분자"` failed before implementation because `ComboUI.ts` did not define the hint separator icon contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 143 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=combo&renderer=canvas&comboFrameQa=1&qaRun=phase206-combo-hint-separator-icon` reports `aeternaComboFrameQa.status = ready`, `hintCount = 2`, `hintSeparatorIcon.iconId = skill_mw_arrow`, rendered keys `skill_mw_arrow_icon`, `renderedCount = 2`, `expectedCount = 2`, display sizes `14x14`, `hintTextLegacyArrowPresent = false`, empty `missingHintSeparatorIconKeys`, `skill_mw_arrow.png` response status `200`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase206-combo-hint-separator-icon.png` shows the ComboUI QA scene with image-backed hint separators.

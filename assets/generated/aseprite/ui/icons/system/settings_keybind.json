@@ -1,0 +1,11 @@
+{
+  "id": "ui_icon_settings_keybind",
+  "mode": "settings_keybind",
+  "source": "assets/source/aseprite/ui/icons/system/settings_keybind.aseprite",
+  "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_keybind.png",
+  "runtimePng": "assets/generated/ui/icons/system/settings_keybind.png",
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "frameCount": 1,
+  "generatedBy": "tools/aseprite-pipeline/scripts/create-settings-ui-icon.lua"
+}

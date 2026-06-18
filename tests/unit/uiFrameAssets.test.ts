@@ -433,14 +433,18 @@ describe('UI frame runtime images', () => {
     expect(chatUiSource).toContain("path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png'");
     expect(chatUiSource).toContain("key: 'ui_frame_chat_emoji_button'");
     expect(chatUiSource).toContain("path: 'assets/generated/ui/frames/UI-BTN-006-DEF.png'");
-    expect(chatUiSource).toContain("import { getSpriteResourceForStatusIcon } from '../assets/spriteResourceManifest'");
+    expect(chatUiSource).toContain("import { getSpriteResourceForStatusIcon, getSpriteResourceForUiIcon } from '../assets/spriteResourceManifest';");
     expect(chatUiSource).toContain("const CHAT_EMOJI_BUTTON_ICON_ID = 'charm'");
+    expect(chatUiSource).toContain("const CHAT_SYSTEM_MESSAGE_ICON_ID = 'chat_system'");
+    expect(chatUiSource).toContain('const CHAT_SYSTEM_MESSAGE_ICON_SIZE = 14');
     expect(chatUiSource).toContain('CHAT_EXPECTED_RENDERED_FRAME_KEY_COUNT = 4');
     expect(chatUiSource).toContain('CHAT_EXPECTED_TAB_FRAME_COUNT = 4');
     expect(chatUiSource).toContain('preloadChatUiFrameTextures');
     expect(chatUiSource).toContain('scene.load.image(texture.key, texture.path)');
     expect(chatUiSource).toContain('const emojiButtonIconResource = getSpriteResourceForStatusIcon(CHAT_EMOJI_BUTTON_ICON_ID)');
     expect(chatUiSource).toContain('scene.load.image(emojiButtonIconResource.key, emojiButtonIconResource.path)');
+    expect(chatUiSource).toContain('const systemMessageIconResource = getSpriteResourceForUiIcon(CHAT_SYSTEM_MESSAGE_ICON_ID)');
+    expect(chatUiSource).toContain('scene.load.image(systemMessageIconResource.key, systemMessageIconResource.path)');
     expect(chatUiSource).toContain('this.panelFrame = this.scene.add.image(px + this.PANEL_W / 2, py + this.PANEL_H / 2, panelTexture.key)');
     expect(chatUiSource).toContain('this.panelFrame.setDisplaySize(this.PANEL_W, this.PANEL_H)');
     expect(chatUiSource).toContain('this.inputFrame = this.scene.add.image(inputX + inputW / 2, inputY + inputH / 2, inputTexture.key)');
@@ -449,6 +453,8 @@ describe('UI frame runtime images', () => {
     expect(chatUiSource).toContain('private emojiButtonFrame: Phaser.GameObjects.Image | null = null');
     expect(chatUiSource).toContain('private emojiButtonIcon: Phaser.GameObjects.Image | null = null');
     expect(chatUiSource).toContain('private emojiButtonFallback: Phaser.GameObjects.Text | null = null');
+    expect(chatUiSource).toContain('private systemMessageIcons: Phaser.GameObjects.Image[] = []');
+    expect(chatUiSource).toContain('private missingSystemMessageIconKeys: string[] = []');
     expect(chatUiSource).toContain('createTabFrame(tabX + 30, tabY + 10, def.channel)');
     expect(chatUiSource).toContain("setName(`chat_tab_button_frame_${channel}`)");
     expect(chatUiSource).toContain('setDisplaySize(68, 22)');
@@ -459,9 +465,19 @@ describe('UI frame runtime images', () => {
     expect(chatUiSource).toContain('this.emojiButtonIcon.setDisplaySize(16, 16)');
     expect(chatUiSource).toContain('this.emojiButtonIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
     expect(chatUiSource).toContain("setName('chat_emoji_button_fallback')");
+    expect(chatUiSource).toContain("setName(`chat_system_message_icon_${i + 1}`)");
+    expect(chatUiSource).toContain('systemIcon.setDisplaySize(CHAT_SYSTEM_MESSAGE_ICON_SIZE, CHAT_SYSTEM_MESSAGE_ICON_SIZE)');
+    expect(chatUiSource).toContain('systemIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
+    expect(chatUiSource).toContain('this.systemMessageIcons.push(systemIcon)');
+    expect(chatUiSource).toContain("const prefix = msg.isSystem && !hasSystemMessageIcon ? '⚙️ ' : `[${msg.senderName}] `");
+    expect(chatUiSource).not.toContain("const prefix = msg.isSystem ? '⚙️ ' : `[${msg.senderName}] `");
     expect(chatUiSource).toContain('emojiButtonFrame');
     expect(chatUiSource).toContain('emojiButtonIcon');
     expect(chatUiSource).toContain('fallbackRendered: this.emojiButtonFallback !== null');
+    expect(chatUiSource).toContain('systemMessageIcon: {');
+    expect(chatUiSource).toContain('iconId: CHAT_SYSTEM_MESSAGE_ICON_ID');
+    expect(chatUiSource).toContain('systemMessageLegacyGlyphPresent');
+    expect(chatUiSource).toContain('missingSystemMessageIconKeys');
     expect(chatUiSource).toContain('inputBufferLength: this.inputBuffer.length');
     expect(chatUiSource).toContain('inputTextPreview: this.inputText.text');
     expect(chatUiSource).toContain('tabButtonFrame');
@@ -526,6 +542,24 @@ describe('UI frame runtime images', () => {
     expect(comboUiSource).not.toContain('this.comboText.setText(`🔥 ${event.comboName}!`)');
   });
 
+  it('ComboUI 힌트 구분자는 Aseprite arrow icon을 legacy arrow glyph보다 먼저 사용한다', () => {
+    const comboUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/ComboUI.ts'), 'utf8');
+
+    expect(comboUiSource).toContain("const COMBO_HINT_SEPARATOR_ICON_ID = 'skill_mw_arrow'");
+    expect(comboUiSource).toContain('const COMBO_HINT_SEPARATOR_ICON_SIZE = 14');
+    expect(comboUiSource).toContain('private hintSeparatorIcons: Phaser.GameObjects.Image[] = []');
+    expect(comboUiSource).toContain('private hintSeparatorIconFallbackRendered = false');
+    expect(comboUiSource).toContain('const comboHintSeparatorIconResource = getSpriteResourceForSkillIcon(COMBO_HINT_SEPARATOR_ICON_ID)');
+    expect(comboUiSource).toContain('scene.load.image(comboHintSeparatorIconResource.key, comboHintSeparatorIconResource.path)');
+    expect(comboUiSource).toContain('const separatorIcon = this._createHintSeparatorIcon(i)');
+    expect(comboUiSource).toContain("setName(`combo_ui_hint_separator_icon_${index + 1}`)");
+    expect(comboUiSource).toContain('separatorIcon.setDisplaySize(COMBO_HINT_SEPARATOR_ICON_SIZE, COMBO_HINT_SEPARATOR_ICON_SIZE)');
+    expect(comboUiSource).toContain('hintTextLegacyArrowPresent');
+    expect(comboUiSource).toContain('hintSeparatorIcon');
+    expect(comboUiSource).toContain('missingHintSeparatorIconKeys');
+    expect(comboUiSource).not.toContain('`${progressBar} ${hint.comboName} → ${skillName}`');
+  });
+
   it('TutorialFlowManager는 Aseprite UI frame preload/render 경로와 QA route를 가진다', () => {
     const tutorialFlowSource = readFileSync(resolve(process.cwd(), 'client/src/ui/TutorialFlowManager.ts'), 'utf8');
     const qaSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/TutorialFlowQaScene.ts'), 'utf8');
@@ -584,6 +618,8 @@ describe('UI frame runtime images', () => {
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
 
     expect(tutorialManagerSource).toContain('TUTORIAL_MANAGER_UI_FRAME_TEXTURES');
+    expect(tutorialManagerSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest'");
+    expect(tutorialManagerSource).toContain("const TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID = 'skill_mw_arrow'");
     expect(tutorialManagerSource).toContain("key: 'ui_frame_tutorial_manager_panel'");
     expect(tutorialManagerSource).toContain("path: 'assets/generated/ui/frames/UI-HUD-005-DEF.png'");
     expect(tutorialManagerSource).toContain("key: 'ui_frame_tutorial_manager_action_button'");
@@ -592,8 +628,14 @@ describe('UI frame runtime images', () => {
     expect(tutorialManagerSource).toContain('TUTORIAL_MANAGER_EXPECTED_ACTION_BUTTON_FRAME_COUNT = 2');
     expect(tutorialManagerSource).toContain('preloadTutorialManagerUiFrameTextures');
     expect(tutorialManagerSource).toContain('scene.load.image(texture.key, texture.path)');
+    expect(tutorialManagerSource).toContain('const nextButtonIconResource = getSpriteResourceForSkillIcon(TUTORIAL_MANAGER_NEXT_BUTTON_ICON_ID)');
+    expect(tutorialManagerSource).toContain('scene.load.image(nextButtonIconResource.key, nextButtonIconResource.path)');
     expect(tutorialManagerSource).toContain('data-aeterna-frame-role="panel"');
     expect(tutorialManagerSource).toContain('data-aeterna-frame-role="action-button"');
+    expect(tutorialManagerSource).toContain('data-aeterna-icon-role="next-button-icon"');
+    expect(tutorialManagerSource).toContain('data-aeterna-icon-key="${nextButtonIconResource.key}"');
+    expect(tutorialManagerSource).toContain('width: 24px; height: 24px;');
+    expect(tutorialManagerSource).not.toContain('>다음 →</button>');
     expect(tutorialManagerSource).toContain('background-image: linear-gradient');
     expect(tutorialManagerSource).toContain("url('/${panelTexture.path}')");
     expect(tutorialManagerSource).toContain("url('/${actionButtonTexture.path}')");
@@ -601,6 +643,9 @@ describe('UI frame runtime images', () => {
     expect(tutorialManagerSource).toContain("new URLSearchParams(window.location.search).get('tutorialManagerFrameQa') === '1'");
     expect(tutorialManagerSource).toContain('panelFrame');
     expect(tutorialManagerSource).toContain('actionButtonFrame');
+    expect(tutorialManagerSource).toContain('nextButtonIcon: {');
+    expect(tutorialManagerSource).toContain('nextButtonLegacyGlyphPresent');
+    expect(tutorialManagerSource).toContain('missingNextButtonIconKeys');
     expect(qaSceneSource).toContain('preloadTutorialManagerUiFrameTextures(this)');
     expect(qaSceneSource).toContain("new TutorialManager(this, 'http://127.0.0.1:1', { frameQa: true })");
     expect(qaSceneSource).toContain("this.tutorial?.writeFrameQaProbe('ready')");
@@ -1088,7 +1133,7 @@ describe('UI frame runtime images', () => {
     const settingsSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/SettingsScene.ts'), 'utf8');
     const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
 
-    expect(settingsSceneSource).toContain("import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';");
+    expect(settingsSceneSource).toContain("import { getSpriteResourceForSkillIcon, getSpriteResourceForUiIcon } from '../assets/spriteResourceManifest';");
     expect(settingsSceneSource).toContain('SETTINGS_UI_FRAME_TEXTURES');
     expect(settingsSceneSource).toContain("key: 'ui_frame_UI-SET-002-DEF'");
     expect(settingsSceneSource).toContain("path: 'assets/generated/ui/frames/UI-SET-002-DEF.png'");
@@ -1144,6 +1189,45 @@ describe('UI frame runtime images', () => {
     expect(settingsSceneSource).toContain('fallbackActionIconIds');
     expect(mainSource).toContain("if (debugScene === 'settings')");
     expect(mainSource).toContain("phaserGame.scene.start('SettingsScene', { frameQa: true })");
+  });
+
+  it('SettingsScene 섹션 제목은 Aseprite ui icon으로 렌더하고 legacy glyph를 QA에서 차단한다', () => {
+    const settingsSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/SettingsScene.ts'), 'utf8');
+
+    expect(settingsSceneSource).toContain(
+      "import { getSpriteResourceForSkillIcon, getSpriteResourceForUiIcon } from '../assets/spriteResourceManifest';",
+    );
+    expect(settingsSceneSource).toContain('const SETTINGS_SECTION_ICON_IDS = {');
+    expect(settingsSceneSource).toContain("title: 'settings_title'");
+    expect(settingsSceneSource).toContain("sound: 'settings_sound'");
+    expect(settingsSceneSource).toContain("language: 'settings_language'");
+    expect(settingsSceneSource).toContain("accessibility: 'settings_accessibility'");
+    expect(settingsSceneSource).toContain("keybind: 'settings_keybind'");
+    expect(settingsSceneSource).toContain('const SETTINGS_EXPECTED_SECTION_ICON_COUNT = 5');
+    expect(settingsSceneSource).toContain('type SettingsSectionIconId = keyof typeof SETTINGS_SECTION_ICON_IDS');
+    expect(settingsSceneSource).toContain('private settingsSectionIcons: Phaser.GameObjects.Image[] = []');
+    expect(settingsSceneSource).toContain('private missingSectionIconKeys: string[] = []');
+    expect(settingsSceneSource).toContain('private fallbackSectionIconIds: string[] = []');
+    expect(settingsSceneSource).toContain('private settingsSectionHeadingTexts: Phaser.GameObjects.Text[] = []');
+    expect(settingsSceneSource).toContain('this._preloadSettingsUiIcon(iconId, queuedSettingsUiIconKeys)');
+    expect(settingsSceneSource).toContain('const uiIconResource = getSpriteResourceForUiIcon(uiIconId)');
+    expect(settingsSceneSource).toContain("this._addSettingsSectionHeading('title', width / 2, 40, '설정', 28, '#c8a2ff', true)");
+    expect(settingsSceneSource).toContain("this._addSettingsSectionHeading('sound', leftX, y, '사운드', 20, '#aaaacc')");
+    expect(settingsSceneSource).toContain("this._addSettingsSectionHeading('language', leftX, y, '언어', 20, '#aaaacc')");
+    expect(settingsSceneSource).toContain("this._addSettingsSectionHeading('accessibility', leftX, y, '접근성', 20, '#aaaacc')");
+    expect(settingsSceneSource).toContain("this._addSettingsSectionHeading('keybind', rightX - 150, ky, '키바인드', 20, '#aaaacc')");
+    expect(settingsSceneSource).toContain('private _addSettingsSectionHeading(');
+    expect(settingsSceneSource).toContain('setName(`settings_section_icon_${sectionId}`)');
+    expect(settingsSceneSource).toContain('this.settingsSectionIcons.push(icon)');
+    expect(settingsSceneSource).toContain('settingsSectionIcon: {');
+    expect(settingsSceneSource).toContain('expectedCount: SETTINGS_EXPECTED_SECTION_ICON_COUNT');
+    expect(settingsSceneSource).toContain('settingsSectionLabelLegacyGlyphPresent');
+    expect(settingsSceneSource).toContain('missingSectionIconKeys: this.missingSectionIconKeys');
+    expect(settingsSceneSource).not.toContain("'⚙ 설정'");
+    expect(settingsSceneSource).not.toContain("'🔊 사운드'");
+    expect(settingsSceneSource).not.toContain("'🌐 언어'");
+    expect(settingsSceneSource).not.toContain("'♿ 접근성'");
+    expect(settingsSceneSource).not.toContain("'⌨ 키바인드'");
   });
 
   it('SettingsScene 설정 항목 focus marker는 Aseprite skill icon을 legacy prefix보다 먼저 사용한다', () => {

@@ -254,6 +254,44 @@ describe('sprite resource manifest', () => {
     expect(manifestSource).toContain('export function getSpriteResourceForUiIcon(uiIconId: string): SpriteResource | undefined');
   });
 
+  it('maps SettingsScene section UI icon ids to Aseprite ui icon resources', () => {
+    const settingsSectionIcons = [
+      'settings_title',
+      'settings_sound',
+      'settings_language',
+      'settings_accessibility',
+      'settings_keybind',
+    ];
+
+    for (const uiIconId of settingsSectionIcons) {
+      expect(getSpriteResource(`ui_icon_${uiIconId}`), uiIconId).toMatchObject({
+        id: `ui_icon_${uiIconId}`,
+        category: 'ui',
+        kind: 'image',
+        key: `ui_icon_${uiIconId}`,
+        path: `assets/generated/ui/icons/system/${uiIconId}.png`,
+        frameWidth: 32,
+        frameHeight: 32,
+        frameCount: 1,
+        uiIconId,
+      });
+    }
+  });
+
+  it('maps ChatUI system message UI icon id to an Aseprite ui icon resource', () => {
+    expect(getSpriteResource('ui_icon_chat_system')).toMatchObject({
+      id: 'ui_icon_chat_system',
+      category: 'ui',
+      kind: 'image',
+      key: 'ui_icon_chat_system',
+      path: 'assets/generated/ui/icons/system/chat_system.png',
+      frameWidth: 32,
+      frameHeight: 32,
+      frameCount: 1,
+      uiIconId: 'chat_system',
+    });
+  });
+
   it('tracks all 40 status icon specs for AssetManager preload', () => {
     const specs = getAllStatusIconSpecs();
 

@@ -4,7 +4,7 @@
  * - 콤보 카운터 표시 (우측 상단, 큰 숫자)
  * - 체인 게이지 바 (3초 타이머)
  * - 콤보 달성 시 이펙트 ("COMBO!" 텍스트 + 화면 흔들림)
- * - 콤보 레시피 힌트 (스킬바 위 화살표)
+ * - 콤보 레시피 힌트 (스킬바 위 구분 아이콘)
  */
 
 import * as Phaser from 'phaser';
@@ -28,6 +28,11 @@ export function preloadComboUiFrameTextures(scene: Phaser.Scene): void {
   const comboAchievedIconResource = getSpriteResourceForSkillIcon(COMBO_ACHIEVED_ICON_ID);
   if (comboAchievedIconResource && !scene.textures.exists(comboAchievedIconResource.key)) {
     scene.load.image(comboAchievedIconResource.key, comboAchievedIconResource.path);
+  }
+
+  const comboHintSeparatorIconResource = getSpriteResourceForSkillIcon(COMBO_HINT_SEPARATOR_ICON_ID);
+  if (comboHintSeparatorIconResource && !scene.textures.exists(comboHintSeparatorIconResource.key)) {
+    scene.load.image(comboHintSeparatorIconResource.key, comboHintSeparatorIconResource.path);
   }
 }
 
@@ -64,6 +69,9 @@ const SHAKE_INTENSITY = 5;       // 화면 흔들림 강도
 const SHAKE_DURATION = 200;      // 화면 흔들림 시간 (ms)
 const COMBO_ACHIEVED_ICON_ID = 'skill_mw_storm';
 const COMBO_ACHIEVED_ICON_SIZE = 28;
+const COMBO_HINT_SEPARATOR_ICON_ID = 'skill_mw_arrow';
+const COMBO_HINT_SEPARATOR_ICON_SIZE = 14;
+const COMBO_HINT_SEPARATOR_ICON_GAP = 6;
 
 const HINT_Y_OFFSET = -30;       // 스킬바 위 힌트 오프셋
 
@@ -111,6 +119,9 @@ export class ComboUI {
   // 콤보 힌트
   private hintContainer: Phaser.GameObjects.Container;
   private hintTexts: Phaser.GameObjects.Text[] = [];
+  private hintSeparatorIcons: Phaser.GameObjects.Image[] = [];
+  private hintSeparatorIconFallbackRendered = false;
+  private hintRowCount = 0;
 
   // 상태
   private currentHitCount: number = 0;
@@ -319,37 +330,87 @@ export class ComboUI {
     hints: ComboHint[],
     skillSlotNames: Record<string, string>,
   ): void {
-    // 기존 힌트 정리
-    for (const ht of this.hintTexts) ht.destroy();
-    this.hintTexts = [];
+    this._clearHints();
 
     if (hints.length === 0) return;
 
     // 최대 2개 힌트만 표시
     const displayHints = hints.slice(0, 2);
+    this.hintRowCount = displayHints.length;
     const startY = -displayHints.length * 16;
+    const hintTextStyle: Phaser.Types.GameObjects.Text.TextStyle = {
+      fontSize: '10px',
+      color: '#ffcc44',
+      stroke: '#000000',
+      strokeThickness: 1,
+    };
 
     for (let i = 0; i < displayHints.length; i++) {
       const hint = displayHints[i];
       const skillName = skillSlotNames[hint.nextSkill] ?? hint.nextSkill;
       const progressBar = '█'.repeat(Math.round(hint.progress * 5)) +
                           '░'.repeat(5 - Math.round(hint.progress * 5));
+      const y = startY + i * 16;
+      const leftLabel = `${progressBar} ${hint.comboName}`;
+      const separatorIcon = this._createHintSeparatorIcon(i);
 
-      const text = this.scene.add.text(
-        0, startY + i * 16,
-        `${progressBar} ${hint.comboName} → ${skillName}`,
-        {
-          fontSize: '10px',
-          color: '#ffcc44',
-          stroke: '#000000',
-          strokeThickness: 1,
-        },
-      ).setOrigin(0.5);
+      if (separatorIcon) {
+        const leftText = this.scene.add.text(0, y, leftLabel, hintTextStyle).setOrigin(1, 0.5);
+        const rightText = this.scene.add.text(0, y, skillName, hintTextStyle).setOrigin(0, 0.5);
+        const totalWidth = leftText.width +
+          rightText.width +
+          COMBO_HINT_SEPARATOR_ICON_SIZE +
+          COMBO_HINT_SEPARATOR_ICON_GAP * 2;
+        const leftX = -totalWidth / 2 + leftText.width;
+        const separatorX = leftX + COMBO_HINT_SEPARATOR_ICON_GAP + COMBO_HINT_SEPARATOR_ICON_SIZE / 2;
+        const rightX = separatorX + COMBO_HINT_SEPARATOR_ICON_SIZE / 2 + COMBO_HINT_SEPARATOR_ICON_GAP;
 
-      this.hintContainer.add(text);
-      this.hintTexts.push(text);
+        leftText.setPosition(leftX, y);
+        separatorIcon.setPosition(separatorX, y);
+        rightText.setPosition(rightX, y);
+
+        this.hintContainer.add(leftText);
+        this.hintContainer.add(separatorIcon);
+        this.hintContainer.add(rightText);
+        this.hintTexts.push(leftText, rightText);
+      } else {
+        const text = this.scene.add.text(
+          0, y,
+          `${leftLabel} → ${skillName}`,
+          hintTextStyle,
+        ).setOrigin(0.5);
+
+        this.hintContainer.add(text);
+        this.hintTexts.push(text);
+      }
     }
     this.writeFrameQaProbeIfEnabled('ready');
+  }
+
+  private _createHintSeparatorIcon(index: number): Phaser.GameObjects.Image | null {
+    const comboHintSeparatorIconResource = getSpriteResourceForSkillIcon(COMBO_HINT_SEPARATOR_ICON_ID);
+    if (!comboHintSeparatorIconResource || !this.scene.textures.exists(comboHintSeparatorIconResource.key)) {
+      this.hintSeparatorIconFallbackRendered = true;
+      return null;
+    }
+
+    const separatorIcon = this.scene.add.image(0, 0, comboHintSeparatorIconResource.key)
+      .setName(`combo_ui_hint_separator_icon_${index + 1}`)
+      .setOrigin(0.5);
+    separatorIcon.setDisplaySize(COMBO_HINT_SEPARATOR_ICON_SIZE, COMBO_HINT_SEPARATOR_ICON_SIZE);
+    separatorIcon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.hintSeparatorIcons.push(separatorIcon);
+    return separatorIcon;
+  }
+
+  private _clearHints(): void {
+    for (const ht of this.hintTexts) ht.destroy();
+    this.hintTexts = [];
+
+    for (const icon of this.hintSeparatorIcons) icon.destroy();
+    this.hintSeparatorIcons = [];
+    this.hintRowCount = 0;
+    this.hintSeparatorIconFallbackRendered = false;
   }
 
   // ─── 프레임 업데이트 ─────────────────────────────────────────
@@ -436,8 +497,7 @@ export class ComboUI {
     this.comboBonusText.setAlpha(0);
     this.comboAchievedIcon?.setVisible(false).setAlpha(0);
 
-    for (const ht of this.hintTexts) ht.destroy();
-    this.hintTexts = [];
+    this._clearHints();
     this.writeFrameQaProbeIfEnabled('hidden');
   }
 
@@ -456,6 +516,23 @@ export class ComboUI {
     const missingComboAchievedIconKeys = expectedComboAchievedIconKeys
       .filter((key) => !renderedComboAchievedIconKeys.includes(key));
     const comboTextLegacyGlyphPresent = this.comboText.text.includes('🔥');
+    const comboHintSeparatorIconResource = getSpriteResourceForSkillIcon(COMBO_HINT_SEPARATOR_ICON_ID);
+    const expectedHintSeparatorIconKeys = comboHintSeparatorIconResource
+      ? Array.from({ length: this.hintRowCount }, () => comboHintSeparatorIconResource.key)
+      : [];
+    const visibleHintSeparatorIcons = this.hintSeparatorIcons
+      .filter((icon) => icon.active && icon.visible && icon.alpha > 0);
+    const renderedHintSeparatorIconKeys = visibleHintSeparatorIcons.map((icon) => icon.texture.key);
+    const unmatchedHintSeparatorIconKeys = [...renderedHintSeparatorIconKeys];
+    const missingHintSeparatorIconKeys = expectedHintSeparatorIconKeys.filter((key) => {
+      const renderedIndex = unmatchedHintSeparatorIconKeys.indexOf(key);
+      if (renderedIndex >= 0) {
+        unmatchedHintSeparatorIconKeys.splice(renderedIndex, 1);
+        return false;
+      }
+      return true;
+    });
+    const hintTextLegacyArrowPresent = this.hintTexts.some((text) => text.text.includes('→'));
     document.body.dataset.aeternaComboFrameQa = JSON.stringify({
       status,
       visible: this.isVisible,
@@ -473,7 +550,21 @@ export class ComboUI {
       currentHitCount: this.currentHitCount,
       gaugeRemaining: Number(this.gaugeRemaining.toFixed(3)),
       gaugeFillWidth: this.gaugeFill.displayWidth,
-      hintCount: this.hintTexts.length,
+      hintCount: this.hintRowCount,
+      hintTextLegacyArrowPresent,
+      hintSeparatorIcon: {
+        iconId: COMBO_HINT_SEPARATOR_ICON_ID,
+        renderedCount: visibleHintSeparatorIcons.length,
+        expectedCount: this.hintRowCount,
+        expectedTextureKeys: expectedHintSeparatorIconKeys,
+        renderedTextureKeys: renderedHintSeparatorIconKeys,
+        displaySizes: visibleHintSeparatorIcons.map((icon) => ({
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        fallbackRendered: this.hintSeparatorIconFallbackRendered,
+      },
+      missingHintSeparatorIconKeys,
       comboTextVisible: this.comboText.alpha > 0,
       comboText: this.comboText.text,
       comboTextLegacyGlyphPresent,
@@ -503,10 +594,8 @@ export class ComboUI {
     this.comboText.destroy();
     this.comboBonusText.destroy();
     this.comboAchievedIcon?.destroy();
+    this._clearHints();
     this.hintContainer.destroy();
-
-    for (const ht of this.hintTexts) ht.destroy();
-    this.hintTexts = [];
   }
 
   private isFrameQaRoute(): boolean {

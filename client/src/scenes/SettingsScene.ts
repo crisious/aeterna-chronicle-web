@@ -15,7 +15,7 @@ import { accessibilityManager, type SubtitleSize } from '../accessibility/Access
 import { i18n, type SupportedLocale } from '../i18n/i18nManager';
 import { getSettingsLabel } from '../settings/settingsLabels';
 import { networkManager } from '../network/NetworkManager';
-import { getSpriteResourceForSkillIcon } from '../assets/spriteResourceManifest';
+import { getSpriteResourceForSkillIcon, getSpriteResourceForUiIcon } from '../assets/spriteResourceManifest';
 
 // ── 설정 저장 키 ─────────────────────────────────────────────
 
@@ -162,6 +162,7 @@ const SETTINGS_UI_FRAME_TEXTURES = {
 
 const SETTINGS_EXPECTED_SLIDER_TRACK_FRAME_COUNT = 3;
 const SETTINGS_EXPECTED_ACTION_ICON_COUNT = 2;
+const SETTINGS_EXPECTED_SECTION_ICON_COUNT = 5;
 
 const SETTINGS_ACTION_BUTTON_ICON_IDS = {
   feedback: 'skill_mw_arrow',
@@ -170,8 +171,27 @@ const SETTINGS_ACTION_BUTTON_ICON_IDS = {
 
 const SETTINGS_FOCUS_ICON_ID = 'skill_mw_arrow';
 const SETTINGS_FOCUS_ICON_SIZE = 14;
+const SETTINGS_SECTION_ICON_SIZE = 18;
+const SETTINGS_TITLE_SECTION_ICON_SIZE = 22;
+
+const SETTINGS_SECTION_ICON_IDS = {
+  title: 'settings_title',
+  sound: 'settings_sound',
+  language: 'settings_language',
+  accessibility: 'settings_accessibility',
+  keybind: 'settings_keybind',
+} as const;
+
+const SETTINGS_SECTION_FALLBACK_GLYPHS = {
+  title: '⚙',
+  sound: '🔊',
+  language: '🌐',
+  accessibility: '♿',
+  keybind: '⌨',
+} as const;
 
 type SettingsActionIconId = keyof typeof SETTINGS_ACTION_BUTTON_ICON_IDS;
+type SettingsSectionIconId = keyof typeof SETTINGS_SECTION_ICON_IDS;
 
 interface SettingsSceneData {
   frameQa?: boolean;
@@ -210,11 +230,15 @@ export class SettingsScene extends Phaser.Scene {
   private frameQaRenderedCounts = new Map<string, number>();
   private settingsSliderFrames: Phaser.GameObjects.Image[] = [];
   private settingsActionIcons: Phaser.GameObjects.Image[] = [];
+  private settingsSectionIcons: Phaser.GameObjects.Image[] = [];
   private missingActionIconKeys: string[] = [];
+  private missingSectionIconKeys: string[] = [];
   private fallbackActionIconIds: string[] = [];
+  private fallbackSectionIconIds: string[] = [];
   private settingsFocusIcon: Phaser.GameObjects.Image | null = null;
   private settingsFocusIconFallbackRendered = false;
   private settingsFocusLabelTexts: Phaser.GameObjects.Text[] = [];
+  private settingsSectionHeadingTexts: Phaser.GameObjects.Text[] = [];
 
   // FINDING-A4 ext4: 키보드 nav state
   private settingsItems: SettingsSelectable[] = [];
@@ -230,11 +254,15 @@ export class SettingsScene extends Phaser.Scene {
     this.frameQaRenderedCounts.clear();
     this.settingsSliderFrames = [];
     this.settingsActionIcons = [];
+    this.settingsSectionIcons = [];
     this.missingActionIconKeys = [];
+    this.missingSectionIconKeys = [];
     this.fallbackActionIconIds = [];
+    this.fallbackSectionIconIds = [];
     this.settingsFocusIcon = null;
     this.settingsFocusIconFallbackRendered = false;
     this.settingsFocusLabelTexts = [];
+    this.settingsSectionHeadingTexts = [];
   }
 
   preload(): void {
@@ -247,6 +275,10 @@ export class SettingsScene extends Phaser.Scene {
     this._preloadSettingsSkillIcon(SETTINGS_FOCUS_ICON_ID, queuedSettingsIconKeys);
     for (const iconId of Object.values(SETTINGS_ACTION_BUTTON_ICON_IDS)) {
       this._preloadSettingsSkillIcon(iconId, queuedSettingsIconKeys);
+    }
+    const queuedSettingsUiIconKeys = new Set<string>();
+    for (const iconId of Object.values(SETTINGS_SECTION_ICON_IDS)) {
+      this._preloadSettingsUiIcon(iconId, queuedSettingsUiIconKeys);
     }
   }
 
@@ -262,16 +294,32 @@ export class SettingsScene extends Phaser.Scene {
     }
   }
 
+  private _preloadSettingsUiIcon(uiIconId: string, queuedSettingsUiIconKeys: Set<string>): void {
+    const uiIconResource = getSpriteResourceForUiIcon(uiIconId);
+    if (
+      uiIconResource
+      && !this.textures.exists(uiIconResource.key)
+      && !queuedSettingsUiIconKeys.has(uiIconResource.key)
+    ) {
+      this.load.image(uiIconResource.key, uiIconResource.path);
+      queuedSettingsUiIconKeys.add(uiIconResource.key);
+    }
+  }
+
   create(): void {
     this.settings = this._loadSettings();
     this.frameQaRenderedCounts.clear();
     this.settingsSliderFrames = [];
     this.settingsActionIcons = [];
+    this.settingsSectionIcons = [];
     this.missingActionIconKeys = [];
+    this.missingSectionIconKeys = [];
     this.fallbackActionIconIds = [];
+    this.fallbackSectionIconIds = [];
     this.settingsFocusIcon = null;
     this.settingsFocusIconFallbackRendered = false;
     this.settingsFocusLabelTexts = [];
+    this.settingsSectionHeadingTexts = [];
     // FINDING-A4 ext10: 색약 모드 진입 시 즉시 적용 (cb-simulator-filters.css SVG 필터)
     applyColorblindMode(this.settings.colorblindMode);
     const { width, height } = this.cameras.main;
@@ -283,14 +331,14 @@ export class SettingsScene extends Phaser.Scene {
     this._addSettingsFrame(width / 2, height - 76, 430, 116, SETTINGS_UI_FRAME_TEXTURES.footerPanel);
 
     // 타이틀
-    this._addText(width / 2, 40, '⚙ 설정', 28, '#c8a2ff', true);
+    this._addSettingsSectionHeading('title', width / 2, 40, '설정', 28, '#c8a2ff', true);
 
     let y = 100;
     const leftX = 80;
     const rightX = width - 80;
 
     // ── 볼륨 섹션 ──
-    this._addText(leftX, y, '🔊 사운드', 20, '#aaaacc');
+    this._addSettingsSectionHeading('sound', leftX, y, '사운드', 20, '#aaaacc');
     y += 40;
 
     // SSOT wiring: 설정 라벨은 SCENARIO_SETTINGS_DESCRIPTIONS 단일 출처 (settingsLabels)
@@ -306,7 +354,7 @@ export class SettingsScene extends Phaser.Scene {
     y += 60;
 
     // ── 언어 섹션 ──
-    this._addText(leftX, y, '🌐 언어', 20, '#aaaacc');
+    this._addSettingsSectionHeading('language', leftX, y, '언어', 20, '#aaaacc');
     y += 40;
 
     this._addCycleButton(leftX, y, '언어',
@@ -321,7 +369,7 @@ export class SettingsScene extends Phaser.Scene {
     y += 60;
 
     // ── 접근성 섹션 ──
-    this._addText(leftX, y, '♿ 접근성', 20, '#aaaacc');
+    this._addSettingsSectionHeading('accessibility', leftX, y, '접근성', 20, '#aaaacc');
     y += 40;
 
     this._addToggle(leftX, y, '화면 흔들림', this.settings.screenShake, (v) => {
@@ -407,7 +455,7 @@ export class SettingsScene extends Phaser.Scene {
 
     // ── 키바인드 섹션 (우측) ──
     let ky = 100;
-    this._addText(rightX - 150, ky, '⌨ 키바인드', 20, '#aaaacc');
+    this._addSettingsSectionHeading('keybind', rightX - 150, ky, '키바인드', 20, '#aaaacc');
     ky += 40;
     for (const kb of KEYBINDS) {
       this._addText(rightX - 200, ky, kb.action, 14, '#888888');
@@ -572,6 +620,43 @@ export class SettingsScene extends Phaser.Scene {
     return t;
   }
 
+  private _addSettingsSectionHeading(
+    sectionId: SettingsSectionIconId,
+    x: number,
+    y: number,
+    label: string,
+    size: number,
+    color: string,
+    center = false,
+  ): Phaser.GameObjects.Text {
+    const uiIconId = SETTINGS_SECTION_ICON_IDS[sectionId];
+    const iconResource = getSpriteResourceForUiIcon(uiIconId);
+    const hasIcon = Boolean(iconResource && this.textures.exists(iconResource.key));
+    const headingText = hasIcon ? label : `${SETTINGS_SECTION_FALLBACK_GLYPHS[sectionId]} ${label}`;
+    const text = this._addText(x, y, headingText, size, color, center);
+    this.settingsSectionHeadingTexts.push(text);
+
+    if (!iconResource || !this.textures.exists(iconResource.key)) {
+      this.fallbackSectionIconIds.push(sectionId);
+      this.missingSectionIconKeys.push(iconResource?.key ?? `settings_section_icon_${sectionId}`);
+      return text;
+    }
+
+    const iconSize = sectionId === 'title' ? SETTINGS_TITLE_SECTION_ICON_SIZE : SETTINGS_SECTION_ICON_SIZE;
+    const iconX = center
+      ? x - (text.width / 2) - (iconSize / 2) - 8
+      : x - iconSize - 10;
+    const iconY = y + text.height / 2;
+    const icon = this.add.image(iconX, iconY, iconResource.key)
+      .setName(`settings_section_icon_${sectionId}`)
+      .setOrigin(0.5);
+    icon.setDisplaySize(iconSize, iconSize);
+    icon.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.uiElements.push(icon);
+    this.settingsSectionIcons.push(icon);
+    return text;
+  }
+
   private _addSettingsActionIcon(
     actionId: SettingsActionIconId,
     x: number,
@@ -688,16 +773,21 @@ export class SettingsScene extends Phaser.Scene {
     const buttonRenderedFrameCount = this.frameQaRenderedCounts.get(buttonTexture.key) ?? 0;
     const sliderRenderedFrameCount = this.settingsSliderFrames.length;
     const actionIconRenderedCount = this.settingsActionIcons.length;
+    const sectionIconRenderedCount = this.settingsSectionIcons.length;
     const settingsFocusIconResource = getSpriteResourceForSkillIcon(SETTINGS_FOCUS_ICON_ID);
     const settingsFocusIconVisible = this.settingsFocusIcon?.active === true
       && this.settingsFocusIcon.visible
       && this.settingsFocusIcon.alpha > 0;
     const settingsFocusLabelLegacyGlyphPresent = this.settingsFocusLabelTexts.some((text) => text.text.includes('▶'));
+    const settingsSectionLabelLegacyGlyphPresent = this.settingsSectionHeadingTexts.some((text) => /[⚙🔊🌐♿⌨]/u.test(text.text));
     const missingSettingsFocusIconKeys = settingsFocusIconVisible && settingsFocusIconResource
       ? []
       : [settingsFocusIconResource?.key ?? SETTINGS_FOCUS_ICON_ID];
     const actionIconKeys = Object.values(SETTINGS_ACTION_BUTTON_ICON_IDS)
       .map((iconId) => getSpriteResourceForSkillIcon(iconId)?.key)
+      .filter((key): key is NonNullable<typeof key> => key !== undefined);
+    const sectionIconKeys = Object.values(SETTINGS_SECTION_ICON_IDS)
+      .map((uiIconId) => getSpriteResourceForUiIcon(uiIconId)?.key)
       .filter((key): key is NonNullable<typeof key> => key !== undefined);
     const panelRenderedFrameCount = panelTextures.reduce(
       (sum, texture) => sum + (this.frameQaRenderedCounts.get(texture.key) ?? 0),
@@ -716,13 +806,18 @@ export class SettingsScene extends Phaser.Scene {
       !this.textures.exists(buttonTexture.key) || buttonRenderedFrameCount < 2 ? buttonTexture.key : null,
       !this.textures.exists(sliderTexture.key) || sliderRenderedFrameCount < SETTINGS_EXPECTED_SLIDER_TRACK_FRAME_COUNT ? sliderTexture.key : null,
       actionIconRenderedCount < SETTINGS_EXPECTED_ACTION_ICON_COUNT ? 'settings_action_icons' : null,
+      sectionIconRenderedCount < SETTINGS_EXPECTED_SECTION_ICON_COUNT ? 'settings_section_icons' : null,
+      this.missingSectionIconKeys.length > 0 ? 'settings_section_icon_keys' : null,
+      settingsSectionLabelLegacyGlyphPresent ? 'settings_section_label_legacy_glyph' : null,
       missingSettingsFocusIconKeys.length > 0 ? 'settings_focus_icon' : null,
     ].filter((key): key is NonNullable<typeof key> => key !== null);
 
     document.body.dataset.aeternaSettingsFrameQa = JSON.stringify({
       status: missingFrameKeys.length === 0
         && this.missingActionIconKeys.length === 0
+        && this.missingSectionIconKeys.length === 0
         && missingSettingsFocusIconKeys.length === 0
+        && !settingsSectionLabelLegacyGlyphPresent
         && !settingsFocusLabelLegacyGlyphPresent
         ? 'ready'
         : 'missing-frame',
@@ -753,6 +848,18 @@ export class SettingsScene extends Phaser.Scene {
         })),
         fallbackActionIconIds: this.fallbackActionIconIds,
       },
+      settingsSectionIcon: {
+        expectedCount: SETTINGS_EXPECTED_SECTION_ICON_COUNT,
+        renderedCount: sectionIconRenderedCount,
+        expectedKeys: sectionIconKeys,
+        renderedKeys: this.settingsSectionIcons.map((icon) => icon.texture.key),
+        displaySizes: this.settingsSectionIcons.map((icon) => ({
+          name: icon.name,
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        fallbackSectionIconIds: this.fallbackSectionIconIds,
+      },
       settingsFocusIcon: {
         iconId: SETTINGS_FOCUS_ICON_ID,
         renderedCount: settingsFocusIconVisible ? 1 : 0,
@@ -763,8 +870,10 @@ export class SettingsScene extends Phaser.Scene {
           : null,
         fallbackRendered: this.settingsFocusIconFallbackRendered,
       },
+      settingsSectionLabelLegacyGlyphPresent,
       settingsFocusLabelLegacyGlyphPresent,
       missingSettingsFocusIconKeys,
+      missingSectionIconKeys: this.missingSectionIconKeys,
       missingActionIconKeys: this.missingActionIconKeys,
       missingFrameKeys,
     });

@@ -1,0 +1,11 @@
+{
+  "id": "ui_icon_settings_title",
+  "mode": "settings_title",
+  "source": "assets/source/aseprite/ui/icons/system/settings_title.aseprite",
+  "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_title.png",
+  "runtimePng": "assets/generated/ui/icons/system/settings_title.png",
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "frameCount": 1,
+  "generatedBy": "tools/aseprite-pipeline/scripts/create-settings-ui-icon.lua"
+}

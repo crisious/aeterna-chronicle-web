@@ -24564,6 +24564,84 @@
       "status": "in-game-verified",
       "requiredTags": [],
       "uiIconId": "battle_bgm_missing"
+    },
+    {
+      "id": "ui_icon_settings_title",
+      "category": "ui",
+      "priority": 1811,
+      "source": "assets/source/aseprite/ui/icons/system/settings_title.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_title.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/settings_title.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/settings_title.png",
+      "runtimeKey": "ui_icon_settings_title",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "settings_title"
+    },
+    {
+      "id": "ui_icon_settings_sound",
+      "category": "ui",
+      "priority": 1812,
+      "source": "assets/source/aseprite/ui/icons/system/settings_sound.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_sound.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/settings_sound.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/settings_sound.png",
+      "runtimeKey": "ui_icon_settings_sound",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "settings_sound"
+    },
+    {
+      "id": "ui_icon_settings_language",
+      "category": "ui",
+      "priority": 1813,
+      "source": "assets/source/aseprite/ui/icons/system/settings_language.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_language.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/settings_language.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/settings_language.png",
+      "runtimeKey": "ui_icon_settings_language",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "settings_language"
+    },
+    {
+      "id": "ui_icon_settings_accessibility",
+      "category": "ui",
+      "priority": 1814,
+      "source": "assets/source/aseprite/ui/icons/system/settings_accessibility.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_accessibility.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/settings_accessibility.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/settings_accessibility.png",
+      "runtimeKey": "ui_icon_settings_accessibility",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "settings_accessibility"
+    },
+    {
+      "id": "ui_icon_settings_keybind",
+      "category": "ui",
+      "priority": 1815,
+      "source": "assets/source/aseprite/ui/icons/system/settings_keybind.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/settings_keybind.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/settings_keybind.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/settings_keybind.png",
+      "runtimeKey": "ui_icon_settings_keybind",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "settings_keybind"
+    },
+    {
+      "id": "ui_icon_chat_system",
+      "category": "ui",
+      "priority": 1816,
+      "source": "assets/source/aseprite/ui/icons/system/chat_system.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/chat_system.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/chat_system.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/chat_system.png",
+      "runtimeKey": "ui_icon_chat_system",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "chat_system"
     }
   ]
 }
