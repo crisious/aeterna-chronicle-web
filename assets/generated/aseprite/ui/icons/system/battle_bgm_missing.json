@@ -1,0 +1,7 @@
+{
+  "id": "battle_bgm_missing",
+  "frameHeight": 32,
+  "frameWidth": 32,
+  "frameCount": 1,
+  "generatedBy": "tools/aseprite-pipeline/scripts/create-battle-bgm-ui-icon.lua"
+}

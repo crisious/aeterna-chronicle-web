@@ -6009,3 +6009,98 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `?renderer=canvas&qaRun=phase199-error-boundary-iab` triggers a runtime `ErrorEvent` and `offline` event; both `aeternaErrorBoundaryIconQa` and `aeternaReconnectIconQa` report `status = ready`, `renderedCount = 1`, `legacyGlyphPresent = false`, loaded image widths `32` and `64`, and no console/page errors.
+
+## Phase 200: BattleUI Reconnect Log Highlight Icon Runtime Wiring
+
+Runtime BattleScene reconnect log highlight icon coverage:
+
+- Reconnect recovery log highlight icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `reconnect = 'skill_tg_stop'`, reusing the pooled `battle_ui_log_highlight_icon` path already used by cooldown and wait highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `재연결됨`, `전투 재개`, and legacy fallback `🔌` source messages as reconnect highlight signals.
+- `_formatLogHighlightText()` strips `🔌` when the Aseprite icon is rendered, and the log highlight QA legacy glyph detector includes `🔌`.
+- `_setupConnectionBadge()` now sends `재연결됨 — 전투 재개` to `BattleUI.addLog()` so the normal runtime path no longer injects the plug glyph before the icon path can render.
+- Texture-missing and QA source paths keep the previous `🔌 재연결됨 — 전투 재개` fallback message observable for regression coverage.
+
+Exit criteria:
+
+- Unit tests verify the reconnect skill icon id, color/icon inference, QA route expansion, QA source message, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free reconnect recovery log call.
+- Browser QA verifies `battleLogHighlightIconQa=reconnect` renders exactly one `battle_ui_log_highlight_icon` with `skill_tg_stop_icon`, `displaySizes = 16x16`, no missing keys, `legacyGlyphPresent = false`, and nonblank canvas output.
+- Existing BattleUI log highlight contracts, runtime image reference coverage, UI frame contracts, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 200 implementation started on 2026-06-18.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "재연결 복구 로그"` failed before implementation because `BattleUI.ts` did not define the reconnect log highlight icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "재연결 복구 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 135 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=reconnect&class=ether_knight&qaRun=phase200-reconnect-log` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = reconnect`, `iconId = skill_tg_stop`, `renderedCount = 1`, `displaySizes = 16x16`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.
+
+## Phase 201: BattleUI Pacing Log Highlight Icon Runtime Wiring
+
+Runtime BattleScene pacing log highlight icon coverage:
+
+- AUTO mode log highlight icon: `skill_tg_haste.png` / texture key `skill_tg_haste_icon`.
+- ATB mode log highlight icon: `skill_tg_stop.png` / texture key `skill_tg_stop_icon`.
+
+Production rule:
+
+- `BattleUI` extends `BATTLE_LOG_HIGHLIGHT_ICON_IDS` with `autoMode = 'skill_tg_haste'` and `atbMode = 'skill_tg_stop'`, reusing the pooled `battle_ui_log_highlight_icon` path used by other skill-backed log highlights.
+- `_inferHighlightColor()` and `_inferHighlightIconKind()` recognize `[AUTO]`, `자동 전투`, `ATB 모드`, and the legacy fallback `⚙`/`⏱` source glyphs as pacing highlight signals.
+- `_formatLogHighlightText()` strips `⚙` and `⏱` when the Aseprite icon is rendered, and the log highlight QA legacy glyph detector includes both glyphs.
+- `_toggleAuto()` now sends `[AUTO] 자동 전투 ON (×1.5)` or `[AUTO] 자동 전투 OFF`, and `_cycleAtbMode()` sends `ATB 모드: <mode> — <description>` so normal runtime pacing logs no longer inject gear/timer glyphs before the icon path can render.
+- Texture-missing and QA source paths keep the previous `⚙ [AUTO] 자동 전투 ON (×1.5)` and `⏱ ATB 모드: WAIT — 메뉴/조준 중 정지` fallback messages observable for regression coverage.
+
+Exit criteria:
+
+- Unit tests verify the time guardian skill icon ids, color/icon inference, QA route expansion, QA source messages, glyph stripping regex, legacy detector, BattleScene log highlight preload loop, and glyph-free AUTO/ATB runtime log calls.
+- Browser QA verifies `battleLogHighlightIconQa=autoMode` renders exactly one `battle_ui_log_highlight_icon` with `skill_tg_haste_icon`, and `battleLogHighlightIconQa=atbMode` renders exactly one `battle_ui_log_highlight_icon` with `skill_tg_stop_icon`; both report `displaySizes = 16x16`, no missing keys, `legacyGlyphPresent = false`, and nonblank canvas output.
+- Existing BattleUI log highlight contracts, runtime image reference coverage, UI frame contracts, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 201 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "전투 페이싱 로그"` failed before implementation because `BattleUI.ts` did not define the `autoMode` log highlight icon contract.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "전투 페이싱 로그"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 136 tests across 3 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=autoMode&class=ether_knight&qaRun=phase201-auto-log` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = autoMode`, `iconId = skill_tg_haste`, `renderedCount = 1`, `displaySizes = 16x16`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=atbMode&class=ether_knight&qaRun=phase201-atb-log` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = atbMode`, `iconId = skill_tg_stop`, `renderedCount = 1`, `displaySizes = 16x16`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.
+
+## Phase 202: BattleUI BGM Log Highlight UI Icon Runtime Wiring
+
+Runtime BattleScene BGM log highlight icon coverage:
+
+- BGM playing log highlight icon: `battle_bgm_playing.png` / texture key `ui_icon_battle_bgm_playing`.
+- BGM missing log highlight icon: `battle_bgm_missing.png` / texture key `ui_icon_battle_bgm_missing`.
+
+Production rule:
+
+- `tools/aseprite-pipeline/scripts/create-battle-bgm-ui-icon.lua` creates the two 32x32 Aseprite source files under `assets/source/aseprite/ui/icons/system/`, with generated mirror PNG/JSON and runtime PNGs under `client/public/assets/generated/ui/icons/system/`.
+- `spriteResourceManifest` now supports `uiIconId`, maps `battle_bgm_playing` and `battle_bgm_missing`, and exposes `getSpriteResourceForUiIcon()`.
+- `BattleUI` routes `BGM:` and `BGM 미존재` logs through `BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS`, strips legacy `🎵`/`🔇` glyphs when an icon is rendered, and keeps the legacy glyph source messages only in QA/fallback coverage.
+- `BattleScene` BGM runtime logs now send `BGM: <track>` and `BGM 미존재: <track>` without directly injecting music/mute glyphs before the icon path can render.
+
+Exit criteria:
+
+- Unit tests verify the UI icon manifest entries, `uiIconId` map/getter, BattleScene preload loop, BattleUI BGM color/icon inference, QA route expansion, glyph stripping regex, legacy detector, QA source messages, and glyph-free BGM runtime log calls.
+- Browser QA verifies `battleLogHighlightIconQa=bgmTrack` renders exactly one `battle_ui_log_highlight_icon` with `ui_icon_battle_bgm_playing`, and `battleLogHighlightIconQa=bgmMissing` renders exactly one icon with `ui_icon_battle_bgm_missing`; both report `displaySizes = 16x16`, no missing keys, `legacyGlyphPresent = false`, and nonblank canvas output.
+- Existing BattleUI log highlight contracts, runtime image reference coverage, UI frame contracts, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 202 implementation started on 2026-06-19.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "BGM"` failed before implementation because the BGM UI icon manifest entries and `BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS` contract did not exist.
+- GREEN: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "BGM"` passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\uiFrameAssets.test.ts` passes with 138 tests across 3 files.
+- Public runtime roster coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 1 test.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=bgmTrack&class=ether_knight&qaRun=phase202-bgm-track` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = bgmTrack`, `iconId = battle_bgm_playing`, `renderedTextureKeys = ui_icon_battle_bgm_playing`, `renderedCount = 1`, `displaySizes = 16x16`, `highlightText = BGM: bgm_ancient_field`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleLogHighlightIconQa=bgmMissing&class=ether_knight&qaRun=phase202-bgm-missing` reports `aeternaBattleLogHighlightIconQa.status = ready`, `kind = bgmMissing`, `iconId = battle_bgm_missing`, `renderedTextureKeys = ui_icon_battle_bgm_missing`, `renderedCount = 1`, `displaySizes = 16x16`, `highlightText = BGM 미존재: bgm_missing`, `legacyGlyphPresent = false`, empty missing key lists, one visible nonblank canvas, and no console/page errors.

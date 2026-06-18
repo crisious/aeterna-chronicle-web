@@ -224,6 +224,36 @@ describe('sprite resource manifest', () => {
     }
   });
 
+  it('maps BattleUI BGM log UI icon ids to Aseprite ui icon resources', () => {
+    expect(getSpriteResource('ui_icon_battle_bgm_playing')).toEqual({
+      id: 'ui_icon_battle_bgm_playing',
+      category: 'ui',
+      kind: 'image',
+      key: 'ui_icon_battle_bgm_playing',
+      path: 'assets/generated/ui/icons/system/battle_bgm_playing.png',
+      frameWidth: 32,
+      frameHeight: 32,
+      frameCount: 1,
+      uiIconId: 'battle_bgm_playing',
+    });
+    expect(getSpriteResource('ui_icon_battle_bgm_missing')).toEqual({
+      id: 'ui_icon_battle_bgm_missing',
+      category: 'ui',
+      kind: 'image',
+      key: 'ui_icon_battle_bgm_missing',
+      path: 'assets/generated/ui/icons/system/battle_bgm_missing.png',
+      frameWidth: 32,
+      frameHeight: 32,
+      frameCount: 1,
+      uiIconId: 'battle_bgm_missing',
+    });
+
+    const manifestSource = readFileSync(resolve(process.cwd(), 'client/src/assets/spriteResourceManifest.ts'), 'utf8');
+    expect(manifestSource).toContain('readonly uiIconId?: string');
+    expect(manifestSource).toContain('const SPRITE_RESOURCE_BY_UI_ICON_ID');
+    expect(manifestSource).toContain('export function getSpriteResourceForUiIcon(uiIconId: string): SpriteResource | undefined');
+  });
+
   it('tracks all 40 status icon specs for AssetManager preload', () => {
     const specs = getAllStatusIconSpecs();
 
@@ -1465,7 +1495,7 @@ describe('sprite resource manifest', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
 
-    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI';");
+    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS, BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS } from '../ui/BattleUI';");
     expect(battleUiSource).toContain("export const BATTLE_LOG_HIGHLIGHT_ICON_IDS = {");
     expect(battleUiSource).toContain("critical: 'skill_ek_explode'");
     expect(battleUiSource).toContain("chain: 'skill_mw_storm'");
@@ -1504,8 +1534,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("kind === 'dualTech' || kind === 'tripleTech'");
     expect(battleUiSource).toContain("dualTech: '✨ 협공 발동: 크로노 블레이드'");
     expect(battleUiSource).toContain("tripleTech: '🌟 3인 협공 발동: 에테르나 파이널'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).not.toContain('`✨ 협공 발동: ${cand.name}`');
     expect(battleSource).not.toContain('`🌟 3인 협공 발동: ${cand.name}`');
     expect(battleSource).not.toContain('`✨ 협공 가능: ${names}`');
@@ -1525,8 +1555,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (m.includes('방어') || m.includes('반사')) return '#90caf9'");
     expect(battleUiSource).toContain("if (message.includes('방어') || message.includes('반사')) return 'guard'");
     expect(battleUiSource).toContain("guard: '🛡 방어 태세!'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('preloadStatusIconResources(this)');
     expect(battleSource).toContain('this.battleUI?.addLog(`반사 → ${attacker.unit.name} : -${reflectDmg}`)');
     expect(battleSource).toContain('this.battleUI?.addLog(`${us.unit.name} 방어 태세!`)');
@@ -1543,8 +1573,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('💀') || message.includes('쓰러짐')) return 'death'");
     expect(battleUiSource).toContain("kind === 'dualTech' || kind === 'tripleTech' || kind === 'guard' || kind === 'death'");
     expect(battleUiSource).toContain("death: '💀 쓰러짐!'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('preloadStatusIconResources(this)');
     expect(battleSource).toContain('this.battleUI?.addLog(`${us.unit.name} 쓰러짐!`)');
     expect(battleSource).not.toContain('this.battleUI?.addLog(`💀 ${us.unit.name} 쓰러짐!`)');
@@ -1559,8 +1589,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('💔') || message.includes('패배')) return 'defeat'");
     expect(battleUiSource).toContain("kind === 'guard' || kind === 'death' || kind === 'defeat'");
     expect(battleUiSource).toContain("defeat: '💔 패배...'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('preloadStatusIconResources(this)');
     expect(battleSource).toContain("this.battleUI?.addLog('패배...')");
     expect(battleSource).not.toContain("this.battleUI?.addLog('💔 패배...')");
@@ -1599,8 +1629,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('⚔') || message.includes('전투 시작')) return 'start'");
     expect(battleUiSource).toContain("kind === 'critical' || kind === 'chain' || kind === 'victory' || kind === 'level' || kind === 'start'");
     expect(battleUiSource).toContain("start: '⚔ 전투 시작!'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain("this.battleUI?.addLog('전투 시작!')");
     expect(battleSource).not.toContain("this.battleUI?.addLog('⚔️ 전투 시작!')");
@@ -1615,8 +1645,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('ECHO')) return 'echo'");
     expect(battleUiSource).toContain("kind === 'echo'");
     expect(battleUiSource).toContain("echo: '✨ ECHO! +29'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain('this.battleUI?.addLog(`ECHO! +${echoDmg}`)');
     expect(battleSource).not.toContain('this.battleUI?.addLog(`✨ ECHO! +${echoDmg}`)');
@@ -1631,8 +1661,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('💢') || message.includes('강공 준비') || message.includes('강공!')) return 'telegraph'");
     expect(battleUiSource).toContain("kind === 'telegraph'");
     expect(battleUiSource).toContain("telegraph: '💢 보스 강공 준비!'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('const BATTLE_BOSS_TELEGRAPH_ICON_ID = \'skill_ek_explode\'');
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain('this.battleUI?.addLog(`${boss.unit.name} 강공 준비!`)');
@@ -1647,8 +1677,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (m.includes('💢') || m.includes('강공 준비') || m.includes('강공!')) return '#ff5533'");
     expect(battleUiSource).toContain("if (message.includes('💢') || message.includes('강공 준비') || message.includes('강공!')) return 'telegraph'");
     expect(battleUiSource).toContain("telegraph: '💢 보스 강공 준비!'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain("const strongLabel = opts?.strong ? '강공! ' : ''");
     expect(battleSource).toContain('this.battleUI?.addLog(`${strongLabel}${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`)');
     expect(battleSource).not.toContain("const strongLabel = opts?.strong ? '💢강공! ' : ''");
@@ -1662,8 +1692,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (m.includes('💥') || m.includes('크리') || m.includes('CRIT')) return '#ffd700'");
     expect(battleUiSource).toContain("if (message.includes('💥') || message.includes('크리') || message.includes('CRIT')) return 'critical'");
     expect(battleUiSource).toContain("critical: '💥 CRIT 88'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain("const critLabel = isCritical ? ' 크리티컬!' : ''");
     expect(battleSource).toContain('this.battleUI?.addLog(`${strongLabel}${attacker.unit.name} → ${target.unit.name} : ${dmg}${critLabel}`)');
     expect(battleSource).not.toContain("const critLabel = isCritical ? ' 💥크리티컬!' : ''");
@@ -1678,8 +1708,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('💧') || message.includes('MP 부족')) return 'mana'");
     expect(battleUiSource).toContain("kind === 'mana'");
     expect(battleUiSource).toContain("mana: '💧 MP 부족 — 에테르 슬래시(MP 15)'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain('this.battleUI?.addLog(`MP 부족 — ${skill.name}(MP ${skill.mpCost})`)');
     expect(battleSource).not.toContain('this.battleUI?.addLog(`💧 MP 부족 — ${skill.name}(MP ${skill.mpCost})`)');
@@ -1689,7 +1719,7 @@ describe('sprite resource manifest', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
 
-    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI';");
+    expect(battleSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS, BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS } from '../ui/BattleUI';");
     expect(battleUiSource).toContain("import { getItemIconResource } from '../data/itemIconResources'");
     expect(battleUiSource).toContain('export const BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS = {');
     expect(battleUiSource).toContain("itemHeal: 'ITM-CON-001'");
@@ -1699,8 +1729,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('🧪') || message.includes('회복')) return 'itemHeal'");
     expect(battleUiSource).toContain("kind === 'itemHeal'");
     expect(battleUiSource).toContain("itemHeal: '🧪 Erien HP +100 회복!'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('for (const itemIconId of Object.values(BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS))');
     expect(battleSource).toContain('const logHighlightItemIconResource = getItemIconResource({ itemIconId })');
     expect(battleSource).toContain('this.battleUI?.addLog(`${target.unit.name} HP +100 회복!`)');
@@ -1716,8 +1746,8 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("if (message.includes('스킬 발동')) return 'skillHit'");
     expect(battleUiSource).toContain("kind === 'skillHit'");
     expect(battleUiSource).toContain("skillHit: '⚡ 스킬 발동: 에테르 슬래시 → 허수아비 : 88'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain('this.battleUI?.addLog(`콤보: ${combo.name}! +${combo.damageBonus}%`)');
     expect(battleSource).toContain('this.battleUI?.addLog(`스킬 발동: ${skill.name} → ${target.unit.name} : ${dmg}`)');
@@ -1738,13 +1768,82 @@ describe('sprite resource manifest', () => {
     expect(battleUiSource).toContain("kind === 'cooldown' || kind === 'wait'");
     expect(battleUiSource).toContain("cooldown: '⏳ 에테르 슬래시 쿨다운 중'");
     expect(battleUiSource).toContain("wait: '⏭ Erien 대기'");
-    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/gu, \'\')');
-    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪]/u.test(highlightText)');
+    expect(battleUiSource).toContain('.replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, \'\')');
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
     expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
     expect(battleSource).toContain('this.battleUI?.addLog(`${skill.name} 쿨다운 중`)');
     expect(battleSource).toContain('this.battleUI?.addLog(`${this.activeCommander.unit.name} 대기`)');
     expect(battleSource).not.toContain('this.battleUI?.addLog(`⏳ ${skill.name} 쿨다운 중`)');
     expect(battleSource).not.toContain('this.battleUI?.addLog(`⏭ ${this.activeCommander.unit.name} 대기`)');
+  });
+
+  it('BattleScene 재연결 복구 로그는 Aseprite stop log highlight를 쓰고 plug glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("reconnect: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("if (m.includes('🔌') || m.includes('재연결됨') || m.includes('전투 재개')) return '#c8a2ff'");
+    expect(battleUiSource).toContain("if (message.includes('🔌') || message.includes('재연결됨') || message.includes('전투 재개')) return 'reconnect'");
+    expect(battleUiSource).toContain("kind === 'reconnect'");
+    expect(battleUiSource).toContain("reconnect: '🔌 재연결됨 — 전투 재개'");
+    expect(battleUiSource).toContain(".replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, '')");
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
+    expect(battleSource).toContain('for (const iconId of Object.values(BATTLE_LOG_HIGHLIGHT_ICON_IDS))');
+    expect(battleSource).toContain("this.battleUI?.addLog('재연결됨 — 전투 재개')");
+    expect(battleSource).not.toContain("this.battleUI?.addLog('🔌 재연결됨 — 전투 재개')");
+  });
+
+  it('BattleScene 전투 페이싱 로그는 Aseprite time guardian log highlights를 쓰고 legacy glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleUiSource).toContain("autoMode: 'skill_tg_haste'");
+    expect(battleUiSource).toContain("atbMode: 'skill_tg_stop'");
+    expect(battleUiSource).toContain("if (m.includes('⚙') || m.includes('[AUTO]') || m.includes('자동 전투')) return '#55ddff'");
+    expect(battleUiSource).toContain("if (m.includes('⏱') || m.includes('ATB 모드')) return '#c8a2ff'");
+    expect(battleUiSource).toContain("if (message.includes('⚙') || message.includes('[AUTO]') || message.includes('자동 전투')) return 'autoMode'");
+    expect(battleUiSource).toContain("if (message.includes('⏱') || message.includes('ATB 모드')) return 'atbMode'");
+    expect(battleUiSource).toContain("kind === 'autoMode' || kind === 'atbMode'");
+    expect(battleUiSource).toContain("autoMode: '⚙ [AUTO] 자동 전투 ON (×1.5)'");
+    expect(battleUiSource).toContain("atbMode: '⏱ ATB 모드: WAIT — 메뉴/조준 중 정지'");
+    expect(battleUiSource).toContain(".replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, '')");
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
+    expect(battleSource).toContain("this.battleUI?.addLog('[AUTO] 자동 전투 ON (×1.5)')");
+    expect(battleSource).toContain("this.battleUI?.addLog('[AUTO] 자동 전투 OFF')");
+    expect(battleSource).toContain('this.battleUI?.addLog(`ATB 모드: ${this.atbMode} — ${desc}`)');
+    expect(battleSource).not.toContain("this.battleUI?.addLog('⚙ [AUTO] 자동 전투 ON (×1.5)')");
+    expect(battleSource).not.toContain("this.battleUI?.addLog('⚙ [AUTO] 자동 전투 OFF')");
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`⏱ ATB 모드: ${this.atbMode} — ${desc}`)');
+  });
+
+  it('BattleScene BGM 로그는 Aseprite ui log highlights를 쓰고 legacy glyph를 직접 주입하지 않는다', () => {
+    const battleSource = readSceneSource('BattleScene.ts');
+    const battleUiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');
+
+    expect(battleSource).toContain('BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS');
+    expect(battleSource).toContain('for (const uiIconId of Object.values(BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS))');
+    expect(battleSource).toContain('const logHighlightUiIconResource = getSpriteResourceForUiIcon(uiIconId)');
+    expect(battleUiSource).toContain("import { getSpriteResourceForSkillIcon, getSpriteResourceForUiIcon } from '../assets/spriteResourceManifest'");
+    expect(battleUiSource).toContain('export const BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS = {');
+    expect(battleUiSource).toContain("bgmTrack: 'battle_bgm_playing'");
+    expect(battleUiSource).toContain("bgmMissing: 'battle_bgm_missing'");
+    expect(battleUiSource).toContain('type BattleLogHighlightUiIconKind = keyof typeof BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS');
+    expect(battleUiSource).toContain('| BattleLogHighlightUiIconKind');
+    expect(battleUiSource).toContain('private _isLogHighlightUiIconKind(kind: BattleLogHighlightIconKind): kind is BattleLogHighlightUiIconKind');
+    expect(battleUiSource).toContain('return getSpriteResourceForUiIcon(BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS[kind])');
+    expect(battleUiSource).toContain("if (m.includes('🎵') || m.includes('BGM:')) return '#6fd3ff'");
+    expect(battleUiSource).toContain("if (m.includes('🔇') || m.includes('BGM 미존재')) return '#ff8888'");
+    expect(battleUiSource).toContain("if (message.includes('🎵') || message.includes('BGM:')) return 'bgmTrack'");
+    expect(battleUiSource).toContain("if (message.includes('🔇') || message.includes('BGM 미존재')) return 'bgmMissing'");
+    expect(battleUiSource).toContain("kind === 'bgmTrack' || kind === 'bgmMissing'");
+    expect(battleUiSource).toContain("bgmTrack: '🎵 BGM: bgm_ancient_field'");
+    expect(battleUiSource).toContain("bgmMissing: '🔇 BGM 미존재: bgm_missing'");
+    expect(battleUiSource).toContain(".replace(/[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/gu, '')");
+    expect(battleUiSource).toContain('const legacyGlyphPresent = /[💥🔥🎉🆙⚡✨🌟🔁🏆🛡💀💔⚔💢💧⏳⏭🧪🔌⚙⏱🎵🔇]/u.test(highlightText)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`BGM: ${fieldEnc.bgmTrack}`)');
+    expect(battleSource).toContain('this.battleUI?.addLog(`BGM 미존재: ${fieldEnc.bgmTrack}`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🎵 ${fieldEnc.bgmTrack}`)');
+    expect(battleSource).not.toContain('this.battleUI?.addLog(`🔇 BGM 미존재: ${fieldEnc.bgmTrack}`)');
   });
 
   it('BattleScene 협공 버튼은 Aseprite skill icons를 이모지 텍스트보다 먼저 사용한다', () => {

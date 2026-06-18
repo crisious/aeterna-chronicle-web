@@ -15,7 +15,7 @@
 import * as Phaser from 'phaser';
 import { EffectManager, EFFECT_FALLBACK_TEXTURES, preloadEffectTextIconResources } from '../effects/EffectManager';
 import { SoundManager } from '../sound/SoundManager';
-import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI';
+import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS, BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS } from '../ui/BattleUI';
 import { CombatManager, CombatUnit, SkillSlot, LootItem } from '../combat/CombatManager';
 import { computeCritEchoDamage, computeReflectDamage, rollMiss, type PassiveCombatantClient } from '../combat/passiveClientHelpers';
 import { COMBO_MIRROR } from '../skills/comboMirror';
@@ -42,7 +42,7 @@ import { resolveFieldEncounter } from '../../../shared/types/chronoField';
 import { composeEscapeLog, escapeOutcomeFromResult } from '../combat/escapeNarration';
 import { getCombatPopupColor } from '../combat/combatResultPalette';
 import { formatDamageTypeTag, getDamageTypePopupColor } from '../combat/damageTypeNarration';
-import { getSpriteResourceForMonster, getSpriteResourceForSkillIcon, getSpriteResourceForVfx } from '../assets/spriteResourceManifest';
+import { getSpriteResourceForMonster, getSpriteResourceForSkillIcon, getSpriteResourceForUiIcon, getSpriteResourceForVfx } from '../assets/spriteResourceManifest';
 import { getStatusIconResource, preloadStatusIconResources } from '../data/statusEffectIcons';
 import { getItemIconResource } from '../data/itemIconResources';
 import monsterManifest from '../data/monsterManifest.json';
@@ -898,6 +898,19 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
+    const queuedLogHighlightUiIconKeys = new Set<string>();
+    for (const uiIconId of Object.values(BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS)) {
+      const logHighlightUiIconResource = getSpriteResourceForUiIcon(uiIconId);
+      if (
+        logHighlightUiIconResource
+        && !this.textures.exists(logHighlightUiIconResource.key)
+        && !queuedLogHighlightUiIconKeys.has(logHighlightUiIconResource.key)
+      ) {
+        this.load.image(logHighlightUiIconResource.key, logHighlightUiIconResource.path);
+        queuedLogHighlightUiIconKeys.add(logHighlightUiIconResource.key);
+      }
+    }
+
     const queuedResultRewardIconKeys = new Set(queuedSkillIconKeys);
     for (const kind of Object.keys(BATTLE_RESULT_REWARD_ICON_IDS) as BattleResultRewardIconKind[]) {
       const resultRewardIconResource = getBattleResultRewardIconResource(kind);
@@ -1052,10 +1065,10 @@ export class BattleScene extends Phaser.Scene {
       if (fieldEnc.bgmTrack && this.soundManager) {
         try {
           this.soundManager.playBgm(fieldEnc.bgmTrack, 1500);
-          this.battleUI?.addLog(`🎵 ${fieldEnc.bgmTrack}`);
+          this.battleUI?.addLog(`BGM: ${fieldEnc.bgmTrack}`);
         } catch (e) {
           console.warn('[BattleScene] BGM 재생 실패 (자산 미존재 가능):', fieldEnc.bgmTrack, e);
-          this.battleUI?.addLog(`🔇 BGM 미존재: ${fieldEnc.bgmTrack}`);
+          this.battleUI?.addLog(`BGM 미존재: ${fieldEnc.bgmTrack}`);
         }
       }
     }
@@ -1547,9 +1560,9 @@ export class BattleScene extends Phaser.Scene {
         this.activeCommander = null;
         this._clearActiveIndicator(); // UX(rank8): AUTO 전환 시 주인 없는 펄싱 ▼ 제거(_endTurn 만 호출하던 누수)
       }
-      this.battleUI?.addLog('⚙ [AUTO] 자동 전투 ON (×1.5)');
+      this.battleUI?.addLog('[AUTO] 자동 전투 ON (×1.5)');
     } else {
-      this.battleUI?.addLog('⚙ [AUTO] 자동 전투 OFF');
+      this.battleUI?.addLog('[AUTO] 자동 전투 OFF');
     }
   }
 
@@ -1565,7 +1578,7 @@ export class BattleScene extends Phaser.Scene {
     const desc = this.atbMode === 'WAIT' ? '메뉴/조준 중 정지'
       : this.atbMode === 'ACTIVE' ? '항상 실시간'
       : '조준 중만 정지';
-    this.battleUI?.addLog(`⏱ ATB 모드: ${this.atbMode} — ${desc}`);
+    this.battleUI?.addLog(`ATB 모드: ${this.atbMode} — ${desc}`);
   }
 
   update(_time: number, delta: number): void {
@@ -4893,7 +4906,7 @@ export class BattleScene extends Phaser.Scene {
         this._renderConnectionBadgeState(state === 'error' ? 'error' : 'reconnecting');
         this.atbFrozenByConnection = true;
       } else if (state === 'connected') {
-        if (this.atbFrozenByConnection) this.battleUI?.addLog('🔌 재연결됨 — 전투 재개');
+        if (this.atbFrozenByConnection) this.battleUI?.addLog('재연결됨 — 전투 재개');
         this.atbFrozenByConnection = false;
         this.connectionBadge?.setVisible(false);
         this.connectionBadgeIcon?.setVisible(false);

@@ -24538,6 +24538,32 @@
       "status": "in-game-verified",
       "requiredTags": [],
       "environmentParticleTextureId": "particle_ether_beam"
+    },
+    {
+      "id": "ui_icon_battle_bgm_playing",
+      "category": "ui",
+      "priority": 1809,
+      "source": "assets/source/aseprite/ui/icons/system/battle_bgm_playing.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/battle_bgm_playing.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/battle_bgm_playing.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/battle_bgm_playing.png",
+      "runtimeKey": "ui_icon_battle_bgm_playing",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "battle_bgm_playing"
+    },
+    {
+      "id": "ui_icon_battle_bgm_missing",
+      "category": "ui",
+      "priority": 1810,
+      "source": "assets/source/aseprite/ui/icons/system/battle_bgm_missing.aseprite",
+      "generatedPng": "assets/generated/aseprite/ui/icons/system/battle_bgm_missing.png",
+      "generatedJson": "assets/generated/aseprite/ui/icons/system/battle_bgm_missing.json",
+      "runtimePng": "client/public/assets/generated/ui/icons/system/battle_bgm_missing.png",
+      "runtimeKey": "ui_icon_battle_bgm_missing",
+      "status": "in-game-verified",
+      "requiredTags": [],
+      "uiIconId": "battle_bgm_missing"
     }
   ]
 }

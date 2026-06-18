@@ -82,7 +82,7 @@ describe('UI frame runtime images', () => {
     expect(battleUiSource).toContain('Aseprite battle log UI frame 로드 실패 시에만 사용하는 안전 fallback');
     expect(battleUiSource).toContain("new URLSearchParams(window.location.search).get('battleLogFrameQa') === '1'");
     expect(battleUiSource).toContain('document.body.dataset.aeternaBattleLogFrameQa = JSON.stringify');
-    expect(battleSceneSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS } from '../ui/BattleUI'");
+    expect(battleSceneSource).toContain("import { BattleUI, preloadBattleUiFrameTextures, BATTLE_LOG_HIGHLIGHT_ICON_IDS, BATTLE_LOG_HIGHLIGHT_ITEM_ICON_IDS, BATTLE_LOG_HIGHLIGHT_UI_ICON_IDS } from '../ui/BattleUI'");
     expect(battleSceneSource).toContain('preloadBattleUiFrameTextures(this)');
   });
 

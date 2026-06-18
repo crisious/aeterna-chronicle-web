@@ -19,6 +19,7 @@ export interface SpriteResource {
   readonly vfxId?: string;
   readonly zoneId?: string;
   readonly skillIconId?: string;
+  readonly uiIconId?: string;
   readonly itemIconId?: string;
   readonly statusIconId?: string;
 }
@@ -245,6 +246,28 @@ const SPRITE_RESOURCE_ENTRIES = [
     frameHeight: 64,
     frameCount: 1,
     skillIconId: 'skill_ek_slash',
+  },
+  {
+    id: 'ui_icon_battle_bgm_playing',
+    category: 'ui',
+    kind: 'image',
+    key: 'ui_icon_battle_bgm_playing',
+    path: 'assets/generated/ui/icons/system/battle_bgm_playing.png',
+    frameWidth: 32,
+    frameHeight: 32,
+    frameCount: 1,
+    uiIconId: 'battle_bgm_playing',
+  },
+  {
+    id: 'ui_icon_battle_bgm_missing',
+    category: 'ui',
+    kind: 'image',
+    key: 'ui_icon_battle_bgm_missing',
+    path: 'assets/generated/ui/icons/system/battle_bgm_missing.png',
+    frameWidth: 32,
+    frameHeight: 32,
+    frameCount: 1,
+    uiIconId: 'battle_bgm_missing',
   },
   {
     id: 'skill_ek_shield_icon',
@@ -655,6 +678,12 @@ const SPRITE_RESOURCE_BY_SKILL_ICON_ID: ReadonlyMap<string, SpriteResource> = ne
     .map((resource) => [resource.skillIconId as string, resource] as const),
 );
 
+const SPRITE_RESOURCE_BY_UI_ICON_ID: ReadonlyMap<string, SpriteResource> = new Map(
+  SPRITE_RESOURCE_MANIFEST
+    .filter((resource) => typeof resource.uiIconId === 'string')
+    .map((resource) => [resource.uiIconId as string, resource] as const),
+);
+
 const SPRITE_RESOURCE_BY_ITEM_ICON_ID: ReadonlyMap<string, SpriteResource> = new Map(
   SPRITE_RESOURCE_MANIFEST
     .filter((resource) => typeof resource.itemIconId === 'string')
@@ -693,6 +722,10 @@ export function getSpriteResourceForWorldZoneIcon(zoneId: string): SpriteResourc
 
 export function getSpriteResourceForSkillIcon(skillIconId: string): SpriteResource | undefined {
   return SPRITE_RESOURCE_BY_SKILL_ICON_ID.get(skillIconId);
+}
+
+export function getSpriteResourceForUiIcon(uiIconId: string): SpriteResource | undefined {
+  return SPRITE_RESOURCE_BY_UI_ICON_ID.get(uiIconId);
 }
 
 export function getSpriteResourceForItemIcon(itemIconId: string): SpriteResource | undefined {
