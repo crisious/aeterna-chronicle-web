@@ -29,7 +29,10 @@ export interface CharacterStats {
 
 // ─── 클래스별 자동 성장률 (레벨당 증가) ────────────────────────
 
-const CLASS_GROWTH_RATES: Record<string, CharacterStats> = {
+// NOTE(B15): base 6클래스의 5필드(atk/def/matk/mdef/spd)는 combat/classBaseStats.ts(SSOT)와
+// 동일해야 한다. hp/mp/crit 은 이 레벨업 도메인 고유(crit 스케일도 combatRoutes 와 다름).
+// 드리프트는 tests/unit/classBaseStatsSSOT.test.ts 가 가드.
+export const CLASS_GROWTH_RATES: Record<string, CharacterStats> = {
   ether_knight:    { hp: 25, mp: 5,  atk: 4, def: 4, matk: 1, mdef: 2, spd: 2, crit: 0.2 },
   memory_weaver:   { hp: 12, mp: 15, atk: 1, def: 2, matk: 5, mdef: 4, spd: 2, crit: 0.3 },
   shadow_weaver:   { hp: 15, mp: 10, atk: 3, def: 2, matk: 3, mdef: 2, spd: 4, crit: 0.5 },
