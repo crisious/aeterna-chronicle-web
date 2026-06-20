@@ -1,0 +1,117 @@
+# ─── 프로덕션 DB 백업 CronJob (in-cluster) ──────────────────────────
+# 아키텍처 정합 백업: 프로덕션 DB 호스트(secret DATABASE_URL 의 postgres-service)는
+# 클러스터 내부에서만 도달 가능하므로, GitHub-hosted 러너의 .github/workflows/db-backup.yml
+# 로는 닿을 수 없다. 이 CronJob 은 클러스터 안에서 돌아 그 호스트에 직접 닿는다.
+#
+# 동작: initContainer(postgres:16)가 pg_dump → 공유 emptyDir, container(amazon/aws-cli)가
+#       그 덤프를 S3 로 업로드하고 7일 보존 정책을 적용. 공식 이미지만 사용(런타임 설치 없음).
+#
+# ⚙️ 활성화: etherna-production-secrets 에 DATABASE_URL · AWS_ACCESS_KEY_ID ·
+#    AWS_SECRET_ACCESS_KEY · AWS_REGION · AWS_S3_BACKUP_BUCKET 가 실제 값으로 채워지고
+#    프로덕션 클러스터에 배포돼야 동작한다. (현재 secrets-production.yaml 은 CHANGE_ME 플레이스홀더.)
+#    이 CronJob 이 actual 백업의 정본 경로이며, .github/workflows/db-backup.yml 은 시크릿
+#    미설정 시 skip(green)되는 fail-safe no-op 로 공존한다(클러스터 검증 후 GH Action 은 폐기 가능).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etherna-db-backup
+  namespace: etherna-production
+  labels:
+    app: etherna
+    component: db-backup
+spec:
+  schedule: "0 18 * * *"            # 매일 UTC 18:00 = KST 03:00 (CronJob 기본 TZ=UTC)
+  concurrencyPolicy: Forbid         # 이전 백업이 안 끝났으면 새로 시작하지 않음
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 7
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800   # 30분 내 미완료 시 실패 처리
+      template:
+        metadata:
+          labels:
+            app: etherna
+            component: db-backup
+        spec:
+          restartPolicy: Never
+          # 1) pg_dump → 공유 볼륨 (DB 는 in-cluster 라 이 컨테이너에서만 도달)
+          initContainers:
+            - name: pg-dump
+              image: postgres:16-alpine
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  TS=$(date -u +%Y%m%d_%H%M%S)
+                  NAME="etherna_${TS}.sql.gz"
+                  echo "$NAME" > /backup/name
+                  echo "▶ pg_dump → ${NAME}"
+                  pg_dump "$DATABASE_URL" --format=plain --no-owner --no-privileges | gzip > "/backup/${NAME}"
+                  ls -lh "/backup/${NAME}"
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: etherna-production-secrets
+                      key: DATABASE_URL
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+              resources:
+                requests: { cpu: "100m", memory: "128Mi" }
+                limits: { cpu: "500m", memory: "512Mi" }
+          # 2) S3 업로드 + 7일 보존
+          containers:
+            - name: s3-upload
+              image: amazon/aws-cli:2.15.30
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  NAME="$(cat /backup/name)"
+                  echo "▶ S3 업로드: s3://${AWS_S3_BACKUP_BUCKET}/daily/${NAME}"
+                  aws s3 cp "/backup/${NAME}" "s3://${AWS_S3_BACKUP_BUCKET}/daily/${NAME}" \
+                    --storage-class STANDARD_IA
+                  echo "▶ 7일 보존 정책 적용"
+                  CUTOFF="$(date -u -d '7 days ago' +%Y%m%d)"
+                  aws s3 ls "s3://${AWS_S3_BACKUP_BUCKET}/daily/" | awk '{print $4}' | while read -r f; do
+                    [ -z "$f" ] && continue
+                    d="$(echo "$f" | grep -oE '[0-9]{8}' | head -1)"
+                    if [ -n "$d" ] && [ "$d" -lt "$CUTOFF" ]; then
+                      echo "  삭제: $f"
+                      aws s3 rm "s3://${AWS_S3_BACKUP_BUCKET}/daily/$f"
+                    fi
+                  done
+                  echo "✅ 백업 완료: ${NAME}"
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: etherna-production-secrets
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: etherna-production-secrets
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: etherna-production-secrets
+                      key: AWS_REGION
+                - name: AWS_S3_BACKUP_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: etherna-production-secrets
+                      key: AWS_S3_BACKUP_BUCKET
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+              resources:
+                requests: { cpu: "50m", memory: "64Mi" }
+                limits: { cpu: "250m", memory: "256Mi" }
+          volumes:
+            - name: backup
+              emptyDir: {}
