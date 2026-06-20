@@ -1,5 +1,16 @@
 # ─── 일일 DB 백업 크론 (P6-17) ──────────────────────────────────
 # UTC 18:00 = KST 03:00 실행
+#
+# ⚙️ 활성화(activation) — 아래 GitHub 시크릿이 모두 설정되면 자동으로 동작한다.
+#    미설정 시 preflight 잡이 backup 잡을 skip 처리해 워크플로가 RED 가 아닌
+#    success(skipped) 로 끝난다(프로덕션 미배포 단계에서 매일 실패 노이즈 방지).
+#      Settings → Secrets and variables → Actions 에 등록:
+#        PROD_DB_HOST · PROD_DB_USER · PROD_DB_PASSWORD
+#        AWS_ACCESS_KEY_ID · AWS_SECRET_ACCESS_KEY · AWS_S3_BACKUP_BUCKET
+#        SLACK_OPS_WEBHOOK (선택 — 실패 알림용)
+#    주의: DB_HOST 는 GitHub-hosted 러너에서 도달 가능한 엔드포인트여야 한다
+#          (in-cluster 서비스명 postgres-service 는 불가 — 외부 노출 호스트 또는
+#           k8s 내부 CronJob 전환 필요).
 name: DB Daily Backup
 
 on:
@@ -24,11 +35,41 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_S3_BACKUP_BUCKET: ${{ secrets.AWS_S3_BACKUP_BUCKET }}
   AWS_REGION: 'ap-northeast-2'
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_OPS_WEBHOOK }}
 
 jobs:
-  daily-backup:
+  # ── 0. preflight: 백업 시크릿이 설정됐는지 확인 ───────────────────
+  # 잡 레벨 if 는 secrets/env 컨텍스트를 직접 못 보므로, 시크릿을 step env 로
+  # 받아 존재 여부만 output 으로 노출한다(값은 노출하지 않음). 미설정이면
+  # 아래 backup 잡들이 skip 되어 워크플로가 실패가 아닌 성공으로 끝난다.
+  preflight:
+    name: Preflight (secrets check)
     runs-on: ubuntu-latest
-    if: github.event.schedule != '0 18 * * 0'
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          C_DB_HOST: ${{ secrets.PROD_DB_HOST }}
+          C_DB_USER: ${{ secrets.PROD_DB_USER }}
+          C_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          C_AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          C_AWS_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          C_S3_BUCKET: ${{ secrets.AWS_S3_BACKUP_BUCKET }}
+        run: |
+          if [ -n "$C_DB_HOST" ] && [ -n "$C_DB_USER" ] && [ -n "$C_DB_PASSWORD" ] \
+             && [ -n "$C_AWS_KEY" ] && [ -n "$C_AWS_SECRET" ] && [ -n "$C_S3_BUCKET" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "✅ 백업 시크릿 설정됨 — 백업을 실행한다."
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=DB backup skipped::백업 시크릿 미설정 — 백업을 건너뛴다(프로덕션 미배포). 활성화하려면 PROD_DB_HOST/USER/PASSWORD, AWS_ACCESS_KEY_ID/SECRET_ACCESS_KEY, AWS_S3_BACKUP_BUCKET 시크릿을 등록하라."
+          fi
+
+  daily-backup:
+    needs: preflight
+    runs-on: ubuntu-latest
+    if: needs.preflight.outputs.configured == 'true' && github.event.schedule != '0 18 * * 0'
     steps:
       - uses: actions/checkout@v5
 
@@ -46,7 +87,7 @@ jobs:
         run: chmod +x tools/db/backup.sh && ./tools/db/backup.sh
 
       - name: Slack 알림
-        if: failure()
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
@@ -57,8 +98,9 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_OPS_WEBHOOK }}
 
   weekly-backup:
+    needs: preflight
     runs-on: ubuntu-latest
-    if: github.event.schedule == '0 18 * * 0' || inputs.weekly
+    if: needs.preflight.outputs.configured == 'true' && (github.event.schedule == '0 18 * * 0' || inputs.weekly)
     steps:
       - uses: actions/checkout@v5
 
@@ -76,7 +118,7 @@ jobs:
         run: chmod +x tools/db/backup.sh && ./tools/db/backup.sh --weekly
 
       - name: Slack 알림
-        if: failure()
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
