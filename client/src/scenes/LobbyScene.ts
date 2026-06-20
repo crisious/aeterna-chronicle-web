@@ -18,6 +18,7 @@ import { playSfx, UI_SFX, NPC_VOICE } from '../utils/SFXHelper';
 import {
   SkillTreeUI,
   SKILL_TREE_UI_FRAME_TEXTURES,
+  preloadSkillTreeAdvancedIllustrations,
   preloadSkillTreeUiFrameTextures,
   type ClassId,
 } from '../ui/SkillTreeUI';
@@ -34,6 +35,15 @@ import { preloadSkillTreeIconResources } from '../data/skillTreeIcons';
 
 type ItemIconQaMode = 'shop' | 'inventory';
 type LobbyNotificationIconId = 'shop' | 'enhance' | 'quest' | 'party' | 'story';
+
+const VALID_SKILL_TREE_CLASS_IDS: ClassId[] = [
+  'ether_knight',
+  'memory_weaver',
+  'shadow_weaver',
+  'memory_breaker',
+  'time_guardian',
+  'void_wanderer',
+];
 
 export interface LobbySceneData {
   characterId?: string;
@@ -660,6 +670,9 @@ export class LobbyScene extends Phaser.Scene {
     const isSkillTreeFrameQa = this.characterData?.openSkillTreeQa === true || this._isSkillTreeFrameQaRoute();
     const skillTreeFrameQaCacheBuster = isSkillTreeFrameQa ? this._getSkillTreeFrameQaCacheBuster() : undefined;
     preloadSkillTreeUiFrameTextures(this, skillTreeFrameQaCacheBuster
+      ? { cacheBuster: skillTreeFrameQaCacheBuster, forceReload: true }
+      : undefined);
+    preloadSkillTreeAdvancedIllustrations(this, this._resolveSkillTreeClassId(), skillTreeFrameQaCacheBuster
       ? { cacheBuster: skillTreeFrameQaCacheBuster, forceReload: true }
       : undefined);
     if (skillTreeFrameQaCacheBuster) {
@@ -1559,6 +1572,11 @@ export class LobbyScene extends Phaser.Scene {
       missingQuestActionFocusIconKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
+  }
+
+  private _resolveSkillTreeClassId(): ClassId {
+    const raw = this.characterData?.characterClass ?? '';
+    return (VALID_SKILL_TREE_CLASS_IDS as string[]).includes(raw) ? (raw as ClassId) : 'ether_knight';
   }
 
   private _preloadSkillTreeFrameQaProbes(cacheBuster: string): void {
@@ -3248,10 +3266,7 @@ export class LobbyScene extends Phaser.Scene {
   private async _openSkillTree(): Promise<void> {
     const userId = networkManager.getUserId() ?? this.characterData?.characterId;
     if (!userId) { this._showNotification('로그인이 필요합니다.'); return; }
-    // characterClass → ClassId (6 클래스 검증, 아니면 fallback)
-    const VALID: ClassId[] = ['ether_knight', 'memory_weaver', 'shadow_weaver', 'memory_breaker', 'time_guardian', 'void_wanderer'];
-    const raw = this.characterData?.characterClass ?? '';
-    const classId: ClassId = (VALID as string[]).includes(raw) ? (raw as ClassId) : 'ether_knight';
+    const classId = this._resolveSkillTreeClassId();
     const level = this.characterData?.level ?? 1;
     // 잔여 스킬 포인트 fetch (실패 시 0)
     let points = this.characterData?.openSkillTreeQa === true ? 3 : 0;

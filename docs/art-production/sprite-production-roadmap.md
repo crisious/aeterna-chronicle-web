@@ -6799,3 +6799,35 @@ Current QA state:
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA fire/ice/lightning/shadow/holy routes report `aeternaBattleElementTagIconQa.status = ready`, one `16x16` element tag icon, empty `missingBattleElementTagIconKeys`, `elementTagLegacyGlyphPresent = false`, expected skill-icon PNG response `200`, one visible nonblank canvas, and no console/page/request errors.
 - Visual QA screenshots: `logs/phase223-battle-element-tag-fire.png`, `logs/phase223-battle-element-tag-ice.png`, `logs/phase223-battle-element-tag-lightning.png`, `logs/phase223-battle-element-tag-shadow.png`, and `logs/phase223-battle-element-tag-holy.png` show BattleScene floating element tags with image-backed Aseprite icons and text-only labels.
+
+## Phase 224: SkillTreeUI Advanced Class Illustration Runtime Wiring
+
+Runtime SkillTreeUI advanced illustration coverage:
+
+- Ether Knight advancement illustrations: `char_illust_ether_knight_adv1_front.png`, `char_illust_ether_knight_adv2_front.png`, and `char_illust_ether_knight_adv3_front.png`.
+- Runtime texture keys follow the `characterIllustration` roster contract: `char_<class_id>_adv<n>`.
+- Current QA route coverage: `debugScene=lobby&skillTreeQa=1&class=ether_knight` starts LobbyScene, opens SkillTreeUI, and records the advanced illustration render state.
+
+Production rule:
+
+- `AssetManager.preloadAdvancedCharacters()` and `SkillTreeUI` now share the same `char_<class_id>_adv<n>` key shape used by `assets/source/aseprite/sprite-production-roster.json`.
+- `LobbyScene.preload()` calls `preloadSkillTreeAdvancedIllustrations()` with the same validated class id used by `_openSkillTree()`.
+- `SkillTreeUI._renderTree()` renders three advanced class illustrations as `52x68` nearest-filtered images named `skill_tree_advanced_illustration_<class_id>_<n>`.
+- Missing advanced illustration textures are recorded as fallback IDs and missing keys instead of silently disappearing from QA.
+- `skillTreeQa=1` writes `aeternaSkillTreeFrameQa.advancedIllustration` with expected/rendered counts, expected/rendered texture keys, display sizes, fallback IDs, and missing illustration keys.
+
+Exit criteria:
+
+- Unit tests verify the roster key shape, SkillTreeUI helper/preload/render/QA contract, LobbyScene preload connection, and AssetManager advanced-character key alignment.
+- Browser QA verifies three Ether Knight advanced illustrations render at `52x68`, record no fallback IDs or missing keys, return `200 image/png` for all three runtime PNGs, and keep the canvas nonblank.
+- Existing SkillTreeUI frame/icon contracts, character illustration roster validation, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 224 implementation started on 2026-06-20.
+- RED: `npx vitest run --config tests/vitest.config.ts tests/unit/uiFrameAssets.test.ts -t "스킬 트리 전직 일러스트"` failed before implementation because `SkillTreeUI.ts` did not define `SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT` or the advanced illustration preload/QA contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests/vitest.config.ts tests/unit/uiFrameAssets.test.ts tests/unit/characterIllustrationAssets.test.ts` passes with 45 tests across 2 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `?debugScene=lobby&renderer=canvas&zone=aether_plains&skillTreeQa=1&class=ether_knight&level=15&qaRun=phase224-skill-tree-advanced-illustrations` reports `aeternaSkillTreeFrameQa.status = ready`, `advancedIllustration.renderedCount = 3`, rendered keys `char_ether_knight_adv1`, `char_ether_knight_adv2`, `char_ether_knight_adv3`, three visible `52x68` images, empty `fallbackAdvancedIllustrationIds`, empty `missingAdvancedIllustrationKeys`, all three runtime PNG responses `200 image/png`, one visible nonblank canvas, and no console/page/request errors.
+- Visual QA screenshot: `logs/phase224-skill-tree-advanced-illustrations.png` shows SkillTreeUI with three image-backed Aseprite advanced class illustrations above the skill node layout.

@@ -67,7 +67,7 @@ export const ASSET_PATHS = {
     // P34-A: 전직 캐릭터 (6클래스 × 3전직 = 18장)
     advanced: CLASS_IDS.flatMap(c =>
       [1, 2, 3].map(adv => ({
-        key: `char_adv_${c}_${adv}`,
+        key: `char_${c}_adv${adv}`,
         path: `${GENERATED}/characters/class_advanced/char_illust_${c}_adv${adv}_front.png`,
       })),
     ),

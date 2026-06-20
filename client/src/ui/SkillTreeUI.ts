@@ -90,6 +90,41 @@ export const SKILL_TREE_UI_FRAME_TEXTURES = {
   },
 } as const;
 
+export const SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT = 3;
+const SKILL_TREE_ADVANCED_ILLUSTRATION_SIZE = { width: 52, height: 68 } as const;
+
+export interface SkillTreeAdvancedIllustrationResource {
+  advancement: number;
+  key: string;
+  path: string;
+}
+
+export function getSkillTreeAdvancedIllustrationResource(
+  classId: ClassId,
+  advancement: number,
+): SkillTreeAdvancedIllustrationResource | null {
+  if (!Number.isInteger(advancement) || advancement < 1 || advancement > SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT) {
+    return null;
+  }
+
+  return {
+    advancement,
+    key: `char_${classId}_adv${advancement}`,
+    path: `assets/generated/characters/class_advanced/char_illust_${classId}_adv${advancement}_front.png`,
+  };
+}
+
+export function getSkillTreeAdvancedIllustrationResources(classId: ClassId): SkillTreeAdvancedIllustrationResource[] {
+  const resources: SkillTreeAdvancedIllustrationResource[] = [];
+  for (let advancement = 1; advancement <= SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT; advancement++) {
+    const resource = getSkillTreeAdvancedIllustrationResource(classId, advancement);
+    if (resource) {
+      resources.push(resource);
+    }
+  }
+  return resources;
+}
+
 const SKILL_TREE_EXPECTED_MAIN_PANEL_FRAME_COUNT = 1;
 const SKILL_TREE_EXPECTED_DETAIL_PANEL_FRAME_COUNT = 1;
 const SKILL_TREE_EXPECTED_MAIN_ACTION_BUTTON_FRAME_COUNT = 2;
@@ -150,6 +185,23 @@ export function preloadSkillTreeUiFrameTextures(
     if (!scene.textures.exists(detailIconResource.key)) {
       const path = options.cacheBuster ? `${detailIconResource.path}?${options.cacheBuster}` : detailIconResource.path;
       scene.load.image(detailIconResource.key, path);
+    }
+  }
+}
+
+export function preloadSkillTreeAdvancedIllustrations(
+  scene: Phaser.Scene,
+  classId: ClassId,
+  options: { cacheBuster?: string; forceReload?: boolean } = {},
+): void {
+  for (const resource of getSkillTreeAdvancedIllustrationResources(classId)) {
+    if (options.forceReload === true && scene.textures.exists(resource.key)) {
+      scene.textures.remove(resource.key);
+    }
+
+    if (!scene.textures.exists(resource.key)) {
+      const path = options.cacheBuster ? `${resource.path}?${options.cacheBuster}` : resource.path;
+      scene.load.image(resource.key, path);
     }
   }
 }
@@ -257,6 +309,8 @@ export class SkillTreeUI {
   private detailLineIconFallbackIds: string[] = [];
   private expectedDetailLineIconCount = 0;
   private expectedDetailLineIconKeys: string[] = [];
+  private advancedIllustrationImages: Phaser.GameObjects.Image[] = [];
+  private fallbackAdvancedIllustrationIds: string[] = [];
 
   // 전키보드 UI: 포커스 링(메인=스킬 노드 ↔ detail=업그레이드/닫기) + 모달락 + 노드 추적.
   private focusRing?: KeyboardFocusRing;
@@ -602,22 +656,29 @@ export class SkillTreeUI {
     this._skillNodes = [];
     this.skillTreeNodeIcons = [];
     this.fallbackSkillNodeIconIds = [];
+    this.advancedIllustrationImages = [];
+    this.fallbackAdvancedIllustrationIds = [];
 
     const nodeSize = 60;
     const gapY = 80;
     const centerX = 210;
 
-    // P34-A: 전직 캐릭터 이미지 표시 (트리 상단)
-    for (let adv = 1; adv <= 3; adv++) {
-      const advKey = `char_adv_${this.classId}_${adv}`;
-      if (this.scene.textures.exists(advKey)) {
-        const advImg = this.scene.add.image(centerX + (adv - 2) * 80, -20, advKey)
-          .setDisplaySize(52, 68)
+    const advancedIllustrationResources = getSkillTreeAdvancedIllustrationResources(this.classId);
+    for (const resource of advancedIllustrationResources) {
+      const x = centerX + (resource.advancement - 2) * 80;
+      if (this.scene.textures.exists(resource.key)) {
+        const advImg = this.scene.add.image(x, -20, resource.key)
+          .setName(`skill_tree_advanced_illustration_${this.classId}_${resource.advancement}`)
+          .setDisplaySize(SKILL_TREE_ADVANCED_ILLUSTRATION_SIZE.width, SKILL_TREE_ADVANCED_ILLUSTRATION_SIZE.height)
           .setAlpha(0.7);
-        const advLabel = this.scene.add.text(centerX + (adv - 2) * 80, 20, `${adv}차 전직`, {
+        advImg.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.advancedIllustrationImages.push(advImg);
+        const advLabel = this.scene.add.text(x, 20, `${resource.advancement}차 전직`, {
           fontSize: '8px', color: '#aaaacc',
         }).setOrigin(0.5);
         this.treeContainer.add([advImg, advLabel]);
+      } else {
+        this.fallbackAdvancedIllustrationIds.push(`${this.classId}_adv${resource.advancement}`);
       }
     }
 
@@ -1090,6 +1151,9 @@ export class SkillTreeUI {
     const activeTitleIcon = this.titleIcon?.active === true ? this.titleIcon : null;
     const activeCloseActionIcons = this.closeActionIcons.filter((icon) => icon.active);
     const activeDetailLineIcons = this.detailLineIcons.filter((icon) => icon.active);
+    const activeAdvancedIllustrations = this.advancedIllustrationImages.filter((icon) => icon.active);
+    const expectedAdvancedIllustrationKeys = getSkillTreeAdvancedIllustrationResources(this.classId)
+      .map((resource) => resource.key);
     const titleIconId = getSkillTreeIconId(this.classId, SKILL_TREE_TITLE_ICON_TIER);
     const titleIconResource = titleIconId ? getSpriteResourceForSkillIcon(titleIconId) : undefined;
     const missingTitleIconKeys = titleIconResource && !activeTitleIcon
@@ -1125,9 +1189,12 @@ export class SkillTreeUI {
       .filter((key) => !this.scene.textures.exists(key));
     const missingDetailLineIconKeys = this.expectedDetailLineIconKeys
       .filter((key) => !this.scene.textures.exists(key) || !activeDetailLineIcons.some((icon) => icon.texture.key === key));
+    const missingAdvancedIllustrationKeys = expectedAdvancedIllustrationKeys
+      .filter((key) => !this.scene.textures.exists(key) || !activeAdvancedIllustrations.some((icon) => icon.texture.key === key));
     const effectiveStatus = status === 'ready'
       && (
         missingFrameKeys.length > 0
+        || missingAdvancedIllustrationKeys.length > 0
         || missingTitleIconKeys.length > 0
         || missingSkillNodeIconKeys.length > 0
         || missingResetActionIconKeys.length > 0
@@ -1137,7 +1204,9 @@ export class SkillTreeUI {
         || this.resetActionIconFallbackRendered
         || this.closeActionIconFallbackIds.length > 0
         || this.detailLineIconFallbackIds.length > 0
+        || this.fallbackAdvancedIllustrationIds.length > 0
         || this.fallbackSkillNodeIconIds.length > 0
+        || activeAdvancedIllustrations.length < SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT
         || activeSkillNodeIcons.length < expectedSkillNodeIconCount
         || activeCloseActionIcons.length < expectedCloseActionIconCount
         || activeDetailLineIcons.length < this.expectedDetailLineIconCount
@@ -1151,6 +1220,20 @@ export class SkillTreeUI {
       classId: this.classId,
       skillCount: this.skills.length,
       currentDetailOpen: this.detailPanel !== null,
+      advancedIllustration: {
+        renderedCount: activeAdvancedIllustrations.length,
+        expectedCount: SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT,
+        expectedKeys: expectedAdvancedIllustrationKeys,
+        renderedKeys: activeAdvancedIllustrations.map((icon) => icon.texture.key),
+        displaySizes: activeAdvancedIllustrations.map((icon) => ({
+          name: icon.name,
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+          visible: icon.visible,
+        })),
+        fallbackAdvancedIllustrationIds: this.fallbackAdvancedIllustrationIds,
+        missingIllustrationKeys: missingAdvancedIllustrationKeys,
+      },
       mainPanelFrame: {
         key: SKILL_TREE_UI_FRAME_TEXTURES.mainPanel.key,
         path: SKILL_TREE_UI_FRAME_TEXTURES.mainPanel.path,
@@ -1247,6 +1330,7 @@ export class SkillTreeUI {
         missingIconKeys: missingDetailLineIconKeys,
       },
       missingFrameKeys,
+      missingAdvancedIllustrationKeys,
       missingTitleIconKeys,
       missingSkillNodeIconKeys,
       missingCloseActionIconKeys,

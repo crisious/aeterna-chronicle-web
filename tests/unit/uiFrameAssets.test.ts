@@ -7,6 +7,8 @@ interface SpriteRosterItem {
   runtimePng: string;
   runtimeKey: string;
   uiFrameId?: string;
+  characterClassId?: string;
+  characterAdvancement?: number;
 }
 
 function readPngSize(filePath: string): { w: number; h: number } {
@@ -1878,5 +1880,42 @@ describe('UI frame runtime images', () => {
     expect(mainSource).toContain("link.rel = 'preload'");
     expect(mainSource).toContain("link.as = 'image'");
     expect(mainSource).toContain('link.dataset.qaAsset = frame.id');
+  });
+
+  it('스킬 트리 전직 일러스트는 Aseprite characterIllustration 런타임 키와 preload/QA 계약을 가진다', () => {
+    const roster = readSpriteRoster();
+    const skillTreeSource = readFileSync(resolve(process.cwd(), 'client/src/ui/SkillTreeUI.ts'), 'utf8');
+    const lobbySceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/LobbyScene.ts'), 'utf8');
+    const assetManagerSource = readFileSync(resolve(process.cwd(), 'client/src/assets/AssetManager.ts'), 'utf8');
+    const etherKnightAdvanced = roster
+      .filter((item) => (
+        item.category === 'characterIllustration'
+        && item.characterClassId === 'ether_knight'
+        && typeof item.characterAdvancement === 'number'
+      ))
+      .sort((a, b) => (a.characterAdvancement ?? 0) - (b.characterAdvancement ?? 0));
+
+    expect(etherKnightAdvanced.map((item) => item.runtimeKey)).toEqual([
+      'char_ether_knight_adv1',
+      'char_ether_knight_adv2',
+      'char_ether_knight_adv3',
+    ]);
+    expect(skillTreeSource).toContain('export const SKILL_TREE_ADVANCED_ILLUSTRATION_COUNT = 3');
+    expect(skillTreeSource).toContain('export function getSkillTreeAdvancedIllustrationResource');
+    expect(skillTreeSource).toContain('key: `char_${classId}_adv${advancement}`');
+    expect(skillTreeSource).toContain('path: `assets/generated/characters/class_advanced/char_illust_${classId}_adv${advancement}_front.png`');
+    expect(skillTreeSource).toContain('export function preloadSkillTreeAdvancedIllustrations');
+    expect(skillTreeSource).toContain('private advancedIllustrationImages: Phaser.GameObjects.Image[] = []');
+    expect(skillTreeSource).toContain('private fallbackAdvancedIllustrationIds: string[] = []');
+    expect(skillTreeSource).toContain('const advancedIllustrationResources = getSkillTreeAdvancedIllustrationResources(this.classId)');
+    expect(skillTreeSource).toContain("setName(`skill_tree_advanced_illustration_${this.classId}_${resource.advancement}`)");
+    expect(skillTreeSource).toContain('this.advancedIllustrationImages.push(advImg)');
+    expect(skillTreeSource).toContain('this.fallbackAdvancedIllustrationIds.push(`${this.classId}_adv${resource.advancement}`)');
+    expect(skillTreeSource).toContain('advancedIllustration: {');
+    expect(skillTreeSource).toContain('missingAdvancedIllustrationKeys');
+    expect(lobbySceneSource).toContain('preloadSkillTreeAdvancedIllustrations');
+    expect(lobbySceneSource).toContain('preloadSkillTreeAdvancedIllustrations(this, this._resolveSkillTreeClassId()');
+    expect(assetManagerSource).toContain('key: `char_${c}_adv${adv}`');
+    expect(assetManagerSource).not.toContain('key: `char_adv_${c}_${adv}`');
   });
 });
