@@ -118,6 +118,29 @@ describe('effect fallback texture runtime images', () => {
     expect(effectManagerSource).toContain("g.generateTexture('buff_fallback', 24, 24)");
   });
 
+  it('VfxPlayer atlas-missing fallback은 Aseprite fallback PNG를 procedural circle보다 먼저 사용한다', () => {
+    const transitionSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/TransitionEffects.ts'), 'utf8');
+    const qaSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/TransitionLoadingQaScene.ts'), 'utf8');
+
+    expect(transitionSource).toContain('export const VFX_FALLBACK_TEXTURES');
+    expect(transitionSource).toContain("hit_slash: { key: 'hit_fallback_slash'");
+    expect(transitionSource).toContain("hit_blunt: { key: 'hit_fallback_blunt'");
+    expect(transitionSource).toContain("hit_magic: { key: 'hit_fallback_magic'");
+    expect(transitionSource).toContain("key: 'buff_fallback'");
+    expect(transitionSource).toContain('export function preloadVfxFallbackTextures(scene: Phaser.Scene): void');
+    expect(transitionSource).toContain('export function getVfxFallbackTextureForType(type: VfxType): VfxFallbackTexture');
+    expect(transitionSource).toContain('if (!this.scene.textures.exists(config.atlasKey)) {');
+    expect(transitionSource).toContain('return this.playFallback(type, x, y, options)');
+    expect(transitionSource).toContain('const fallbackTexture = getVfxFallbackTextureForType(type)');
+    expect(transitionSource).toContain('if (this.scene.textures.exists(fallbackTexture.key)) {');
+    expect(transitionSource).toContain('this.scene.add.sprite(x, y, fallbackTexture.key)');
+    expect(transitionSource).toContain('setName(`vfx_fallback_image_${type}`)');
+    expect(transitionSource).toContain('Aseprite fallback PNG까지 없을 때만 절차형 원을 생성한다');
+    expect(qaSceneSource).toContain('preloadVfxFallbackTextures(this)');
+    expect(qaSceneSource).toContain("new URLSearchParams(window.location.search).get('transitionVfxFallbackQa')");
+    expect(qaSceneSource).toContain("document.body.dataset.aeternaTransitionVfxFallbackQa = JSON.stringify");
+  });
+
   it('EffectManager damage/dual-tech popup은 Aseprite skill icon을 glyph prefix보다 먼저 사용한다', () => {
     const effectManagerSource = readFileSync(resolve(process.cwd(), 'client/src/effects/EffectManager.ts'), 'utf8');
     const battleSceneSource = readFileSync(resolve(process.cwd(), 'client/src/scenes/BattleScene.ts'), 'utf8');

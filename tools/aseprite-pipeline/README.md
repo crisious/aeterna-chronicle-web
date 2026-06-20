@@ -20,6 +20,7 @@
 12. 전투 몬스터 generic fallback texture를 Aseprite runtime PNG로 publish
 13. 환경 파티클 rain/snow/ether beam texture를 Aseprite runtime PNG로 publish
 14. GameScene 필드 플레이어 spritesheet 누락 시 캐릭터 전투 썸네일을 Aseprite fallback image로 표시
+15. TransitionEffects VfxPlayer atlas 누락 시 전투 hit/buff fallback PNG를 Aseprite image로 먼저 표시
 
 고로디 NPC 파일럿과 core town NPC 3종은 `client/src/assets/spriteResourceManifest.ts`를 통해 `client/public/assets/generated/characters/npc_sprites` 런타임 경로에 연결되어 있다. 캐릭터 스프라이트는 `npm run art:character:build -- <character-id> --publish`로 `client/public/assets/generated` 심링크를 경유하는 runtime sprite 경로에 게시할 수 있다. Atlas PNG/JSON은 직접 편집 원본이 아니라 개별 Aseprite 산출물을 다시 묶은 파생 publish 대상이다.
 
@@ -836,6 +837,8 @@ npm run art:aseprite:validate -- vfx `
 
 `BattleScene`은 `getSpriteResourceForVfx('vfx_hit_slash')`로 새 spritesheet를 먼저 로드한다. `_showHitVFX()`는 `vfx_hit_slash_sprite` animation을 생성하고, texture가 있을 때 기존 프로그래매틱 원형 버스트/크리티컬 링/방사 파티클을 만들지 않는다. 해당 프로그래매틱 효과는 `vfx_hit_slash_sprite` texture가 없을 때만 texture-missing fallback으로 생성한다. `?debugScene=battle&renderer=canvas&battleHitVfxQa=critical`은 `aeternaBattleHitVfxQa`에 rendered texture key, display size, procedural fallback count, 누락 key를 기록한다.
 
+`TransitionEffects.VfxPlayer`는 `vfx_atlas`가 없거나 atlas frame이 비어 있을 때 `hit_fallback_slash`, `hit_fallback_blunt`, `hit_fallback_magic`, `buff_fallback` Aseprite PNG를 `VFX_FALLBACK_TEXTURES`로 먼저 선택한다. 해당 fallback PNG texture까지 없을 때만 절차형 원을 생성한다. `?debugScene=transitionLoading&renderer=canvas&transitionLoadingFrameQa=1&transitionVfxFallbackQa=hit_slash`은 `aeternaTransitionVfxFallbackQa`에 expected/rendered texture key, display size, procedural fallback state, 누락 key를 기록한다.
+
 ## VFX Runtime 라이브러리
 
 AssetManager preload용 VFX 원본은 `assets/source/aseprite/vfx/library/{common|skills/<class_id>}/...` 아래에 둔다.
@@ -1329,6 +1332,7 @@ npm run art:atlas:pack
 - Story CG는 `storyCg` 1216x832 카테고리를 사용하며 tag를 요구하지 않는다.
 - Fallback texture는 `fallbackTexture` 64x64와 `fallbackTextureSmall` 32x32 카테고리를 사용하며 tag를 요구하지 않는다.
 - Effect fallback texture는 `effectFallbackTexture` 32x32와 `effectFallbackTextureSmall` 24x24 카테고리를 사용하며 tag를 요구하지 않는다.
+- TransitionEffects VfxPlayer atlas 누락 fallback은 `hit_fallback_slash.png`, `hit_fallback_blunt.png`, `hit_fallback_magic.png`, `buff_fallback.png` Aseprite PNG를 먼저 사용하며, PNG texture가 없을 때만 절차형 원 fallback을 생성한다.
 - Battle monster fallback texture는 `battleMonsterFallbackTexture` 60x60과 `battleMonsterBossFallbackTexture` 90x90 카테고리를 사용하며 tag를 요구하지 않는다.
 - Environment particle texture는 `environmentParticleRainTexture` 2x10, `environmentParticleSnowTexture` 6x10, `environmentParticleEtherBeamTexture` 6x16 카테고리를 사용하며 tag를 요구하지 않는다.
 - VFX는 `start`, `loop`, `end` tag가 필수이며 모든 frame이 64x64여야 한다.

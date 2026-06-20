@@ -248,6 +248,8 @@ npm run art:aseprite:validate -- npc `
 
 전투 기본 hit slash VFX는 `vfx_hit_slash_sprite`로 매핑합니다. 이 리소스는 `512x64` sheet, `64x64` frame, `start` 0-1 / `loop` 2-5 / `end` 6-7 계약을 따릅니다. `_showHitVFX()`는 texture가 있을 때 Aseprite `Sprite` animation만 렌더하고, 기존 원형 버스트/크리티컬 링/방사 파티클은 `vfx_hit_slash_sprite` texture가 없을 때만 생성하는 안전 fallback으로 유지합니다. `?debugScene=battle&renderer=canvas&battleHitVfxQa=critical`은 `aeternaBattleHitVfxQa`에 rendered texture key, 표시 크기, procedural fallback count, 누락 key를 기록합니다.
 
+`TransitionEffects.VfxPlayer`는 `vfx_atlas`가 없거나 atlas frame을 만들 수 없을 때도 기존 절차형 원을 바로 생성하지 않고, `assets/generated/vfx/fallback/hit_fallback_slash.png`, `hit_fallback_blunt.png`, `hit_fallback_magic.png`, `buff_fallback.png` Aseprite fallback PNG를 먼저 렌더합니다. 해당 PNG key까지 없을 때만 절차형 원 fallback으로 내려갑니다. `?debugScene=transitionLoading&renderer=canvas&transitionLoadingFrameQa=1&transitionVfxFallbackQa=hit_slash`은 `aeternaTransitionVfxFallbackQa`에 기대 texture key, 실제 렌더 texture key, 표시 크기, 절차형 fallback 여부를 기록합니다.
+
 `WorldScene`은 월드맵 지역 아이콘 `zone_aether_plains`, `zone_memory_forest`, `zone_malatus_sanctuary`, `zone_shadow_gorge`, `zone_crystal_cave`, `zone_forgotten_citadel`, `zone_chrono_spire`를 `spriteResourceManifest`의 `worldmap` 리소스로 로드합니다. 각 리소스는 단일 `64x64` Aseprite export이며 기존 `assets/generated/ui/worldmap/<iconKey>.png` 직접 경로는 fallback으로 유지합니다. 월드맵 선택 정보 패널은 `UI-HUD-003-DEF.png`, 배경 프리뷰 프레임은 `UI-HUD-004-DEF.png`를 먼저 렌더하고, frame key가 없을 때만 기존 절차 사각형 fallback을 생성합니다.
 
 `WorldScene` 타이틀의 지도 표식은 같은 `worldmap` Aseprite 아이콘 중 `zone_aether_plains.png`를 `24x24` 이미지로 먼저 렌더합니다. texture가 없을 때만 기존 `🗺️` 텍스트 fallback을 사용하며, `worldFrameQa=1` 경로는 `titleIcon`에 zone id, texture key/path, expected/rendered count, 표시 크기, fallback 상태, 누락 key를 기록합니다.

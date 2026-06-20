@@ -413,6 +413,58 @@ export const VFX_CONFIGS: Record<VfxType, VfxConfig> = {
   revive_glow:      { atlasKey: 'vfx_atlas', framePrefix: 'revive_',         frameCount: 14, frameRate: 20, scale: 1.2, autoDestroy: true },
 };
 
+export interface VfxFallbackTexture {
+  key: string;
+  path: string;
+  width: number;
+  height: number;
+  displaySize: number;
+}
+
+const DEFAULT_VFX_FALLBACK_TEXTURE: VfxFallbackTexture = {
+  key: 'buff_fallback',
+  path: 'assets/generated/vfx/fallback/buff_fallback.png',
+  width: 24,
+  height: 24,
+  displaySize: 34,
+};
+
+export const VFX_FALLBACK_TEXTURES = {
+  hit_slash: { key: 'hit_fallback_slash', path: 'assets/generated/vfx/fallback/hit_fallback_slash.png', width: 32, height: 32, displaySize: 36 },
+  hit_blunt: { key: 'hit_fallback_blunt', path: 'assets/generated/vfx/fallback/hit_fallback_blunt.png', width: 32, height: 32, displaySize: 36 },
+  hit_magic: { key: 'hit_fallback_magic', path: 'assets/generated/vfx/fallback/hit_fallback_magic.png', width: 32, height: 32, displaySize: 38 },
+  hit_critical: { key: 'hit_fallback_slash', path: 'assets/generated/vfx/fallback/hit_fallback_slash.png', width: 32, height: 32, displaySize: 44 },
+  skill_fire: { key: 'hit_fallback_magic', path: 'assets/generated/vfx/fallback/hit_fallback_magic.png', width: 32, height: 32, displaySize: 42 },
+  skill_ice: { key: 'hit_fallback_magic', path: 'assets/generated/vfx/fallback/hit_fallback_magic.png', width: 32, height: 32, displaySize: 42 },
+  skill_lightning: { key: 'hit_fallback_magic', path: 'assets/generated/vfx/fallback/hit_fallback_magic.png', width: 32, height: 32, displaySize: 44 },
+  skill_shadow: { key: 'hit_fallback_magic', path: 'assets/generated/vfx/fallback/hit_fallback_magic.png', width: 32, height: 32, displaySize: 42 },
+  skill_heal: { key: 'buff_fallback', path: 'assets/generated/vfx/fallback/buff_fallback.png', width: 24, height: 24, displaySize: 36 },
+  levelup: { key: 'buff_fallback', path: 'assets/generated/vfx/fallback/buff_fallback.png', width: 24, height: 24, displaySize: 48 },
+  enhance_success: { key: 'buff_fallback', path: 'assets/generated/vfx/fallback/buff_fallback.png', width: 24, height: 24, displaySize: 40 },
+  enhance_fail: { key: 'buff_fallback', path: 'assets/generated/vfx/fallback/buff_fallback.png', width: 24, height: 24, displaySize: 36 },
+  death_dissolve: { key: 'buff_fallback', path: 'assets/generated/vfx/fallback/buff_fallback.png', width: 24, height: 24, displaySize: 38 },
+  revive_glow: { key: 'buff_fallback', path: 'assets/generated/vfx/fallback/buff_fallback.png', width: 24, height: 24, displaySize: 40 },
+} as const satisfies Partial<Record<VfxType, VfxFallbackTexture>>;
+
+export function getVfxFallbackTextureForType(type: VfxType): VfxFallbackTexture {
+  return (VFX_FALLBACK_TEXTURES as Partial<Record<VfxType, VfxFallbackTexture>>)[type] ?? DEFAULT_VFX_FALLBACK_TEXTURE;
+}
+
+export function preloadVfxFallbackTextures(scene: Phaser.Scene): void {
+  const queuedTextureKeys = new Set<string>();
+  const fallbackTextures: VfxFallbackTexture[] = [
+    DEFAULT_VFX_FALLBACK_TEXTURE,
+    ...Object.values(VFX_FALLBACK_TEXTURES),
+  ];
+
+  for (const texture of fallbackTextures) {
+    if (queuedTextureKeys.has(texture.key) || scene.textures.exists(texture.key)) continue;
+
+    scene.load.image(texture.key, texture.path);
+    queuedTextureKeys.add(texture.key);
+  }
+}
+
 export type EnvironmentParticleType = 'rain' | 'snow' | 'ether_beam';
 
 export const ENVIRONMENT_PARTICLE_TEXTURES: Record<EnvironmentParticleType, {
@@ -466,6 +518,10 @@ export class VfxPlayer {
     const config = VFX_CONFIGS[type];
     if (!config) return null;
 
+    if (!this.scene.textures.exists(config.atlasKey)) {
+      return this.playFallback(type, x, y, options);
+    }
+
     const animKey = `vfx_${type}`;
 
     // 애니메이션이 없으면 생성
@@ -477,7 +533,7 @@ export class VfxPlayer {
         zeroPad: 2,
       });
 
-      // 프레임이 없으면 fallback (프로시저럴 원 이펙트)
+      // 프레임이 없으면 Aseprite fallback PNG를 우선 사용한다.
       if (frames.length === 0) {
         return this.playFallback(type, x, y, options);
       }
@@ -506,9 +562,35 @@ export class VfxPlayer {
   }
 
   /**
-   * 아틀라스 프레임 없을 때 프로시저럴 이펙트
+   * 아틀라스 프레임 없을 때 Aseprite fallback PNG 우선 사용
    */
   private playFallback(type: VfxType, x: number, y: number, options?: { scale?: number; tint?: number }): Phaser.GameObjects.Sprite | null {
+    const fallbackTexture = getVfxFallbackTextureForType(type);
+    if (this.scene.textures.exists(fallbackTexture.key)) {
+      const sprite = this.scene.add.sprite(x, y, fallbackTexture.key)
+        .setName(`vfx_fallback_image_${type}`)
+        .setDepth(8000)
+        .setAlpha(0.88);
+      const displaySize = fallbackTexture.displaySize * (options?.scale ?? 1);
+
+      sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      sprite.setDisplaySize(displaySize, displaySize);
+      if (options?.tint) sprite.setTint(options.tint);
+
+      this.scene.tweens.add({
+        targets: sprite,
+        scaleX: sprite.scaleX * 1.8,
+        scaleY: sprite.scaleY * 1.8,
+        alpha: 0,
+        duration: 400,
+        ease: 'Cubic.easeOut',
+        onComplete: () => sprite.destroy(),
+      });
+
+      return sprite;
+    }
+
+    // Aseprite fallback PNG까지 없을 때만 절차형 원을 생성한다.
     const colorMap: Partial<Record<VfxType, number>> = {
       hit_slash: 0xff4444, hit_blunt: 0xffaa00, hit_magic: 0x44aaff,
       hit_critical: 0xffff00, skill_fire: 0xff6600, skill_ice: 0x66ccff,

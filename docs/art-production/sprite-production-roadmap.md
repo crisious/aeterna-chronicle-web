@@ -6894,3 +6894,36 @@ Current QA state:
 - Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
 - Browser QA: `?debugScene=battle&renderer=canvas&battleHitVfxQa=critical&class=ether_knight&qaRun=phase226-battle-hit-vfx` reports `aeternaBattleHitVfxQa.status = ready`, rendered key `vfx_hit_slash_sprite`, display size `134.4x134.4`, empty `missingBattleHitVfxKeys`, `proceduralFallbackCount = 0`, `vfx_hit_slash.png` response `200 image/png`, one visible nonblank canvas, and no console/page errors.
 - Visual QA screenshot: `logs/phase226-battle-hit-vfx.png` shows BattleScene with the image-backed Aseprite hit slash VFX on the enemy and no procedural burst overlay.
+
+## Phase 227: TransitionEffects VfxPlayer Atlas-Missing Fallback Sprite
+
+Runtime TransitionEffects VfxPlayer fallback coverage:
+
+- Atlas-missing hit slash fallback image: `hit_fallback_slash.png` / texture key `hit_fallback_slash`.
+- Additional shared fallback images: `hit_fallback_blunt.png`, `hit_fallback_magic.png`, `buff_fallback.png`.
+- Current QA route coverage: `debugScene=transitionLoading&transitionVfxFallbackQa=hit_slash` starts the transition loading QA scene, preloads the fallback PNG set, plays `VfxPlayer.play('hit_slash')`, and records the rendered fallback state.
+
+Production rule:
+
+- `preloadVfxFallbackTextures()` loads the four Aseprite fallback PNGs before the transition QA scene starts.
+- `VfxPlayer.play()` checks the configured atlas key before generating frames. If `vfx_atlas` is unavailable, it calls the fallback path immediately.
+- `playFallback()` renders the mapped Aseprite fallback image first and returns the sprite so QA can inspect the texture key and display size.
+- The old procedural circle is retained only as the final safety fallback when the Aseprite fallback PNG texture is also unavailable.
+- `transitionVfxFallbackQa=<VfxType>` writes `aeternaTransitionVfxFallbackQa` with expected/rendered texture keys, display size, missing texture keys, procedural fallback state, and canvas count.
+
+Exit criteria:
+
+- Unit tests verify the public fallback texture map, preload helper, fallback selection helper, atlas-missing gate, image sprite path, final procedural fallback comment, and transition QA probe wiring.
+- Browser QA verifies `hit_fallback_slash` renders as an image fallback before any procedural circle, the PNG request returns `200 image/png`, the canvas is nonblank, and no console/page errors occur.
+- Existing effect fallback texture asset coverage, environment particle texture coverage, UI frame coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 227 implementation started on 2026-06-20.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\effectFallbackTextureAssets.test.ts -t "VfxPlayer atlas-missing"` failed before implementation because `TransitionEffects.ts` did not define `VFX_FALLBACK_TEXTURES`.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\effectFallbackTextureAssets.test.ts tests\unit\environmentParticleTextureAssets.test.ts tests\unit\uiFrameAssets.test.ts` passes with 47 tests across 3 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `?debugScene=transitionLoading&renderer=canvas&transitionLoadingFrameQa=1&transitionVfxFallbackQa=hit_slash&qaRun=phase227-vfx-fallback` reports `aeternaTransitionVfxFallbackQa.status = ready`, expected/rendered key `hit_fallback_slash`, display size `59.13648x59.13648`, `fallbackImageRendered = true`, `proceduralFallbackRendered = false`, empty missing texture keys, `hit_fallback_slash.png` response `200 image/png`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase227-transition-vfx-fallback.png` shows TransitionLoadingQaScene with the image-backed Aseprite hit slash fallback over the loading panel.
