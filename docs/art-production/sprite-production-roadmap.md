@@ -6831,3 +6831,34 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Browser QA: `?debugScene=lobby&renderer=canvas&zone=aether_plains&skillTreeQa=1&class=ether_knight&level=15&qaRun=phase224-skill-tree-advanced-illustrations` reports `aeternaSkillTreeFrameQa.status = ready`, `advancedIllustration.renderedCount = 3`, rendered keys `char_ether_knight_adv1`, `char_ether_knight_adv2`, `char_ether_knight_adv3`, three visible `52x68` images, empty `fallbackAdvancedIllustrationIds`, empty `missingAdvancedIllustrationKeys`, all three runtime PNG responses `200 image/png`, one visible nonblank canvas, and no console/page/request errors.
 - Visual QA screenshot: `logs/phase224-skill-tree-advanced-illustrations.png` shows SkillTreeUI with three image-backed Aseprite advanced class illustrations above the skill node layout.
+
+## Phase 225: BattleScene Boss Telegraph Overhead Icon QA Route
+
+Runtime BattleScene boss telegraph overhead icon coverage:
+
+- Boss strong-attack overhead icon: `skill_ek_explode.png` / texture key `skill_ek_explode_icon`.
+- Current QA route coverage: `debugScene=battle&battleBossTelegraphIconQa=1` starts BattleScene, marks the first enemy as a deterministic boss, calls `_showBossTelegraph()`, and records the overhead icon render state.
+
+Production rule:
+
+- `BattleScene.preload()` continues resolving `BATTLE_BOSS_TELEGRAPH_ICON_ID = 'skill_ek_explode'` through the existing skill icon manifest and shared skill-icon preload de-duplication queue.
+- `_showBossTelegraph()` renders `battle_boss_telegraph_icon` as a `30x30` nearest-filtered Aseprite image whenever `skill_ek_explode_icon` is present.
+- The visible `⚠` warning glyph remains only as the texture-missing fallback branch.
+- `battleBossTelegraphIconQa=1` writes `aeternaBattleBossTelegraphIconQa` with expected/rendered texture keys, display size, fallback state, missing keys, legacy glyph state, and canvas count.
+
+Exit criteria:
+
+- Unit tests verify the debug route flag, QA starter, deterministic boss setup, `_showBossTelegraph()` invocation, dataset payload fields, fallback tracking, and `main.ts` route parameter.
+- Browser QA verifies `skill_ek_explode_icon` renders at `30x30`, records no missing boss telegraph icon keys, avoids the legacy `⚠` glyph on the normal path, returns `200 image/png` for `skill_ek_explode.png`, keeps one visible nonblank canvas, and reports no console/page errors.
+- Existing boss telegraph timing/strong-attack behavior, log highlight icon contracts, sprite resource coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 225 implementation started on 2026-06-20.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\bossTelegraph.test.ts -t "브라우저 QA route"` failed before implementation because `BattleScene.ts` did not define `battleBossTelegraphIconQa` or the boss telegraph icon QA probe contract.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\bossTelegraph.test.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 116 tests across 4 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleBossTelegraphIconQa=1&class=ether_knight&qaRun=phase225-boss-telegraph-icon` reports `aeternaBattleBossTelegraphIconQa.status = ready`, rendered key `skill_ek_explode_icon`, display size `30x30`, empty `missingBattleBossTelegraphIconKeys`, `fallbackRendered = false`, `legacyGlyphPresent = false`, `skill_ek_explode.png` response `200 image/png`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase225-battle-boss-telegraph-icon.png` shows BattleScene with the image-backed Aseprite boss telegraph overhead icon above the enemy.

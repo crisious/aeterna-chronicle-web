@@ -135,6 +135,8 @@ export interface BattleSceneData {
   battleConnectionBadgeIconQa?: 'reconnecting' | 'error';
   /** Aseprite CHAIN 라벨 icon 브라우저 QA용 */
   battleChainLabelIconQa?: 'chain' | 'max';
+  /** Aseprite 보스 강공 예고 icon 브라우저 QA용 */
+  battleBossTelegraphIconQa?: boolean;
   /** Aseprite 아군 누락 리소스 fallback 브라우저 QA용 */
   battleAllyFallbackQa?: boolean;
 }
@@ -592,6 +594,7 @@ export class BattleScene extends Phaser.Scene {
   private elementTagIcons: Phaser.GameObjects.Image[] = [];
   private elementTagTexts: Phaser.GameObjects.Text[] = [];
   private elementTagIconFallbackRendered = false;
+  private bossTelegraphIconFallbackRendered = false;
   private battleIntroIcon?: Phaser.GameObjects.Image;
   private battleIntroIconFallbackRendered = false;
   private battleCommandFocusIcon: Phaser.GameObjects.Image | null = null;
@@ -688,6 +691,7 @@ export class BattleScene extends Phaser.Scene {
     this.elementTagIcons = [];
     this.elementTagTexts = [];
     this.elementTagIconFallbackRendered = false;
+    this.bossTelegraphIconFallbackRendered = false;
     this.battleIntroIcon = undefined;
     this.battleIntroIconFallbackRendered = false;
     this.battleCommandFocusIcon = null;
@@ -1351,6 +1355,7 @@ export class BattleScene extends Phaser.Scene {
     this._startBattleElementTagIconQa();
     this._startBattleChainLabelIconQa();
     this._startBattleConnectionBadgeIconQa();
+    this._startBattleBossTelegraphIconQa();
   }
 
   private _addBattleSceneFrame(
@@ -2897,6 +2902,7 @@ export class BattleScene extends Phaser.Scene {
   private _addBossTelegraphIcon(boss: UnitSprite): Phaser.GameObjects.Image | undefined {
     const bossTelegraphIconResource = getSpriteResourceForSkillIcon(BATTLE_BOSS_TELEGRAPH_ICON_ID);
     if (!bossTelegraphIconResource || !this.textures.exists(bossTelegraphIconResource.key)) {
+      this.bossTelegraphIconFallbackRendered = true;
       return undefined;
     }
 
@@ -4676,6 +4682,72 @@ export class BattleScene extends Phaser.Scene {
       elementTagLabels,
       elementTagLegacyGlyphPresent,
       missingBattleElementTagIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _startBattleBossTelegraphIconQa(): void {
+    if (this._initData.battleBossTelegraphIconQa !== true) return;
+
+    this.time.delayedCall(1700, () => {
+      const boss = this.enemySprites[0] ?? null;
+      if (!boss) {
+        this._writeBattleBossTelegraphIconQaProbe();
+        return;
+      }
+
+      boss.isBoss = true;
+      this._showBossTelegraph(boss);
+      this._writeBattleBossTelegraphIconQaProbe();
+    });
+  }
+
+  private _writeBattleBossTelegraphIconQaProbe(): void {
+    if (this._initData.battleBossTelegraphIconQa !== true || typeof document === 'undefined' || !document.body) return;
+
+    const bossTelegraphIconResource = getSpriteResourceForSkillIcon(BATTLE_BOSS_TELEGRAPH_ICON_ID);
+    const expectedTextureKeys = bossTelegraphIconResource ? [bossTelegraphIconResource.key] : [];
+    const activeBossTelegraphIcons = this.enemySprites
+      .map((enemy) => enemy.telegraphIcon)
+      .filter((icon): icon is Phaser.GameObjects.Image => (
+        icon instanceof Phaser.GameObjects.Image
+        && icon.active
+        && icon.visible
+      ));
+    const renderedTextureKeys = activeBossTelegraphIcons.map((icon) => icon.texture.key);
+    const missingBattleBossTelegraphIconKeys = expectedTextureKeys
+      .filter((key) => !renderedTextureKeys.includes(key));
+    const fallbackLabels = this.enemySprites
+      .map((enemy) => enemy.telegraphIcon)
+      .filter((icon): icon is Phaser.GameObjects.Text => (
+        icon instanceof Phaser.GameObjects.Text
+        && icon.active
+        && icon.visible
+      ))
+      .map((text) => text.text);
+    const legacyGlyphPresent = fallbackLabels.some((label) => label.includes('⚠'));
+    const hasExpectedIcon = activeBossTelegraphIcons.length >= 1
+      && missingBattleBossTelegraphIconKeys.length === 0
+      && !this.bossTelegraphIconFallbackRendered
+      && !legacyGlyphPresent;
+
+    document.body.dataset.aeternaBattleBossTelegraphIconQa = JSON.stringify({
+      status: hasExpectedIcon ? 'ready' : 'missing-icon',
+      bossTelegraphIcon: {
+        iconId: BATTLE_BOSS_TELEGRAPH_ICON_ID,
+        expectedCount: 1,
+        renderedCount: activeBossTelegraphIcons.length,
+        expectedTextureKeys,
+        renderedTextureKeys,
+        displaySizes: activeBossTelegraphIcons.map((icon) => ({
+          width: icon.displayWidth,
+          height: icon.displayHeight,
+        })),
+        fallbackRendered: this.bossTelegraphIconFallbackRendered,
+      },
+      fallbackLabels,
+      legacyGlyphPresent,
+      missingBattleBossTelegraphIconKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }

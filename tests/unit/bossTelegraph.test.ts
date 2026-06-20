@@ -10,6 +10,10 @@ function battleSource(): string {
   return readFileSync(resolve(process.cwd(), 'client/src/scenes/BattleScene.ts'), 'utf8');
 }
 
+function mainSource(): string {
+  return readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+}
+
 describe('boss strong-attack telegraph (Phase E Part②)', () => {
   const source = battleSource();
 
@@ -54,5 +58,27 @@ describe('boss strong-attack telegraph (Phase E Part②)', () => {
 
   it('정리는 사망 그레이 틴트를 덮지 않는다', () => {
     expect(source).toContain('if (!boss.isDead && this._canTint(boss.sprite)) boss.sprite.clearTint()');
+  });
+
+  it('브라우저 QA route는 보스 강공 Aseprite 아이콘의 실제 렌더 상태를 기록한다', () => {
+    const main = mainSource();
+
+    expect(source).toContain('battleBossTelegraphIconQa?: boolean');
+    expect(source).toContain('private bossTelegraphIconFallbackRendered = false');
+    expect(source).toContain('this.bossTelegraphIconFallbackRendered = false');
+    expect(source).toContain('this._startBattleBossTelegraphIconQa()');
+    expect(source).toContain('private _startBattleBossTelegraphIconQa(): void');
+    expect(source).toContain('if (this._initData.battleBossTelegraphIconQa !== true) return');
+    expect(source).toContain('boss.isBoss = true');
+    expect(source).toContain('this._showBossTelegraph(boss)');
+    expect(source).toContain('this._writeBattleBossTelegraphIconQaProbe()');
+    expect(source).toContain('private _writeBattleBossTelegraphIconQaProbe(): void');
+    expect(source).toContain('document.body.dataset.aeternaBattleBossTelegraphIconQa = JSON.stringify');
+    expect(source).toContain('missingBattleBossTelegraphIconKeys');
+    expect(source).toContain('legacyGlyphPresent');
+    expect(source).toContain('visibleCanvasCount: document.querySelectorAll(\'canvas\').length');
+    expect(source).toContain('fallbackRendered: this.bossTelegraphIconFallbackRendered');
+    expect(source).toContain('this.bossTelegraphIconFallbackRendered = true');
+    expect(main).toContain("battleBossTelegraphIconQa: params.get('battleBossTelegraphIconQa') === '1'");
   });
 });

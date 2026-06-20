@@ -564,6 +564,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
             battleChainLabelIconQa: battleChainLabelIconQaParam === 'chain' || battleChainLabelIconQaParam === 'max'
                 ? battleChainLabelIconQaParam
                 : undefined,
+            battleBossTelegraphIconQa: params.get('battleBossTelegraphIconQa') === '1',
             battleAllyFallbackQa: params.get('battleAllyFallbackQa') === '1',
             battleSubMenuFocusIconQa: battleSubMenuFocusIconQaParam === 'magic' || battleSubMenuFocusIconQaParam === 'item'
                 ? battleSubMenuFocusIconQaParam
