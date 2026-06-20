@@ -163,6 +163,16 @@ npm run art:character:build -- char_void_wanderer_base --publish
 - Browser QA: `BattleScene`, `GameScene`, `DungeonScene`에서 `char_sprite_ether_knight_base`, `char_sprite_memory_weaver_base`, `char_sprite_shadow_weaver_base`, `char_sprite_memory_breaker_base`, `char_sprite_time_guardian_base`, `char_sprite_void_wanderer_base` texture가 로드되고, frame `0` 표시 크기 `64x64`를 확인했다. `DungeonScene`은 `debugScene=dungeon`에서 manifest sheet를 우선 표시하고 side illustration은 fallback으로만 남긴다.
 - `debugScene=world`는 월드맵 씬이므로 캐릭터 스프라이트를 직접 생성하지 않는다. 필드 캐릭터 검증은 `GameScene` 기준으로 수행한다. 던전 플레이어 검증은 `?debugScene=dungeon&renderer=canvas&class=ether_knight`를 사용한다.
 
+### 2026-06-20 Time Guardian 후방 실루엣 보정 루프
+
+CT/FF6 레퍼런스의 "형태 우선" 원칙에 따라 `char_time_guardian_base`의 `U`/`UL` 후방 포즈를 보정했다. 기존 `U` idle 상체 영역은 전면 피부색 면적이 많아 64x64 화면에서 뒤돌아선 포즈보다 정면 얼굴처럼 읽히는 문제가 있었다.
+
+- Source script: `tools/aseprite-pipeline/scripts/create-time-guardian-pilot.lua`
+- Regenerated source: `assets/source/aseprite/character/time_guardian/char_time_guardian_base.aseprite`
+- Generated/published: `assets/generated/aseprite/character/char_time_guardian_base.png`, `client/public/assets/generated/characters/sprites/char_time_guardian_base.png`
+- 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 상체 영역의 Time Guardian 피부색 픽셀을 `48`개 이하로 제한한다. 보정 전 `112`, 보정 후 `0`.
+- Browser QA: `logs/phase229-time-guardian-battle.png`, `logs/phase229-time-guardian-game.png`에서 `char_sprite_time_guardian_base` texture가 전투/필드 scene child로 렌더되는 것을 확인했다.
+
 ## Runtime Application
 
 - `client/src/assets/characterSpriteManifest.ts`가 `textureKey`, `imagePath`, `jsonPath`, `frameWidth: 64`, `frameHeight: 64` 계약을 제공한다.

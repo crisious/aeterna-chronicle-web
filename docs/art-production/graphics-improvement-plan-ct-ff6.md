@@ -7,6 +7,20 @@
 
 ---
 
+## 2026-06-20 현황 보정
+
+현재 코드 기준으로 Phase A/B의 6클래스 full motion 승급과 `ready`/`victory` 포즈 추가는 완료된 상태다. Phase C의 팔레트/실루엣 품질 게이트도 `tests/unit/characterSpriteQualityGates.test.ts`, `validate-character-palette.mjs`, `validate-character-silhouette.mjs`로 운영 중이다.
+
+따라서 이후 개선 루프는 "파일럿을 full로 승급"하는 작업이 아니라, 이미 게시된 6개 기본 클래스의 **모션별 픽셀 품질 보정**, **방향별 실루엣 가독성 보강**, **combo/skill 전용 pose 추가** 순서로 진행한다.
+
+최근 루프:
+
+- `char_time_guardian_base`의 `U`/`UL` 후방 포즈를 보정해 전면 피부색 노출을 줄이고 후드/로브/시계 장치 실루엣을 강화했다.
+- RED 기준: `U` idle 상체 영역 Time Guardian 피부색 픽셀 `112 > 48` 실패.
+- 완료 기준: 동일 영역 피부색 픽셀 `0`, `art:character:roster`, 단일 character export validate, 관련 vitest 49개, `client` typecheck, Battle/Game browser QA 통과.
+
+---
+
 ## 0. 현황 진단 (코드 기준)
 
 ### 0-1. 실제 파이프라인 (브리프 보정)
