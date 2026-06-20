@@ -24,10 +24,13 @@ export default defineConfig({
     environment: 'node',
     // 서버 보안 모듈(jwtManager/authMiddleware/authGate)은 import 시점에 시크릿을 요구한다(fail-fast).
     // 테스트용 더미 시크릿을 모듈 로드 전에 주입한다. 실제 환경에서는 .env 가 우선한다.
+    // DATABASE_URL: server/src/db.ts 가 import 시점에 new PrismaClient() 를 만들어 url 을 요구한다.
+    // 라우트/레벨업 등 db 의존 모듈을 단위 테스트에서 import 할 수 있도록 더미 폴백을 준다(미연결).
     env: {
       JWT_SECRET: process.env.JWT_SECRET ?? 'test-jwt-secret-aeterna',
       JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET ?? 'test-jwt-refresh-aeterna',
       JWT_ADMIN_SECRET: process.env.JWT_ADMIN_SECRET ?? 'test-jwt-admin-aeterna',
+      DATABASE_URL: process.env.DATABASE_URL ?? 'postgresql://test:test@localhost:5432/aeterna_test',
     },
     testTimeout: 30000,
     hookTimeout: 15000,

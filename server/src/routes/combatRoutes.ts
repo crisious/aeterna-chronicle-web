@@ -34,7 +34,9 @@ import {
 } from '../../../shared/types/chronoEraAtb';
 
 // ─── 클래스별 기본 전투 스탯 (레벨 1 기준) ──────────────────────
-const CLASS_BASE_COMBAT_STATS: Record<string, {
+// NOTE(B15): 5필드(atk/def/matk/mdef/spd)는 combat/classBaseStats.ts(SSOT)와 동일해야 한다.
+// critRate/critDamage 는 이 경로 고유. 드리프트는 tests/unit/classBaseStatsSSOT.test.ts 가 가드.
+export const CLASS_BASE_COMBAT_STATS: Record<string, {
   atk: number; def: number; matk: number; mdef: number;
   spd: number; critRate: number; critDamage: number;
 }> = {
@@ -46,8 +48,8 @@ const CLASS_BASE_COMBAT_STATS: Record<string, {
   void_wanderer:   { atk: 10, def: 8,  matk: 14, mdef: 10, spd: 12, critRate: 0.08, critDamage: 1.5 },
 };
 
-// 클래스별 레벨당 성장률
-const CLASS_GROWTH: Record<string, {
+// 클래스별 레벨당 성장률 — 5필드는 classBaseStats.ts(SSOT)와 동일, crit 은 이 경로 고유.
+export const CLASS_GROWTH: Record<string, {
   atk: number; def: number; matk: number; mdef: number;
   spd: number; crit: number;
 }> = {
