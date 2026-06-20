@@ -1,0 +1,466 @@
+{
+  "_meta": {
+    "description": "전투 피드백 색상 가독성 — WCAG 대비비 + 색약 구별성(ΔE) 벤치마크",
+    "author": "심요연 (Data Analyst)",
+    "generator": "scripts/analytics/damage-legibility-contrast.mjs",
+    "version": "1.0.0",
+    "method": "WCAG 2.x relative luminance / CIE76 ΔE / Machado 2009 CVD severity=1.0",
+    "note": "재생성: node scripts/analytics/damage-legibility-contrast.mjs --json — SSOT 색 변경 시 재실행"
+  },
+  "backgrounds": {
+    "battle_bg": {
+      "hex": "#1a1a2e",
+      "note": "DESIGN.md 기본 다크 판타지 배경"
+    },
+    "atb_track": {
+      "hex": "#2a2a3a",
+      "note": "ATB 게이지 empty 트랙 위"
+    },
+    "mid_sprite": {
+      "hex": "#6a6a72",
+      "note": "중간 명도 엔티티 스프라이트 위 (최악 케이스)"
+    }
+  },
+  "thresholds": {
+    "wcag_AA_large": 3,
+    "wcag_AAA_large": 4.5,
+    "wcag_AAA_normal": 7,
+    "deltaE_safe": 20
+  },
+  "damageContrast": {
+    "palette": "damage",
+    "rows": [
+      {
+        "key": "normal",
+        "hex": "#ffffff",
+        "fontPx": 16,
+        "semantic": "일반 피해",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 17.06,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 14.09,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "mid_sprite": {
+            "ratio": 5.36,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "critical",
+        "hex": "#ffd700",
+        "fontPx": 32,
+        "semantic": "치명타",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 12.16,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 10.04,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "mid_sprite": {
+            "ratio": 3.82,
+            "passAA_large": true,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "heal",
+        "hex": "#2ecc71",
+        "fontPx": 18,
+        "semantic": "회복",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 8.12,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 6.7,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 2.55,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "miss",
+        "hex": "#a0a0a0",
+        "fontPx": 14,
+        "semantic": "빗나감",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 6.52,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "atb_track": {
+            "ratio": 5.39,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 2.05,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "weak",
+        "hex": "#ff6b35",
+        "fontPx": 22,
+        "semantic": "약점",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 6.02,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "atb_track": {
+            "ratio": 4.97,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 1.89,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "resist",
+        "hex": "#3498db",
+        "fontPx": 14,
+        "semantic": "저항",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 5.41,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "atb_track": {
+            "ratio": 4.47,
+            "passAA_large": true,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 1.7,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "immune",
+        "hex": "#9b59b6",
+        "fontPx": 14,
+        "semantic": "무효",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 3.65,
+            "passAA_large": true,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          },
+          "atb_track": {
+            "ratio": 3.02,
+            "passAA_large": true,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 1.15,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      }
+    ]
+  },
+  "resultContrast": {
+    "palette": "combat_result",
+    "rows": [
+      {
+        "key": "hit",
+        "hex": "#ffffff",
+        "semantic": "명중",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 17.06,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 14.09,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "mid_sprite": {
+            "ratio": 5.36,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "miss",
+        "hex": "#aaaaaa",
+        "semantic": "빗나감",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 7.34,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 6.06,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 2.31,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "crit",
+        "hex": "#ffcc00",
+        "semantic": "치명타",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 11.28,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 9.32,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "mid_sprite": {
+            "ratio": 3.55,
+            "passAA_large": true,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "reflect",
+        "hex": "#88ccff",
+        "semantic": "반사",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 9.85,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 8.14,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "mid_sprite": {
+            "ratio": 3.1,
+            "passAA_large": true,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "combo",
+        "hex": "#ffaa44",
+        "semantic": "콤보",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 9,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "atb_track": {
+            "ratio": 7.44,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": true
+          },
+          "mid_sprite": {
+            "ratio": 2.83,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      },
+      {
+        "key": "crit_echo",
+        "hex": "#cc88ff",
+        "semantic": "치명타 잔향",
+        "contrast": {
+          "battle_bg": {
+            "ratio": 6.93,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "atb_track": {
+            "ratio": 5.72,
+            "passAA_large": true,
+            "passAAA_large": true,
+            "passAAA_normal": false
+          },
+          "mid_sprite": {
+            "ratio": 2.18,
+            "passAA_large": false,
+            "passAAA_large": false,
+            "passAAA_normal": false
+          }
+        }
+      }
+    ]
+  },
+  "cvdPairs": [
+    {
+      "pair": "weak ↔ critical",
+      "risk": "약점 vs 치명타 — 둘 다 \"강한 타격\", 혼동 시 전술 오판",
+      "deltaE_normal": 67.72,
+      "deltaE_cvd": {
+        "protanopia": 54.83,
+        "deuteranopia": 44.01,
+        "tritanopia": 44.58
+      },
+      "worstCaseDeltaE": 44.01,
+      "verdict": "PASS"
+    },
+    {
+      "pair": "heal ↔ weak",
+      "risk": "회복 vs 약점 — 적록 채널, 색약 최대 위험",
+      "deltaE_normal": 115.94,
+      "deltaE_cvd": {
+        "protanopia": 22.09,
+        "deuteranopia": 30.3,
+        "tritanopia": 116.02
+      },
+      "worstCaseDeltaE": 22.09,
+      "verdict": "PASS"
+    },
+    {
+      "pair": "heal ↔ normal",
+      "risk": "회복(아군 이득) vs 일반피해 — 부호 오인",
+      "deltaE_normal": 73.98,
+      "deltaE_cvd": {
+        "protanopia": 46.48,
+        "deuteranopia": 41.61,
+        "tritanopia": 54.31
+      },
+      "worstCaseDeltaE": 41.61,
+      "verdict": "PASS"
+    },
+    {
+      "pair": "resist ↔ immune",
+      "risk": "저항(절반) vs 무효(0) — 청/보라 인접",
+      "deltaE_normal": 50.5,
+      "deltaE_cvd": {
+        "protanopia": 16.55,
+        "deuteranopia": 14.95,
+        "tritanopia": 62.9
+      },
+      "worstCaseDeltaE": 14.95,
+      "verdict": "WARN"
+    },
+    {
+      "pair": "critical ↔ normal",
+      "risk": "치명타 vs 일반 — 폰트크기로도 보강되나 색 단독 검증",
+      "deltaE_normal": 88.14,
+      "deltaE_cvd": {
+        "protanopia": 86.23,
+        "deuteranopia": 87.79,
+        "tritanopia": 40.77
+      },
+      "worstCaseDeltaE": 40.77,
+      "verdict": "PASS"
+    },
+    {
+      "pair": "miss ↔ normal",
+      "risk": "빗나감(0) vs 일반피해 — 회색 vs 흰색 명도차",
+      "deltaE_normal": 34.13,
+      "deltaE_cvd": {
+        "protanopia": 34.13,
+        "deuteranopia": 34.13,
+        "tritanopia": 34.13
+      },
+      "worstCaseDeltaE": 34.13,
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "damageColorsTotal": 7,
+    "failAA_onMidSprite": [
+      "heal",
+      "miss",
+      "weak",
+      "resist",
+      "immune"
+    ],
+    "failAAA_onBattleBg": [
+      "immune"
+    ],
+    "cvdRiskPairs": [
+      {
+        "pair": "resist ↔ immune",
+        "verdict": "WARN",
+        "worstDeltaE": 14.95
+      }
+    ]
+  }
+}

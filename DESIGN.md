@@ -44,6 +44,8 @@
 8. [반응형 브레이크포인트](#8-반응형-브레이크포인트)
 9. [구현 가이드](#9-구현-가이드)
 10. [Monster Tier Tokens — 몬스터 아트 파이프라인 SSOT](#10-monster-tier-tokens--몬스터-아트-파이프라인-ssot)
+11. [Sound Design Tokens — BGM·SFX 사운드 시스템 SSOT](#11-sound-design-tokens--bgmsfx-사운드-시스템-ssot)
+12. [전투 피드백 — 데미지·상태이상 표시 SSOT](#12-전투-피드백--데미지상태이상-표시-ssot)
 
 ---
 
@@ -901,3 +903,172 @@ export class AudioBus {
 > - **백능파** → §11.7 접근성 토글 launch_checklist 등재 (§2.18 옆 §2.19 `사운드 게이트`)
 >
 > 어머~! 이제 우리 게임에 *목소리*가 생겨요~! 🎵✨💖
+
+---
+
+## 12. 전투 피드백 — 데미지·상태이상 표시 SSOT
+
+> 신설: 2026-06-20 (가춘운, Plan 단계)
+> 스프린트: 전투 피드백 UX 개선 — 데미지·상태이상 표시 가독성
+> 진단: 두련사 5병근 · PRD: `docs/release/prd_battle-feedback-readability.md` (정경패) · 스코프: 백능파 **HOLD(부채 청산)**
+> **본 절이 1차 SSOT** — `client/src/constants/battle-tokens.ts §damage·§DAMAGE_POPUP_SIZE` + `client/src/styles/design-system-battle.css §4` 가 본 절을 미러(단방향).
+> 핵심 약속: **신규 색·폰트 0개**. 이미 정의된 토큰을 정본화하고, 렌더 경로가 그것을 *따르도록* 명세한다.
+
+### 12.0 문제 — 다섯 매듭 (As-Is, 코드 증거)
+
+토큰은 멀쩡한데 *렌더 경로가 토큰을 배신*하고 있어요. 코드 라인까지 짚은 진단이에요~ 🔍
+
+| # | 병근 | 코드 증거 | 심각도 |
+|---|------|-----------|--------|
+| ① | **SSOT 이중화 + 토큰 미사용** | `StatusEffectRenderer.ts` 자체 `EFFECT_VISUALS` 색표 보유(L45) — `battle-tokens.ts` import 0. `_spawnDamageNumber`(BattleScene L3220) critical **30px**(토큰은 32) · normal **22px**(토큰은 16) 하드코딩 | P0 |
+| ② | **색-단독 표기** | `EFFECT_VISUALS` 색만으로 효과 구분 · DoT 팝업 색만(`showDotDamage` L285) · 데미지 팝업 형태/기호 단서 부재 | P0 |
+| ③ | **약점/저항/면역 부재** | `_spawnDamageNumber` 타입 `'normal'|'critical'|'heal'` **3종뿐** — 토큰엔 `weak/resist/immune` 색·폰트 다 있는데 *렌더 진입점이 없음* | P0 |
+| ④ | **정보 과밀** | 아이콘 20px 위에 라벨 **8px**(L223)·스택 **8px**(L233)·지속바 3중 중첩 → 판독 불가 | P1 |
+| ⑤ | **동시 충돌 · 모션 비가드** | DoT 위치 `Math.random()`(L288) 흩뿌림 → 다발 시 겹침 · Phaser tween `prefers-reduced-motion` 미감지(CSS만 가드) | P1 |
+
+> **14px 봉인 위반 현황**: `StatusEffectRenderer` 8/8/12px · `BattleUI` 8/9px · `_spawnDamageNumber` critical 30(≠32). 모바일 §8.4 `--font-min-legible:14px` 약속과 정면 충돌.
+
+### 12.1 전투 피드백 5원칙
+
+| 원칙 | 설명 | 실천 |
+|------|------|------|
+| **단일 SSOT** | 색·폰트는 본 절 → `battle-tokens.ts` 단방향 미러만 | 렌더러는 `BATTLE_COLORS.damage`·`DAMAGE_POPUP_SIZE` import, 하드코딩 0 |
+| **색약 병행 표기** | 색 + (형태 ∨ 기호 ∨ 텍스트) 항상 2중 이상 | 완전 색맹(achromatopsia)도 기호·크기로 식별 |
+| **14px 봉인** | 모든 전투 텍스트 ≥ 14px | 8px·9px·12px 전면 승격 (§12.4) |
+| **정보 위계** | 중요할수록 크고 강하게 | 4단 타이포 사다리 14 / 18 / 22 / 32 (§12.2) |
+| **충돌·모션 가드** | 동시 다발에도 안 겹치고, 저자극 옵션 존중 | 결정론적 스택 레인 + `prefers-reduced-motion` 런타임 감지 (§12.5) |
+
+### 12.2 데미지 팝업 — 7종 통합 토큰 (컬러 × 타이포 × 형태)
+
+> 색 = `battle-tokens.ts BATTLE_COLORS.damage` · 폰트 = `DAMAGE_POPUP_SIZE` · CSS = `design-system-battle.css §4 .ac-dmg--*`.
+> **변경 2건**: ⓐ `normal` 16→**18**(위계 명확화 — combo 18/echo 16 대비 기본 데미지가 역전돼 있던 것 시정) ⓑ critical 렌더값 30→**32**(토큰 정합).
+
+| 타입 | 색 토큰 | Hex | 폰트(px) | 색약 병행(형태·기호) | 텍스트 예 | 모션 |
+|------|---------|-----|----------|----------------------|-----------|------|
+| `normal` | `--ac-dmg-normal` | `#FFFFFF` | **18** | 숫자 단독 (기준) | `1234` | float 0.9s |
+| `critical` | `--ac-dmg-critical` | `#FFD700` | **32** | `✦` 접두 + 외곽 글로우 + 쉐이크 150ms | `✦1234!` | crit 0.9s |
+| `heal` | `--ac-dmg-heal` | `#2ECC71` | 18 | `+` 접두 (회복 부호) | `+456` | float 0.9s |
+| `miss` | `--ac-dmg-miss` | `#A0A0A0` | 14 | *italic* + 전용 글리프 | `MISS` | float 0.9s |
+| `weak` | `--ac-dmg-weak` | `#FF6B35` | 22 | `▲` 접두(상향 삼각) + 라벨 | `▲1234 약점` | float + 가중 |
+| `resist` | `--ac-dmg-resist` | `#3498DB` | 14 | `▽` 접두(하향 삼각) + 라벨 | `▽789 저항` | float 0.9s |
+| `immune` | `--ac-dmg-immune` | `#9B59B6` | 14 | `⊘` 접두(금지) + 라벨 | `⊘ 무효` | float 0.9s |
+
+**타이포 4단 사다리** (전투 피드백 전용 위계):
+
+```
+┌──────────────────────────────────────────────┐
+│ 32px ████████████  critical          (최대)  │
+│ 22px ████████      weak (약점!)       (강조)  │
+│ 18px ██████        normal · heal      (기본)  │
+│ 14px ████          miss·resist·immune·DoT·스택 (부가/봉인 하한) │
+└──────────────────────────────────────────────┘
+```
+
+> DoT(지속 피해) 팝업도 본 사다리의 **14px 부가단**에 안착(현 12px → 14). 색은 효과 카테고리 색(§12.3) 사용, 음수=heal 녹색 `+N`.
+
+### 12.3 상태이상 표시 — 카테고리 5계 + 아이콘 트레이 (레이아웃)
+
+> 카테고리 색 = `shared/types/scenarioRegistry` SSOT `uiColor` (이미 `statusEffectCategory.ts` 가 wiring). 색약 대응은 *테두리 형태*로 2중화.
+
+#### 12.3.1 카테고리 5계 — 색 × 형태 단서
+
+| 카테고리 | 의미 | 테두리 색(SSOT uiColor) | 테두리 형태(색약 단서) | 효과 예 |
+|----------|------|------------------------|------------------------|---------|
+| `buff` | 강화 | 녹/금 계열 | 2px **solid** + 상단 글로우 | attack_up, haste, regen, shield |
+| `debuff` | 약화 | 보라 계열 | 2px **solid** | slow, blind, curse |
+| `control` | 행동 제어 | 적/주황 계열 | 2px **dashed** (점선) | stun, silence, freeze, charm |
+| `dot` | 지속 피해 | 진홍 계열 | 2px **double** (이중선) | poison, burn, bleed |
+| `special` | 특수 | 청 계열 | 2px solid + **사선 패턴** | (시나리오 정의) |
+
+> 형태 단서(solid/dashed/double/사선)는 §5.4 ATB 4상태 패턴과 **일관** — 색맹 사용자가 색 없이 테두리 형태만으로 buff↔control↔dot 구분.
+
+#### 12.3.2 아이콘 트레이 레이아웃 (④ 정보 과밀 해소)
+
+```
+        ┌──┐ ┌──┐ ┌──┐ ┌──┐  ← 아이콘 22px, 카테고리 색 테두리
+        │🜂│ │❄ │ │☠ │ │+N│     · 최대 4개 + 초과 시 "+N" 칩
+        └──┘ └──┘ └─×3 └──┘     · 스택은 우하단 배지 14px (어두운 펠릿 위)
+        ▔▔▔▔ ▔▔▔▔ ▔▔▔▔          ← 지속바 3px (아이콘 폭, 카테고리 색)
+              [캐릭터]            ← 트레이는 머리 위 1줄, 중앙 정렬, offsetY -60
+```
+
+| 요소 | 규격 | 변경 | 근거 |
+|------|------|------|------|
+| 아이콘 | 22×22px (20→22) | 형태 단서 강화 | 픽셀 아이콘이 1차 식별자 |
+| 상시 텍스트 라벨 | **제거**(8px 폐기) | ④ 해소 | 아이콘+테두리가 이미 2중 단서. 라벨은 포커스/호버 툴팁(14px)으로 이전 |
+| 스택 배지 `×N` | 14px, 우하단, `#1A1A2E` 80% 펠릿 + 흰 텍스트 | 8→14 승격 | 봉인 준수 |
+| 지속바 | 3px, 아이콘 폭, 카테고리 색 0.8α | 유지 | — |
+| 초과 칩 | `+N` 14px, 5번째부터 | 신규 | 4개 초과 과밀 방지 |
+| 트레이 정렬 | 중앙, 아이콘 간격 4px | 유지 | — |
+
+### 12.4 14px 가독성 봉인 (As-Is → To-Be)
+
+| 위치 | 현재 | 목표 | 비고 |
+|------|------|------|------|
+| `StatusEffectRenderer` 라벨 | 8px | (제거 → 툴팁 14px) | §12.3.2 |
+| `StatusEffectRenderer` 스택 | 8px | **14px** | 배지 펠릿 |
+| `StatusEffectRenderer` DoT | 12px | **14px** | §12.2 부가단 |
+| `BattleScene` normal | 22px | **18px** | 위계 정합 |
+| `BattleScene` critical | 30px | **32px** | 토큰 정합 |
+| `BattleUI` 로그/스탯 | 8·9px | **14px** | 전수 승격 |
+
+> **봉인 수치(이소화 비협상)**: 전투 텍스트 최소 **14px** · 4단 사다리 `14 / 18 / 22 / 32` · 7 데미지 타입 색은 `BATTLE_COLORS.damage` 7값 고정.
+
+### 12.5 동시 충돌 & 모션 가드 (레이아웃 · 타이밍)
+
+**⑤-a 결정론적 스택 레인** (`Math.random()` 폐기):
+
+| 항목 | 규칙 |
+|------|------|
+| 동일 타깃 다발 | Y 계단식 stagger: n번째 팝업 = `baseY - n×20px` |
+| 동시 프레임 큐 | 발생 간 최소 **80ms** 간격으로 순차 spawn |
+| DoT X 오프셋 | `effectId` 해시 기반 고정 오프셋(랜덤 X 제거 → 같은 독은 같은 자리) |
+| 좌우 분리 | 아군 데미지 좌측 바이어스, 적 우측 바이어스(겹침 최소) |
+
+**⑤-b 모션 가드** (`prefers-reduced-motion` — Phaser 런타임도 감지):
+
+| 모션 | 기본 | reduced |
+|------|------|---------|
+| 팝업 float/상승 | 0.9s, -40px | 0.15s, -8px (즉시 페이드) |
+| critical 쉐이크 | 150ms | **skip** |
+| critical 글로우 펄스 | infinite | 정적 1회 |
+| 상태 오버레이 깜빡임 | 200ms blink | 정적 alpha |
+
+> CSS `@media (prefers-reduced-motion)` 는 §4에 이미 있음. **추가 필요**: Phaser 렌더러가 `window.matchMedia('(prefers-reduced-motion: reduce)')` 를 읽어 tween duration·shake 분기. `battle-tokens.ts` 에 `REDUCED_MOTION` 타이밍 세트 추가 권고.
+
+### 12.6 색약 4모드 병행 표기 매트릭스
+
+> 색 자체가 약화돼도 *형태·기호·텍스트* 로 식별 보장 (WCAG AAA, §7.3 4모드 연동).
+
+| 신호 | 색(1차) | 형태(2차) | 기호/텍스트(3차) | 완전색맹 식별 |
+|------|---------|-----------|------------------|---------------|
+| 약점 | 주황 #FF6B35 | 큰 폰트 22 | `▲` + "약점" | ✅ 기호+텍스트 |
+| 저항 | 청 #3498DB | 작은 14 | `▽` + "저항" | ✅ |
+| 무효 | 보라 #9B59B6 | 작은 14 | `⊘` + "무효" | ✅ |
+| 크리티컬 | 금 #FFD700 | 최대 32 + 글로우 | `✦` + "!" | ✅ 크기+기호 |
+| 회복 | 녹 #2ECC71 | 18 | `+` 부호 | ✅ |
+| 상태 buff/debuff/control/dot | uiColor | solid/solid/dashed/double | 아이콘 글리프 | ✅ 테두리형태+아이콘 |
+
+### 12.7 SSOT 미러 변경 절차 & 구현 체크포인트 (계섬월 인계)
+
+**변경 절차** (위→아래 단방향):
+
+1. 본 §12 (1차 SSOT) — ✅ 본 문서
+2. `client/src/constants/battle-tokens.ts` — `DAMAGE_POPUP_SIZE.normal` 16→18, `REDUCED_MOTION` 세트 추가
+3. `client/src/styles/design-system-battle.css §4` — `.ac-dmg--normal` 16→18 미러
+4. 렌더 경로 토큰 wiring (아래 체크포인트)
+5. 시각 회귀 `client/public/battle-style-guide.html` 7종 팝업 + 5카테고리 트레이 미리보기
+
+**구현 체크포인트**:
+
+- [ ] `StatusEffectRenderer` → `EFFECT_VISUALS` 색을 `BATTLE_COLORS`/카테고리 SSOT 로 대체, `import` 추가
+- [ ] `StatusEffectRenderer` 라벨 8px 제거 + 스택 8→14 + DoT 12→14
+- [ ] `_spawnDamageNumber` 타입에 `'weak'|'resist'|'immune'` 3종 **추가** + `DAMAGE_POPUP_SIZE` import (하드코딩 제거)
+- [ ] 7종 전부 색약 접두 기호(`✦▲▽⊘+`) + 라벨 적용
+- [ ] `Math.random()` 위치 → 결정론적 스택 레인 (§12.5-a)
+- [ ] Phaser `matchMedia` reduced-motion 분기 (§12.5-b)
+- [ ] `BattleUI` 8·9px → 14px 전수 승격
+
+### 12.8 비주얼 QA
+
+`/battle-style-guide.html` 확장 — 데미지 7종 팝업(색약 시뮬 4모드 토글) · 상태이상 5카테고리 트레이(스택/지속바/초과칩) · reduced-motion 토글 · 14px 봉인 측정 오버레이를 한 화면에서 검증. 어머~ 이제 전투가 *읽혀요*! 데미지가 팍! 약점이 ▲! 한눈에 들어오죠?! ✨⚔️

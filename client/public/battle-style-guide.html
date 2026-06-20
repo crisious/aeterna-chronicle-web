@@ -98,6 +98,44 @@
       align-items: center;
       border-bottom: 1px dashed #2A2A3A;
     }
+    /* 시각 회귀: 대미지 팝업 정적 표시 (float 애니메이션 멈춤) */
+    .sg-dmg-static {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: center;
+      padding: 24px 16px;
+      background: repeating-linear-gradient(45deg, #0D0D1A 0 8px, #14141F 8px 16px);
+      border: 1px solid #3A3A4A;
+    }
+    .sg-dmg-static .ac-dmg { position: static; animation: none; }
+    /* 상태이상 칩 갤러리 */
+    .sg-chip-group { margin-bottom: 18px; }
+    .sg-chip-group__label {
+      font-size: 10px;
+      color: #A0A0A0;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+      border-left: 3px solid var(--cat, #3A3A4A);
+      padding-left: 8px;
+    }
+    .sg-chip-cells { display: flex; flex-wrap: wrap; gap: 4px; }
+    .sg-chip-cell {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 68px;
+      padding: 8px 0;
+    }
+    .sg-chip-cell small { font-size: 8px; color: #C0C0C0; text-align: center; line-height: 1.3; }
+    .sg-chip-cell code { font-size: 7px; color: #6A6A7A; }
+    /* before/after 비교 */
+    .sg-ba { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .sg-ba__col { padding: 12px; border: 1px solid #3A3A4A; background: rgba(13,13,26,0.6); }
+    .sg-ba__col h4 { margin: 0 0 10px; font-size: 10px; letter-spacing: 1px; }
+    .sg-ba__col--before h4 { color: #FF6B6B; }
+    .sg-ba__col--after  h4 { color: #6BFF9B; }
   </style>
 </head>
 <body>
@@ -154,19 +192,214 @@
       <p class="sg-caption">active 슬롯만 금색+scale(1.1), 적 슬롯은 붉은 배경, skipped는 반투명.</p>
     </section>
 
-    <!-- 3. 대미지 팝업 -->
+    <!-- 3. 대미지 팝업 (v1 가독성) -->
     <section class="sg-section">
-      <div class="sg-section__title">3. 대미지 팝업 (7종)</div>
+      <div class="sg-section__title">3. 대미지 팝업 (7종 · v1 형태 마커 + 8방향 아웃라인)</div>
+
+      <div class="sg-label">정적 뷰 — 형태 마커 prefix (색약 대응) + 크기 v1 보정</div>
+      <div class="sg-dmg-static">
+        <div class="ac-dmg ac-dmg--normal">124</div>
+        <div class="ac-dmg ac-dmg--critical"><span class="ac-dmg__marker">★</span>9999</div>
+        <div class="ac-dmg ac-dmg--weak"><span class="ac-dmg__marker">▲</span>1240</div>
+        <div class="ac-dmg ac-dmg--resist"><span class="ac-dmg__marker">▼</span>86</div>
+        <div class="ac-dmg ac-dmg--immune"><span class="ac-dmg__marker">⊘</span>IMMUNE</div>
+        <div class="ac-dmg ac-dmg--heal"><span class="ac-dmg__marker">✚</span>+320</div>
+        <div class="ac-dmg ac-dmg--miss"><span class="ac-dmg__marker">✗</span>MISS</div>
+      </div>
+      <p class="sg-caption">
+        마커 ★(치명) ▲(약점) ▼(저항) ⊘(무효) ✚(치유) ✗(빗나감) — 색맹 3종에서도 형태로 판별.
+        크기 v1: crit 36 · weak 24 · resist/immune 18 · heal 20 · miss 16px.
+      </p>
+
+      <div class="sg-label" style="margin-top:16px;">애니메이션 뷰 — float 0.9s (새로고침 시 재생)</div>
       <div class="sg-demo-field">
         <div class="ac-dmg ac-dmg--normal"   style="top:20px;  left:40px;">124</div>
-        <div class="ac-dmg ac-dmg--critical" style="top:20px;  left:160px;">1247!</div>
-        <div class="ac-dmg ac-dmg--weak"     style="top:30px;  left:360px;">WEAK! 890</div>
-        <div class="ac-dmg ac-dmg--heal"     style="top:90px;  left:40px;">+320</div>
-        <div class="ac-dmg ac-dmg--miss"     style="top:90px;  left:180px;">MISS</div>
-        <div class="ac-dmg ac-dmg--resist"   style="top:90px;  left:280px;">RESIST</div>
-        <div class="ac-dmg ac-dmg--immune"   style="top:90px;  left:400px;">IMMUNE</div>
+        <div class="ac-dmg ac-dmg--critical" style="top:20px;  left:150px;"><span class="ac-dmg__marker">★</span>9999</div>
+        <div class="ac-dmg ac-dmg--weak"     style="top:30px;  left:360px;"><span class="ac-dmg__marker">▲</span>890</div>
+        <div class="ac-dmg ac-dmg--heal"     style="top:95px;  left:40px;"><span class="ac-dmg__marker">✚</span>+320</div>
+        <div class="ac-dmg ac-dmg--miss"     style="top:95px;  left:170px;"><span class="ac-dmg__marker">✗</span>MISS</div>
+        <div class="ac-dmg ac-dmg--resist"   style="top:95px;  left:290px;"><span class="ac-dmg__marker">▼</span>86</div>
+        <div class="ac-dmg ac-dmg--immune"   style="top:95px;  left:400px;"><span class="ac-dmg__marker">⊘</span>0</div>
       </div>
-      <p class="sg-caption">각 팝업은 0.9s float 애니메이션 후 자동 소멸. Critical은 scale 1.4 + 글로우.</p>
+      <p class="sg-caption">8방향 검정 아웃라인 → 밝은 VFX 위에서도 분리. Critical은 scale 1.4 + 글로우.</p>
+
+      <div class="sg-ba" style="margin-top:16px;">
+        <div class="sg-ba__col sg-ba__col--before">
+          <h4>BEFORE — 색만, 단방향 그림자</h4>
+          <div class="sg-dmg-static" style="background:#1a1a2e; border:none; gap:24px;">
+            <span style="color:#FFD700; font-size:32px; text-shadow:2px 2px 0 #000; font-weight:700;">9999</span>
+            <span style="color:#FF6B35; font-size:22px; text-shadow:2px 2px 0 #000; font-weight:900;">1240</span>
+            <span style="color:#3498DB; font-size:14px; text-shadow:2px 2px 0 #000;">86</span>
+          </div>
+          <p class="sg-caption">색맹 시 크리/약점/저항 구분 불가 · 14px 난전 중 증발</p>
+        </div>
+        <div class="sg-ba__col sg-ba__col--after">
+          <h4>AFTER — 형태 마커 + 아웃라인 + 크기</h4>
+          <div class="sg-dmg-static" style="background:#1a1a2e; border:none; gap:24px;">
+            <div class="ac-dmg ac-dmg--critical"><span class="ac-dmg__marker">★</span>9999</div>
+            <div class="ac-dmg ac-dmg--weak"><span class="ac-dmg__marker">▲</span>1240</div>
+            <div class="ac-dmg ac-dmg--resist"><span class="ac-dmg__marker">▼</span>86</div>
+          </div>
+          <p class="sg-caption">★▲▼ 형태로 색 없이 판별 · resist 18px 가독 확보</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3·B 상태이상 칩 (v1 신규) -->
+    <section class="sg-section">
+      <div class="sg-section__title">3·B 상태이상 칩 (15종 · v1 신규 — 글리프 + 카테고리 테두리 + 스택 + 잔여턴)</div>
+
+      <div class="sg-chip-group">
+        <div class="sg-chip-group__label" style="--cat:#FF4D6A;">CONTROL — 행동 제어 (실선 굵게 · 위험 우선)</div>
+        <div class="sg-chip-cells">
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="control" data-effect="stun" data-stacks="2">
+              <span class="ac-status-chip__glyph">✦</span><span class="ac-status-chip__stack">2</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.7"></span>
+            </div><small>기절<br><code>stun</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="control" data-effect="silence">
+              <span class="ac-status-chip__glyph">⊘</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.4"></span>
+            </div><small>침묵<br><code>silence</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="control" data-effect="freeze">
+              <span class="ac-status-chip__glyph">❄</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:1"></span>
+            </div><small>빙결<br><code>freeze</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="control" data-effect="charm">
+              <span class="ac-status-chip__glyph">♥</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.55"></span>
+            </div><small>매혹<br><code>charm</code></small>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-chip-group">
+        <div class="sg-chip-group__label" style="--cat:#FF7A3C;">DOT — 지속 피해 (점선 · 매 턴 깎임)</div>
+        <div class="sg-chip-cells">
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="dot" data-effect="poison" data-stacks="3">
+              <span class="ac-status-chip__glyph">☠</span><span class="ac-status-chip__stack">3</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.8"></span>
+            </div><small>독<br><code>poison</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="dot" data-effect="burn">
+              <span class="ac-status-chip__glyph">▲</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.6"></span>
+            </div><small>화상<br><code>burn</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="dot" data-effect="bleed" data-stacks="2">
+              <span class="ac-status-chip__glyph">◆</span><span class="ac-status-chip__stack">2</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.45"></span>
+            </div><small>출혈<br><code>bleed</code></small>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-chip-group">
+        <div class="sg-chip-group__label" style="--cat:#9B59B6;">DEBUFF — 약화 (실선)</div>
+        <div class="sg-chip-cells">
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="debuff" data-effect="slow">
+              <span class="ac-status-chip__glyph">↓</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.5"></span>
+            </div><small>감속<br><code>slow</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="debuff" data-effect="blind">
+              <span class="ac-status-chip__glyph">◐</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.3"></span>
+            </div><small>실명<br><code>blind</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="debuff" data-effect="curse">
+              <span class="ac-status-chip__glyph">✸</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.9"></span>
+            </div><small>저주<br><code>curse</code></small>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-chip-group">
+        <div class="sg-chip-group__label" style="--cat:#FFD700;">BUFF — 강화 (이중선 · 아군 이득)</div>
+        <div class="sg-chip-cells">
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="buff" data-effect="attack_up">
+              <span class="ac-status-chip__glyph">⚔</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.65"></span>
+            </div><small>공격↑<br><code>attack_up</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="buff" data-effect="defense_up">
+              <span class="ac-status-chip__glyph">⛊</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.5"></span>
+            </div><small>방어↑<br><code>defense_up</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="buff" data-effect="haste">
+              <span class="ac-status-chip__glyph">⏩</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.85"></span>
+            </div><small>가속↑<br><code>haste</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="buff" data-effect="regen" data-stacks="2">
+              <span class="ac-status-chip__glyph">✚</span><span class="ac-status-chip__stack">2</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:1"></span>
+            </div><small>재생↑<br><code>regen</code></small>
+          </div>
+          <div class="sg-chip-cell">
+            <div class="ac-status-chip" data-cat="buff" data-effect="shield">
+              <span class="ac-status-chip__glyph">⛨</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.4"></span>
+            </div><small>보호<br><code>shield</code></small>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-ba" style="margin-top:8px;">
+        <div class="sg-ba__col sg-ba__col--before">
+          <h4>BEFORE — 12px 색점 (.ac-status-icon)</h4>
+          <div class="ac-status-tray" style="padding:8px 0;">
+            <span class="ac-status-icon" style="width:12px;height:12px;display:inline-block;background:#FFE14D;border-radius:1px;"></span>
+            <span class="ac-status-icon" style="width:12px;height:12px;display:inline-block;background:#3DD13D;border-radius:1px;"></span>
+            <span class="ac-status-icon" style="width:12px;height:12px;display:inline-block;background:#6E92D6;border-radius:1px;"></span>
+            <span class="ac-status-icon" style="width:12px;height:12px;display:inline-block;background:#FFD94D;border-radius:1px;"></span>
+          </div>
+          <p class="sg-caption">색만으로 효과 식별 — 스택·잔여턴·부류 정보 없음</p>
+        </div>
+        <div class="sg-ba__col sg-ba__col--after">
+          <h4>AFTER — 18px 정보칩 (트레이 + 오버플로)</h4>
+          <div class="ac-status-tray" style="padding:8px 0;">
+            <div class="ac-status-chip" data-cat="control" data-effect="stun" data-stacks="2">
+              <span class="ac-status-chip__glyph">✦</span><span class="ac-status-chip__stack">2</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.7"></span>
+            </div>
+            <div class="ac-status-chip" data-cat="dot" data-effect="poison" data-stacks="3">
+              <span class="ac-status-chip__glyph">☠</span><span class="ac-status-chip__stack">3</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.8"></span>
+            </div>
+            <div class="ac-status-chip" data-cat="debuff" data-effect="slow">
+              <span class="ac-status-chip__glyph">↓</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.5"></span>
+            </div>
+            <div class="ac-status-chip" data-cat="buff" data-effect="shield">
+              <span class="ac-status-chip__glyph">⛨</span>
+              <span class="ac-status-chip__duration" style="--ac-chip-dur:0.4"></span>
+            </div>
+            <div class="ac-status-chip ac-status-chip--overflow">
+              <span class="ac-status-chip__glyph">+2</span>
+            </div>
+          </div>
+          <p class="sg-caption">글리프(형태) + 테두리(부류) + 스택뱃지 + 잔여턴바 · control 먼저 정렬 · 4개+N</p>
+        </div>
+      </div>
     </section>
 
     <!-- 4. 스킬 카드 -->
@@ -390,9 +623,37 @@
           <div class="sg-token-row"><code>--ac-dmg-weak</code><span class="sg-color-chip" style="background:#FF6B35"></span><span>#FF6B35</span></div>
           <div class="sg-token-row"><code>--ac-dmg-resist</code><span class="sg-color-chip" style="background:#3498DB"></span><span>#3498DB</span></div>
         </div>
+        <div>
+          <div class="sg-label">상태이상 — dot / control</div>
+          <div class="sg-token-row"><code>--ac-status-poison</code><span class="sg-color-chip" style="background:#3DD13D"></span><span>#3DD13D</span></div>
+          <div class="sg-token-row"><code>--ac-status-burn</code><span class="sg-color-chip" style="background:#FF5A2C"></span><span>#FF5A2C</span></div>
+          <div class="sg-token-row"><code>--ac-status-bleed</code><span class="sg-color-chip" style="background:#E03A3A"></span><span>#E03A3A</span></div>
+          <div class="sg-token-row"><code>--ac-status-stun</code><span class="sg-color-chip" style="background:#FFE14D"></span><span>#FFE14D</span></div>
+          <div class="sg-token-row"><code>--ac-status-silence</code><span class="sg-color-chip" style="background:#A35FD1"></span><span>#A35FD1</span></div>
+          <div class="sg-token-row"><code>--ac-status-freeze</code><span class="sg-color-chip" style="background:#5FC8FF"></span><span>#5FC8FF</span></div>
+          <div class="sg-token-row"><code>--ac-status-charm</code><span class="sg-color-chip" style="background:#FF7FD1"></span><span>#FF7FD1</span></div>
+        </div>
+        <div>
+          <div class="sg-label">상태이상 — debuff / buff</div>
+          <div class="sg-token-row"><code>--ac-status-slow</code><span class="sg-color-chip" style="background:#6E92D6"></span><span>#6E92D6</span></div>
+          <div class="sg-token-row"><code>--ac-status-blind</code><span class="sg-color-chip" style="background:#8A8A9E"></span><span>#8A8A9E</span></div>
+          <div class="sg-token-row"><code>--ac-status-curse</code><span class="sg-color-chip" style="background:#9B4DC4"></span><span>#9B4DC4</span></div>
+          <div class="sg-token-row"><code>--ac-status-attack-up</code><span class="sg-color-chip" style="background:#FF9933"></span><span>#FF9933</span></div>
+          <div class="sg-token-row"><code>--ac-status-defense-up</code><span class="sg-color-chip" style="background:#5599FF"></span><span>#5599FF</span></div>
+          <div class="sg-token-row"><code>--ac-status-haste</code><span class="sg-color-chip" style="background:#4DE88A"></span><span>#4DE88A</span></div>
+          <div class="sg-token-row"><code>--ac-status-shield</code><span class="sg-color-chip" style="background:#FFD94D"></span><span>#FFD94D</span></div>
+        </div>
+        <div>
+          <div class="sg-label">카테고리 테두리</div>
+          <div class="sg-token-row"><code>--ac-status-cat-control</code><span class="sg-color-chip" style="background:#FF4D6A"></span><span>solid-bold</span></div>
+          <div class="sg-token-row"><code>--ac-status-cat-dot</code><span class="sg-color-chip" style="background:#FF7A3C"></span><span>dotted</span></div>
+          <div class="sg-token-row"><code>--ac-status-cat-debuff</code><span class="sg-color-chip" style="background:#9B59B6"></span><span>solid</span></div>
+          <div class="sg-token-row"><code>--ac-status-cat-buff</code><span class="sg-color-chip" style="background:#FFD700"></span><span>double</span></div>
+        </div>
       </div>
       <p class="sg-caption">
-        CSS 변수 ↔ <code>client/src/constants/battle-tokens.ts</code> Phaser 상수 1:1 동기화 유지.
+        CSS 변수 ↔ <code>client/src/constants/battle-tokens.ts</code> · <code>battle-feedback-tokens.ts</code> Phaser 상수 1:1 동기화 유지.
+        정본: <code>docs/art-production/battle-feedback-readability-v1.md</code>
       </p>
     </section>
 
@@ -400,10 +661,12 @@
     <section class="sg-section">
       <div class="sg-section__title">10. 접근성</div>
       <ul style="font-size:11px; line-height:1.8; color:#A0A0A0;">
-        <li>✅ <code>prefers-reduced-motion</code>: pulse/float/shake 애니메이션 정지</li>
-        <li>✅ <code>prefers-contrast: more</code>: 경계선 +1px, 대미지 이중 text-shadow</li>
-        <li>✅ 색약 모드: 대미지 타입은 컬러 + 폰트 크기/굵기/italic 중복 표기</li>
-        <li>✅ 반응형: 1920 / 1440 / 1280 / 1024 px 4단계 자동 적응</li>
+        <li>✅ <code>prefers-reduced-motion</code>: pulse/float/shake + 칩 잔여턴바 애니메이션 정지</li>
+        <li>✅ <code>prefers-contrast: more</code>: 대미지 8방향 2px 아웃라인 · 상태칩 테두리 강화(+1px)</li>
+        <li>✅ <b>색약 3중 잉여</b>: 대미지 형태 마커(★▲▼⊘✚✗) + 상태이상 글리프(☠✦❄ 등) + 카테고리 테두리 패턴(점선/실선/이중선)</li>
+        <li>✅ <b>WCAG 보정</b>: blind <code>#444→#8A8A9E</code> · curse <code>#606→#9B4DC4</code> — 구 대비 FAIL → v1 AA 달성</li>
+        <li>✅ 대미지 8방향 픽셀 아웃라인 → 밝은 VFX 위에서도 숫자 분리</li>
+        <li>✅ 반응형: 1920 / 1440 / 1280 / 1024 px 4단계 · 모바일 칩 18→16px</li>
       </ul>
     </section>
 

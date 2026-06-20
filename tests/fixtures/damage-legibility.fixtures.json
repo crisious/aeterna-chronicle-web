@@ -1,0 +1,226 @@
+{
+  "_meta": {
+    "description": "전투 피드백 표시 가독성 검증 시드 — 데미지 팝업·상태이상 동시 표시·화면 폭주 케이스",
+    "author": "심요연 (Data Analyst / UX Researcher)",
+    "version": "1.0.0",
+    "sprint": "에테르나 크로니클 전투 피드백 UX 개선 — 데미지·상태이상 표시 가독성",
+    "referenceDocs": [
+      "DESIGN.md#1-디자인-원칙 (접근성 우선: WCAG AAA, 색약 대응, 색상 외 형태/아이콘 병행)",
+      "client/src/constants/battle-tokens.ts (BATTLE_COLORS.damage / DAMAGE_POPUP_SIZE)",
+      "client/src/combat/damageTypeNarration.ts (속성 태그)",
+      "client/src/data/statusIconSpecs.ts (상태이상 아이콘 15종)",
+      "client/src/combat/statusEffectCategory.ts (5 카테고리)",
+      "tests/benchmarks/damage-legibility-contrast.json (WCAG/ΔE 정량 근거)"
+    ],
+    "purpose": "시각 회귀(battle-style-guide.html) + 가독성 QA + 사용성 테스트 자극(stimulus) 시드. 프로덕션 데이터 아님.",
+    "usage": "각 케이스의 expectLegible 은 contrast 벤치마크에서 도출된 가독 기대값. assertVisualRegression() 및 a11y QA 체크리스트가 참조."
+  },
+
+  "damagePopupCases": [
+    {
+      "id": "dmg-magnitude-sweep",
+      "description": "데미지 수치 자릿수 스윕 — 폭 변화/잘림 검증 (1자리~6자리)",
+      "rationale": "팝업 폭이 자릿수에 비례 증가. 6자리(124,500)에서 화면 밖 잘림/겹침 여부와 천단위 구분 가독성 확인.",
+      "samples": [
+        { "value": 7, "type": "normal", "fontPx": 16, "display": "7" },
+        { "value": 48, "type": "normal", "fontPx": 16, "display": "48" },
+        { "value": 523, "type": "normal", "fontPx": 16, "display": "523" },
+        { "value": 4820, "type": "normal", "fontPx": 16, "display": "4,820" },
+        { "value": 38150, "type": "critical", "fontPx": 32, "display": "38,150" },
+        { "value": 124500, "type": "critical", "fontPx": 32, "display": "124,500" }
+      ],
+      "expectLegible": {
+        "thousandsSeparator": true,
+        "maxWidthPx": 180,
+        "noClippingAtViewportEdge": true,
+        "tags": ["magnitude", "overflow", "regression"]
+      }
+    },
+    {
+      "id": "dmg-type-full-matrix",
+      "description": "7개 데미지 타입 전수 — 색/폰트/대비 SSOT 일치 검증",
+      "rationale": "battle-tokens BATTLE_COLORS.damage 7종 각각이 어두운 배경 대비 식별되는가. immune(보라)이 최약 — 벤치마크에서 battle-bg AAA 미달.",
+      "samples": [
+        { "value": 50, "type": "normal", "hex": "#ffffff", "fontPx": 16, "contrastVsBg": 17.06, "expectLegible": true },
+        { "value": 360, "type": "critical", "hex": "#ffd700", "fontPx": 32, "contrastVsBg": 12.16, "expectLegible": true, "shake": true },
+        { "value": 120, "type": "heal", "hex": "#2ecc71", "fontPx": 18, "contrastVsBg": 8.12, "expectLegible": true, "sign": "+" },
+        { "value": 0, "type": "miss", "hex": "#a0a0a0", "fontPx": 14, "contrastVsBg": 6.52, "expectLegible": true, "display": "MISS" },
+        { "value": 240, "type": "weak", "hex": "#ff6b35", "fontPx": 22, "contrastVsBg": 6.02, "expectLegible": true, "label": "약점!" },
+        { "value": 25, "type": "resist", "hex": "#3498db", "fontPx": 14, "contrastVsBg": 5.41, "expectLegible": true, "label": "저항" },
+        { "value": 0, "type": "immune", "hex": "#9b59b6", "fontPx": 14, "contrastVsBg": 3.65, "expectLegible": "AT_RISK", "label": "무효", "note": "AAA-large 미달. 형태/아이콘 병행 표기 권장 (벤치마크 failAAA_onBattleBg)" }
+      ],
+      "tags": ["type-matrix", "wcag", "ssot-parity"]
+    },
+    {
+      "id": "dmg-on-sprite-worst-case",
+      "description": "중간 명도 스프라이트 위 팝업 — 최악 대비 케이스",
+      "rationale": "데미지 팝업은 피격 대상 스프라이트 위에 뜬다. mid-sprite(#6A6A72) 위에서 heal/miss/weak/resist/immune 5종이 AA(3.0) 미달 — 외곽선/그림자 보강 필요성 검증.",
+      "background": "#6a6a72",
+      "samples": [
+        { "value": 120, "type": "heal", "contrastVsSprite": 2.55, "expectLegible": "NEEDS_OUTLINE" },
+        { "value": 240, "type": "weak", "contrastVsSprite": 1.89, "expectLegible": "NEEDS_OUTLINE" },
+        { "value": 25, "type": "resist", "contrastVsSprite": 1.70, "expectLegible": "NEEDS_OUTLINE" },
+        { "value": 0, "type": "immune", "contrastVsSprite": 1.15, "expectLegible": "NEEDS_OUTLINE", "note": "거의 비가시 — 텍스트 외곽선(stroke) 또는 반투명 backdrop 필수" }
+      ],
+      "recommendedFix": "팝업 텍스트에 1-2px 다크 스트로크(#0a0a14) 또는 반투명 배경 칩 적용 시 대비 회복",
+      "tags": ["sprite-overlay", "worst-case", "a11y-blocker"]
+    },
+    {
+      "id": "dmg-element-tag-combos",
+      "description": "속성 태그 병기 — 이모지+라벨 가독성 (damageTypeNarration)",
+      "rationale": "속성 스킬은 색 외에 이모지+라벨 병기(무가시 보존: physical은 무태그). 색약 사용자에게 색상 외 단서 제공 — 본 스프린트 핵심 a11y 패턴의 모범.",
+      "samples": [
+        { "value": 180, "element": "fire", "tag": "🔥 화염", "popupColorRef": "SSOT", "expectLegible": true },
+        { "value": 150, "element": "ice", "tag": "❄ 빙결", "expectLegible": true },
+        { "value": 200, "element": "lightning", "tag": "⚡ 뇌전", "expectLegible": true },
+        { "value": 170, "element": "shadow", "tag": "🌑 암흑", "expectLegible": true },
+        { "value": 190, "element": "holy", "tag": "✨ 신성", "expectLegible": true },
+        { "value": 100, "element": "physical", "tag": "", "expectLegible": true, "note": "무속성 → 무태그 (기존 외관 보존)" }
+      ],
+      "tags": ["element-tag", "colorblind-safe", "icon-redundancy"]
+    }
+  ],
+
+  "statusEffectCases": [
+    {
+      "id": "status-single-each-category",
+      "description": "5 카테고리 대표 1종씩 — 테두리 색/라벨 SSOT 일치",
+      "rationale": "statusEffectCategory uiColor/label 단일 출처 검증. 카테고리 색만으로 buff/debuff/control/dot 구분 가능한가.",
+      "samples": [
+        { "effectId": "burn", "category": "dot", "stacks": 1, "turnsLeft": 3, "iconKey": "status_burn_icon" },
+        { "effectId": "stun", "category": "control", "stacks": 1, "turnsLeft": 1, "iconKey": "status_stun_icon" },
+        { "effectId": "slow", "category": "debuff", "stacks": 1, "turnsLeft": 2, "iconKey": "status_slow_icon" },
+        { "effectId": "regen", "category": "buff", "stacks": 1, "turnsLeft": 3, "iconKey": "status_regen_icon" },
+        { "effectId": "shield", "category": "buff", "stacks": 1, "turnsLeft": 5, "iconKey": "status_shield_icon" }
+      ],
+      "tags": ["category", "ssot-parity"]
+    },
+    {
+      "id": "status-stack-counter",
+      "description": "스택/턴 카운터 가독성 — 다중 스택 표기",
+      "rationale": "화상 5스택 같은 누적 효과의 숫자 배지 가독성. 작은 아이콘 위 숫자 대비.",
+      "samples": [
+        { "effectId": "burn", "category": "dot", "stacks": 5, "turnsLeft": 3, "badge": "5", "expectLegible": true },
+        { "effectId": "poison", "category": "dot", "stacks": 9, "turnsLeft": 4, "badge": "9", "expectLegible": true },
+        { "effectId": "bleed", "category": "dot", "stacks": 12, "turnsLeft": 2, "badge": "9+", "expectLegible": true, "note": "두 자리 이상은 9+ 축약 권장" }
+      ],
+      "tags": ["stack", "badge"]
+    },
+    {
+      "id": "status-overflow-density",
+      "description": "동시 상태이상 밀도 스윕 — 1/3/8/15중 (UI 폭주 임계 탐색)",
+      "rationale": "한 엔티티에 다수 효과 동시 부착 시 아이콘 행 가독성. 8개 초과부터 겹침/오버플로 발생 추정 — +N 요약 칩 전환 임계 검증. 본 스프린트 최우선 UX 리스크.",
+      "samples": [
+        {
+          "density": 1,
+          "effects": ["burn"],
+          "expectLayout": "single-icon",
+          "expectLegible": true
+        },
+        {
+          "density": 3,
+          "effects": ["burn", "slow", "attack_up"],
+          "expectLayout": "inline-row",
+          "expectLegible": true,
+          "note": "혼합 카테고리 — 색 구분 + 정렬(버프/디버프 그룹핑) 권장"
+        },
+        {
+          "density": 8,
+          "effects": ["burn", "poison", "bleed", "stun", "silence", "slow", "blind", "curse"],
+          "expectLayout": "wrap-or-summarize",
+          "expectLegible": "AT_RISK",
+          "note": "8중 — 표시 영역 임계. 우선순위 정렬(control>dot>debuff>buff) 또는 2행 wrap 필요"
+        },
+        {
+          "density": 15,
+          "effects": ["burn", "poison", "bleed", "stun", "silence", "freeze", "charm", "slow", "blind", "curse", "attack_up", "defense_up", "haste", "regen", "shield"],
+          "expectLayout": "summarize-overflow",
+          "expectLegible": "OVERFLOW",
+          "recommendedFix": "최대 N(예: 6)개 표시 후 '+9' 요약 칩, 호버/탭 시 전체 목록 툴팁. 우선순위: control > dot > debuff > buff",
+          "note": "전체 15종 동시 — 실전 극단값. 요약 전환 없이는 판독 불가"
+        }
+      ],
+      "tags": ["overflow", "density", "summarize", "a11y-blocker", "priority-sort"]
+    }
+  ],
+
+  "simultaneousFloodCases": [
+    {
+      "id": "flood-aoe-multitarget",
+      "description": "광역기 다중 대상 동시 데미지 팝업 — 화면 폭주",
+      "rationale": "AOE 스킬이 5~8 대상에 동시 적중 시 팝업이 한 프레임에 폭발. 겹침/순차 표시/페이드 타이밍(damagePopupMs=900) 가독성.",
+      "scenario": {
+        "skill": "메테오 (8대상 AOE)",
+        "targets": 8,
+        "popups": [
+          { "targetIdx": 0, "value": 420, "type": "critical" },
+          { "targetIdx": 1, "value": 180, "type": "weak" },
+          { "targetIdx": 2, "value": 95, "type": "resist" },
+          { "targetIdx": 3, "value": 210, "type": "normal" },
+          { "targetIdx": 4, "value": 0, "type": "immune" },
+          { "targetIdx": 5, "value": 230, "type": "normal" },
+          { "targetIdx": 6, "value": 175, "type": "weak" },
+          { "targetIdx": 7, "value": 200, "type": "normal" }
+        ]
+      },
+      "expectLegible": {
+        "staggerMs": 60,
+        "maxConcurrentPopups": 8,
+        "verticalOffsetOnOverlap": true,
+        "note": "동일 좌표 겹침 시 60ms 스태거 + 수직 오프셋으로 분리. 전부 동시 표시 시 판독 불가",
+        "tags": ["flood", "aoe", "stagger", "overlap"]
+      }
+    },
+    {
+      "id": "flood-dot-tick-burst",
+      "description": "다중 DOT 동시 틱 — 턴 시작 시 누적 피해 표시",
+      "rationale": "화상+중독+출혈 동시 보유 엔티티의 턴 시작 DOT 틱이 한꺼번에 발생. 합산 표시 vs 개별 표시 가독성 트레이드오프.",
+      "scenario": {
+        "entityStatuses": [
+          { "effectId": "burn", "dotPerTurn": 45 },
+          { "effectId": "poison", "dotPerTurn": 30 },
+          { "effectId": "bleed", "dotPerTurn": 25 }
+        ],
+        "options": {
+          "separate": ["45 🔥", "30 ☠", "25 🩸"],
+          "summed": "100 (3 DOT)"
+        }
+      },
+      "expectLegible": {
+        "recommendation": "개별 순차(staggerMs=120) 표시 후 합계 요약 — 어느 효과가 얼마인지 학습 가능성 유지",
+        "tags": ["dot", "tick", "burst", "summarize"]
+      }
+    }
+  ],
+
+  "usabilityTestStimuli": {
+    "description": "사용성 테스트(UX Research)용 자극 세트 — 피험자에게 제시할 표준 시나리오",
+    "rationale": "정량 벤치마크(대비/ΔE)를 정성 검증으로 보완. 색약 시뮬레이터 착용 그룹 vs 일반 그룹 식별 정확도/응답시간 측정.",
+    "tasks": [
+      {
+        "taskId": "T1-identify-resist-vs-immune",
+        "prompt": "방금 가한 공격이 '저항'(절반 피해)인가 '무효'(0 피해)인가?",
+        "stimulusRef": "damagePopupCases#dmg-type-full-matrix (resist/immune)",
+        "metric": "식별 정확도 %, 응답시간 ms",
+        "hypothesis": "색약 그룹에서 resist↔immune 오인율 유의하게 높음 (ΔE=14.95 근거). 라벨/아이콘 병기 시 격차 해소.",
+        "successCriterion": "정확도 ≥ 95% (양 그룹), 응답시간 ≤ 1500ms"
+      },
+      {
+        "taskId": "T2-count-active-debuffs",
+        "prompt": "현재 적에게 걸린 '디버프 계열'(행동제어+지속피해+능력감소) 효과는 몇 개인가?",
+        "stimulusRef": "statusEffectCases#status-overflow-density (density 8)",
+        "metric": "카운트 정확도, 응답시간",
+        "hypothesis": "8중 밀도에서 정렬/그룹핑 없으면 오카운트 증가. 우선순위 정렬 시 개선.",
+        "successCriterion": "오차 ≤ ±1, 응답시간 ≤ 3000ms"
+      },
+      {
+        "taskId": "T3-spot-critical-in-flood",
+        "prompt": "이번 광역기에서 '치명타'가 터진 대상을 모두 가리키시오.",
+        "stimulusRef": "simultaneousFloodCases#flood-aoe-multitarget",
+        "metric": "재현율(recall), 정밀도(precision)",
+        "hypothesis": "스태거/오프셋 없으면 폭주 중 치명타 누락. 32px+쉐이크 강조가 재현율 견인.",
+        "successCriterion": "재현율 ≥ 90%"
+      }
+    ]
+  }
+}

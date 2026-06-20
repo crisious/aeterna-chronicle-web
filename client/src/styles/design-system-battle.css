@@ -53,6 +53,46 @@
   --ac-z-battle-hud:      30;
   --ac-z-battle-popup:    40;
   --ac-z-battle-modal:    50;
+
+  /* 대미지 팝업 v1 가독성 — 8방향 픽셀 아웃라인 (battle-feedback-tokens.ts DAMAGE_OUTLINE 1:1) */
+  --ac-dmg-outline:
+    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
+    -1px  0   0 #000,               1px  0   0 #000,
+    -1px  1px 0 #000, 0  1px 0 #000, 1px  1px 0 #000;
+  --ac-dmg-outline-strong:
+    -2px -2px 0 #000, 0 -2px 0 #000, 2px -2px 0 #000,
+    -2px  0   0 #000,               2px  0   0 #000,
+    -2px  2px 0 #000, 0  2px 0 #000, 2px  2px 0 #000;
+
+  /* 상태이상 색 v1 (배경 #0D0D1A 기준 WCAG 보정 — STATUS_FEEDBACK 1:1) */
+  --ac-status-poison:     #3DD13D;  /* dot  · AAA */
+  --ac-status-burn:       #FF5A2C;  /* dot  · AA  */
+  --ac-status-bleed:      #E03A3A;  /* dot  · AA  */
+  --ac-status-stun:       #FFE14D;  /* ctrl · AAA */
+  --ac-status-silence:    #A35FD1;  /* ctrl · AA  */
+  --ac-status-freeze:     #5FC8FF;  /* ctrl · AAA */
+  --ac-status-charm:      #FF7FD1;  /* ctrl · AA  */
+  --ac-status-slow:       #6E92D6;  /* dbuf · AA  */
+  --ac-status-blind:      #8A8A9E;  /* dbuf · AA (구 #444 FAIL 해소) */
+  --ac-status-curse:      #9B4DC4;  /* dbuf · AA-graphic (구 #606 FAIL 해소) */
+  --ac-status-attack-up:  #FF9933;  /* buff · AA  */
+  --ac-status-defense-up: #5599FF;  /* buff · AA  */
+  --ac-status-haste:      #4DE88A;  /* buff · AAA */
+  --ac-status-regen:      #9BE85A;  /* buff · AAA */
+  --ac-status-shield:     #FFD94D;  /* buff · AAA */
+
+  /* 상태이상 카테고리 테두리 (형태 잉여 #2 — STATUS_CATEGORY_BORDER 1:1) */
+  --ac-status-cat-control: #FF4D6A;  /* solid-bold · priority 0 (위험 먼저) */
+  --ac-status-cat-dot:     #FF7A3C;  /* dotted     · priority 1 */
+  --ac-status-cat-debuff:  #9B59B6;  /* solid      · priority 2 */
+  --ac-status-cat-buff:    #FFD700;  /* double     · priority 3 */
+
+  /* 상태이상 칩 치수 (STATUS_CHIP 1:1) */
+  --ac-chip-size:        18px;
+  --ac-chip-size-mobile: 16px;
+  --ac-chip-glyph:       11px;
+  --ac-chip-badge:       8px;
+  --ac-chip-bar-h:       2px;
 }
 
 /* ---------- 2. ATB 게이지 바 ---------- */
@@ -143,30 +183,48 @@
   opacity: 0.5;
 }
 
-/* ---------- 4. 대미지 팝업 ---------- */
+/* ---------- 4. 대미지 팝업 (v1 가독성: 8방향 아웃라인 + 형태 마커 + 크기 보정) ----------
+   1차 SSOT: docs/art-production/battle-feedback-readability-v1.md §1
+   D1(묻힘)·D2(색약)·D3(난전 크기)·D4(겹침) 적자 해소. */
 .ac-dmg {
   position: absolute;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28em;
+  white-space: nowrap;
   font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
   font-weight: 700;
-  text-shadow: 2px 2px 0 #000000;
+  /* D1 해소: 단방향 그림자 → 8방향 픽셀 아웃라인 (밝은 VFX 위에서도 분리) */
+  text-shadow: var(--ac-dmg-outline);
   pointer-events: none;
   image-rendering: pixelated;
   z-index: var(--ac-z-battle-popup);
+  /* D4 해소: 다단히트 스태거 훅 — JS(계섬월)가 staggerOffset(i)로 --ac-dmg-i/-dx 주입.
+     float 애니메이션이 translateY 점유 → 좌우 분산은 margin-left 로 비충돌 처리. */
+  margin-left: var(--ac-dmg-dx, 0px);
   animation: ac-dmg-float 0.9s ease-out forwards;
+  animation-delay: calc(var(--ac-dmg-i, 0) * 90ms);
 }
 
+/* D2 해소: 색약 대응 형태 마커 prefix (★▲▼⊘✚✗) — 색 없이도 종류 1차 판별 */
+.ac-dmg__marker {
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* 크기 v1 보정 (D3 해소: resist·immune·miss 가독 크기 상향) */
 .ac-dmg--normal   { font-size: 16px; color: var(--ac-dmg-normal); }
 .ac-dmg--critical {
-  font-size: 32px;
+  font-size: 36px;
   color: var(--ac-dmg-critical);
   animation: ac-dmg-crit 0.9s ease-out forwards;
-  text-shadow: 2px 2px 0 #000000, 0 0 12px var(--ac-dmg-critical);
+  text-shadow: var(--ac-dmg-outline), 0 0 12px var(--ac-dmg-critical);
 }
-.ac-dmg--heal     { font-size: 18px; color: var(--ac-dmg-heal); }
-.ac-dmg--miss     { font-size: 14px; color: var(--ac-dmg-miss); font-style: italic; }
-.ac-dmg--weak     { font-size: 22px; color: var(--ac-dmg-weak); font-weight: 900; }
-.ac-dmg--resist   { font-size: 14px; color: var(--ac-dmg-resist); }
-.ac-dmg--immune   { font-size: 14px; color: var(--ac-dmg-immune); }
+.ac-dmg--weak     { font-size: 24px; color: var(--ac-dmg-weak); font-weight: 900; }
+.ac-dmg--resist   { font-size: 18px; color: var(--ac-dmg-resist); }
+.ac-dmg--immune   { font-size: 18px; color: var(--ac-dmg-immune); }
+.ac-dmg--heal     { font-size: 20px; color: var(--ac-dmg-heal); }
+.ac-dmg--miss     { font-size: 16px; color: var(--ac-dmg-miss); font-style: italic; }
 
 @keyframes ac-dmg-float {
   0%   { transform: translateY(0)     scale(0.6); opacity: 0; }
@@ -246,7 +304,8 @@
   .ac-shake {
     animation-duration: 0.01ms;
   }
-  .ac-turn-slot {
+  .ac-turn-slot,
+  .ac-status-chip__duration {
     transition: none;
   }
 }
@@ -258,9 +317,17 @@
   .ac-turn-slot {
     border-width: 3px;
   }
+  /* 데미지: 1px → 2px 8방향 아웃라인 (DAMAGE_OUTLINE_STRONG) */
   .ac-dmg {
-    text-shadow: 3px 3px 0 #000000, -1px -1px 0 #000000;
+    text-shadow: var(--ac-dmg-outline-strong);
   }
+  .ac-dmg--critical {
+    text-shadow: var(--ac-dmg-outline-strong), 0 0 12px var(--ac-dmg-critical);
+  }
+  /* 상태칩: 테두리 +1px (control/buff 는 이미 굵으므로 4→5px) */
+  .ac-status-chip { border-width: 3px; }
+  .ac-status-chip[data-cat="control"],
+  .ac-status-chip[data-cat="buff"] { border-width: 5px; }
 }
 
 /* ---------- 9. 파티 HUD 슬롯 (하단 2×2 그리드) ---------- */
@@ -564,4 +631,126 @@
   .ac-party-slot__portrait { width: 48px; height: 48px; }
   .ac-command-panel { width: 100%; }
   .ac-combo-gauge   { width: 100%; }
+}
+
+/* ---------- 14. 상태이상 칩 (v1 가독성: 글리프 + 카테고리 테두리 + 스택 + 잔여턴) ----------
+   1차 SSOT: docs/art-production/battle-feedback-readability-v1.md §3
+   기존 .ac-status-icon(12px 색점) → .ac-status-chip(18px 정보칩) 승급.
+   3중 잉여(색·형태·테두리)로 색약·저대비 환경에서도 효과 식별 보장. */
+
+.ac-status-tray {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.ac-status-chip {
+  position: relative;
+  box-sizing: border-box;
+  width: var(--ac-chip-size);
+  height: var(--ac-chip-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 13, 26, 0.88);
+  border: 2px solid var(--ac-chip-border, #3A3A4A);
+  border-radius: 2px;
+  image-rendering: pixelated;
+  color: var(--ac-chip-color, #FFFFFF);
+  cursor: default;
+}
+
+/* 중앙 글리프 — PNG 아이콘 로드 실패 시 텍스트 폴백 (이중 안전) */
+.ac-status-chip__glyph {
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  font-size: var(--ac-chip-glyph);
+  line-height: 1;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
+  pointer-events: none;
+}
+
+/* 스택 뱃지 — 우상단, stacks ≥ 2 일 때만 노출 (data-stacks 제어) */
+.ac-status-chip__stack {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: var(--ac-chip-badge);
+  height: var(--ac-chip-badge);
+  padding: 0 1px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #14141F;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--ac-font-pixel, "Press Start 2P", monospace);
+  font-size: 7px;
+  line-height: 1;
+  color: #FFFFFF;
+}
+.ac-status-chip[data-stacks]:not([data-stacks="1"]):not([data-stacks="0"]) .ac-status-chip__stack {
+  display: flex;
+}
+
+/* 잔여 턴 게이지 — 하단 2px, 카테고리 색. --ac-chip-dur (0~1) 로 너비 제어 */
+.ac-status-chip__duration {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: var(--ac-chip-bar-h);
+  width: calc(var(--ac-chip-dur, 1) * 100%);
+  background: var(--ac-chip-border, currentColor);
+  transition: width 240ms linear;
+}
+
+/* ── 카테고리 테두리 (형태 잉여 #2: 색약에도 두께·패턴으로 구분) ── */
+.ac-status-chip[data-cat="control"] {
+  --ac-chip-border: var(--ac-status-cat-control);
+  border-style: solid;
+  border-width: 3px;       /* solid-bold: 행동봉쇄 위험 강조 (정렬 우선순위 0) */
+}
+.ac-status-chip[data-cat="dot"] {
+  --ac-chip-border: var(--ac-status-cat-dot);
+  border-style: dotted;    /* 매 턴 깎임 */
+}
+.ac-status-chip[data-cat="debuff"] {
+  --ac-chip-border: var(--ac-status-cat-debuff);
+  border-style: solid;
+}
+.ac-status-chip[data-cat="buff"] {
+  --ac-chip-border: var(--ac-status-cat-buff);
+  border-style: double;
+  border-width: 4px;       /* double은 ≥3px 이어야 이중선 렌더 — 아군 이득 */
+}
+
+/* ── 15종 효과 글리프 색 (data-effect 로 주입 · STATUS_FEEDBACK 1:1) ── */
+.ac-status-chip[data-effect="poison"]     { --ac-chip-color: var(--ac-status-poison); }
+.ac-status-chip[data-effect="burn"]       { --ac-chip-color: var(--ac-status-burn); }
+.ac-status-chip[data-effect="bleed"]      { --ac-chip-color: var(--ac-status-bleed); }
+.ac-status-chip[data-effect="stun"]       { --ac-chip-color: var(--ac-status-stun); }
+.ac-status-chip[data-effect="silence"]    { --ac-chip-color: var(--ac-status-silence); }
+.ac-status-chip[data-effect="freeze"]     { --ac-chip-color: var(--ac-status-freeze); }
+.ac-status-chip[data-effect="charm"]      { --ac-chip-color: var(--ac-status-charm); }
+.ac-status-chip[data-effect="slow"]       { --ac-chip-color: var(--ac-status-slow); }
+.ac-status-chip[data-effect="blind"]      { --ac-chip-color: var(--ac-status-blind); }
+.ac-status-chip[data-effect="curse"]      { --ac-chip-color: var(--ac-status-curse); }
+.ac-status-chip[data-effect="attack_up"]  { --ac-chip-color: var(--ac-status-attack-up); }
+.ac-status-chip[data-effect="defense_up"] { --ac-chip-color: var(--ac-status-defense-up); }
+.ac-status-chip[data-effect="haste"]      { --ac-chip-color: var(--ac-status-haste); }
+.ac-status-chip[data-effect="regen"]      { --ac-chip-color: var(--ac-status-regen); }
+.ac-status-chip[data-effect="shield"]     { --ac-chip-color: var(--ac-status-shield); }
+
+/* +N 오버플로 칩 (트레이 maxDisplay=4 초과분 합산) */
+.ac-status-chip--overflow {
+  --ac-chip-border: #6A6A7A;
+  border-style: solid;
+  border-width: 2px;
+  color: #C0C0C0;
+}
+.ac-status-chip--overflow .ac-status-chip__glyph { font-size: 9px; }
+
+/* 모바일 칩 16px */
+@media (max-width: 1024px) {
+  .ac-status-chip { width: var(--ac-chip-size-mobile); height: var(--ac-chip-size-mobile); }
 }

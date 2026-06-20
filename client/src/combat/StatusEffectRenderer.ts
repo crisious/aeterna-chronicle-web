@@ -10,6 +10,9 @@
 import * as Phaser from 'phaser';
 import { getStatusIconResource } from '../data/statusEffectIcons';
 import { getStatusCategoryColor, hexToPhaserColor } from './statusEffectCategory';
+import { resolveDotStyle } from './damageFeedbackResolver';
+import { placeStaggered } from './battleFeedbackPresenter';
+import { DAMAGE_STROKE } from '../constants/battle-feedback-tokens';
 
 // ─── 타입 정의 ──────────────────────────────────────────────────
 
@@ -268,40 +271,76 @@ export class StatusEffectRenderer {
 
   // ─── DoT 데미지 팝업 ────────────────────────────────────────
 
-  /** DoT 데미지 표시 */
+  /**
+   * DoT 데미지 표시 — SSOT 토큰 배선(B3).
+   *
+   * 적폐 청산:
+   *   · 색      : EFFECT_VISUALS → resolveDotStyle(STATUS_FEEDBACK) 단일 출처
+   *   · 폰트    : 12px 하드코딩 → DAMAGE_POPUP_SIZE(normal 16px) — 14px 봉인 준수
+   *   · 힐 색   : '#44ff44' 하드코딩 → 토큰 heal 색 + '+' 부호
+   *   · 위치    : Math.random() 분산 → placeStaggered() 결정적 스택(K5 겹침 0)
+   *   · 색약    : 효과 글리프 prefix 병기(색-비의존 2종 단서, WCAG)
+   *
+   * @param hitIndex 같은 타깃 동시 틱의 0-base 인덱스. 미지정 시 근접 활성 팝업 수로 자동 산정.
+   */
   showDotDamage(
     targetX: number,
     targetY: number,
     damage: number,
     effectId: string,
+    hitIndex?: number,
   ): void {
-    const visual = EFFECT_VISUALS[effectId];
-    const colorHex = visual
-      ? `#${visual.color.toString(16).padStart(6, '0')}`
-      : '#ffffff';
+    const style = resolveDotStyle(effectId, damage);
 
-    const isHeal = damage < 0;
-    const displayValue = isHeal ? `+${Math.abs(damage)}` : `${damage}`;
-    const displayColor = isHeal ? '#44ff44' : colorHex;
+    // 동시 틱 인덱스 — 명시값 우선, 없으면 근접 활성 팝업 수로 결정적 산정.
+    const index = hitIndex ?? this.countNearbyDotPopups(targetX, targetY);
+    const placement = placeStaggered({ x: targetX, y: targetY - 20 }, index);
+
+    // 색-비의존 단서: 효과 글리프 prefix(있을 때만) + 부호 + 절대값.
+    const marker = style.marker ? `${style.marker} ` : '';
+    const displayValue = `${marker}${style.signPrefix}${Math.abs(damage)}`;
 
     const text = this.scene.add.text(
-      targetX + (Math.random() - 0.5) * 20,
-      targetY - 20,
+      placement.x,
+      placement.y,
       displayValue,
       {
-        fontSize: '12px',
-        color: displayColor,
+        fontSize: `${style.fontSizePx}px`, // 14px 봉인 — DAMAGE_POPUP_SIZE SSOT
+        color: style.colorCss,
         fontStyle: 'bold',
-        stroke: '#000000',
-        strokeThickness: 2,
+        stroke: DAMAGE_STROKE.color,
+        strokeThickness: DAMAGE_STROKE.thickness,
       },
     ).setOrigin(0.5);
+
+    // 스태거 등장 지연 — 동시 다발 틱을 시간축으로도 분리(판독 여유).
+    if (placement.delayMs > 0) {
+      text.setAlpha(0);
+      this.scene.time.delayedCall(placement.delayMs, () => {
+        if (text.active) text.setAlpha(1);
+      });
+    }
 
     this.dotPopups.push({
       text,
       ttl: DOT_TEXT_LIFETIME,
       vy: -DOT_TEXT_RISE_SPEED,
     });
+  }
+
+  /**
+   * 근접(±스태거 반경) 활성 DoT 팝업 수 — 동시 틱 스택 인덱스 산정용.
+   * Math.random() 분산을 대체하는 결정적 카운터. 같은 대상에 겹친 팝업을 세로로 쌓는다.
+   */
+  private countNearbyDotPopups(x: number, y: number): number {
+    const RADIUS = 28; // 스태거 offsetX(14)·offsetY(6) 묶음 반경
+    let count = 0;
+    for (const popup of this.dotPopups) {
+      if (Math.abs(popup.text.x - x) <= RADIUS && Math.abs(popup.text.y - (y - 20)) <= RADIUS) {
+        count++;
+      }
+    }
+    return count;
   }
 
   // ─── 프레임 업데이트 ─────────────────────────────────────────

@@ -494,6 +494,50 @@ npm run data:validate -- --watch
 
 ---
 
+## ⚔️ 전투 피드백 가독성
+
+> *검의 날이 무뎌지면 사람이 다친다.* — 데미지·상태이상을 색맹 여부와 무관하게 한눈에.
+
+데미지·상태이상 표시가 색상에만 기대면 색약 플레이어(인구 약 8%)와 빠른 연타 구간에서 정보가 묻힙니다. 색상은 보조 단서일 뿐 — **크기·라벨·아이콘·형태**가 1차 단서가 되도록 4지표로 게이트하옵니다.
+
+### 🎯 한눈 지표 (4지표)
+
+| 지표 | 약속 | 현재 | 측정 |
+|------|------|------|------|
+| 데미지·상태이상 명도 대비 | 텍스트 ≥7:1 · 아이콘 ≥3:1 (AAA) | _측정 예정_ | `npm run battle:contrast` |
+| 전투 텍스트 최소 폰트 | ≥ 14px (데미지 28px) | _측정 예정_ | `npm run battle:legibility` |
+| 색약 비색상 단서 커버리지 | 100% (속성 6 + 상태 15) | _측정 예정_ | `npm run battle:colorblind` |
+| 데미지 팝업 체류 · 겹침 | ≥ 900ms · 겹침 0 | _측정 예정_ | `npm run battle:overlap` |
+
+> `_측정 예정_` 슬롯은 적경홍 QA(Test) 단계에서 `npm run battle:gate` 실측치로 치환됩니다. (게이트 명령어 6종 + `scripts/battle/`는 Build 단계 계섬월 배선 예정 — 본 절은 **SSOT 선행 정의**.) 상단 배지(Battle Contrast AAA · Colorblind Cues 100%)도 게이트 PASS 확인 후 게양하옵니다.
+
+### 🚀 빠른 시작 (3명령)
+
+```bash
+npm run battle:gate       # 4종 게이트 합본 (~60s)
+npm run battle:measure    # 대비/폰트/체류 종합 측정 (~12s)
+npm run battle:colorblind # 색약 3종 시뮬 (~8s)
+```
+
+### 💥 핵심 표시 요소 (3종)
+
+| 요소 | 종 수 | 비색상 단서 |
+|------|-------|-------------|
+| 💥 데미지 결과 | 7종 (일반/크리/회복/빗나감/약점/저항/무효) | 크기 위계 + 라벨 |
+| 🔥 데미지 속성 | 6종 (물리 무태그 + 화염/빙결/뇌전/암흑/신성) | 이모지 🔥❄⚡🌑✨ |
+| ⛓️ 상태이상 | 15종 (지속피해 3 / 봉쇄 4 / 저하 3 / 강화 5) | 아이콘 + 라벨 + 잔여 턴 |
+
+### 📖 자세한 가이드
+
+- 📖 [사용자 가이드](docs/release/battle-feedback-user-guide.md) — 한 손 흐름도 + FAQ 8건
+- 📜 [에러 메시지 SSOT](docs/release/battle-feedback-error-messages.md) — 16 슬롯 ko/en
+- 🔧 [PR / 커밋 컨벤션](docs/release/battle-feedback-pr-template.md) — 6 스코프 + 5인 인계 체크
+- 🎨 [디자인 토큰](DESIGN.md#5-컴포넌트-토큰) — 데미지/상태 색·폰트 1차 SSOT
+
+> **Ship-Gate 예고** — PR 머지 시 봇 하네스가 자동 차단하옵니다 (3-AND): `battle:gate` 4종 🟢 PASS · 사용자 가이드 메아리 동기화 · 5인 인계 체크 ✓. 약속 수치 변경은 백능파(Strategy) 승인 필수.
+
+---
+
 ## 📱 모바일 반응형 (Mobile Responsive)
 
 > Phaser.js 데스크탑(1920×1080) 우선 개발 위에 모바일 360~430 너비를 얹사옵나이다. 4 게이트로 한눈에 — 잘림·터치 미지원·성능 저하·노치 침범 4 위험을 잘라내옵니다.

@@ -35,6 +35,28 @@
 ---
 
 ### Added
+- **에테르나 크로니클 전투 피드백 가독성 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Battle-Feedback-UX, 2026-06-20) — 진채봉 Editor 합본 정리
+  - Phase 52까지 전투 시스템은 갖췄으나 데미지·상태이상 표시가 색상 의존적이라, 색약 플레이어(인구 약 8%)와 빠른 연타 구간에서 정보가 묻히던 결을 메우고자 텍스트 에셋 5편 + README 절을 묶어 두옵니다.
+  - 가독 약속 4지표: 데미지·상태 명도 대비 **텍스트 ≥7:1 / 아이콘 ≥3:1 (WCAG AAA)** · 전투 텍스트 최소 폰트 **≥14px (데미지 28px)** · 색약 비색상 단서 커버리지 **100%** · 데미지 팝업 체류 **≥900ms · 겹침 0** — `launch_checklist §2.20` SSOT 신설 예정
+  - **전투 피드백 가독성 사용자 가이드 v1.0** (`docs/release/battle-feedback-user-guide.md`) — 진채봉 Editor
+    - 9개 절 + FAQ 8건 — 한 손 흐름도(타격 → 팝업 → 속성 태그 → 상태이상 → 게이트) · 데미지 결과 7종 색/폰트 표 · 속성 6종 이모지 매핑 표 · 상태이상 전투 15종(지속피해 3/봉쇄 4/저하 3/강화 5) 표 · 가독성 4약속
+    - 본 문서가 1차 SSOT — `README.md §⚔️ 전투 피드백 가독성` 메아리, 약속 수치 변경 시 §1 흐름도 동시 갱신
+  - **전투 피드백 가독성 에러 메시지 카피 SSOT v1.0** (`docs/release/battle-feedback-error-messages.md`) — 진채봉 Editor
+    - 4종 게이트(contrast · legibility · colorblind · overlap) × 4 상태(PASS/BLOCK/WARN/ERROR) = **16개 카피 슬롯** (ko/en 동시 = 32줄)
+    - 키 규약 `battle.feedback.<gate>.<state>.<reason>` · 코드 상수 매핑 (계섬월 인계용 `client/src/constants/battle_feedback_gate_messages.ts` 스니펫)
+    - 톤 5계명: 원인→처방 · 수치는 사실 · 경로 절단 금지 · 시는 hint만 · 도메인 키 규약
+  - **전투 피드백 가독성 PR / 커밋 메시지 컨벤션 v1.0** (`docs/release/battle-feedback-pr-template.md`) — 진채봉 Editor
+    - PR 제목 6 스코프 (`damage`/`status`/`contrast`/`colorblind`/`gate`/`docs`) · PR 본문 7개 섹션(자동 감사 표 Before/After/Δ/약속 · 산출물 분류 · 디자인 토큰 SSOT 위계 정합 · 접근성 약속 · i18n · 5인 인계 체크)
+    - 커밋 메시지 좋은 예/나쁜 예 + 리뷰어 행동 가이드 5항(이소화 접근성 봉인 비협상) + 3-AND 머지 게이트
+  - **README §⚔️ 전투 피드백 가독성 절 신설 완료 (h2)** (`README.md`, 🎵 사운드 시스템 절 다음) — 진채봉 Editor
+    - 골격 SSOT(`docs/release/battle-feedback-readme-skeleton.md`)를 정본 README에 실배선 — 한눈 지표 4지표 표 · 빠른 시작 3명령 · 핵심 표시 요소 3종(데미지 7/속성 6/상태 15) 표 · 자세한 가이드 링크 4개 · ship-gate 3-AND 예고
+    - 4지표 *현재* 열은 `_측정 예정_` — 적경홍 QA(Test) 단계 `battle:gate` 실측치로 치환. 상단 배지 2종(`Battle Contrast AAA`·`Colorblind Cues 100%`)은 게이트 PASS 확인 후 추가(현 미측정이라 보류 — *수치는 사실* 원칙)
+    - 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수
+  - **본 CHANGELOG 항목 정식 등재** — 출전 `docs/release/battle-feedback-changelog-draft.md`. 9단계 Auto 스프린트 Build/Review/Test/Ship 진척에 따라 실측 수치로 `_측정 예정_` 슬롯 치환
+  - **회고(Reflect) 검증 결과** (`docs/release/retro_battle-feedback-ux-sprint.md`) — 진채봉 Editor
+    - *청사진은 만개, 채색은 절반* — 해석(`damageFeedbackResolver.ts` 9.3KB) + 토큰(`battle-feedback-tokens.ts`) + 상태 렌더(`StatusEffectRenderer.ts`)는 `BattleScene·CombatManager`까지 배선 완료이나, 화면을 그리는 `createBattleFeedbackPresenter`는 `throw [asset-stub]`(`battleFeedbackPresenter.ts:122`)로 **Build B5/B7 의도적 미구현**. 본 항목은 머지된 *렌더링 가치*가 아닌 **설계·데이터·접근성 약속 + 문서 가치**임을 정직히 표기
+    - 정량(심요연): 최근 7일 68 커밋·283K 삽입이나 실 코드 **36K(12.8%)** · 토픽 직결은 combat-ux 18 리비전의 꼬리 2건(r17·r19). 정성(두련사): 가독성은 vibes 아닌 **WCAG 대비비·색약 ΔE 실측**으로 입증 — 토픽 본질 불변
+    - 다음 사이클 P0 인계: presenter 실구현(계섬월) + 버프/디버프 형태 단서 분리(이소화 접근성 봉인) + 게이트 4종 실측(적경홍) → `_측정 예정_` 치환
 - **에테르나 크로니클 verify-core 시나리오 3종 실배선 — 텍스트 에셋 묶음 v1.0** (Sprint Auto-Verify-Core-Scenarios, 2026-05-01) — 진채봉 Editor 합본 정리
   - 직전 회고 *Build-Catchup §1 P0 A4 P1* 직접 해소 — 기존 `scripts/dev-cycle/verify-core.mjs`가 골격만 있고 battle/save/map 3 시나리오 모두 unknown FAIL 상태였던 적자(赤字)를 청산하옵나이다.
   - **사용자: 대표(crisi) 본인 1인** — 외부 사용자 X. 신규 콘텐츠(시나리오/스킬/맵) 변경 시 자동 검증 보장이 단 하나의 약속.
