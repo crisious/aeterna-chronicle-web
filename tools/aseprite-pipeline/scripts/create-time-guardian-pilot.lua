@@ -300,13 +300,17 @@ local function drawBody(image, pose)
   local headX = centeredX(23 + sway + lean, 18, headW, pose)
   local torsoX = centeredX(22 + sway + torso, 20, torsoW, pose)
 
-  -- Head: hood/hair frame + face (teal eyes only when not viewed from behind).
+  -- Head: front-facing frames expose skin/eyes; rear frames read as hood and hair.
   fillRect(image, headX, 9 + bob, headW, 18, colors.outline)
-  fillRect(image, headX + 2, 12 + bob, math.max(8, headW - 4), 13, colors.skin)
   if backView == 0 then
+    fillRect(image, headX + 2, 12 + bob, math.max(8, headW - 4), 13, colors.skin)
     fillRect(image, headX + 4, 15 + bob, math.max(8, headW - 8), 3, colors.skinDark)
     fillRect(image, headX + 5, 16 + bob, 2, 2, colors.cyan)
     fillRect(image, headX + headW - 7, 16 + bob, 2, 2, colors.cyan)
+  else
+    fillRect(image, headX + 2, 12 + bob, math.max(8, headW - 4), 13, colors.hairDark)
+    fillRect(image, headX + 4, 14 + bob, math.max(6, headW - 8), 9, colors.hair)
+    fillRect(image, centeredX(30 + sway, 5, 5, pose), 16 + bob, 5, 9, colors.robeDark)
   end
 
   -- Hair cap.
@@ -319,10 +323,18 @@ local function drawBody(image, pose)
     fillRect(image, headX + 3, 9 + bob, math.max(6, headW - 6), 4, colors.hairLight)
   end
 
-  -- Arms.
+  -- Arms. Rear-facing poses tuck exposed forearms under robe sleeves to keep
+  -- the silhouette readable as a back view at 64x64.
   if (pose.profile or 0) >= 2 then
     fillRect(image, torsoX + 1, 28 + bob, 6, 15, colors.outline)
-    fillRect(image, torsoX + 2, 31 + bob, 4, 10, colors.skin)
+    fillRect(image, torsoX + 2, 31 + bob, 4, 10, backView == 0 and colors.skin or colors.robeDark)
+  elseif backView > 0 then
+    fillRect(image, 18 + torso + dirX, 28 + bob, 8, 15, colors.outline)
+    fillRect(image, 39 + torso + dirX, 28 + bob, 8, 15, colors.outline)
+    fillRect(image, 20 + torso + dirX, 31 + bob, 5, 10, colors.robeDark)
+    fillRect(image, 41 + torso + dirX, 31 + bob, 4, 10, colors.robeDark)
+    fillRect(image, 21 + torso + dirX, 32 + bob, 3, 3, colors.goldDark)
+    fillRect(image, 41 + torso + dirX, 32 + bob, 3, 3, colors.goldDark)
   else
     fillRect(image, 18 + torso + dirX, 28 + bob, 8, 15, colors.outline)
     fillRect(image, 39 + torso + dirX, 28 + bob, 8, 15, colors.outline)

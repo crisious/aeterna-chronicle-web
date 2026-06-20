@@ -58,12 +58,16 @@ export default defineConfig({
       json: './test-results.json',
     },
 
-    // 스레드 풀 (테스트 병렬 실행)
-    pool: 'threads',
+    // 프로세스 풀 (테스트 병렬 실행).
+    // Prisma 5.x library 쿼리 엔진(@prisma/client N-API 네이티브 애드온)을 worker_threads
+    // 안에서 new PrismaClient() 하면 query-engine engine.rs 의 'Failed to deserialize
+    // constructor options' 패닉 → SIGABRT(exit 134) 가 간헐 발생한다(메인 스레드는 통과).
+    // child_process 기반 forks 풀로 격리해 네이티브 엔진 크래시를 회피한다.
+    pool: 'forks',
     poolOptions: {
-      threads: {
-        minThreads: 1,
-        maxThreads: 4,
+      forks: {
+        minForks: 1,
+        maxForks: 4,
       },
     },
   },

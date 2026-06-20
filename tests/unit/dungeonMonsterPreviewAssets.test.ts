@@ -96,7 +96,11 @@ describe('dungeon monster preview runtime images', () => {
     expect(dungeonSource).toContain('this.load.image(preview.textureKey, preview.path)');
     expect(dungeonSource).toContain('this.add.image(x, y, preview.textureKey)');
     expect(dungeonSource).toContain('sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST)');
-    expect(dungeonSource).toContain('Aseprite preview 로드 실패 시에만 사용하는 안전 fallback');
+    // 중간 폴백 계층(generic fallback image) — preview 미로드 시 우선 사용. 주석 문구가 아니라
+    // 실제 폴백 코드를 검증해 소스 주석 리워딩에 깨지지 않게 한다(거짓 어포던스 회피).
+    expect(dungeonSource).toContain('DUNGEON_MONSTER_FALLBACK_TEXTURES.boss');
+    expect(dungeonSource).toContain('DUNGEON_MONSTER_FALLBACK_TEXTURES.normal');
+    // 최종 안전 폴백 — preview·fallback image 모두 실패 시 절차적 사각형.
     expect(dungeonSource).toContain('gfx.generateTexture(`dmon_${i}`, rectSize, rectSize)');
   });
 });

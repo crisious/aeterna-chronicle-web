@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+// @ts-expect-error - pipeline helper is a plain .mjs file with no type declarations
+import { decodePng } from '../../tools/aseprite-pipeline/decode-png.mjs';
 // @ts-expect-error - pipeline validators are plain .mjs with no type declarations
 import { validateCharacterPalette, DEFAULT_MAX_COLORS } from '../../tools/aseprite-pipeline/validate-character-palette.mjs';
 // @ts-expect-error - pipeline validators are plain .mjs with no type declarations
@@ -31,6 +33,39 @@ function spritesAreLfsPointers(): boolean {
 
 const lfsPointers = spritesAreLfsPointers();
 
+function countPixelsInFrameRegion({
+  imagePath,
+  frameX,
+  frameY,
+  region,
+  rgba,
+}: {
+  imagePath: string;
+  frameX: number;
+  frameY: number;
+  region: { x: number; y: number; width: number; height: number };
+  rgba: readonly [number, number, number, number];
+}): number {
+  const image = decodePng(resolve(process.cwd(), imagePath));
+  let count = 0;
+
+  for (let y = region.y; y < region.y + region.height; y += 1) {
+    for (let x = region.x; x < region.x + region.width; x += 1) {
+      const index = ((frameY + y) * image.width + (frameX + x)) * 4;
+      if (
+        image.data[index] === rgba[0] &&
+        image.data[index + 1] === rgba[1] &&
+        image.data[index + 2] === rgba[2] &&
+        image.data[index + 3] === rgba[3]
+      ) {
+        count += 1;
+      }
+    }
+  }
+
+  return count;
+}
+
 describe('character sprite quality gates', () => {
   it.skipIf(lfsPointers)('every class palette stays within the post-composite color ceiling', () => {
     const result = validateCharacterPalette();
@@ -51,5 +86,41 @@ describe('character sprite quality gates', () => {
     expect(result.ok).toBe(true);
     expect(result.minPair).not.toBeNull();
     expect(result.minPair.distance).toBeGreaterThanOrEqual(DEFAULT_MIN_DISTANCE);
+  });
+
+  it.skipIf(lfsPointers)('time guardian back-facing idle reads as a back view, not a front face', () => {
+    const exposedSkinPixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_time_guardian_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 18, y: 6, width: 29, height: 25 },
+      rgba: [211, 143, 103, 255],
+    });
+
+    expect(exposedSkinPixels).toBeLessThanOrEqual(48);
+  });
+
+  it.skipIf(lfsPointers)('memory weaver back-facing idle does not expose open book page interiors', () => {
+    const openPagePixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_memory_weaver_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 6, y: 18, width: 53, height: 25 },
+      rgba: [230, 222, 194, 255],
+    });
+
+    expect(openPagePixels).toBeLessThanOrEqual(24);
+  });
+
+  it.skipIf(lfsPointers)('void wanderer back-facing idle hides the front chest panel', () => {
+    const frontPanelPixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_void_wanderer_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 24, y: 35, width: 20, height: 14 },
+      rgba: [186, 210, 235, 255],
+    });
+
+    expect(frontPanelPixels).toBeLessThanOrEqual(4);
   });
 });
