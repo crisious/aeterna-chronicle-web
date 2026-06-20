@@ -193,6 +193,16 @@ Void Wanderer의 `U`/`UL` 후방 포즈는 얼굴은 숨겨졌지만, 중심 몸
 - 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 중심 몸통 영역의 `silverBlue` 패널 픽셀을 `4`개 이하로 제한한다. 보정 전 `25`, 보정 후 `0`.
 - Preview/Browser QA: `logs/phase231-void-wanderer-du-idle-preview.png`, `logs/phase231-void-wanderer-battle.png`, `logs/phase231-void-wanderer-game.png`에서 후방 망토 등판과 전투/필드 scene child 렌더를 확인했다.
 
+### 2026-06-20 Ether Knight 후방 chest accent 보정 루프
+
+Ether Knight의 `U`/`UL` 후방 포즈는 전면 청록/금색 chest crest가 등판 중앙에 남아 갑옷 후면보다 정면 가슴 장식처럼 읽혔다. 후방 방향에서는 전면 crest를 제거하고 작은 리벳과 어두운 back plate 라인으로 렌더하도록 보정했다.
+
+- Source script: `tools/aseprite-pipeline/scripts/create-ether-knight-pilot.lua`
+- Regenerated source: `assets/source/aseprite/character/ether_knight/char_ether_knight_base.aseprite`
+- Generated/published: `assets/generated/aseprite/character/char_ether_knight_base.png`, `client/public/assets/generated/characters/sprites/char_ether_knight_base.png`
+- 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 중심 chest 영역의 `cyanDim` 픽셀을 `4`개 이하, `goldAccent` 픽셀을 `8`개 이하로 제한한다. 보정 전 `cyanDim 21`, `goldAccent 26`, 보정 후 둘 다 `0`.
+- Preview/Browser QA: `logs/phase232-ether-knight-du-idle-preview.png`, `logs/phase232-ether-knight-battle.png`, `logs/phase232-ether-knight-game.png`에서 후방 back plate와 전투/필드 scene child 렌더를 확인했다.
+
 ## Runtime Application
 
 - `client/src/assets/characterSpriteManifest.ts`가 `textureKey`, `imagePath`, `jsonPath`, `frameWidth: 64`, `frameHeight: 64` 계약을 제공한다.
@@ -222,6 +232,8 @@ Void Wanderer의 `U`/`UL` 후방 포즈는 얼굴은 숨겨졌지만, 중심 몸
 ?debugScene=game&class=void_wanderer&era=present
 ?debugScene=battle&class=void_wanderer&era=present
 ?debugScene=battle&class=void_wanderer&era=present&renderer=canvas
+?debugScene=game&class=ether_knight&era=present&renderer=canvas
+?debugScene=battle&class=ether_knight&era=present&renderer=canvas
 ```
 
 체크 포인트:

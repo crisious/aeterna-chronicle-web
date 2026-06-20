@@ -123,4 +123,24 @@ describe('character sprite quality gates', () => {
 
     expect(frontPanelPixels).toBeLessThanOrEqual(4);
   });
+
+  it.skipIf(lfsPointers)('ether knight back-facing idle hides front chest accent colors', () => {
+    const rearChestCyanPixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 24, y: 29, width: 18, height: 15 },
+      rgba: [62, 146, 178, 255],
+    });
+    const rearChestGoldPixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_ether_knight_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 24, y: 29, width: 18, height: 15 },
+      rgba: [255, 215, 0, 255],
+    });
+
+    expect(rearChestCyanPixels).toBeLessThanOrEqual(4);
+    expect(rearChestGoldPixels).toBeLessThanOrEqual(8);
+  });
 });

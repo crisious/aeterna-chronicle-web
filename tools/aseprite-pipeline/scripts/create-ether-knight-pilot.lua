@@ -444,9 +444,11 @@ local function drawAccent(image, pose)
   local backView = pose.backView or 0
 
   if backView > 0 then
-    fillRect(image, 29 + lean + dirX, 31 + bob, 7, 2, colors.memoryCyan)
-    fillRect(image, 31 + torso + dirX, 34 + bob, 3, 9, colors.cyanDim)
-    fillRect(image, 25 + torso + dirX, 40 + bob, 13, 2, colors.goldAccent)
+    -- Rear view uses small armor rivets and a muted back plate line instead
+    -- of the front cyan/gold chest crest.
+    fillPixel(image, 29 + lean + dirX, 32 + bob, colors.memoryCyan)
+    fillPixel(image, 35 + lean + dirX, 32 + bob, colors.memoryCyan)
+    fillRect(image, 28 + torso + dirX, 40 + bob, 10, 2, colors.steelDark)
   else
     fillRect(image, 29 + lean + dirX, 20 + bob, 6, 2, colors.memoryCyan)
     fillRect(image, 31 + torso + dirX, 31 + bob, 3, 10, colors.memoryCyan)

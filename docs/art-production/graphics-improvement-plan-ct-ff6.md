@@ -24,6 +24,9 @@
 - `char_void_wanderer_base`의 `U`/`UL` 후방 몸통을 전면 가슴 패널에서 망토 등판으로 보정했다.
 - RED 기준: `U` idle 중심 몸통 `silverBlue` 패널 픽셀 `25 > 4` 실패.
 - 완료 기준: 동일 영역 `silverBlue` 픽셀 `0`, `art:character:roster`, 단일 character export validate, 관련 vitest 51개, `client` typecheck, Battle/Game browser QA 통과.
+- `char_ether_knight_base`의 `U`/`UL` 후방 chest accent를 전면 crest에서 작은 리벳과 어두운 back plate 라인으로 보정했다.
+- RED 기준: `U` idle 중심 chest 영역 `cyanDim 21 > 4`, `goldAccent 26 > 8` 실패.
+- 완료 기준: 동일 영역 `cyanDim 0`, `goldAccent 0`, `art:character:roster`, 단일 character export validate, 관련 vitest 52개, `client` typecheck, Battle/Game browser QA 통과.
 
 ---
 
