@@ -173,6 +173,16 @@ CT/FF6 레퍼런스의 "형태 우선" 원칙에 따라 `char_time_guardian_base
 - 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 상체 영역의 Time Guardian 피부색 픽셀을 `48`개 이하로 제한한다. 보정 전 `112`, 보정 후 `0`.
 - Browser QA: `logs/phase229-time-guardian-battle.png`, `logs/phase229-time-guardian-game.png`에서 `char_sprite_time_guardian_base` texture가 전투/필드 scene child로 렌더되는 것을 확인했다.
 
+### 2026-06-20 Memory Weaver 후방 책 실루엣 보정 루프
+
+Memory Weaver의 `U`/`UL` 후방 포즈는 얼굴 피부 노출은 없었지만, 열린 책 안쪽 페이지가 정면과 동일하게 크게 노출되어 후방 시점에서도 소품이 전면처럼 읽혔다. 후방 방향에서는 책을 닫힌 표지/책등으로 렌더하도록 보정했다.
+
+- Source script: `tools/aseprite-pipeline/scripts/create-memory-weaver-pilot.lua`
+- Regenerated source: `assets/source/aseprite/character/memory_weaver/char_memory_weaver_base.aseprite`
+- Generated/published: `assets/generated/aseprite/character/char_memory_weaver_base.png`, `client/public/assets/generated/characters/sprites/char_memory_weaver_base.png`
+- 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 책 영역의 `bookPage` 색 픽셀을 `24`개 이하로 제한한다. 보정 전 `96`, 보정 후 `0`.
+- Preview/Browser QA: `logs/phase230-memory-weaver-du-idle-preview.png`, `logs/phase230-memory-weaver-battle.png`, `logs/phase230-memory-weaver-game.png`에서 후방 닫힌 책과 전투/필드 scene child 렌더를 확인했다.
+
 ## Runtime Application
 
 - `client/src/assets/characterSpriteManifest.ts`가 `textureKey`, `imagePath`, `jsonPath`, `frameWidth: 64`, `frameHeight: 64` 계약을 제공한다.

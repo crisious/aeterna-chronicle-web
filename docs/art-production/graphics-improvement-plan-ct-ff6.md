@@ -18,6 +18,9 @@
 - `char_time_guardian_base`의 `U`/`UL` 후방 포즈를 보정해 전면 피부색 노출을 줄이고 후드/로브/시계 장치 실루엣을 강화했다.
 - RED 기준: `U` idle 상체 영역 Time Guardian 피부색 픽셀 `112 > 48` 실패.
 - 완료 기준: 동일 영역 피부색 픽셀 `0`, `art:character:roster`, 단일 character export validate, 관련 vitest 49개, `client` typecheck, Battle/Game browser QA 통과.
+- `char_memory_weaver_base`의 `U`/`UL` 후방 책 소품을 열린 페이지에서 닫힌 표지/책등으로 보정했다.
+- RED 기준: `U` idle 책 영역 `bookPage` 색 픽셀 `96 > 24` 실패.
+- 완료 기준: 동일 영역 `bookPage` 픽셀 `0`, `art:character:roster`, 단일 character export validate, 관련 vitest 50개, `client` typecheck, Battle/Game browser QA 통과.
 
 ---
 

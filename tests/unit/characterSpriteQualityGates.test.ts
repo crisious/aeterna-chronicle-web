@@ -99,4 +99,16 @@ describe('character sprite quality gates', () => {
 
     expect(exposedSkinPixels).toBeLessThanOrEqual(48);
   });
+
+  it.skipIf(lfsPointers)('memory weaver back-facing idle does not expose open book page interiors', () => {
+    const openPagePixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_memory_weaver_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 6, y: 18, width: 53, height: 25 },
+      rgba: [230, 222, 194, 255],
+    });
+
+    expect(openPagePixels).toBeLessThanOrEqual(24);
+  });
 });

@@ -379,6 +379,17 @@ end
 local function drawBook(image, pose, x, y, openSide)
   fillRect(image, x, y, 11, 12, colors.outline)
   fillRect(image, x + 1, y + 1, 9, 10, colors.bookCover)
+
+  if (pose.backView or 0) > 0 then
+    -- Back-facing poses show closed book covers. Exposing bright page interiors
+    -- from behind makes the U/UL silhouettes read like front-facing props.
+    fillRect(image, x + 2, y + 2, 7, 8, colors.robeDark)
+    fillRect(image, x + 3, y + 3, 5, 2, colors.robe)
+    fillRect(image, x + 5, y + 1, 1, 10, colors.gold)
+    fillPixel(image, x + 5, y + 5, colors.memoryCyan)
+    return
+  end
+
   fillRect(image, x + 2, y + 2, 3, 8, colors.bookPage)
   fillRect(image, x + 6, y + 2, 3, 8, colors.bookPage)
   fillRect(image, x + 5, y + 1, 1, 10, colors.gold)
