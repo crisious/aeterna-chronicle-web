@@ -378,9 +378,16 @@ local function drawCloak(image, pose)
   fillRect(image, coatX, 33 + bob, coatW, 19, colors.outline)
   fillRect(image, coatX + 3, 35 + bob, coatW - 6, 15, colors.midnight)
   fillRect(image, coatX + 6, 36 + bob, math.max(8, coatW - 12), 12, colors.overcoat)
-  fillRect(image, coatX + 9, 38 + bob, math.max(4, math.floor(coatW / 3)), 5, colors.silverBlue)
-  -- Magenta seam running down the front keeps the nebula read.
-  fillRect(image, coatX + math.floor(coatW / 2), 35 + bob, 4, 16, colors.magentaDim)
+  if backView == 0 then
+    fillRect(image, coatX + 9, 38 + bob, math.max(4, math.floor(coatW / 3)), 5, colors.silverBlue)
+    -- Magenta seam running down the front keeps the nebula read.
+    fillRect(image, coatX + math.floor(coatW / 2), 35 + bob, 4, 16, colors.magentaDim)
+  else
+    -- Rear-facing frames show the coat back, not the pale front chest panel.
+    fillRect(image, coatX + 8, 37 + bob, math.max(6, coatW - 16), 10, colors.hoodDark)
+    fillRect(image, coatX + math.floor(coatW / 2), 35 + bob, 2, 15, colors.hood)
+    fillRect(image, coatX + math.floor(coatW / 2) + 3, 38 + bob, 2, 8, colors.magentaDim)
+  end
 
   -- Drifting hem flaps — asymmetric, amorphous tatters at the sides.
   fillRect(image, coatX - 1 + capeShift, 43 + bob, 7, 11, colors.hoodDark)

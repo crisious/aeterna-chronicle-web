@@ -183,6 +183,16 @@ Memory Weaver의 `U`/`UL` 후방 포즈는 얼굴 피부 노출은 없었지만,
 - 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 책 영역의 `bookPage` 색 픽셀을 `24`개 이하로 제한한다. 보정 전 `96`, 보정 후 `0`.
 - Preview/Browser QA: `logs/phase230-memory-weaver-du-idle-preview.png`, `logs/phase230-memory-weaver-battle.png`, `logs/phase230-memory-weaver-game.png`에서 후방 닫힌 책과 전투/필드 scene child 렌더를 확인했다.
 
+### 2026-06-20 Void Wanderer 후방 몸통 패널 보정 루프
+
+Void Wanderer의 `U`/`UL` 후방 포즈는 얼굴은 숨겨졌지만, 중심 몸통에 전면 `silverBlue` 가슴 패널이 남아 뒤돌아선 포즈가 정면 몸통처럼 읽혔다. 후방 방향에서는 전면 패널/중앙 seam 대신 어두운 망토 등판과 접힘선으로 렌더하도록 보정했다.
+
+- Source script: `tools/aseprite-pipeline/scripts/create-void-wanderer-pilot.lua`
+- Regenerated source: `assets/source/aseprite/character/void_wanderer/char_void_wanderer_base.aseprite`
+- Generated/published: `assets/generated/aseprite/character/char_void_wanderer_base.png`, `client/public/assets/generated/characters/sprites/char_void_wanderer_base.png`
+- 품질 게이트: `tests/unit/characterSpriteQualityGates.test.ts`가 `U` idle 중심 몸통 영역의 `silverBlue` 패널 픽셀을 `4`개 이하로 제한한다. 보정 전 `25`, 보정 후 `0`.
+- Preview/Browser QA: `logs/phase231-void-wanderer-du-idle-preview.png`, `logs/phase231-void-wanderer-battle.png`, `logs/phase231-void-wanderer-game.png`에서 후방 망토 등판과 전투/필드 scene child 렌더를 확인했다.
+
 ## Runtime Application
 
 - `client/src/assets/characterSpriteManifest.ts`가 `textureKey`, `imagePath`, `jsonPath`, `frameWidth: 64`, `frameHeight: 64` 계약을 제공한다.

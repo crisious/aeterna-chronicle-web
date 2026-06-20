@@ -111,4 +111,16 @@ describe('character sprite quality gates', () => {
 
     expect(openPagePixels).toBeLessThanOrEqual(24);
   });
+
+  it.skipIf(lfsPointers)('void wanderer back-facing idle hides the front chest panel', () => {
+    const frontPanelPixels = countPixelsInFrameRegion({
+      imagePath: 'assets/generated/aseprite/character/char_void_wanderer_base.png',
+      frameX: 0,
+      frameY: 64 * 4,
+      region: { x: 24, y: 35, width: 20, height: 14 },
+      rgba: [186, 210, 235, 255],
+    });
+
+    expect(frontPanelPixels).toBeLessThanOrEqual(4);
+  });
 });
