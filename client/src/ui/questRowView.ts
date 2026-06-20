@@ -31,6 +31,9 @@ export interface QuestItem {
    * 메인 퀘스트가 "어떻게 완료하는지 알기 어려운" 문제를 해소하기 위한 필드.
    */
   actionHint?: string;
+  /** actionHint 왼쪽에 표시할 Aseprite 아이콘 이미지. 없으면 공통 안내 화살표로 fallback. */
+  actionIconImageKey?: string;
+  actionIconImagePath?: string;
   /**
    * 이 퀘스트가 월드맵의 특정 존으로 이동해야 진행되는 경우 그 존 ID.
    * 설정 시 퀘스트 행에 "월드맵 열기" 버튼이 렌더되고, 클릭하면
@@ -71,14 +74,24 @@ function buildQuestMapButtonIconHtml(zoneId: string): string | null {
   return `<img class="hud-quest-map-icon" src="/${iconPath}" alt="" aria-hidden="true" decoding="async" loading="lazy" data-aeterna-icon-key="${escapeHtml(iconResource.key)}" data-aeterna-icon-path="${iconPath}" />`;
 }
 
-function buildQuestActionHintIconHtml(): string {
+function buildQuestActionHintImageHtml(iconKey: string, iconPath: string): string {
+  const escapedIconKey = escapeHtml(iconKey);
+  const escapedIconPath = escapeHtml(iconPath);
+
+  return `<img class="hud-quest-action-icon" src="/${escapedIconPath}" alt="" aria-hidden="true" decoding="async" loading="lazy" data-aeterna-icon-key="${escapedIconKey}" data-aeterna-icon-path="${escapedIconPath}" />`;
+}
+
+function buildQuestActionHintIconHtml(quest: QuestItem): string {
+  if (quest.actionIconImageKey && quest.actionIconImagePath) {
+    return buildQuestActionHintImageHtml(quest.actionIconImageKey, quest.actionIconImagePath);
+  }
+
   const iconResource = getSpriteResourceForSkillIcon(QUEST_ACTION_HINT_ICON_ID);
   if (!iconResource) {
     return '<span class="hud-quest-action-icon-fallback" aria-hidden="true">&gt;</span>';
   }
 
-  const iconPath = escapeHtml(iconResource.path);
-  return `<img class="hud-quest-action-icon" src="/${iconPath}" alt="" aria-hidden="true" decoding="async" loading="lazy" data-aeterna-icon-key="${escapeHtml(iconResource.key)}" data-aeterna-icon-path="${iconPath}" />`;
+  return buildQuestActionHintImageHtml(iconResource.key, iconResource.path);
 }
 
 export function buildQuestRowHtml(quest: QuestItem): string {
@@ -88,7 +101,7 @@ export function buildQuestRowHtml(quest: QuestItem): string {
 
   // 진행 방법 안내 줄 — 완료된 퀘스트엔 불필요하므로 미완료일 때만.
   const actionHintHtml = (quest.actionHint && !quest.isCompleted)
-    ? `<div class="hud-quest-action">${buildQuestActionHintIconHtml()}<span class="hud-quest-action-text">${escapeHtml(quest.actionHint)}</span></div>`
+    ? `<div class="hud-quest-action">${buildQuestActionHintIconHtml(quest)}<span class="hud-quest-action-text">${escapeHtml(quest.actionHint)}</span></div>`
     : '';
 
   const mapButtonIconHtml = quest.mapZoneId && !quest.isCompleted

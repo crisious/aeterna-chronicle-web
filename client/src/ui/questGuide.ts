@@ -10,22 +10,58 @@
 import {
   buildQuestGuide,
   type QuestGuide,
+  type QuestObjectiveKind,
   type QuestObjectiveInput,
 } from '../../../shared/types/scenarioRegistry';
+import {
+  getSpriteResourceForSkillIcon,
+  getSpriteResourceForUiIcon,
+  type SpriteResource,
+} from '../assets/spriteResourceManifest';
+import { getItemIconResource, type ItemIconResource } from '../data/itemIconResources';
 import type { QuestItem } from './questRowView';
 import type { ActiveQuestData } from '../network/NetworkManager';
 
 export interface QuestGuideFields {
   actionHint?: string;
   mapZoneId?: string;
+  actionIconImageKey?: string;
+  actionIconImagePath?: string;
+}
+
+const QUEST_ACTION_ICON_BY_KIND: Readonly<Record<QuestObjectiveKind, () => SpriteResource | ItemIconResource | undefined>> = {
+  explore: () => getSpriteResourceForSkillIcon('skill_vw_warp'),
+  talk: () => getSpriteResourceForUiIcon('chat_system'),
+  kill: () => getSpriteResourceForSkillIcon('skill_ek_slash'),
+  collect: () => getItemIconResource({ itemIconId: 'ITM-MAT-001' }),
+  craft: () => getItemIconResource({ itemIconId: 'ITM-WPN-001' }),
+};
+
+function resolveQuestActionIconFields(kind: QuestObjectiveKind | 'unknown' | undefined): Pick<QuestGuideFields, 'actionIconImageKey' | 'actionIconImagePath'> {
+  if (!kind || kind === 'unknown') {
+    return {};
+  }
+
+  const resource = QUEST_ACTION_ICON_BY_KIND[kind]?.();
+  if (!resource) {
+    return {};
+  }
+
+  return {
+    actionIconImageKey: resource.key,
+    actionIconImagePath: resource.path,
+  };
 }
 
 /** QuestGuide → QuestItem 안내 필드. opensMap 일 때만 mapZoneId(=mapTarget)를 채운다. */
 function guideToFields(guide: QuestGuide): QuestGuideFields {
   if (!guide.actionHint) return {};
+  const activeStep = guide.steps.find((step) => !step.completed) ?? guide.steps[0];
+
   return {
     actionHint: guide.actionHint,
     mapZoneId: guide.opensMap ? guide.mapTarget : undefined,
+    ...resolveQuestActionIconFields(activeStep?.kind),
   };
 }
 

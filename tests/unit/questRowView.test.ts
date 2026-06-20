@@ -45,6 +45,21 @@ describe('buildQuestRowHtml — 메인 퀘스트 진행 방법 노출', () => {
     expect(html).not.toContain('▶ ESC로 월드맵을 열고');
   });
 
+  test('actionHint 전용 Aseprite 아이콘 경로가 있으면 공통 화살표 대신 해당 이미지를 렌더한다', () => {
+    const html = buildQuestRowHtml({
+      ...malatusQuest,
+      actionIconImageKey: 'skill_vw_warp_icon',
+      actionIconImagePath: 'assets/generated/ui/icons/skills/skill_vw_warp.png',
+    } as QuestItem & { actionIconImageKey: string; actionIconImagePath: string });
+
+    expect(html).toContain('class="hud-quest-action-icon"');
+    expect(html).toContain('src="/assets/generated/ui/icons/skills/skill_vw_warp.png"');
+    expect(html).toContain('data-aeterna-icon-key="skill_vw_warp_icon"');
+    expect(html).toContain('data-aeterna-icon-path="assets/generated/ui/icons/skills/skill_vw_warp.png"');
+    expect(html).not.toContain('src="/assets/generated/ui/icons/skills/skill_mw_arrow.png"');
+    expect(html).not.toContain('hud-quest-action-icon-fallback');
+  });
+
   test('mapZoneId 가 있으면 그 존을 가리키는 "월드맵 열기" 버튼이 렌더된다', () => {
     const html = buildQuestRowHtml(malatusQuest);
     expect(html).toContain('hud-quest-map-btn');

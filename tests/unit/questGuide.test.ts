@@ -25,11 +25,49 @@ describe('questGuide wiring', () => {
     expect(deriveQuestGuideFields([])).toEqual({});
   });
 
+  test('deriveQuestGuideFields — objective 종류별 Aseprite 안내 아이콘 리소스를 함께 반환한다', () => {
+    const cases = [
+      {
+        type: 'explore',
+        key: 'skill_vw_warp_icon',
+        path: 'assets/generated/ui/icons/skills/skill_vw_warp.png',
+      },
+      {
+        type: 'talk',
+        key: 'ui_icon_chat_system',
+        path: 'assets/generated/ui/icons/system/chat_system.png',
+      },
+      {
+        type: 'kill',
+        key: 'skill_ek_slash_icon',
+        path: 'assets/generated/ui/icons/skills/skill_ek_slash.png',
+      },
+      {
+        type: 'collect',
+        key: 'icon_item_ITM-MAT_001',
+        path: 'assets/generated/ui/icons/items/ITM-MAT-001.png',
+      },
+      {
+        type: 'craft',
+        key: 'icon_item_ITM-WPN_001',
+        path: 'assets/generated/ui/icons/items/ITM-WPN-001.png',
+      },
+    ] as const;
+
+    for (const c of cases) {
+      const fields = deriveQuestGuideFields([{ type: c.type, description: `${c.type} 목표`, target: `${c.type}_target` }]);
+      const record = fields as Record<string, unknown>;
+      expect(record.actionIconImageKey, c.type).toBe(c.key);
+      expect(record.actionIconImagePath, c.type).toBe(c.path);
+    }
+  });
+
   test('questGuideToFields — 서버 guide(QuestGuide)를 동일 규칙으로 매핑', () => {
     const guide = buildQuestGuide([{ type: 'kill', description: '시간 망령 처치', target: 'mob_time_wraith' }]);
     const f = questGuideToFields(guide);
     expect(f.actionHint).toContain('시간 망령 처치');
     expect(f.mapZoneId).toBe('mob_time_wraith'); // kill 도 opensMap=true
+    expect((f as Record<string, unknown>).actionIconImageKey).toBe('skill_ek_slash_icon');
     expect(questGuideToFields(null)).toEqual({});
     expect(questGuideToFields(undefined)).toEqual({});
   });

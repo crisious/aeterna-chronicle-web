@@ -691,8 +691,17 @@ export class HudOverlay {
     });
     const expectedQuestActionIconResources = this.quests
       .filter((quest) => quest.actionHint && !quest.isCompleted)
-      .map(() => getSpriteResourceForSkillIcon('skill_mw_arrow'))
-      .filter((resource): resource is NonNullable<typeof resource> => resource !== undefined);
+      .map((quest) => {
+        if (quest.actionIconImageKey && quest.actionIconImagePath) {
+          return {
+            key: quest.actionIconImageKey,
+            path: quest.actionIconImagePath,
+          };
+        }
+
+        return getSpriteResourceForSkillIcon('skill_mw_arrow');
+      })
+      .filter((resource): resource is { key: string; path: string } => resource !== undefined);
     const expectedQuestActionIconCount = expectedQuestActionIconResources.length;
     const missingQuestActionIconKeys = expectedQuestActionIconResources
       .filter((resource, index) => {

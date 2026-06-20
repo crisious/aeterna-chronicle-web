@@ -880,6 +880,10 @@ describe('UI frame runtime images', () => {
     expect(hudOverlaySource).toContain('missingQuestActionIconKeys');
     expect(hudOverlaySource).toContain('questActionIconReady');
     expect(hudOverlaySource).toContain('quest.actionHint && !quest.isCompleted');
+    expect(hudOverlaySource).toContain('quest.actionIconImageKey && quest.actionIconImagePath');
+    expect(hudOverlaySource).toContain('key: quest.actionIconImageKey');
+    expect(hudOverlaySource).toContain('path: quest.actionIconImagePath');
+    expect(hudOverlaySource).not.toContain(".map(() => getSpriteResourceForSkillIcon('skill_mw_arrow'))");
     expect(hudOverlaySource).toContain('.hud-quest-map-icon { width:16px; height:16px; object-fit:contain; image-rendering:pixelated');
     expect(hudOverlaySource).toContain('.hud-quest-action-icon { width:14px; height:14px; object-fit:contain; image-rendering:pixelated');
     expect(hudOverlaySource).toContain('.hud-quest-action-text { min-width:0; }');

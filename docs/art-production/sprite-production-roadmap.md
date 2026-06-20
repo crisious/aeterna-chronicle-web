@@ -45,13 +45,18 @@ Current QA state:
 
 ## Phase 3: Player Class Completion
 
-The first class full-motion source is `char_ether_knight_base`.
+The player class full-motion set now covers all six base classes: `char_ether_knight_base`, `char_memory_weaver_base`, `char_shadow_weaver_base`, `char_memory_breaker_base`, `char_time_guardian_base`, and `char_void_wanderer_base`.
 
 Exit criteria:
 
-- `idle_D`, `walk_D`, `attack_melee_D`, `cast_D`, `hit_D`, `death_D` tags validate for every production direction.
-- Remaining class pilots are promoted from `idle_D`/`walk_D` to the full motion set.
+- `idle`, `walk`, `attack_melee`, `cast`, `hit`, `death`, `ready`, and `victory` tags validate for every production direction.
+- Runtime atlases are `2560x320`, `200` frames, `5` directions, and `40` motion tags.
 - Browser QA covers `BattleScene` and `GameScene` for each promoted class.
+
+Current QA state:
+
+- 2026-06-20: all six base classes are roster `phase: full`, `status: published`.
+- `assets/generated/characters/sprites` and `client/public/assets/generated/characters/sprites` contain matching `2560x320` PNG sheets and `200`-sprite runtime JSON atlases.
 
 ## Phase 4: Monster And VFX Pilots
 
@@ -6927,3 +6932,37 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Browser QA: `?debugScene=transitionLoading&renderer=canvas&transitionLoadingFrameQa=1&transitionVfxFallbackQa=hit_slash&qaRun=phase227-vfx-fallback` reports `aeternaTransitionVfxFallbackQa.status = ready`, expected/rendered key `hit_fallback_slash`, display size `59.13648x59.13648`, `fallbackImageRendered = true`, `proceduralFallbackRendered = false`, empty missing texture keys, `hit_fallback_slash.png` response `200 image/png`, one visible nonblank canvas, and no console/page errors.
 - Visual QA screenshot: `logs/phase227-transition-vfx-fallback.png` shows TransitionLoadingQaScene with the image-backed Aseprite hit slash fallback over the loading panel.
+
+## Phase 228: HudOverlay Quest Objective Action Icons
+
+Runtime HudOverlay quest action hint icon coverage:
+
+- Explore objective: `skill_vw_warp.png` / texture key `skill_vw_warp_icon`.
+- Talk objective: `chat_system.png` / texture key `ui_icon_chat_system`.
+- Kill objective: `skill_ek_slash.png` / texture key `skill_ek_slash_icon`.
+- Collect objective: `ITM-MAT-001.png` / texture key `icon_item_ITM-MAT_001`.
+- Craft objective: `ITM-WPN-001.png` / texture key `icon_item_ITM-WPN_001`.
+- Current QA route coverage: `debugScene=game&hudFrameQa=1` starts GameScene with deterministic default HUD quests and records `aeternaHudFrameQa.questActionIcon`.
+
+Production rule:
+
+- `questGuide.ts` resolves the first incomplete objective kind into `actionIconImageKey` and `actionIconImagePath` alongside the existing `actionHint` and `mapZoneId`.
+- `questRowView.ts` renders the objective-specific Aseprite image before the action hint text. The old `skill_mw_arrow.png` marker is retained only as a fallback for legacy quest rows that do not provide action icon key/path.
+- `HudOverlay.writeHudFrameQaProbe()` now builds the expected quest action icon set from each active quest row's action icon key/path, so `hudFrameQa` validates the actual objective-specific resources instead of the old generic arrow.
+
+Exit criteria:
+
+- Unit tests verify explore/kill objective guide fields, quest guide conversion, quest row image rendering, fallback behavior, and HudOverlay QA probe source contract.
+- Browser QA verifies the default explore and collect quests render `skill_vw_warp_icon` and `icon_item_ITM-MAT_001`, do not render `skill_mw_arrow_icon`, report `aeternaHudFrameQa.status = ready`, and expose nonblank icon pixels.
+- Existing sprite resource coverage, UI frame coverage, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 228 implementation started on 2026-06-20.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\questGuide.test.ts tests\unit\questRowView.test.ts` failed before implementation because quest guide fields did not include objective-specific action icon key/path and quest row rendering still used the generic arrow.
+- RED follow-up: `npx vitest run --config tests\vitest.config.ts tests\unit\uiFrameAssets.test.ts` failed before HudOverlay QA probe alignment because the source still expected `skill_mw_arrow_icon` for every quest action hint.
+- GREEN: focused quest guide/row tests, HudOverlay source-contract tests, and related sprite manifest coverage pass.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\questGuide.test.ts tests\unit\questRowView.test.ts tests\unit\uiFrameAssets.test.ts tests\unit\spriteResourceManifest.test.ts` passes with 170 tests across 4 files.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA desktop and mobile landscape routes report `aeternaHudFrameQa.status = ready`, rendered quest action icon keys `skill_vw_warp_icon` and `icon_item_ITM-MAT_001`, empty generic-arrow usage, nonblank icon pixel probes, and visible screenshots at `logs/phase228-hud-quest-objective-icons-desktop-ready.png` and `logs/phase228-hud-quest-objective-icons-mobile-landscape-ready.png`.
