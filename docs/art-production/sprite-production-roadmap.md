@@ -6862,3 +6862,35 @@ Current QA state:
 - Typecheck: `npm --prefix client run typecheck` passes.
 - Browser QA: `?debugScene=battle&renderer=canvas&battleBossTelegraphIconQa=1&class=ether_knight&qaRun=phase225-boss-telegraph-icon` reports `aeternaBattleBossTelegraphIconQa.status = ready`, rendered key `skill_ek_explode_icon`, display size `30x30`, empty `missingBattleBossTelegraphIconKeys`, `fallbackRendered = false`, `legacyGlyphPresent = false`, `skill_ek_explode.png` response `200 image/png`, one visible nonblank canvas, and no console/page errors.
 - Visual QA screenshot: `logs/phase225-battle-boss-telegraph-icon.png` shows BattleScene with the image-backed Aseprite boss telegraph overhead icon above the enemy.
+
+## Phase 226: BattleScene Hit Slash VFX Aseprite-First Runtime Gate
+
+Runtime BattleScene hit slash VFX coverage:
+
+- Basic hit slash VFX: `vfx_hit_slash.png` / texture key `vfx_hit_slash_sprite`.
+- Current QA route coverage: `debugScene=battle&battleHitVfxQa=critical` starts BattleScene, triggers `_showHitVFX()` on the first enemy, and records the active hit slash render state.
+
+Production rule:
+
+- `BattleScene.preload()` continues resolving `vfx_hit_slash` through `getSpriteResourceForVfx()` and loads the `64x64` frame spritesheet before combat starts.
+- `_showHitVFX()` now renders the `vfx_hit_slash_sprite` animation as the primary path whenever the texture exists.
+- The old procedural circle burst, critical ring, and radial particles are now texture-missing safety fallback only.
+- `battleHitVfxQa=normal|critical|element` writes `aeternaBattleHitVfxQa` with expected/rendered texture keys, display size, procedural fallback count, missing keys, and canvas count.
+
+Exit criteria:
+
+- Unit tests verify the QA route mode type, `main.ts` parser, QA starter/probe, hit slash sprite tracking, Aseprite texture gate, and procedural fallback counter.
+- Browser QA verifies `vfx_hit_slash_sprite` renders at critical scale `134.4x134.4`, records empty `missingBattleHitVfxKeys`, keeps `proceduralFallbackCount = 0`, returns `200 image/png` for `vfx_hit_slash.png`, keeps one visible nonblank canvas, and reports no console/page errors.
+- Existing sprite resource coverage, runtime image reference coverage, public runtime roster coverage, sprite roster validation, typecheck, and build remain green.
+
+Current QA state:
+
+- Phase 226 implementation started on 2026-06-20.
+- RED: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts -t "hit VFX QA"` failed before implementation because `BattleScene.ts` did not define `BattleHitVfxQaMode`, the hit VFX QA probe, or the Aseprite-only procedural fallback gate.
+- GREEN: the same focused command passes after implementation.
+- Related coverage: `npx vitest run --config tests\vitest.config.ts tests\unit\spriteResourceManifest.test.ts tests\unit\runtimeImageReferenceCoverage.test.ts tests\unit\runtimeImageRosterCoverage.test.ts` passes with 111 tests across 3 files.
+- Sprite roster: `npm run art:sprite:roster` passes with `{"ok":true,"errors":[]}`.
+- Typecheck: `npm --prefix client run typecheck` passes.
+- Build: `npm run build:client` passes; Vite still prints the existing CJS Node API deprecation warning.
+- Browser QA: `?debugScene=battle&renderer=canvas&battleHitVfxQa=critical&class=ether_knight&qaRun=phase226-battle-hit-vfx` reports `aeternaBattleHitVfxQa.status = ready`, rendered key `vfx_hit_slash_sprite`, display size `134.4x134.4`, empty `missingBattleHitVfxKeys`, `proceduralFallbackCount = 0`, `vfx_hit_slash.png` response `200 image/png`, one visible nonblank canvas, and no console/page errors.
+- Visual QA screenshot: `logs/phase226-battle-hit-vfx.png` shows BattleScene with the image-backed Aseprite hit slash VFX on the enemy and no procedural burst overlay.

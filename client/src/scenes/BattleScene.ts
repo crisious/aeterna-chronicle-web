@@ -76,6 +76,7 @@ import type { ATBMode } from '../../../shared/types/atb';
 // ─── 전투 상태 ──────────────────────────────────────────────────
 
 export type BattlePhase = 'intro' | 'fighting' | 'victory' | 'defeat';
+type BattleHitVfxQaMode = 'normal' | 'critical' | 'element';
 
 /** 전투 씬 시작 시 전달받는 데이터 */
 export interface BattleSceneData {
@@ -139,6 +140,8 @@ export interface BattleSceneData {
   battleBossTelegraphIconQa?: boolean;
   /** Aseprite 아군 누락 리소스 fallback 브라우저 QA용 */
   battleAllyFallbackQa?: boolean;
+  /** Aseprite hit slash VFX 브라우저 QA용 */
+  battleHitVfxQa?: BattleHitVfxQaMode;
 }
 
 const DUNGEON_BATTLE_BG_KEY = 'battle_bg_dungeon';
@@ -610,6 +613,8 @@ export class BattleScene extends Phaser.Scene {
   private battleResultLeadIcon: Phaser.GameObjects.Image | null = null;
   private battleResultLeadIconFallbackRendered = false;
   private battleResultLeadText: Phaser.GameObjects.Text | null = null;
+  private hitVfxSlashSprites: Phaser.GameObjects.Sprite[] = [];
+  private hitVfxProceduralFallbackCount = 0;
   // CHRONO-S70: chain combo 카운터 + UI 라벨
   private chainCount = 0;
   private chainLabel: Phaser.GameObjects.Text | null = null;
@@ -707,6 +712,8 @@ export class BattleScene extends Phaser.Scene {
     this.battleResultLeadIcon = null;
     this.battleResultLeadIconFallbackRendered = false;
     this.battleResultLeadText = null;
+    this.hitVfxSlashSprites = [];
+    this.hitVfxProceduralFallbackCount = 0;
     this.chainLabelIcon = null;
     this.chainLabelIconFallbackRendered = false;
     this.chainLabelIconMode = null;
@@ -991,7 +998,7 @@ export class BattleScene extends Phaser.Scene {
       }
     }
 
-    // VFX — 프로그래매틱 이펙트 사용
+    // VFX — Aseprite spritesheet 우선, 누락 시 코드 fallback 사용
     const hitSlashResource = getSpriteResourceForVfx('vfx_hit_slash');
     if (hitSlashResource && !this.textures.exists(hitSlashResource.key)) {
       this.load.spritesheet(hitSlashResource.key, hitSlashResource.path, {
@@ -1356,6 +1363,7 @@ export class BattleScene extends Phaser.Scene {
     this._startBattleChainLabelIconQa();
     this._startBattleConnectionBadgeIconQa();
     this._startBattleBossTelegraphIconQa();
+    this._startBattleHitVfxQa();
   }
 
   private _addBattleSceneFrame(
@@ -3370,8 +3378,9 @@ export class BattleScene extends Phaser.Scene {
     const elementColor = opts?.element ? ELEM_COLOR[opts.element] : undefined;
     const baseColor = crit ? 0xffe066 : (elementColor ?? 0xffffff);
     const hitSlashResource = getSpriteResourceForVfx('vfx_hit_slash');
+    const usedAsepriteHitVfx = Boolean(hitSlashResource && this.textures.exists(hitSlashResource.key));
 
-    if (hitSlashResource && this.textures.exists(hitSlashResource.key)) {
+    if (usedAsepriteHitVfx && hitSlashResource) {
       const animKey = `${hitSlashResource.key}_play`;
       if (!this.anims.exists(animKey)) {
         this.anims.create({
@@ -3394,29 +3403,45 @@ export class BattleScene extends Phaser.Scene {
       slash.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       slash.setTint(baseColor);
       slash.play(animKey);
-      slash.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => slash.destroy());
+      this.hitVfxSlashSprites.push(slash);
+      slash.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        const removeSlash = () => {
+          slash.destroy();
+          this.hitVfxSlashSprites = this.hitVfxSlashSprites.filter((sprite) => sprite !== slash);
+        };
+
+        if (this._initData.battleHitVfxQa) {
+          this.time.delayedCall(900, removeSlash);
+          return;
+        }
+
+        removeSlash();
+      });
     }
 
-    const circle = this.add.circle(x, y, crit ? 14 : 8, baseColor, 0.85).setDepth(8000);
-    this.tweens.add({
-      targets: circle, scaleX: crit ? 4 : 3, scaleY: crit ? 4 : 3, alpha: 0,
-      duration: crit ? 380 : 300, ease: 'Sine.easeOut', onComplete: () => circle.destroy(),
-    });
-
-    if (crit) {
-      // 크리 임팩트: 확장 링 + 방사 파티클 6개
-      const ring = this.add.circle(x, y, 10).setStrokeStyle(3, 0xffe066, 1).setDepth(8001);
+    if (!usedAsepriteHitVfx) {
+      this.hitVfxProceduralFallbackCount += 1;
+      const circle = this.add.circle(x, y, crit ? 14 : 8, baseColor, 0.85).setDepth(8000);
       this.tweens.add({
-        targets: ring, scaleX: 5, scaleY: 5, alpha: 0, duration: 360, ease: 'Quad.easeOut',
-        onComplete: () => ring.destroy(),
+        targets: circle, scaleX: crit ? 4 : 3, scaleY: crit ? 4 : 3, alpha: 0,
+        duration: crit ? 380 : 300, ease: 'Sine.easeOut', onComplete: () => circle.destroy(),
       });
-      for (let i = 0; i < 6; i++) {
-        const ang = (Math.PI * 2 / 6) * i;
-        const p = this.add.circle(x, y, 3, 0xffd700, 1).setDepth(8001);
+
+      if (crit) {
+        // 크리 임팩트 fallback: Aseprite slash texture가 없을 때만 확장 링 + 방사 파티클 사용
+        const ring = this.add.circle(x, y, 10).setStrokeStyle(3, 0xffe066, 1).setDepth(8001);
         this.tweens.add({
-          targets: p, x: x + Math.cos(ang) * 36, y: y + Math.sin(ang) * 36, alpha: 0,
-          duration: 320, ease: 'Quad.easeOut', onComplete: () => p.destroy(),
+          targets: ring, scaleX: 5, scaleY: 5, alpha: 0, duration: 360, ease: 'Quad.easeOut',
+          onComplete: () => ring.destroy(),
         });
+        for (let i = 0; i < 6; i++) {
+          const ang = (Math.PI * 2 / 6) * i;
+          const p = this.add.circle(x, y, 3, 0xffd700, 1).setDepth(8001);
+          this.tweens.add({
+            targets: p, x: x + Math.cos(ang) * 36, y: y + Math.sin(ang) * 36, alpha: 0,
+            duration: 320, ease: 'Quad.easeOut', onComplete: () => p.destroy(),
+          });
+        }
       }
     }
   }
@@ -4748,6 +4773,52 @@ export class BattleScene extends Phaser.Scene {
       fallbackLabels,
       legacyGlyphPresent,
       missingBattleBossTelegraphIconKeys,
+      visibleCanvasCount: document.querySelectorAll('canvas').length,
+    });
+  }
+
+  private _startBattleHitVfxQa(): void {
+    const mode = this._initData.battleHitVfxQa;
+    if (mode !== 'normal' && mode !== 'critical' && mode !== 'element') return;
+
+    this.time.delayedCall(1700, () => {
+      const target = this.enemySprites[0] ?? this.allySprites[0] ?? null;
+      const x = target?.sprite.x ?? this.cameras.main.width / 2;
+      const y = target?.sprite.y ?? this.cameras.main.height / 2;
+      this._showHitVFX(x, y, { crit: mode === 'critical', element: mode === 'element' ? 'fire' : undefined });
+      this._writeBattleHitVfxQaProbe(mode);
+    });
+  }
+
+  private _writeBattleHitVfxQaProbe(mode: BattleHitVfxQaMode): void {
+    if (this._initData.battleHitVfxQa !== mode || typeof document === 'undefined' || !document.body) return;
+
+    const hitSlashResource = getSpriteResourceForVfx('vfx_hit_slash');
+    const expectedTextureKeys = hitSlashResource ? [hitSlashResource.key] : [];
+    const activeHitVfxSlashSprites = this.hitVfxSlashSprites.filter((sprite) => sprite.active);
+    const renderedTextureKeys = activeHitVfxSlashSprites.map((sprite) => sprite.texture.key);
+    const missingBattleHitVfxKeys = expectedTextureKeys
+      .filter((key) => !renderedTextureKeys.includes(key));
+    const hasExpectedVfx = activeHitVfxSlashSprites.length >= 1
+      && missingBattleHitVfxKeys.length === 0
+      && this.hitVfxProceduralFallbackCount === 0;
+
+    document.body.dataset.aeternaBattleHitVfxQa = JSON.stringify({
+      status: hasExpectedVfx ? 'ready' : 'missing-vfx',
+      mode,
+      hitVfx: {
+        vfxId: 'vfx_hit_slash',
+        expectedCount: 1,
+        renderedCount: activeHitVfxSlashSprites.length,
+        expectedTextureKeys,
+        renderedTextureKeys,
+        displaySizes: activeHitVfxSlashSprites.map((sprite) => ({
+          width: sprite.displayWidth,
+          height: sprite.displayHeight,
+        })),
+        proceduralFallbackCount: this.hitVfxProceduralFallbackCount,
+      },
+      missingBattleHitVfxKeys,
       visibleCanvasCount: document.querySelectorAll('canvas').length,
     });
   }

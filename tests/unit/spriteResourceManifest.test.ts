@@ -1115,6 +1115,31 @@ describe('sprite resource manifest', () => {
     expect(source).toContain("setName('vfx_hit_slash_instance')");
   });
 
+  it('BattleScene hit VFX QA keeps procedural burst as texture-missing fallback only', () => {
+    const source = readSceneSource('BattleScene.ts');
+    const mainSource = readFileSync(resolve(process.cwd(), 'client/src/main.ts'), 'utf8');
+
+    expect(source).toContain("type BattleHitVfxQaMode = 'normal' | 'critical' | 'element'");
+    expect(source).toContain('battleHitVfxQa?: BattleHitVfxQaMode');
+    expect(source).toContain('private hitVfxSlashSprites: Phaser.GameObjects.Sprite[] = []');
+    expect(source).toContain('private hitVfxProceduralFallbackCount = 0');
+    expect(source).toContain('this.hitVfxSlashSprites = []');
+    expect(source).toContain('this.hitVfxProceduralFallbackCount = 0');
+    expect(source).toContain('this._startBattleHitVfxQa()');
+    expect(source).toContain('private _startBattleHitVfxQa(): void');
+    expect(source).toContain("const mode = this._initData.battleHitVfxQa");
+    expect(source).toContain("this._showHitVFX(x, y, { crit: mode === 'critical', element: mode === 'element' ? 'fire' : undefined })");
+    expect(source).toContain('this._writeBattleHitVfxQaProbe(mode)');
+    expect(source).toContain('private _writeBattleHitVfxQaProbe(mode: BattleHitVfxQaMode): void');
+    expect(source).toContain('document.body.dataset.aeternaBattleHitVfxQa = JSON.stringify');
+    expect(source).toContain('const usedAsepriteHitVfx = Boolean(hitSlashResource && this.textures.exists(hitSlashResource.key))');
+    expect(source).toContain('this.hitVfxSlashSprites.push(slash)');
+    expect(source).toContain('if (!usedAsepriteHitVfx) {');
+    expect(source).toContain('this.hitVfxProceduralFallbackCount += 1');
+    expect(mainSource).toContain("const battleHitVfxQaParam = params.get('battleHitVfxQa')");
+    expect(mainSource).toContain("battleHitVfxQa: battleHitVfxQaParam === 'normal' || battleHitVfxQaParam === 'critical' || battleHitVfxQaParam === 'element'");
+  });
+
   it('BattleScene and BattleUI load Aseprite skill icons before text-only fallback', () => {
     const battleSource = readSceneSource('BattleScene.ts');
     const uiSource = readFileSync(resolve(process.cwd(), 'client/src/ui/BattleUI.ts'), 'utf8');

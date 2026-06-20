@@ -808,7 +808,7 @@ assets/source/aseprite/vfx/common/vfx_hit_slash.aseprite
 - Runtime key: `vfx_hit_slash_sprite`
 - VFX id: `vfx_hit_slash`
 - Status: `in-game-verified`
-- Browser QA: `BattleScene` texture load and `_showHitVFX()` sprite animation instance verified on 2026-06-12
+- Browser QA: `BattleScene` texture load and `_showHitVFX()` sprite animation instance verified on 2026-06-12; `battleHitVfxQa=critical` verified Aseprite-only render with no procedural fallback on 2026-06-20
 
 생성 스크립트는 `tools/aseprite-pipeline/scripts/create-hit-slash-vfx-pilot.lua`를 사용한다.
 
@@ -834,7 +834,7 @@ npm run art:aseprite:validate -- vfx `
   assets/generated/aseprite/vfx/vfx_hit_slash.json
 ```
 
-`BattleScene`은 `getSpriteResourceForVfx('vfx_hit_slash')`로 새 spritesheet를 먼저 로드한다. `_showHitVFX()`는 `vfx_hit_slash_sprite` animation을 생성하고, 기존 프로그래매틱 원형 버스트는 fallback 겸 타격 보강 효과로 유지한다.
+`BattleScene`은 `getSpriteResourceForVfx('vfx_hit_slash')`로 새 spritesheet를 먼저 로드한다. `_showHitVFX()`는 `vfx_hit_slash_sprite` animation을 생성하고, texture가 있을 때 기존 프로그래매틱 원형 버스트/크리티컬 링/방사 파티클을 만들지 않는다. 해당 프로그래매틱 효과는 `vfx_hit_slash_sprite` texture가 없을 때만 texture-missing fallback으로 생성한다. `?debugScene=battle&renderer=canvas&battleHitVfxQa=critical`은 `aeternaBattleHitVfxQa`에 rendered texture key, display size, procedural fallback count, 누락 key를 기록한다.
 
 ## VFX Runtime 라이브러리
 

@@ -532,6 +532,7 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
         const battleChainLabelIconQaParam = params.get('battleChainLabelIconQa');
         const battleConnectionBadgeIconQaParam = params.get('battleConnectionBadgeIconQa');
         const battleElementTagIconQaParam = params.get('battleElementTagIconQa');
+        const battleHitVfxQaParam = params.get('battleHitVfxQa');
         const battleConnectionBadgeIconQa = battleConnectionBadgeIconQaParam === 'reconnecting' || battleConnectionBadgeIconQaParam === 'error'
             ? battleConnectionBadgeIconQaParam
             : undefined;
@@ -566,6 +567,9 @@ function startDebugSceneIfRequested(phaserGame: Phaser.Game): void {
                 : undefined,
             battleBossTelegraphIconQa: params.get('battleBossTelegraphIconQa') === '1',
             battleAllyFallbackQa: params.get('battleAllyFallbackQa') === '1',
+            battleHitVfxQa: battleHitVfxQaParam === 'normal' || battleHitVfxQaParam === 'critical' || battleHitVfxQaParam === 'element'
+                ? battleHitVfxQaParam
+                : undefined,
             battleSubMenuFocusIconQa: battleSubMenuFocusIconQaParam === 'magic' || battleSubMenuFocusIconQaParam === 'item'
                 ? battleSubMenuFocusIconQaParam
                 : undefined,
