@@ -211,7 +211,8 @@ ship-ready ⇔ dev:measure(boot ≤5s) ∧ dev:verify(3/3 PASS) ∧ dev:build(ts
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 npm run audio:gate          # 4종 게이트 합본 (~60s)
 npm run audio:measure       # 응답 지연 측정 (~10s)
 npm run audio:license-check # 라이선스 안전성 확인 (~3s)
@@ -402,7 +403,8 @@ npm run verify                 # lint + typecheck + unit/contract test + build
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 npm run save:gate          # 4종 게이트 합본 (~90s)
 npm run save:roundtrip     # 왕복 일치 검증 (~30s)
 npm run save:recovery      # 손상 시뮬 + 자동 복구 (~20s)
@@ -460,7 +462,7 @@ PR 머지 시 봇 하네스가 자동 차단합니다 — 세 가닥 모두 통�
 npm run data:validate
 
 # 도메인별 빠른 검증 (개발 중)
-npm run data:validate:monster
+# (미구현) npm run data:validate:monster — 도메인별 검증 스크립트는 아직 없습니다
 
 # 변경 감지 watch 모드 (가장 흔한 워크플로)
 npm run data:validate -- --watch
@@ -511,7 +513,8 @@ npm run data:validate -- --watch
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 # 4 viewport × 4 시나리오 = 16건 자동 검증
 npm run mobile:viewport
 
@@ -566,7 +569,8 @@ Phaser.js + 1,454 어셋 환경에서 저사양 디바이스 포함 안정 플�
 
 ### 빠른 시작
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 # 전투·맵 60초 FPS 샘플링 (평균/p1/p5 보고)
 npm run perf:fps
 
