@@ -9,7 +9,7 @@
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C454%20Images-ff69b4?style=for-the-badge)](#-프로젝트-통계)
 [![Commits](https://img.shields.io/badge/Commits-600-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)](#-코드-품질)
+![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)
 [![Tutorial Coverage](https://img.shields.io/badge/Tutorial%20Coverage-100%25-brightgreen?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 [![First 30min](https://img.shields.io/badge/First%2030min-%E2%89%A430%3A00-blue?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 [![Save Round-Trip](https://img.shields.io/badge/Save%20Round--Trip-100%25-success?style=for-the-badge)](#-세이브로드-시스템)
@@ -155,7 +155,7 @@ cd client && npm run dev       # → http://localhost:5173 (Vite proxy → :3000
 ### 🚀 빠른 시작 (4 명령)
 
 ```bash
-npm run dev          # 부팅 진행률 바 + ≤5s 약속
+npm run dev -w client  # client 개발 서버(Vite) 기동
 npm run dev:verify   # 전투/세이브/맵 3 시나리오 자동 검증 + ≤60s 약속
 npm run dev:measure  # 부팅 시간 + 누적 회귀 추세 (.ac/boot-trend.json)
 npm run dev:build    # 에러 발생 시 단일 카드(파일:라인:컬럼)
@@ -230,7 +230,7 @@ npm run audio:license-check # 라이선스 안전성 확인 (~3s)
 - 📖 [사용자 가이드](docs/release/sound-system-user-guide.md) — 한 손 흐름도 + FAQ 7건 (1차 SSOT)
 - 📜 [에러 메시지 SSOT](docs/release/sound-system-error-messages.md) — 16 슬롯 ko/en
 - 🔧 [PR / 커밋 컨벤션](docs/release/sound-system-pr-template.md) — 7 스코프 + 5인 인계 체크
-- ⚖️ [라이선스 크레딧](docs/legal/audio-credits.md) — 자동 등재 출처 목록
+- ⚖️ 라이선스 크레딧: `docs/legal/audio-credits.md` (작성 예정) — 자동 등재 출처 목록
 
 ### 🛡️ Ship-Gate 예고 (3-AND)
 
