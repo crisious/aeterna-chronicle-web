@@ -230,7 +230,7 @@ npm run audio:license-check # 라이선스 안전성 확인 (~3s)
 - 📖 [사용자 가이드](docs/release/sound-system-user-guide.md) — 한 손 흐름도 + FAQ 7건 (1차 SSOT)
 - 📜 [에러 메시지 SSOT](docs/release/sound-system-error-messages.md) — 16 슬롯 ko/en
 - 🔧 [PR / 커밋 컨벤션](docs/release/sound-system-pr-template.md) — 7 스코프 + 5인 인계 체크
-- ⚖️ [라이선스 크레딧](docs/legal/audio-credits.md) — 자동 등재 출처 목록
+- ⚖️ 라이선스 크레딧: `docs/legal/audio-credits.md` (작성 예정) — 자동 등재 출처 목록
 
 ### 🛡️ Ship-Gate 예고 (3-AND)
 
