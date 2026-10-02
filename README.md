@@ -204,14 +204,15 @@ ship-ready ⇔ dev:measure(boot ≤5s) ∧ dev:verify(3/3 PASS) ∧ dev:build(ts
 
 | 지표 | 약속 | 현재 | 측정 |
 |------|------|------|------|
-| 씬 BGM 매핑 커버리지 | 100% | _TBD_ | `npm run audio:coverage-bgm` |
-| 핵심 전투 SFX 커버리지 | 100% | _TBD_ | `npm run audio:coverage-sfx` |
-| 라이선스 위험 | 0건 | _TBD_ | `npm run audio:license-check` |
-| SFX 평균 응답 지연 | ≤ 50ms | _TBD_ | `npm run audio:measure` |
+| 씬 BGM 매핑 커버리지 | 100% | _TBD_ | `npm run audio:coverage-bgm` (미구현) |
+| 핵심 전투 SFX 커버리지 | 100% | _TBD_ | `npm run audio:coverage-sfx` (미구현) |
+| 라이선스 위험 | 0건 | _TBD_ | `npm run audio:license-check` (미구현) |
+| SFX 평균 응답 지연 | ≤ 50ms | _TBD_ | `npm run audio:measure` (미구현) |
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 npm run audio:gate          # 4종 게이트 합본 (~60s)
 npm run audio:measure       # 응답 지연 측정 (~10s)
 npm run audio:license-check # 라이선스 안전성 확인 (~3s)
@@ -393,16 +394,17 @@ npm run verify                 # lint + typecheck + unit/contract test + build
 
 | 지표 | 약속 | 측정 |
 |------|------|------|
-| 세이브/로드 왕복 데이터 일치 | **100%** | `npm run save:roundtrip` |
-| 손상 파일 → 마지막 정상 백업 자동 복구 | **100%** | `npm run save:recovery` |
-| v1 → v2 마이그레이션 호환 | **100%** | `npm run save:migrate-test` |
-| 로드 검증 누락 필드 기본값 적용 | **100%** | `npm run save:validate` |
+| 세이브/로드 왕복 데이터 일치 | **100%** | `npm run save:roundtrip` (미구현) |
+| 손상 파일 → 마지막 정상 백업 자동 복구 | **100%** | `npm run save:recovery` (미구현) |
+| v1 → v2 마이그레이션 호환 | **100%** | `npm run save:migrate-test` (미구현) |
+| 로드 검증 누락 필드 기본값 적용 | **100%** | `npm run save:validate` (미구현) |
 
 > 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수.
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 npm run save:gate          # 4종 게이트 합본 (~90s)
 npm run save:roundtrip     # 왕복 일치 검증 (~30s)
 npm run save:recovery      # 손상 시뮬 + 자동 복구 (~20s)
@@ -460,10 +462,10 @@ PR 머지 시 봇 하네스가 자동 차단합니다 — 세 가닥 모두 통�
 npm run data:validate
 
 # 도메인별 빠른 검증 (개발 중)
-npm run data:validate:monster
+npm run data:validate -- --domain=monster
 
 # 변경 감지 watch 모드 (가장 흔한 워크플로)
-npm run data:validate -- --watch
+# (미구현) npm run data:validate -- --watch — watch 옵션은 아직 없습니다
 ```
 
 ### 🌊 4 게이트 흐름 (두련사 *선禪 4계*)
@@ -511,7 +513,8 @@ npm run data:validate -- --watch
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 # 4 viewport × 4 시나리오 = 16건 자동 검증
 npm run mobile:viewport
 
@@ -559,14 +562,15 @@ Phaser.js + 1,454 어셋 환경에서 저사양 디바이스 포함 안정 플�
 
 | 지표 | 임계 | 측정 도구 |
 |------|------|----------|
-| **FPS 평균** | 전투·맵 모두 **≥ 55** | `perf:fps` (60초 샘플) |
-| **메모리 증가율** | 5분 연속 플레이 시 **≤ 50MB** | `perf:memory` (씬 10회 전환) |
-| **초기 로딩** | 첫 플레이 가능 시점 **≤ 5초** | `perf:load` (3G·4G·WiFi) |
-| **번들 청크** | 초기 chunk **≤ 2MB gzipped** | `perf:bundle` (rollup-plugin-visualizer) |
+| **FPS 평균** | 전투·맵 모두 **≥ 55** | `perf:fps` (미구현) (60초 샘플) |
+| **메모리 증가율** | 5분 연속 플레이 시 **≤ 50MB** | `perf:memory` (미구현) (씬 10회 전환) |
+| **초기 로딩** | 첫 플레이 가능 시점 **≤ 5초** | `perf:load` (미구현) (3G·4G·WiFi) |
+| **번들 청크** | 초기 chunk **≤ 2MB gzipped** | `perf:bundle` (미구현) (rollup-plugin-visualizer) |
 
 ### 빠른 시작
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 # 전투·맵 60초 FPS 샘플링 (평균/p1/p5 보고)
 npm run perf:fps
 
