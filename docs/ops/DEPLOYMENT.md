@@ -46,8 +46,9 @@ npm run dev      # http://localhost:5173
 ### 타입 체크
 
 ```bash
-cd server && npm run typecheck
-cd client && npm run typecheck
+# 저장소 루트에서 실행
+npm run typecheck:server
+npm run typecheck:client
 ```
 
 ---
