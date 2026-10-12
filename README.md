@@ -155,7 +155,7 @@ cd client && npm run dev       # → http://localhost:5173 (Vite proxy → :3000
 ### 🚀 빠른 시작 (4 명령)
 
 ```bash
-npm run dev          # 부팅 진행률 바 + ≤5s 약속
+npm --prefix client run dev  # client 개발 서버(Vite) 기동 + ≤5s 약속
 npm run dev:verify   # 전투/세이브/맵 3 시나리오 자동 검증 + ≤60s 약속
 npm run dev:measure  # 부팅 시간 + 누적 회귀 추세 (.ac/boot-trend.json)
 npm run dev:build    # 에러 발생 시 단일 카드(파일:라인:컬럼)
