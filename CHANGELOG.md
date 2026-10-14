@@ -16,7 +16,7 @@
 > 브랜치 `docs/doc-integrity-2026-10` · 기준 main@63c9621 · `.md`만 변경, 게임 코드 변경 0
 
 **Fixed**
-- **README 빠른 시작** — 루트에서 `Missing script`로 끝나던 `npm run dev`를 `npm run dev -w client`로 교정. 루트 `package.json`에는 `dev` 스크립트가 없고, `workspaces`에 `client`가 있어 `-w client`로 실행된다.
+- **README 빠른 시작** — 루트에서 `Missing script`로 끝나던 `npm run dev`를 `npm --prefix client run dev`로 교정(client 문서 표기와 통일). 루트 `package.json`에는 `dev` 스크립트가 없다.
 - **미작성 법적 문서 참조** — 없는 `docs/legal/audio-credits.md`를 가리키던 링크 2건(README, `docs/release/sound-system-readme-skeleton.md`)을 풀고 `(작성 예정)`으로 표기. `client/src/accessibility/README.md`의 `docs/legal/vpat-2.4.md` 참조에도 같은 표기를 붙임. 새 파일 0개.
 
 **Changed**
