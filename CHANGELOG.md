@@ -12,6 +12,18 @@
 
 ---
 
+> ── 문서 무결성 점검 스프린트 (2026-10-03) ──
+> 브랜치 `docs/doc-integrity-2026-10` · 기준 main@63c9621 · `.md`만 변경, 게임 코드 변경 0
+
+**Fixed**
+- **README 빠른 시작** — 루트에서 `Missing script`로 끝나던 `npm run dev`를 `npm run dev -w client`로 교정. 루트 `package.json`에는 `dev` 스크립트가 없고, `workspaces`에 `client`가 있어 `-w client`로 실행된다.
+- **미작성 법적 문서 참조** — 없는 `docs/legal/audio-credits.md`를 가리키던 링크 2건(README, `docs/release/sound-system-readme-skeleton.md`)을 풀고 `(작성 예정)`으로 표기. `client/src/accessibility/README.md`의 `docs/legal/vpat-2.4.md` 참조에도 같은 표기를 붙임. 새 파일 0개.
+
+**Changed**
+- **README 미구현 명령 표기** — 어느 `package.json`에도 없는 npm 스크립트만 담긴 빠른 시작 블록 4개(사운드·세이브·모바일·성능)에 `계획된 명령 (미구현)` 라벨을 달고 `text` 블록으로 바꿔 복사 실행을 막음. 데이터 검증 블록의 `npm run data:validate:monster` 1줄은 주석으로 바꾸고 `(미구현)` 표기. 명령 삭제와 제목 변경 0건.
+
+---
+
 > ── 보안·인프라 하드닝 스프린트 (2026-05-30~31) ──
 > 상세: [`docs/release/release_notes_v1.0-rc.3_security-infra-hardening.md`](docs/release/release_notes_v1.0-rc.3_security-infra-hardening.md) · PR #173~#187 (15건, main 머지·CI 녹색)
 
