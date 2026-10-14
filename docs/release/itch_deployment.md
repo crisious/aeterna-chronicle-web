@@ -172,7 +172,8 @@ fragments and uncover the truth behind the Great Oblivion in this story-driven A
 
 ### 4.3 데모 빌드 분리 방법
 
-```bash
+> **계획된 스크립트 (미구현)** — 아래 `scripts/build-demo.sh`와 그 안의 `scripts/extract-demo.js`, `config/demo-config.json`, `npm run build:all`은 아직 저장소에 없습니다. · 확인 main@63c9621
+```text
 # scripts/build-demo.sh
 #!/bin/bash
 

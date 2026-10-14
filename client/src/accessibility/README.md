@@ -98,7 +98,7 @@ a11y.screenReader.aria.register("inventory.slot.{n}", {
 | §4.1 화면 낭독기 호환 | `screen_reader/` | NVDA·JAWS·VoiceOver 수동 + AriaContract |
 | §4.2 색맹 모드 | `colorblind/` | ColorBlindSim 스냅샷 |
 | §4.3 키보드 풀-내비 | `screen_reader/FocusManager` | KeyboardTraverser |
-| §4.4 VPAT 2.4 | 본 모듈 + `docs/legal/vpat-2.4.md` | `summary.wcagLevel` 자동 갱신 |
+| §4.4 VPAT 2.4 | 본 모듈 + `docs/legal/vpat-2.4.md` (작성 예정) | `summary.wcagLevel` 자동 갱신 |
 
 ---
 

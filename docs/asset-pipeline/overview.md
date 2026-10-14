@@ -194,13 +194,13 @@ assets/
 
 ```bash
 # 1. 프롬프트 템플릿에서 개별 프롬프트 CSV 생성
-python tools/asset-pipeline/generate_prompts.py --template character --output prompts/characters.csv
+# (미구현) python tools/asset-pipeline/generate_prompts.py --template character --output prompts/characters.csv
 
 # 2. ComfyUI API로 배치 생성
-python tools/asset-pipeline/batch_generate.py --prompts prompts/characters.csv --output raw/characters/
+# (미구현) python tools/asset-pipeline/batch_generate.py --prompts prompts/characters.csv --output raw/characters/
 
 # 3. 후처리
-python tools/asset-pipeline/postprocess.py --input raw/characters/ --output processed/characters/ --palette erebos
+# (미구현) python tools/asset-pipeline/postprocess.py --input raw/characters/ --output processed/characters/ --palette erebos
 
 # 4. 스프라이트 시트 생성
 python tools/asset-pipeline/spritesheet_generator.py --input processed/characters/ --output sheets/characters/ --size 64x64 --cols 8

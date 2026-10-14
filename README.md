@@ -9,13 +9,13 @@
 [![Docs](https://img.shields.io/badge/Docs-742%2B%20MD-orange?style=for-the-badge)](#-프로젝트-통계)
 [![Assets](https://img.shields.io/badge/Assets-1%2C454%20Images-ff69b4?style=for-the-badge)](#-프로젝트-통계)
 [![Commits](https://img.shields.io/badge/Commits-600-blueviolet?style=for-the-badge)](#-프로젝트-통계)
-[![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)](#-코드-품질)
+![TS Errors](https://img.shields.io/badge/TS%20Errors-0-brightgreen?style=for-the-badge)
 [![Tutorial Coverage](https://img.shields.io/badge/Tutorial%20Coverage-100%25-brightgreen?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 [![First 30min](https://img.shields.io/badge/First%2030min-%E2%89%A430%3A00-blue?style=for-the-badge)](#-첫-30분--신규-플레이어-학습-보장)
 [![Save Round-Trip](https://img.shields.io/badge/Save%20Round--Trip-100%25-success?style=for-the-badge)](#-세이브로드-시스템)
 [![Auto Recovery](https://img.shields.io/badge/Auto%20Recovery-100%25-brightgreen?style=for-the-badge)](#-세이브로드-시스템)
-[![Schema Validation](https://img.shields.io/badge/Schema%20Validation-100%25-brightgreen?style=for-the-badge)](#-데이터-검증--콘텐츠-정합성-자동-보장)
-[![Reference Integrity](https://img.shields.io/badge/Reference%20Integrity-0%20broken-success?style=for-the-badge)](#-데이터-검증--콘텐츠-정합성-자동-보장)
+[![Schema Validation](https://img.shields.io/badge/Schema%20Validation-100%25-brightgreen?style=for-the-badge)](#%EF%B8%8F-데이터-검증--콘텐츠-정합성-자동-보장)
+[![Reference Integrity](https://img.shields.io/badge/Reference%20Integrity-0%20broken-success?style=for-the-badge)](#%EF%B8%8F-데이터-검증--콘텐츠-정합성-자동-보장)
 [![Mobile Viewport](https://img.shields.io/badge/Mobile%20Viewport-4%2F4%20Pass-brightgreen?style=for-the-badge)](#-모바일-반응형-mobile-responsive)
 [![Touch Latency](https://img.shields.io/badge/Touch%20Latency-p95%20%E2%89%A4100ms-success?style=for-the-badge)](#-모바일-반응형-mobile-responsive)
 [![FPS Avg](https://img.shields.io/badge/FPS%20Avg-%E2%89%A555-brightgreen?style=for-the-badge)](#-성능-최적화-performance)
@@ -204,14 +204,15 @@ ship-ready ⇔ dev:measure(boot ≤5s) ∧ dev:verify(3/3 PASS) ∧ dev:build(ts
 
 | 지표 | 약속 | 현재 | 측정 |
 |------|------|------|------|
-| 씬 BGM 매핑 커버리지 | 100% | _TBD_ | `npm run audio:coverage-bgm` |
-| 핵심 전투 SFX 커버리지 | 100% | _TBD_ | `npm run audio:coverage-sfx` |
-| 라이선스 위험 | 0건 | _TBD_ | `npm run audio:license-check` |
-| SFX 평균 응답 지연 | ≤ 50ms | _TBD_ | `npm run audio:measure` |
+| 씬 BGM 매핑 커버리지 | 100% | _TBD_ | `npm run audio:coverage-bgm` (미구현) |
+| 핵심 전투 SFX 커버리지 | 100% | _TBD_ | `npm run audio:coverage-sfx` (미구현) |
+| 라이선스 위험 | 0건 | _TBD_ | `npm run audio:license-check` (미구현) |
+| SFX 평균 응답 지연 | ≤ 50ms | _TBD_ | `npm run audio:measure` (미구현) |
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 npm run audio:gate          # 4종 게이트 합본 (~60s)
 npm run audio:measure       # 응답 지연 측정 (~10s)
 npm run audio:license-check # 라이선스 안전성 확인 (~3s)
@@ -230,7 +231,7 @@ npm run audio:license-check # 라이선스 안전성 확인 (~3s)
 - 📖 [사용자 가이드](docs/release/sound-system-user-guide.md) — 한 손 흐름도 + FAQ 7건 (1차 SSOT)
 - 📜 [에러 메시지 SSOT](docs/release/sound-system-error-messages.md) — 16 슬롯 ko/en
 - 🔧 [PR / 커밋 컨벤션](docs/release/sound-system-pr-template.md) — 7 스코프 + 5인 인계 체크
-- ⚖️ [라이선스 크레딧](docs/legal/audio-credits.md) — 자동 등재 출처 목록
+- ⚖️ 라이선스 크레딧: `docs/legal/audio-credits.md` (작성 예정) — 자동 등재 출처 목록
 
 ### 🛡️ Ship-Gate 예고 (3-AND)
 
@@ -393,16 +394,17 @@ npm run verify                 # lint + typecheck + unit/contract test + build
 
 | 지표 | 약속 | 측정 |
 |------|------|------|
-| 세이브/로드 왕복 데이터 일치 | **100%** | `npm run save:roundtrip` |
-| 손상 파일 → 마지막 정상 백업 자동 복구 | **100%** | `npm run save:recovery` |
-| v1 → v2 마이그레이션 호환 | **100%** | `npm run save:migrate-test` |
-| 로드 검증 누락 필드 기본값 적용 | **100%** | `npm run save:validate` |
+| 세이브/로드 왕복 데이터 일치 | **100%** | `npm run save:roundtrip` (미구현) |
+| 손상 파일 → 마지막 정상 백업 자동 복구 | **100%** | `npm run save:recovery` (미구현) |
+| v1 → v2 마이그레이션 호환 | **100%** | `npm run save:migrate-test` (미구현) |
+| 로드 검증 누락 필드 기본값 적용 | **100%** | `npm run save:validate` (미구현) |
 
 > 약속 수치 임의 갱신 금지 — 백능파(Strategy) 승인 필수.
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 npm run save:gate          # 4종 게이트 합본 (~90s)
 npm run save:roundtrip     # 왕복 일치 검증 (~30s)
 npm run save:recovery      # 손상 시뮬 + 자동 복구 (~20s)
@@ -460,10 +462,10 @@ PR 머지 시 봇 하네스가 자동 차단합니다 — 세 가닥 모두 통�
 npm run data:validate
 
 # 도메인별 빠른 검증 (개발 중)
-npm run data:validate:monster
+npm run data:validate -- --domain=monster
 
 # 변경 감지 watch 모드 (가장 흔한 워크플로)
-npm run data:validate -- --watch
+# (미구현) npm run data:validate -- --watch — watch 옵션은 아직 없습니다
 ```
 
 ### 🌊 4 게이트 흐름 (두련사 *선禪 4계*)
@@ -511,7 +513,8 @@ npm run data:validate -- --watch
 
 ### 🚀 빠른 시작 (3명령)
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 # 4 viewport × 4 시나리오 = 16건 자동 검증
 npm run mobile:viewport
 
@@ -559,14 +562,15 @@ Phaser.js + 1,454 어셋 환경에서 저사양 디바이스 포함 안정 플�
 
 | 지표 | 임계 | 측정 도구 |
 |------|------|----------|
-| **FPS 평균** | 전투·맵 모두 **≥ 55** | `perf:fps` (60초 샘플) |
-| **메모리 증가율** | 5분 연속 플레이 시 **≤ 50MB** | `perf:memory` (씬 10회 전환) |
-| **초기 로딩** | 첫 플레이 가능 시점 **≤ 5초** | `perf:load` (3G·4G·WiFi) |
-| **번들 청크** | 초기 chunk **≤ 2MB gzipped** | `perf:bundle` (rollup-plugin-visualizer) |
+| **FPS 평균** | 전투·맵 모두 **≥ 55** | `perf:fps` (미구현) (60초 샘플) |
+| **메모리 증가율** | 5분 연속 플레이 시 **≤ 50MB** | `perf:memory` (미구현) (씬 10회 전환) |
+| **초기 로딩** | 첫 플레이 가능 시점 **≤ 5초** | `perf:load` (미구현) (3G·4G·WiFi) |
+| **번들 청크** | 초기 chunk **≤ 2MB gzipped** | `perf:bundle` (미구현) (rollup-plugin-visualizer) |
 
 ### 빠른 시작
 
-```bash
+> **계획된 명령 (미구현)** — 아래 명령은 아직 `package.json`에 없습니다. 실행하면 `Missing script` 오류가 납니다. · 확인 main@63c9621
+```text
 # 전투·맵 60초 FPS 샘플링 (평균/p1/p5 보고)
 npm run perf:fps
 
